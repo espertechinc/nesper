@@ -1,0 +1,20 @@
+NEsper Strong Name Key Readme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The NEsper release builds are strongly named using the NEsper.snk key 
+file. This file is not distributed as part of the NEsper source or 
+binary downloads. See the NEsper documentation for more details.
+
+Before you can build your own release builds you will need to generate 
+a strong name key that identifies your assemblies.
+
+Generating your own strong name key.
+
+Run the SN utility from the .NET Framework SDK as follows:
+
+	sn -k NEsper.snk
+
+A new strong name key pair will be created and written to the NEsper.snk 
+file.
+
+

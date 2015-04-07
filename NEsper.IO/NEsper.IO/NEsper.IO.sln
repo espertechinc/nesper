@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper.IO", "NEsper.IO.csproj", "{6B178E01-D598-4D42-BA2A-B215CC87D85E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEsper", "..\NEsper\NEsper.csproj", "{8376DC7A-06AC-40F1-9338-9AC5AF788356}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B178E01-D598-4D42-BA2A-B215CC87D85E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B178E01-D598-4D42-BA2A-B215CC87D85E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B178E01-D598-4D42-BA2A-B215CC87D85E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B178E01-D598-4D42-BA2A-B215CC87D85E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8376DC7A-06AC-40F1-9338-9AC5AF788356}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

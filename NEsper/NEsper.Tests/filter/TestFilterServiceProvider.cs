@@ -1,0 +1,28 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using com.espertech.esper.client;
+
+using NUnit.Framework;
+
+namespace com.espertech.esper.filter
+{
+    [TestFixture]
+    public class TestFilterServiceProvider 
+    {
+        [Test]
+        public void TestGetService()
+        {
+            FilterService serviceOne = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY);
+            FilterService serviceTwo = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY);
+    
+            Assert.IsTrue(serviceOne != null);
+            Assert.IsTrue(serviceOne != serviceTwo);
+        }
+    }
+}

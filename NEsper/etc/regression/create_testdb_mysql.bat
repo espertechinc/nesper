@@ -1,0 +1,1 @@
+"c:\Program Files\MySQL\MySQL Server 5.6\bin\mysql.exe" -u esper < create_testdb_mysql.sql

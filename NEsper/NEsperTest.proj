@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Tests">
+  <PropertyGroup>
+    <!-- Configuration - if not set, sets the configuration to 'Debug' -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+
+    <!-- Location of MSBuild Community Tasks -->
+    <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\..\dependencies\MSBuild.Community.Tasks</MSBuildCommunityTasksPath>
+    <MSBuildCommunityTasksTargets>MSBuild.Community.Tasks.Targets</MSBuildCommunityTasksTargets>
+    <TPath>$(MSBuildCommunityTasksPath)\$(MSBuildCommunityTasksTargets)</TPath>
+    
+    <!-- Location of NUnit -->
+    <NUnitToolPath>C:\Program Files (x86)\NUnit 2.5.1\bin\net-2.0</NUnitToolPath>
+    
+    <!-- Location of the candidate assembly -->
+    <TestLocation>$(MSBuildProjectDirectory)\NEsper.Tests\bin\$(Configuration)</TestLocation>
+    <TestTransform>$(MSBuildProjectDirectory)\NEsper.Tests.xsl</TestTransform>
+  </PropertyGroup>
+  
+  <Import Project="$(TPath)"/>
+
+  <Target Name="Tests">
+    <NUnit Assemblies="NEsper.Tests.dll"
+           OutputXmlFile="$(TestLocation)\NEsper.Tests-Results.xml"
+           WorkingDirectory="$(TestLocation)"
+           ToolPath="$(NUnitToolPath)"
+           ContinueOnError="false" />
+
+    <Xslt Inputs="$(TestLocation)\NEsper.Tests-Results.xml"
+          Xsl="$(TestTransform)"
+          Output="$(TestLocation)\NEsper.Tests-Results.html"
+          Condition="Exists('$(TestTransform)')"
+          />
+  </Target>
+</Project>

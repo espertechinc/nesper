@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Deploy-Grammar">
+	<ItemGroup>
+		<Antlr4 Include="EsperEPL2Grammar.g4">
+			<TargetLanguage>CSharp</TargetLanguage>
+			<CustomToolNamespace>com.espertech.esper.epl.generated</CustomToolNamespace>
+		</Antlr4>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<IntermediateOutputPath>$(MSBuildProjectDirectory)</IntermediateOutputPath>
+		<AntlrVersion>4.4.3.0</AntlrVersion>
+	</PropertyGroup>
+
+	<Import Project="..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.props" Condition="Exists('..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.props')" />
+	<Import Project="..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.targets" Condition="Exists('..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.targets')" />
+
+	<UsingTask TaskName="ReplaceFileText" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+	  <ParameterGroup>
+		<InputFilename ParameterType="System.String" Required="true" />
+		<OutputFilename ParameterType="System.String" Required="true" />
+		<MatchExpression ParameterType="System.String" Required="true" />
+		<ReplacementText ParameterType="System.String" Required="true" />
+	  </ParameterGroup>
+	  <Task>
+		<Reference Include="System.Core" />
+		<Using Namespace="System" />
+		<Using Namespace="System.IO" />
+		<Using Namespace="System.Text.RegularExpressions" />
+		<Code Type="Fragment" Language="cs">
+		  <![CDATA[
+				File.WriteAllText(
+					OutputFilename,
+					Regex.Replace(File.ReadAllText(InputFilename), MatchExpression, ReplacementText)
+					);
+			  ]]>
+		</Code>
+	  </Task>
+	</UsingTask>
+	
+	<Target Name="Info">
+		<Message Text="MSBuildToolsPath: $(MSBuildToolsPath)" />
+	</Target>
+
+	<Target Name="Build-Grammar">
+		<PropertyGroup>
+			<Antlr>D:\opt\antlr\antlr-4.2.2\antlr-4.2.2-complete.jar</Antlr>
+			<Classpath>D:\opt\antlr\antlr-4.2.2\antlr4cs.jar</Classpath>
+			<Java>&quot;$(JAVA_HOME)\bin\java.exe&quot;</Java>
+			<TargetDir>$(MSBuildProjectDirectory)\..\NEsper\epl\generated</TargetDir>		
+			<Antlr4AbstractGrammar>EsperEPL2Grammar.g4</Antlr4AbstractGrammar>
+		</PropertyGroup>
+		
+		<Message Text="Testing: %(Antlr4.CustomToolNamespace)" />
+
+		<CallTarget Condition="'$(BuildingProject)' != 'true'" Targets="Antlr4Compile" 
+			ContinueOnError="false"
+			/>
+	</Target>
+	
+	<Target Name="Repair-Grammar" DependsOnTargets="Build-Grammar">
+		<!--
+		<ReplaceFileText
+			InputFilename="$(OutputPath)EsperEPL2Ast.cs"
+			OutputFilename="$(OutputPath)EsperEPL2Ast.cs"
+			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
+			ReplacementText="$1)"
+			/>
+		<ReplaceFileText
+			InputFilename="$(OutputPath)EsperEPL2GrammarParser.cs"
+			OutputFilename="$(OutputPath)EsperEPL2GrammarParser.cs"
+			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
+			ReplacementText="$1)"
+			/>
+		<ReplaceFileText
+			InputFilename="$(OutputPath)EsperEPL2GrammarLexer.cs"
+			OutputFilename="$(OutputPath)EsperEPL2GrammarLexer.cs"
+			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
+			ReplacementText="$1)"
+			/>
+		-->
+	</Target>
+	
+	<Target Name="Deploy-Grammar" DependsOnTargets="Repair-Grammar">
+		<ItemGroup>
+			<SourceFiles Include="$(MSBuildProjectDirectory)\*.cs" />
+		</ItemGroup>
+
+		<ItemGroup>
+			<TokenFiles Include="$(MSBuildProjectDirectory)\*.tokens" />
+		</ItemGroup>
+
+		<Message Text="Copying NEsper Generated Grammar Files: @(SourceFiles, ' ')" />
+
+		<Copy SourceFiles="@(SourceFiles)"
+			  DestinationFolder="$(TargetDir)"
+			  SkipUnchangedFiles="True" />
+
+		<Delete Files="@(SourceFiles)" />
+		<Delete Files="@(TokenFiles)" />
+	</Target>
+</Project>

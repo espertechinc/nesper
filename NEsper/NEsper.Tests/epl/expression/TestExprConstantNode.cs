@@ -1,0 +1,70 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.expression.ops;
+
+using NUnit.Framework;
+
+namespace com.espertech.esper.epl.expression
+{
+    [TestFixture]
+    public class TestExprConstantNode 
+    {
+        private ExprConstantNode _constantNode;
+    
+        [SetUp]
+        public void SetUp()
+        {
+            _constantNode = new ExprConstantNodeImpl("5");
+        }
+    
+        [Test]
+        public void TestGetType()
+        {
+            Assert.AreEqual(typeof(string), _constantNode.ConstantType);
+    
+            _constantNode = new ExprConstantNodeImpl(null);
+            Assert.IsNull(_constantNode.ConstantType);
+        }
+    
+        [Test]
+        public void TestValidate()
+        {
+            _constantNode.Validate(ExprValidationContextFactory.MakeEmpty());
+        }
+    
+        [Test]
+        public void TestEvaluate()
+        {
+            Assert.AreEqual("5", _constantNode.GetConstantValue(null));
+        }
+    
+        [Test]
+        public void TestToExpressionString()
+        {
+            _constantNode = new ExprConstantNodeImpl("5");
+            Assert.AreEqual("\"5\"", _constantNode.ToExpressionStringMinPrecedenceSafe());
+    
+            _constantNode = new ExprConstantNodeImpl(10);
+            Assert.AreEqual("10", _constantNode.ToExpressionStringMinPrecedenceSafe());        
+        }
+    
+        [Test]
+        public void TestEqualsNode()
+        {
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl("5")));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprOrNode()));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(3)));
+    
+            _constantNode = new ExprConstantNodeImpl(null);
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
+        }
+    }
+}

@@ -1,0 +1,1818 @@
+<chapter id="extension">
+
+    <title>Extension and Plug-in</title>
+    <title>Integration and Extension</title>
+    
+    <sect1 id="extension-overview" revision="1">
+        <title>Overview</title>
+
+		<para>
+		  This chapter summarizes integration and describes in detail each of the extension APIs that allow integrating external data and/or extend engine functionality. 
+		</para>
+
+		<para>
+		  For information on input and output adapters that connect to an event transport and perform event transformation for incoming and outgoing on-the-wire event data, for use with streaming data, please see the EsperIO reference documentation. Consider using the Plug-in Loader API for creating a new adapter that starts or stops as part of the CEP engine initialization and destroy lifecycle, see <xref linkend="api-plugin"/>.
+		</para>
+		
+		<para>
+		  To join data that resides in a relational database and that is accessible via JDBC driver and SQL statement the engine offers a syntax for using SQL within EPL, see <xref linkend="histdata_overview"/>. A relational database input and output adapter for streaming input from and output to a relational database also exists (EsperIO).
+		</para>
+		
+		<para>
+		  To join data that resides in a non-relational store the engine offers a two means: FIrst, the virtual data window, as described below, for transparently integrating the external store as a named window. The second mechanism is a special join syntax based on static method invocation, see <xref linkend="joining_method"/>.
+		</para>
+    </sect1>
+    
+    <sect1 id="extension-virtualdw" revision="1">
+        <title>Virtual Data Window</title>
+        
+        <para>
+			Use a virtual data window if you have a (large) external data store that you want to access as a named window. The access is transparent: There is no need to use special syntax or join syntax. All regular queries including subqueries, joins, on-merge, on-select, on-insert, on-delete, on-update and fire-and-forget are supported with virtual data windows.
+        </para>
+        
+        <para>
+           There is no need to keep any data or events in memory with virtual data windows. The only requirement for virtual data windows is that all data rows returned are <literal>EventBean</literal> instances.
+        </para>
+
+        <para>
+			When implementing a virtual data window it is not necessary to send any events into the engine or to use insert-into. The event content is simply assumed to exist and accessible to the engine via the API implementation you provide. 
+        </para>
+        
+        <para>
+          The distribution ships with a sample virtual data window in the examples folder under the name <literal>virtualdw</literal>. The code snippets below are extracts from the example.
+        </para>
+        
+        <para>
+			We use the term <emphasis>store</emphasis> here to mean a source set of data that is managed by the virtual data window. We use the term <emphasis>store row</emphasis> or just <emphasis>row</emphasis> to mean a single data item provided by the store. We use the term <emphasis>lookup</emphasis>
+			to mean a read operation against the store returning zero, one or many rows.
+        </para>
+        
+        <para>
+           Virtual data windows allow high-performance low-latency lookup by exposing all relevant EPL query access path information. This makes it possible for the virtual data window to choose the desired access method into its store.
+        </para>
+        
+        <para>
+			The following steps are required to develop and use a virtual data window: 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindowFactory</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindow</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement the interface <literal>com.espertech.esper.client.hook.VirtualDataWindowLookup</literal>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the factory class in the engine configuration.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para> 
+			Once you have completed above steps, the virtual data window is ready to use in EPL statements.
+		</para>       	
+		
+		<para>
+			The following restrictions apply to virtual data windows:
+		</para>
+	
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					The virtual data window may not be enumerated via the <literal>GetEnumerator</literal> or <literal>GetSafeEnumerator</literal> methods.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					A statement consuming a stream from a virtual data window does not get up-to-date state at statement creation time. For example, the EPL <literal>select count(*) from MySampleWindow</literal> always starts at count zero and not the count of events that are currently held in store.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					When a virtual data window itself originates new events, use insert-into to insert into the named window.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para>
+		  From a threading perspective, virtual data window implementation classes must be thread-safe if objects are shared between multiple named windows. If no objects are shared between multiple different named windows, thereby each object is only used for the same named window and other named windows receive a separate instance, it is no necessary that the implementation classes are thread-safe.
+		</para>
+
+		<sect2 id="extension-virtualdw-howto" revision="1">
+			<title>How to Use</title>
+			
+			<para>
+				Your application must first register the virtual data window factory as part of engine configuration:
+			</para>
+			
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.AddPlugInVirtualDataWindow<SampleVirtualDataWindowFactory>("sample", "samplevdw");
+config.AddPlugInVirtualDataWindow("sample2", "samplevdw2", 
+    typeof(SampleVirtualDataWindowFactory2).FullName);]]></programlisting>
+
+			<para>
+				Your application may then create a named window backed by a virtual data window.
+			</para>
+
+			<para>
+				For example, assume that the <literal>SampleEvent</literal> event type is declared as follows:
+			</para>				
+			<programlisting><![CDATA[create schema SampleEvent as (key1 string, key2 string, value1 int, value2 double)]]></programlisting>
+
+			<para>
+				The next EPL statement creates a named window <literal>MySampleWindow</literal> that provides <literal>SampleEvent</literal> events and is backed by a virtual data window provided by <literal>SampleVirtualDataWindowFactory</literal> as configured above:
+			</para>
+			<programlisting><![CDATA[create window MySampleWindow.sample:samplevdw() as SampleEvent]]></programlisting>
+			
+			<para>
+			    You may then access the named window, same as any other named window, for example by subquery, join, on-action, fire-and-forget query or by consuming its insert and remove stream. While this example uses Map-type events, the example code is the same for POJO or other events.
+			</para>
+			
+			<para>
+				Your application may obtain a reference to the virtual data window from the engine context.
+			</para>
+	
+			<para>
+			  This code snippet looks up the virtual data window by the named window name:
+			</para>
+			<programlisting><![CDATA[try {
+  return (VirtualDataWindow) epService.Context.Lookup("/virtualdw/MySampleWindow");
+}
+catch (NamingException e) {
+  throw new ApplicationException("Failed to look up virtual data window, is it created yet?");
+}]]></programlisting>
+
+			<sect3 id="extension-virtualdw-howto-access" revision="1">
+				<title>Query Access Path</title>
+				
+				<para>
+					When you application registers a subquery, join or on-action query or executes a fire-and-forget query against a virtual data window the engine interacts with the virtual data window. The interaction is a two-step process. 
+				</para>
+				
+				<para>
+					At time of EPL statement creation (once), the engine analyzes the EPL where-clause, if present. It then compiles a list of hash-index and binary tree (btree, i.e. sorted) index properties. It passes the property names that are queried as well as the operators (i.e. =, &gt;, range etc.) to the virtual data window. The virtual data window returns a lookup strategy object to the engine.
+				</para>
+				
+				<para>
+					At time of EPL statement execution (repeatedly as triggered) , the engine uses that lookup strategy object to execute a lookup. It passes to the lookup all actual key values (hash, btree including ranges) to make fast and efficient lookup achievable.
+				</para>
+				
+				<para>
+				    To explain in detail, assume that your application creates an EPL statement with a subquery as follows:
+				</para>
+				<programlisting><![CDATA[select (select * from MySampleWindow where key1 = 'A1') from OtherEvent]]></programlisting>
+				
+				<para>
+				  At the time of creation of the EPL query above the engine analyzes the EPL query. It determines that the subquery queries a virtual data window.  It determines from the where-clause that the lookup uses property <literal>key1</literal> and hash-equals semantics. The engine then provides this information as part of <literal>VirtualDataWindowLookupContext</literal> passed to the <literal>getLookup</literal> method. Your application may inspect hash and btree properties and may determine the appropriate store access method to use.
+				</para>
+				
+				<para>
+					The hash and btree property lookup information is for informational purposes, to enable fast and performant queries that returns the smallest number of rows possible. Your implementation classes may use some or none of the information provided and may also instead return some or perhaps even all rows, as is practical to your implementation. The <literal>where</literal>-clause still remains in effect and gets evaluated on all rows that are returned by the lookup strategy.
+				</para>
+
+				<para>
+				  Following the above example, the sub-query executes once when a <literal>OtherEvent</literal> event arrives. At time of execution the engine delivers the string value <literal>A1</literal> to the <literal>VirtualDataWindowLookup</literal> lookup implementation provided by your application. The lookup object queries the store and returns 
+				  store rows as <literal>EventBean</literal> instances.
+				</para>
+
+				<para>
+				    As a second example, consider an EPL join statement as follows:
+				</para>
+				<programlisting><![CDATA[select * from MySampleWindow, MyTriggerEvent where key1 = trigger1 and key2 = trigger2]]></programlisting>
+				
+				<para>
+					The engine analyzes the query and passes to the virtual data window the information that the lookup occurs on properties <literal>key1</literal> and <literal>key2</literal> under hash-equals semantics. When a <literal>MyTriggerEvent</literal> arrives, 
+					it passes the actual value of the <literal>trigger1</literal> and <literal>trigger2</literal> properties of the current MyTriggerEvent to the lookup.
+				</para>
+				
+				<para>
+				    As a last example, consider an EPL fire-and-forget statement as follows:
+				</para>
+				<programlisting><![CDATA[select * from MySampleWindow key1 = 'A2' and value1 between 0 and 1000]]></programlisting>
+				
+				<para>
+					The engine analyzes the query and passes to the virtual data window the lookup information.  The lookup occurs on property <literal>key1</literal> under hash-equals semantics and on property <literal>value1</literal> under btree-open-range semantics. When you application 
+					executes the fire-and-forget query the engine passes <literal>A2</literal> and the range endpoints <literal>0</literal> and <literal>1000</literal> to the lookup.
+				</para>
+				
+				<para>
+					For more information, please consult the JavaDoc API documentation for class <literal>com.espertech.esper.client.hook.VirtualDataWindow</literal>, <literal>VirtualDataWindowLookupContext</literal> or <literal>VirtualDataWindowLookupFieldDesc</literal>.
+				</para>
+			</sect3>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-vdwfactory" revision="1">
+			<title>Implementing the Factory</title>
+			
+			<para>
+				A virtual data window factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the factory context object as a parameter and return the <literal>VirtualDataWindow</literal> implementation.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindowFactory : IVirtualDataWindowFactory {
+  public IVirtualDataWindow Create(VirtualDataWindowContext context) {
+    return new SampleVirtualDataWindow(context);
+  }
+}]]></programlisting>
+
+			<para>
+				Your factory class must implement the <literal>create</literal> method which receives a <literal>VirtualDataWindowContext</literal> object. This method is called once for each EPL that creates a virtual data window (see example <literal>create window</literal> above).
+			</para>
+    
+			<para>
+				The <literal>VirtualDataWindowContext</literal> provides to your application:
+			</para>
+			<programlisting><![CDATA[String namedWindowName;	// Name of named window being created.
+Object[] parameters;  // Any optional parameters provided as part of create-window.
+EventType eventType;  // The event type of events.
+EventBeanFactory eventFactory;  // A factory for creating EventBean instances from store rows.
+VirtualDataWindowOutStream outputStream;  // For stream output to consuming statements.
+StatementContext statementContext;  // Other EPL statement information.]]></programlisting>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-vdw" revision="1">
+			<title>Implementing the Virtual Data Window</title>
+			
+			<para>
+				A virtual data window implementation is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the lookup context object as a parameter and return the <literal>VirtualDataWindowLookup</literal> implementation.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Optionally, post insert and remove stream data.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>.
+			</para>
+
+			<para>
+			  The implementation class must implement the <literal>VirtualDataWindow</literal> interface like so:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindow : IVirtualDataWindow {
+
+  private readonly VirtualDataWindowContext context;
+  
+  public SampleVirtualDataWindow(VirtualDataWindowContext context) {
+    this.context = context;
+  } ...]]></programlisting>
+
+			<para>
+			  When the engine compiles an EPL statement and detects a virtual data window, the engine invokes the <literal>getLookup</literal> method indicating hash and btree access path information by passing a <literal>VirtualDataWindowLookupContext</literal> context. The lookup method must return a <literal>VirtualDataWindowLookup</literal> implementation that the EPL statement
+			  uses for all lookups until the EPL statement is stopped or destroyed.
+			</para>
+			
+			<para>
+			  The sample implementation does not use the hash and btree access path information and simply returns a lookup object: 
+			</para>
+			<programlisting><![CDATA[public VirtualDataWindowLookup GetLookup(VirtualDataWindowLookupContext desc) {
+
+  // Place any code that interrogates the hash-index and btree-index fields here.
+
+  // Return the lookup strategy.
+  return new SampleVirtualDataWindowLookup(context);
+}]]></programlisting>
+
+			<para>
+				If your virtual data window returns null instead of a lookup object, the EPL query creation fails and throws an <literal>EPStatementException</literal>.
+			</para>
+
+			<para>
+			 The engine calls the <literal>update</literal> method when data changes because of on-merge, on-delete, on-update or insert-into. For example, if you have an on-merge statement that is triggered and that updates the virtual data window, the <literal>newData</literal> parameter receives the new (updated) event and the <literal>oldData</literal> parameters receives the event prior to the update. Your code may use these events to update the store or delete from the store, if needed.
+			</para>
+
+			<para>
+				If your application plans to consume data from the virtual data window, for example via <literal>select * from MySampleWindow</literal>, then the code must implement the <literal>update</literal> method to forward insert and remove stream events, as shown below, to receive the events in consuming statements. To post insert and remove stream data, use the <literal>VirtualDataWindowOutStream</literal> provided by the context object as follows. 
+			</para>
+			
+			<programlisting><![CDATA[public void update(Object sender, UpdateEventArgs e) {
+  // This sample simply posts into the insert and remove stream what is received.
+  context.OutputStream.Update(sender, e);
+}]]></programlisting>
+
+			<para>
+				Your application should not use <literal>VirtualDataWindowOutStream</literal> to post new events that originate from the store. The object is intended for use with on-action EPL statements. Use insert-into instead for any new events that originate from the store.
+			</para>
+		</sect2>
+
+		<sect2 id="extension-virtualdw-lookup" revision="1">
+			<title>Implementing the Lookup</title>
+			
+			<para>
+				A lookup implementation is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept the lookup values as a parameter and return a set of <literal>EventBean</literal> instances.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The sample code shown here can be found among the examples in the distribution under <literal>virtualdw</literal>.
+			</para>
+
+			<para>
+			  The implementation class must implement the <literal>VirtualDataWindowLookup</literal> interface:
+			</para>
+			<programlisting><![CDATA[public class SampleVirtualDataWindowLookup : IVirtualDataWindowLookup {
+
+  private readonly VirtualDataWindowContext context;
+  
+  public SampleVirtualDataWindowLookup(VirtualDataWindowContext context) {
+    this.context = context;
+  } ...]]></programlisting>
+
+			<para>
+			  When an EPL query fires, the engine invokes the lookup and provides the actual lookup values. The lookup values are provided in the same exact order as the access path information that the engine provided when obtaining the lookup.
+			</para>
+			
+			<para>
+				Each store row must be wrapped as an <literal>EventBean</literal> instance. The context object provides an <literal>EventBeanFactory</literal> implementation returned by <literal>getEventFactory()</literal> that can be used to wrap rows.
+			</para>
+			
+			<para>
+			  The sample implementation does not use the lookup values and simply returns a hardcoded sample event: 
+			</para>
+			<programlisting><![CDATA[public ICollection<EventBean> Lookup(Object[] lookupValues) {
+  // Add code to interogate lookup values here.
+
+  // Create sample event.
+  // This example uses Map events; Other underlying events such as POCO are exactly the same code.
+  IDictionary<String, Object> eventData = new Dictionary<String, Object>();
+  eventData["key1" = "sample1";
+  eventData["key2" = "sample2";
+  eventData["value1" = 100;
+  eventData["value2"] = 1.5d;
+  EventBean @event = context.EventFactory.Wrap(eventData);
+  return new EventBean[]{ @event };
+}]]></programlisting>
+
+			<para>
+				The <literal>lookupValues</literal> object array represents all actual joined property values or expression results if you where-clause criteria are expressions. The code may use these keys to for efficient store access.
+			</para>
+			
+			<para>
+				When a key value is a range, the key value is an instance of <literal>VirtualDataWindowKeyRange</literal>.
+			</para>
+		</sect2>
+    </sect1>
+	
+    <sect1 id="custom-singlerow-function" revision="1">
+        <title>Single-Row Functions</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>single-row function</secondary></indexterm>
+		<indexterm><primary>single-row functions</primary><secondary>custom plug-in</secondary></indexterm>
+        <para>
+			Single-row functions return a single value. They are not expected to aggregate rows but instead should be stateless functions. These functions can appear in any expressions and can be passed any number of parameters.
+        </para>
+
+        <para>
+			The following steps are required to develop and use a custom single-row function with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement a class providing one or more public static methods accepting the number and type of parameters as required.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the single-row function class and method name with the engine by supplying a function name, via the engine configuration file or the configuration API.
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para>
+			You may not override a built-in function with a single-row function provided by you. The single-row function you register must have a different name then any of the built-in functions.
+		</para>
+		
+		<para>
+			An example single-row function can also be found in the examples under the runtime configuration example.
+		</para>
+
+		<sect2 id="custom-singlerow-implementing" revision="1">
+			<title>Implementing a Single-Row Function</title>
+			
+			<para>
+				Single-row function classes have no further requirement then provide a public static method.
+			</para>
+
+			<para>
+				The following sample single-row function simply computes a percentage value based on two number values. 
+			</para>
+
+			<para>
+				This sample class provides a public static method by name <literal>computePercent</literal> to return a percentage value:
+			</para>
+			<programlisting><![CDATA[public class MyUtilityClass {
+  public static double computePercent(double amount, double total) {
+    return amount / total * 100;
+  }
+}]]></programlisting>
+		</sect2>
+
+		<sect2 id="custom-single-row-config" revision="1">
+			<title>Configuring the Single-Row Function Name</title>
+			
+			<para>
+				The class name of the class, the method name and the function name of the new single-row function must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the runtime and static configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-singlerow-function name="percent" 
+    function-class="mycompany.MyUtilityClass" function-method="computePercent" />
+</esper-configuration>]]></programlisting>
+
+			<para>
+				Note that the function name and method name need not be the same.
+			</para>
+
+			<para>
+				The new single-row function is now ready to use in a statement:
+			</para>		
+			<programlisting><![CDATA[select percent(50,100) from MyEvent]]></programlisting>
+
+			<para>
+				If the single-row function returns an object that provides further functions, you may chain function calls.
+			</para>
+			
+			<para>
+				The following demonstrates a chained single-row function. The example assumes that a single-row function by name <literal>calculator</literal> returns an object that provides the <literal>add</literal> function which accepts two parameters:
+			</para>
+			<programlisting><![CDATA[select calculator().add(5, amount) from MyEvent]]></programlisting>
+		</sect2>
+	</sect1>
+
+    <sect1 id="custom-views" revision="1">
+        <title>Derived-value and Data Window View</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>custom view</secondary></indexterm>
+		<indexterm><primary>views</primary><secondary>custom plug-in view</secondary></indexterm>
+		<indexterm><primary>data window views</primary><secondary>custom plug-in view</secondary></indexterm>
+        <para>
+			Views in Esper are used to derive information from an event stream, and to represent data windows onto an event stream. This chapter describes how to plug-in a new, custom view. 
+        </para>
+        
+        <para>
+			The following steps are required to develop and use a custom view with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement a view factory class. View factories are classes that accept and check view parameters and instantiate the appropriate view class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement a view class. A view class commonly represents a data window or derives new information from a stream.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Configure the view factory class supplying a view namespace and name in the engine configuration file.
+				</para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			The example view factory and view class that are used in this chapter can be found in the examples source folder in the OHLC (open-high-low-close) example. The class names are <literal>OHLCBarPlugInViewFactory</literal> and <literal>OHLCBarPlugInView</literal>.
+        </para>
+
+        <para>
+			Views can make use of the following engine services available via <literal>StatementServiceContext</literal>:
+        </para>
+        
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					The <literal>SchedulingService</literal> interface allows views to schedule timer callbacks to a view
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The <literal>EventAdapterService</literal> interface allows views to create new event types and event instances of a given type. 
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The <literal>StatementStopService</literal> interface allows view to register a callback that the engine invokes to indicate that the view's statement has been stopped
+				</para>
+			</listitem>
+		</itemizedlist>
+
+        <para>
+			<xref linkend="custom-views-contract"/> outlines the requirements for correct behavior of a your custom view within the engine.
+        </para>
+
+        <para>
+			Note that custom views may use engine services and APIs that can be subject to change between major releases. The engine services discussed above and view APIs are considered part of the engine internal public API and are stable. Any changes to such APIs are disclosed through the release change logs and history. Please also consider contributing your custom view to the Esper project team by submitting the view code through the mailing list or via a JIRA issue.
+        </para>
+
+		<sect2 id="custom-views-viewfactory" revision="1">
+			<title>Implementing a View Factory</title>
+			
+			<para>
+				A view factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Accept zero, one or more view parameters. View parameters are themselves expressions. The view factory must validate and evaluate these expressions.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Instantiate the actual view class.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Provide information about the event type of events posted by the view.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				View factory classes simply subclass <literal>com.espertech.esper.view.ViewFactorySupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class OHLCBarPlugInViewFactory : ViewFactorySupport { ...]]></programlisting>
+
+			<para>
+				Your view factory class must implement the <literal>SetViewParameters</literal> method to accept and parse view parameters. The next code snippet shows an implementation of this method. The code checks the number of parameters and retains the parameters passed to the method:
+			</para>
+			<programlisting><![CDATA[public class OHLCBarPlugInViewFactory : ViewFactorySupport {
+    private ViewFactoryContext viewFactoryContext;
+    private IList<ExprNode> viewParameters;
+    private ExprNode timestampExpression;
+    private ExprNode valueExpression;
+
+    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters) {
+        this.viewFactoryContext = viewFactoryContext;
+        if (viewParameters.size() != 2) {
+            throw new ViewParameterException(
+                "View requires a two parameters: " +
+                "the expression returning timestamps and the expression supplying OHLC data points");
+        }
+        this.viewParameters = viewParameters;
+    }
+  ...]]></programlisting>
+    
+		<para>
+			After the engine supplied view parameters to the factory, the engine will ask the view to attach to its parent view and validate any parameter expressions against the parent view's event type. If the view will be generating events of a different type then the events generated by the parent view, then the view factory can create the new event type in this method:
+		</para>
+
+		<programlisting><![CDATA[public void Attach(EventType parentEventType, 
+		StatementContext statementContext, 
+		ViewFactory optionalParentFactory, 
+		IList<ViewFactory> parentViewFactories) {
+		
+    ExprNode[] validatedNodes = ViewFactorySupport.Validate("OHLC view", 
+	      parentEventType, statementContext, viewParameters, false);
+
+    timestampExpression = validatedNodes[0];
+    valueExpression = validatedNodes[1];
+
+    if ((timestampExpression.ExprEvaluator.ReturnType != typeof(long)) && 
+        (timestampExpression.ExprEvaluator.ReturnType != typeof(long?))) {
+        throw new ViewParameterException(
+            "View requires long-typed timestamp values in parameter 1");
+    }
+    if ((valueExpression.ExprEvaluator.ReturnType != typeof(double)) && 
+        (valueExpression.ExprEvaluator.ReturnType != typeof(double?))) {
+        throw new ViewParameterException(
+            "View requires double-typed values for in parameter 2");
+    }
+}]]></programlisting>
+
+		<para>
+			Finally, the engine asks the view factory to create a view instance, and asks for the type of event generated by the view:
+		</para>
+
+		<programlisting><![CDATA[public View MakeView(StatementContext statementContext) {
+    return new OHLCBarPlugInView(statementContext, timestampExpression, valueExpression);
+}
+
+public EventType EventType {
+	get { return OHLCBarPlugInView.GetEventType(viewFactoryContext.EventAdapterService) }
+}]]></programlisting>
+		</sect2>
+		
+		<sect2 id="custom-views-view" revision="1">
+			<title>Implementing a View</title>
+			
+			<para>
+				A view class is responsible for:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						The <literal>Parent</literal> property informs the view of the parent view's event type
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>Update</literal> method receives insert streams and remove stream events from its parent view
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>GetEnumerator</literal> method supplies an (optional) iterator to allow an application to pull or request results from an <literal>EPStatement</literal>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The <literal>CloneView</literal> method must make a configured copy of the view to enable the view to work in a grouping context together with a <literal>std:groupwin</literal> parent view
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				View classes simply subclass <literal>com.espertech.esper.view.ViewSupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyTrendSpotterView : ViewSupport { ...]]></programlisting>
+
+			<para>
+				Your view's <literal>Update</literal> method will be processing incoming (insert stream) and outgoing (remove stream) events posted by the parent view (if any), as well as providing incoming and outgoing events to child views. The convention required of your update method implementation is that the view releases any insert stream events (EventBean object references) which the view generates as reference-equal remove stream events (EventBean object references) at a later time. 
+			</para>
+
+			<para>
+				The view implementation must call the <literal>UpdateChildren</literal> method to post outgoing insert and remove stream events. Similar to the <literal>Update</literal> method, the <literal>UpdateChildren</literal> method takes insert and remove stream events as parameters.
+			</para>
+
+			<para>
+				A sample <literal>Update</literal> method implementation is provided in the OHLC example.
+			</para>
+		</sect2>
+
+		<sect2 id="custom-views-contract" revision="1">
+			<title>View Contract</title>
+
+			<para>
+				The <literal>Update</literal> method must adhere to the following conventions, to prevent memory leaks and to enable correct behavior within the engine:
+			</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						A view implementation that posts events to the insert stream must post unique <literal>EventBean</literal> object references as insert stream events, and cannot post the same <literal>EventBean</literal> object reference multiple times. The underlying event to the <literal>EventBean</literal> object reference can be the same object reference, however the <literal>EventBean</literal> object reference posted by the view into the insert stream must be a new instance for each insert stream event.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						If the custom view posts a continuous insert stream, then the views must also post a continuous remove stream (second parameter to the <literal>UpdateChildren</literal> method). If the view does not post remove stream events, it assumes unbound keep-all semantics.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>EventBean</literal> events posted as remove stream events must be the same object reference as the <literal>EventBean</literal> events posted as insert stream by the view. Thus remove stream events posted by the view (the <literal>EventBean</literal> instances, does not affect the underlying representation) must be reference-equal to insert stream events posted by the view as part of an earlier invocation of the update method, or the same invocation of the update method.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<literal>EventBean</literal> events represent a unique observation. The values of the observation can be the same, thus the underlying representation of an <literal>EventBean</literal> event can be reused, however event property values must be kept immutable and not be subject to change.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Array elements of the insert and remove stream events must not carry null values. Array size must match the number of <literal>EventBean</literal> instances posted. It is recommended to use a <literal>null</literal> value for no insert or remove stream events rather then an empty zero-size array. 
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The engine can provide a callback to the view indicating when a statement using the view is stopped. The callback is available to the view via the <literal>com.espertech.esper.view.StatementStopCallback</literal> interface. Your
+				view code must subscribe to the stop callback in order for the engine to invoke the callback:
+			</para>			
+			<programlisting><![CDATA[statementContext.StatementStopService.AddSubscriber(this);]]></programlisting>
+
+			<para>
+				Please refer to the sample views for a code sample on how to implement <literal>iterator</literal> and <literal>CloneView</literal> methods.
+			</para>
+
+			<para>
+				In terms of multiple threads accessing view state, there is no need for your custom view factory or view implementation to perform any synchronization to protect internal state. The iterator of the custom view implementation does also not need to be thread-safe. The engine ensures the custom view executes in the context of a single thread at a time. If your view uses shared external state, such external state must be still considered for synchronization when using multiple threads.
+			</para>
+		</sect2>
+		
+		<sect2 id="custom-views-config" revision="1">
+			<title>Configuring View Namespace and Name</title>
+			
+			<para>
+				The view factory class name as well as the view namespace and name for the new view must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-view namespace="custom" name="ohlc" 
+      factory-class="com.espertech.esper.example.ohlc.OHLCBarPlugInViewFactory" /> 
+</esper-configuration>]]></programlisting>
+
+			<para>
+				The new view is now ready to use in a statement:
+			</para>		
+			<programlisting><![CDATA[select * from StockTick.custom:ohlc(timestamp, price)]]></programlisting>
+
+			<para>
+				Note that the view must implement additional interfaces if it acts as a data window view, or works in a grouping context, as discussed in detail below.
+			</para>		
+		</sect2>
+
+		<sect2 id="custom-views-datawin" revision="1">
+			<title>Requirement for Data Window Views</title>
+			
+			<para>
+				Your custom view may represent an expiry policy and may retain events and thus act as a data window view. In order to allow the engine to validate that your view can be used with named windows, which allow only data window views,
+				this section documents any additional requirement that your classes must fulfill.
+			</para>
+		
+			<para>
+				Your view factory class must implement the <literal>com.espertech.esper.view.DataWindowViewFactory</literal> interface. This marker interface (no methods required) indicates that your view factory provides only data window views.  
+			</para>		
+
+			<para>
+				Your view class must implement the <literal>com.espertech.esper.view.DataWindowView</literal> interface. This marker interface indicates that your view is a data window view and therefore eligible to be used in any construct that requires a data window  view.
+			</para>
+		</sect2>
+
+		<sect2 id="custom-views-grouped" revision="1">
+			<title>Requirement for Grouped Views</title>
+			
+			<para>
+				Grouped views are views that operate under the <literal>std:groupwin</literal> view. When operating under one or more <literal>std:groupwin</literal> views, the engine instantiates a single view instance when the statement starts, and a new view instance per group criteria dynamically as new group criteria become known. 
+			</para>
+		
+			<para>
+				The next statement shows EPL for using a view instance per grouping criteria:
+			</para>		
+			<programlisting><![CDATA[select * from StockTick.std:groupwin(symbol).custom:trendspotter(price)]]></programlisting>
+
+			<para>
+				Your view must implement the <literal>com.espertech.esper.view.CloneableView</literal> interface to indicate your view may create new views. This code snippet shows a sample implementation of the <literal>CloneView</literal> method required by the interface:
+			</para>		
+			
+			<programlisting><![CDATA[public View CloneView(StatementContext statementContext) {
+  return new MyPlugInView(statementContext);	// pass any parameters along where
+}]]></programlisting>
+
+		</sect2>
+    </sect1>
+
+    <sect1 id="custom-aggregation-function" revision="1">
+        <title>Aggregation Functions</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>custom aggregation function</secondary></indexterm>
+		<indexterm><primary>aggregation functions</primary><secondary>custom plug-in</secondary></indexterm>
+        <para>
+			Aggregation functions aggregate event property values or expression results obtained from one or more streams. Examples for built-in aggregation functions are <literal>count(*)</literal>, <literal>sum(price * volume)</literal> or <literal>avg(distinct volume)</literal>.
+        </para>
+        
+        <para>
+			The optional keyword <literal>distinct</literal> ensures that only distinct (unique) values are aggregated and duplicate values are ignored by the aggregation function. Custom plug-in aggregation functions do not need to implement the logic to handle <literal>distinct</literal> values. This is because when the engine encounters the <literal>distinct</literal> keyword, it eliminates any non-distinct values before passing the value for aggregation to the custom aggregation function.
+        </para>
+
+        <para>
+			Custom aggregation functions can also be passed multiple parameters, as further discribed in <xref linkend="custom-aggregation-multiparam"/>. In the example below the aggregation function accepts a single parameter.
+        </para>
+
+        <para>
+			The following steps are required to develop and use a custom aggregation function with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement an aggregation function class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the aggregation function class with the engine by supplying a function name, via the engine configuration file or the runtime and static configuration API.
+				</para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			The code for the example aggregation function as shown in this chapter can be found in the runtime configuration example in the package <literal>com.espertech.esper.example.runtimeconfig</literal> by the name <literal>MyConcatAggregationFunction</literal>. The sample function simply concatenates string-type values.
+        </para>
+
+		<sect2 id="custom-aggregation-implementing" revision="1">
+			<title>Implementing an Aggregation Function</title>
+			
+			<para>
+				An aggregation function class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Implement a <literal>Validate</literal> method that validates the value type of the data points that the function must process.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement a <literal>ValueType</literal> property that returns the type of the aggregation value generated by the function. For example, the built-in <literal>count</literal> aggregation function returns <literal>Long.class</literal> as it generates <literal>long</literal> -typed values.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement an <literal>Enter</literal> method that the engine invokes to add a data point into the aggregation, when an event enters a data window
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement a <literal>Leave</literal> method that the engine invokes to remove a data point from the aggregation, when an event leaves a data window
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement a <literal>Value</literal> property that returns the current value of the aggregation. 
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Aggregation function classes simply subclass <literal>com.espertech.esper.epl.agg.AggregationSupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyConcatAggregationFunction : AggregationSupport { ...]]></programlisting>
+
+			<para>
+				The engine generally constructs one instance of the aggregation function class for each time the function is listed in a statement, however the engine may decide to reduce the number of aggregation class instances if it finds equivalent aggregations. The class that provides the aggregation and extends <literal>AggregationSupport</literal> does not have to be threadsafe.
+			</para>
+
+			<para>
+				The constructor initializes the aggregation function:
+			</para>
+			<programlisting><![CDATA[public class MyConcatAggregationFunction : AggregationSupport {
+  private readonly static char DELIMITER = ' ';
+  private StringBuilder builder;
+  private String delimiter;
+
+  public MyConcatAggregationFunction() : base()
+  {
+    builder = new StringBuilder();
+    delimiter = "";
+  }
+  ...]]></programlisting>
+
+			<para>
+				An aggregation function must provide an implementation of the <literal>Validate</literal> method that is passed a <literal>AggregationValidationContext</literal> validation context object. Within the validation context you find the result type of each of the parameters expressions to the aggregation function as well as information about constant values and data window use. Please see the API documentation for a comprehensive list of validation context information.
+			</para>
+				
+			<para>
+				Since the example concatenation function requires string types, it implements a type check:
+			</para>
+			<programlisting><![CDATA[public void Validate(AggregationValidationContext validationContext) {
+  if ((validationContext.ParameterTypes.Length != 1) ||
+    (validationContext.ParameterTypes[0] != typeof(string))) {
+    throw new ArgumentException("Concat aggregation requires a single parameter of type String");
+  }
+}]]></programlisting>
+
+			<para>
+				The <literal>Enter</literal> method adds a datapoint to the current aggregation value. The example <literal>Enter</literal> method shown below adds a delimiter and the string value to a string buffer:
+			</para>
+			<programlisting><![CDATA[public void Enter(Object value) {
+  if (value != null) {
+    builder.Append(delimiter);
+    builder.Append(value.ToString());
+    delimiter = DELIMITER.ToString();
+  }
+}]]></programlisting>
+
+			<para>
+				Conversly, the <literal>Leave</literal> method removes a datapoint from the current aggregation value. The example <literal>Leave</literal> method removes from the string buffer:
+			</para>
+			<programlisting><![CDATA[public void Leave(Object value) {
+  if (value != null) {
+	builder.Length = 0;
+  }
+}]]></programlisting>
+
+			<para>
+				In order for the engine to validate the type returned by the aggregation function against the types expected by enclosing expressions, the <literal>ValueType</literal> must return the result type of any values produced by the aggregation function:
+			</para>
+			<programlisting><![CDATA[public Class ValueType {
+  get { return typeof(string); }
+}]]></programlisting>
+
+			<para>
+				For on-demand queries the aggregation function must support resetting its value to empty or start values. Implement the <literal>Clear</literal> function to reset the value as shown below:
+			</para>
+			<programlisting><![CDATA[public void Clear() {
+  builder = new StringBuilder();
+  delimiter = "";
+}]]></programlisting>			
+			
+			<para>
+				Finally, the engine obtains the current aggregation value by means of the <literal>Value</literal> property:
+			</para>
+			<programlisting><![CDATA[public Object Value {
+  get { return builder.ToString(); }
+}]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="custom-aggregation-config" revision="1">
+			<title>Configuring the Aggregation Function Name</title>
+			
+			<para>
+				The aggregation function class name as well as the function name for the new aggregation function must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-aggregation-function name="concat" 
+    function-class="com.espertech.esper.example.runtimeconfig.MyConcatAggregationFunction" />
+</esper-configuration>]]></programlisting>
+
+			<para>
+				The new aggregation function is now ready to use in a statement:
+			</para>		
+			<programlisting><![CDATA[select concat(symbol) from StockTick.win:length(3)]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="custom-aggregation-multiparam" revision="1">
+			<title>Accepting Multiple Parameters</title>
+			
+			<para>
+				Your plug-in aggregation function may accept multiple parameters, simply by casting the Object parameter of the <literal>Enter</literal> and <literal>Leave</literal> method to <literal>Object[]</literal>.
+			</para>
+		
+			<para>
+				For instance, assume an aggregation function <literal>rangeCount</literal> that counts all values that fall into a range of values. The EPL that calls this function and provides a lower and upper bounds of 1 and 10 is:
+			</para>
+			<programlisting><![CDATA[select rangeCount(1, 10, myValue) from MyEvent]]></programlisting>
+
+			<para>
+				The <literal>Enter</literal> method of the plug-in aggregation function may look as follows:
+			</para>
+			<programlisting><![CDATA[public void Enter(Object value)  {
+  Object[] params = (Object[]) value;
+  int lower = (int) params[0];
+  int upper = (int) params[1];
+  int val = (int) params[2];
+  if ((val >= lower) && (val <= upper)) {
+    count++;
+  }
+}]]></programlisting>
+
+			<para>
+				Your plug-in aggregation function may want to validate parameter types or may want to know which parameters are constant-value expressions. Constant-value expressions are evaluated only once by the engine and could
+				therefore be cached by your aggregation function for performance reasons. The engine provides constant-value information as part of the <literal>AggregationValidationContext</literal> passed to the <literal>Validate</literal> method.
+			</para>
+		</sect2>
+	</sect1>
+
+    <sect1 id="custom-pattern-guard" revision="1">
+        <title>Pattern Guard</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>custom pattern guard</secondary></indexterm>
+		<indexterm><primary>pattern guard</primary><secondary>custom plug-in</secondary></indexterm>
+        <para>
+			Pattern guards are pattern objects that control the lifecycle of the guarded sub-expression, and can filter the events fired by the subexpression. 
+        </para>
+        
+        <para>
+			The following steps are required to develop and use a custom guard object with Esper. 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement a guard factory class, responsible for creating guard object instances.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement a guard class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register the guard factory class with the engine by supplying a namespace and name, via the engine configuration file or the configuration API.
+				</para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			The code for the example guard object as shown in this chapter can be found in the test source folder in the package <literal>com.espertech.esper.regression.client</literal> by the name <literal>MyCountToPatternGuardFactory</literal>. The sample guard discussed here counts the number of events occurring up to a maximum number of events, and end the sub-expression when that maximum is reached.
+        </para>
+
+		<sect2 id="custom-pattern-guard-factory-implementing" revision="1">
+			<title>Implementing a Guard Factory</title>
+			
+			<para>
+				A guard factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Implement a <literal>SetGuardParameters</literal> method that takes guard parameters, which are themselves expressions.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement a <literal>MakeGuard</literal> method that constructs a new guard instance.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Guard factory classes subclass <literal>com.espertech.esper.pattern.guard.GuardFactorySupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyCountToPatternGuardFactory : GuardFactorySupport { ...]]></programlisting>
+
+			<para>
+				The engine constructs one instance of the guard factory class for each time the guard is listed in a statement. 
+			</para>
+				
+			<para>
+				The guard factory class implements the <literal>SetGuardParameters</literal> method that is passed the parameters to the guard as supplied by the statement. It verifies the guard parameters, similar to the code snippet shown next. Our example counter guard takes a single numeric parameter:
+			</para>
+			<programlisting><![CDATA[public void SetGuardParameters(IList<ExprNode> guardParameters, 
+			MatchedEventConvertor convertor) {
+    String message = "Count-to guard takes a single integer-value expression as parameter";
+    if (guardParameters.Count != 1) {
+        throw new GuardParameterException(message);
+    }
+
+    if (guardParameters[0].ExprEvaluator.ReturnType != typeof(int)) {
+        throw new GuardParameterException(message);
+    }
+
+    this.numCountToExpr = guardParameters[0];
+    this.convertor = convertor;
+}]]></programlisting>
+
+			<para>
+				The <literal>MakeGuard</literal> method is called by the engine to create a new guard instance. The example <literal>MakeGuard</literal> method shown below passes the maximum count of events to the guard instance. It also passes a <literal>Quitable</literal> implementation to the guard instance. The guard uses <literal>Quitable</literal> to indicate that the sub-expression contained within must stop (quit) listening for events.
+			</para>
+			<programlisting><![CDATA[public Guard MakeGuard(PatternContext context, 
+      MatchedEventMap beginState, 
+      Quitable quitable, 
+      Object stateNodeId, 
+      Object guardState) {
+      
+    Object parameter = PatternExpressionUtil.Evaluate("Count-to guard", 
+        beginState, numCountToExpr, convertor);
+    if (parameter == null) {
+        throw new EPException("Count-to guard parameter evaluated to a null value");
+    }
+
+    int? numCountTo = (int?) parameter;
+    return new MyCountToPatternGuard(numCountTo, quitable);
+}]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="custom-pattern-guard-implementing" revision="1">
+			<title>Implementing a Guard Class</title>
+			
+			<para>
+				A guard class has the following responsibilities:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Provides a <literal>StartGuard</literal> method that initalizes the guard.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Provides a <literal>StopGuard</literal> method that stops the guard, called by the engine when the whole pattern is stopped, or the sub-expression containing the guard is stopped.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Provides an <literal>Inspect</literal> method that the pattern engine invokes to determine if the guard lets matching events pass for further evaluation by the containing expression.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Guard classes subclass <literal>com.espertech.esper.pattern.guard.GuardSupport</literal> as shown here:
+			</para>
+			<programlisting><![CDATA[public abstract class GuardSupport : Guard { ...]]></programlisting>
+
+			<para>
+				The engine invokes the guard factory class to construct an instance of the guard class for each new sub-expression instance within a statement.
+			</para>
+
+			<para>
+				A guard class must provide an implementation of the <literal>StartGuard</literal> method that the pattern engine invokes to start a guard instance. In our example, the method resets the guard's counter to zero:
+			</para>
+			<programlisting><![CDATA[public void StartGuard() {
+  counter = 0;
+}]]></programlisting>
+
+			<para>
+				The pattern engine invokes the <literal>Inspect</literal> method for each time the sub-expression indicates a new event result. Our example guard needs to count the number of events matched, and quit if the maximum number is reached:
+			</para>
+			<programlisting><![CDATA[public bool Inspect(MatchedEventMap matchEvent) {
+  counter++;
+  if (counter > numCountTo) {
+    quitable.GuardQuit();
+    return false;
+  }
+  return true;
+}]]></programlisting>
+
+			<para>
+				The <literal>Inspect</literal> method returns true for events that pass the guard, and false for events that should not pass the guard.
+			</para>
+
+		</sect2>
+
+		<sect2 id="custom-pattern-guard-config" revision="1">
+			<title>Configuring Guard Namespace and Name</title>
+			
+			<para>
+				The guard factory class name as well as the namespace and name for the new guard must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-pattern-guard namespace="myplugin" name="count_to" 
+      factory-class="com.espertech.esper.regression.client.MyCountToPatternGuardFactory"/>
+</esper-configuration>]]></programlisting>
+
+			<para>
+				The new guard is now ready to use in a statement. The next pattern statement detects the first 10 MyEvent events:
+			</para>		
+			<programlisting><![CDATA[select * from pattern [(every MyEvent) where myplugin:count_to(10)]]]></programlisting>
+
+			<para>
+				Note that the <literal>every</literal> keyword was placed within parentheses to ensure the guard controls the repeated matching of events.
+			</para>		
+
+		</sect2>
+	</sect1>
+
+    <sect1 id="custom-pattern-observer" revision="1">
+        <title>Pattern Observer</title>
+        
+		<indexterm><primary>plug-in</primary><secondary>custom pattern observer</secondary></indexterm>
+		<indexterm><primary>pattern observer</primary><secondary>custom plug-in</secondary></indexterm>
+
+        <para>
+			Pattern observers are pattern objects that are executed as part of a pattern expression and can observe events or test conditions. Examples for built-in observers are <literal>timer:at</literal> and <literal>timer:interval</literal>. Some suggested uses of observer objects are: 
+        </para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement custom scheduling logic using the engine's own scheduling and timer services
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Test conditions related to prior events matching an expression
+				</para>
+			</listitem>
+		</itemizedlist>
+        
+        <para>
+			The following steps are required to develop and use a custom observer object within pattern statements: 
+        </para>
+			
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Implement an observer factory class, responsible for creating observer object instances.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Implement an observer class.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register an observer factory class with the engine by supplying a namespace and name, via the engine configuration file or the configuration API.
+				</para>
+			</listitem>
+		</orderedlist>
+
+        <para>
+			The code for the example observer object as shown in this chapter can be found in the test source folder in package <literal>com.espertech.esper.regression.client</literal> by the name <literal>MyFileExistsObserver</literal>. The sample observer discussed here very simply checks if a file exists, using the filename supplied by the pattern statement, and via the <literal>System.IO.File</literal> class.
+        </para>
+
+		<sect2 id="custom-pattern-observer-factory-implementing" revision="1">
+			<title>Implementing an Observer Factory</title>
+			
+			<para>
+				An observer factory class is responsible for the following functions:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Implement a <literal>SetObserverParameters</literal> method that takes observer parameters, which are themselves expressions.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement a <literal>MakeObserver</literal> method that constructs a new observer instance.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Observer factory classes subclass <literal>com.espertech.esper.pattern.observer.ObserverFactorySupport</literal>:
+			</para>
+			<programlisting><![CDATA[public class MyFileExistsObserverFactory : ObserverFactorySupport { ...]]></programlisting>
+
+			<para>
+				The engine constructs one instance of the observer factory class for each time the observer is listed in a statement. 
+			</para>
+				
+			<para>
+				The observer factory class implements the <literal>SetObserverParameters</literal> method that is passed the parameters to the observer as supplied by the statement. It verifies the observer parameters, similar to the code snippet shown next. Our example file-exists observer takes a single string parameter:
+			</para>
+			<programlisting><![CDATA[public void SetObserverParameters(IList<ExprNode> expressionParameters, 
+			MatchedEventConvertor convertor) {
+    String message = "File exists observer takes a single string filename parameter";
+    if (expressionParameters.Count != 1) {
+	    throw new ObserverParameterException(message);
+    }
+    if (expressionParameters[0].ExprEvaluator.ReturnType != typeof(string)) {
+	    throw new ObserverParameterException(message);
+    }
+
+    this.filenameExpression = expressionParameters[0];
+    this.convertor = convertor;
+}]]></programlisting>
+
+			<para>
+				The pattern engine calls the <literal>MakeObserver</literal> method to create a new observer instance. The example <literal>MakeObserver</literal> method shown below passes parameters to the observer instance:
+			</para>
+			<programlisting><![CDATA[public EventObserver MakeObserver(PatternContext context, 
+			MatchedEventMap beginState, 
+			ObserverEventEvaluator observerEventEvaluator, 
+			Object stateNodeId, 
+			Object observerState) {
+    Object filename = PatternExpressionUtil.Evaluate("File-exists observer ", beginState, filenameExpression, convertor);
+    if (filename == null) {
+	    throw new EPException("Filename evaluated to null");
+    }
+
+    return new MyFileExistsObserver(beginState, observerEventEvaluator, filename.ToString());
+}]]></programlisting>
+
+			<para>
+				The <literal>ObserverEventEvaluator</literal> parameter allows an observer to indicate events, and to indicate change of truth value to permanently false. Use this interface to indicate when your observer has received or witnessed an event, or changed it's truth value to true or permanently false.
+			</para>
+
+			<para>
+				The <literal>MatchedEventMap</literal> parameter provides a Map of all matching events for the expression prior to the observer's start. For example, consider a pattern as below:
+			</para>
+			<programlisting><![CDATA[a=MyEvent -> myplugin:my_observer(...)]]></programlisting>
+
+			<para>
+				The above pattern tagged the MyEvent instance with the tag "a". The pattern engine starts an instance of <literal>my_observer</literal> when it receives the first MyEvent. The observer can query the <literal>MatchedEventMap</literal> using  "a" as a key and obtain the tagged event.
+			</para>
+		</sect2>
+
+		<sect2 id="custom-pattern-observer-implementing" revision="1">
+			<title>Implementing an Observer Class</title>
+			
+			<para>
+				An observer class has the following responsibilities:
+			</para>
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Provides a <literal>StartObserve</literal> method that starts the observer.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Provides a <literal>StopObserve</literal> method that stops the observer, called by the engine when the whole pattern is stopped, or the sub-expression containing the observer is stopped.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				Observer classes subclass <literal>com.espertech.esper.pattern.observer.ObserverSupport</literal> as shown here:
+			</para>
+			<programlisting><![CDATA[public class MyFileExistsObserver : EventObserver { ...]]></programlisting>
+
+			<para>
+				The engine invokes the observer factory class to construct an instance of the observer class for each new sub-expression instance within a statement.
+			</para>
+
+			<para>
+				An observer class must provide an implementation of the <literal>StartObserve</literal> method that the pattern engine invokes to start an observer instance. In our example, the observer checks for the presence of a file and indicates the truth value to the remainder of the expression:
+			</para>
+			<programlisting><![CDATA[public void startObserve() {
+  File file = new File(filename);
+  if (file.exists()) {
+    observerEventEvaluator.observerEvaluateTrue(beginState);
+  } 
+  else {
+    observerEventEvaluator.observerEvaluateFalse(); 
+  }
+}]]></programlisting>
+
+			<para>
+				Note the observer passes the <literal>ObserverEventEvaluator</literal> an instance of <literal>MatchedEventMap</literal>. The observer can also create one or more new events and pass these events through the Map to the remaining expressions in the pattern.
+			</para>
+
+		</sect2>
+
+		<sect2 id="custom-pattern-observer-config" revision="1">
+			<title>Configuring Observer Namespace and Name</title>
+			
+			<para>
+				The observer factory class name as well as the namespace and name for the new observer must be added to the engine configuration via the configuration API or using the XML configuration file. The configuration shown below is XML however the same options are available through the configuration API:
+			</para>
+		
+			<programlisting><![CDATA[<esper-configuration
+  <plugin-pattern-observer namespace="myplugin" name="file_exists" 
+    factory-class="com.espertech.esper.regression.client.MyFileExistsObserverFactory" />
+</esper-configuration>]]></programlisting>
+
+			<para>
+				The new observer is now ready to use in a statement. The next pattern statement checks every 10 seconds if the given file exists, and indicates to the listener when the file is found.
+			</para>		
+			<programlisting><![CDATA[select * from pattern [every timer:interval(10 sec) -> myplugin:file_exists("myfile.txt")]]]></programlisting>
+
+		</sect2>
+	</sect1>
+
+    <sect1 id="custom-event-representation" revision="1">
+        <title>Event Type And Event Object</title>
+
+		<indexterm><primary>plug-in</primary><secondary>custom event object</secondary></indexterm>
+		<indexterm><primary>event object</primary><secondary>custom</secondary></indexterm>
+		    
+		<para>
+			Creating a plug-in event representation can be useful under any of these conditions:
+		</para>
+			
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Your application has existing types that carry event metadata and event property values and your application does not want to (or cannot) extract or transform such event metadata and event data into one of the built-in event representations (Native objects, Map or XML DOM).
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Your application must perform a network lookup or other dynamic resolution of event type and events.
+				</para>
+			</listitem>
+		</itemizedlist>	
+		
+		<para>
+			Note that the classes to plug-in custom event representations are held stable between minor releases, but can be subject to change between major releases. 
+		</para>
+			
+		<para>
+			Currently, EsperIO provides the following additional event representations:
+		</para>
+		<!--
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Apache Axiom provides access to XML event data on top of the fast Streaming API for XML (StAX). 
+				</para>
+			</listitem>
+		</itemizedlist>	
+		-->
+		
+		<para>
+			The source code is available for these and they are therefore excellent examples for how to implement a plug-in event representation.
+			Please see the EsperIO documentation for usage details.
+		</para>
+
+		<sect2 id="custom-eventrep-overview" revision="1">
+			<title>How It Works</title>
+			
+			<para>
+				Your application provides a plug-in event representation as an implementation of the <literal>com.espertech.esper.plugin.PlugInEventRepresentation</literal> interface. It registers the implementation class in the
+				<literal>Configuration</literal> and at the same time provides a unique URI. This URI is called the root event representation URI. An example value for a root URI is <literal>type://xml/apacheaxiom/OMNode</literal>. 
+			</para>
+			
+			<para>
+				One can register multiple plug-in event representations. Each representation has a root URI. The root URI serves to divide the overall space of different event representations and plays a role in resolving event types and event objects.
+			</para>
+
+			<para>
+				There are two situations in an Esper engine instance asks an event representation for an event type:
+			</para>
+			<orderedlist>
+				<listitem>
+					<para>
+						When an application registers a new event type using the method <literal>AddPlugInEventType</literal> on <literal>ConfigurationOperations</literal>, either at runtime or at configuration time.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When an EPL statement is created with a new event type name (a name not seen before) and the URIs for resolving such names are set beforehand via <literal>PlugInEventTypeNameResolutionURIs</literal> on <literal>ConfigurationOperations</literal>.
+					</para>
+				</listitem>
+			</orderedlist>
+				
+			<para>
+				The implementation of the <literal>PlugInEventRepresentation</literal> interface must provide implementations for two key interfaces: <literal>com.espertech.esper.client.EventType</literal> and <literal>EventBean</literal>. It must also implement several other related interfaces as described below.
+			</para>
+
+			<para>
+				The <literal>EventType</literal> methods provide event metadata including property names and property types. They also provide instances of <literal>EventPropertyGetter</literal> for retrieving event property values. Each instance of <literal>EventType</literal> represents a distinct type of event.
+			</para>
+			
+			<para>
+				The <literal>EventBean</literal> implementation is the event itself and encapsulates the underlying event object.
+			</para>						
+		</sect2>
+
+		<sect2 id="custom-eventrep-steps" revision="1">
+			<title>Steps</title>
+			<para>
+				Follow the steps outlined below to process event objects for your event types:
+			</para>
+				
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Implement the <literal>EventType</literal>, <literal>EventPropertyGetter</literal> and <literal>EventBean</literal> interfaces.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implement the <literal>PlugInEventRepresentation</literal> interface, the <literal>PlugInEventTypeHandler</literal> and <literal>PlugInEventBeanFactory</literal> interfaces, then add the <literal>PlugInEventRepresentation</literal> class name to configuration.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Register plug-in event types, and/or set the event type name resolution URIs, via configuration.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Obtain an <literal>EventSender</literal> from <literal>EPRuntime</literal> via the <literal>GetEventSender(Uri[])</literal> method and use that to send in your event objects.
+					</para>
+				</listitem>
+			</orderedlist>	
+
+			<para>
+				Please consult the SDK documentation for further information on each of the interfaces and their respective methods.
+			</para>
+		</sect2>				
+
+		<sect2 id="custom-eventrep-uriresolution" revision="1">
+			<title>URI-based Resolution</title>
+			
+			<para>
+				Assume you have registered event representations using the following URIs:
+			</para>
+				
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						type://myFormat/myProject/myName
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						type://myFormat/myProject
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						type://myFormat/myOtherProject
+					</para>
+				</listitem>
+			</orderedlist>	
+
+			<para>
+				When providing an array of child URIs for resolution, the engine compares each child URI to each of the event representation root URIs, in the order provided. Any event representation root URIs that 
+				spans the child URI space becomes a candidate event representation. If multiple root URIs match, the order is defined by the more specific root URI first, to the least specific root URI last.
+			</para>
+
+			<para>
+				During event type resolution and event sender resolution you provide a child URI. Assuming the child URI provided is <literal>type://myFormat/myProject/myName/myEvent?param1=abc&amp;param2=true</literal>. In this example both root URIs #1 (the more specific) and #1 (the less specific) match, while root URI #3 is not a match. Thus at the time of type resolution the engine invokes the <literal>AcceptType</literal> method on event presentation for URI #1 first (the more specific), before asking #2 (the less specific) to resolve the type.
+			</para>
+
+			<para>			    
+				The <literal>EventSender</literal> returned by the <literal>GetEventSender(Uri[])</literal> method follows the same scheme. The event sender instance asks each matching event representation for each URI to resolve the event object in the order of most specific to least specific root URI, and the first event representation to return an instance of <literal>EventBean</literal> ends the resolution process for event objects.
+			</para>
+
+			<para>
+				The <literal>type://</literal> part of the URI is an optional convention for the scheme part of an URI that your application may follow. URIs can also be simple names and can include parameters, as the MSDN documents for class <ulink url="http://msdn.microsoft.com/en-us/library/system.uri.aspx">System.Uri</ulink>.
+			</para>
+		</sect2>			
+		
+		<sect2 id="custom-eventrep-example" revision="1">
+				<title>Example</title>
+				<para>
+					This section implements a minimal sample plug-in event representation. For the sake of keeping the example easy to understand, the event representation is rather straightforward: an event is a <literal>System.Collections.Generic.IDictionary&lt;string, string&gt;</literal> object that consists of key-values pairs of type string.
+				</para>
+				
+				<para>
+					The code shown next does not document method footprints. Please consult the MSDN documentation for method details.
+				</para>
+
+			<sect3 id="custom-eventrep-example-eventtype" revision="1">
+				<title>Sample Event Type</title>
+				<para>
+					First, the sample shows how to implement the <literal>EventType</literal> interface. The event type provides information about property names and types, as well as supertypes of the event type.
+				</para>
+
+				<para>
+					Our <literal>EventType</literal> takes a set of valid property names:
+				</para>
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventType : EventType {
+  private readonly IDictionary<string, string> properties;
+
+  public MyPlugInPropertiesEventType(IDictionary<string, string> properties) {
+    this.properties = properties;
+  }
+
+  public Type GetPropertyType(string property) {
+    if (!IsProperty(property)) {
+      return null;
+    }
+    return typeof(string);
+  }
+
+  public Type UnderlyingType {
+    get { return typeof(IDictionary<string, string>); }
+  }
+  
+  //... further methods below
+}]]></programlisting>
+
+				<para>
+					An <literal>EventType</literal> is responsible for providing implementations of <literal>EventPropertyGetter</literal> to query actual events. The getter simply
+					queries the <literal>Properties </literal> object underlying each event:
+				</para>
+				<programlisting><![CDATA[  public EventPropertyGetter GetGetter(string property) {
+    readonly String propertyName = property;
+    
+    return new EventPropertyGetter() {
+      public Object get(EventBean eventBean) throws PropertyAccessException {
+        MyPlugInPropertiesEventBean propBean = (MyPlugInPropertiesEventBean) eventBean;
+        return propBean.getProperties().getProperty(propertyName);
+      }
+      
+      public boolean isExistsProperty(EventBean eventBean) {
+        MyPlugInPropertiesEventBean propBean = (MyPlugInPropertiesEventBean) eventBean;
+        return propBean.getProperties().getProperty(propertyName) != null;
+      }
+      
+      public Object getFragment(EventBean eventBean) {
+	    return null;	// The property is not a fragment
+      }
+    };
+  }]]></programlisting>
+
+				<para>
+				  Our sample <literal>EventType</literal> does not have supertypes. Supertypes represent an extends-relationship between event types, and subtypes are expected to exhibit the same event property names and types as each of their supertypes combined:
+				</para>
+				<programlisting><![CDATA[  public EventType[] SuperTypes {
+    get { return null; } // no supertype for this example
+  }
+
+  public EventType[] DeepSuperTypes {
+	get { return null ; }
+  }
+  
+  public string Name {
+    get { return name; }
+  }
+
+  public EventPropertyDescriptor[] PropertyDescriptors {
+	get {
+		return descriptors.Values.ToArray(); // Use of LINQ - ToArray() extension
+	}
+  }
+
+  public EventPropertyDescriptor GetPropertyDescriptor(string propertyName) {
+    return descriptors.Get(propertyName); // Use of compat extension
+  }
+
+  public FragmentEventType GetFragmentType(string property) {
+    return null;  // sample does not provide any fragments
+  }]]></programlisting>
+  
+		  <para>
+			The example event type as above does not provide fragments, which are properties of the event that can themselves be represented as an event, to keep the example simple.
+		  </para>
+		  
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventbean" revision="1">
+				<title>Sample Event Bean</title>
+				<para>
+					Each <literal>EventBean</literal> instance represents an event. The interface is straightforward to implement. In this example an event is backed by a <literal>Properties</literal> object:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventBean : EventBean {
+  private readonly MyPlugInPropertiesEventType eventType;
+
+  public MyPlugInPropertiesEventBean(MyPlugInPropertiesEventType eventType, 
+        IDictionary<string, string> properties) {
+    this.eventType = eventType;
+    this.Properties = properties;
+  }
+
+  public EventType EventType {
+    get { return eventType; }
+  }
+
+  public Object Get(string property) {
+    EventPropertyGetter getter = eventType.GetGetter(property);
+    return getter.Get(this);
+  }
+
+  public Object GetFragment(string property) {
+    EventPropertyGetter getter = eventType.GetGetter(property);
+    if (getter != null) {
+      return getter.GetFragment(this);
+    }
+    return null;
+  }
+
+  public Object Underlying {
+    get { return properties; }
+  }
+
+  protected IDictionary<string, string> Properties {
+	get; private set;
+  }    
+}]]></programlisting>
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventrep" revision="1">
+				<title>Sample Event Representation</title>
+				<para>
+					A <literal>PlugInEventRepresentation</literal> serves to create <literal>EventType</literal> and <literal>EventBean</literal> instances through its related interfaces.
+				</para>
+
+				<para>
+					The sample event representation creates <literal>MyPlugInPropertiesEventType</literal> and <literal>MyPlugInPropertiesEventBean</literal> instances. 
+					The <literal>PlugInEventTypeHandler</literal> returns the <literal>EventType</literal> instance and an <literal>EventSender</literal> instance.
+				</para>
+
+				<para>
+					Our sample event representation accepts all requests for event types by returning boolean true on the <literal>AcceptType</literal> method.  When asked for the <literal>PlugInEventTypeHandler</literal>, it constructs a new <literal>EventType</literal>. The list of property names for the new type is passed as an initialization value provided through the configuration API or XML, as a comma-separated list of property names:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInEventRepresentation : PlugInEventRepresentation {
+
+  private IList<MyPlugInPropertiesEventType> types;
+
+  public void Init(PlugInEventRepresentationContext context) {
+    types = new List<MyPlugInPropertiesEventType>();
+  }
+
+  public bool AcceptsType(PlugInEventTypeHandlerContext context) {
+    return true;
+  }
+
+  public PlugInEventTypeHandler GetTypeHandler(PlugInEventTypeHandlerContext eventTypeContext) {
+    String proplist = (String) eventTypeContext.TypeInitializer;
+    String[] propertyList = proplist.Split(',');
+
+    HashSet<String> typeProps = new HashSet<String>(propertyList);
+
+    MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(typeProps);
+    types.Add(eventType);
+
+    return new MyPlugInPropertiesEventTypeHandler(eventType);
+  }
+  // ... more methods below
+}]]></programlisting>
+
+				<para>
+					The <literal>PlugInEventTypeHandler</literal> simply returns the <literal>EventType</literal> as well as an implementation of <literal>EventSender</literal> for processing same-type events:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventTypeHandler :  PlugInEventTypeHandler {
+  private readonly MyPlugInPropertiesEventType eventType;
+
+  public MyPlugInPropertiesEventTypeHandler(MyPlugInPropertiesEventType eventType) {
+    this.eventType = eventType;
+  }
+
+  public EventSender GetSender(EPRuntimeEventSender runtimeEventSender) {
+    return new MyPlugInPropertiesEventSender(eventType, runtimeEventSender);
+  }
+
+  public EventType EventType {
+    get { return eventType; }
+  }
+}]]></programlisting>
+
+				<para>
+					The <literal>EventSender</literal> returned by <literal>PlugInEventTypeHandler</literal> is expected process events of the same type or any subtype:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventSender : EventSender {
+  private readonly MyPlugInPropertiesEventType type;
+  private readonly EPRuntimeEventSender runtimeSender;
+
+  public MyPlugInPropertiesEventSender(MyPlugInPropertiesEventType type, 
+        EPRuntimeEventSender runtimeSender) {
+    this.type = type;
+    this.runtimeSender = runtimeSender;
+  }
+
+  public void SendEvent(Object @event) {
+    if (!(@event is IDictionary<string,string>)) {
+       throw new EPException("Sender expects a properties event");
+    }
+    EventBean eventBean = new MyPlugInPropertiesEventBean(type, (IDictionary<string,string>) @event);
+    runtimeSender.ProcessWrappedEvent(eventBean);
+  }
+}]]></programlisting>
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventbeanfac" revision="1">
+				<title>Sample Event Bean Factory</title>
+				<para>
+					The plug-in event representation may optionally provide an implementation of <literal>PlugInEventBeanFactory</literal>. A <literal>PlugInEventBeanFactory</literal> may inspect event objects and assign an event type dynamically based on resolution URIs and event properties.
+				</para>
+				
+				<para>
+					Our sample event representation accepts all URIs and returns a <literal>MyPlugInPropertiesBeanFactory</literal>:
+				</para>
+				<programlisting><![CDATA[public class MyPlugInEventRepresentation : PlugInEventRepresentation {
+
+  // ... methods as seen earlier
+  public bool AcceptsEventBeanResolution(
+        PlugInEventBeanReflectorContext eventBeanContext) {
+    return true;
+  }
+
+  public PlugInEventBeanFactory GetEventBeanFactory(
+        PlugInEventBeanReflectorContext eventBeanContext) {
+    return new MyPlugInPropertiesBeanFactory(types);
+   }
+}]]></programlisting>
+
+			<para>
+			  Last, the sample <literal>MyPlugInPropertiesBeanFactory</literal> implements the <literal>PlugInEventBeanFactory</literal> interface. It inspects incoming events and determines
+			  an event type based on whether all properties for that event type are present:
+			</para>
+			
+				<programlisting><![CDATA[public class MyPlugInPropertiesBeanFactory : PlugInEventBeanFactory {
+  private readonly IList<MyPlugInPropertiesEventType> knownTypes;
+
+  public MyPlugInPropertiesBeanFactory(IList<MyPlugInPropertiesEventType> types) {
+    knownTypes = types;
+  }
+
+  public EventBean create(Object @event, URI resolutionURI) {
+    Properties properties = (Properties) @event;
+
+    // use the known types to determine the type of the object
+    foreach (MyPlugInPropertiesEventType type in knownTypes) {
+      // if there is one property the event does not contain, then its not the right type
+      bool hasAllProperties = true;
+      foreach (String prop in type.PropertyNames) {
+        if (!properties.ContainsKey(prop)) {
+          hasAllProperties = false;
+          break;
+        }
+      }
+
+      if (hasAllProperties) {
+        return new MyPlugInPropertiesEventBean(type, properties);
+      }
+    }
+    return null; // none match, unknown event
+  }
+}]]></programlisting>
+
+			</sect3>
+		</sect2>			
+		
+	</sect1>
+</chapter>
