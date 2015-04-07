@@ -60,7 +60,7 @@ namespace com.espertech.esperio.csv
         private static bool EachPropertyNameRepresented(String[] row, IDictionary<String, Object> propertyTypes)
         {
             ICollection<String> rowSet = new HashSet<String>(row);
-            return rowSet.All(propertyTypes.ContainsKey);
+            return propertyTypes.Keys.All(rowSet.Contains);
         }
 
         private static bool IsValidRowLength(String[] row, IDictionary<String, Object> propertyTypes)
