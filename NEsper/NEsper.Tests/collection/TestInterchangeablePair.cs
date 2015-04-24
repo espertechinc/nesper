@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
@@ -73,7 +74,12 @@ namespace com.espertech.esper.collection
         [Test]
         public void TestHashCode()
         {
+            // Note that hash codes are different between release architectures (AnyCPU/x64/x86).  This test has
+            // been validated against AnyCPU to succeed (and validated to fail with x64) because the hash codes
+            // are different.
+
             Assert.IsTrue(_pair1A.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
+            Console.WriteLine("test-start");
             Assert.IsTrue(_pair2A.GetHashCode() == "a".GetHashCode());
             Assert.IsTrue(_pair3A.GetHashCode() == "b".GetHashCode());
             Assert.IsTrue(_pair4A.GetHashCode() == 0);
