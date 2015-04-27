@@ -25,11 +25,11 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="build\NEsper-5.0.2\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
-        <file src="build\NEsper-5.0.2\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
-        <file src="build\NEsper-5.0.2\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
+        <file src="build\NEsper-5.2.0\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
+        <file src="build\NEsper-5.2.0\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
+        <file src="build\NEsper-5.2.0\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
 		
-        <file src="build\NEsper-5.0.2\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
-        <file src="build\NEsper-5.0.2\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
+        <file src="build\NEsper-5.2.0\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
+        <file src="build\NEsper-5.2.0\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
     </files>
 </package>
