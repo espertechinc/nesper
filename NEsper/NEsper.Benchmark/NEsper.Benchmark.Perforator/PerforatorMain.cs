@@ -135,8 +135,9 @@ namespace NEsper.Benchmark.Perforator
                     false,
                     false,
                     false,
-                    null)
-                );
+                    null,
+                    false
+                    ));
 
             var exprEvaluatorContext = (ExprEvaluatorContext) null;
 
