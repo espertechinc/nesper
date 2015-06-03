@@ -714,13 +714,16 @@ namespace com.espertech.esper.core.context.mgr
         private void RecursivePopulateBuiltinProps(ContextController originator, IDictionary<String, Object> properties)
         {
             var entry = _subcontexts.Get(originator);
-            if (entry.InitContextProperties != null)
+            if (entry != null)
             {
-                properties.Put(entry.Parent.Factory.FactoryContext.ContextName, entry.InitContextProperties);
-            }
-            if (entry.Parent != null && entry.Parent.Factory.FactoryContext.NestingLevel > 1)
-            {
-                RecursivePopulateBuiltinProps(entry.Parent, properties);
+                if (entry.InitContextProperties != null)
+                {
+                    properties.Put(entry.Parent.Factory.FactoryContext.ContextName, entry.InitContextProperties);
+                }
+                if (entry.Parent != null && entry.Parent.Factory.FactoryContext.NestingLevel > 1)
+                {
+                    RecursivePopulateBuiltinProps(entry.Parent, properties);
+                }
             }
         }
 

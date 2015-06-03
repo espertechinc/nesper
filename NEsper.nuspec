@@ -1,35 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-    <metadata>
-        <id>NEsper</id>
-        <version>5.2.1</version>
-        <authors>Espertech</authors>
-        <owners>Espertech</owners>
-		<language>en-us</language>
-        <projectUrl>http://esper.codehaus.org/</projectUrl>
-		<licenseUrl>http://esper.codehaus.org/about/license/license.html</licenseUrl>
-        <iconUrl>http://esper.codehaus.org/images/espertech_logo_transparent.png</iconUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</description>
-        <summary>A component for complex event processing (CEP).</summary>
-        <copyright>Copyright (C) 2006-2014 Esper Team. All rights reserved.</copyright>
-		<tags>esper esp cep</tags>
-		<title>NEsper</title>
-        <dependencies>
-            <dependency id="XLR8.CGLib" version="1.0.2" />
-            <dependency id="Common.Logging" version="2.1.2" />
-            <dependency id="Nito.KitchenSink.CRC" version="1.1.0" />
-            <dependency id="Castle.Core" version="3.3.0" />
-			<dependency id="Antlr4.Runtime" version="4.3.0" />
-			<dependency id="Sharpen" version="1.0.0.3" />
-        </dependencies>
-    </metadata>
-    <files>
-        <file src="build\NEsper-5.2.1\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
-        <file src="build\NEsper-5.2.1\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
-        <file src="build\NEsper-5.2.1\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
-		
-        <file src="build\NEsper-5.2.1\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
-        <file src="build\NEsper-5.2.1\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
-    </files>
+<metadata>
+<id>NEsper</id>
+<version>5.2.3</version>
+<authors>Espertech</authors>
+<owners>Espertech</owners>
+<language>en-us</language>
+<projectUrl>http://esper.codehaus.org/</projectUrl>
+<licenseUrl>http://esper.codehaus.org/about/license/license.html</licenseUrl>
+<iconUrl>http://esper.codehaus.org/images/espertech_logo_transparent.png</iconUrl>
+<requireLicenseAcceptance>false</requireLicenseAcceptance>
+<description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</description>
+<summary>A component for complex event processing (CEP).</summary>
+<copyright>Copyright (C) 2006-2014 Esper Team. All rights reserved.</copyright>
+<tags>esper esp cep</tags>
+<title>NEsper</title>
+<dependencies>
+<dependency id="XLR8.CGLib" version="1.0.2" />
+<dependency id="Common.Logging" version="2.1.2" />
+<dependency id="Nito.KitchenSink.CRC" version="1.1.0" />
+<dependency id="Castle.Core" version="3.3.0" />
+<dependency id="Antlr4.Runtime" version="4.3.0" />
+<dependency id="Sharpen" version="1.0.0.3" />
+</dependencies>
+</metadata>
+<files>
+<file src="build\NEsper-5.2.3\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
+<file src="build\NEsper-5.2.3\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
+<file src="build\NEsper-5.2.3\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
+
+<file src="build\NEsper-5.2.3\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
+<file src="build\NEsper-5.2.3\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
+</files>
 </package>

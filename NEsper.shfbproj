@@ -1,113 +1,113 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <PropertyGroup>
-    <!-- The configuration and platform will be used to determine which
-         assemblies to include from solution and project documentation
-         sources -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{b4e95207-c099-4074-b7f9-495cd7d7bc28}</ProjectGuid>
-    <SHFBSchemaVersion>1.9.3.0</SHFBSchemaVersion>
-    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
-         Studio adds them anyway -->
-    <AssemblyName>Documentation</AssemblyName>
-    <RootNamespace>Documentation</RootNamespace>
-    <Name>Documentation</Name>
-    <!-- SHFB properties -->
-    <OutputPath>.\build\NEsper-5.2.1\docs\</OutputPath>
-    <HtmlHelpName>NEsper</HtmlHelpName>
-    <ProjectSummary>
-    </ProjectSummary>
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
-    <HtmlHelp1xCompilerPath>
-    </HtmlHelp1xCompilerPath>
-    <HtmlHelp2xCompilerPath>
-    </HtmlHelp2xCompilerPath>
-    <SandcastlePath>
-    </SandcastlePath>
-    <WorkingPath>
-    </WorkingPath>
-    <BuildLogFile>
-    </BuildLogFile>
-    <FrameworkVersion>.NET 4.0.30319</FrameworkVersion>
-    <HelpTitle>NEsper Class Library</HelpTitle>
-    <FeedbackEMailAddress>nesper%40espertech.com</FeedbackEMailAddress>
-    <PresentationStyle>hana</PresentationStyle>
-    <DocumentationSources>
-      <DocumentationSource sourceFile="NEsper\NEsper\bin\$(Configuration)\NEsper.dll" />
-      <DocumentationSource sourceFile="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll" />
-      <DocumentationSource sourceFile="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.XML" />
-      <DocumentationSource sourceFile="NEsper\NEsper\bin\$(Configuration)\NEsper.xml" />
-    </DocumentationSources>
-    <NamespaceSummaries>
-      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="Antlr.Runtime" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="Antlr.Runtime.Collections" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="Antlr.Runtime.Debug" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="Antlr.Runtime.Misc" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="C5" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.client" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.client.soda" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.client.time" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.collection" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.compat" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.core" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.dispatch" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.emit" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.agg" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.core" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.db" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.db.drivers" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.expression" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.generated" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join.assemble" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join.exec" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join.plan" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join.rep" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.join.table" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.lookup" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.named" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.parse" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.spec" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.subquery" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.variable" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.epl.view" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.events" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.events.property" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.events.vaevent" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.events.xml" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.filter" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.indicator.pretty" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.pattern" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.pattern.guard" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.pattern.observer" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.plugin" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.schedule" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.timer" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.type" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.util" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.ext" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.internals" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.stat" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.stat.olap" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.std" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.stream" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esper.view.window" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esperio" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esperio.csv" isDocumented="True" xmlns="" />
-      <NamespaceSummaryItem name="com.espertech.esperio.subscription" isDocumented="True" xmlns="" />
-    </NamespaceSummaries>
-  </PropertyGroup>
-  <!-- There are no properties for these two groups but they need to appear in
-       order for Visual Studio to perform the build. -->
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  </PropertyGroup>
-  <!-- Import the SHFB build targets -->
-  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+<PropertyGroup>
+<!-- The configuration and platform will be used to determine which
+assemblies to include from solution and project documentation
+sources -->
+<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+<SchemaVersion>2.0</SchemaVersion>
+<ProjectGuid>{b4e95207-c099-4074-b7f9-495cd7d7bc28}</ProjectGuid>
+<SHFBSchemaVersion>1.9.3.0</SHFBSchemaVersion>
+<!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+Studio adds them anyway -->
+<AssemblyName>Documentation</AssemblyName>
+<RootNamespace>Documentation</RootNamespace>
+<Name>Documentation</Name>
+<!-- SHFB properties -->
+<OutputPath>.\build\NEsper-5.2.3\docs\</OutputPath>
+<HtmlHelpName>NEsper</HtmlHelpName>
+<ProjectSummary>
+</ProjectSummary>
+<MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
+<VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+<HtmlHelp1xCompilerPath>
+</HtmlHelp1xCompilerPath>
+<HtmlHelp2xCompilerPath>
+</HtmlHelp2xCompilerPath>
+<SandcastlePath>
+</SandcastlePath>
+<WorkingPath>
+</WorkingPath>
+<BuildLogFile>
+</BuildLogFile>
+<FrameworkVersion>.NET 4.0.30319</FrameworkVersion>
+<HelpTitle>NEsper Class Library</HelpTitle>
+<FeedbackEMailAddress>nesper%40espertech.com</FeedbackEMailAddress>
+<PresentationStyle>hana</PresentationStyle>
+<DocumentationSources>
+<DocumentationSource sourceFile="NEsper\NEsper\bin\$(Configuration)\NEsper.dll" />
+<DocumentationSource sourceFile="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll" />
+<DocumentationSource sourceFile="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.XML" />
+<DocumentationSource sourceFile="NEsper\NEsper\bin\$(Configuration)\NEsper.xml" />
+</DocumentationSources>
+<NamespaceSummaries>
+<NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Antlr.Runtime" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Antlr.Runtime.Collections" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Antlr.Runtime.Debug" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Antlr.Runtime.Misc" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="C5" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.client" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.client.soda" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.client.time" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.collection" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.compat" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.core" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.dispatch" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.emit" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.agg" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.core" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.db" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.db.drivers" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.expression" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.generated" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join.assemble" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join.exec" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join.plan" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join.rep" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.join.table" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.lookup" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.named" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.parse" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.spec" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.subquery" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.variable" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.epl.view" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.events" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.events.property" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.events.vaevent" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.events.xml" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.filter" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.indicator.pretty" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.pattern" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.pattern.guard" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.pattern.observer" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.plugin" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.schedule" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.timer" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.type" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.util" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.ext" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.internals" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.stat" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.stat.olap" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.std" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.stream" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esper.view.window" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esperio" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esperio.csv" isDocumented="True" xmlns="" />
+<NamespaceSummaryItem name="com.espertech.esperio.subscription" isDocumented="True" xmlns="" />
+</NamespaceSummaries>
+</PropertyGroup>
+<!-- There are no properties for these two groups but they need to appear in
+order for Visual Studio to perform the build. -->
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+</PropertyGroup>
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+</PropertyGroup>
+<!-- Import the SHFB build targets -->
+<Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
 </Project>
