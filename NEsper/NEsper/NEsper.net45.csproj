@@ -518,6 +518,7 @@
     <Compile Include="collection\OneEventCollection.cs" />
     <Compile Include="compat\attributes\RenderWithToStringAttribute.cs" />
     <Compile Include="compat\Blob.cs" />
+    <Compile Include="compat\collections\DebugDictionary.cs" />
     <Compile Include="compat\collections\SubList.cs" />
     <Compile Include="collection\TimeWindowPair.cs" />
     <Compile Include="compat\AtomicLong.cs" />

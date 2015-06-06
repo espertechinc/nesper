@@ -499,6 +499,7 @@
     <Compile Include="client\VariableNotFoundException.cs" />
     <Compile Include="client\VariableValueException.cs" />
     <Compile Include="collection\ArrayWrap.cs" />
+    <Compile Include="compat\collections\DebugDictionary.cs" />
     <Compile Include="collection\FilteredEventEnumerator.cs" />
     <Compile Include="collection\MixedEventBeanAndCollectionEnumeratorBase.cs" />
     <Compile Include="collection\MultiKeyInt.cs" />

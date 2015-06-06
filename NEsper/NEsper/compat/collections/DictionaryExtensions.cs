@@ -19,6 +19,17 @@ namespace com.espertech.esper.compat.collections
             return new ConcurrentDictionary<TK, TV>(dictionary);
         }
 
+        public static IDictionary<TK, TV> WithDebugSupport<TK, TV>(this IDictionary<TK, TV> dictionary)
+            where TK : class
+        {
+            if (dictionary is DebugDictionary<TK, TV>)
+            {
+                return dictionary;
+            }
+
+            return new DebugDictionary<TK, TV>(dictionary);
+        }
+
 
         public static IDictionary<TK, TV> WithNullSupport<TK, TV>(this IDictionary<TK, TV> dictionary)
             where TK : class

@@ -60,7 +60,7 @@ namespace com.espertech.esper.core.context.mgr
         /// For example with 3 contexts declared this map has entries for the root, second and third-level contexts.
         /// </summary>
         private readonly IDictionary<ContextController, ContextControllerTreeEntry> _subcontexts =
-            new Dictionary<ContextController, ContextControllerTreeEntry>().WithNullSupport();
+            new Dictionary<ContextController, ContextControllerTreeEntry>().WithNullSupport().WithDebugSupport();
 
         private readonly ContextPartitionIdManager _contextPartitionIdManager;
 
