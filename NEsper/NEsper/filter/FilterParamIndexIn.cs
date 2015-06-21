@@ -123,7 +123,7 @@ namespace com.espertech.esper.filter
                 }
 
                 // Look up in hashtable
-                using (_constantsMapRwLock.ReadLock.Acquire())
+                using (_constantsMapRwLock.AcquireReadLock())
                 {
                     var evaluators = _constantsMap.Get(attributeValue);
 

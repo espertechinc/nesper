@@ -94,7 +94,7 @@ namespace com.espertech.esper.epl.metric
         /// <param name="statementName">to remove</param>
         public void RemoveStatement(String statementName)
         {
-            using (rwLock.WriteLock.Acquire()) {
+            using (rwLock.AcquireWriteLock()) {
                 removedStatementNames.Add(statementName);
                 if (removedStatementNames.Count > 1000)
                 {
@@ -120,7 +120,7 @@ namespace com.espertech.esper.epl.metric
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(String statementName)
         {
-            using (rwLock.WriteLock.Acquire()) {
+            using (rwLock.AcquireWriteLock()) {
                 // see if there is room
                 if ((currentLastElement + 1) < metrics.Length) {
                     currentLastElement++;
@@ -166,7 +166,7 @@ namespace com.espertech.esper.epl.metric
         /// <returns>metrics</returns>
         public StatementMetric[] FlushMetrics()
         {
-            using (rwLock.WriteLock.Acquire()) {
+            using (rwLock.AcquireWriteLock()) {
                 bool isEmpty = false;
                 if (currentLastElement == -1) {
                     isEmpty = true;

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.compat.threading
 {
     public interface IReaderWriterLock
@@ -19,6 +21,20 @@ namespace com.espertech.esper.compat.threading
         /// Gets the write-side lockable
         /// </summary>
         ILockable WriteLock { get; }
+
+        /// <summary>
+        /// Acquires the read lock; the lock is released when the disposable
+        /// object that was returned is disposed.
+        /// </summary>
+        /// <returns></returns>
+        IDisposable AcquireReadLock();
+
+        /// <summary>
+        /// Acquires the write lock; the lock is released when the disposable
+        /// object that was returned is disposed.
+        /// </summary>
+        /// <returns></returns>
+        IDisposable AcquireWriteLock();
 
         /// <summary>
         /// Indicates if the writer lock is held.

@@ -60,6 +60,9 @@ namespace com.espertech.esper.compat.threading
                 case "MONITORSLIMLOCK":
                     DefaultLockFactory = CreateMonitorSlimLock;
                     break;
+                case "VOID":
+                    DefaultLockFactory = CreateVoidLock;
+                    break;
                 default:
                     throw new ArgumentException("unknown lock type '" + defaultLockTypeName + "'");
             }
@@ -179,8 +182,16 @@ namespace com.espertech.esper.compat.threading
         /// <returns></returns>
         public static ILockable CreateMonitorSlimLock()
         {
-            
             return new MonitorSlimLock();
+        }
+
+        /// <summary>
+        /// Creates a void lock.
+        /// </summary>
+        /// <returns></returns>
+        public static ILockable CreateVoidLock()
+        {
+            return new VoidLock();
         }
     }
 }

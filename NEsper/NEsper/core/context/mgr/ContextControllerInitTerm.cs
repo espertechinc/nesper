@@ -578,7 +578,7 @@ namespace com.espertech.esper.core.context.mgr
                  */
 
                 AgentInstanceContext aiCreate = _contextControllerInitTerm.Factory.FactoryContext.AgentInstanceContextCreate;
-                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     Object key = _contextControllerInitTerm.GetDistinctKey(theEvent);
                     EventBean trigger = _contextControllerInitTerm.DistinctContexts.Get(key);
@@ -620,7 +620,7 @@ namespace com.espertech.esper.core.context.mgr
                 //
 
                 AgentInstanceContext aiCreate = _contextControllerInitTerm.Factory.FactoryContext.AgentInstanceContextCreate;
-                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     EventBean trigger = _contextControllerInitTerm._nonDistinctLastTrigger;
                     if (theEvent != trigger)

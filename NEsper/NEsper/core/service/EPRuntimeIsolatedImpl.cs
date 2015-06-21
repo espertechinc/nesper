@@ -278,7 +278,7 @@ namespace com.espertech.esper.core.service
         public void ProcessWrappedEvent(EventBean eventBean)
         {
             // Acquire main processing lock which locks out statement management
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 try
                 {
@@ -413,11 +413,11 @@ namespace com.espertech.esper.core.service
             // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
             // We want to stay in this order for allowing the engine lock as a second-order lock to the
             // services own lock, if it has one.
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 _services.SchedulingService.Evaluate(handles);
             }
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 try
                 {
@@ -593,7 +593,7 @@ namespace com.espertech.esper.core.service
             // wait for the latch to complete
             EventBean eventBean = insertIntoLatch.Await();
 
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 try
                 {
@@ -618,7 +618,7 @@ namespace com.espertech.esper.core.service
             // wait for the latch to complete
             EventBean eventBean = insertIntoLatch.Await();
 
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 try
                 {
@@ -650,7 +650,7 @@ namespace com.espertech.esper.core.service
                 eventBean = _unisolatedServices.EventAdapterService.AdapterForObject(item);
             }
 
-            using (_unisolatedServices.EventProcessingRwLock.ReadLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
             {
                 try
                 {
@@ -735,7 +735,7 @@ namespace com.espertech.esper.core.service
         /// <param name="theEvent">to process</param>
         public void ProcessStatementFilterMultiple(EPStatementAgentInstanceHandle handle, ICollection<FilterHandleCallback> callbackList, EventBean theEvent)
         {
-            using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+            using (handle.StatementAgentInstanceLock.AcquireWriteLock())
             {
                 try
                 {
@@ -769,7 +769,7 @@ namespace com.espertech.esper.core.service
         /// <param name="theEvent">event to indicate</param>
         public void ProcessStatementFilterSingle(EPStatementAgentInstanceHandle handle, EPStatementHandleCallback handleCallback, EventBean theEvent)
         {
-            using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+            using (handle.StatementAgentInstanceLock.AcquireWriteLock())
             {
                 try
                 {

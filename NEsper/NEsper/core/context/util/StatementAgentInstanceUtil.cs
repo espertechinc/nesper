@@ -59,7 +59,8 @@ namespace com.espertech.esper.core.context.util
         {
             if (terminationProperties != null)
             {
-                var contextProperties = (MappedEventBean)agentInstance.AgentInstanceContext.ContextProperties;                contextProperties.Properties.PutAll(terminationProperties);
+                var contextProperties = (MappedEventBean)agentInstance.AgentInstanceContext.ContextProperties;
+                contextProperties.Properties.PutAll(terminationProperties);
             }
             Stop(agentInstance.StopCallback, agentInstance.AgentInstanceContext, agentInstance.FinalView, servicesContext, isStatementStop, leaveLocksAcquired);
         }
@@ -197,7 +198,7 @@ namespace com.espertech.esper.core.context.util
                 i => i.QContextPartitionAllocate(agentInstanceContext),
                 i => i.AContextPartitionAllocate()))
             {
-                using (statementAgentInstanceLock.WriteLock.Acquire())
+                using (statementAgentInstanceLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -467,7 +468,7 @@ namespace com.espertech.esper.core.context.util
             EventBean theEvent)
         {
             var agentInstanceContext = agentInstance.AgentInstanceContext;
-            using (agentInstance.AgentInstanceContext.AgentInstanceLock.WriteLock.Acquire())
+            using (agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock())
             {
                 try
                 {

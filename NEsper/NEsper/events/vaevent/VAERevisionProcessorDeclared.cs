@@ -230,7 +230,7 @@ namespace com.espertech.esper.events.vaevent
         }
     
         public override ICollection<EventBean> GetSnapshot(EPStatementAgentInstanceHandle createWindowStmtHandle, Viewable parent) {
-            using(createWindowStmtHandle.StatementAgentInstanceLock.ReadLock.Acquire())
+            using(createWindowStmtHandle.StatementAgentInstanceLock.AcquireReadLock())
             {
                 var it = parent.GetEnumerator();
                 var list = new LinkedList<EventBean>();

@@ -71,7 +71,7 @@ namespace com.espertech.esper.events
             EventBean eventBean = GetEventBean(theEvent);
     
             // Process event
-            if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_threadingService.IsInboundThreading))
             {
                 _threadingService.SubmitInbound(new InboundUnitSendWrapped(eventBean, _runtime).Run);
             }

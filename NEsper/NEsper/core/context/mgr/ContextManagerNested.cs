@@ -60,7 +60,7 @@ namespace com.espertech.esper.core.context.mgr
         /// For example with 3 contexts declared this map has entries for the root, second and third-level contexts.
         /// </summary>
         private readonly IDictionary<ContextController, ContextControllerTreeEntry> _subcontexts =
-            new Dictionary<ContextController, ContextControllerTreeEntry>().WithNullSupport().WithDebugSupport();
+            new Dictionary<ContextController, ContextControllerTreeEntry>().WithNullSupport();
 
         private readonly ContextPartitionIdManager _contextPartitionIdManager;
 
@@ -109,7 +109,8 @@ namespace com.espertech.esper.core.context.mgr
             using (_iLock.Acquire())
             {
                 var instances = GetAgentInstancesForStmt(statementId, selector);
-                return instances.SelectMany(instance => instance.FinalView).GetEnumerator();            }
+                return instances.SelectMany(instance => instance.FinalView).GetEnumerator();
+            }
         }
 
         public IEnumerator<EventBean> GetSafeEnumerator(String statementId, ContextPartitionSelector selector)
@@ -117,7 +118,8 @@ namespace com.espertech.esper.core.context.mgr
             using (_iLock.Acquire())
             {
                 var instances = GetAgentInstancesForStmt(statementId, selector);
-                return GetEnumeratorWithInstanceLock(instances);            }
+                return GetEnumeratorWithInstanceLock(instances);
+            }
         }
 
         private static IEnumerator<EventBean> GetEnumeratorWithInstanceLock(AgentInstance[] instances)
@@ -125,7 +127,7 @@ namespace com.espertech.esper.core.context.mgr
             foreach (var instance in instances)
             {
                 var instanceLock = instance.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
-                using (instanceLock.WriteLock.Acquire())
+                using (instanceLock.AcquireWriteLock())
                 {
                     foreach (var eventBean in instance.FinalView)
                     {
@@ -133,7 +135,8 @@ namespace com.espertech.esper.core.context.mgr
                     }
                 }
             }
-        }
+        }
+
         public ICollection<int> GetAgentInstanceIds(ContextPartitionSelector contextPartitionSelector)
         {
             return GetAgentInstancesForSelector(contextPartitionSelector);
@@ -660,7 +663,8 @@ namespace com.espertech.esper.core.context.mgr
                     {
                         yield return eventBean;
                     }
-                }            }
+                }
+            }
         }
 
         public IEnumerator<EventBean> GetSafeEnumerator(String statementId)
@@ -671,7 +675,7 @@ namespace com.espertech.esper.core.context.mgr
 
                 foreach (var instance in instances)
                 {
-                    using (instance.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.WriteLock.Acquire())
+                    using (instance.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
                     {
                         foreach (var eventBean in instance.FinalView)
                         {
@@ -679,7 +683,8 @@ namespace com.espertech.esper.core.context.mgr
                         }
                     }
                 }
-            }        }
+            }
+        }
 
         private AgentInstance StartStatement(
             int contextId,

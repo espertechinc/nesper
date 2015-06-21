@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.service
                 return;    
             }
     
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 foreach (String reference in eventTypesReferenced)
                 {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.core.service
     
         public void RemoveReferencesStatement(String statementName)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 var types = _stmtToType.Pluck(statementName);
                 if (types != null)
@@ -68,7 +68,7 @@ namespace com.espertech.esper.core.service
     
         public void RemoveReferencesType(String name)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 var statementNames = _typeToStmt.Pluck(name);
                 if (statementNames != null)
@@ -83,7 +83,7 @@ namespace com.espertech.esper.core.service
     
         public bool IsInUse(String eventTypeName)
         {
-            using (_mapLock.ReadLock.Acquire())
+            using (_mapLock.AcquireReadLock())
             {
                 return _typeToStmt.ContainsKey(eventTypeName);
             }
@@ -91,7 +91,7 @@ namespace com.espertech.esper.core.service
     
         public ICollection<String> GetStatementNamesForType(String eventTypeName)
         {
-            using (_mapLock.ReadLock.Acquire())
+            using (_mapLock.AcquireReadLock())
             {
                 var types = _typeToStmt.Get(eventTypeName);
                 if (types == null)
@@ -104,7 +104,7 @@ namespace com.espertech.esper.core.service
     
         public String[] GetTypesForStatementName(String statementName)
         {
-            using (_mapLock.ReadLock.Acquire())
+            using (_mapLock.AcquireReadLock())
             {
                 var types = _stmtToType.Get(statementName);
                 if (types == null)

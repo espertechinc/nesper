@@ -227,7 +227,7 @@ namespace com.espertech.esper.epl.named
 	                i => i.QNamedWindowDispatch(_exceptionHandlingService.EngineURI),
 	                i => i.ANamedWindowDispatch()))
 	            {
-	                using (_eventProcessingRwLock.ReadLock.Acquire())
+	                using (_eventProcessingRwLock.AcquireReadLock())
 	                {
 	                    try
 	                    {
@@ -431,7 +431,7 @@ namespace com.espertech.esper.epl.named
 	            i => i.QNamedWindowCPMulti(_exceptionHandlingService.EngineURI, deltaPerConsumer, handle, _schedulingService.Time),
 	            i => i.ANamedWindowCPMulti()))
 	        {
-	            using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+	            using (handle.StatementAgentInstanceLock.AcquireWriteLock())
 	            {
 	                try
 	                {
@@ -476,7 +476,7 @@ namespace com.espertech.esper.epl.named
 	                    _exceptionHandlingService.EngineURI, value, newData, oldData, handle, _schedulingService.Time),
 	            i => i.ANamedWindowCPSingle()))
 	        {
-	            using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+	            using (handle.StatementAgentInstanceLock.AcquireWriteLock())
 	            {
 	                try
 	                {

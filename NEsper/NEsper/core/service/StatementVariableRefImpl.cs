@@ -58,7 +58,7 @@ namespace com.espertech.esper.core.service
 
         public void AddReferences(String statementName, ICollection<String> variablesReferenced, ExprTableAccessNode[] tableNodes)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 if (variablesReferenced != null) {
                     foreach (var reference in variablesReferenced)
@@ -78,7 +78,7 @@ namespace com.espertech.esper.core.service
 
         public void AddReferences(String statementName, String variableReferenced)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 AddReference(statementName, variableReferenced);
             }
@@ -86,7 +86,7 @@ namespace com.espertech.esper.core.service
 
         public void RemoveReferencesStatement(String statementName)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 var variables = _stmtToVariable.Pluck(statementName);
                 if (variables != null)
@@ -101,7 +101,7 @@ namespace com.espertech.esper.core.service
 
         public void RemoveReferencesVariable(String name)
         {
-            using(_mapLock.WriteLock.Acquire())
+            using(_mapLock.AcquireWriteLock())
             {
                 var statementNames = _variableToStmt.Pluck(name);
                 if (statementNames != null)
@@ -116,7 +116,7 @@ namespace com.espertech.esper.core.service
 
         public bool IsInUse(String variable)
         {
-            using(_mapLock.ReadLock.Acquire())
+            using(_mapLock.AcquireReadLock())
             {
                 return _variableToStmt.ContainsKey(variable);
             }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.core.service
     
         public ICollection<String> GetStatementNamesForVar(String variableName)
         {
-            using(_mapLock.ReadLock.Acquire())
+            using(_mapLock.AcquireReadLock())
             {
                 ICollection<String> variables = _variableToStmt.Get(variableName);
                 if (variables == null)

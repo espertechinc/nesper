@@ -11,6 +11,8 @@ namespace com.espertech.esper.core.thread
     /// <summary>Ctor </summary>
     public class ThreadingOption
     {
+        internal static bool IsThreadingEnabledValue;
+
         static ThreadingOption()
         {
             IsThreadingEnabled = false;
@@ -18,6 +20,10 @@ namespace com.espertech.esper.core.thread
 
         /// <summary>Returns true when threading is enabled </summary>
         /// <value>indicator</value>
-        public static bool IsThreadingEnabled { get; set; }
+        public static bool IsThreadingEnabled
+        {
+            get { return IsThreadingEnabledValue; }
+            set { IsThreadingEnabledValue = value; }
+        }
     }
 }

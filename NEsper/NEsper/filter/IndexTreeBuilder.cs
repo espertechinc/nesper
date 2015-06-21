@@ -129,7 +129,7 @@ namespace com.espertech.esper.filter
             // If no parameters are specified, add to current node, and done
             if (remainingParameters.IsEmpty())
             {
-                using(currentNode.NodeRWLock.WriteLock.Acquire())
+                using(currentNode.NodeRWLock.AcquireWriteLock())
                 {
                     currentNode.Add(filterCallback);
                 }            
@@ -138,7 +138,7 @@ namespace com.espertech.esper.filter
 
             // Need to find an existing index that matches one of the filter parameters
             Pair<FilterValueSetParam, FilterParamIndexBase> pair;
-            using (currentNode.NodeRWLock.ReadLock.Acquire())
+            using (currentNode.NodeRWLock.AcquireReadLock())
             {
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
@@ -155,7 +155,7 @@ namespace com.espertech.esper.filter
             }
 
             // An index for any of the filter parameters was not found, create one
-            using(currentNode.NodeRWLock.WriteLock.Acquire())
+            using(currentNode.NodeRWLock.AcquireWriteLock())
             {
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.filter
             // No remaining filter parameters
             if (nextPair == null)
             {
-                using(currentNode.NodeRWLock.WriteLock.Acquire())
+                using(currentNode.NodeRWLock.AcquireWriteLock())
                 {
                     var isRemoved = currentNode.Remove(filterCallback);
                     var isEmpty = currentNode.IsEmpty();
@@ -213,7 +213,7 @@ namespace com.espertech.esper.filter
             var nextIndex = nextPair.Index;
             var filteredForValue = nextPair.Lookupable;
 
-            using(currentNode.NodeRWLock.WriteLock.Acquire())
+            using(currentNode.NodeRWLock.AcquireWriteLock())
             {
                 var isEmpty = RemoveFromIndex(filterCallback, nextIndex, treePathInfo, treePathPosition, filteredForValue);
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.filter
             int treePathPosition,
             Object filterForValue)
         {
-            using(index.ReadWriteLock.WriteLock.Acquire())
+            using(index.ReadWriteLock.AcquireWriteLock())
             {
                 EventEvaluator eventEvaluator = index[filterForValue];
 
@@ -330,7 +330,7 @@ namespace com.espertech.esper.filter
 
             EventEvaluator eventEvaluator;
 
-            using(index.ReadWriteLock.ReadLock.Acquire())
+            using(index.ReadWriteLock.AcquireReadLock())
             {
                 eventEvaluator = index[filterForValue];
 
@@ -346,7 +346,7 @@ namespace com.espertech.esper.filter
             }
 
             // new filter parameter value, need a write lock
-            using(index.ReadWriteLock.WriteLock.Acquire())
+            using(index.ReadWriteLock.AcquireWriteLock())
             {
                 eventEvaluator = index[filterForValue];
 

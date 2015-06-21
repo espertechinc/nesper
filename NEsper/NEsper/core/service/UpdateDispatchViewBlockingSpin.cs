@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dispatch;
 using com.espertech.esper.timer;
@@ -37,15 +38,18 @@ namespace com.espertech.esper.core.service
             _timeSourceService = timeSourceService;
         }
     
-        public override void Update(EventBean[] newData, EventBean[] oldData) {
+        public override void Update(EventBean[] newData, EventBean[] oldData)
+        {
             NewResult(new UniformPair<EventBean[]>(newData, oldData));
         }
     
         public override void NewResult(UniformPair<EventBean[]> result)
         {
             StatementResultService.Indicate(result);
-    
-            if (!IsDispatchWaiting.Value)
+
+            var isDispatchWaiting = IsDispatchWaiting;
+
+            if (!isDispatchWaiting.Value)
             {
                 UpdateDispatchFutureSpin nextFutureSpin;
                 lock(this)
@@ -54,7 +58,7 @@ namespace com.espertech.esper.core.service
                     _currentFutureSpin = nextFutureSpin;
                 }
                 DispatchService.AddExternal(nextFutureSpin);
-                IsDispatchWaiting.Value = true;
+                isDispatchWaiting.Value = true;
             }
         }
     

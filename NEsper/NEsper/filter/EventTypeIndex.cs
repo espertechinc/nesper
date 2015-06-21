@@ -58,7 +58,7 @@ namespace com.espertech.esper.filter
         /// <param name="rootNode">is the root node of the subtree for filter constant indizes and callbacks</param>
         public void Add(EventType eventType, FilterHandleSetNode rootNode)
         {
-            using(_eventTypesLock.WriteLock.Acquire())
+            using(_eventTypesLock.AcquireWriteLock())
             {
                 if (_eventTypes.ContainsKey(eventType))
                 {
@@ -71,7 +71,7 @@ namespace com.espertech.esper.filter
     
         public void RemoveType(EventType type) 
         {
-            using (_eventTypesLock.WriteLock.Acquire())
+            using (_eventTypesLock.AcquireWriteLock())
             {
                 _eventTypes.Remove(type);
             }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.filter
         /// <returns>the subtree's root node</returns>
         public FilterHandleSetNode Get(EventType eventType)
         {
-            using (_eventTypesLock.ReadLock.Acquire())
+            using (_eventTypesLock.AcquireReadLock())
             {
                 FilterHandleSetNode result = _eventTypes.Get(eventType);
                 return result;
@@ -101,10 +101,12 @@ namespace com.espertech.esper.filter
             {
                 return;
             }
-    
-            foreach(EventType superType in eventType.DeepSuperTypes)
+
+            var deepSuperTypes = eventType.DeepSuperTypes;
+            var deepSuperTypesLength = deepSuperTypes.Length;
+            for (int ii = 0; ii < deepSuperTypesLength; ii++)
             {
-                MatchType(superType, theTheEvent, matches);
+                MatchType(deepSuperTypes[ii], theTheEvent, matches);
             }
         }
 
@@ -119,7 +121,7 @@ namespace com.espertech.esper.filter
         {
             get
             {
-                using (_eventTypesLock.ReadLock.Acquire())
+                using (_eventTypesLock.AcquireReadLock())
                 {
                     int count = 0;
                     foreach (var entry in _eventTypes)
@@ -136,7 +138,7 @@ namespace com.espertech.esper.filter
         {
             FilterHandleSetNode rootNode;
 
-            using (_eventTypesLock.WriteLock.Acquire())
+            using (_eventTypesLock.AcquireWriteLock())
             {
                 rootNode = _eventTypes.Get(eventType);
             }

@@ -66,17 +66,74 @@ namespace com.espertech.esper.core.service
         private readonly ExprEvaluatorContext _engineFilterAndDispatchTimeContext;
         private ThreadWorkQueue _threadWorkQueue;
     
-        public event EventHandler<UnmatchedEventArgs> UnmatchedEvent;
-        /// <summary>        /// Data that remains local to the thread.        /// </summary>
-        private IThreadLocal<ThreadLocalData> _threadLocalData;
-        #region Nested type: ThreadLocalData
-        /// <summary>        /// Group of data that is associated with the thread.        /// </summary>
-        private class ThreadLocalData        {            internal List<FilterHandle> MatchesArrayThreadLocal;            internal IDictionary<EPStatementAgentInstanceHandle, Object> MatchesPerStmtThreadLocal;            internal ArrayBackedCollection<ScheduleHandle> ScheduleArrayThreadLocal;            internal IDictionary<EPStatementAgentInstanceHandle, Object> SchedulePerStmtThreadLocal;        }
-        /// <summary>        /// Gets the local data.        /// </summary>        /// <value>The local data.</value>
-        private ThreadLocalData ThreadData        {            get { return _threadLocalData.GetOrCreate(); }        }
-        private ArrayBackedCollection<ScheduleHandle> ScheduleArray        {            get { return ThreadData.ScheduleArrayThreadLocal; }        }
-        private IDictionary<EPStatementAgentInstanceHandle, Object> SchedulePerStmt        {            get { return ThreadData.SchedulePerStmtThreadLocal; }        }
-        #endregion
+        public event EventHandler<UnmatchedEventArgs> UnmatchedEvent;
+
+        /// <summary>
+        /// Data that remains local to the thread.
+        /// </summary>
+
+        private IThreadLocal<ThreadLocalData> _threadLocalData;
+
+        [ThreadStatic]
+        private static Pair<EPRuntimeImpl, ThreadLocalData> MetaLast;
+
+        #region Nested type: ThreadLocalData
+
+        /// <summary>
+        /// Group of data that is associated with the thread.
+        /// </summary>
+
+        private class ThreadLocalData
+        {
+            internal List<FilterHandle> MatchesArrayThreadLocal;
+            internal IDictionary<EPStatementAgentInstanceHandle, Object> MatchesPerStmtThreadLocal;
+            internal ArrayBackedCollection<ScheduleHandle> ScheduleArrayThreadLocal;
+            internal IDictionary<EPStatementAgentInstanceHandle, Object> SchedulePerStmtThreadLocal;
+        }
+
+        /// <summary>
+        /// Gets the local data.
+        /// </summary>
+        /// <value>The local data.</value>
+
+#if NET45
+        //[MethodImplOptions.AggressiveInlining]
+#endif
+        private ThreadLocalData ThreadData
+        {
+            get
+            {
+#if false
+                return _threadLocalData.GetOrCreate();
+#else
+                if (MetaLast == null)
+                {
+                    return (MetaLast = new Pair<EPRuntimeImpl, ThreadLocalData>(this, _threadLocalData.GetOrCreate())).Second;
+                }
+                else if (MetaLast.First == this)
+                {
+                    return MetaLast.Second;
+                }
+                else
+                {
+                    return MetaLast.Second = _threadLocalData.GetOrCreate();
+                }
+#endif
+            }
+        }
+
+        private ArrayBackedCollection<ScheduleHandle> ScheduleArray
+        {
+            get { return ThreadData.ScheduleArrayThreadLocal; }
+        }
+
+        private IDictionary<EPStatementAgentInstanceHandle, Object> SchedulePerStmt
+        {
+            get { return ThreadData.SchedulePerStmtThreadLocal; }
+        }
+
+        #endregion
+
         /// <summary>Constructor. </summary>
         /// <param name="services">references to services</param>
         public EPRuntimeImpl(EPServicesContext services)
@@ -114,17 +171,43 @@ namespace com.espertech.esper.core.service
             services.ThreadingService.InitThreading(services, this);
         }
     
-        /// <summary>        /// Removes all unmatched event handlers.        /// </summary>
-        public void RemoveAllUnmatchedEventHandlers()        {            UnmatchedEvent = null;        }
-        /// <summary>        /// Creates a local data object.        /// </summary>        /// <returns></returns>
-        private ThreadLocalData CreateLocalData()        {            var threadLocalData = new ThreadLocalData
+        /// <summary>
+        /// Removes all unmatched event handlers.
+        /// </summary>
+
+        public void RemoveAllUnmatchedEventHandlers()
+        {
+            UnmatchedEvent = null;
+        }
+
+        /// <summary>
+        /// Creates a local data object.
+        /// </summary>
+        /// <returns></returns>
+
+        private ThreadLocalData CreateLocalData()
+        {
+            var threadLocalData = new ThreadLocalData
             {
                 MatchesArrayThreadLocal = new List<FilterHandle>(100),
                 ScheduleArrayThreadLocal = new ArrayBackedCollection<ScheduleHandle>(100)
             };
 
-            if (_isPrioritized) {                threadLocalData.MatchesPerStmtThreadLocal =                    new OrderedDictionary<EPStatementAgentInstanceHandle, Object>(new EPStatementAgentInstanceHandlePrioritySort());                threadLocalData.SchedulePerStmtThreadLocal =                    new OrderedDictionary<EPStatementAgentInstanceHandle, Object>(new EPStatementAgentInstanceHandlePrioritySort());            }            else {                threadLocalData.MatchesPerStmtThreadLocal =                    new Dictionary<EPStatementAgentInstanceHandle, Object>(10000);                threadLocalData.SchedulePerStmtThreadLocal =                    new Dictionary<EPStatementAgentInstanceHandle, Object>(10000);            }
-            return threadLocalData;        }
+            if (_isPrioritized) {
+                threadLocalData.MatchesPerStmtThreadLocal =
+                    new OrderedDictionary<EPStatementAgentInstanceHandle, Object>(new EPStatementAgentInstanceHandlePrioritySort());
+                threadLocalData.SchedulePerStmtThreadLocal =
+                    new OrderedDictionary<EPStatementAgentInstanceHandle, Object>(new EPStatementAgentInstanceHandlePrioritySort());
+            }
+            else {
+                threadLocalData.MatchesPerStmtThreadLocal =
+                    new Dictionary<EPStatementAgentInstanceHandle, Object>(10000);
+                threadLocalData.SchedulePerStmtThreadLocal =
+                    new Dictionary<EPStatementAgentInstanceHandle, Object>(10000);
+            }
+
+            return threadLocalData;
+        }
 
 
         /// <summary>Sets the route for events to use </summary>
@@ -173,7 +256,7 @@ namespace com.espertech.esper.core.service
             }
     
             // Process event
-            if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsInboundThreading))
             {
                 _services.ThreadingService.SubmitInbound(
                     new InboundUnitSendEvent(theEvent, this).Run);
@@ -198,7 +281,7 @@ namespace com.espertech.esper.core.service
             }
     
             // Process event
-            if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsInboundThreading))
             {
                 _services.ThreadingService.SubmitInbound(
                     new InboundUnitSendDOM(document, _services, this).Run);
@@ -211,10 +294,42 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        /// <summary>        /// Send an event represented by a LINQ element to the event stream processing runtime.        /// <para/>        /// Use the route method for sending events into the runtime from within        /// event handler code. to avoid the possibility of a stack overflow due to nested calls to        /// SendEvent.        /// </summary>        /// <param name="element">The element.</param>
-        public void SendEvent(XElement element)        {            if (element == null)            {                Log.Fatal(".sendEvent Null object supplied");                return;            }
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))            {                Log.Debug(".sendEvent Processing DOM node event {0}", element);            }
-            // Process event            if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))            {                _services.ThreadingService.SubmitInbound(                    new InboundUnitSendLINQ(element, _services, this).Run);            }            else            {                // Get it wrapped up, process event                var eventBean = WrapEvent(element);                ProcessEvent(eventBean);            }        }
+        /// <summary>
+        /// Send an event represented by a LINQ element to the event stream processing runtime.
+        /// <para/>
+        /// Use the route method for sending events into the runtime from within
+        /// event handler code. to avoid the possibility of a stack overflow due to nested calls to
+        /// SendEvent.
+        /// </summary>
+        /// <param name="element">The element.</param>
+
+        public void SendEvent(XElement element)
+        {
+            if (element == null)
+            {
+                Log.Fatal(".sendEvent Null object supplied");
+                return;
+            }
+
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+            {
+                Log.Debug(".sendEvent Processing DOM node event {0}", element);
+            }
+
+            // Process event
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsInboundThreading))
+            {
+                _services.ThreadingService.SubmitInbound(
+                    new InboundUnitSendLINQ(element, _services, this).Run);
+            }
+            else
+            {
+                // Get it wrapped up, process event
+                var eventBean = WrapEvent(element);
+                ProcessEvent(eventBean);
+            }
+        }
+
         public EventBean WrapEvent(XmlNode node)
         {
             return _services.EventAdapterService.AdapterForDOM(node);
@@ -272,8 +387,8 @@ namespace com.espertech.esper.core.service
             {
                 Log.Debug(".sendMap Processing event " + map);
             }
-    
-            if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))
+
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsInboundThreading))
             {
                 _services.ThreadingService.SubmitInbound(
                     new InboundUnitSendMap(map, mapEventTypeName, _services, this).Run);
@@ -302,8 +417,8 @@ namespace com.espertech.esper.core.service
             {
                 Log.Debug(".sendMap Processing event " + propertyValues.Render());
             }
-    
-            if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))
+
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsInboundThreading))
             {
                 _services.ThreadingService.SubmitInbound(
                     new InboundUnitSendObjectArray(propertyValues, objectArrayEventTypeName, _services, this).Run);
@@ -497,7 +612,7 @@ namespace com.espertech.esper.core.service
 
                 try
                 {
-                    using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                    using (_services.EventProcessingRwLock.AcquireReadLock())
                     {
                         try
                         {
@@ -505,7 +620,7 @@ namespace com.espertech.esper.core.service
                         }
                         catch (Exception ex)
                         {
-                            _threadLocalData.GetOrCreate().MatchesArrayThreadLocal.Clear();
+                            ThreadData.MatchesArrayThreadLocal.Clear();
                             throw new EPException(ex);
                         }
                     }
@@ -577,7 +692,7 @@ namespace com.espertech.esper.core.service
                     }
                     _services.SchedulingService.Time = timeInMillis;
 
-                    if (MetricReportingPath.IsMetricsEnabled)
+                    if (MetricReportingPath.IsMetricsEnabledValue)
                     {
                         _services.MetricsReportingService.ProcessTimeEvent(timeInMillis);
                     }
@@ -648,7 +763,7 @@ namespace com.espertech.esper.core.service
 
                     _services.SchedulingService.Time = currentTime;
 
-                    if (MetricReportingPath.IsMetricsEnabled)
+                    if (MetricReportingPath.IsMetricsEnabledValue)
                     {
                         _services.MetricsReportingService.ProcessTimeEvent(currentTime);
                     }
@@ -681,12 +796,12 @@ namespace com.espertech.esper.core.service
                 // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
                 // We want to stay in this order for allowing the engine lock as a second-order lock to the
                 // services own lock, if it has one.
-                using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                using (_services.EventProcessingRwLock.AcquireReadLock())
                 {
                     _services.SchedulingService.Evaluate(handles);
                 }
 
-                using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                using (_services.EventProcessingRwLock.AcquireReadLock())
                 {
                     try
                     {
@@ -723,8 +838,8 @@ namespace com.espertech.esper.core.service
             {
                 var handleArray = handles.Array;
                 var handle = (EPStatementHandleCallback) handleArray[0];
-    
-                if ((MetricReportingPath.IsMetricsEnabled) && (handle.AgentInstanceHandle.StatementHandle.MetricsHandle.IsEnabled))
+
+                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.AgentInstanceHandle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     handle.AgentInstanceHandle.StatementHandle.MetricsHandle.Call(
                         _services.MetricsReportingService.PerformanceCollector,
@@ -732,7 +847,7 @@ namespace com.espertech.esper.core.service
                 }
                 else
                 {
-                    if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsTimerThreading))
+                    if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsTimerThreading))
                     {
                         _services.ThreadingService.SubmitTimerWork(
                             new TimerUnitSingle(_services, this, handle).Run);
@@ -789,10 +904,11 @@ namespace com.espertech.esper.core.service
             {
                 var handle = entry.Key;
                 var callbackObject = entry.Value;
-    
-                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+
+                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
-                    var numInput = callbackObject is ICollection ? ((ICollection)callbackObject).Count : 0;
+                    var numInput = callbackObject is ICollection ? ((ICollection)callbackObject).Count : 0;
+
                     handle.StatementHandle.MetricsHandle.Call(
                         _services.MetricsReportingService.PerformanceCollector,
                         () => ProcessStatementScheduleMultiple(handle, callbackObject, _services),
@@ -800,7 +916,7 @@ namespace com.espertech.esper.core.service
                 }
                 else
                 {
-                    if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsTimerThreading))
+                    if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsTimerThreading))
                     {
                         _services.ThreadingService.SubmitTimerWork(
                             new TimerUnitMultiple(_services, this, handle, callbackObject).Run);
@@ -909,7 +1025,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                using (_services.EventProcessingRwLock.AcquireReadLock())
                 {
                     try
                     {
@@ -917,7 +1033,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception)
                     {
-                        _threadLocalData.GetOrCreate().MatchesArrayThreadLocal.Clear();
+                        ThreadData.MatchesArrayThreadLocal.Clear();
                         throw;
                     }
                     finally
@@ -945,7 +1061,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                using (_services.EventProcessingRwLock.AcquireReadLock())
                 {
                     try
                     {
@@ -953,7 +1069,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception)
                     {
-                        _threadLocalData.GetOrCreate().MatchesArrayThreadLocal.Clear();
+                        ThreadData.MatchesArrayThreadLocal.Clear();
                         throw;
                     }
                     finally
@@ -988,7 +1104,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.ReadLock.Acquire())
+                using (_services.EventProcessingRwLock.AcquireReadLock())
                 {
                     try
                     {
@@ -996,7 +1112,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception)
                     {
-                        _threadLocalData.GetOrCreate().MatchesArrayThreadLocal.Clear();
+                        ThreadData.MatchesArrayThreadLocal.Clear();
                         throw;
                     }
                 }
@@ -1012,7 +1128,8 @@ namespace com.espertech.esper.core.service
     
         private void ProcessMatches(EventBean theEvent)
         {
-            var localData = _threadLocalData.GetOrCreate();
+            var localData = ThreadData;
+
             // get matching filters
             var matches = localData.MatchesArrayThreadLocal;
             var version = _services.FilterService.Evaluate(theEvent, matches);
@@ -1053,8 +1170,8 @@ namespace com.espertech.esper.core.service
                 // Priority or preemptive settings also require special ordering.
                 if (handle.CanSelfJoin || _isPrioritized)
                 {
-                    var callbacks = stmtCallbacks.Get(handle);
-                    if (callbacks == null)
+                    object callbacks;
+                    if (!stmtCallbacks.TryGetValue(handle, out callbacks))
                     {
                         stmtCallbacks.Put(handle, handleCallback.FilterCallback);
                     }
@@ -1074,7 +1191,7 @@ namespace com.espertech.esper.core.service
                     continue;
                 }
 
-                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     handle.StatementHandle.MetricsHandle.Call(
                         _services.MetricsReportingService.PerformanceCollector,
@@ -1082,7 +1199,7 @@ namespace com.espertech.esper.core.service
                 }
                 else
                 {
-                    if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsRouteThreading))
+                    if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsRouteThreading))
                     {
                         _services.ThreadingService.SubmitRoute(
                             new RouteUnitSingle(this, handleCallback, theEvent, version).Run);
@@ -1106,7 +1223,7 @@ namespace com.espertech.esper.core.service
                 var handle = entry.Key;
                 var callbackList = entry.Value;
 
-                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     var count = 1;
                     if (callbackList is ICollection)
@@ -1119,7 +1236,7 @@ namespace com.espertech.esper.core.service
                 }
                 else
                 {
-                    if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsRouteThreading))
+                    if ((ThreadingOption.IsThreadingEnabledValue) && (_services.ThreadingService.IsRouteThreading))
                     {
                         _services.ThreadingService.SubmitRoute(
                             new RouteUnitMultiple(this, callbackList, theEvent, handle, version).Run);
@@ -1151,7 +1268,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (handle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -1212,7 +1329,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (handle.AgentInstanceHandle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (handle.AgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -1261,7 +1378,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (handle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -1330,7 +1447,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (handle.StatementAgentInstanceLock.WriteLock.Acquire())
+                using (handle.StatementAgentInstanceLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -1489,7 +1606,7 @@ namespace com.espertech.esper.core.service
             VariableMetaData metaData = _services.VariableService.GetVariableMetaData(variableName);
             CheckVariable(variableName, metaData, true, false);
 
-            using(_services.VariableService.ReadWriteLock.WriteLock.Acquire())
+            using(_services.VariableService.ReadWriteLock.AcquireWriteLock())
             {
                 _services.VariableService.CheckAndWrite(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID, variableValue);
                 _services.VariableService.Commit();
@@ -1872,13 +1989,15 @@ namespace com.espertech.esper.core.service
             if (_threadLocalData != null)
             {
                 _threadLocalData.Dispose();
-                _threadLocalData = ThreadLocalManager.Create(CreateLocalData);            }
+                _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
+            }
         }
     
         private void InitThreadLocals()
         {
             RemoveFromThreadLocals();
-            _threadLocalData = ThreadLocalManager.Create(CreateLocalData);        }
+            _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
+        }
 
         private void CheckVariable(String variableName, VariableMetaData metaData, bool settable, bool requireContextPartitioned)
         {
@@ -1914,7 +2033,7 @@ namespace com.espertech.esper.core.service
             }
 
             // set values
-            using (_services.VariableService.ReadWriteLock.WriteLock.Acquire())
+            using (_services.VariableService.ReadWriteLock.AcquireWriteLock())
             {
                 foreach (var entry in variableValues)
                 {

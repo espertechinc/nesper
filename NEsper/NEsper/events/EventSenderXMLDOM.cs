@@ -94,7 +94,7 @@ namespace com.espertech.esper.events
             }
             else
             {
-                if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
+                if ((ThreadingOption.IsThreadingEnabledValue) && (_threadingService.IsInboundThreading))
                 {
                     _threadingService.SubmitInbound(new InboundUnitSendWrapped(theEvent, _runtimeEventSender).Run);
                 }

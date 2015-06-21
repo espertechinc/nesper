@@ -116,7 +116,7 @@ namespace com.espertech.esper.filter
                 }
 
                 // Look up in hashtable the set of not-in evaluators
-                using (_constantsMapRwLock.ReadLock.Acquire())
+                using (_constantsMapRwLock.AcquireReadLock())
                 {
                     ICollection<EventEvaluator> evalNotMatching = _constantsMap.Get(attributeValue);
 

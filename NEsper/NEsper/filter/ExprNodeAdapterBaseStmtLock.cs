@@ -35,7 +35,7 @@ namespace com.espertech.esper.filter
     
         public override bool Evaluate(EventBean theEvent)
         {
-            using(EvaluatorContext.AgentInstanceLock.WriteLock.Acquire())
+            using(EvaluatorContext.AgentInstanceLock.AcquireWriteLock())
             {
                 _variableService.SetLocalVersion();
                 return EvaluatePerStream(new[] {theEvent});

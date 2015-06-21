@@ -75,7 +75,7 @@ namespace com.espertech.esper.filter
                 i => i.QFilterBoolean(this),
                 i => i.AFilterBoolean()))
             {
-                using (_constantsMapRwLock.ReadLock.Acquire())
+                using (_constantsMapRwLock.AcquireReadLock())
                 {
                     if (InstrumentationHelper.ENABLED)
                     {

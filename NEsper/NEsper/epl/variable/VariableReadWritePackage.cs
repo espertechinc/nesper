@@ -204,7 +204,7 @@ namespace com.espertech.esper.epl.variable
             // We obtain a write lock global to the variable space
             // Since expressions can contain variables themselves, these need to be unchangeable for the duration
             // as there could be multiple statements that do "var1 = var1 + 1".
-            using(variableService.ReadWriteLock.WriteLock.Acquire())
+            using(variableService.ReadWriteLock.AcquireWriteLock())
             {
                 try
                 {

@@ -360,6 +360,12 @@ namespace com.espertech.esper.compat.collections
                 yield return entry.Value;
         }
 
+        public void AddTo(ICollection<T> collection)
+        {
+            for (var entry = _entryListHead.Next; entry != null; entry = entry.Next)
+                collection.Add(entry.Value);
+        }
+
         public void ForEach(Action<T> action)
         {
             for (var entry = _entryListHead.Next; entry != null; entry = entry.Next)

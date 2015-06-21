@@ -34,6 +34,9 @@ namespace com.espertech.esper.compat.threading
             _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
             ReadLock = new CommonReadLock(this);
             WriteLock = new CommonWriteLock(this);
+
+            _rDisposable = new TrackedDisposable(ReleaseReaderLock);
+            _wDisposable = new TrackedDisposable(ReleaseWriterLock);
 #endif
         }
 
@@ -48,6 +51,33 @@ namespace com.espertech.esper.compat.threading
         /// </summary>
         /// <value></value>
         public ILockable WriteLock { get;  private set; }
+
+        private readonly IDisposable _rDisposable;
+        private readonly IDisposable _wDisposable;
+
+        public IDisposable AcquireReadLock()
+        {
+#if MONO
+            throw new NotSupportedException(ExceptionText);
+#else
+            if (_rwLock.TryEnterReadLock(BaseLock.RLockTimeout))
+                return _rDisposable;
+
+            throw new TimeoutException("ReaderWriterLock timeout expired");
+#endif
+        }
+
+        public IDisposable AcquireWriteLock()
+        {
+#if MONO
+            throw new NotSupportedException(ExceptionText);
+#else
+            if (_rwLock.TryEnterWriteLock(BaseLock.WLockTimeout))
+                return _wDisposable;
+
+            throw new TimeoutException("ReaderWriterLock timeout expired");
+#endif
+        }
 
         /// <summary>
         /// Indicates if the writer lock is held.
@@ -67,7 +97,7 @@ namespace com.espertech.esper.compat.threading
         /// <value><c>true</c> if trace; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
-        
+
         /// <summary>
         /// Acquires the reader lock.
         /// </summary>
@@ -77,43 +107,12 @@ namespace com.espertech.esper.compat.threading
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-#if PERFORMANCE_TUNING
-            var counterIn = PerformanceObserverWin.GetCounter();
-            var hadWriteLock = HasWriteLock;
-#endif
+            if (_rwLock.TryEnterReadLock(timeout))
+                return;
 
-            if (!_rwLock.TryEnterReadLock(timeout))
-            {
-                throw new TimeoutException("ReaderWriterLock timeout expired");
-            }
-
-#if PERFORMANCE_TUNING
-            var counter = PerformanceObserverWin.GetCounter() - counterIn;
-            if (counter > 5000)
-            {
-                Console.WriteLine("!! {0} | {1}", counter, hadWriteLock);
-            }
-
-            HasReadLock = true;
-
-            Interlocked.Increment(ref ReadAcquireCounter);
-            Interlocked.Add(ref ReadAcquireCycles, counter);
-#endif
+            throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
-
-#if PERFORMANCE_TUNING
-        public static long ReadAcquireCounter;
-        public static long ReadAcquireCycles;
-        public static long WriteAcquireCounter;
-        public static long WriteAcquireCycles;
-
-        public bool HasReadLock;
-        public bool HasWriteLock;
-
-        public long TimeAcquire;
-        public long TimeRelease;
-#endif
 
         /// <summary>
         /// Acquires the writer lock.
@@ -124,22 +123,10 @@ namespace com.espertech.esper.compat.threading
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-#if PERFORMANCE_TUNING
-            var counterIn = PerformanceObserverWin.GetCounter();
-#endif
+            if (_rwLock.TryEnterWriteLock(timeout))
+                return;
 
-            if (!_rwLock.TryEnterWriteLock(timeout))
-            {
-                throw new TimeoutException("ReaderWriterLock timeout expired");
-            }
-
-#if PERFORMANCE_TUNING
-            HasWriteLock = true;
-
-            long counter = (TimeAcquire = PerformanceObserverWin.GetCounter()) - counterIn;
-            Interlocked.Increment(ref WriteAcquireCounter);
-            Interlocked.Add(ref WriteAcquireCycles, counter);
-#endif
+            throw new TimeoutException("ReaderWriterLock timeout expired");
 #endif
         }
 
@@ -152,9 +139,6 @@ namespace com.espertech.esper.compat.threading
             throw new NotSupportedException(ExceptionText);
 #else
             _rwLock.ExitReadLock();
-#if PERFORMANCE_TUNING
-            HasReadLock = false;
-#endif
 #endif
         }
 
@@ -167,16 +151,6 @@ namespace com.espertech.esper.compat.threading
             throw new NotSupportedException(ExceptionText);
 #else
             _rwLock.ExitWriteLock();
-
-#if PERFORMANCE_TUNING
-            HasWriteLock = false;
-            long counter = PerformanceObserverWin.GetCounter() - TimeAcquire;
-            if (counter > 10000)
-            {
-                Console.WriteLine("%% => {0}", counter);
-                Console.WriteLine(new StackTrace());
-            }
-#endif
 #endif
         }
     }

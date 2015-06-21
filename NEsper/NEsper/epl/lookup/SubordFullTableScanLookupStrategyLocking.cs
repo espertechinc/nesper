@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.lookup
     
         private ICollection<EventBean> LookupInternal()
         {
-            using(_statementLock.ReadLock.Acquire())
+            using(_statementLock.AcquireReadLock())
             {
                 var result = new ArrayDeque<EventBean>();
                 foreach (EventBean eventBean in _contents)

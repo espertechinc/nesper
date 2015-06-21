@@ -31,7 +31,7 @@ namespace com.espertech.esper.filter
 
         public override FilterSet Take(ICollection<String> statementId)
         {
-            using(_iLock.WriteLock.Acquire())
+            using(_iLock.AcquireWriteLock())
             {
                 return base.TakeInternal(statementId);
             }
@@ -39,7 +39,7 @@ namespace com.espertech.esper.filter
 
         public override void Apply(FilterSet filterSet)
         {
-            using(_iLock.WriteLock.Acquire())
+            using(_iLock.AcquireWriteLock())
             {
                 base.ApplyInternal(filterSet);
             }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.filter
 
         public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 return base.EvaluateInternal(theEvent, matches);
             }
@@ -55,7 +55,7 @@ namespace com.espertech.esper.filter
 
         public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, String statementId)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 return base.EvaluateInternal(theEvent, matches, statementId);
             }
@@ -63,7 +63,7 @@ namespace com.espertech.esper.filter
 
         public override void Add(FilterValueSet filterValueSet, FilterHandle callback)
         {
-            using (_iLock.WriteLock.Acquire())
+            using (_iLock.AcquireWriteLock())
             {
                 base.AddInternal(filterValueSet, callback);
             }
@@ -71,7 +71,7 @@ namespace com.espertech.esper.filter
 
         public override void Remove(FilterHandle callback)
         {
-            using (_iLock.WriteLock.Acquire())
+            using (_iLock.AcquireWriteLock())
             {
                 base.RemoveInternal(callback);
             }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.filter
 
         public override void RemoveType(EventType type)
         {
-            using (_iLock.WriteLock.Acquire())
+            using (_iLock.AcquireWriteLock())
             {
                 base.RemoveTypeInternal(type);
             }

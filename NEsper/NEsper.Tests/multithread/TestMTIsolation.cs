@@ -44,7 +44,7 @@ namespace com.espertech.esper.multithread
             var future = new Future<bool>[numThreads];
 
             var sharedStartLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            using (sharedStartLock.WriteLock.Acquire())
+            using (sharedStartLock.AcquireWriteLock())
             {
                 for (int i = 0; i < numThreads; i++)
                 {

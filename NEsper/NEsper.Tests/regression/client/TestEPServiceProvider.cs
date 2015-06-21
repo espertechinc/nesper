@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.client
         [Test]
         public void TestUnit()
         {
-            using(_epService.EngineInstanceWideLock.WriteLock.Acquire())
+            using(_epService.EngineInstanceWideLock.AcquireWriteLock())
             {
             }
         }

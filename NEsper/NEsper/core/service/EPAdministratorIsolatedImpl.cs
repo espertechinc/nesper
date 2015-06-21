@@ -76,7 +76,7 @@ namespace com.espertech.esper.core.service
     
         public void AddStatement(EPStatement[] stmt)
         {
-            using (_unisolatedServices.EventProcessingRwLock.WriteLock.Acquire())
+            using (_unisolatedServices.EventProcessingRwLock.AcquireWriteLock())
             {
                 try
                 {
@@ -152,7 +152,7 @@ namespace com.espertech.esper.core.service
     
         public void RemoveStatement(IList<EPStatement> stmt) {
     
-            using(_unisolatedServices.EventProcessingRwLock.WriteLock.Acquire())
+            using(_unisolatedServices.EventProcessingRwLock.AcquireWriteLock())
             {
                 try
                 {

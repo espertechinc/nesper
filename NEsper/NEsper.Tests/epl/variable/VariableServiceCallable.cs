@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.variable
             ReadAll(indexes, readResults, mark);
     
             // Start a write cycle for the write we are getting an exclusive write lock
-            using (_variableService.ReadWriteLock.WriteLock.Acquire()) {
+            using (_variableService.ReadWriteLock.AcquireWriteLock()) {
                 // Write every second of the variables
                 for (int i = 0; i < indexes.Length; i++) {
                     int variableNum = indexes[i];

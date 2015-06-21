@@ -334,7 +334,7 @@ namespace com.espertech.esper.core.service
                 // create metadata
                 StatementMetadata statementMetadata = _services.StatementMetadataFactory.Create(new StatementMetadataFactoryContext(statementName, statementId, statementContext, statementSpec, expression, isPattern, optionalModel));
 
-                using (_eventProcessingRwLock.WriteLock.Acquire())
+                using (_eventProcessingRwLock.AcquireWriteLock())
                 {
                     try
                     {
@@ -600,7 +600,7 @@ namespace com.espertech.esper.core.service
 
                 // Acquire a lock for event processing as threads may be in the views used by the statement
                 // and that could conflict with the destroy of views
-                using (_eventProcessingRwLock.WriteLock.Acquire())
+                using (_eventProcessingRwLock.AcquireWriteLock())
                 {
                     var desc = _stmtIdToDescMap.Get(statementId);
                     if (desc == null)
@@ -629,7 +629,7 @@ namespace com.espertech.esper.core.service
             // and that could conflict with the destroy of views
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QEngineManagementStmtCompileStart(_services.EngineURI, statementId, desc.EpStatement.Name, desc.EpStatement.Text, _services.SchedulingService.Time); }
 
-            using (_eventProcessingRwLock.WriteLock.Acquire())
+            using (_eventProcessingRwLock.AcquireWriteLock())
             {
                 try
                 {
@@ -729,7 +729,7 @@ namespace com.espertech.esper.core.service
                 // and that could conflict with the destroy of views
                 try
                 {
-                    using (_eventProcessingRwLock.WriteLock.Acquire())
+                    using (_eventProcessingRwLock.AcquireWriteLock())
                     {
                         EPStatementDesc desc = _stmtIdToDescMap.Get(statementId);
                         if (desc == null)
@@ -778,7 +778,7 @@ namespace com.espertech.esper.core.service
             {
                 // Acquire a lock for event processing as threads may be in the views used by the statement
                 // and that could conflict with the destroy of views
-                using (_eventProcessingRwLock.WriteLock.Acquire())
+                using (_eventProcessingRwLock.AcquireWriteLock())
                 {
                     EPStatementDesc desc = _stmtIdToDescMap.Get(statementId);
                     if (desc == null)

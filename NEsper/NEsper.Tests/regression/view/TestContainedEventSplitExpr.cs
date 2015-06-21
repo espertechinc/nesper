@@ -78,10 +78,26 @@ namespace com.espertech.esper.regression.view
 	        Assert.AreEqual(eventRepresentationEnum.GetOutputClass(), stmt.EventType.UnderlyingType);
 
 	        SendSentenceEvent(eventRepresentationEnum, "I am testing this code");
-            EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "I" }, new object[] { "am" }, new object[] { "testing" }, new object[] { "this" }, new object[] { "code" } });
+            EPAssertionUtil.AssertPropsPerRow(
+                _listener.GetAndResetLastNewData(), fields,
+                new object[][]
+                {
+                    new object[] { "I" }, 
+                    new object[] { "am" }, 
+                    new object[] { "testing" }, 
+                    new object[] { "this" }, 
+                    new object[] { "code" }
+                });
 
 	        SendSentenceEvent(eventRepresentationEnum, "the second event");
-            EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "the" }, new object[] { "second" }, new object[] { "event" } });
+            EPAssertionUtil.AssertPropsPerRow(
+                _listener.GetAndResetLastNewData(), fields,
+                new object[][]
+                {
+                    new object[] { "the" }, 
+                    new object[] { "second" }, 
+                    new object[] { "event" }
+                });
 
 	        stmt.Dispose();
 
@@ -93,7 +109,14 @@ namespace com.espertech.esper.regression.view
 	        stmt.AddListener(_listener);
 
 	        SendSentenceEvent(eventRepresentationEnum, "the third event");
-            EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "the" }, new object[] { "third" }, new object[] { "event" } });
+            EPAssertionUtil.AssertPropsPerRow(
+                _listener.GetAndResetLastNewData(), fields, 
+                new object[][]
+                {
+                    new object[] { "the" }, 
+                    new object[] { "third" }, 
+                    new object[] { "event" }
+                });
 
 	        stmt.Dispose();
 
@@ -111,7 +134,13 @@ namespace com.espertech.esper.regression.view
 	            Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
 	            _epService.EPRuntime.SendEvent(Collections.EmptyDataMap, "SentenceEvent");
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "wordOne" }, new object[] { "wordTwo" } });
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    _listener.GetAndResetLastNewData(), fields,
+                    new object[][]
+                    {
+                        new object[] { "wordOne" },
+                        new object[] { "wordTwo" }
+                    });
 
 	            stmt.Dispose();
 	        }
@@ -123,7 +152,14 @@ namespace com.espertech.esper.regression.view
 	        Assert.AreEqual("CharacterEvent", stmt.EventType.Name);
 
 	        SendSentenceEvent(eventRepresentationEnum, "I am");
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.GetAndResetLastNewData(), "char".Split(','), new object[][] { new object[] { "I" }, new object[] { "a" }, new object[] { "m" } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                _listener.GetAndResetLastNewData(), "char".Split(','),
+                new object[][]
+                {
+                    new object[] { "I" }, 
+                    new object[] { "a" }, 
+                    new object[] { "m" }
+                });
 
 	        stmt.Dispose();
 
@@ -134,7 +170,14 @@ namespace com.espertech.esper.regression.view
 	        Assert.AreEqual("WordEvent", stmt.EventType.Name);
 
 	        SendSentenceEvent(eventRepresentationEnum, "another test sentence");
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "another" }, new object[] { "test" }, new object[] { "sentence" } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                _listener.GetAndResetLastNewData(), fields, 
+                new object[][]
+                {
+                    new object[] { "another" }, 
+                    new object[] { "test" },
+                    new object[] { "sentence" }
+                });
 
 	        stmt.Dispose();
 
@@ -148,9 +191,17 @@ namespace com.espertech.esper.regression.view
 
                 var rows = new object[][] { new object[] { "this" }, new object[] { "is" }, new object[] { "collection" } };
 	            _epService.EPRuntime.SendEvent(new ObjectArrayEvent(rows));
-                EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "this" }, new object[] { "is" }, new object[] { "collection" } });
+                EPAssertionUtil.AssertPropsPerRow(
+                    _listener.GetAndResetLastNewData(), fields,
+                    new object[][]
+                    {
+                        new object[] { "this" }, 
+                        new object[] { "is" }, 
+                        new object[] { "collection" }
+                    });
 	        }
-	        else {
+	        else
+            {
                 _epService.EPAdministrator.Configuration.AddEventType<CollectionEvent<IDictionary<string, object>>>("CollectionEvent");
 	            stmtText = eventRepresentationEnum.GetAnnotationText() + " select * from CollectionEvent[someCollection@type(WordEvent)]";
 	            stmt = _epService.EPAdministrator.CreateEPL(stmtText);
@@ -163,7 +214,14 @@ namespace com.espertech.esper.regression.view
 	            coll.Add(Collections.SingletonDataMap("word", "collection"));
 
 	            _epService.EPRuntime.SendEvent(new CollectionEvent<IDictionary<string, object>>(coll));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "this" }, new object[] { "is" }, new object[] { "collection" } });
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    _listener.GetAndResetLastNewData(), fields, 
+                    new object[][]
+                    {
+                        new object[] { "this" }, 
+                        new object[] { "is" }, 
+                        new object[] { "collection" }
+                    });
 	        }
 
 	        // invalid: event type not found

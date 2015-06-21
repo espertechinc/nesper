@@ -121,7 +121,7 @@ namespace com.espertech.esper.compat.threading
             }
 
             _threadData = lThreadData = new StaticData();
-            using (ThreadDataListLock.WriteLock.Acquire())
+            using (ThreadDataListLock.AcquireWriteLock())
             {
                 ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
             }
@@ -135,7 +135,7 @@ namespace com.espertech.esper.compat.threading
             if (lThreadData == null)
             {
                 _threadData = lThreadData = new StaticData();
-                using (ThreadDataListLock.WriteLock.Acquire())
+                using (ThreadDataListLock.AcquireWriteLock())
                 {
                     ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
                 }
@@ -152,7 +152,7 @@ namespace com.espertech.esper.compat.threading
         private static StaticData CreateThreadData(int index)
         {
             StaticData lThreadData = _threadData = new StaticData();
-            using (ThreadDataListLock.WriteLock.Acquire())
+            using (ThreadDataListLock.AcquireWriteLock())
             {
                 ThreadDataList.AddLast(new WeakReference<StaticData>(_threadData));
             }
@@ -242,7 +242,7 @@ namespace com.espertech.esper.compat.threading
         {
             int lInstance = _instanceId;
 
-            using (ThreadDataListLock.ReadLock.Acquire())
+            using (ThreadDataListLock.AcquireReadLock())
             {
                 LinkedList<WeakReference<StaticData>>.Enumerator threadDataEnum =
                     ThreadDataList.GetEnumerator();

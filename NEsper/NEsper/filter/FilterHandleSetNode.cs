@@ -80,7 +80,7 @@ namespace com.espertech.esper.filter
         /// <param name="matches">is the list of callbacks to add to for any matches found</param>
         public void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            using(_nodeRwLock.ReadLock.Acquire())
+            using(_nodeRwLock.AcquireReadLock())
             {
                 if (InstrumentationHelper.ENABLED)
                 {
@@ -114,7 +114,7 @@ namespace com.espertech.esper.filter
                 }
 
                 // Add each filter callback stored in this node to the matching list
-                _callbackSet.ForEach(matches.Add);
+                _callbackSet.AddTo(matches);
 
                 //foreach (FilterHandle filterCallback in _callbackSet)
                 //{

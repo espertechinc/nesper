@@ -116,7 +116,7 @@ namespace com.espertech.esper.epl.metric
                                  int numInput)
         {
             StatementMetricArray array = _groupMetrics[handle.GroupNum];
-            using (array.RWLock.ReadLock.Acquire())
+            using (array.RWLock.AcquireReadLock())
             {
                 StatementMetric metric = array.GetAddMetric(handle.Index);
                 metric.IncrementTime(cpu, wall);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.epl.metric
                                   int numRStream)
         {
             StatementMetricArray array = _groupMetrics[handle.GroupNum];
-            using (array.RWLock.ReadLock.Acquire())
+            using (array.RWLock.AcquireReadLock())
             {
                 StatementMetric metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);

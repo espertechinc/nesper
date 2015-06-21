@@ -78,6 +78,8 @@ namespace com.espertech.esper.core.context.mgr
         public void Destroy(FilterService filterService)
         {
             filterService.Remove(_filterHandle);
+            long filtersVersion = _agentInstanceContextCreateContext.StatementContext.FilterService.FiltersVersion;
+            _agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
 
         public EPStatementHandleCallback FilterHandle

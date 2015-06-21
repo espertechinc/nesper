@@ -32,7 +32,7 @@ namespace com.espertech.esper.filter
 
         public override FilterSet Take(ICollection<String> statementId)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 return base.TakeInternal(statementId);
             }
@@ -40,7 +40,7 @@ namespace com.espertech.esper.filter
 
         public override void Apply(FilterSet filterSet)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 base.ApplyInternal(filterSet);
             }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.filter
 
         public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 return base.EvaluateInternal(theEvent, matches);
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.filter
 
         public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, String statementId)
         {
-            using (_iLock.ReadLock.Acquire())
+            using (_iLock.AcquireReadLock())
             {
                 return base.EvaluateInternal(theEvent, matches, statementId);
             }

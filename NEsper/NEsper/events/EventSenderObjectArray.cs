@@ -56,7 +56,7 @@ namespace com.espertech.esper.events
             var arr = (Object[]) theEvent;
             EventBean objectArrayEvent = _eventAdapterService.AdapterForTypedObjectArray(arr, _objectArrayEventType);
 
-            if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_threadingService.IsInboundThreading))
             {
                 _threadingService.SubmitInbound(new InboundUnitSendWrapped(objectArrayEvent, _runtimeEventSender).Run);
             }

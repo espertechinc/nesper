@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.lookup
     
         public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
         {
-            using(_statementLock.ReadLock.Acquire())
+            using(_statementLock.AcquireReadLock())
             {
                 ICollection<EventBean> result = _inner.Lookup(events, context);
                 if (result != null) {

@@ -57,7 +57,7 @@ namespace com.espertech.esper.events
             var map = (DataMap)theEvent;
             EventBean mapEvent = _eventAdapterService.AdapterForTypedMap(map, _mapEventType);
 
-            if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_threadingService.IsInboundThreading))
             {
                 _threadingService.SubmitInbound(() => _runtimeEventSender.ProcessWrappedEvent(mapEvent));
             }

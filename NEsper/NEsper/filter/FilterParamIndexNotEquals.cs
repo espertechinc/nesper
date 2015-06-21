@@ -43,7 +43,7 @@ namespace com.espertech.esper.filter
                 }
 
                 // Look up in hashtable
-                using (ConstantsMapRwLock.ReadLock.Acquire())
+                using (ConstantsMapRwLock.AcquireReadLock())
                 {
                     foreach (var entry in ConstantsMap)
                     {

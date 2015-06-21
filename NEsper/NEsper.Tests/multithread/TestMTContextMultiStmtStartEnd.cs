@@ -20,7 +20,7 @@ namespace com.espertech.esper.multithread
     public class TestMTContextMultiStmtStartEnd
     {
         [Test]
-        public void fTestContextMultistmt()
+        public void TestContextMultistmt()
         {
             RunAssertion(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY);
             RunAssertion(ConfigurationEngineDefaults.FilterServiceProfile.READWRITE);

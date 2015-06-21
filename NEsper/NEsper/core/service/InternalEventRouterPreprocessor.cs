@@ -187,7 +187,7 @@ namespace com.espertech.esper.core.service
             // evaluate
             Object[] values;
             if (entry.HasSubselect) {
-                using(entry.AgentInstanceLock.WriteLock.Acquire()) {
+                using(entry.AgentInstanceLock.AcquireWriteLock()) {
                     values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext);
                 }
             }

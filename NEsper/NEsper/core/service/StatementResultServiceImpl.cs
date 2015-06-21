@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -66,8 +67,11 @@ namespace com.espertech.esper.core.service
         private readonly ICollection<StatementResultListener> _statementOutputHooks;
 
         /// <summary>Buffer for holding dispatchable events. </summary>
-        protected IThreadLocal<LinkedList<UniformPair<EventBean[]>>> LastResults =
+        private IThreadLocal<LinkedList<UniformPair<EventBean[]>>> _lastResults =
             ThreadLocalManager.Create(() => new LinkedList<UniformPair<EventBean[]>>());
+
+        [ThreadStatic]
+        private static Pair<StatementResultServiceImpl, LinkedList<UniformPair<EventBean[]>>> MetaLastResults;
 
         /// <summary>
         /// Ctor.
@@ -206,41 +210,68 @@ namespace com.espertech.esper.core.service
             _isMakeNatural = true;
         }
 
+#if NET45
+        //[MethodImplOptions.AggressiveInlining]
+#endif
+        private LinkedList<UniformPair<EventBean[]>> MetaLast()
+        {
+#if false
+            return _lastResults.GetOrCreate();
+#else
+            if (MetaLastResults == null)
+            {
+                LinkedList<UniformPair<EventBean[]>> metaLast;
+                MetaLastResults = new Pair<StatementResultServiceImpl, LinkedList<UniformPair<EventBean[]>>>(
+                    this, metaLast = _lastResults.GetOrCreate());
+                return metaLast;
+            }
+            else if (MetaLastResults.First == this)
+            {
+                return MetaLastResults.Second;
+            }
+            else
+            {
+                return MetaLastResults.Second = _lastResults.GetOrCreate();
+            }
+#endif
+        }
+
         // Called by OutputProcessView
         public void Indicate(UniformPair<EventBean[]> results)
         {
             if (results != null)
             {
-                if ((MetricReportingPath.IsMetricsEnabled) && (_statementMetricHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabledValue) && (_statementMetricHandle.IsEnabled))
                 {
                     int numIStream = (results.First != null) ? results.First.Length : 0;
                     int numRStream = (results.Second != null) ? results.Second.Length : 0;
                     _metricReportingService.AccountOutput(_statementMetricHandle, numIStream, numRStream);
                 }
 
+                var lastResults = MetaLast();
+
                 if ((results.First != null) && (results.First.Length != 0))
                 {
-                    LastResults.GetOrCreate().AddLast(results);
+                    lastResults.AddLast(results);
                 }
                 else if ((results.Second != null) && (results.Second.Length != 0))
                 {
-                    LastResults.GetOrCreate().AddLast(results);
+                    lastResults.AddLast(results);
                 }
             }
         }
 
         public void Execute()
         {
-            var dispatches = LastResults.GetOrCreate();
-
-            UniformPair<EventBean[]> events = EventBeanUtility.FlattenList(dispatches);
+            var dispatches = MetaLast();
+            var events = EventBeanUtility.FlattenList(dispatches);
 
             if (_isDebugEnabled)
             {
                 ViewSupport.DumpUpdateParams(".execute", events);
             }
 
-            if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsOutboundThreading))
+            if ((ThreadingOption.IsThreadingEnabledValue) && (_threadingService.IsOutboundThreading))
             {
                 _threadingService.SubmitOutbound(new OutboundUnitRunnable(events, this).Run);
             }
@@ -431,7 +462,7 @@ namespace com.espertech.esper.core.service
         /// </summary>
         public void DispatchOnStop()
         {
-            var dispatches = LastResults.GetOrCreate();
+            var dispatches = MetaLast();
             if (dispatches.IsEmpty())
             {
                 return;
@@ -439,8 +470,9 @@ namespace com.espertech.esper.core.service
 
             Execute();
 
-            LastResults = ThreadLocalManager.Create(
+            _lastResults = ThreadLocalManager.Create(
                 () => new LinkedList<UniformPair<EventBean[]>>());
+            MetaLastResults = null;
         }
     }
 }

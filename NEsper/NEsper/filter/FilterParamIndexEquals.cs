@@ -44,7 +44,7 @@ namespace com.espertech.esper.filter
 
                 // Look up in hashtable
                 EventEvaluator evaluator = null;
-                using (ConstantsMapRwLock.ReadLock.Acquire())
+                using (ConstantsMapRwLock.AcquireReadLock())
                 {
                     evaluator = ConstantsMap.Get(attributeValue);
                 }

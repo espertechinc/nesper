@@ -280,7 +280,7 @@ namespace com.espertech.esper.core.context.mgr
             foreach (var instance in instances)
             {
                 var instanceLock = instance.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
-                using (instanceLock.WriteLock.Acquire())
+                using (instanceLock.AcquireWriteLock())
                 {
                     foreach (var eventBean in instance.FinalView)
                     {

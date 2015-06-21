@@ -187,7 +187,7 @@ namespace com.espertech.esper.epl.named
 	            return coll.GetEnumerator();
 	        }
 
-	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReadLock.Acquire())
+	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock())
 	        {
 	            IEnumerator<EventBean> en = Parent.GetEnumerator();
 	            if (!en.MoveNext())
@@ -219,7 +219,7 @@ namespace com.espertech.esper.epl.named
                 return _tailView.RevisionProcessor.GetSnapshot(_agentInstanceContext.EpStatementAgentInstanceHandle, Parent);
 	        }
 
-	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReadLock.Acquire())
+	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock())
 	        {
 	            try
 	            {
@@ -234,7 +234,7 @@ namespace com.espertech.esper.epl.named
 
 	    public EventBean[] SnapshotUpdate(FilterSpecCompiled filter, ExprNode optionalWhereClause, EventBeanUpdateHelper updateHelper, Attribute[] annotations)
         {
-	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReadLock.Acquire())
+	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock())
 	        {
 	            try
 	            {
@@ -265,7 +265,7 @@ namespace com.espertech.esper.epl.named
 
 	    public EventBean[] SnapshotDelete(FilterSpecCompiled filter, ExprNode filterExpr, Attribute[] annotations)
         {
-	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReadLock.Acquire())
+	        using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock())
 	        {
 	            try
 	            {

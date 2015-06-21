@@ -266,7 +266,7 @@ namespace com.espertech.esper.dataflow.ops
 
             EventBean theEvent = _adapterFactories[originatingStream].MakeAdapter(row);
 
-            using(_agentInstanceContext.StatementContext.DefaultAgentInstanceLock.WriteLock.Acquire())
+            using(_agentInstanceContext.StatementContext.DefaultAgentInstanceLock.AcquireWriteLock())
             {
                 try
                 {

@@ -37,7 +37,7 @@ namespace com.espertech.esper.filter
                 i => i.AFilterReverseIndex(returnValue.Value)))
             {
                 EventEvaluator evaluator = null;
-                using (ConstantsMapRwLock.ReadLock.Acquire())
+                using (ConstantsMapRwLock.AcquireReadLock())
                 {
                     evaluator = ConstantsMap.Get(attributeValue);
                 }

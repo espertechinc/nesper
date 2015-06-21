@@ -39,6 +39,16 @@ namespace com.espertech.esper.compat.threading
         /// <value></value>
         public ILockable WriteLock { get;  private set; }
 
+        public IDisposable AcquireReadLock()
+        {
+            return ReadLock.Acquire();
+        }
+
+        public IDisposable AcquireWriteLock()
+        {
+            return WriteLock.Acquire();
+        }
+
 #if DEBUG
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="StandardReaderWriterLock"/> is trace.

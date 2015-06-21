@@ -33,7 +33,8 @@ namespace com.espertech.esper.filter
             : base(filterOperator, lookupable)
         {
             _constantsMap = new OrderedDictionary<Object, EventEvaluator>();
-            _constantsMapRwLock = readWriteLock;
+            _constantsMapRwLock = readWriteLock;
+
             if ((filterOperator != FilterOperator.GREATER) &&
                 (filterOperator != FilterOperator.GREATER_OR_EQUAL) &&
                 (filterOperator != FilterOperator.LESS) &&
@@ -85,7 +86,7 @@ namespace com.espertech.esper.filter
                 var filterOperator = FilterOperator;
 
                 // Look up in table
-                using(_constantsMapRwLock.ReadLock.Acquire())
+                using(_constantsMapRwLock.AcquireReadLock())
                 {
                     // Get the head or tail end of the map depending on comparison type
                     IDictionary<Object, EventEvaluator> subMap;

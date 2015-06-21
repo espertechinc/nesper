@@ -41,7 +41,7 @@ namespace com.espertech.esper.core.start
     
                 var ctx = _processorInstance.TailViewInstance.AgentInstanceContext;
                 var ailock = ctx.AgentInstanceLock;
-                using (ailock.WriteLock.Acquire())
+                using (ailock.AcquireWriteLock())
                 {
                     try
                     {

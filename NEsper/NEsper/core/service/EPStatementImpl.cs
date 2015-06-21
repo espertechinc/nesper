@@ -425,7 +425,7 @@ namespace com.espertech.esper.core.service
             }
 
             // Set variable version and acquire the lock first
-            var instanceLockHandler = StatementContext.DefaultAgentInstanceLock.ReadLock.Acquire();
+            var instanceLockHandler = StatementContext.DefaultAgentInstanceLock.AcquireReadLock();
 
             try
             {
@@ -623,7 +623,7 @@ namespace com.espertech.esper.core.service
                 throw new IllegalStateException("Statement is in destroyed state");
             }
 
-            using (StatementContext.DefaultAgentInstanceLock.ReadLock.Acquire())
+            using (StatementContext.DefaultAgentInstanceLock.AcquireReadLock())
             {
                 _statementListenerSet.Events.Add(eventHandler);
                 StatementContext.StatementResultService.SetUpdateListeners(_statementListenerSet, false);

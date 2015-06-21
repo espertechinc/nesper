@@ -12,6 +12,6 @@ namespace com.espertech.esper.util
 {
 public class Version
 {
-public static readonly String VERSION = "5.2.3";
+public static readonly String VERSION = "5.2.4";
 }
 }

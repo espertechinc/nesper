@@ -1,14 +1,17 @@
-﻿namespace com.espertech.esper.compat.threading
+﻿using System;
+
+namespace com.espertech.esper.compat.threading
 {
     public class VoidReaderWriterLock : IReaderWriterLock
     {
+        private static readonly VoidLock Instance = new VoidLock();
+        private static readonly VoidDisposable Disposable = new VoidDisposable();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="VoidReaderWriterLock"/> class.
         /// </summary>
         public VoidReaderWriterLock()
         {
-            ReadLock = new VoidLock();
-            WriteLock = new VoidLock();
         }
 
         #region IReaderWriterLock Members
@@ -16,12 +19,28 @@
         /// <summary>
         /// Gets the read-side lockable
         /// </summary>
-        public ILockable ReadLock { get; set; }
+        public ILockable ReadLock
+        {
+            get { return Instance; }
+        }
 
         /// <summary>
         /// Gets the write-side lockable
         /// </summary>
-        public ILockable WriteLock { get; set; }
+        public ILockable WriteLock
+        {
+            get { return Instance; }
+        }
+
+        public IDisposable AcquireReadLock()
+        {
+            return Disposable;
+        }
+
+        public IDisposable AcquireWriteLock()
+        {
+            return Disposable;
+        }
 
         /// <summary>
         /// Indicates if the writer lock is held.
@@ -33,7 +52,7 @@
             get { return false; }
         }
 
-#if DEBUG
+        #if DEBUG
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="VoidReaderWriterLock"/> is trace.
         /// </summary>

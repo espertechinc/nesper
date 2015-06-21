@@ -43,6 +43,15 @@ namespace com.espertech.esper.compat.threading
         /// <value></value>
         public ILockable WriteLock { get; private set; }
 
+        public IDisposable AcquireReadLock()
+        {
+            return ReadLock.Acquire();
+        }
+
+        public IDisposable AcquireWriteLock()
+        {
+            return WriteLock.Acquire();
+        }
 
         /// <summary>
         /// Indicates if the writer lock is held.

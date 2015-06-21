@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace com.espertech.esper.compat.threading
 {
 	/// <summary>
@@ -7,6 +9,8 @@ namespace com.espertech.esper.compat.threading
 	public class DummyReaderWriterLock
 		: IReaderWriterLock
 	{
+        private static readonly VoidDisposable Disposable = new VoidDisposable();
+
 		/// <summary>
 		/// Constructs a new instance of a DummyReaderWriterLock
 		/// </summary>
@@ -24,6 +28,17 @@ namespace com.espertech.esper.compat.threading
         /// Gets the write-side lockable
         /// </summary>
         public ILockable WriteLock { get; private set; }
+
+        public IDisposable AcquireReadLock()
+        {
+            return Disposable;
+        }
+
+        public IDisposable AcquireWriteLock()
+        {
+            return Disposable;
+        }
+
 
         /// <summary>
         /// Indicates if the writer lock is held.
