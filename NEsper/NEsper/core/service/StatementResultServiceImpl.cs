@@ -70,9 +70,6 @@ namespace com.espertech.esper.core.service
         private IThreadLocal<LinkedList<UniformPair<EventBean[]>>> _lastResults =
             ThreadLocalManager.Create(() => new LinkedList<UniformPair<EventBean[]>>());
 
-        [ThreadStatic]
-        private static Pair<StatementResultServiceImpl, LinkedList<UniformPair<EventBean[]>>> MetaLastResults;
-
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -213,28 +210,6 @@ namespace com.espertech.esper.core.service
 #if NET45
         //[MethodImplOptions.AggressiveInlining]
 #endif
-        private LinkedList<UniformPair<EventBean[]>> MetaLast()
-        {
-#if false
-            return _lastResults.GetOrCreate();
-#else
-            if (MetaLastResults == null)
-            {
-                LinkedList<UniformPair<EventBean[]>> metaLast;
-                MetaLastResults = new Pair<StatementResultServiceImpl, LinkedList<UniformPair<EventBean[]>>>(
-                    this, metaLast = _lastResults.GetOrCreate());
-                return metaLast;
-            }
-            else if (MetaLastResults.First == this)
-            {
-                return MetaLastResults.Second;
-            }
-            else
-            {
-                return MetaLastResults.Second = _lastResults.GetOrCreate();
-            }
-#endif
-        }
 
         // Called by OutputProcessView
         public void Indicate(UniformPair<EventBean[]> results)
@@ -248,7 +223,7 @@ namespace com.espertech.esper.core.service
                     _metricReportingService.AccountOutput(_statementMetricHandle, numIStream, numRStream);
                 }
 
-                var lastResults = MetaLast();
+                var lastResults = _lastResults.GetOrCreate();
 
                 if ((results.First != null) && (results.First.Length != 0))
                 {
@@ -263,7 +238,7 @@ namespace com.espertech.esper.core.service
 
         public void Execute()
         {
-            var dispatches = MetaLast();
+            var dispatches = _lastResults.GetOrCreate();
             var events = EventBeanUtility.FlattenList(dispatches);
 
             if (_isDebugEnabled)
@@ -462,7 +437,7 @@ namespace com.espertech.esper.core.service
         /// </summary>
         public void DispatchOnStop()
         {
-            var dispatches = MetaLast();
+            var dispatches = _lastResults.GetOrCreate();
             if (dispatches.IsEmpty())
             {
                 return;
@@ -472,7 +447,6 @@ namespace com.espertech.esper.core.service
 
             _lastResults = ThreadLocalManager.Create(
                 () => new LinkedList<UniformPair<EventBean[]>>());
-            MetaLastResults = null;
         }
     }
 }

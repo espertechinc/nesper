@@ -74,9 +74,6 @@ namespace com.espertech.esper.core.service
 
         private IThreadLocal<ThreadLocalData> _threadLocalData;
 
-        [ThreadStatic]
-        private static Pair<EPRuntimeImpl, ThreadLocalData> MetaLast;
-
         #region Nested type: ThreadLocalData
 
         /// <summary>
@@ -103,22 +100,7 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-#if false
                 return _threadLocalData.GetOrCreate();
-#else
-                if (MetaLast == null)
-                {
-                    return (MetaLast = new Pair<EPRuntimeImpl, ThreadLocalData>(this, _threadLocalData.GetOrCreate())).Second;
-                }
-                else if (MetaLast.First == this)
-                {
-                    return MetaLast.Second;
-                }
-                else
-                {
-                    return MetaLast.Second = _threadLocalData.GetOrCreate();
-                }
-#endif
             }
         }
 
