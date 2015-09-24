@@ -15,7 +15,7 @@
 
 <!-- Distribution version -->
 <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-<Version Condition=" '$(Version)' == '' ">5.2.5</Version>
+<Version Condition=" '$(Version)' == '' ">5.2.6</Version>
 
 <!-- Build Directories -->
 <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>

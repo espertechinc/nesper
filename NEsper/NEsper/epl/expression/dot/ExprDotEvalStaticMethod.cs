@@ -129,10 +129,10 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 var message = TypeHelper.GetMessageInvocationTarget(
                     _statementName, _staticMethod.Target, _classOrPropertyName, args, e);
-                Log.Error(message, e.InnerException);
+                Log.Error(message, e);
                 if (_rethrowExceptions)
                 {
-                    throw new EPException(message, e.InnerException);
+                    throw new EPException(message, e);
                 }
             }
 
