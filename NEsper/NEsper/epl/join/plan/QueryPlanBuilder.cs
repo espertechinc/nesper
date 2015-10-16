@@ -112,7 +112,7 @@ namespace com.espertech.esper.epl.join.plan
 
 	                if (log.IsDebugEnabled)
 	                {
-	                    log.Debug(methodName + "N-Stream inner-join queryPlan=" + queryPlanX);
+	                    log.Debug(methodName + "Count-Stream inner-join queryPlan=" + queryPlanX);
 	                }
 	                return queryPlanX;
 	            }

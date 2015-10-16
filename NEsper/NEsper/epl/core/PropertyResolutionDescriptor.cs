@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.core
 	    public String PropertyName { get; private set; }
 
 	    /// <summary> Returns the number of the stream the property was found in.</summary>
-	    /// <returns> stream offset number Starting at zero to N-1 where N is the number of streams
+	    /// <returns> stream offset number Starting at zero to Count-1 where Count is the number of streams
 	    /// </returns>
 	    public int StreamNum { get; private set; }
 

@@ -28,6 +28,7 @@ using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.epl.variable;
 using com.espertech.esper.plugin;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
@@ -107,7 +108,8 @@ namespace com.espertech.esper.epl.parse
 	        IList<ExpressionScriptProvided> scriptExpressions,
 	        ContextDescriptor contextDescriptor,
 	        TableService tableService,
-	        StatementSpecRaw statementSpec)
+	        StatementSpecRaw statementSpec,
+            VariableService variableService)
         {
 	        var model = GetModel(ctx, tokenStream);
 	        var duckType = configurationInformation.EngineDefaults.ExpressionConfig.IsDuckTyping;
@@ -132,6 +134,9 @@ namespace com.espertech.esper.epl.parse
 	            chainX.Add(new ExprChainedSpec(model.OptionalClassIdent, Collections.GetEmptyList<ExprNode>(), true));
 	            chainX.Add(chainSpec);
 	            var dotNodeX = new ExprDotNode(chainX, configurationInformation.EngineDefaults.ExpressionConfig.IsDuckTyping, configurationInformation.EngineDefaults.ExpressionConfig.IsUdfCache);
+                if (dotNodeX.IsVariableOp(variableService)) {
+                    statementSpec.HasVariables = true;
+                }
 	            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(dotNodeX, ctx, astExprNodeMap);
 	            return;
 	        }

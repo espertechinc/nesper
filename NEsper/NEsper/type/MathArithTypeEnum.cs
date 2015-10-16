@@ -168,10 +168,9 @@ namespace com.espertech.esper.type
 
             if (value != MathArithTypeEnum.DIVIDE) {
                 var key = new MultiKeyUntyped(new Object[] {coercedType, value});
-                Computer computer = Computers.Get(key);
+                var computer = Computers.Get(key);
                 if (computer == null) {
-                    throw new ArgumentException("Could not determine process or type " + value + " type " +
-                                                coercedType);
+                    throw new ArgumentException("Could not determine process or type " + value + " type " + coercedType);
                 }
                 return computer;
             }

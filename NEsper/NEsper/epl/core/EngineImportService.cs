@@ -179,6 +179,10 @@ namespace com.espertech.esper.epl.core
         void AddAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction desc) ;
 
         MathContext DefaultMathContext { get; }
+
+        TimeZoneInfo TimeZone { get;  }
+
+        ConfigurationEngineDefaults.ThreadingProfile ThreadingProfile { get; }
     }
 
     internal class EngineImportServiceConstants

@@ -17,6 +17,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
 using com.espertech.esper.metrics.instrumentation;
@@ -41,6 +42,7 @@ namespace com.espertech.esper.regression.epl
 	        var config = SupportConfigFactory.GetConfiguration();
 	        config.EngineDefaults.ViewResourcesConfig.IsIterableUnbound = true;
 	        config.AddVariable("MYCONST_THREE", "boolean", true, true);
+            config.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = true;
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName);}
@@ -55,6 +57,34 @@ namespace com.espertech.esper.regression.epl
 	        _listener = null;
 	        _listenerSet = null;
 	    }
+
+        [Test]
+        public void TestDotVariableSeparateThread()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddVariable<MySimpleVariableService>("mySimpleVariableService", null);
+            _epService.EPRuntime.SetVariableValue("mySimpleVariableService", new MySimpleVariableService());
+
+            EPStatement epStatement = _epService.EPAdministrator.CreateEPL("select mySimpleVariableService.DoSomething() as c0 from SupportBean");
+
+            var latch = new CountDownLatch(1);
+            var values = new List<String>();
+            epStatement.Subscriber = new Action<IDictionary<string, object>>(
+                @event =>
+                {
+                    var value = (String) @event.Get("c0");
+                    values.Add(value);
+                    latch.CountDown();
+                });
+
+            var executorService = Executors.NewSingleThreadExecutor();
+            executorService.Submit(() => _epService.EPRuntime.SendEvent(new SupportBean()));
+            latch.Await();
+            executorService.Shutdown();
+
+            Assert.AreEqual(1, values.Count);
+            Assert.AreEqual("hello", values[0]);
+        }
 
         [Test]
 	    public void TestInvokeMethod()

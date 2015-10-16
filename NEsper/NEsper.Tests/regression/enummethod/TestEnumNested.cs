@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.enummethod
         {
             _epService.EPAdministrator.Configuration.AddEventType<ContainerEvent>();
 
-            // try "in" with "Set<String> multivalues"
+            // try "in" with "Insert<String> multivalues"
             _epService.EPAdministrator.CreateEPL("select * from ContainerEvent(level1s.anyOf(x=>x.level2s.anyOf(y => 'A' in (y.multivalues))))").Events += _listener.Update;
             RunAssertionContainer();
 

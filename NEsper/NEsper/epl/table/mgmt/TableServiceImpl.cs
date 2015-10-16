@@ -71,7 +71,7 @@ namespace com.espertech.esper.epl.table.mgmt
     
         public TableMetadata AddTable(string tableName, string eplExpression, string statementName, Type[] keyTypes, IDictionary<String, TableMetadataColumn> tableColumns, TableStateRowFactory tableStateRowFactory, int numberMethodAggregations, StatementContext statementContext, ObjectArrayEventType internalEventType, ObjectArrayEventType publicEventType, TableMetadataInternalEventToPublic eventToPublic, bool queryPlanLogging)
         {
-            var metadata = new TableMetadata(tableName, eplExpression, statementName, keyTypes, tableColumns, tableStateRowFactory, numberMethodAggregations, statementContext.ExtensionServicesContext.StmtResources, statementContext.ContextName, internalEventType, publicEventType, eventToPublic, queryPlanLogging, statementContext.StatementName);
+            var metadata = new TableMetadata(tableName, eplExpression, statementName, keyTypes, tableColumns, tableStateRowFactory, numberMethodAggregations, statementContext.StatementExtensionServicesContext.StmtResources, statementContext.ContextName, internalEventType, publicEventType, eventToPublic, queryPlanLogging, statementContext.StatementName);
     
             // determine table state factory
             TableStateFactory tableStateFactory;

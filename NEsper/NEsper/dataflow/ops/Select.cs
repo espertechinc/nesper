@@ -165,8 +165,9 @@ namespace com.espertech.esper.dataflow.ops
                 viewables[entry.Key] = viewable;
             }
     
-            var activatorFactory = new ViewableActivatorFactory(
-                filterStreamSpec =>
+            var activatorFactory = new ProxyViewableActivatorFactory
+            {
+                ProcCreateActivatorSimple = filterStreamSpec =>
                 {
                     EPLSelectViewable found = null;
                     foreach (EPLSelectViewable sviewable in viewables) {
@@ -185,9 +186,12 @@ namespace com.espertech.esper.dataflow.ops
                             () => { },
                             null,
                             null,
+                            null,
                             false,
-                            false));
-                });
+                            false,
+                            null));
+                }
+            };
     
             // for per-row deliver, register select expression result callback
             OutputProcessViewCallback optionalOutputProcessViewCallback = null;

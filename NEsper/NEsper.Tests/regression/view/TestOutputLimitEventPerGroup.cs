@@ -1566,6 +1566,17 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test11AllHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "group by symbol " +
+                    "having sum(price) > 50 " +
+                    "output all every 1 seconds";
+            RunAssertion11_12(stmtText, "all");
+        }
+
+        [Test]
         public void Test12AllHavingJoin()
         {
             String stmtText = "select symbol, sum(price) "
@@ -1574,6 +1585,18 @@ namespace com.espertech.esper.regression.view
                               + "group by symbol " + "having sum(price) > 50 "
                               + "output all every 1 seconds";
 
+            RunAssertion11_12(stmtText, "all");
+        }
+
+        [Test]
+        public void Test12AllHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where theString=symbol " +
+                    "group by symbol " +
+                    "having sum(price) > 50 " +
+                    "output all every 1 seconds";
             RunAssertion11_12(stmtText, "all");
         }
 
@@ -1610,6 +1633,17 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test15LastHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
+                    "from MarketData.win:time(5.5 sec)" +
+                    "group by symbol " +
+                    "having sum(price) > 50 " +
+                    "output last every 1 seconds";
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
         public void Test16LastHavingJoin()
         {
             String stmtText = "select symbol, sum(price) "
@@ -1618,6 +1652,18 @@ namespace com.espertech.esper.regression.view
                               + "group by symbol " + "having sum(price) > 50 "
                               + "output last every 1 seconds";
 
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
+        public void Test16LastHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, sum(price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where theString=symbol " +
+                    "group by symbol " +
+                    "having sum(price) > 50 " +
+                    "output last every 1 seconds";
             RunAssertion15_16(stmtText, "last");
         }
 
@@ -1907,7 +1953,15 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestJoinAll()
         {
-            String viewExpr = "select irstream symbol," + "sum(price) as mySum,"
+            RunAssertionJoinAll(false);
+            RunAssertionJoinAll(true);
+        }
+
+        private void RunAssertionJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            String viewExpr = hint
+                              + "select irstream symbol," + "sum(price) as mySum,"
                               + "avg(price) as myAvg " + "from "
                               + typeof (SupportBeanString).FullName
                               + ".win:length(100) as one, "
@@ -1927,12 +1981,22 @@ namespace com.espertech.esper.regression.view
             _epService.EPRuntime.SendEvent(new SupportBeanString("AAA"));
 
             RunAssertionAll(selectTestView);
+
+            selectTestView.Dispose();
         }
 
         [Test]
         public void TestJoinLast()
         {
-            String viewExpr = "select irstream symbol," + "sum(price) as mySum,"
+            RunAssertionJoinLast(true);
+            RunAssertionJoinLast(false);
+        }
+
+        public void RunAssertionJoinLast(bool hinted)
+	    {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            String viewExpr = hint
+                              + "select irstream symbol," + "sum(price) as mySum,"
                               + "avg(price) as myAvg " + "from "
                               + typeof (SupportBeanString).FullName
                               + ".win:length(100) as one, "
@@ -1942,8 +2006,7 @@ namespace com.espertech.esper.regression.view
                               + "       and one.TheString = two.symbol " + "group by symbol "
                               + "output last every 2 events";
 
-            EPStatement selectTestView = _epService.EPAdministrator.CreateEPL(
-                viewExpr);
+            EPStatement selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
 
             selectTestView.Events += _listener.Update;
 
@@ -1952,6 +2015,8 @@ namespace com.espertech.esper.regression.view
             _epService.EPRuntime.SendEvent(new SupportBeanString("AAA"));
 
             RunAssertionLast(selectTestView);
+
+            selectTestView.Dispose();
         }
 
         [Test]
@@ -2325,7 +2390,15 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestNoJoinAll()
         {
-            String viewExpr = "select irstream symbol," + "sum(price) as mySum,"
+            RunAssertionNoJoinAll(false);
+            RunAssertionNoJoinAll(true);
+        }
+
+        private void RunAssertionNoJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            String viewExpr = hint
+                              + "select irstream symbol," + "sum(price) as mySum,"
                               + "avg(price) as myAvg " + "from "
                               + typeof (SupportMarketDataBean).FullName + ".win:length(5) "
                               + "where symbol='DELL' or symbol='IBM' or symbol='GE' "
@@ -2337,12 +2410,22 @@ namespace com.espertech.esper.regression.view
             selectTestView.Events += _listener.Update;
 
             RunAssertionAll(selectTestView);
-        }
 
+            selectTestView.Dispose();
+        }
+        
         [Test]
         public void TestNoJoinLast()
         {
-            String viewExpr = "select irstream symbol," + "sum(price) as mySum,"
+            RunAssertionNoJoinLast(true);
+            RunAssertionNoJoinLast(false);
+        }
+
+        private void RunAssertionNoJoinLast(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            String viewExpr = hint
+                              + "select irstream symbol," + "sum(price) as mySum,"
                               + "avg(price) as myAvg " + "from "
                               + typeof (SupportMarketDataBean).FullName + ".win:length(3) "
                               + "where symbol='DELL' or symbol='IBM' or symbol='GE' "
@@ -2354,6 +2437,8 @@ namespace com.espertech.esper.regression.view
             selectTestView.Events += _listener.Update;
 
             RunAssertionLast(selectTestView);
+
+            selectTestView.Dispose();
         }
 
         [Test]

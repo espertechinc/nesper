@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     /// <summary>
     /// A wrapper that provide a list that is readonly.
@@ -22,7 +22,7 @@ namespace com.espertech.esper.compat
         private readonly ICollection<T> _parent;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReadOnlyList&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="ReadOnlyList{T}"/> class.
         /// </summary>
         /// <param name="parentList">The parent list.</param>
         public ReadOnlyCollection(ICollection<T> parentList)

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -49,7 +50,12 @@ namespace com.espertech.esper.epl.view
             OutputCallback outputCallback = GetCallbackToLocal(parent.StreamCount);
             _outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
         }
-    
+
+        public override int NumChangesetRows
+        {
+            get { return Math.Max(_viewEventsList.Count, _joinEventsSet.Count); }
+        }
+
         /// <summary>The Update method is called if the view does not participate in a join. </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
@@ -74,14 +80,14 @@ namespace com.espertech.esper.epl.view
                 _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
                 UniformPair<EventBean[]> newOldEvents = ResultSetProcessor.ProcessOutputLimitedView(_viewEventsList, isGenerateSynthetic, OutputLimitLimitType.FIRST);
                 _viewEventsList.Clear();
-    
-                if (newOldEvents == null || (newOldEvents.First == null && newOldEvents.Second == null)) {
-                    return; // nothing to indicate
+
+                if (!HasRelevantResults(newOldEvents)) {
+                    return;
                 }
     
                 _witnessedFirst = true;
 
-                if (_parent.IsDistinct && newOldEvents != null)
+                if (_parent.IsDistinct)
                 {
                     newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
@@ -140,23 +146,19 @@ namespace com.espertech.esper.epl.view
     
             // add the incoming events to the event batches
             if (!_witnessedFirst) {
-                var copyNew = newEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(newEvents) : new LinkedHashSet<MultiKey<EventBean>>();
-                var copyOld = oldEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(oldEvents) : new LinkedHashSet<MultiKey<EventBean>>();
-    
-                _joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
+                AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
                 var isGenerateSynthetic = _parent.StatementResultService.IsMakeSynthetic;
     
-                // Process the events and get the result
-                UniformPair<EventBean[]> newOldEvents = ResultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, isGenerateSynthetic, OutputLimitLimitType.FIRST);
+                var newOldEvents = ResultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, isGenerateSynthetic, OutputLimitLimitType.FIRST);
                 _joinEventsSet.Clear();
-    
-                if (newOldEvents == null || (newOldEvents.First == null && newOldEvents.Second == null)) {
-                    return; // nothing to indicate
+
+                if (!HasRelevantResults(newOldEvents)) {
+                    return;
                 }
     
                 _witnessedFirst = true;
 
-                if (_parent.IsDistinct && newOldEvents != null)
+                if (_parent.IsDistinct)
                 {
                     newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
@@ -174,10 +176,7 @@ namespace com.espertech.esper.epl.view
                 Output(true, newOldEvents);
             }
             else {
-                ISet<MultiKey<EventBean>> copyNew = newEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(newEvents) : new LinkedHashSet<MultiKey<EventBean>>();
-                ISet<MultiKey<EventBean>> copyOld = oldEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(oldEvents) : new LinkedHashSet<MultiKey<EventBean>>();
-
-                _joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
+                AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
     
                 // Process the events and get the result
                 ResultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, false, OutputLimitLimitType.FIRST);
@@ -253,6 +252,43 @@ namespace com.espertech.esper.epl.view
             if (_parent.IsTerminable) {
                 _outputCondition.Terminated();
             }
+        }
+
+        private bool HasRelevantResults(UniformPair<EventBean[]> newOldEvents)
+        {
+            if (newOldEvents == null)
+            {
+                return false;
+            }
+            if (_parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY)
+            {
+                if (newOldEvents.First == null)
+                {
+                    return false; // nothing to indicate
+                }
+            }
+            else if (_parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
+            {
+                if (newOldEvents.First == null && newOldEvents.Second == null)
+                {
+                    return false; // nothing to indicate
+                }
+            }
+            else
+            {
+                if (newOldEvents.Second == null)
+                {
+                    return false; // nothing to indicate
+                }
+            }
+            return true;
+        }
+
+        private static void AddToChangeSet(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        {
+            ISet<MultiKey<EventBean>> copyNew = newEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(newEvents) : new LinkedHashSet<MultiKey<EventBean>>();
+            ISet<MultiKey<EventBean>> copyOld = oldEvents != null ? new LinkedHashSet<MultiKey<EventBean>>(oldEvents) : new LinkedHashSet<MultiKey<EventBean>>();
+            joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
         }
     }
 }

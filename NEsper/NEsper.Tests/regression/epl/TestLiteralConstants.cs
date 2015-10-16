@@ -15,7 +15,6 @@ using com.espertech.esper.support.client;
 
 using NUnit.Framework;
 
-
 namespace com.espertech.esper.regression.epl
 {
     [TestFixture]
@@ -43,18 +42,23 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestLiteral()
         {
-            String statement = "select 0x23 as mybyte, " +
-                               "'\u0041' as myunicode " +
-                               "from SupportBean";
-    
+            String statement = (
+                "select 0x23 as mybyte, " +
+                "'\u0041' as myunicode," +
+                "08 as zero8, " +
+                "09 as zero9, " +
+                "008 as zeroZero8 " +
+                "from SupportBean"
+                );
+
             EPStatement stmt = epService.EPAdministrator.CreateEPL(statement);
             stmt.Events += updateListener.Update;
     
             epService.EPRuntime.SendEvent(new SupportBean("e1", 100));
-    
-            EventBean theEvent = updateListener.AssertOneGetNewAndReset();
-            Assert.AreEqual((byte) 35, theEvent.Get("mybyte"));
-            Assert.AreEqual("A", theEvent.Get("myunicode"));
+
+            EPAssertionUtil.AssertProps(updateListener.AssertOneGetNewAndReset(),
+                "mybyte,myunicode,zero8,zero9,zeroZero8".Split(','),
+                new Object[] { (byte)35, "A", 8, 9, 8 });
         }
     }
 }

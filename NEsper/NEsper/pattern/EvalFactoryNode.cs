@@ -28,7 +28,7 @@ namespace com.espertech.esper.pattern
 
         void AddChildNodes(IEnumerable<EvalFactoryNode> childNodes);
     
-        EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext);
+        EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode);
 
         bool IsFilterChildNonQuitting { get; }
 

@@ -18,7 +18,7 @@ using com.espertech.esper.metrics.instrumentation;
 namespace com.espertech.esper.view.window
 {
     /// <summary>
-    /// A length-first view takes the first N arriving events. Further arriving insert stream 
+    /// A length-first view takes the first Count arriving events. Further arriving insert stream 
     /// events are disregarded until events are deleted. <para/>Remove stream events delete 
     /// from the data window.
     /// </summary>
@@ -33,7 +33,7 @@ namespace com.espertech.esper.view.window
         /// </summary>
         /// <param name="agentInstanceViewFactoryContext">The agent instance view factory context.</param>
         /// <param name="lengthFirstWindowViewFactory">for copying this view in a group-by</param>
-        /// <param name="size">the first N events to consider</param>
+        /// <param name="size">the first Count events to consider</param>
         public FirstLengthWindowView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext, FirstLengthWindowViewFactory lengthFirstWindowViewFactory, int size)
         {
             if (size < 1)

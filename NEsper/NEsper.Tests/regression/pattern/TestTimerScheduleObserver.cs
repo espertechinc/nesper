@@ -66,11 +66,11 @@ namespace com.espertech.esper.regression.pattern
 	        // full form: "R<?>/<date>/P<period>" : recurring, start time, with period
 	        RunAssertionFullFormLimitedFutureDated();
 	        RunAssertionFullFormLimitedPastDated();
-	        RunAssertionFullFormUnlimitedFutureDated();
-	        RunAssertionFullFormUnlimitedPastDated();
+            RunAssertionFullFormUnlimitedFutureDated();
+            RunAssertionFullFormUnlimitedPastDated();
 	        RunAssertionFullFormUnlimitedPastDatedAnchoring();
 
-	        // equivalent formulations
+            // equivalent formulations
 	        RunAssertionEquivalent();
 
             // invalid tests
@@ -80,10 +80,9 @@ namespace com.espertech.esper.regression.pattern
 	        RunAssertionFollowedBy();
 	        RunAssertionFollowedByDynamicallyComputed();
 
-	        // named parameters
+            // named parameters
 	        RunAssertionNameParameters();
-	        RunAssertionCurrentTimeWTime();
-	    }
+        }
 
 	    private void RunAssertionFollowedByDynamicallyComputed()
         {
@@ -102,26 +101,6 @@ namespace com.espertech.esper.regression.pattern
 
 	        SendCurrentTime(iso, "2012-10-01T05:51:10.000GMT-0:00");
 	        Assert.AreEqual(b1, _listener.AssertOneGetNewAndReset().Get("sb"));
-
-	        _epService.EPAdministrator.DestroyAllStatements();
-	        iso.Dispose();
-	    }
-
-	    private void RunAssertionCurrentTimeWTime() {
-	        EPServiceProviderIsolated iso = _epService.GetEPServiceIsolated("E1");
-	        SendCurrentTime(iso, "2012-10-01T08:59:00.000GMT-04:00");
-
-	        string epl = "select * from pattern[timer:schedule(date: current_timestamp.withTime(9, 0, 0, 0))]";
-	        iso.EPAdministrator.CreateEPL(epl, null, null).AddListener(_listener);
-
-	        SendCurrentTime(iso, "2012-10-01T08:59:59.999GMT-4:00");
-	        Assert.IsFalse(_listener.IsInvokedAndReset());
-
-	        SendCurrentTime(iso, "2012-10-01T09:00:00.000GMT-4:00");
-	        Assert.IsTrue(_listener.IsInvokedAndReset());
-
-	        SendCurrentTime(iso, "2012-10-03T09:00:00.000GMT-4:00");
-	        Assert.IsFalse(_listener.IsInvokedAndReset());
 
 	        _epService.EPAdministrator.DestroyAllStatements();
 	        iso.Dispose();
@@ -171,7 +150,7 @@ namespace com.espertech.esper.regression.pattern
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select * from pattern[timer:schedule(repetitions:'a', period:1 seconds)]",
 	                "Invalid parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select * from pattern[timer:schedule(date:1 seconds)]",
-	                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,DateTime,long");
+	                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,DateTime,DateTimeOffset,long");
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select * from pattern[timer:schedule(repetitions:1)]",
 	                "Invalid parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select * from pattern[timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S', repetitions:1)]",
@@ -490,7 +469,7 @@ namespace com.espertech.esper.regression.pattern
 	    }
 
 	    private void AssertReceivedAtTime(EPServiceProviderIsolated iso, string time) {
-	        long msec = DateTimeHelper.ParseDefaultMSecWZone(time);
+            long msec = DateTimeParser.ParseDefaultMSecWZone(time);
 
 	        iso.EPRuntime.SendEvent(new CurrentTimeEvent(msec - 1));
 	        Assert.IsFalse(_listener.IsInvokedAndReset());
@@ -500,7 +479,7 @@ namespace com.espertech.esper.regression.pattern
 	    }
 
 	    private void SendCurrentTime(EPServiceProviderIsolated iso, string time) {
-	        iso.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSecWZone(time)));
+            iso.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSecWZone(time)));
 	    }
 
 	    private SupportBean MakeSendEvent(EPServiceProviderIsolated iso, string theString) {
@@ -513,23 +492,28 @@ namespace com.espertech.esper.regression.pattern
 	        return b;
 	    }
 
-	    public static string ComputeISO8601String(SupportBean bean) {
+	    public static string ComputeISO8601String(SupportBean bean)
+        {
 	        return "R/1980-01-01T00:00:00Z/PT" + bean.IntPrimitive + "S";
 	    }
 
-	    public static DateTime GetThe1980Calendar() {
-	        return DateTimeHelper.ParseDefaultWZone("1980-01-01T00:00:00.000GMT-0:00");
-	    }
+	    public static DateTimeOffset GetThe1980Calendar()
+	    {
+	        return DateTimeParser.ParseDefaultExWZone("1980-01-01T00:00:00.000GMT-0:00").DateTime;
+        }
 
-	    public static DateTime GetThe1980Date() {
+        public static DateTimeOffset GetThe1980Date()
+        {
 	        return GetThe1980Calendar();
 	    }
 
-	    public static long GetThe1980Long() {
+	    public static long GetThe1980Long()
+        {
 	        return GetThe1980Calendar().TimeInMillis();
 	    }
 
-	    public static int GetTheSeconds() {
+	    public static int GetTheSeconds()
+        {
 	        return 1;
 	    }
 	}

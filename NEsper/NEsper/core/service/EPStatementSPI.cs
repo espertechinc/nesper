@@ -41,9 +41,9 @@ namespace com.espertech.esper.core.service
         /// <param name="timeLastStateChange">the timestamp the statement changed state</param>
         void SetCurrentState(EPStatementState currentState, long timeLastStateChange);
 
-        /// <summary>Sets the parent view. </summary>
-        /// <value>is the statement viewable</value>
-        Viewable ParentView { set; }
+        /// <summary>Gets or sets the parent view. </summary>
+        /// <value>the statement viewable</value>
+        Viewable ParentView { get; set; }
 
         /// <summary>Returns additional metadata about a statement. </summary>
         /// <value>statement metadata</value>

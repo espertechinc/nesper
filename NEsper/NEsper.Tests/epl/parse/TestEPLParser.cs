@@ -113,7 +113,6 @@ namespace com.espertech.esper.epl.parse
             AssertIsInvalid("insert into select 1 from b.win:length(1)");
             AssertIsInvalid("insert into 38484 select 1 from b.win:length(1)");
             AssertIsInvalid("insert into A B select 1 from b.win:length(1)");
-            AssertIsInvalid("insert into A () select 1 from b.win:length(1)");
             AssertIsInvalid("insert into A (a,) select 1 from b.win:length(1)");
             AssertIsInvalid("insert into A (,) select 1 from b.win:length(1)");
             AssertIsInvalid("insert into A(,a) select 1 from b.win:length(1)");
@@ -263,6 +262,10 @@ namespace com.espertech.esper.epl.parse
             AssertIsValid(preFill + "(string in [1:2])");
             AssertIsValid(preFill + "(string in (1:2))");
             AssertIsValid(preFill + "(string in (1:2])");
+            AssertIsValid(preFill + "(IntPrimitive = 08)");
+            AssertIsValid(preFill + "(IntPrimitive = 09)");
+            AssertIsValid(preFill + "(IntPrimitive = 008)");
+            AssertIsValid(preFill + "(IntPrimitive = 0008)");
             AssertIsValid(preFill + "(IntPrimitive between 1 and 2)");
             AssertIsValid(preFill + "(IntPrimitive not between 1 and 2)");
             AssertIsValid(preFill + "(IntPrimitive not in [1:2])");

@@ -116,7 +116,7 @@ namespace com.espertech.esper.pattern
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctEvaluateTrue(EveryDistinctNode, matchEvent);}
     
             // determine if this evaluation has been seen before from the same node
-            var matchEventKey = PatternExpressionUtil.GetKeys(matchEvent, EveryDistinctNode);
+            var matchEventKey = PatternExpressionUtil.GetKeys(matchEvent, EveryDistinctNode.FactoryNode.Convertor, EveryDistinctNode.FactoryNode.DistinctExpressionsArray, EveryDistinctNode.Context.AgentInstanceContext);
             var haveSeenThis = false;
             var keysFromNode = SpawnedNodes.Get(fromNode);
             if (keysFromNode != null)

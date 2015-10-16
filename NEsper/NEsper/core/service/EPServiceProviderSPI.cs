@@ -69,7 +69,7 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the extension services context. </summary>
         /// <value>extension services context</value>
-        ExtensionServicesContext ExtensionServicesContext { get; }
+        EngineLevelExtensionServicesContext ExtensionServicesContext { get; }
 
         /// <summary>Returns metrics reporting. </summary>
         /// <value>metrics reporting</value>

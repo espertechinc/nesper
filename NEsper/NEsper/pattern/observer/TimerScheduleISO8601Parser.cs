@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern.observer
 	        var split = iso.Split('/');
 
 	        long? optionalRepeats = null;
-	        DateTime? optionalDate = null;
+            DateTimeEx optionalDate = null;
 	        TimePeriod optionalTimePeriod = null;
 
 	        try {
@@ -86,10 +86,11 @@ namespace com.espertech.esper.pattern.observer
 	        return new TimerScheduleSpec(optionalDate, optionalRepeats, optionalTimePeriod);
 	    }
 
-	    public static DateTime? ParseDate(string dateText) {
+	    public static DateTimeEx ParseDate(string dateText)
+        {
 	        try
 	        {
-	            return DateTimeHelper.ParseDefault(dateText);
+                return DateTimeParser.ParseDefaultEx(dateText);
 	            //return javax.xml.datatype.DatatypeFactory.NewInstance().NewXMLGregorianCalendar(dateText).ToGregorianCalendar();
 	        }
 	        catch (Exception e) {

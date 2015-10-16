@@ -16,16 +16,16 @@ namespace com.espertech.esper.support.bean
     {
         private string _key;
         private readonly long? _msecdate;
-        private readonly DateTime? _utildate;
+        private readonly DateTimeOffset? _utildate;
 
-        public SupportDateTime(string key, long? msecdate, DateTime? utildate)
+        public SupportDateTime(string key, long? msecdate, DateTimeOffset? utildate)
         {
             _key = key;
             _msecdate = msecdate;
             _utildate = utildate;
         }
 
-        public SupportDateTime(long? msecdate, DateTime? utildate)
+        public SupportDateTime(long? msecdate, DateTimeOffset? utildate)
         {
             _msecdate = msecdate;
             _utildate = utildate;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.support.bean
             get { return _msecdate; }
         }
 
-        public DateTime? Utildate
+        public DateTimeOffset? Utildate
         {
             get { return _utildate; }
         }
@@ -47,14 +47,14 @@ namespace com.espertech.esper.support.bean
             set { _key = value; }
         }
 
-        public static DateTime ToCalendar(long value)
+        public static DateTimeOffset ToCalendar(long value)
         {
-            return value.TimeFromMillis();
+            return value.TimeFromMillis(null);
         }
 
-        public static DateTime ToDate(long value)
+        public static DateTimeOffset ToDate(long value)
         {
-            return value.TimeFromMillis();
+            return value.TimeFromMillis(null);
         }
 
         public static SupportDateTime Make(string datestr)
@@ -64,8 +64,8 @@ namespace com.espertech.esper.support.bean
                 return new SupportDateTime(null, null);
             }
             // expected : 2002-05-30T09:00:00
-            DateTime date = DateTimeHelper.ParseDefault(datestr);
-            return new SupportDateTime(date.TimeInMillis(), date);
+            var date = DateTimeParser.ParseDefaultEx(datestr);
+            return new SupportDateTime(date.TimeInMillis, date.DateTime);
         }
 
         public static SupportDateTime Make(string key, string datestr)
@@ -77,7 +77,7 @@ namespace com.espertech.esper.support.bean
 
         public static Object GetValueCoerced(string expectedTime, string format)
         {
-            long msec = DateTimeHelper.ParseDefaultMSec(expectedTime);
+            long msec = DateTimeParser.ParseDefaultMSec(expectedTime);
             return Coerce(msec, format);
         }
 
@@ -89,11 +89,11 @@ namespace com.espertech.esper.support.bean
                 case "msec":
                     return msec;
                 case "util":
-                    return msec.TimeFromMillis();
+                    return DateTimeOffsetHelper.TimeFromMillis(msec, null);
                 case "cal":
-                    return msec.TimeFromMillis();
+                    return DateTimeOffsetHelper.TimeFromMillis(msec, null);
                 case "sdf":
-                    return msec.TimeFromMillis().ToString();
+                    return DateTimeOffsetHelper.TimeFromMillis(msec, null).ToString();
                 case "null":
                     return null;
                 default:
@@ -104,7 +104,7 @@ namespace com.espertech.esper.support.bean
         public static Object[] GetArrayCoerced(string expectedTime, params string[] desc)
         {
             var result = new Object[desc.Length];
-            var msec = DateTimeHelper.ParseDefaultMSec(expectedTime);
+            var msec = DateTimeParser.ParseDefaultMSec(expectedTime);
             for (int i = 0; i < desc.Length; i++)
             {
                 result[i] = Coerce(msec, desc[i]);
@@ -117,7 +117,7 @@ namespace com.espertech.esper.support.bean
             var result = new Object[expectedTimes.Length];
             for (int i = 0; i < expectedTimes.Length; i++)
             {
-                var msec = DateTimeHelper.ParseDefaultMSec(expectedTimes[i]);
+                var msec = DateTimeParser.ParseDefaultMSec(expectedTimes[i]);
                 result[i] = Coerce(msec, desc);
             }
             return result;

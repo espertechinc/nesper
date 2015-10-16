@@ -65,8 +65,9 @@ namespace com.espertech.esper.epl.expression.core
         {
             get { return _exprEvaluatorContext; }
         }
-    }
 
+        public static readonly EvaluateParams Empty = new EvaluateParams(null, false, null);
+    }
 
     public delegate Object ExprEvaluatorDelegate(EvaluateParams evaluateParams);
 

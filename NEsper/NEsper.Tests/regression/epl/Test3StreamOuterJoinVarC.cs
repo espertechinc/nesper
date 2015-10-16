@@ -247,13 +247,13 @@ namespace com.espertech.esper.regression.epl
     
             // Test s1 ... s0 with 2 rows, s2 with 2 rows
             //
-            s0Events = SupportBean_S0.MakeS0("N", new[]{"N-s0-1", "N-s0-2"});
+            s0Events = SupportBean_S0.MakeS0("Count", new[]{"Count-s0-1", "Count-s0-2"});
             SendEventsAndReset(s0Events);
     
-            s2Events = SupportBean_S2.MakeS2("N", new[]{"N-s2-1", "N-s2-2"});
+            s2Events = SupportBean_S2.MakeS2("Count", new[]{"Count-s2-1", "Count-s2-2"});
             SendEventsAndReset(s2Events);
     
-            s1Events = SupportBean_S1.MakeS1("N", new[]{"N-s1-1"});
+            s1Events = SupportBean_S1.MakeS1("Count", new[]{"Count-s1-1"});
             SendEvent(s1Events);
             EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
                     new Object[] {s0Events[0], s1Events[0], s2Events[0]},

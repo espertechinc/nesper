@@ -50,6 +50,7 @@ namespace com.espertech.esper.rowregex
 	    private readonly ObjectArrayBackedEventBean _defineMultimatchEventBean;
 	    private readonly bool[] _isExprRequiresMultimatchState;
         private readonly RowRegexExprNode _expandedPatternNode;
+        private readonly ConfigurationEngineDefaults.MatchRecognize _matchRecognizeConfig;
 
         /// <summary>
         /// Ctor.
@@ -78,12 +79,15 @@ namespace com.espertech.esper.rowregex
 	        MatchRecognizeSpec matchRecognizeSpec,
 	        AgentInstanceContext agentInstanceContext,
 	        bool isUnbound,
-	        Attribute[] annotations)
+	        Attribute[] annotations,
+            ConfigurationEngineDefaults.MatchRecognize matchRecognizeConfig)
 	    {
 	        var parentViewType = viewChain.EventType;
 	        _matchRecognizeSpec = matchRecognizeSpec;
 	        _isUnbound = isUnbound;
 	        _isIterateOnly = HintEnum.ITERATE_ONLY.GetHint(annotations) != null;
+            _matchRecognizeConfig = matchRecognizeConfig;
+ 
 	        var statementContext = agentInstanceContext.StatementContext;
 
             // Expand repeats and permutations
@@ -516,25 +520,41 @@ namespace com.espertech.esper.rowregex
 
         public override View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-	        return new EventRowRegexNFAView(this,
-	                _compositeEventType,
-	                _rowEventType,
-	                _matchRecognizeSpec,
-	                _variableStreams,
-	                _streamVariables,
-	                _variablesSingle,
-	                agentInstanceViewFactoryContext.AgentInstanceContext,
-	                _callbacksPerIndex,
-	                _aggregationService,
-	                _isDefineAsksMultimatches,
-	                _defineMultimatchEventBean,
-	                _isExprRequiresMultimatchState,
-	                _isUnbound,
-	                _isIterateOnly,
-	                _isCollectMultimatches,
-                    _expandedPatternNode
-	             );
-	    }
+            EventRowRegexNFAViewScheduler scheduler = null;
+            if (_matchRecognizeSpec.Interval != null)
+            {
+                scheduler = new EventRowRegexNFAViewSchedulerImpl();
+            }
+
+            EventRowRegexNFAView view = new EventRowRegexNFAView(
+                this,
+                _compositeEventType,
+                _rowEventType,
+                _matchRecognizeSpec,
+                _variableStreams,
+                _streamVariables,
+                _variablesSingle,
+                agentInstanceViewFactoryContext.AgentInstanceContext,
+                _callbacksPerIndex,
+                _aggregationService,
+                _isDefineAsksMultimatches,
+                _defineMultimatchEventBean,
+                _isExprRequiresMultimatchState,
+                _isUnbound,
+                _isIterateOnly,
+                _isCollectMultimatches,
+                _expandedPatternNode,
+                _matchRecognizeConfig,
+                scheduler
+                );
+
+            if (scheduler != null)
+            {
+                scheduler.SetScheduleCallback(agentInstanceViewFactoryContext.AgentInstanceContext, view);
+            }
+
+            return view;
+        }
 
 	    public override EventType EventType
 	    {

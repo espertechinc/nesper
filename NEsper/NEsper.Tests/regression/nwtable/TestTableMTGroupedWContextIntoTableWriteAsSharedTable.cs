@@ -44,8 +44,8 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestMT() 
         {
-            // with T, N, G:  Each of T threads loops N times and sends for each loop G events for each group.
-            // for a total of T*N*G events being processed, and G aggregations retained in a shared variable.
+            // with T, Count, G:  Each of T threads loops Count times and sends for each loop G events for each group.
+            // for a total of T*Count*G events being processed, and G aggregations retained in a shared variable.
             // Group is the innermost loop.
             TryMT(8, 1000, 64);
         }

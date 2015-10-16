@@ -38,7 +38,7 @@ namespace com.espertech.esper.pattern.observer
             _scheduleSlot = observerEventEvaluator.Context.PatternContext.ScheduleBucket.AllocateSlot();
         }
     
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverScheduledEval();}
             _observerEventEvaluator.ObserverEvaluateTrue(_beginState, true);

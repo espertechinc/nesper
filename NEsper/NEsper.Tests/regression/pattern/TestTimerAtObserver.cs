@@ -28,14 +28,38 @@ namespace com.espertech.esper.regression.pattern
     [TestFixture]
     public class TestTimerAtObserver : SupportBeanConstants
     {
+        private DateTimeOffset MakeDateTime(int year, int month, int dayOfMonth, int hour, int minute, int second, int millisecond)
+        {
+            var dateTime = new DateTimeOffset(
+                year, month, dayOfMonth, hour, minute, second, millisecond, TimeZoneInfo.Local.BaseUtcOffset);
+            if (TimeZoneInfo.Local.SupportsDaylightSavingTime)
+            {
+                dateTime = dateTime.ToOffset(TimeZoneInfo.Local.GetUtcOffset(dateTime));
+            }
+
+            return dateTime;
+        }
+
         [Test]
         public void TestOp()
         {
-            var dateTime = new DateTime(2005, 3, 9, 8, 0, 0, 0);
+            var dateTime = MakeDateTime(2005, 3, 9, 8, 0, 0, 0);
             var startTime = dateTime.TimeInMillis();
-    
-            // Start a 2004-12-9 8:00:00am and send events every 10 minutes "A1"    8:10 "B1"    8:20 "C1"    8:30 "B2"    8:40 "A2"    8:50 "D1"    9:00 "E1"    9:10 "F1"    9:20 "D2"    9:30 "B3"    9:40 "G1"    9:50 "D3"   10:00 </summary>
-    
+
+            // Start a 2004-12-9 8:00:00am and send events every 10 minutes
+            //        "A1"    8:10
+            //        "B1"    8:20
+            //        "C1"    8:30
+            //        "B2"    8:40
+            //        "A2"    8:50
+            //        "D1"    9:00
+            //        "E1"    9:10
+            //        "F1"    9:20
+            //        "D2"    9:30
+            //        "B3"    9:40
+            //        "G1"    9:50
+            //        "D3"   10:00
+
             var testData = EventCollectionFactory.GetEventSetOne(startTime, 1000 * 60 * 10);
             var testCaseList = new CaseList();
             EventExpressionCase testCase = null;
@@ -188,7 +212,7 @@ namespace com.espertech.esper.regression.pattern
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
 
-            var dateTime = new DateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
+            var dateTime = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(dateTime.TimeInMillis(), epService);
     
             var statement = epService.EPAdministrator.CreateEPL(expression);
@@ -210,7 +234,7 @@ namespace com.espertech.esper.regression.pattern
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
 
-            DateTime cal = new DateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
+            var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
     
             var prepared = epService.EPAdministrator.PrepareEPL(expression);
@@ -237,8 +261,8 @@ namespace com.espertech.esper.regression.pattern
             var epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
-    
-            DateTime cal = new DateTime(2008, 7, 3, 10, 0, 0, 0);      // start on a Sunday at 6am, August 3 2008
+
+            var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0);      // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
     
             var prepared = epService.EPAdministrator.PrepareEPL(expression);
@@ -263,8 +287,8 @@ namespace com.espertech.esper.regression.pattern
             var epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
-    
-            DateTime cal = new DateTime(2008, 7, 3, 10, 0, 0, 0);      // start on a Sunday at 6am, August 3 2008
+
+            var cal = MakeDateTime(2008, 7, 3, 10, 0, 0, 0);      // start on a Sunday at 6am, August 3 2008
             SendTimer(cal.TimeInMillis(), epService);
     
             var prepared = epService.EPAdministrator.PrepareEPL(expression);
@@ -326,7 +350,7 @@ namespace com.espertech.esper.regression.pattern
     
         private void RunAssertion(EPServiceProvider epService, SupportUpdateListener listener)
         {
-            var dateTime = new DateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
+            var dateTime = MakeDateTime(2008, 7, 3, 10, 0, 0, 0); // start on a Sunday at 6am, August 3 2008
     
             var invocations = new List<String>();
             for (var i = 0; i < 24 * 60 * 7; i++)   // run for 1 week
@@ -342,22 +366,22 @@ namespace com.espertech.esper.regression.pattern
                 }
             }
             var expectedResult = new String[5];
-            dateTime = new DateTime(2008, 7, 4, 8, 0, 0); //"Mon Aug 04 08:00:00 EDT 2008"
+            dateTime = MakeDateTime(2008, 7, 4, 8, 0, 0, 0); //"Mon Aug 04 08:00:00 EDT 2008"
             expectedResult[0] = dateTime.ToShortTimeString();
-            dateTime = new DateTime(2008, 7, 5, 8, 0, 0); //"Tue Aug 05 08:00:00 EDT 2008"
+            dateTime = MakeDateTime(2008, 7, 5, 8, 0, 0, 0); //"Tue Aug 05 08:00:00 EDT 2008"
             expectedResult[1] = dateTime.ToShortTimeString();
-            dateTime = new DateTime(2008, 7, 6, 8, 0, 0); //"Wed Aug 06 08:00:00 EDT 2008"
+            dateTime = MakeDateTime(2008, 7, 6, 8, 0, 0, 0); //"Wed Aug 06 08:00:00 EDT 2008"
             expectedResult[2] = dateTime.ToShortTimeString();
-            dateTime = new DateTime(2008, 7, 7, 8, 0, 0); //"Thu Aug 07 08:00:00 EDT 2008"
+            dateTime = MakeDateTime(2008, 7, 7, 8, 0, 0, 0); //"Thu Aug 07 08:00:00 EDT 2008"
             expectedResult[3] = dateTime.ToShortTimeString();
-            dateTime = new DateTime(2008, 7, 8, 8, 0, 0); //"Fri Aug 08 08:00:00 EDT 2008"
+            dateTime = MakeDateTime(2008, 7, 8, 8, 0, 0, 0); //"Fri Aug 08 08:00:00 EDT 2008"
             expectedResult[4] = dateTime.ToShortTimeString();
             EPAssertionUtil.AssertEqualsExactOrder(expectedResult, invocations.ToArray());
         }
     
         private void SendTimeEvent(String time, EPServiceProvider epService)
         {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
     
         private void SendTimer(long timeInMSec, EPServiceProvider epService)

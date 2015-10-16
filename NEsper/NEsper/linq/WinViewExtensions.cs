@@ -15,7 +15,7 @@ namespace com.espertech.esper.linq
     public static class WinViewExtensions
     {
         /// <summary>
-        /// Expands the view to keep the first N events.
+        /// Expands the view to keep the first Count events.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="esperQuery">The esper query.</param>

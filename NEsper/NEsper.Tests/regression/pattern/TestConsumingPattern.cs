@@ -36,19 +36,13 @@ namespace com.espertech.esper.regression.pattern
             _epService.EPAdministrator.Configuration.AddEventType("C", typeof (CEvent));
             _epService.EPAdministrator.Configuration.AddEventType("D", typeof (DEvent));
             _listener = new SupportUpdateListener();
-            if (InstrumentationHelper.ENABLED)
-            {
-                InstrumentationHelper.StartTest(_epService, GetType(), GetType().Name);
-            }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (InstrumentationHelper.ENABLED)
-            {
-                InstrumentationHelper.EndTest();
-            }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _listener = null;
         }
 

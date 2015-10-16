@@ -34,8 +34,16 @@ namespace com.espertech.esper.core.context.factory
         protected override StatementAgentInstanceFactoryResult NewContextInternal(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             StopCallback stopCallback = () => _services.VariableService.DeallocateVariableState(_variableMetaData.VariableName, agentInstanceContext.AgentInstanceId);
-            _services.VariableService.AllocateVariableState(_variableMetaData.VariableName, agentInstanceContext.AgentInstanceId, _statementContext.ExtensionServicesContext);
+            _services.VariableService.AllocateVariableState(_variableMetaData.VariableName, agentInstanceContext.AgentInstanceId, _statementContext.StatementExtensionServicesContext);
             return new StatementAgentInstanceFactoryCreateVariableResult(new ViewableDefaultImpl(_eventType), stopCallback, agentInstanceContext);
+        }
+
+        public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public override void UnassignExpressions()
+        {
         }
     }
 }

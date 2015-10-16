@@ -21,23 +21,25 @@ namespace com.espertech.esper.epl.datetime.reformatop
     public class ReformatOpGetField : ReformatOp
     {
         private readonly CalendarFieldEnum _fieldNum;
+        private readonly TimeZoneInfo _timeZone;
     
-        public ReformatOpGetField(CalendarFieldEnum fieldNum)
+        public ReformatOpGetField(CalendarFieldEnum fieldNum, TimeZoneInfo timeZone)
         {
             _fieldNum = fieldNum;
+            _timeZone = timeZone;
         }
 
         public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) 
         {
-            return Action(ts.TimeFromMillis());
+            return Action(ts.TimeFromMillis(_timeZone));
         }
 
-        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) 
+        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) 
         {
             return Action(d);
         }
     
-        private int Action(DateTime dateTime)
+        private int Action(DateTimeOffset dateTime)
         {
             switch (_fieldNum)
             {

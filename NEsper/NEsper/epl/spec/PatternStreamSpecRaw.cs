@@ -297,7 +297,7 @@ namespace com.espertech.esper.epl.spec
                 // and additionally stream 0 (self) is our event type.
                 // Stream type service allows resolution by property name event if that name appears in other tags.
                 // by defaulting to stream zero.
-                // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
+                // Stream zero is always the current event type, all others follow the order of the map (stream 1 to Count).
                 var selfStreamName = optionalTag;
                 if (selfStreamName == null)
                 {
@@ -380,7 +380,7 @@ namespace com.espertech.esper.epl.spec
                         tags.TaggedEventTypes, tags.ArrayEventTypes, allTagNamesOrdered, context.EventAdapterService);
 
                     observerNode.ObserverFactory = observerFactory;
-                    observerFactory.SetObserverParameters(validated, convertor);
+                    observerFactory.SetObserverParameters(validated, convertor, validationContext);
                 }
                 catch (ObserverParameterException e)
                 {

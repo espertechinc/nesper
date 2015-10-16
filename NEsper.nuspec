@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 <metadata>
 <id>NEsper</id>
-<version>5.2.6</version>
+<version>5.3.0</version>
 <authors>Espertech</authors>
 <owners>Espertech</owners>
 <language>en-us</language>
@@ -25,11 +25,11 @@
 </dependencies>
 </metadata>
 <files>
-<file src="build\NEsper-5.2.6\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
-<file src="build\NEsper-5.2.6\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
-<file src="build\NEsper-5.2.6\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
+<file src="build\NEsper-5.3.0\lib\net40\NEsper.dll" target="lib\net40\NEsper.dll" />
+<file src="build\NEsper-5.3.0\lib\net40\NEsper.xml" target="lib\net40\NEsper.xml" />
+<file src="build\NEsper-5.3.0\lib\net40\NEsper.IO.dll" target="lib\net40\NEsper.IO.dll" />
 
-<file src="build\NEsper-5.2.6\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
-<file src="build\NEsper-5.2.6\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
+<file src="build\NEsper-5.3.0\lib\net45\NEsper.dll" target="lib\net45\NEsper.dll" />
+<file src="build\NEsper-5.3.0\lib\net45\NEsper.xml" target="lib\net45\NEsper.xml" />
 </files>
 </package>

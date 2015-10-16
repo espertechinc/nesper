@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.datetime
                                        " from SupportDateTime";
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTime?), typeof(long?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTimeOffset?), typeof(long?) });
 
             const string startTime = "2002-05-30 09:00:00.000";
             const string expectedTime = "2002-01-30 09:00:00.000";
@@ -76,7 +76,13 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
+            {
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?), 
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?)
+            });
 
             String[] expected = {
                     "2002-05-30 09:00:00.001",

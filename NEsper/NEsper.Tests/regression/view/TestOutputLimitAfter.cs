@@ -52,6 +52,35 @@ namespace com.espertech.esper.regression.view
         private SupportUpdateListener _listener;
         private String[] _fields;
 
+        [Test]
+        public void testAfterWithOutputLast()
+        {
+            runAssertionAfterWithOutputLast(false);
+            runAssertionAfterWithOutputLast(true);
+        }
+
+        private void runAssertionAfterWithOutputLast(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            String epl = hint + "select sum(intPrimitive) as thesum " +
+                    "from SupportBean.win:keepall() " +
+                    "output after 4 events last every 2 events";
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
+            stmt.AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
+            _epService.EPRuntime.SendEvent(new SupportBean("E3", 30));
+            _epService.EPRuntime.SendEvent(new SupportBean("E4", 40));
+            _epService.EPRuntime.SendEvent(new SupportBean("E5", 50));
+            Assert.IsFalse(_listener.IsInvoked);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E6", 60));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "thesum".Split(','), new Object[] { 210 });
+
+            stmt.Dispose();
+        }
+
         private void RunAssertion()
         {
             SendTimer(1);
@@ -128,12 +157,12 @@ namespace com.espertech.esper.regression.view
 
         private void SendCurrentTime(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendCurrentTimeWithMinus(String time, long minus)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
 
         [Test]

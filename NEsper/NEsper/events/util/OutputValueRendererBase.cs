@@ -38,6 +38,23 @@ namespace com.espertech.esper.events.util
                     buf.Append(".0");
                 }
             }
+            else if (o is DateTimeOffset)
+            {
+                var dateTime = (DateTimeOffset)o;
+                var dateOnly = dateTime.Date;
+                if (dateTime == dateOnly)
+                {
+                    buf.Append(dateTime.ToString("yyyy-MM-dd"));
+                }
+                else if (dateTime.Millisecond == 0)
+                {
+                    buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss"));
+                }
+                else
+                {
+                    buf.Append(dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff"));
+                }
+            }
             else if (o is DateTime)
             {
                 var dateTime = (DateTime) o;

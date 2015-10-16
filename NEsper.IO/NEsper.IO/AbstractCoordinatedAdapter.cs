@@ -41,7 +41,7 @@ namespace com.espertech.esperio
 	    /// <summary>
 	    /// Sorted events to be sent.
 	    /// </summary>
-	    protected readonly ICollection<SendableEvent> EventsToSend = new TreeSet<SendableEvent>(new SendableEventComparator());
+	    protected readonly ICollection<SendableEvent> EventsToSend = new SortedSet<SendableEvent>(new SendableEventComparator());
 
 	    private readonly EPServiceProvider _epService;
 	    private SchedulingService _schedulingService;

@@ -31,32 +31,48 @@ namespace com.espertech.esper.regression.support
         private EPStatement _stmt;
         private readonly SupportUpdateListener _listener;
         private readonly ResultAssertTestResult _expected;
-    
-        public ResultAssertExecution(EPServiceProvider engine,
-                                     EPStatement stmt,
-                                     SupportUpdateListener listener,
-                                     ResultAssertTestResult expected)
+        private ResultAssertExecutionTestSelector _irTestSelector;
+
+        public ResultAssertExecution(
+            EPServiceProvider engine,
+            EPStatement stmt,
+            SupportUpdateListener listener,
+            ResultAssertTestResult expected,
+            ResultAssertExecutionTestSelector irTestSelector)
         {
             _engine = engine;
             _stmt = stmt;
             _listener = listener;
             _expected = expected;
+            _irTestSelector = irTestSelector;
+        }
+
+        public ResultAssertExecution(
+            EPServiceProvider engine,
+            EPStatement stmt,
+            SupportUpdateListener listener,
+            ResultAssertTestResult expected)
+            : this(engine, stmt, listener, expected, ResultAssertExecutionTestSelector.TEST_BOTH_ISTREAM_AND_IRSTREAM)
+        {
         }
     
         public void Execute()
         {
             bool isAssert = Environment.GetEnvironmentVariable("ASSERTION_DISABLED") == null;
-    
-            // First execution is for ISTREAM only, which is the default
-            Execute(isAssert, true);
-    
-            // Second execution is for IRSTREAM, asserting both the insert and remove stream
+
+            bool expectRemoveStream = _stmt.Text.ToLower().Contains("select irstream");
+            Execute(isAssert, !expectRemoveStream);
             _stmt.Stop();
-            String epl = _stmt.Text;
-            String irStreamEPL = epl.Replace("select ", "select irstream ");
-            _stmt = _engine.EPAdministrator.CreateEPL(irStreamEPL);
-            _stmt.Events += _listener.Update;
-            Execute(isAssert, false);
+
+            // Second execution is for IRSTREAM, asserting both the insert and remove stream
+            if (_irTestSelector != ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED)
+            {
+                String epl = _stmt.Text;
+                String irStreamEPL = epl.Replace("select ", "select irstream ");
+                _stmt = _engine.EPAdministrator.CreateEPL(irStreamEPL);
+                _stmt.AddListener(_listener);
+                Execute(isAssert, false);
+            }
         }
     
         private void Execute(bool isAssert, bool isExpectNullRemoveStream)
@@ -82,7 +98,7 @@ namespace com.espertech.esper.regression.support
             foreach (KeyValuePair<long, TimeAction> timeEntry in Input)
             {
                 long time = timeEntry.Key;
-                String timeInSec = String.Format("{0,3:1F}", time / 1000.0);
+                String timeInSec = String.Format("{0,3:F1}", time / 1000.0);
 
                 Log.Info(".execute At " + timeInSec + " sending timer event");
                 SendTimer(time);

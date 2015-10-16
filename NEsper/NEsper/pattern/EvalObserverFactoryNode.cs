@@ -32,7 +32,7 @@ namespace com.espertech.esper.pattern
             _patternObserverSpec = patternObserverSpec;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             return new EvalObserverNode(agentInstanceContext, this);
         }

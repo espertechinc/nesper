@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
@@ -16,17 +17,20 @@ namespace com.espertech.esper.core.context.mgr
 {
     public class ContextControllerFactoryServiceContext
     {
-        public ContextControllerFactoryServiceContext(String contextName,
-                                                      EPServicesContext servicesContext,
-                                                      ContextDetail detail,
-                                                      AgentInstanceContext agentInstanceContextCreate,
-                                                      bool isRecoveringResilient)
+        public ContextControllerFactoryServiceContext(
+            String contextName,
+            EPServicesContext servicesContext,
+            ContextDetail detail,
+            AgentInstanceContext agentInstanceContextCreate,
+            bool isRecoveringResilient,
+            EventType statementResultEventType)
         {
             ContextName = contextName;
             ServicesContext = servicesContext;
             Detail = detail;
             AgentInstanceContextCreate = agentInstanceContextCreate;
             IsRecoveringResilient = isRecoveringResilient;
+            StatementResultEventType = statementResultEventType;
         }
 
         public string ContextName { get; private set; }
@@ -38,5 +42,8 @@ namespace com.espertech.esper.core.context.mgr
         public AgentInstanceContext AgentInstanceContextCreate { get; private set; }
 
         public bool IsRecoveringResilient { get; private set; }
+
+        public EventType StatementResultEventType { get; private set; }
+
     }
 }

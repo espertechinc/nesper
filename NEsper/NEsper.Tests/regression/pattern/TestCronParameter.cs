@@ -280,7 +280,7 @@ namespace com.espertech.esper.regression.pattern
         private void RunSequence(EPServiceProviderIsolated epService, String[] times) {
             foreach (String next in times) {
                 // send right-before time
-                long nextLong = DateTimeHelper.ParseDefaultMSec(next);
+                long nextLong = DateTimeParser.ParseDefaultMSec(next);
                 epService.EPRuntime.SendEvent(new CurrentTimeEvent(nextLong - 1001));
                 Assert.IsFalse(_listener.IsInvoked, "unexpected callback at " + next);
     
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.pattern
         }
     
         private void SendTime(EPServiceProviderIsolated epService, String time) {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
     }
     

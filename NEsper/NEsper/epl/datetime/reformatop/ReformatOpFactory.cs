@@ -19,43 +19,42 @@ namespace com.espertech.esper.epl.datetime.reformatop
     public class ReformatOpFactory : OpFactory 
     {
         private static readonly ReformatOp FormatString = new ReformatOpStringFormat();
-        private static readonly ReformatOp ToDateTime = new ReformatOpToDateTime();
         private static readonly ReformatOp ToMsec = new ReformatOpToMillisec();
     
-        public ReformatOp GetOp(DatetimeMethodEnum method, String methodNameUsed, IList<ExprNode> parameters)
+        public ReformatOp GetOp(TimeZoneInfo timeZone, DatetimeMethodEnum method, String methodNameUsed, IList<ExprNode> parameters)
         {
             switch (method)
             {
                 case DatetimeMethodEnum.GET:
-                    return new ReformatOpGetField(CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]));
+                    return new ReformatOpGetField(CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]), timeZone);
                 case DatetimeMethodEnum.FORMAT:
                     return FormatString;
                 case DatetimeMethodEnum.TOMILLISEC:
                     return ToMsec;
                 case DatetimeMethodEnum.TODATE:
-                    return ToDateTime;
+                    return new ReformatOpToDateTime(timeZone);
                 case DatetimeMethodEnum.TOCALENDAR:
-                    return ToDateTime;
+                    return new ReformatOpToDateTime(timeZone);
                 case DatetimeMethodEnum.GETDAYOFMONTH:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfMonth, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfMonth, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETMINUTEOFHOUR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MinuteOfHour, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MinuteOfHour, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETMONTHOFYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MonthOfYear, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MonthOfYear, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETDAYOFWEEK:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfWeek, typeof(DayOfWeek));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfWeek, typeof(DayOfWeek), timeZone);
                 case DatetimeMethodEnum.GETDAYOFYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfYear, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfYear, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETHOUROFDAY:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.HourOfDay, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.HourOfDay, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETMILLISOFSECOND:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MillisOfSecond, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MillisOfSecond, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETSECONDOFMINUTE:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.SecondOfMinute, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.SecondOfMinute, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETWEEKYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Weekyear, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Weekyear, typeof(int), timeZone);
                 case DatetimeMethodEnum.GETYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Year, typeof(int));
+                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Year, typeof(int), timeZone);
                 case DatetimeMethodEnum.BETWEEN:
                     if (ExprNodeUtility.IsAllConstants(parameters))
                     {

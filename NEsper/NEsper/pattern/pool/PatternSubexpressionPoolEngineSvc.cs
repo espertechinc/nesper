@@ -14,6 +14,7 @@ using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.pattern.pool
@@ -67,23 +68,20 @@ namespace com.espertech.esper.pattern.pool
             }
         }
 
-        public bool TryIncreaseCount(EvalFollowedByNode evalFollowedByNode)
+        public bool TryIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext)
         {
             // test pool max
             long newMax = _poolCount.IncrementAndGet();
             if (newMax > _maxPoolCountConfigured && _maxPoolCountConfigured >= 0)
             {
                 var counts = Counts;
-                evalFollowedByNode.Context.AgentInstanceContext.StatementContext.ExceptionHandlingService.
-                    HandleCondition(new ConditionPatternEngineSubexpressionMax(_maxPoolCountConfigured, counts),
-                                    evalFollowedByNode.Context.AgentInstanceContext.StatementContext.EpStatementHandle);
+                agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
+                    new ConditionPatternEngineSubexpressionMax(_maxPoolCountConfigured, counts), agentInstanceContext.StatementContext.EpStatementHandle);
                 if ((ExecutionPathDebugLog.IsEnabled) &&
                     (Log.IsDebugEnabled && (ExecutionPathDebugLog.IsTimerDebugEnabled)))
                 {
-                    PatternSubexpressionPoolStmtHandler stmtHandler =
-                        evalFollowedByNode.Context.AgentInstanceContext.StatementContext.PatternSubexpressionPoolSvc
-                            .StmtHandler;
-                    String stmtName = evalFollowedByNode.Context.AgentInstanceContext.StatementContext.StatementName;
+                    PatternSubexpressionPoolStmtHandler stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
+                    String stmtName = agentInstanceContext.StatementContext.StatementName;
                     Log.Debug(".tryIncreaseCount For statement '" + stmtName + "' pool count overflow at " + newMax +
                               " statement count was " + stmtHandler.Count + " preventStart=" + _preventStart);
                 }
@@ -98,10 +96,8 @@ namespace com.espertech.esper.pattern.pool
             }
             if ((ExecutionPathDebugLog.IsEnabled) && Log.IsDebugEnabled)
             {
-                PatternSubexpressionPoolStmtHandler stmtHandler =
-                    evalFollowedByNode.Context.AgentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.
-                        StmtHandler;
-                String stmtName = evalFollowedByNode.Context.AgentInstanceContext.StatementContext.StatementName;
+                PatternSubexpressionPoolStmtHandler stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
+                String stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(".tryIncreaseCount For statement '" + stmtName + "' pool count increases to " + newMax +
                           " statement count was " + stmtHandler.Count);
             }
@@ -109,29 +105,25 @@ namespace com.espertech.esper.pattern.pool
         }
 
         // Relevant for recovery of state
-        public void ForceIncreaseCount(EvalFollowedByNode evalFollowedByNode)
+        public void ForceIncreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext)
         {
             long newMax = _poolCount.IncrementAndGet();
             if ((ExecutionPathDebugLog.IsEnabled) && Log.IsDebugEnabled)
             {
-                PatternSubexpressionPoolStmtHandler stmtHandler =
-                    evalFollowedByNode.Context.AgentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.
-                        StmtHandler;
-                String stmtName = evalFollowedByNode.Context.AgentInstanceContext.StatementContext.StatementName;
+                PatternSubexpressionPoolStmtHandler stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
+                String stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(".forceIncreaseCount For statement '" + stmtName + "' pool count increases to " + newMax +
                           " statement count was " + stmtHandler.Count);
             }
         }
 
-        public void DecreaseCount(EvalFollowedByNode evalFollowedByNode)
+        public void DecreaseCount(EvalNode evalNode, AgentInstanceContext agentInstanceContext)
         {
             long newMax = _poolCount.DecrementAndGet();
             if ((ExecutionPathDebugLog.IsEnabled) && Log.IsDebugEnabled)
             {
-                PatternSubexpressionPoolStmtHandler stmtHandler =
-                    evalFollowedByNode.Context.AgentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.
-                        StmtHandler;
-                String stmtName = evalFollowedByNode.Context.AgentInstanceContext.StatementContext.StatementName;
+                PatternSubexpressionPoolStmtHandler stmtHandler = agentInstanceContext.StatementContext.PatternSubexpressionPoolSvc.StmtHandler;
+                String stmtName = agentInstanceContext.StatementContext.StatementName;
                 Log.Debug(".decreaseCount For statement '" + stmtName + "' pool count decreases to " + newMax +
                           " statement count was " + stmtHandler.Count);
             }

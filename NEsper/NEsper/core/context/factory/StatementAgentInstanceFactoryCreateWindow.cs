@@ -35,13 +35,13 @@ namespace com.espertech.esper.core.context.factory
         private readonly StatementContext _statementContext;
         private readonly StatementSpecCompiled _statementSpec;
         private readonly EPServicesContext _services;
-        private readonly ViewableActivatorFilterProxy _activator;
+        private readonly ViewableActivator _activator;
         private readonly ViewFactoryChain _unmaterializedViewChain;
         private readonly ResultSetProcessorFactoryDesc _resultSetProcessorPrototype;
         private readonly OutputProcessViewFactory _outputProcessViewFactory;
         private readonly bool _isRecoveringStatement;
     
-        public StatementAgentInstanceFactoryCreateWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivatorFilterProxy activator, ViewFactoryChain unmaterializedViewChain, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, OutputProcessViewFactory outputProcessViewFactory, bool recoveringStatement)
+        public StatementAgentInstanceFactoryCreateWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, ViewFactoryChain unmaterializedViewChain, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, OutputProcessViewFactory outputProcessViewFactory, bool recoveringStatement)
             : base(statementContext.Annotations)
         {
             _statementContext = statementContext;
@@ -63,12 +63,14 @@ namespace com.espertech.esper.core.context.factory
             Viewable eventStreamParentViewable;
             StatementAgentInstancePostLoad postLoad;
             Viewable topView;
+            NamedWindowProcessorInstance processorInstance;
+            ViewableActivationResult viewableActivationResult;
     
             try {
                 // Register interest
-                ViewableActivationResult activationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
-                stopCallbacks.Add(activationResult.StopCallback);
-                eventStreamParentViewable = activationResult.Viewable;
+                viewableActivationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
+                stopCallbacks.Add(viewableActivationResult.StopCallback);
+                eventStreamParentViewable = viewableActivationResult.Viewable;
     
                 // Obtain processor for this named window
                 var processor = _services.NamedWindowService.GetProcessor(windowName);
@@ -77,7 +79,7 @@ namespace com.espertech.esper.core.context.factory
                 }
     
                 // Allocate processor instance
-                var processorInstance = processor.AddInstance(agentInstanceContext);
+                processorInstance = processor.AddInstance(agentInstanceContext);
                 var rootView = processorInstance.RootViewInstance;
                 eventStreamParentViewable.AddView(rootView);
     
@@ -116,10 +118,6 @@ namespace com.espertech.esper.core.context.factory
                         if (instance != null && instance.RootViewInstance.IsVirtualDataWindow)
                         {
                             instance.RootViewInstance.VirtualDataWindow.HandleStopWindow();
-                        }
-                        if (instance != null)
-                        {
-                            iprocessor.RemoveProcessorInstance(instance);
                         }
                     }
                     if (environmentStopCallback != null)
@@ -190,10 +188,27 @@ namespace com.espertech.esper.core.context.factory
                 StatementAgentInstanceUtil.StopSafe(callback, _statementContext);
                 throw;
             }
+
+            StatementAgentInstanceFactoryCreateWindowResult createWindowResult = new StatementAgentInstanceFactoryCreateWindowResult(
+                finalView, null, agentInstanceContext, eventStreamParentViewable, postLoad, topView, processorInstance, viewableActivationResult);
+            if (_statementContext.StatementExtensionServicesContext != null)
+            {
+                _statementContext.StatementExtensionServicesContext.ContributeStopCallback(createWindowResult, stopCallbacks);
+            }
     
             Log.Debug(".start Statement start completed");
             StopCallback stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
-            return new StatementAgentInstanceFactoryCreateWindowResult(finalView, stopCallback, agentInstanceContext, eventStreamParentViewable, postLoad, topView);
+            createWindowResult.StopCallback = stopCallback;
+
+            return createWindowResult;
+        }
+
+        public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public override void UnassignExpressions()
+        {
         }
     }
 }

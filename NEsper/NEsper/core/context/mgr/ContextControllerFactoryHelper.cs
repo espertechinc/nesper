@@ -119,34 +119,7 @@ namespace com.espertech.esper.core.context.mgr
                                                                     IList<FilterSpecCompiled> optFiltersNested,
                                                                     ContextStateCache contextStateCache)
         {
-            ContextControllerFactory factory;
-            if (detail is ContextDetailInitiatedTerminated)
-            {
-                factory = new ContextControllerInitTermFactory(
-                    factoryContext, (ContextDetailInitiatedTerminated) detail, contextStateCache);
-            }
-            else if (detail is ContextDetailPartitioned)
-            {
-                factory = new ContextControllerPartitionedFactory(
-                    factoryContext, (ContextDetailPartitioned) detail, optFiltersNested, contextStateCache);
-            }
-            else if (detail is ContextDetailCategory)
-            {
-                factory = new ContextControllerCategoryFactory(
-                    factoryContext, (ContextDetailCategory) detail, optFiltersNested, contextStateCache);
-            }
-            else if (detail is ContextDetailHash)
-            {
-                factory = new ContextControllerHashFactory(
-                    factoryContext, (ContextDetailHash) detail, optFiltersNested, contextStateCache);
-            }
-            else
-            {
-                throw new UnsupportedOperationException(
-                    "Context detail " + detail + " is not yet supported in a nested context");
-            }
-
-            return factory;
+            return factoryContext.ServicesContext.ContextControllerFactoryFactorySvc.Make(factoryContext, detail, optFiltersNested, contextStateCache);
         }
     }
 }

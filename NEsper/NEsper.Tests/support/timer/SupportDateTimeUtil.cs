@@ -16,17 +16,16 @@ namespace com.espertech.esper.support.timer
 {
 	public class SupportDateTimeUtil
     {
-	    public static void CompareDate(DateTime sourceDate, int year, int month, int day, int hour, int minute, int second, int millis, string timeZoneId)
+        public static void CompareDate(DateTimeOffset sourceDate, int year, int month, int day, int hour, int minute, int second, int millis, string timeZoneId)
         {
             var timeZoneInfoTarget = TimeZoneHelper.GetTimeZoneInfo(timeZoneId);
-            var timeZoneInfoLocal = TimeZoneHelper.Local;
-            var targetDate = TimeZoneInfo.ConvertTime(sourceDate, timeZoneInfoLocal, timeZoneInfoTarget);
+            var targetDate = sourceDate.TranslateTo(timeZoneInfoTarget);
 
 	        CompareDate(targetDate, year, month, day, hour, minute, second, millis);
 	        // Assert.AreEqual(timeZoneId, cal.TimeZone.ID);
 	    }
 
-        public static void CompareDate(DateTime date, int year, int month, int day, int hour, int minute, int second, int millis)
+        public static void CompareDate(DateTimeOffset date, int year, int month, int day, int hour, int minute, int second, int millis)
         {
             Assert.AreEqual(year, date.Year);
             Assert.AreEqual(month, date.Month);

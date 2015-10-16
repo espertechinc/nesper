@@ -11,9 +11,9 @@ using System;
 namespace com.espertech.esper.epl.agg.aggregator
 {
     /// <summary>
-    /// Aggregator to return the Nth oldest element to enter, with N=1 the most recent value 
-    /// is returned. If N is larger than the enter minus leave size, null is returned. A maximum 
-    /// N historical values are stored, so it can be safely used to compare recent values in large 
+    /// Aggregator to return the Nth oldest element to enter, with Count=1 the most recent value 
+    /// is returned. If Count is larger than the enter minus leave size, null is returned. A maximum 
+    /// Count historical values are stored, so it can be safely used to compare recent values in large 
     /// views without incurring excessive overhead.
     /// </summary>
     public class AggregatorNth : AggregationMethod

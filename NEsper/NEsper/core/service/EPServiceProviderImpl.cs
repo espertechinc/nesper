@@ -291,7 +291,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public ExtensionServicesContext ExtensionServicesContext
+        public EngineLevelExtensionServicesContext ExtensionServicesContext
         {
             get
             {
@@ -299,7 +299,7 @@ namespace com.espertech.esper.core.service
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
-                return _engine.Services.ExtensionServicesContext;
+                return _engine.Services.EngineLevelExtensionServicesContext;
             }
         }
 
@@ -667,11 +667,23 @@ namespace com.espertech.esper.core.service
             // Configure services to use the new runtime
             services.TimerService.Callback = timerCallback;
     
-            // Statement lifycycle init
+            // Statement lifecycle init
             services.StatementLifecycleSvc.Init();
+            // Filter service init
+            services.FilterService.Init();
+
+            // Schedule service init
+            services.SchedulingService.Init();
     
             // New admin
-            var configOps = new ConfigurationOperationsImpl(services.EventAdapterService, services.EventTypeIdGenerator, services.EngineImportService, services.VariableService, services.EngineSettingsService, services.ValueAddEventService, services.MetricsReportingService, services.StatementEventTypeRefService, services.StatementVariableRefService, services.PlugInViews, services.FilterService, services.PatternSubexpressionPoolSvc, services.TableService);
+            var configOps = new ConfigurationOperationsImpl(
+                services.EventAdapterService, services.EventTypeIdGenerator, services.EngineImportService,
+                services.VariableService, services.EngineSettingsService, services.ValueAddEventService,
+                services.MetricsReportingService, services.StatementEventTypeRefService,
+                services.StatementVariableRefService, services.PlugInViews, services.FilterService,
+                services.PatternSubexpressionPoolSvc,
+                services.MatchRecognizeStatePoolEngineSvc, 
+                services.TableService);
             var defaultStreamSelector = _configSnapshot.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector.MapFromSODA();
             EPAdministratorSPI adminSPI;
             var adminClassName = _configSnapshot.EngineDefaults.AlternativeContextConfig.Admin;
@@ -735,9 +747,9 @@ namespace com.espertech.esper.core.service
             LoadAdapters(services);
     
             // Initialize extension services
-            if (services.ExtensionServicesContext != null)
+            if (services.EngineLevelExtensionServicesContext != null)
             {
-                services.ExtensionServicesContext.Init(services, runtimeSPI, adminSPI);
+                services.EngineLevelExtensionServicesContext.Init(services, runtimeSPI, adminSPI);
             }
     
             // Start metrics reporting, if any

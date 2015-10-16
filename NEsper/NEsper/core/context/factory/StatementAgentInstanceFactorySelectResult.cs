@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
@@ -39,8 +40,8 @@ namespace com.espertech.esper.core.context.factory
             EvalRootState[] patternRoots,
             StatementAgentInstancePostLoad optionalPostLoadJoin,
             Viewable[] topViews,
-            Viewable[] eventStreamViewables)
-            : base(
+            Viewable[] eventStreamViewables,
+            ViewableActivationResult[] viewableActivationResults) : base(
                 finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies,
                 priorNodeStrategies, previousNodeStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList)
         {
@@ -48,6 +49,7 @@ namespace com.espertech.esper.core.context.factory
             PatternRoots = patternRoots;
             OptionalPostLoadJoin = optionalPostLoadJoin;
             EventStreamViewables = eventStreamViewables;
+            ViewableActivationResults = viewableActivationResults;
         }
 
         public Viewable[] TopViews { get; private set; }
@@ -57,5 +59,7 @@ namespace com.espertech.esper.core.context.factory
         public StatementAgentInstancePostLoad OptionalPostLoadJoin { get; private set; }
 
         public Viewable[] EventStreamViewables { get; private set; }
+
+        public ViewableActivationResult[] ViewableActivationResults { get; private set; }
     }
 }

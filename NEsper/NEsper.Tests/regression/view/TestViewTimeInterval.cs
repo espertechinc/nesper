@@ -187,11 +187,11 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("select rstream * from SupportBean.win:ext_timed(LongPrimitive, 1 month)");
             stmt.Events += _testListener.Update;
 
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-02-01T9:00:00.000"), "E1");
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-03-01T9:00:00.000") - 1, "E2");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-02-01T9:00:00.000"), "E1");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-03-01T9:00:00.000") - 1, "E2");
             Assert.IsFalse(_testListener.IsInvoked);
 
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-03-01T9:00:00.000"), "E3");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-03-01T9:00:00.000"), "E3");
             EPAssertionUtil.AssertProps(_testListener.AssertOneGetNewAndReset(), "TheString".Split(','), new Object[]{"E1"});
         }
 
@@ -203,11 +203,11 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("select * from SupportBean.win:ext_timed_batch(LongPrimitive, 1 month)");
             stmt.Events += _testListener.Update;
 
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-02-01T9:00:00.000"), "E1");
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-03-01T9:00:00.000") - 1, "E2");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-02-01T9:00:00.000"), "E1");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-03-01T9:00:00.000") - 1, "E2");
             Assert.IsFalse(_testListener.IsInvoked);
 
-            SendExtTimeEvent(DateTimeHelper.ParseDefaultMSec("2002-03-01T9:00:00.000"), "E3");
+            SendExtTimeEvent(DateTimeParser.ParseDefaultMSec("2002-03-01T9:00:00.000"), "E3");
             EPAssertionUtil.AssertPropsPerRow(_testListener.GetAndResetLastNewData(), "TheString".Split(','), new Object[][]{ new object[] {"E1"}, new object[] {"E2"}});
         }
     
@@ -322,12 +322,12 @@ namespace com.espertech.esper.regression.view
 
         private void SendCurrentTime(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendCurrentTimeWithMinus(String time, long minus)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
     }
 }

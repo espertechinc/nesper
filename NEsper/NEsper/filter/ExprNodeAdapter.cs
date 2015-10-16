@@ -54,7 +54,7 @@ namespace com.espertech.esper.filter
         }
 
         /// <summary>
-        /// Provides the prototype events-per-stream where stream zero is the current stream
+        /// Provides the Prototype events-per-stream where stream zero is the current stream
         /// and is filled when the expression is evaluated.
         /// </summary>
         public EventBean[] Prototype

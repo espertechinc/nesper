@@ -438,16 +438,16 @@ namespace com.espertech.esper.regression.epl
     
             // Test s2 and s0=1, s1=0, s3=0, s4=1, s5=2
             //
-            s0Events = SupportBean_S0.MakeS0("N", new String[]{"N-s0-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new String[]{"Count-s0-1"});
             SendEvent(s0Events);
     
-            s4Events = SupportBean_S4.MakeS4("N", new String[]{"N-s4-1"});
+            s4Events = SupportBean_S4.MakeS4("Count", new String[]{"Count-s4-1"});
             SendEventsAndReset(s4Events);
     
-            s5Events = SupportBean_S5.MakeS5("N", new String[]{"N-s5-1", "N-s5-2"});
+            s5Events = SupportBean_S5.MakeS5("Count", new String[]{"Count-s5-1", "Count-s5-2"});
             SendEventsAndReset(s5Events);
     
-            s2Events = SupportBean_S2.MakeS2("N", new String[]{"N-s2-1"});
+            s2Events = SupportBean_S2.MakeS2("Count", new String[]{"Count-s2-1"});
             SendEvent(s2Events);
             EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
                     new Object[] {null, null, s2Events[0], null, s4Events[0], s5Events[0]},

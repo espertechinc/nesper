@@ -6,12 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     public class SynchronizedList<T> : IList<T>
     {

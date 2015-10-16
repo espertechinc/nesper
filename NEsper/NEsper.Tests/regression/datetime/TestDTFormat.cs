@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.datetime
         public void TestFormat()
         {
             String startTime = "2002-05-30 9:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
             String[] fields = "val0,val1,val2".Split(',');
             String eplFragment = "select " +

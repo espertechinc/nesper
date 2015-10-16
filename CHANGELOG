@@ -1,0 +1,20 @@
+NEsper Changelog
+====================
+
+Changes in version 5.3.0
+------------------------
+
+	* Support for match recognize to have a maximum state count
+	* Support for output rate limiting hints
+	* Support for filter expression rewrite hint
+	* Support for stateless statements to have no listener dispatch or insert into latches
+	* Support for configuring an engine-wide default time zone
+	* Support for insert-into into a stream without any properties to use a select-clause that selects only "null"
+	* Addition of DateTimeEx to provide operations that require datetimes + timezones.
+	* Migrated most datetime operations to DateTimeEx and/or DateTimeOffset.
+	* Moved datetime parsing operations into DateTimeParser.
+	* Moved datetime math operations into DateTimeMath.
+	* DateTime conversion to milliseconds normalized to UtcTicks (previously ticks) and offset.
+
+Bug fixes and other improvements
+	* Fixed issue Github#2 System.String not handled by TypeHelper

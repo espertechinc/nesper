@@ -636,7 +636,7 @@ namespace com.espertech.esper.regression.pattern
             epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SupportUpdateListener listener = new SupportUpdateListener();
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().Name);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
 
             SendCurrentTime(epService, "2002-02-01T9:00:00.000");
             epService.EPAdministrator.CreateEPL("select * from pattern [every-distinct(TheString, 1 month) a=SupportBean]").Events += listener.Update;
@@ -658,11 +658,11 @@ namespace com.espertech.esper.regression.pattern
         }
 
         private void SendCurrentTimeWithMinus(EPServiceProvider epService, String time, long minus) {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
 
         private void SendCurrentTime(EPServiceProvider epService, String time) {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         public void TryInvalid(EPServiceProvider engine, String statement, String message)

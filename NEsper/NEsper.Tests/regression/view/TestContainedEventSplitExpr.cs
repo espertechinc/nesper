@@ -43,7 +43,8 @@ namespace com.espertech.esper.regression.view
 	    }
 
         [Test]
-	    public void TestSingleRowSplitAndType() {
+	    public void TestSingleRowSplitAndType()
+        {
 	        RunAssertionSingleRowSplitAndType(EventRepresentationEnum.OBJECTARRAY);
 	        RunAssertionSingleRowSplitAndType(EventRepresentationEnum.MAP);
 	        RunAssertionSingleRowSplitAndType(EventRepresentationEnum.DEFAULT);

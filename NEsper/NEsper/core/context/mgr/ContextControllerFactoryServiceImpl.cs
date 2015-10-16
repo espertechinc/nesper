@@ -6,28 +6,26 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.core.context.mgr
 {
-    public class ContextControllerFactoryServiceImpl : ContextControllerFactoryService
+	public class ContextControllerFactoryServiceImpl : ContextControllerFactoryService
     {
-        private static ContextStateCache CACHE_NO_SAVE = new ContextStateCacheNoSave();
-    
-        public static ContextControllerFactoryServiceImpl DEFAULT_FACTORY = new ContextControllerFactoryServiceImpl(CACHE_NO_SAVE);
-    
-        private readonly ContextStateCache _cache;
-    
-        public ContextControllerFactoryServiceImpl(ContextStateCache cache) {
-            this._cache = cache;
-        }
-    
-        public ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext serviceContext) {
-            return ContextControllerFactoryHelper.GetFactory(serviceContext, _cache);
-        }
-    
-        public ContextPartitionIdManager AllocatePartitionIdMgr(String contextName, String contextStmtId) {
-            return new ContextPartitionIdManagerImpl();
-        }
-    }
-}
+	    private readonly static ContextStateCache CACHE_NO_SAVE = new ContextStateCacheNoSave();
+
+	    public readonly static ContextControllerFactoryServiceImpl DEFAULT_FACTORY = new ContextControllerFactoryServiceImpl(CACHE_NO_SAVE);
+
+	    private readonly ContextStateCache _cache;
+
+	    public ContextControllerFactoryServiceImpl(ContextStateCache cache) {
+	        _cache = cache;
+	    }
+
+	    public ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext serviceContext) {
+	        return ContextControllerFactoryHelper.GetFactory(serviceContext, _cache);
+	    }
+
+	    public ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, string contextStmtId) {
+	        return new ContextPartitionIdManagerImpl();
+	    }
+	}
+} // end of namespace

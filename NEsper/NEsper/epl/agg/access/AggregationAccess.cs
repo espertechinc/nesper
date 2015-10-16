@@ -35,12 +35,12 @@ namespace com.espertech.esper.epl.agg.access
         /// <value>last value</value>
         EventBean LastValue { get; }
 
-        /// <summary>Counting from the first element to the last, returns the oldest (first) value entered for index zero and the n-th oldest value for index N. </summary>
+        /// <summary>Counting from the first element to the last, returns the oldest (first) value entered for index zero and the n-th oldest value for index Count. </summary>
         /// <param name="index">index</param>
         /// <returns>last value</returns>
         EventBean GetFirstNthValue(int index);
     
-        /// <summary>Counting from the last element to the first, returns the newest (last) value entered for index zero and the n-th newest value for index N. </summary>
+        /// <summary>Counting from the last element to the first, returns the newest (last) value entered for index zero and the n-th newest value for index Count. </summary>
         /// <param name="index">index</param>
         /// <returns>last value</returns>
         EventBean GetLastNthValue(int index);

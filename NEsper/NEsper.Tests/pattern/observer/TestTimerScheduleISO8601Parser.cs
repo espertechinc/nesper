@@ -148,7 +148,7 @@ namespace com.espertech.esper.pattern.observer
 	            Assert.IsNull(spec.OptionalDate);
 	        }
 	        else {
-	            Assert.AreEqual(DateTimeHelper.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.Value.TimeInMillis());
+	            Assert.AreEqual(DateTimeParser.ParseDefaultMSecWZone(expectedDate), spec.OptionalDate.TimeInMillis);
 	        }
 	    }
 
@@ -157,8 +157,8 @@ namespace com.espertech.esper.pattern.observer
 	        TimeZoneInfo timeZoneInfoTarget = TimeZoneHelper.GetTimeZoneInfo(zone);
             TimeZoneInfo timeZoneInfoLocal = TimeZoneHelper.Local;
 	        TimerScheduleSpec spec = TimerScheduleISO8601Parser.Parse(date);
-            // the date time will be parsed by the ISO8601 parser but the time returned will be in "local" terms
-	        DateTime specDate = TimeZoneInfo.ConvertTime(spec.OptionalDate.Value, timeZoneInfoLocal, timeZoneInfoTarget);
+            // the date time will be parsed by the ISO8601 parser but the time returned will be in "offset" terms
+	        DateTimeOffset specDate = spec.OptionalDate.DateTime.TranslateTo(timeZoneInfoTarget);
 
 	        SupportDateTimeUtil.CompareDate(specDate, year, month, day, hour, minute, second, millis);
 	        //Assert.AreEqual(zone, spec.OptionalDate.TimeZone.DisplayName);

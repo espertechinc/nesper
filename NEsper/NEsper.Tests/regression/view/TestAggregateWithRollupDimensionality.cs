@@ -44,17 +44,18 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestOutputWhenTerminated()
         {
-            RunAssertionOutputWhenTerminated("last");
-            RunAssertionOutputWhenTerminated("all");
-            RunAssertionOutputWhenTerminated("snapshot");
+            RunAssertionOutputWhenTerminated("last", false);
+            RunAssertionOutputWhenTerminated("last", true);
+            RunAssertionOutputWhenTerminated("all", false);
+            RunAssertionOutputWhenTerminated("snapshot", false);
         }
-    
-        private void RunAssertionOutputWhenTerminated(string outputLimit)
-        {
+
+        private void RunAssertionOutputWhenTerminated(string outputLimit, bool hinted) {
+            string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             _epService.EPAdministrator.CreateEPL("@Name('s0') create context MyContext start SupportBean_S0(id=1) end SupportBean_S0(id=0)");
-            _epService.EPAdministrator.CreateEPL("@Name('s1') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
+            _epService.EPAdministrator.CreateEPL(hint + "@Name('s1') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
                     "from SupportBean group by rollup(TheString) output " + outputLimit + " when terminated");
-            _epService.EPAdministrator.GetStatement("s1").Events += _listener.Update;
+            _epService.EPAdministrator.GetStatement("s1").AddListener(_listener);
     
             _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));

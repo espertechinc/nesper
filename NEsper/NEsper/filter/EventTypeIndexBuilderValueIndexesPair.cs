@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.filter
 {
-    public class EventTypeIndexBuilderValueIndexesPair
+    public class EventTypeIndexBuilderValueIndexesPair : FilterServiceEntry
     {
         public EventTypeIndexBuilderValueIndexesPair(
             FilterValueSet filterValueSet,

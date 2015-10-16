@@ -19,8 +19,8 @@ namespace com.espertech.esper.filter
         private readonly IReaderWriterLock _iLock =
             ReaderWriterLockManager.CreateDefaultLock();
 
-        public FilterServiceLockCoarse()
-            : base(new FilterServiceGranularLockFactoryNone())
+        public FilterServiceLockCoarse(bool allowIsolation)
+            : base(new FilterServiceGranularLockFactoryNone(), allowIsolation)
         {
         }
 
@@ -61,19 +61,19 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override void Add(FilterValueSet filterValueSet, FilterHandle callback)
+        public override FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback)
         {
             using (_iLock.AcquireWriteLock())
             {
-                base.AddInternal(filterValueSet, callback);
+                return base.AddInternal(filterValueSet, callback);
             }
         }
 
-        public override void Remove(FilterHandle callback)
+        public override void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry)
         {
             using (_iLock.AcquireWriteLock())
             {
-                base.RemoveInternal(callback);
+                base.RemoveInternal(callback, filterServiceEntry);
             }
         }
 

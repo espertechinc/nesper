@@ -105,9 +105,9 @@ namespace com.espertech.esper.pattern
 
         /// <summary>Returns extension services context for statement (statement-specific). </summary>
         /// <value>extension services</value>
-        public StatementExtensionSvcContext ExtensionServicesContext
+        public StatementExtensionSvcContext StatementExtensionServicesContext
         {
-            get { return _statementContext.ExtensionServicesContext; }
+            get { return _statementContext.StatementExtensionServicesContext; }
         }
 
         /// <summary>Returns the variable service. </summary>

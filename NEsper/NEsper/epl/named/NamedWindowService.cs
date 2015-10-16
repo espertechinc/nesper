@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.lookup;
@@ -55,21 +56,22 @@ namespace com.espertech.esper.epl.named
         /// <param name="eventTypeAsName">Name of the event type as.</param>
         /// <returns>processor for the named window</returns>
         /// <throws>ViewProcessingException if the named window already exists</throws>
-        NamedWindowProcessor AddProcessor(String name,
-                                          String contextName,
-                                          bool singleInstanceContext,
-                                          EventType eventType,
-                                          StatementResultService statementResultService,
-                                          ValueAddEventProcessor revisionProcessor,
-                                          String eplExpression,
-                                          String statementName,
-                                          bool isPrioritized,
-                                          bool isEnableSubqueryIndexShare,
-                                          bool isBatchingDataWindow,
-                                          bool isVirtualDataWindow,
-                                          StatementMetricHandle statementMetricHandle,
-                                          ICollection<String> optionalUniqueKeyProps,
-                                          String eventTypeAsName);
+        NamedWindowProcessor AddProcessor(
+            String name,
+            String contextName,
+            EventType eventType,
+            StatementResultService statementResultService,
+            ValueAddEventProcessor revisionProcessor,
+            String eplExpression,
+            String statementName,
+            bool isPrioritized,
+            bool isEnableSubqueryIndexShare,
+            bool isBatchingDataWindow,
+            bool isVirtualDataWindow,
+            StatementMetricHandle statementMetricHandle,
+            ICollection<String> optionalUniqueKeyProps,
+            String eventTypeAsName,
+            StatementResourceService statementResourceService);
     
         /// <summary>Returns the processing instance for a given named window. </summary>
         /// <param name="name">window name</param>

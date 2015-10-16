@@ -845,7 +845,7 @@ namespace com.espertech.esper.util
                                    new[] {typeof(float?), typeof(float?)},
                                    new[] {typeof(HashSet<object>), typeof(ICollection<object>)},
                                    new[] {typeof(HashSet<object>), typeof(IEnumerable<object>)},
-                                   new[] {typeof(TreeSet<object>), typeof(ICollection<object>)},
+                                   new[] {typeof(SortedSet<object>), typeof(ICollection<object>)},
                                    new[] {typeof(ArrayList), typeof(Object)},
                                    // widening of arrays allowed if supertype
                                    //new[] {typeof(int[]), typeof(Object[])},

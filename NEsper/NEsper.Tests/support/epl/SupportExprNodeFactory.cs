@@ -437,7 +437,7 @@ namespace com.espertech.esper.support.epl
 
 	    public static MethodResolutionService MethodResService
 	    {
-	        get { return new MethodResolutionServiceImpl(new EngineImportServiceImpl(true, true, true, false, null), null); }
+            get { return new MethodResolutionServiceImpl(SupportEngineImportServiceFactory.Make(), null); }
 	    }
 	}
 } // end of namespace

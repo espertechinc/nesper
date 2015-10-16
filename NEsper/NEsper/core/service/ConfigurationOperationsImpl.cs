@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
@@ -25,6 +26,7 @@ using com.espertech.esper.events.vaevent;
 using com.espertech.esper.events.xml;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern.pool;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
@@ -46,6 +48,7 @@ namespace com.espertech.esper.core.service
         private readonly PluggableObjectCollection _plugInViews;
         private readonly FilterService _filterService;
         private readonly PatternSubexpressionPoolEngineSvc _patternSubexpressionPoolSvc;
+        private readonly MatchRecognizeStatePoolEngineSvc _matchRecognizeStatePoolEngineSvc;
         private readonly TableService _tableService;
 
         /// <summary>
@@ -77,6 +80,7 @@ namespace com.espertech.esper.core.service
             PluggableObjectCollection plugInViews,
             FilterService filterService,
             PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc, 
             TableService tableService)
         {
             _eventAdapterService = eventAdapterService;
@@ -91,6 +95,7 @@ namespace com.espertech.esper.core.service
             _plugInViews = plugInViews;
             _filterService = filterService;
             _patternSubexpressionPoolSvc = patternSubexpressionPoolSvc;
+            _matchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             _tableService = tableService;
         }
     
@@ -709,8 +714,36 @@ namespace com.espertech.esper.core.service
 
         public long PatternMaxSubexpressions
         {
-            set { _patternSubexpressionPoolSvc.PatternMaxSubexpressions = value; }
             get { return _patternSubexpressionPoolSvc.PatternMaxSubexpressions.GetValueOrDefault(); }
+            set
+            {
+                if (_patternSubexpressionPoolSvc != null)
+                {
+                    _patternSubexpressionPoolSvc.PatternMaxSubexpressions = value;
+                }
+            }
+        }
+
+        public long? MatchRecognizeMaxStates
+        {
+            get
+            {
+                if (_matchRecognizeStatePoolEngineSvc != null)
+                {
+                    return _matchRecognizeStatePoolEngineSvc.MatchRecognizeMaxStates;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (_matchRecognizeStatePoolEngineSvc != null)
+                {
+                    _matchRecognizeStatePoolEngineSvc.MatchRecognizeMaxStates = value;
+                }
+            }
         }
     }
 }

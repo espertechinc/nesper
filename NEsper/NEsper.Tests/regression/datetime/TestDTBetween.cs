@@ -45,12 +45,15 @@ namespace com.espertech.esper.regression.datetime
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _listener = null;
         }
-    
+
+        /// <summary>
+        /// Tests the include endpoints.
+        /// </summary>
         [Test]
         public void TestIncludeEndpoints()
         {
             String startTime = "2002-05-30 09:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
             String[] fieldsCurrentTs = "val0,val1,val2,val3,val4,val5,val6".Split(',');
             String eplCurrentTS = "select " +
@@ -86,13 +89,13 @@ namespace com.espertech.esper.regression.datetime
             stmtCurrentTs.Dispose();
     
             // test calendar field and constants
-            _epService.EPAdministrator.Configuration.AddImport(typeof(DateTime));
+            _epService.EPAdministrator.Configuration.AddImport(typeof(DateTimeParser));
             String[] fieldsConstants = "val0,val1,val2,val3".Split(',');
             String eplConstants = "select " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000')) as val0, " +
-                    "utildateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000')) as val1, " +
-                    "caldateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000')) as val2, " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000')) as val3 " +
+                    "msecdateStart.between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000')) as val0, " +
+                    "utildateStart.between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000')) as val1, " +
+                    "caldateStart.between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000')) as val2, " +
+                    "msecdateStart.between(DateTimeParser.ParseDefault('2002-05-30 09:01:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:00:00.000')) as val3 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = _epService.EPAdministrator.CreateEPL(eplConstants);
             stmtConstants.Events += _listener.Update;
@@ -123,7 +126,7 @@ namespace com.espertech.esper.regression.datetime
         public void TestExcludeEndpoints()
         {
             String startTime = "2002-05-30 9:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
             _epService.EPAdministrator.CreateEPL("create variable boolean VAR_TRUE = true");
             _epService.EPAdministrator.CreateEPL("create variable boolean VAR_FALSE = false");
     
@@ -157,13 +160,13 @@ namespace com.espertech.esper.regression.datetime
             stmtCurrentTs.Dispose();
     
             // test calendar field and constants
-            _epService.EPAdministrator.Configuration.AddImport(typeof(DateTime));
+            _epService.EPAdministrator.Configuration.AddImport(typeof(DateTimeParser));
             String[] fieldsConstants = "val0,val1,val2,val3".Split(',');
             String eplConstants = "select " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000'), true, true) as val0, " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000'), true, false) as val1, " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000'), false, true) as val2, " +
-                    "msecdateStart.Between(DateTimeHelper.ParseDefault('2002-05-30 09:00:00.000'), DateTimeHelper.ParseDefault('2002-05-30 09:01:00.000'), false, false) as val3 " +
+                    "msecdateStart.Between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000'), true, true) as val0, " +
+                    "msecdateStart.Between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000'), true, false) as val1, " +
+                    "msecdateStart.Between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000'), false, true) as val2, " +
+                    "msecdateStart.Between(DateTimeParser.ParseDefault('2002-05-30 09:00:00.000'), DateTimeParser.ParseDefault('2002-05-30 09:01:00.000'), false, false) as val3 " +
                     "from SupportTimeStartEndA";
             EPStatement stmtConstants = _epService.EPAdministrator.CreateEPL(eplConstants);
             stmtConstants.Events += _listener.Update;

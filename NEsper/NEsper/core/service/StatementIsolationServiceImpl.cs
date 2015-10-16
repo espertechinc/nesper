@@ -20,7 +20,9 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>Service to maintain currently active isoalted service providers for an engine. </summary>
+    /// <summary>
+    /// Service to maintain currently active isoalted service providers for an engine.
+    /// </summary>
     public class StatementIsolationServiceImpl : StatementIsolationService
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -51,7 +53,7 @@ namespace com.espertech.esper.core.service
                 return serviceProviderIsolated;
             }
 
-            var filterService = FilterServiceProvider.NewService(_epServicesContext.ConfigSnapshot.EngineDefaults.ExecutionConfig.FilterServiceProfile);
+            var filterService = FilterServiceProvider.NewService(_epServicesContext.ConfigSnapshot.EngineDefaults.ExecutionConfig.FilterServiceProfile, true);
             var scheduleService = new SchedulingServiceImpl(_epServicesContext.TimeSource);
             var services = new EPIsolationUnitServices(name, _currentUnitId, filterService, scheduleService);
             serviceProviderIsolated = new EPServiceProviderIsolatedImpl(name, services, _epServicesContext, _isolatedProviders);

@@ -16,6 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.schedule;
 using com.espertech.esper.core.deploy;
@@ -36,6 +37,7 @@ using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.pattern.pool;
 using com.espertech.esper.plugin;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.schedule;
 using com.espertech.esper.script;
 using com.espertech.esper.timer;
@@ -124,7 +126,9 @@ namespace com.espertech.esper.core.service
                 epServiceProvider.URI,
                 configSnapshot.EngineDefaults.ViewResourcesConfig.IsShareViews);
 
-            var filterService = FilterServiceProvider.NewService(configSnapshot.EngineDefaults.ExecutionConfig.FilterServiceProfile);
+            var filterService = FilterServiceProvider.NewService(
+                configSnapshot.EngineDefaults.ExecutionConfig.FilterServiceProfile,
+                configSnapshot.EngineDefaults.ExecutionConfig.IsAllowIsolatedService);
 
             var metricsReporting = new MetricReportingServiceImpl(configSnapshot.EngineDefaults.MetricsReportingConfig, epServiceProvider.URI);
             var namedWindowService = new NamedWindowServiceImpl(
@@ -171,6 +175,14 @@ namespace com.espertech.esper.core.service
                     configSnapshot.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
             }
 
+            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc = null;
+            if (configSnapshot.EngineDefaults.MatchRecognizeConfig.MaxStates != null)
+            {
+                matchRecognizeStatePoolEngineSvc = new MatchRecognizeStatePoolEngineSvc(
+                    configSnapshot.EngineDefaults.MatchRecognizeConfig.MaxStates.Value,
+                    configSnapshot.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart);
+            }
+
             var scriptingService = new ScriptingServiceImpl();
             scriptingService.DiscoverEngines();
     
@@ -183,9 +195,14 @@ namespace com.espertech.esper.core.service
                 namedWindowService, variableService, tableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
                 statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
                 deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl(), eventTypeIdGenerator, stmtMetadataFactory,
-                contextManagementService, schedulableAgentInstanceDirectory, patternSubexpressionPoolSvc,
+                contextManagementService, schedulableAgentInstanceDirectory, patternSubexpressionPoolSvc, matchRecognizeStatePoolEngineSvc,
                 new DataFlowServiceImpl(epServiceProvider, new DataFlowConfigurationStateServiceImpl()),
                 new ExprDeclaredServiceImpl(),
+                new ContextControllerFactoryFactorySvcImpl(), 
+                new ContextManagerFactoryServiceImpl(),
+                new EPStatementFactoryDefault(), 
+                new RegexHandlerFactoryDefault(), 
+                new ViewableActivatorFactoryDefault(),
                 scriptingService
                 );
 
@@ -540,7 +557,9 @@ namespace com.espertech.esper.core.service
                 expression.IsUdfCache,
                 expression.IsDuckTyping,
                 configSnapshot.EngineDefaults.LanguageConfig.IsSortUsingCollator,
-                expression.MathContext);
+                expression.MathContext,
+                expression.TimeZone,
+                configSnapshot.EngineDefaults.ExecutionConfig.ThreadingProfile);
             engineImportService.AddMethodRefs(configSnapshot.MethodInvocationReferences);
     
             // Add auto-imports

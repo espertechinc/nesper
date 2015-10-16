@@ -24,7 +24,10 @@ namespace com.espertech.esper.pattern.observer
 	    /// <param name="paramList">is a list of parameters</param>
 	    /// <param name="convertor">for converting partial pattern matches to event-per-stream for expressions</param>
 	    /// <throws>ObserverParameterException thrown to indicate a parameter problem</throws>
-	    public abstract void SetObserverParameters(IList<ExprNode> paramList, MatchedEventConvertor convertor);
+	    public abstract void SetObserverParameters(
+	        IList<ExprNode> paramList,
+	        MatchedEventConvertor convertor,
+	        ExprValidationContext validationContext);
 
         /// <summary>
         /// Make an observer instance.

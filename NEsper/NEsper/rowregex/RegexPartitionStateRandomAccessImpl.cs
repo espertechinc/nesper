@@ -130,16 +130,19 @@ namespace com.espertech.esper.rowregex
         /// <summary>
         /// Returns true for empty collection.
         /// </summary>
-        /// <returns>
-        /// indicator if empty
-        /// </returns>
-        public bool IsEmpty()
+        /// <value>
+        ///   indicator if empty
+        /// </value>
+        public bool IsEmpty
         {
-            if (_priorEventMap != null)
+            get
             {
-                _priorEventMap.IsEmpty();
+                if (_priorEventMap != null)
+                {
+                    _priorEventMap.IsEmpty();
+                }
+                return true;
             }
-            return true;
         }
     }
 }

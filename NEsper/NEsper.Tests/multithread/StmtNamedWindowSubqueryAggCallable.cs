@@ -44,7 +44,7 @@ namespace com.espertech.esper.multithread
     
                 for (int loop = 0; loop < _numRepeats; loop++)
                 {
-                    String generalKey = "Key";
+                    String generalKey = "Value";
                     int valueExpected = _threadNum * 1000000000 + loop + 1;
     
                     // send insert event with string-value NOT specific to thread

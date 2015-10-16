@@ -273,7 +273,7 @@ namespace com.espertech.esper.epl.core
         AggregationMethod MakeLeavingAggregator(int agentInstanceId, int groupId, int aggregationId);
 
         /// <summary>
-        /// Returns a new set of aggregators given an existing prototype-set of aggregators for a given context partition and group key.
+        /// Returns a new set of aggregators given an existing Prototype-set of aggregators for a given context partition and group key.
         /// </summary>
         /// <param name="prototypes">is the prototypes</param>
         /// <param name="agentInstanceId">context partition</param>
@@ -284,7 +284,7 @@ namespace com.espertech.esper.epl.core
         AggregationMethod[] NewAggregators(AggregationMethodFactory[] prototypes, int agentInstanceId, Object groupKey, Object groupKeyBinding, AggregationGroupByRollupLevel groupByRollupLevel);
 
         /// <summary>
-        /// Returns a new set of aggregators given an existing prototype-set of aggregators for a given context partition (no groups).
+        /// Returns a new set of aggregators given an existing Prototype-set of aggregators for a given context partition (no groups).
         /// </summary>
         /// <param name="aggregators">The aggregators.</param>
         /// <param name="agentInstanceId">context partition</param>

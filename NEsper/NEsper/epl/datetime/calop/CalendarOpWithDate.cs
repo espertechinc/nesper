@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 
@@ -27,34 +28,33 @@ namespace com.espertech.esper.epl.datetime.calop
             _day = day;
         }
 
-        public void Evaluate(ref DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) 
+        public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) 
         {
             int? yearNum = GetInt(_year, eventsPerStream, isNewData, context);
             int? monthNum = GetInt(_month, eventsPerStream, isNewData, context);
             int? dayNum = GetInt(_day, eventsPerStream, isNewData, context);
-            dateTime = Action(dateTime, yearNum, monthNum, dayNum);
+            Action(dateTime, yearNum, monthNum, dayNum);
         }
     
         public static int? GetInt(ExprEvaluator expr, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) 
         {
-            Object result = expr.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+            var result = expr.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
             if (result == null) {
                 return null;
             }
             return (int?) result;
         }
-    
-        private static DateTime Action(DateTime dateTime, int? year, int? month, int? day)
+
+        private static DateTimeEx Action(DateTimeEx dateTime, int? year, int? month, int? day)
         {
-            return new DateTime(
+            return dateTime.Set(
                 year ?? dateTime.Year,
                 month ?? dateTime.Month,
                 day ?? dateTime.Day,
                 dateTime.Hour,
                 dateTime.Minute,
                 dateTime.Second,
-                dateTime.Millisecond,
-                dateTime.Kind);
+                dateTime.Millisecond);
         }
     }
 }

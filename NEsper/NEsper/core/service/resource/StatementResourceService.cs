@@ -19,13 +19,21 @@ namespace com.espertech.esper.core.service.resource
 {
     public class StatementResourceService
     {
-        public StatementResourceHolder ResourcesZero { get; private set; }
+        public StatementResourceHolder ResourcesUnpartitioned { get; private set; }
 
-        public IDictionary<int, StatementResourceHolder> ResourcesNonZero { get; private set; }
+        public IDictionary<int, StatementResourceHolder> ResourcesPartitioned { get; private set; }
 
         public IDictionary<ContextStatePathKey, EvalRootState> ContextEndEndpoints { get; private set; }
 
         public IDictionary<ContextStatePathKey, EvalRootState> ContextStartEndpoints { get; private set; }
+
+        public StatementResourceService(bool partitioned)
+        {
+            if (partitioned)
+            {
+                ResourcesPartitioned = new OrderedDictionary<int, StatementResourceHolder>();
+            }
+        }
 
         public void StartContextPattern(EvalRootState patternStopCallback, bool startEndpoint, ContextStatePathKey path)
         {
@@ -37,103 +45,30 @@ namespace com.espertech.esper.core.service.resource
             RemoveContextPattern(startEndpoint, path);
         }
 
-        public void StartContextPartition(StatementAgentInstanceFactoryResult startResult, int agentInstanceId)
+        public StatementResourceHolder GetPartitioned(int agentInstanceId)
         {
-            IReaderWriterLock iLock =
-                startResult.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
-            StatementResourceHolder recoveryResources = null;
-
-            if (startResult is StatementAgentInstanceFactorySelectResult)
-            {
-                StatementAgentInstanceFactorySelectResult selectResult =
-                    (StatementAgentInstanceFactorySelectResult) startResult;
-                recoveryResources = new StatementResourceHolder(
-                    iLock,
-                    selectResult.TopViews,
-                    selectResult.EventStreamViewables,
-                    selectResult.PatternRoots,
-                    selectResult.OptionalAggegationService,
-                    selectResult.SubselectStrategies,
-                    selectResult.OptionalPostLoadJoin);
-            }
-
-            if (startResult is StatementAgentInstanceFactoryCreateWindowResult)
-            {
-                StatementAgentInstanceFactoryCreateWindowResult createResult =
-                    (StatementAgentInstanceFactoryCreateWindowResult) startResult;
-                recoveryResources = new StatementResourceHolder(
-                    iLock,
-                    new Viewable[] { createResult.TopView },
-                    null,
-                    null,
-                    null,
-                    null,
-                    createResult.PostLoad);
-            }
-
-            if (startResult is StatementAgentInstanceFactoryCreateTableResult)
-            {
-                StatementAgentInstanceFactoryCreateTableResult createResult = (StatementAgentInstanceFactoryCreateTableResult) startResult;
-                recoveryResources = new StatementResourceHolder(
-                    iLock,
-                    new Viewable[] { createResult.FinalView },
-                    null,
-                    null, 
-                    createResult.OptionalAggegationService,
-                    null, 
-                    null);
-            }
-
-            if (startResult is StatementAgentInstanceFactoryOnTriggerResult)
-            {
-                var onTriggerResult = (StatementAgentInstanceFactoryOnTriggerResult) startResult;
-                recoveryResources = new StatementResourceHolder(
-                    iLock,
-                    null, 
-                    null, 
-                    new EvalRootState[] { onTriggerResult.OptPatternRoot }, 
-                    onTriggerResult.OptionalAggegationService, 
-                    onTriggerResult.SubselectStrategies, 
-                    null);
-            }
-
-            if (recoveryResources != null)
-            {
-                AddRecoveryResources(agentInstanceId, recoveryResources);
-            }
+            return ResourcesPartitioned.Get(agentInstanceId);
         }
 
-        public void EndContextPartition(int agentInstanceId)
+        public StatementResourceHolder Unpartitioned
         {
-            RemoveRecoveryResources(agentInstanceId);
+            get { return ResourcesUnpartitioned; }
+            set { ResourcesUnpartitioned = value; }
         }
 
-        private void AddRecoveryResources(int agentInstanceId, StatementResourceHolder recoveryResources)
+        public void SetPartitioned(int agentInstanceId, StatementResourceHolder statementResourceHolder)
         {
-            if (agentInstanceId == 0)
-            {
-                ResourcesZero = recoveryResources;
-            }
-            else
-            {
-                if (ResourcesNonZero == null)
-                {
-                    ResourcesNonZero = new SortedDictionary<int, StatementResourceHolder>();
-                }
-                ResourcesNonZero.Put(agentInstanceId, recoveryResources);
-            }
+            ResourcesPartitioned.Put(agentInstanceId, statementResourceHolder);
         }
 
-        private void RemoveRecoveryResources(int agentInstanceId)
+        public void DeallocatePartitioned(int agentInstanceId)
         {
-            if (agentInstanceId == 0)
-            {
-                ResourcesZero = null;
-            }
-            else if (ResourcesNonZero != null)
-            {
-                ResourcesNonZero.Remove(agentInstanceId);
-            }
+            ResourcesPartitioned.Remove(agentInstanceId);
+        }
+
+        public void DeallocateUnpartitioned()
+        {
+            ResourcesUnpartitioned = null;
         }
 
         private void RemoveContextPattern(bool startEndpoint, ContextStatePathKey path)

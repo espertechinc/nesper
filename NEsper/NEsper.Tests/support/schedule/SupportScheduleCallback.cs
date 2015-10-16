@@ -18,7 +18,7 @@ namespace com.espertech.esper.support.schedule
     
         private int orderTriggered = 0;
     
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
             log.Debug(".scheduledTrigger");
             orderAllCallbacks++;

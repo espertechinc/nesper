@@ -740,7 +740,7 @@ namespace com.espertech.esper.epl.expression.core
 	        var allConstants = true;
 	        foreach(var childNode in parameters)
 	        {
-	            if (childNode is ExprLambdaGoesNode) {
+                if (!EnumMethodEnumExtensions.IsEnumerationMethod(methodName) && childNode is ExprLambdaGoesNode) {
 	                throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method '" + methodName + "'");
 	            }
 	            if (childNode is ExprWildcard) {
@@ -1099,14 +1099,17 @@ namespace com.espertech.esper.epl.expression.core
         private static ExprValidationException GetNamedValidationException(String parameterName, Type[] expected)
         {
             String expectedType;
-            if (expected.Length == 1) {
+            if (expected.Length == 1)
+            {
                 expectedType = "a " + TypeHelper.GetSimpleNameForType(expected[0]) + "-typed value";
             }
-            else {
+            else
+            {
                 var buf = new StringWriter();
                 buf.Write("any of the following types: ");
                 var delimiter = "";
-                foreach (var clazz in expected) {
+                foreach (var clazz in expected)
+                {
                     buf.Write(delimiter);
                     buf.Write(TypeHelper.GetSimpleNameForType(clazz));
                     delimiter = ",";

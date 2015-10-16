@@ -62,7 +62,7 @@ namespace com.espertech.esper.core.service
         /// <summary>Map of statement name to statement. </summary>
         private readonly IDictionary<String, EPStatement> _stmtNameToStmtMap;
 
-        private readonly EPServiceProviderSPI _epServiceProvider;
+        private readonly EPServiceProviderSPI _serviceProvider;
         private readonly IReaderWriterLock _eventProcessingRwLock;
 
         private readonly IDictionary<String, String> _stmtNameToIdMap;
@@ -77,7 +77,7 @@ namespace com.espertech.esper.core.service
         public StatementLifecycleSvcImpl(EPServiceProvider epServiceProvider, EPServicesContext services)
         {
             _services = services;
-            _epServiceProvider = (EPServiceProviderSPI)epServiceProvider;
+            _serviceProvider = (EPServiceProviderSPI)epServiceProvider;
 
             // lock for starting and stopping statements
             _eventProcessingRwLock = services.EventProcessingRwLock;
@@ -261,6 +261,9 @@ namespace com.espertech.esper.core.service
                     throw;
                 }
 
+                // We keep a reference of the compiled spec as part of the statement context
+                statementContext.StatementSpecCompiled = compiledSpec;
+
                 // For insert-into streams, create a lock taken out as soon as an event is inserted
                 // Makes the processing between chained statements more predictable.
                 if (statementSpec.InsertIntoDesc != null || statementSpec.OnTriggerDesc is OnTriggerMergeDesc)
@@ -278,19 +281,23 @@ namespace com.espertech.esper.core.service
                     var latchFactoryNameFront = "insert_stream_F_" + insertIntoStreamName + "_" + statementName;
                     var msecTimeout = _services.EngineSettingsService.EngineSettings.ThreadingConfig.InsertIntoDispatchTimeout;
                     var locking = _services.EngineSettingsService.EngineSettings.ThreadingConfig.InsertIntoDispatchLocking;
-                    var latchFactoryFront = new InsertIntoLatchFactory(latchFactoryNameFront, msecTimeout, locking, _services.TimeSource);
-                    var latchFactoryBack = new InsertIntoLatchFactory(latchFactoryNameBack, msecTimeout, locking, _services.TimeSource);
+                    var latchFactoryFront = new InsertIntoLatchFactory(latchFactoryNameFront, stateless, msecTimeout, locking, _services.TimeSource);
+                    var latchFactoryBack = new InsertIntoLatchFactory(latchFactoryNameBack, stateless, msecTimeout, locking, _services.TimeSource);
                     statementContext.EpStatementHandle.InsertIntoFrontLatchFactory = latchFactoryFront;
                     statementContext.EpStatementHandle.InsertIntoBackLatchFactory = latchFactoryBack;
                 }
 
+                // determine overall filters, assign the filter spec index to filter boolean expressions
                 var needDedup = false;
                 var streamAnalysis = StatementSpecCompiledAnalyzer.AnalyzeFilters(compiledSpec);
-                foreach (FilterSpecCompiled filter in streamAnalysis.Filters) {
+                FilterSpecCompiled[] filterSpecAll = streamAnalysis.Filters.ToArray();
+                compiledSpec.FilterSpecsOverall = filterSpecAll;
+                foreach (FilterSpecCompiled filter in filterSpecAll) {
                     if (filter.Parameters.Length > 1) {
                         needDedup = true;
                         break;
                     }
+                    AssignFilterSpecIds(filter, filterSpecAll);
                 }
 
                 MultiMatchHandler multiMatchHandler;
@@ -339,20 +346,21 @@ namespace com.espertech.esper.core.service
                     try
                     {
                         // create statement - may fail for parser and simple validation errors
-                        var preserveDispatchOrder = _services.EngineSettingsService.EngineSettings.ThreadingConfig.IsListenerDispatchPreserveOrder;
+                        var preserveDispatchOrder = _services.EngineSettingsService.EngineSettings.ThreadingConfig.IsListenerDispatchPreserveOrder && !stateless;
                         var isSpinLocks = _services.EngineSettingsService.EngineSettings.ThreadingConfig.ListenerDispatchLocking == ConfigurationEngineDefaults.Threading.Locking.SPIN;
                         var blockingTimeout = _services.EngineSettingsService.EngineSettings.ThreadingConfig.ListenerDispatchTimeout;
                         var timeLastStateChange = _services.SchedulingService.Time;
-                        var statement = new EPStatementImpl(
-                            _epServiceProvider, statementSpec.ExpressionNoAnnotations, isPattern,
+                        var statement = _services.EpStatementFactory.Make(
+                            _serviceProvider, statementSpec.ExpressionNoAnnotations, isPattern,
                             _services.DispatchService, this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
                             _services.TimeSource, statementMetadata, statementUserObject, statementContext, isFailed, nameProvided);
+                        statementContext.Statement = statement;
 
                         var isInsertInto = statementSpec.InsertIntoDesc != null;
                         var isDistinct = statementSpec.SelectClauseSpec.IsDistinct;
                         var isForClause = statementSpec.ForClauseSpec != null;
                         statementContext.StatementResultService.SetContext(
-                            statement, _epServiceProvider,
+                            statement, _serviceProvider,
                             isInsertInto, isPattern, isDistinct,
                             isForClause, statementContext.EpStatementHandle.MetricsHandle);
 
@@ -762,7 +770,7 @@ namespace com.espertech.esper.core.service
                         long timeLastStateChange = _services.SchedulingService.Time;
                         statement.SetCurrentState(EPStatementState.STOPPED, timeLastStateChange);
 
-                        ((EPRuntimeSPI) _epServiceProvider.EPRuntime).ClearCaches();
+                        ((EPRuntimeSPI) _serviceProvider.EPRuntime).ClearCaches();
 
                         DispatchStatementLifecycleEvent(new StatementLifecycleEvent(statement, StatementLifecycleEvent.LifecycleEventType.STATECHANGE));
                     }
@@ -807,6 +815,12 @@ namespace com.espertech.esper.core.service
                             _services.PatternSubexpressionPoolSvc.RemoveStatement(desc.EpStatement.Name);
                         }
 
+                        // remove any match-recognize counts
+                        if (_services.MatchRecognizeStatePoolEngineSvc != null)
+                        {
+                            _services.MatchRecognizeStatePoolEngineSvc.RemoveStatement(desc.EpStatement.Name);
+                        }
+
                         EPStatementSPI statement = desc.EpStatement;
                         if (statement.State == EPStatementState.STARTED)
                         {
@@ -838,9 +852,9 @@ namespace com.espertech.esper.core.service
                         _stmtNameToIdMap.Remove(statement.Name);
                         _stmtIdToDescMap.Remove(statementId);
 
-                        if (!_epServiceProvider.IsDestroyed)
+                        if (!_serviceProvider.IsDestroyed)
                         {
-                            ((EPRuntimeSPI) _epServiceProvider.EPRuntime).ClearCaches();
+                            ((EPRuntimeSPI) _serviceProvider.EPRuntime).ClearCaches();
                         }
 
                         DispatchStatementLifecycleEvent(
@@ -1046,7 +1060,7 @@ namespace com.espertech.esper.core.service
                 var dotVisitor = new ExprNodeSubselectDeclaredDotVisitor();
                 whereClause.Accept(dotVisitor);
 
-                var disqualified = dotVisitor.Subselects.Count > 0;
+                var disqualified = dotVisitor.Subselects.Count > 0 || HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER.GetHint(annotations) != null;
 
                 if (!disqualified)
                 {
@@ -1531,6 +1545,19 @@ namespace com.espertech.esper.core.service
 
             var filter = new FilterSpecCompiled(targetType, typeName, new List<FilterSpecParam>[0], null);
             return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
+        }
+
+        private static void AssignFilterSpecIds(FilterSpecCompiled filterSpec, FilterSpecCompiled[] filterSpecsAll) {
+            for (int path = 0; path < filterSpec.Parameters.Length; path++) {
+                foreach (FilterSpecParam param in filterSpec.Parameters[path]) {
+                    if (param is FilterSpecParamExprNode) {
+                        int index = filterSpec.GetFilterSpecIndexAmongAll(filterSpecsAll);
+                        var exprNode = (FilterSpecParamExprNode) param;
+                        exprNode.FilterSpecId = index;
+                        exprNode.FilterSpecParamPathNum = path;
+                    }
+                }
+            }
         }
 
         /// <summary>

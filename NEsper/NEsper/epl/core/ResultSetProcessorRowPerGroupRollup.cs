@@ -32,13 +32,13 @@ namespace com.espertech.esper.epl.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
-        protected readonly ResultSetProcessorRowPerGroupRollupFactory Prototype;
-        protected readonly OrderByProcessor OrderByProcessor;
-        protected readonly AggregationService AggregationService;
+        internal readonly ResultSetProcessorRowPerGroupRollupFactory Prototype;
+        internal readonly OrderByProcessor OrderByProcessor;
+        internal readonly AggregationService AggregationService;
         private AgentInstanceContext _agentInstanceContext;
     
         // For output rate limiting, as temporary buffer of to keep a representative event for each group
-        private readonly IDictionary<Object, EventBean[]>[] _outputLimitGroupRepsPerLevel;
+        internal readonly IDictionary<Object, EventBean[]>[] OutputLimitGroupRepsPerLevel;
     
         private readonly IDictionary<Object, OutputConditionPolled>[] _outputState;
     
@@ -46,6 +46,8 @@ namespace com.espertech.esper.epl.core
         protected readonly IDictionary<Object, EventBean[]>[] EventPerGroupJoinBuf;
     
         private readonly EventArrayAndSortKeyArray _rstreamEventSortArrayPair;
+        private readonly ResultSetProcessorRowPerGroupRollupOutputLastHelper _outputLastHelper;
+        private readonly ResultSetProcessorRowPerGroupRollupOutputAllHelper _outputAllHelper;
     
         public ResultSetProcessorRowPerGroupRollup(ResultSetProcessorRowPerGroupRollupFactory prototype, OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
@@ -71,17 +73,40 @@ namespace com.espertech.esper.epl.core
                 }
                 EventPerGroupJoinBuf = null;
             }
-    
-            if (prototype.OutputLimitSpec != null) {
-                _outputLimitGroupRepsPerLevel = new IDictionary<Object, EventBean[]>[levelCount];
-                for (var i = 0; i < levelCount; i++) {
-                    _outputLimitGroupRepsPerLevel[i] = new LinkedHashMap<Object, EventBean[]>();
+
+            if (prototype.OutputLimitSpec != null)
+            {
+                OutputLimitGroupRepsPerLevel = new IDictionary<Object, EventBean[]>[levelCount];
+                for (var i = 0; i < levelCount; i++)
+                {
+                    OutputLimitGroupRepsPerLevel[i] = new LinkedHashMap<Object, EventBean[]>();
+                }
+
+                if (prototype.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST)
+                {
+                    _outputLastHelper = new ResultSetProcessorRowPerGroupRollupOutputLastHelper(
+                        this, OutputLimitGroupRepsPerLevel.Length);
+                    _outputAllHelper = null;
+                }
+                else if (prototype.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL)
+                {
+                    _outputAllHelper = new ResultSetProcessorRowPerGroupRollupOutputAllHelper(
+                        this, OutputLimitGroupRepsPerLevel.Length);
+                    _outputLastHelper = null;
+                }
+                else
+                {
+                    _outputLastHelper = null;
+                    _outputAllHelper = null;
                 }
             }
-            else {
-                _outputLimitGroupRepsPerLevel = null;
+            else
+            {
+                OutputLimitGroupRepsPerLevel = null;
+                _outputLastHelper = null;
+                _outputAllHelper = null;
             }
-    
+
             // Allocate output state for output-first
             if (prototype.OutputLimitSpec != null && prototype.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST) {
                 _outputState = new IDictionary<Object, OutputConditionPolled>[levelCount];
@@ -385,7 +410,7 @@ namespace com.espertech.esper.epl.core
     
         private UniformPair<EventBean[]> HandleOutputLimitFirstView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
         {
-            foreach (var aGroupRepsView in _outputLimitGroupRepsPerLevel) {
+            foreach (var aGroupRepsView in OutputLimitGroupRepsPerLevel) {
                 aGroupRepsView.Clear();
             }
     
@@ -399,12 +424,12 @@ namespace com.espertech.esper.epl.core
                 oldEventCount = HandleOutputLimitFirstViewHaving(viewEventsList, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
     
         private UniformPair<EventBean[]> HandleOutputLimitFirstJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
         {
-            foreach (var aGroupRepsView in _outputLimitGroupRepsPerLevel) {
+            foreach (var aGroupRepsView in OutputLimitGroupRepsPerLevel) {
                 aGroupRepsView.Clear();
             }
     
@@ -418,7 +443,7 @@ namespace com.espertech.esper.epl.core
                 oldEventCount = HandleOutputLimitFirstJoinHaving(joinEventsSet, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
     
         private int HandleOutputLimitFirstViewHaving(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic, IList<EventBean>[] oldEventsPerLevel, IList<Object>[] oldEventsSortKeyPerLevel)
@@ -486,7 +511,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, eventsPerStream, true, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -525,7 +550,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, eventsPerStream, false, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -571,7 +596,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, aNewData.Array, true, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -601,7 +626,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, anOldData.Array, false, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -678,7 +703,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, aNewData.Array, true, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -716,7 +741,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, anOldData.Array, false, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -763,7 +788,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, eventsPerStream, true, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -794,7 +819,7 @@ namespace com.espertech.esper.epl.core
                             }
                             var pass = outputStateGroup.UpdateOutputCondition(1, 0);
                             if (pass) {
-                                if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                                if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
                                     if (Prototype.IsSelectRStream) {
                                         GenerateOutputBatched(false, groupKey, level, eventsPerStream, false, generateSynthetic, oldEventsPerLevel, oldEventsSortKeyPerLevel);
                                         oldEventCount++;
@@ -918,7 +943,7 @@ namespace com.espertech.esper.epl.core
             throw new NotSupportedException();
         }
     
-        protected Object GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
+        internal Object GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
 
@@ -967,7 +992,7 @@ namespace com.espertech.esper.epl.core
             GenerateOutputBatched(join, mk, level, eventsPerStream, isNewData, isSynthesize, resultList, sortKeys);
         }
     
-        private void GenerateOutputBatched(bool join, Object mk, AggregationGroupByRollupLevel level, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
+        internal void GenerateOutputBatched(bool join, Object mk, AggregationGroupByRollupLevel level, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
         {
             AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, level);
     
@@ -987,7 +1012,25 @@ namespace com.espertech.esper.epl.core
                 optSortKeys.Add(OrderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext, Prototype.PerLevelExpression.OptionalOrderByElements[level.LevelNumber]));
             }
         }
-    
+
+        internal void GenerateOutputBatchedMapUnsorted(bool join, Object mk, AggregationGroupByRollupLevel level, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents)
+        {
+            AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, level);
+
+            if (Prototype.PerLevelExpression.OptionalHavingNodes!= null)
+            {
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(eventsPerStream[0]); else InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream); }
+                var result = Prototype.PerLevelExpression.OptionalHavingNodes[level.LevelNumber].Evaluate(new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext)).AsBoxedBoolean();
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result); else InstrumentationHelper.Get().AHavingClauseJoin(result); }
+                if ((result == null) || (false.Equals(result)))
+                {
+                    return;
+                }
+            }
+
+            resultEvents[mk] = Prototype.PerLevelExpression.SelectExprProcessor[level.LevelNumber].Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
+        }
+
         private UniformPair<EventBean[]> HandleOutputLimitLastView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
         {
             var oldEventCount = 0;
@@ -995,7 +1038,7 @@ namespace com.espertech.esper.epl.core
                 _rstreamEventSortArrayPair.Reset();
             }
     
-            foreach (var aGroupRepsView in _outputLimitGroupRepsPerLevel) {
+            foreach (var aGroupRepsView in OutputLimitGroupRepsPerLevel) {
                 aGroupRepsView.Clear();
             }
     
@@ -1015,7 +1058,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null)
+                            if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null)
                             {
                                 if (Prototype.IsSelectRStream) {
                                     GenerateOutputBatched(false, groupKey, level, eventsPerStream, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
@@ -1033,7 +1076,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
+                            if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream) == null) {
                                 if (Prototype.IsSelectRStream) {
                                     GenerateOutputBatched(true, groupKey, level, eventsPerStream, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
                                     oldEventCount++;
@@ -1045,7 +1088,7 @@ namespace com.espertech.esper.epl.core
                 }
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
     
         private UniformPair<EventBean[]> HandleOutputLimitLastJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> viewEventsList, bool generateSynthetic)
@@ -1055,7 +1098,7 @@ namespace com.espertech.esper.epl.core
                 _rstreamEventSortArrayPair.Reset();
             }
     
-            foreach (var aGroupRepsView in _outputLimitGroupRepsPerLevel) {
+            foreach (var aGroupRepsView in OutputLimitGroupRepsPerLevel) {
                 aGroupRepsView.Clear();
             }
     
@@ -1073,7 +1116,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
+                            if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array) == null) {
                                 if (Prototype.IsSelectRStream) {
                                     GenerateOutputBatched(false, groupKey, level, aNewData.Array, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
                                     oldEventCount++;
@@ -1089,7 +1132,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            if (_outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
+                            if (OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array) == null) {
                                 if (Prototype.IsSelectRStream) {
                                     GenerateOutputBatched(true, groupKey, level, anOldData.Array, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
                                     oldEventCount++;
@@ -1101,7 +1144,7 @@ namespace com.espertech.esper.epl.core
                 }
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
     
         private UniformPair<EventBean[]> HandleOutputLimitAllView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
@@ -1111,7 +1154,7 @@ namespace com.espertech.esper.epl.core
                 _rstreamEventSortArrayPair.Reset();
     
                 foreach (var level in Prototype.GroupByRollupDesc.Levels) {
-                    var groupGenerators = _outputLimitGroupRepsPerLevel[level.LevelNumber];
+                    var groupGenerators = OutputLimitGroupRepsPerLevel[level.LevelNumber];
                     foreach (var entry in groupGenerators) {
                         GenerateOutputBatched(false, entry.Key, level, entry.Value, false, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
                         oldEventCount++;
@@ -1134,7 +1177,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            Object existing = _outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream);
+                            Object existing = OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream);
     
                             if (existing == null && Prototype.IsSelectRStream) {
                                 GenerateOutputBatched(false, groupKey, level, eventsPerStream, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
@@ -1151,7 +1194,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            Object existing = _outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream);
+                            Object existing = OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, eventsPerStream);
     
                             if (existing == null && Prototype.IsSelectRStream) {
                                 GenerateOutputBatched(false, groupKey, level, eventsPerStream, false, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
@@ -1163,7 +1206,7 @@ namespace com.espertech.esper.epl.core
                 }
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
     
         private UniformPair<EventBean[]> HandleOutputLimitAllJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
@@ -1173,7 +1216,7 @@ namespace com.espertech.esper.epl.core
                 _rstreamEventSortArrayPair.Reset();
     
                 foreach (var level in Prototype.GroupByRollupDesc.Levels) {
-                    var groupGenerators = _outputLimitGroupRepsPerLevel[level.LevelNumber];
+                    var groupGenerators = OutputLimitGroupRepsPerLevel[level.LevelNumber];
                     foreach (var entry in groupGenerators) {
                         GenerateOutputBatched(false, entry.Key, level, entry.Value, false, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
                         oldEventCount++;
@@ -1195,7 +1238,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            Object existing = _outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array);
+                            Object existing = OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, aNewData.Array);
     
                             if (existing == null && Prototype.IsSelectRStream) {
                                 GenerateOutputBatched(false, groupKey, level, aNewData.Array, true, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
@@ -1211,7 +1254,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var level in Prototype.GroupByRollupDesc.Levels) {
                             var groupKey = level.ComputeSubkey(groupKeyComplete);
                             groupKeysPerLevel[level.LevelNumber] = groupKey;
-                            Object existing = _outputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array);
+                            Object existing = OutputLimitGroupRepsPerLevel[level.LevelNumber].Push(groupKey, anOldData.Array);
     
                             if (existing == null && Prototype.IsSelectRStream) {
                                 GenerateOutputBatched(false, groupKey, level, anOldData.Array, false, generateSynthetic, _rstreamEventSortArrayPair.EventsPerLevel, _rstreamEventSortArrayPair.SortKeyPerLevel);
@@ -1223,7 +1266,7 @@ namespace com.espertech.esper.epl.core
                 }
             }
     
-            return GenerateAndSort(_outputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
+            return GenerateAndSort(OutputLimitGroupRepsPerLevel, generateSynthetic, oldEventCount);
         }
 
         private void GenerateOutputBatchedCollectNonJoin(IDictionary<Object, EventBean>[] eventPairs, bool isNewData, bool generateSynthetic, IList<EventBean> events, IList<Object> sortKey)
@@ -1407,6 +1450,48 @@ namespace com.espertech.esper.epl.core
                     AggregationService.ApplyLeave(mk.Array, keys, AgentInstanceContext);
                 }
             }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputView(isSynthesize);
+            }
+            return _outputLastHelper.OutputView(isSynthesize);
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputJoin(isSynthesize);
+            }
+            return _outputLastHelper.OutputJoin(isSynthesize);
         }
 
         private UniformPair<EventBean[]> ConvertToArrayMaySort(List<EventBean> newEvents, List<Object> newEventsSortKey, List<EventBean> oldEvents, List<Object> oldEventsSortKey) {

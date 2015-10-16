@@ -37,8 +37,11 @@ namespace com.espertech.esper.multithread
             using (_sharedStartLock.Acquire()) {
                 Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting");
                 try {
-                    while(_events.MoveNext()) {
+                    while(_events.MoveNext())
+                    {
+                        Log.Info(".call: send event");
                         _engine.EPRuntime.SendEvent(_events.Current);
+                        Log.Info(".call: send event - complete");
                     }
                 }
                 catch (Exception ex) {

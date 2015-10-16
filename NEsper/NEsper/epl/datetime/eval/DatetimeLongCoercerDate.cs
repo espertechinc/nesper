@@ -7,19 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.datetime.eval
 {
     public class DatetimeLongCoercerDate : DatetimeLongCoercer
     {
-        #region DatetimeLongCoercer Members
-
-        public long Coerce(Object date)
+        public long Coerce(Object value)
         {
-            return ((DateTime)date).TimeInMillis();
+            return value.AsDateTimeOffset().TimeInMillis();
         }
-
-        #endregion
     }
 }

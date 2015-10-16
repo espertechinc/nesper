@@ -136,7 +136,7 @@ namespace com.espertech.esper.regression.view
 
             public static MyEvent MakeTime(String id, String mytime)
             {
-                long msec = DateTimeHelper.ParseDefaultMSec("2002-05-1T" + mytime);
+                long msec = DateTimeParser.ParseDefaultMSec("2002-05-1T" + mytime);
                 return new MyEvent(id, msec);
             }
         }

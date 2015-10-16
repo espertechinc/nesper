@@ -97,7 +97,7 @@ namespace com.espertech.esper.regression.client
 	    private void SetCurrentTime(string time)
         {
 	        var timestamp = "2002-05-30T" + time + ".000";
-	        var current = DateTimeHelper.ParseDefaultMSec(timestamp);
+	        var current = DateTimeParser.ParseDefaultMSec(timestamp);
 	        Debug.WriteLine("Advancing time to " + timestamp + " msec " + current);
 	        _epService.EPRuntime.SendEvent(new CurrentTimeSpanEvent(current));
 	    }

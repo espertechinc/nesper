@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.view
 	        config.AddEventType("SupportBean_B", typeof(SupportBean_B));
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();
-	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().Name);}
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
 	    }
 
         [TearDown]

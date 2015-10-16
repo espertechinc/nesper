@@ -448,10 +448,10 @@ namespace com.espertech.esper.regression.epl
     
             // Test s2 inner join to s0 and outer to s1:  s0 with 2 rows, s1 with 0 rows
             //
-            s0Events = SupportBean_S0.MakeS0("N", new String[]{"N-s0-1", "N-s0-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new String[]{"Count-s0-1", "Count-s0-1"});
             SendEventsAndReset(s0Events);
     
-            s2Events = SupportBean_S2.MakeS2("N", new String[]{"N-s2-1"});
+            s2Events = SupportBean_S2.MakeS2("Count", new String[]{"Count-s2-1"});
             SendEvent(s2Events);
             expected = new Object[][]{
                     new Object[] {s0Events[0], null, s2Events[0]},

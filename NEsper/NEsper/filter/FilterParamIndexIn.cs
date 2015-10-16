@@ -38,13 +38,13 @@ namespace com.espertech.esper.filter
             _constantsMapRwLock = readWriteLock;
         }
 
-        protected internal override EventEvaluator Get(Object filterConstant)
+        public override EventEvaluator Get(Object filterConstant)
         {
             var keyValues = (MultiKeyUntyped) filterConstant;
             return _evaluatorsMap.Get(keyValues);
         }
 
-        protected internal override void Put(Object filterConstant, EventEvaluator evaluator)
+        public override void Put(Object filterConstant, EventEvaluator evaluator)
         {
             // Store evaluator keyed to set of values
             var keys = (MultiKeyUntyped) filterConstant;

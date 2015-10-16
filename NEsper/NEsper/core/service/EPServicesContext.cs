@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.schedule;
 using com.espertech.esper.core.deploy;
@@ -29,6 +30,7 @@ using com.espertech.esper.events.vaevent;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.pattern.pool;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.schedule;
 using com.espertech.esper.script;
 using com.espertech.esper.timer;
@@ -97,7 +99,7 @@ namespace com.espertech.esper.core.service
             PluggableObjectCollection plugInViews,
             StatementLockFactory statementLockFactory,
             IReaderWriterLock eventProcessingRWLock,
-            ExtensionServicesContext extensionServicesContext,
+            EngineLevelExtensionServicesContext extensionServicesContext,
             Directory engineEnvContext,
             StatementContextFactory statementContextFactory,
             PluggableObjectCollection plugInPatternObjects,
@@ -125,8 +127,14 @@ namespace com.espertech.esper.core.service
             ContextManagementService contextManagementService,
             SchedulableAgentInstanceDirectory schedulableAgentInstanceDirectory,
             PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
             DataFlowService dataFlowService,
             ExprDeclaredService exprDeclaredService,
+            ContextControllerFactoryFactorySvc contextControllerFactoryFactorySvc,
+            ContextManagerFactoryService contextManagerFactoryService,
+            EPStatementFactory epStatementFactory,
+            RegexHandlerFactory regexHandlerFactory,
+            ViewableActivatorFactory viewableActivatorFactory,
             ScriptingService scriptingService)
         {
             EngineURI = engineURI;
@@ -143,7 +151,7 @@ namespace com.espertech.esper.core.service
             PlugInViews = plugInViews;
             StatementLockFactory = statementLockFactory;
             EventProcessingRwLock = eventProcessingRWLock;
-            ExtensionServicesContext = extensionServicesContext;
+            EngineLevelExtensionServicesContext = extensionServicesContext;
             EngineEnvContext = engineEnvContext;
             StatementContextFactory = statementContextFactory;
             PlugInPatternObjects = plugInPatternObjects;
@@ -168,9 +176,15 @@ namespace com.espertech.esper.core.service
             ContextManagementService = contextManagementService;
             SchedulableAgentInstanceDirectory = schedulableAgentInstanceDirectory;
             PatternSubexpressionPoolSvc = patternSubexpressionPoolSvc;
+            MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
             ExprDeclaredService = exprDeclaredService;
             ExpressionResultCacheSharable = new ExpressionResultCacheServiceThreadlocal();
+            ContextControllerFactoryFactorySvc = contextControllerFactoryFactorySvc;
+            ContextManagerFactoryService = contextManagerFactoryService;
+            EpStatementFactory = epStatementFactory;
+            RegexHandlerFactory = regexHandlerFactory;
+            ViewableActivatorFactory = viewableActivatorFactory;
             ScriptingService = scriptingService;
         }
 
@@ -242,7 +256,7 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns extension service for adding custom the services. </summary>
         /// <value>extension service context</value>
-        public ExtensionServicesContext ExtensionServicesContext { get; private set; }
+        public EngineLevelExtensionServicesContext EngineLevelExtensionServicesContext { get; private set; }
 
         /// <summary>Returns the engine environment context for getting access to engine-external resources, such as adapters </summary>
         /// <value>engine environment context</value>
@@ -318,6 +332,8 @@ namespace com.espertech.esper.core.service
 
         public PatternSubexpressionPoolEngineSvc PatternSubexpressionPoolSvc { get; private set; }
 
+        public MatchRecognizeStatePoolEngineSvc MatchRecognizeStatePoolEngineSvc { get; private set; }
+
         public DataFlowService DataFlowService { get; private set; }
 
         public ExprDeclaredService ExprDeclaredService { get; private set; }
@@ -327,6 +343,16 @@ namespace com.espertech.esper.core.service
         public ScriptingService ScriptingService { get; private set; }
 
         public TableService TableService { get; private set; }
+
+        public ContextControllerFactoryFactorySvc ContextControllerFactoryFactorySvc { get; private set; }
+
+        public EPStatementFactory EpStatementFactory { get; private set; }
+
+        public ContextManagerFactoryService ContextManagerFactoryService { get; private set; }
+
+        public RegexHandlerFactory RegexHandlerFactory { get; private set; }
+
+        public ViewableActivatorFactory ViewableActivatorFactory { get; private set; }
         
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>
@@ -386,9 +412,9 @@ namespace com.espertech.esper.core.service
             {
                 NamedWindowService.Dispose();
             }
-            if (ExtensionServicesContext != null)
+            if (EngineLevelExtensionServicesContext != null)
             {
-                ExtensionServicesContext.Dispose();
+                EngineLevelExtensionServicesContext.Dispose();
             }
             if (StatementIsolationService != null)
             {
@@ -418,7 +444,7 @@ namespace com.espertech.esper.core.service
             StreamService = null;
             PlugInViews = null;
             StatementLockFactory = null;
-            ExtensionServicesContext = null;
+            EngineLevelExtensionServicesContext = null;
             EngineEnvContext = null;
             StatementContextFactory = null;
             PlugInPatternObjects = null;

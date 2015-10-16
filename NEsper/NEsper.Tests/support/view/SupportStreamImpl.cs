@@ -45,7 +45,7 @@ namespace com.espertech.esper.support.view
             _childViews = ViewSupport.EMPTY_VIEW_ARRAY;
         }
     
-        /// <summary>Insert a single event to the stream </summary>
+        /// <summary>Set a single event to the stream </summary>
         /// <param name="theEvent"></param>
         public void Insert(EventBean theEvent)
         {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.support.view
             }
         }
     
-        /// <summary>Insert a bunch of events to the stream </summary>
+        /// <summary>Set a bunch of events to the stream </summary>
         /// <param name="eventArray"></param>
         public void Insert(EventBean[] eventArray)
         {

@@ -173,7 +173,7 @@ namespace com.espertech.esper.view
         /// <param name="viewFactories">is the view factories to use to make each view, or reuse and existing view</param>
         /// <param name="viewFactoryChainContext">The view factory chain context.</param>
         /// <returns>chain of views instantiated</returns>
-        protected internal static IList<View> InstantiateChain(Viewable parentViewable, IList<ViewFactory> viewFactories, AgentInstanceViewFactoryChainContext viewFactoryChainContext)
+        public static IList<View> InstantiateChain(Viewable parentViewable, IList<ViewFactory> viewFactories, AgentInstanceViewFactoryChainContext viewFactoryChainContext)
         {
             IList<View> newViews = new List<View>();
             Viewable parent = parentViewable;
@@ -372,7 +372,7 @@ namespace com.espertech.esper.view
                     viewFactory = (ViewFactory) ViewFactoryProxy.NewInstance(statementContext.EngineURI, statementContext.StatementName, viewFactory, spec.ObjectName);
                 }
                 factoryChain.Add(viewFactory);
-    
+
                 // Set view factory parameters
                 try
                 {

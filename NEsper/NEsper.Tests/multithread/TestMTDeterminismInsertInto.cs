@@ -151,7 +151,13 @@ namespace com.espertech.esper.multithread
             EPStatement stmtInsertThree = engine.EPAdministrator.CreateEPL("select * from MyStreamTwo");
             SupportUpdateListener listener = new SupportUpdateListener();
             stmtInsertThree.Events += listener.Update;
-    
+#if false
+            stmtInsertThree.Events += (sender, eargs) =>
+            {
+                Console.WriteLine("Event: {0}", eargs.NewEvents[0].Get("mysum"));
+            };
+#endif
+
             // execute
             var threadPool = Executors.NewFixedThreadPool(numThreads);
             var future = new Future<bool>[numThreads];

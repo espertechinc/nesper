@@ -168,7 +168,13 @@ namespace com.espertech.esper.regression.view
     
         [Test]
         public void TestRewriteWhere() {
-            var epl = "select * from SupportBean as A0 where A0.IntPrimitive = 3";
+            RunAssertionRewriteWhere("");
+            RunAssertionRewriteWhere("@Hint('DISABLE_WHEREEXPR_MOVETO_FILTER')");
+        }
+
+        private void RunAssertionRewriteWhere(String prefix)
+        {
+            var epl = prefix + " select * from SupportBean as A0 where A0.IntPrimitive = 3";
             var statement = _epService.EPAdministrator.CreateEPL(epl);
             statement.Events += _listener.Update;
     

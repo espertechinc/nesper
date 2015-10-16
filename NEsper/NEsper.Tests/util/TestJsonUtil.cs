@@ -9,9 +9,9 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 using NUnit.Framework;
@@ -26,7 +26,7 @@ namespace com.espertech.esper.util
         [SetUp]
         public void SetUp()
         {
-            _engineImportService = new EngineImportServiceImpl(false, false, false, false, null);
+            _engineImportService = new EngineImportServiceImpl(false, false, false, false, null, TimeZoneInfo.Local, ConfigurationEngineDefaults.ThreadingProfile.NORMAL);
         }
     
         [TearDown]

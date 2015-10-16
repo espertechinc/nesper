@@ -114,25 +114,27 @@ namespace com.espertech.esper.epl.datetime.interval
             IntervalComputer intervalComputer = IntervalComputerFactory.Make(method, expressions);
     
             // evaluation without end timestamp
+            var timestampTypeBoxed = timestampType != null ? timestampType.GetBoxedType() : timestampType;
             if (evaluatorEndTimestamp == null)
             {
-                if (timestampType.GetBoxedType() == typeof(DateTime?))
+                if (timestampTypeBoxed == typeof(DateTime?) || timestampTypeBoxed == typeof (DateTimeOffset?))
                 {
                     _intervalOpEval = new IntervalOpEvalCal(intervalComputer);
                 }
-                else if (timestampType.GetBoxedType() == typeof(long?)) {
+                else if (timestampTypeBoxed == typeof(long?)) {
                     _intervalOpEval = new IntervalOpEvalLong(intervalComputer);
                 }
                 else {
                     throw new ArgumentException("Invalid interval first parameter type '" + timestampType + "'");
                 }
             }
-            else {
-                if (timestampType.GetBoxedType() == typeof(DateTime?))
+            else
+            {
+                if (timestampTypeBoxed == typeof(DateTime?) || timestampTypeBoxed == typeof(DateTimeOffset?))
                 {
                     _intervalOpEval = new IntervalOpEvalCalWithEnd(intervalComputer, evaluatorEndTimestamp);
                 }
-                else if (timestampType.GetBoxedType() == typeof(long?))
+                else if (timestampTypeBoxed == typeof(long?))
                 {
                     _intervalOpEval = new IntervalOpEvalLongWithEnd(intervalComputer, evaluatorEndTimestamp);
                 }
@@ -242,7 +244,7 @@ namespace com.espertech.esper.epl.datetime.interval
     
             public override Object Evaluate(long startTs, long endTs, Object parameter, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
             {
-                long time = DateTimeHelper.TimeInMillis((DateTime) parameter);
+                long time = parameter.AsDateTimeOffset().TimeInMillis();
                 return IntervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
             }
         }
@@ -287,7 +289,11 @@ namespace com.espertech.esper.epl.datetime.interval
             }
     
             public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-                return IntervalComputer.Compute(startTs, endTs, ((DateTime)parameterStartTs).TimeInMillis(), ((DateTime)parameterEndTs).TimeInMillis(), eventsPerStream, isNewData, context);
+                return IntervalComputer.Compute(
+                    startTs, endTs, 
+                    parameterStartTs.AsDateTimeOffset().TimeInMillis(),
+                    parameterEndTs.AsDateTimeOffset().TimeInMillis(),
+                    eventsPerStream, isNewData, context);
             }
         }
     }

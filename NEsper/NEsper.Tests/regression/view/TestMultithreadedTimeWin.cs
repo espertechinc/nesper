@@ -21,7 +21,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regression.view
 {
-    /// <summary>Test for N threads feeding events that affect M statements which employ a small time window. Each of the M statements is associated with a symbol and each event send hits exactly one statement only. &lt;p&gt; Thus the timer is fairly busy when active, competing with N application threads. Created for ESPER-59 Internal Threading Bugs Found. &lt;p&gt; Exceptions can occur in (1) an application thread during SendEvent() outside of the listener, causes the test to fail (2) an application thread during SendEvent() inside of the listener, causes assertion to fail (3) the timer thread, causes an exception to be logged and assertion *may* fail </summary>
+    /// <summary>Test for Count threads feeding events that affect M statements which employ a small time window. Each of the M statements is associated with a symbol and each event send hits exactly one statement only. &lt;p&gt; Thus the timer is fairly busy when active, competing with Count application threads. Created for ESPER-59 Internal Threading Bugs Found. &lt;p&gt; Exceptions can occur in (1) an application thread during SendEvent() outside of the listener, causes the test to fail (2) an application thread during SendEvent() inside of the listener, causes assertion to fail (3) the timer thread, causes an exception to be logged and assertion *may* fail </summary>
     [TestFixture]
     public class TestMultithreadedTimeWin  {
     
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.view
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             epService.Initialize();
     
-            // Create a statement for N number of symbols, each it's own listener
+            // Create a statement for Count number of symbols, each it's own listener
             var symbols = new String[numSymbols];
             _listeners = new ResultUpdateListener[symbols.Length];
             for (int i = 0; i < symbols.Length; i++)

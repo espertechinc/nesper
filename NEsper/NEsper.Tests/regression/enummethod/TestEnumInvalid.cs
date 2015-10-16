@@ -60,7 +60,9 @@ namespace com.espertech.esper.regression.enummethod
             // property not there
             epl = "select Contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalid(_epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.dummy=1': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select Contained.where(x=>x.dummy = 1) from SupportBean_ST0_Container]");
-    
+            epl = "select * from SupportBean(products.where(p => code = '1'))";
+            SupportMessageAssertUtil.TryInvalid(_epService, epl, "Failed to validate filter expression 'products.where()': Failed to resolve 'products.where' to a property, single-row function, aggregation function, script, stream or class name ");
+
             // test not an enumeration method
             epl = "select Contained.notAMethod(x=>x.BoolPrimitive) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalid(_epService, epl, "Error starting statement: Failed to validate select-clause expression 'Contained.notAMethod()': Could not find event property, enumeration method or instance method named 'notAMethod' in collection of events of type 'SupportBean_ST0' [select Contained.notAMethod(x=>x.BoolPrimitive) from SupportBean_ST0_Container]");

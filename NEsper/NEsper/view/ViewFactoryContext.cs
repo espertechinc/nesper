@@ -14,13 +14,16 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.view
 {
-    /// <summary>Context calss for specific views within a statement. Each view in a statement gets it's own context containing the statement context. </summary>
+    /// <summary>
+    /// Context class for specific views within a statement. Each view in a statement
+    /// gets it's own context containing the statement context.
+    /// </summary>
     public class ViewFactoryContext
     {
         /// <summary>Ctor. </summary>
         /// <param name="statementContext">is the statement-level services</param>
-        /// <param name="streamNum">is the stream number from zero to N</param>
-        /// <param name="viewNum">is the view number from zero to N</param>
+        /// <param name="streamNum">is the stream number from zero to Count</param>
+        /// <param name="viewNum">is the view number from zero to Count</param>
         /// <param name="namespaceName">is the view namespace</param>
         /// <param name="viewName">is the view name</param>
         public ViewFactoryContext(StatementContext statementContext, int streamNum, int viewNum, String namespaceName, String viewName)
@@ -62,9 +65,9 @@ namespace com.espertech.esper.view
 
         /// <summary>Returns extension svc. </summary>
         /// <value>svc</value>
-        public StatementExtensionSvcContext ExtensionServicesContext
+        public StatementExtensionSvcContext StatementExtensionServicesContext
         {
-            get { return StatementContext.ExtensionServicesContext; }
+            get { return StatementContext.StatementExtensionServicesContext; }
         }
 
         /// <summary>Returns the statement id. </summary>

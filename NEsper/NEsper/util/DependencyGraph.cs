@@ -93,7 +93,7 @@ namespace com.espertech.esper.util
             var toSet = _dependencies.Get(target);
             if (toSet == null)
             {
-                toSet = new compat.collections.TreeSet<int>();
+                toSet = new SortedSet<int>();
                 _dependencies.Put(target, toSet);
             }
     

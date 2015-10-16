@@ -34,9 +34,9 @@ namespace com.espertech.esper.pattern
             SingleBound = singleBound;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext);
+            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext, parentNode);
             return new EvalMatchUntilNode(agentInstanceContext, this, children[0], children.Length == 1 ? null : children[1]);
         }
 

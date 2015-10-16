@@ -30,12 +30,12 @@ namespace com.espertech.esper.filter
             ConstantsMapRwLock = readWriteLock;
         }
 
-        protected internal override EventEvaluator Get(Object filterConstant)
+        public override EventEvaluator Get(Object filterConstant)
         {
             return ConstantsMap.Get(filterConstant);
         }
 
-        protected internal override void Put(Object filterConstant, EventEvaluator evaluator)
+        public override void Put(Object filterConstant, EventEvaluator evaluator)
         {
             ConstantsMap.Put(filterConstant, evaluator);
         }

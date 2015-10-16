@@ -87,9 +87,7 @@ namespace com.espertech.esper.regression.client
             var callback = new SupportAuditCallback();
             AuditPath.AuditCallback += callback.Audit;
             AuditLog.Info("*** Stream: ");
-            var stmtInput =
-                _epService.EPAdministrator.CreateEPL(
-                    "@Name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
+            var stmtInput = _epService.EPAdministrator.CreateEPL("@Name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual(1, callback.Audits.Count);
             var cb = callback.Audits[0];
@@ -277,12 +275,11 @@ namespace com.espertech.esper.regression.client
         public void TestAuditDataFlow()
         {
             // data flow
-            EPStatement stmtDataflow =
-                _epService.EPAdministrator.CreateEPL(
-                    "@Audit @Name('df') create dataflow MyFlow " +
-                    "EventBusSource -> a<SupportBean> {filter:TheString like 'I%'} " +
-                    "Filter(a) -> b {filter: true}" +
-                    "LogSink(b) {log:false}");
+            var stmtDataflow = _epService.EPAdministrator.CreateEPL(
+                "@Audit @Name('df') create dataflow MyFlow " +
+                "EventBusSource -> a<SupportBean> {filter:TheString like 'I%'} " +
+                "Filter(a) -> b {filter: true}" +
+                "LogSink(b) {log:false}");
             var df = _epService.EPRuntime.DataFlowRuntime.Instantiate("MyFlow");
             df.Start();
             _epService.EPRuntime.SendEvent(new SupportBean("I1", 1));

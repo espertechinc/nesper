@@ -144,7 +144,17 @@ namespace com.espertech.esper.regression.events
             // try control character
             TryInvalidControlCharacter(listener.AssertOneGetNew());
 
+            // try enum with keyword
+            TryEnumWithKeyword();
+
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
+        }
+
+        private void TryEnumWithKeyword()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<LocalEventWithEnum>();
+            _epService.EPAdministrator.Configuration.AddImport<LocalEventEnum>();
+            _epService.EPAdministrator.CreateEPL("select * from LocalEventWithEnum(LocalEventEnum=LocalEventEnum.`NEW`)");
         }
 
         private void TryInvalidControlCharacter(EventBean eventBean)
@@ -388,6 +398,20 @@ namespace com.espertech.esper.regression.events
             Assert.AreEqual(10, result.Get(propTwoName));
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
+        }
+
+        public class LocalEventWithEnum
+        {
+            public LocalEventEnum LocalEventEnum { get; private set; }
+            public LocalEventWithEnum(LocalEventEnum localEventEnum)
+            {
+                LocalEventEnum = localEventEnum;
+            }
+        }
+
+        public enum LocalEventEnum
+        {
+            NEW
         }
     }
 }

@@ -33,11 +33,11 @@ namespace com.espertech.esper.pattern
             Expressions = expressions;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext) {
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
             if (distinctExpressionsArray == null) {
                 distinctExpressionsArray = ExprNodeUtility.GetEvaluators(DistinctExpressions);
             }
-            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext);
+            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalEveryDistinctNode(this, child, agentInstanceContext);
         }
 

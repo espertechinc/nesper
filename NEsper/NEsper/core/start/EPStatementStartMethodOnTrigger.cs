@@ -20,6 +20,7 @@ using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
@@ -192,7 +193,7 @@ namespace com.espertech.esper.core.start
             // Without context - start here
             else {
                 var agentInstanceContext = GetDefaultAgentInstanceContext(statementContext);
-                var resultOfStart = contextFactoryResult.ContextFactory.NewContext(agentInstanceContext, false);
+                var resultOfStart = contextFactoryResult.ContextFactory.NewContext(agentInstanceContext, isRecoveringResilient);
                 finalViewable = resultOfStart.FinalView;
                 stopStatementMethod = () =>  {
                     resultOfStart.StopCallback.Invoke();
@@ -201,9 +202,12 @@ namespace com.espertech.esper.core.start
                 aggregationService = resultOfStart.OptionalAggegationService;
                 subselectStrategyInstances = resultOfStart.SubselectStrategies;
                 tableAccessStrategyInstances = resultOfStart.TableAccessEvalStrategies;
-    
-                if (statementContext.ExtensionServicesContext != null && statementContext.ExtensionServicesContext.StmtResources != null) {
-                    statementContext.ExtensionServicesContext.StmtResources.StartContextPartition(resultOfStart, 0);
+
+                if (statementContext.StatementExtensionServicesContext != null && statementContext.StatementExtensionServicesContext.StmtResources != null)
+                {
+                    StatementResourceHolder holder = statementContext.StatementExtensionServicesContext.ExtractStatementResourceHolder(resultOfStart);
+                    statementContext.StatementExtensionServicesContext.StmtResources.Unpartitioned = holder;
+                    statementContext.StatementExtensionServicesContext.PostProcessStart(resultOfStart, isRecoveringResilient);
                 }
             }
     
@@ -228,7 +232,7 @@ namespace com.espertech.esper.core.start
                 throw new ExprValidationException("A named window by name '" + namedSpec.WindowName + "' does not exist");
             }
             var triggerEventTypeName = namedSpec.WindowName;
-            var activator = new ViewableActivatorNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
+            var activator = services.ViewableActivatorFactory.CreateNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
             var activatorResultEventType = processor.NamedWindowType;
             if (namedSpec.OptPropertyEvaluator != null) {
                 activatorResultEventType = namedSpec.OptPropertyEvaluator.FragmentEventType;
@@ -241,11 +245,10 @@ namespace com.espertech.esper.core.start
             var usedByChildViews = patternStreamSpec.ViewSpecs.Length > 0 || (StatementSpec.InsertIntoDesc != null);
             var patternTypeName = statementContext.StatementId + "_patternon";
             var eventType = services.EventAdapterService.CreateSemiAnonymousMapType(patternTypeName, patternStreamSpec.TaggedEventTypes, patternStreamSpec.ArrayEventTypes, usedByChildViews);
-    
-            var rootNode = services.PatternNodeFactory.MakeRootNode();
-            rootNode.AddChildNode(patternStreamSpec.EvalFactoryNode);
+
+            var rootNode = services.PatternNodeFactory.MakeRootNode(patternStreamSpec.EvalFactoryNode);
             var patternContext = statementContext.PatternContextFactory.CreateContext(statementContext, 0, rootNode, patternStreamSpec.MatchedEventMapMeta, true);
-            var activator = new ViewableActivatorPattern(patternContext, rootNode, eventType, EPStatementStartMethodHelperUtil.IsConsumingFilters(patternStreamSpec.EvalFactoryNode), false, false, false);
+            var activator = services.ViewableActivatorFactory.CreatePattern(patternContext, rootNode, eventType, EPStatementStartMethodHelperUtil.IsConsumingFilters(patternStreamSpec.EvalFactoryNode), false, false, false);
             return new ActivatorResult(activator, null, eventType);
         }
     
@@ -264,7 +267,7 @@ namespace com.espertech.esper.core.start
                     },
                 };
             }
-            var activator = new ViewableActivatorFilterProxy(services, filterStreamSpec.FilterSpec, statementContext.Annotations, false, instrumentationAgentOnTrigger, false);
+            var activator = services.ViewableActivatorFactory.CreateFilterProxy(services, filterStreamSpec.FilterSpec, statementContext.Annotations, false, instrumentationAgentOnTrigger, false);
             var activatorResultEventType = filterStreamSpec.FilterSpec.ResultEventType;
             return new ActivatorResult(activator, triggerEventTypeName, activatorResultEventType);
         }
@@ -312,8 +315,8 @@ namespace com.espertech.esper.core.start
             defaultSelectAllSpec.SelectClauseSpec.SetSelectExprList(new SelectClauseElementWildcard());
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {outputEventType}, new string[] {"trigger_stream"}, new bool[] {true}, services.EngineURI, false);
             var outputResultSetProcessorPrototype = ResultSetProcessorFactoryFactory.GetProcessorPrototype(defaultSelectAllSpec, statementContext, streamTypeService, null, new bool[0], true, contextPropertyRegistry, null, services.ConfigSnapshot);
-    
-            var outputViewFactory = OutputProcessViewFactoryFactory.Make(statementSpec, services.InternalEventRouter, statementContext, null, null, services.TableService);
+
+            var outputViewFactory = OutputProcessViewFactoryFactory.Make(statementSpec, services.InternalEventRouter, statementContext, null, null, services.TableService, outputResultSetProcessorPrototype.ResultSetProcessorFactory.ResultSetProcessorType);
             var contextFactory = new StatementAgentInstanceFactoryOnTriggerSetVariable(statementContext, statementSpec, services, activatorResult.Activator, subSelectStrategyCollection, onSetVariableViewFactory, outputResultSetProcessorPrototype, outputViewFactory);
             return new ContextFactoryResult(contextFactory, subSelectStrategyCollection, null);
         }
@@ -452,8 +455,7 @@ namespace com.espertech.esper.core.start
             }
     
             EventType resultEventType = validationResult.ResultSetProcessorPrototype.ResultSetProcessorFactory.ResultEventType;
-            var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultEventType, null, services.TableService);
-    
+            var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultEventType, null, services.TableService, validationResult.ResultSetProcessorPrototype.ResultSetProcessorFactory.ResultSetProcessorType);
             var contextFactory = new StatementAgentInstanceFactoryOnTriggerNamedWindow(statementContext, StatementSpec, services, activatorResult.Activator, validationResult.SubSelectStrategyCollection, validationResult.ResultSetProcessorPrototype, validationResult.ValidatedJoin, outputResultSetProcessorPrototype, onExprFactory, outputViewFactory, activatorResult.ActivatorResultEventType, processor);
             return new ContextFactoryResult(contextFactory, validationResult.SubSelectStrategyCollection, validationResult.ResultSetProcessorPrototype);
         }
@@ -599,7 +601,7 @@ namespace com.espertech.esper.core.start
             }
     
             EventType resultEventType = validationResult.ResultSetProcessorPrototype.ResultSetProcessorFactory.ResultEventType;
-            var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultEventType, null, services.TableService);
+            var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultEventType, null, services.TableService, validationResult.ResultSetProcessorPrototype.ResultSetProcessorFactory.ResultSetProcessorType);
 
             var contextFactory = new StatementAgentInstanceFactoryOnTriggerTable(statementContext, StatementSpec, services, activatorResult.Activator, validationResult.SubSelectStrategyCollection, validationResult.ResultSetProcessorPrototype, validationResult.ValidatedJoin, onExprFactory, activatorResult.ActivatorResultEventType, metadata, outputResultSetProcessorPrototype, outputViewFactory);
     

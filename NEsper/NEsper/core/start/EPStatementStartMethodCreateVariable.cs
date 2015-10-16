@@ -20,6 +20,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.epl.view;
+using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.start
@@ -92,7 +93,8 @@ namespace com.espertech.esper.core.start
                 throw new ExprValidationException("Cannot create variable: " + ex.Message, ex);
             }
 
-            var destroyMethod = new EPStatementDestroyMethod(
+            var destroyMethod = new EPStatementDestroyCallbackList();
+            destroyMethod.AddCallback(
                 () =>
                 {
                     try
@@ -118,11 +120,14 @@ namespace com.espertech.esper.core.start
                 outputView = mergeView;
                 var statement = new ContextManagedStatementCreateVariableDesc(StatementSpec, statementContext, mergeView, contextFactory);
                 services.ContextManagementService.AddStatement(StatementSpec.OptionalContextName, statement, isRecoveringResilient);
+
+                ContextManagementService contextManagementService = services.ContextManagementService;
+                destroyMethod.AddCallback(() => contextManagementService.DestroyedStatement(StatementSpec.OptionalContextName, statementContext.StatementName, statementContext.StatementId));
             }
             else
             {
                 // allocate
-                services.VariableService.AllocateVariableState(createDesc.VariableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID, statementContext.ExtensionServicesContext);
+                services.VariableService.AllocateVariableState(createDesc.VariableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID, statementContext.StatementExtensionServicesContext);
                 var createView = new CreateVariableView(statementContext.StatementId, services.EventAdapterService, services.VariableService, createDesc.VariableName, statementContext.StatementResultService);
     
                 services.VariableService.RegisterCallback(createDesc.VariableName, 0, createView.Update);
@@ -139,15 +144,15 @@ namespace com.espertech.esper.core.start
                 var resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(agentInstanceContext, resultSetProcessorPrototype);
     
                 // Attach output view
-                var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, agentInstanceContext.StatementContext, resultSetProcessor.ResultEventType, null, services.TableService);
+                var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, agentInstanceContext.StatementContext, resultSetProcessor.ResultEventType, null, services.TableService, resultSetProcessorPrototype.ResultSetProcessorFactory.ResultSetProcessorType);
                 var outputViewBase = outputViewFactory.MakeView(resultSetProcessor, agentInstanceContext);
                 createView.AddView(outputViewBase);
                 outputView = outputViewBase;
-    
-                services.StatementVariableRefService.AddReferences(statementContext.StatementName, Collections.SingletonList(createDesc.VariableName), null);
             }
-    
-            return new EPStatementStartResult(outputView, stopMethod, destroyMethod);
+
+            services.StatementVariableRefService.AddReferences(statementContext.StatementName, Collections.SingletonList(createDesc.VariableName), null);
+ 
+            return new EPStatementStartResult(outputView, stopMethod, destroyMethod.Destroy);
         }
     }
 }

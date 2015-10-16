@@ -15,7 +15,7 @@
 
 <!-- Distribution version -->
 <Version Condition=" '$(CCNetLabel)' != '' ">$(CCNetLabel)</Version>
-<Version Condition=" '$(Version)' == '' ">5.2.6</Version>
+<Version Condition=" '$(Version)' == '' ">5.3.0</Version>
 
 <!-- Build Directories -->
 <BuildPath>$(MSBuildProjectDirectory)\build</BuildPath>
@@ -43,13 +43,16 @@
 <VersionedAssemblies Include="NEsper.IO\NEsper.IO.Tests\Properties\AssemblyInfo.cs" />
 </ItemGroup>
 
-<FileUpdate Files='@(VersionedAssemblies)'
+<FileUpdate
+Files='@(VersionedAssemblies)'
 Regex='AssemblyVersion\([ ]*".*"[ ]*\)'
 ReplacementText='AssemblyVersion("$(Version)")' />
-<FileUpdate Files='@(VersionedAssemblies)'
+<FileUpdate
+Files='@(VersionedAssemblies)'
 Regex='AssemblyFileVersion\([ ]*".*"[ ]*\)'
 ReplacementText='AssemblyFileVersion("$(Version)")' />
-<FileUpdate Files='$(MSBuildProjectDirectory)\NEsper.shfbproj'
+<FileUpdate
+Files='$(MSBuildProjectDirectory)\NEsper.shfbproj'
 Regex='build\\NEsper-[0-9\.]+\\'
 ReplacementText='build\NEsper-$(Version)\' />
 </Target>
@@ -70,18 +73,12 @@ ReplacementText='build\NEsper-$(Version)\' />
 </Target>
 
 <Target Name="VeryClean">
-<MSBuild Projects="NEsper.proj"
-Properties="Configuration=Debug"
-Targets="Clean"/>
-<MSBuild Projects="NEsper.proj"
-Properties="Configuration=Release"
-Targets="Clean"/>
+<MSBuild Projects="NEsper.proj" Properties="Configuration=Debug" Targets="Clean"/>
+<MSBuild Projects="NEsper.proj" Properties="Configuration=Release" Targets="Clean"/>
 </Target>
 
 <Target Name="Release-All" DependsOnTargets="Update-Packages">
-<MSBuild Projects="NEsper.proj"
-Properties="Configuration=$(Configuration)"
-Targets="Clean;Release-Target;Clean"/>
+<MSBuild Projects="NEsper.proj" Properties="Configuration=$(Configuration)" Targets="Clean;Release-Target;Clean"/>
 </Target>
 
 <Target Name="Build" DependsOnTargets="Update-Packages">
@@ -118,9 +115,7 @@ Condition="Exists('$(LicenseFile)')"/>
 <Binaries40 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll"/>
 </ItemGroup>
 
-<Copy SourceFiles="@(Binaries40)"
-DestinationFolder="$(BuildRoot)\lib\net40"
-SkipUnchangedFiles="True" />
+<Copy SourceFiles="@(Binaries40)" DestinationFolder="$(BuildRoot)\lib\net40" SkipUnchangedFiles="True" />
 
 <ItemGroup>
 <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\v4.5\NEsper.xml"/>
@@ -180,7 +175,7 @@ SkipUnchangedFiles="True" />
 <NEsperSource Include="NEsper\**\*.config"  Exclude="NEsper\**\bin\**\*"/>
 <NEsperSource Include="NEsper\**\*.csproj"  Exclude="NEsper\**\bin\**\*"/>
 <NEsperSource Include="NEsper\**\*.proj"    Exclude="NEsper\**\bin\**\*"/>
-<NEsperSource Include="NEsper\**\*.sln" 	  Exclude="NEsper\**\bin\**\*"/>
+<NEsperSource Include="NEsper\**\*.sln" 	Exclude="NEsper\**\bin\**\*"/>
 </ItemGroup>
 
 <Copy SourceFiles="@(NEsperSource)"
@@ -261,8 +256,7 @@ ReplacementText="&lt;string&gt;..\..\etc\NEsper&lt;/string&gt;" />
 <NuSpecFile>$(MSBuildProjectDirectory)/NEsper.nuspec</NuSpecFile>
 </PropertyGroup>
 
-<Exec Command="$(NuGetCommand) pack $(NuSpecFile)"
-/>
+<Exec Command="$(NuGetCommand) pack $(NuSpecFile)" />
 </Target>
 
 <Target Name="Documentation">

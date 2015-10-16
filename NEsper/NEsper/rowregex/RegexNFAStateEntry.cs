@@ -25,7 +25,14 @@ namespace com.espertech.esper.rowregex
         /// <param name="greedyCountPerState">number of greedy matches over all variables</param>
         /// <param name="optionalMultiMatches">matches for multirow-variables</param>
         /// <param name="partitionKey">key of partition</param>
-        public RegexNFAStateEntry(int matchBeginEventSeqNo, long matchBeginEventTime, RegexNFAState state, EventBean[] eventsPerStream, int[] greedyCountPerState, MultimatchState[] optionalMultiMatches, Object partitionKey)
+        public RegexNFAStateEntry(
+            int matchBeginEventSeqNo,
+            long matchBeginEventTime,
+            RegexNFAState state,
+            EventBean[] eventsPerStream,
+            int[] greedyCountPerState,
+            MultimatchState[] optionalMultiMatches,
+            Object partitionKey)
         {
             MatchBeginEventSeqNo = matchBeginEventSeqNo;
             MatchBeginEventTime = matchBeginEventTime;

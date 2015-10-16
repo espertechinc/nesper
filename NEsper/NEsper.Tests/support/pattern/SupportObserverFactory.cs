@@ -18,7 +18,7 @@ namespace com.espertech.esper.support.pattern
 {
     public class SupportObserverFactory : ObserverFactory
     {
-        public void SetObserverParameters(IList<ExprNode> observerParameters, MatchedEventConvertor convertor)
+        public void SetObserverParameters(IList<ExprNode> observerParameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
         {
         }
 

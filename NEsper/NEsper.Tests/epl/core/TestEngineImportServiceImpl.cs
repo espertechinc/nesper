@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.support.core;
 using com.espertech.esper.support.epl;
 
 using NUnit.Framework;
@@ -23,7 +24,7 @@ namespace com.espertech.esper.epl.core
         [SetUp]
         public void SetUp()
         {
-            _engineImportService = new EngineImportServiceImpl(true, true, true, false, null);
+            _engineImportService = SupportEngineImportServiceFactory.Make();
         }
     
         [Test]

@@ -178,8 +178,16 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 return;
             }
-    
-            // validate create-window
+
+            // validate create-window with column definition: not allowed, requires typed
+            if (statement.StatementSpec.CreateWindowDesc.Columns != null && 
+                statement.StatementSpec.CreateWindowDesc.Columns.Count > 0)
+            {
+                throw new ExprValidationException("Segmented context '" + contextName +
+                        "' requires that named windows are associated to an existing event type and that the event type is listed among the partitions defined by the create-context statement");
+            }
+
+            // validate create-window declared type
             String declaredAsName = statement.StatementSpec.CreateWindowDesc.AsEventTypeName;
             if (declaredAsName != null)
             {

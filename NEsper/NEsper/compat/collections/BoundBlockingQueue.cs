@@ -62,7 +62,7 @@ namespace com.espertech.esper.compat.collections
                 PulsePushHandle();
                 PulsePopHandle();
 
-                //_queuePushWaitHandle.Set();  // Push is clear
+                //_queuePushWaitHandle.Insert();  // Push is clear
                 //_queuePopWaitHandle.Reset(); // Pop now waits
             }
         }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.compat.collections
 
                         PulsePushHandle();
 
-                        //_queuePushWaitHandle.Set(); // Push is clear
+                        //_queuePushWaitHandle.Insert(); // Push is clear
                         return value;
                     }
                 }

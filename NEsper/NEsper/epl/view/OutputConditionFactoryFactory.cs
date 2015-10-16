@@ -63,15 +63,10 @@ namespace com.espertech.esper.epl.view
 	            }
 	        }
 
-	        if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST)
-			{
-	            if (isGrouped) {
-	                return new OutputConditionNullFactory();
-	            }
-	            if (!isWithHavingClause) {
-	                return new OutputConditionFirstFactory(outputLimitSpec, statementContext, isGrouped, isWithHavingClause);
-	            }
-			}
+            if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST && isGrouped)
+            {
+                return new OutputConditionNullFactory();
+            }
 
 	        if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB)
 	        {

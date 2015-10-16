@@ -111,6 +111,7 @@ namespace com.espertech.esper.util
             ParserTable[typeof(bool?)] = s => BoolValue.ParseString(s.Trim());
             ParserTable[typeof(char?)] = s => s[0];
             ParserTable[typeof(DateTime?)] = s => DateTime.Parse(s.Trim());
+            ParserTable[typeof(DateTimeOffset?)] = s => DateTimeParser.ParseDefault(s.Trim());
 
             ParserTable[typeof(decimal?)] = s => DecimalValue.ParseString(s.Trim());
             ParserTable[typeof(double?)] = s => DoubleValue.ParseString(s.Trim());
@@ -1856,6 +1857,10 @@ namespace com.espertech.esper.util
             {
                 return false;
             }
+            if (propertyType == typeof(DateTimeOffset))
+            {
+                return false;
+            }
             if (propertyType == typeof(DateTime))
             {
                 return false;
@@ -2147,6 +2152,12 @@ namespace com.espertech.esper.util
 
             var className = constant.Substring(0, lastDotIndex);
             var constName = constant.Substring(lastDotIndex + 1);
+
+            // un-escape
+            if (constName.StartsWith("`") && constName.EndsWith("`"))
+            {
+                constName = constName.Substring(1, constName.Length - 2);
+            }
 
             Type clazz;
             try
@@ -2695,7 +2706,8 @@ namespace com.espertech.esper.util
                 return false;
 
             var clazzBoxed = clazz.GetBoxedType();
-            return 
+            return
+                (clazzBoxed == typeof (DateTimeOffset?)) ||
                 (clazzBoxed == typeof (DateTime?)) ||
                 (clazzBoxed == typeof (long?));
         }

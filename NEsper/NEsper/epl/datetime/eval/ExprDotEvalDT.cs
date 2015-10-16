@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.datetime.calop;
 using com.espertech.esper.epl.datetime.interval;
 using com.espertech.esper.epl.datetime.reformatop;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
@@ -30,12 +29,13 @@ namespace com.espertech.esper.epl.datetime.eval
 
         public ExprDotEvalDT(
             IList<CalendarOp> calendarOps,
+            TimeZoneInfo timeZone,
             ReformatOp reformatOp,
             IntervalOp intervalOp,
             Type inputType,
             EventType inputEventType)
         {
-            _evaluator = GetEvaluator(calendarOps, inputType, inputEventType, reformatOp, intervalOp);
+            _evaluator = GetEvaluator(calendarOps, timeZone, inputType, inputEventType, reformatOp, intervalOp);
 
             if (intervalOp != null)
             {
@@ -50,9 +50,8 @@ namespace com.espertech.esper.epl.datetime.eval
                 // only calendar ops
                 if (inputEventType != null)
                 {
-                    _returnType =
-                        EPTypeHelper.SingleValue(
-                            inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName));
+                    _returnType = EPTypeHelper.SingleValue(
+                        inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName));
                 }
                 else
                 {
@@ -90,6 +89,7 @@ namespace com.espertech.esper.epl.datetime.eval
 
         public DTLocalEvaluator GetEvaluator(
             IList<CalendarOp> calendarOps,
+            TimeZoneInfo timeZone,
             Type inputType,
             EventType inputEventType,
             ReformatOp reformatOp,
@@ -103,17 +103,25 @@ namespace com.espertech.esper.epl.datetime.eval
                     {
                         if (calendarOps.IsEmpty())
                         {
-                            return new DTLocalEvaluatorDateReformat(reformatOp);
+                            return new DTLocalEvaluatorDateTimeReformat(reformatOp);
                         }
-                        return new DTLocalEvaluatorDateOpsReformat(calendarOps, reformatOp);
+                        return new DTLocalEvaluatorDateTimeOpsReformat(calendarOps, reformatOp, timeZone);
                     }
-                    if (inputType.GetBoxedType() == typeof (long?))
+                    if (inputType.GetBoxedType() == typeof(DateTimeOffset?))
+                    {
+                        if (calendarOps.IsEmpty())
+                        {
+                            return new DTLocalEvaluatorDateTimeReformat(reformatOp);
+                        }
+                        return new DTLocalEvaluatorDateTimeOpsReformat(calendarOps, reformatOp, timeZone);
+                    }
+                    if (inputType.GetBoxedType() == typeof(long?))
                     {
                         if (calendarOps.IsEmpty())
                         {
                             return new DTLocalEvaluatorLongReformat(reformatOp);
                         }
-                        return new DTLocalEvaluatorLongOpsReformat(calendarOps, reformatOp);
+                        return new DTLocalEvaluatorLongOpsReformat(calendarOps, reformatOp, timeZone);
                     }
                 }
                 else if (intervalOp != null)
@@ -122,9 +130,17 @@ namespace com.espertech.esper.epl.datetime.eval
                     {
                         if (calendarOps.IsEmpty())
                         {
-                            return new DTLocalEvaluatorDateInterval(intervalOp);
+                            return new DTLocalEvaluatorDateTimeInterval(intervalOp);
                         }
-                        return new DTLocalEvaluatorDateOpsInterval(calendarOps, intervalOp);
+                        return new DTLocalEvaluatorDateTimeOpsInterval(calendarOps, intervalOp, timeZone);
+                    }
+                    if (inputType.GetBoxedType() == typeof(DateTimeOffset?))
+                    {
+                        if (calendarOps.IsEmpty())
+                        {
+                            return new DTLocalEvaluatorDateTimeInterval(intervalOp);
+                        }
+                        return new DTLocalEvaluatorDateTimeOpsInterval(calendarOps, intervalOp, timeZone);
                     }
                     if (inputType.GetBoxedType() == typeof (long?))
                     {
@@ -132,7 +148,7 @@ namespace com.espertech.esper.epl.datetime.eval
                         {
                             return new DTLocalEvaluatorLongInterval(intervalOp);
                         }
-                        return new DTLocalEvaluatorLongOpsInterval(calendarOps, intervalOp);
+                        return new DTLocalEvaluatorLongOpsInterval(calendarOps, intervalOp, timeZone);
                     }
                 }
                 else
@@ -140,55 +156,54 @@ namespace com.espertech.esper.epl.datetime.eval
                     // only calendar ops, nothing else
                     if (inputType.GetBoxedType() == typeof (DateTime?))
                     {
-                        return new DTLocalEvaluatorCalOpsDate(calendarOps);
+                        return new DTLocalEvaluatorCalOpsDateTime(calendarOps, timeZone);
+                    }
+                    if (inputType.GetBoxedType() == typeof(DateTimeOffset?))
+                    {
+                        return new DTLocalEvaluatorCalOpsDateTime(calendarOps, timeZone);
                     }
                     if (inputType.GetBoxedType() == typeof (long?))
                     {
-                        return new DTLocalEvaluatorCalOpsLong(calendarOps);
+                        return new DTLocalEvaluatorCalOpsLong(calendarOps, timeZone);
                     }
                 }
                 throw new ArgumentException("Invalid input type '" + inputType + "'");
             }
 
-            EventPropertyGetter getter = inputEventType.GetGetter(inputEventType.StartTimestampPropertyName);
-            Type getterResultType = inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName);
+            var getter = inputEventType.GetGetter(inputEventType.StartTimestampPropertyName);
+            var getterResultType = inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName);
 
             if (reformatOp != null)
             {
-                DTLocalEvaluator inner = GetEvaluator(calendarOps, getterResultType, null, reformatOp, null);
+                var inner = GetEvaluator(calendarOps, timeZone, getterResultType, null, reformatOp, null);
                 return new DTLocalEvaluatorBeanReformat(getter, inner);
             }
             if (intervalOp == null)
             {
                 // only calendar ops
-                DTLocalEvaluator inner = GetEvaluator(calendarOps, getterResultType, null, null, null);
+                var inner = GetEvaluator(calendarOps, timeZone, getterResultType, null, null, null);
                 return new DTLocalEvaluatorBeanCalOps(getter, inner);
             }
 
             // have interval ops but no end timestamp
             if (inputEventType.EndTimestampPropertyName == null)
             {
-                DTLocalEvaluator inner = GetEvaluator(calendarOps, getterResultType, null, null, intervalOp);
+                var inner = GetEvaluator(calendarOps, timeZone, getterResultType, null, null, intervalOp);
                 return new DTLocalEvaluatorBeanIntervalNoEndTS(getter, inner);
             }
 
             // interval ops and have end timestamp
-            EventPropertyGetter getterEndTimestamp = inputEventType.GetGetter(inputEventType.EndTimestampPropertyName);
+            var getterEndTimestamp = inputEventType.GetGetter(inputEventType.EndTimestampPropertyName);
             var intervalComp =
-                (DTLocalEvaluatorIntervalComp) GetEvaluator(calendarOps, getterResultType, null, null, intervalOp);
+                (DTLocalEvaluatorIntervalComp)GetEvaluator(calendarOps, timeZone, getterResultType, null, null, intervalOp);
             return new DTLocalEvaluatorBeanIntervalWithEnd(getter, getterEndTimestamp, intervalComp);
         }
 
-        public static void EvaluateCalOps(
-            IEnumerable<CalendarOp> calendarOps,
-            ref DateTime dateTime,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public static void EvaluateCalOps(IEnumerable<CalendarOp> calendarOps, DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (CalendarOp calendarOp in calendarOps)
+            foreach (var calendarOp in calendarOps)
             {
-                calendarOp.Evaluate(ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                calendarOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
@@ -228,7 +243,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                Object timestamp = _getter.Get((EventBean) target);
+                var timestamp = _getter.Get((EventBean) target);
                 if (timestamp == null)
                 {
                     return null;
@@ -264,7 +279,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                Object timestamp = _getter.Get((EventBean) target);
+                var timestamp = _getter.Get((EventBean) target);
                 if (timestamp == null)
                 {
                     return null;
@@ -303,12 +318,12 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                Object startTimestamp = _getterStartTimestamp.Get((EventBean) target);
+                var startTimestamp = _getterStartTimestamp.Get((EventBean) target);
                 if (startTimestamp == null)
                 {
                     return null;
                 }
-                Object endTimestamp = _getterEndTimestamp.Get((EventBean) target);
+                var endTimestamp = _getterEndTimestamp.Get((EventBean) target);
                 if (endTimestamp == null)
                 {
                     return null;
@@ -344,7 +359,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                Object timestamp = _getter.Get((EventBean) target);
+                var timestamp = _getter.Get((EventBean) target);
                 if (timestamp == null)
                 {
                     return null;
@@ -371,15 +386,18 @@ namespace com.espertech.esper.epl.datetime.eval
 
         #endregion
 
-        #region Nested type: DTLocalEvaluatorCalOpsDate
+        #region Nested type: DTLocalEvaluatorCalOpsDateTime
 
-        private class DTLocalEvaluatorCalOpsDate
+        private class DTLocalEvaluatorCalOpsDateTime
             : DTLocalEvaluatorCalOpsCalBase
             , DTLocalEvaluator
         {
-            internal DTLocalEvaluatorCalOpsDate(IList<CalendarOp> calendarOps)
+            private readonly TimeZoneInfo _timeZone;
+
+            internal DTLocalEvaluatorCalOpsDateTime(IList<CalendarOp> calendarOps, TimeZoneInfo timeZone)
                 : base(calendarOps)
             {
+                _timeZone = timeZone;
             }
 
             #region DTLocalEvaluator Members
@@ -390,9 +408,9 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var dateValue = (DateTime) target;
-                EvaluateCalOps(CalendarOps, ref dateValue, eventsPerStream, isNewData, exprEvaluatorContext);
-                return dateValue;
+                var dateValue = new DateTimeEx(target.AsDateTimeOffset(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateValue, eventsPerStream, isNewData, exprEvaluatorContext);
+                return dateValue.DateTime;
             }
 
             #endregion
@@ -447,9 +465,12 @@ namespace com.espertech.esper.epl.datetime.eval
             : DTLocalEvaluatorCalOpsCalBase
             , DTLocalEvaluator
         {
-            internal DTLocalEvaluatorCalOpsLong(IList<CalendarOp> calendarOps)
+            private readonly TimeZoneInfo _timeZone;
+
+            internal DTLocalEvaluatorCalOpsLong(IList<CalendarOp> calendarOps, TimeZoneInfo timeZone)
                 : base(calendarOps)
             {
+                _timeZone = timeZone;
             }
 
             #region DTLocalEvaluator Members
@@ -461,9 +482,9 @@ namespace com.espertech.esper.epl.datetime.eval
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 var longValue = (long?) target;
-                DateTime dateTime = longValue.Value.TimeFromMillis();
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                return dateTime.TimeInMillis();
+                var dateTime = new DateTimeEx(longValue.Value.TimeFromMillis(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                return dateTime.TimeInMillis;
             }
 
             #endregion
@@ -499,11 +520,11 @@ namespace com.espertech.esper.epl.datetime.eval
 
         #endregion
 
-        #region Nested type: DTLocalEvaluatorDateInterval
+        #region Nested type: DTLocalEvaluatorDateTimeInterval
 
-        private class DTLocalEvaluatorDateInterval : DTLocalEvaluatorIntervalBase
+        private class DTLocalEvaluatorDateTimeInterval : DTLocalEvaluatorIntervalBase
         {
-            internal DTLocalEvaluatorDateInterval(IntervalOp intervalOp)
+            internal DTLocalEvaluatorDateTimeInterval(IntervalOp intervalOp)
                 : base(intervalOp)
             {
             }
@@ -514,7 +535,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long time = ((DateTime) target).TimeInMillis();
+                var time = target.AsDateTimeOffset().TimeInMillis();
                 return IntervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
@@ -525,23 +546,27 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long start = ((DateTime) startTimestamp).TimeInMillis();
-                long end = ((DateTime) endTimestamp).TimeInMillis();
+                var start = startTimestamp.AsDateTimeOffset().TimeInMillis();
+                var end = endTimestamp.AsDateTimeOffset().TimeInMillis();
                 return IntervalOp.Evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
         #endregion
 
-        #region Nested type: DTLocalEvaluatorDateOpsInterval
+        #region Nested type: DTLocalEvaluatorDateTimeOpsInterval
 
-        private class DTLocalEvaluatorDateOpsInterval : DTLocalEvaluatorCalOpsIntervalBase
+        private class DTLocalEvaluatorDateTimeOpsInterval : DTLocalEvaluatorCalOpsIntervalBase
         {
-            internal DTLocalEvaluatorDateOpsInterval(
+            private readonly TimeZoneInfo _timeZone;
+
+            internal DTLocalEvaluatorDateTimeOpsInterval(
                 IList<CalendarOp> calendarOps,
-                IntervalOp intervalOp)
+                IntervalOp intervalOp,
+                TimeZoneInfo timeZone)
                 : base(calendarOps, intervalOp)
             {
+                _timeZone = timeZone;
             }
 
             public override Object Evaluate(
@@ -550,9 +575,9 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var dateTime = (DateTime) target;
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                long time = dateTime.TimeInMillis();
+                var dateTime = new DateTimeEx(target.AsDateTimeOffset(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var time = dateTime.TimeInMillis;
                 return IntervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
@@ -563,27 +588,31 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long startLong = ((DateTime) startTimestamp).TimeInMillis();
-                long endLong = ((DateTime) endTimestamp).TimeInMillis();
-                DateTime dateTime = startLong.TimeFromMillis();
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                long startTime = dateTime.TimeInMillis();
-                long endTime = startTime + (endLong - startLong);
+                var startLong = startTimestamp.AsDateTimeOffset(_timeZone).TimeInMillis();
+                var endLong = startTimestamp.AsDateTimeOffset(_timeZone).TimeInMillis();
+                var dateTime = new DateTimeEx(startLong.TimeFromMillis(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var startTime = dateTime.TimeInMillis;
+                var endTime = startTime + (endLong - startLong);
                 return IntervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
         #endregion
 
-        #region Nested type: DTLocalEvaluatorDateOpsReformat
+        #region Nested type: DTLocalEvaluatorDateTimeOpsReformat
 
-        private class DTLocalEvaluatorDateOpsReformat : DTLocalEvaluatorCalopReformatBase
+        private class DTLocalEvaluatorDateTimeOpsReformat : DTLocalEvaluatorCalopReformatBase
         {
-            internal DTLocalEvaluatorDateOpsReformat(
+            private readonly TimeZoneInfo _timeZone;
+
+            internal DTLocalEvaluatorDateTimeOpsReformat(
                 IList<CalendarOp> calendarOps,
-                ReformatOp reformatOp)
+                ReformatOp reformatOp,
+                TimeZoneInfo timeZone)
                 : base(calendarOps, reformatOp)
             {
+                _timeZone = timeZone;
             }
 
             public override Object Evaluate(
@@ -592,19 +621,19 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var dateTime = (DateTime) target;
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                return ReformatOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var dateTime = new DateTimeEx(target.AsDateTimeOffset(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                return ReformatOp.Evaluate(dateTime.DateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
         #endregion
 
-        #region Nested type: DTLocalEvaluatorDateReformat
+        #region Nested type: DTLocalEvaluatorDateTimeReformat
 
-        private class DTLocalEvaluatorDateReformat : DTLocalEvaluatorReformatBase
+        private class DTLocalEvaluatorDateTimeReformat : DTLocalEvaluatorReformatBase
         {
-            internal DTLocalEvaluatorDateReformat(ReformatOp reformatOp)
+            internal DTLocalEvaluatorDateTimeReformat(ReformatOp reformatOp)
                 : base(reformatOp)
             {
             }
@@ -615,7 +644,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                return ReformatOp.Evaluate((DateTime) target, eventsPerStream, isNewData, exprEvaluatorContext);
+                 return ReformatOp.Evaluate((DateTimeOffset) target, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
@@ -699,7 +728,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long time = target.AsLong();
+                var time = target.AsLong();
                 return IntervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
@@ -710,8 +739,8 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long startTime = startTimestamp.AsLong();
-                long endTime = endTimestamp.AsLong();
+                var startTime = startTimestamp.AsLong();
+                var endTime = endTimestamp.AsLong();
                 return IntervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
@@ -722,11 +751,15 @@ namespace com.espertech.esper.epl.datetime.eval
 
         private class DTLocalEvaluatorLongOpsInterval : DTLocalEvaluatorCalOpsIntervalBase
         {
+            private readonly TimeZoneInfo _timeZone;
+
             internal DTLocalEvaluatorLongOpsInterval(
                 IList<CalendarOp> calendarOps,
-                IntervalOp intervalOp)
+                IntervalOp intervalOp,
+                TimeZoneInfo timeZone)
                 : base(calendarOps, intervalOp)
             {
+                _timeZone = timeZone;
             }
 
             public override Object Evaluate(
@@ -735,9 +768,9 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                DateTime dateTime = target.AsLong().TimeFromMillis();
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                long time = dateTime.TimeInMillis();
+                var dateTime = new DateTimeEx(target.AsLong().TimeFromMillis(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var time = dateTime.TimeInMillis;
                 return IntervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
@@ -748,12 +781,12 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                long startLong = startTimestamp.AsLong();
-                long endLong = endTimestamp.AsLong();
-                DateTime dateTime = startLong.TimeFromMillis();
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                long startTime = dateTime.TimeInMillis();
-                long endTime = startTime + (endLong - startLong);
+                var startLong = startTimestamp.AsLong();
+                var endLong = endTimestamp.AsLong();
+                var dateTime = new DateTimeEx(startLong.TimeFromMillis(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var startTime = dateTime.TimeInMillis;
+                var endTime = startTime + (endLong - startLong);
                 return IntervalOp.Evaluate(startTime, endTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
@@ -764,11 +797,15 @@ namespace com.espertech.esper.epl.datetime.eval
 
         private class DTLocalEvaluatorLongOpsReformat : DTLocalEvaluatorCalopReformatBase
         {
+            private readonly TimeZoneInfo _timeZone;
+
             internal DTLocalEvaluatorLongOpsReformat(
                 IList<CalendarOp> calendarOps,
-                ReformatOp reformatOp)
+                ReformatOp reformatOp,
+                TimeZoneInfo timeZone)
                 : base(calendarOps, reformatOp)
             {
+                _timeZone = timeZone;
             }
 
             public override Object Evaluate(
@@ -777,9 +814,9 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var dateTime = target.AsLong().TimeFromMillis();
-                EvaluateCalOps(CalendarOps, ref dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
-                return ReformatOp.Evaluate(dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                var dateTime = new DateTimeEx(target.AsLong().TimeFromMillis(_timeZone), _timeZone);
+                EvaluateCalOps(CalendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
+                return ReformatOp.Evaluate(dateTime.DateTime, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 

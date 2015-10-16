@@ -108,7 +108,7 @@ namespace com.espertech.esper.core.context.mgr
                     endEndpoint.Activate(optionalTriggeringEvent, null, 0, _factory.FactoryContext.IsRecoveringResilient);
                     var startTime = _factory.SchedulingService.Time;
                     var endTime = endEndpoint.ExpectedEndTime;
-                    var builtinProps = GetBuiltinProperties(_factory, startTime, endTime, Collections.GetEmptyMap<string, object>());
+                    var builtinProps = GetBuiltinProperties(_factory.FactoryContext.ContextName, startTime, endTime, Collections.GetEmptyMap<string, object>());
                     var instanceHandle = ActivationCallback.ContextPartitionInstantiate(null, CurrentSubpathId, null, this, optionalTriggeringEvent, optionalTriggeringPattern, null, builtinProps, controllerState, filterAddendum, _factory.FactoryContext.IsRecoveringResilient, ContextPartitionState.STARTED);
                     EndConditions.Put(endEndpoint, new ContextControllerInitTermInstance(instanceHandle, null, startTime, endTime, CurrentSubpathId));
     
@@ -269,7 +269,7 @@ namespace com.espertech.esper.core.context.mgr
                                 StartCondition.Deactivate();
                             }
                         }
-                            // For overlapping mode, make sure we activate again or stay activated
+                        // For overlapping mode, make sure we activate again or stay activated
                         else
                         {
                             if (!StartCondition.IsRunning)
@@ -285,7 +285,7 @@ namespace com.espertech.esper.core.context.mgr
                         endEndpoint.Activate(null, matchedEventMap, 0, false);
                         var startTime = _factory.SchedulingService.Time;
                         var endTime = endEndpoint.ExpectedEndTime;
-                        var builtinProps = GetBuiltinProperties(_factory, startTime, endTime, builtinProperties);
+                        var builtinProps = GetBuiltinProperties(_factory.FactoryContext.ContextName, startTime, endTime, builtinProperties);
                         var instanceHandle = ActivationCallback.ContextPartitionInstantiate(
                             null, CurrentSubpathId, null, this, optionalTriggeringEvent, optionalTriggeringPattern,
                             new ContextControllerInitTermState(
@@ -363,8 +363,8 @@ namespace com.espertech.esper.core.context.mgr
                ((contextDetailInitiatedTerminated.End is ContextDetailConditionCrontab)))     {
                 var scheduleStart = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.Start).Schedule;
                 var scheduleEnd = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.End).Schedule;
-                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, _factory.TimeProvider.Time);
-                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, _factory.TimeProvider.Time);
+                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, _factory.TimeProvider.Time, _factory.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
+                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, _factory.TimeProvider.Time, _factory.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
     
@@ -405,11 +405,11 @@ namespace com.espertech.esper.core.context.mgr
             EndConditions.Clear();
             _factory.StateCache.RemoveContextParentPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId);
         }
-    
-        internal static IDictionary<String, Object> GetBuiltinProperties(ContextControllerInitTermFactory factory, long startTime, long? endTime, IDictionary<String, Object> startEndpointData)
+
+        internal static IDictionary<String, Object> GetBuiltinProperties(String contextName, long startTime, long? endTime, IDictionary<String, Object> startEndpointData)
         {
             IDictionary<String, Object> props = new Dictionary<String, Object>();
-            props.Put(ContextPropertyEventType.PROP_CTX_NAME, factory.FactoryContext.ContextName);
+            props.Put(ContextPropertyEventType.PROP_CTX_NAME, contextName);
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, startTime);
             props.Put(ContextPropertyEventType.PROP_CTX_ENDTIME, endTime);
             props.PutAll(startEndpointData);
@@ -461,7 +461,7 @@ namespace com.espertech.esper.core.context.mgr
                 endEndpoint.Activate(optionalTriggeringEvent, null, timeOffset, _factory.FactoryContext.IsRecoveringResilient);
                 var startTime = state.StartTime;
                 var endTime = endEndpoint.ExpectedEndTime;
-                var builtinProps = GetBuiltinProperties(_factory, startTime, endTime, state.PatternData);
+                var builtinProps = GetBuiltinProperties(_factory.FactoryContext.ContextName, startTime, endTime, state.PatternData);
                 var contextPartitionId = entry.Value.OptionalContextPartitionId;
     
                 var assignedSubPathId = !controllerState.IsImported ? entry.Key.SubPath : ++CurrentSubpathId;

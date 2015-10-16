@@ -48,7 +48,7 @@ namespace com.espertech.esper.dispatch
 
             if (IsDebugEnabled)
             {
-                Log.Debug(".dispatchFromQueue Dispatch queue is " + dispatchQueue.Count + " elements");
+                Log.Debug(".DispatchFromQueue Dispatch queue is " + dispatchQueue.Count + " elements");
             }
 
             try

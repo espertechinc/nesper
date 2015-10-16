@@ -55,8 +55,8 @@ namespace com.espertech.esper.regression.view
         #endregion
 
         private const String SYMBOL_CISCO = "CSCO.O";
-        private const String SYMBOL_IBM = "IBM.N";
-        private const String SYMBOL_GE = "GE.N";
+        private const String SYMBOL_IBM = "IBM.Count";
+        private const String SYMBOL_GE = "GE.Count";
 
         private EPServiceProvider _epService;
 

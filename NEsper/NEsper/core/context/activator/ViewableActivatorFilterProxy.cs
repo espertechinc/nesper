@@ -27,7 +27,7 @@ namespace com.espertech.esper.core.context.activator
         private readonly InstrumentationAgent _instrumentationAgent;
         private readonly bool _isCanIterate;
     
-        public ViewableActivatorFilterProxy(EPServicesContext services, FilterSpecCompiled filterSpec, Attribute[] annotations, bool subSelect, InstrumentationAgent instrumentationAgent, bool isCanIterate)
+        internal ViewableActivatorFilterProxy(EPServicesContext services, FilterSpecCompiled filterSpec, Attribute[] annotations, bool subSelect, InstrumentationAgent instrumentationAgent, bool isCanIterate)
         {
             _services = services;
             _filterSpec = filterSpec;
@@ -85,15 +85,20 @@ namespace com.espertech.esper.core.context.activator
                 addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(_filterSpec);
             }
             var filterValueSet = _filterSpec.GetValueSet(null, agentInstanceContext, addendum);
-            _services.FilterService.Add(filterValueSet, filterHandle);
-    
-            var stopCallback = new ViewableActivatorFilterProxyStopCallback(this, filterHandle);
-            return new ViewableActivationResult(inputStream, stopCallback.Stop, null, null, false, false);
+            var filterServiceEntry = _services.FilterService.Add(filterValueSet, filterHandle);
+
+            var stopCallback = new ViewableActivatorFilterProxyStopCallback(this, filterHandle, filterServiceEntry);
+            return new ViewableActivationResult(inputStream, stopCallback.Stop, null, null, null, false, false, null);
         }
 
         public EPServicesContext Services
         {
             get { return _services; }
+        }
+
+        public FilterSpecCompiled FilterSpec
+        {
+            get { return _filterSpec; }
         }
     }
 }

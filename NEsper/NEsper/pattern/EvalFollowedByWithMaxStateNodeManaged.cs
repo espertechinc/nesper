@@ -70,7 +70,7 @@ namespace com.espertech.esper.pattern
                     }
                     if (EvalFollowedByNode.IsTrackWithPool) {
                         PatternSubexpressionPoolStmtSvc poolSvc = EvalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
-                        poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode);
+                        poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode, EvalFollowedByNode.Context.AgentInstanceContext);
                         poolSvc.StmtHandler.DecreaseCount();
                     }
                 }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.pattern
     
                 if (EvalFollowedByNode.IsTrackWithPool) {
                     PatternSubexpressionPoolStmtSvc poolSvc = EvalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
-                    bool allow = poolSvc.EngineSvc.TryIncreaseCount(EvalFollowedByNode);
+                    bool allow = poolSvc.EngineSvc.TryIncreaseCount(EvalFollowedByNode, EvalFollowedByNode.Context.AgentInstanceContext);
                     if (!allow) {
                         return;
                     }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.pattern
                 }
                 if (EvalFollowedByNode.IsTrackWithPool) {
                     PatternSubexpressionPoolStmtSvc poolSvc = EvalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
-                    poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode);
+                    poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode, EvalFollowedByNode.Context.AgentInstanceContext);
                     poolSvc.StmtHandler.DecreaseCount();
                 }
             }
@@ -178,7 +178,7 @@ namespace com.espertech.esper.pattern
                 if (EvalFollowedByNode.IsTrackWithPool) {
                     if (entry.Value > 0) {
                         PatternSubexpressionPoolStmtSvc poolSvc = EvalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
-                        poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode);
+                        poolSvc.EngineSvc.DecreaseCount(EvalFollowedByNode, EvalFollowedByNode.Context.AgentInstanceContext);
                         poolSvc.StmtHandler.DecreaseCount();
                     }
                 }

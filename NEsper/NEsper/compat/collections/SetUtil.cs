@@ -9,9 +9,7 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.compat.collections;
-
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     public class SetUtil
     {

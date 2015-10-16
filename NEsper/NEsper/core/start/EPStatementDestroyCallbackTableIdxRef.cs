@@ -8,14 +8,11 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    public class EPStatementDestroyCallbackTableIdxRef : DestroyCallback
+    public class EPStatementDestroyCallbackTableIdxRef
     {
         private readonly TableService _tableService;
         private readonly TableMetadata _tableMetadata;

@@ -21,15 +21,15 @@ namespace com.espertech.esper.epl.datetime.reformatop
     {
         public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return Action(ts.TimeFromMillis());
+            return Action(ts.TimeFromMillis(null));
         }
 
-        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return Action(d);
         }
 
-        private static String Action(DateTime d)
+        private static String Action(DateTimeOffset d)
         {
             return d.ToString();
         }

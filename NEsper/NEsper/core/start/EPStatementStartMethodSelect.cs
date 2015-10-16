@@ -17,6 +17,7 @@ using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.prev;
@@ -48,6 +49,10 @@ namespace com.espertech.esper.core.start
             var contextName = StatementSpec.OptionalContextName;
             var defaultAgentInstanceContext = GetDefaultAgentInstanceContext(statementContext);
             var selectDesc = EPStatementStartMethodSelectUtil.Prepare(StatementSpec, services, statementContext, isRecoveringResilient, defaultAgentInstanceContext, IsQueryPlanLogging(services), null, null, null);
+            statementContext.StatementAgentInstanceFactory = selectDesc.StatementAgentInstanceFactorySelect;
+
+            // allow extension to walk
+            statementContext.StatementExtensionServicesContext.PreStartWalk(selectDesc);
     
             // Determine context
             EPStatementStopMethod stopStatementMethod;
@@ -149,17 +154,22 @@ namespace com.espertech.esper.core.start
                 previousStrategyInstances = resultOfStart.PreviousNodeStrategies;
                 tableAccessStrategyInstances = resultOfStart.TableAccessEvalStrategies;
                 preloadList = resultOfStart.PreloadList;
-    
-                var matchRecognize = EventRowRegexHelper.RecursiveFindRegexService(resultOfStart.TopViews[0]);
-                if (matchRecognize != null) {
-                    matchRecognizePrevEvalStrategy = matchRecognize.PreviousEvaluationStrategy;
+
+                matchRecognizePrevEvalStrategy = null;
+                if (resultOfStart.TopViews.Length > 0)
+                {
+                    EventRowRegexNFAViewService matchRecognize = EventRowRegexHelper.RecursiveFindRegexService(resultOfStart.TopViews[0]);
+                    if (matchRecognize != null)
+                    {
+                        matchRecognizePrevEvalStrategy = matchRecognize.PreviousEvaluationStrategy;
+                    }
                 }
-                else {
-                    matchRecognizePrevEvalStrategy = null;
-                }
-    
-                if (statementContext.ExtensionServicesContext != null && statementContext.ExtensionServicesContext.StmtResources != null) {
-                    statementContext.ExtensionServicesContext.StmtResources.StartContextPartition(resultOfStart, 0);
+
+                if (statementContext.StatementExtensionServicesContext != null && statementContext.StatementExtensionServicesContext.StmtResources != null)
+                {
+                    StatementResourceHolder holder = statementContext.StatementExtensionServicesContext.ExtractStatementResourceHolder(resultOfStart);
+                    statementContext.StatementExtensionServicesContext.StmtResources.Unpartitioned = holder;
+                    statementContext.StatementExtensionServicesContext.PostProcessStart(resultOfStart, isRecoveringResilient);
                 }
             }
     

@@ -62,66 +62,18 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
 
             stmt.Events += _listener.Update;
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
+            var fields = new String[] { "symbol", "volume", "price" };
 
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(200, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(1500, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
-            expected.AddResultInsert(2100, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
-            expected.AddResultInsert(4300, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                }
-            }
-                );
-            expected.AddResultRemove(5700, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultRemove(7000, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
+            expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 150L, 24d } } );
+            expected.AddResultInsert(2100, 1, new Object[][] { new Object[] { "IBM", 155L, 26d } } );
+            expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 150L, 22d } } );
+            expected.AddResultRemove(5700, 0, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultRemove(7000, 0, new Object[][] { new Object[] { "IBM", 150L, 24d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
-
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
             execution.Execute();
         }
 
@@ -132,59 +84,18 @@ namespace com.espertech.esper.regression.view
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(1200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(2200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+            expected.AddResultInsert(1200, 0, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultInsert(2200, 0, new Object[][] { new Object[] { "IBM", 155L, 26d } } );
             expected.AddResultInsRem(3200, 0, null, null);
             expected.AddResultInsRem(4200, 0, null, null);
-            expected.AddResultInsert(5200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                }
-            }
-                );
-            expected.AddResultInsRem(6200, 0, null, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultRemove(7200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
+            expected.AddResultInsert(5200, 0, new Object[][] { new Object[] { "IBM", 150L, 22d } } );
+            expected.AddResultInsRem(6200, 0, null, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultRemove(7200, 0, new Object[][] { new Object[] { "IBM", 150L, 24d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
@@ -201,112 +112,22 @@ namespace com.espertech.esper.regression.view
                 "symbol", "volume", "price"
             }
                 ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(200, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(800, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
-            expected.AddResultInsert(1500, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
-            expected.AddResultInsert(1500, 2, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                }
-            }
-                );
-            expected.AddResultInsert(2100, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
-            expected.AddResultInsert(3500, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                }
-            }
-                );
-            expected.AddResultInsert(4300, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                }
-            }
-                );
-            expected.AddResultInsert(4900, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 11500L, 3d
-                }
-            }
-                );
-            expected.AddResultRemove(5700, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(5900, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 10500L, 1d
-                }
-            }
-                );
-            expected.AddResultRemove(6300, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
-            expected.AddResultRemove(7000, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                }
-            }
-                );
+            expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultInsert(800, 1, new Object[][] { new Object[] { "MSFT", 5000L, 9d } } );
+            expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 150L, 24d } } );
+            expected.AddResultInsert(1500, 2, new Object[][] { new Object[] { "YAH", 10000L, 1d } } );
+            expected.AddResultInsert(2100, 1, new Object[][] { new Object[] { "IBM", 155L, 26d } } );
+            expected.AddResultInsert(3500, 1, new Object[][] { new Object[] { "YAH", 11000L, 2d } } );
+            expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 150L, 22d } } );
+            expected.AddResultInsert(4900, 1, new Object[][] { new Object[] { "YAH", 11500L, 3d } } );
+            expected.AddResultRemove(5700, 0, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultInsert(5900, 1, new Object[][] { new Object[] { "YAH", 10500L, 1d } } );
+            expected.AddResultRemove(6300, 0, new Object[][] { new Object[] { "MSFT", 5000L, 9d } } );
+            expected.AddResultRemove(7000, 0, new Object[][] { new Object[] { "IBM", 150L, 24d }, new Object[] { "YAH", 10000L, 1d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
@@ -318,73 +139,18 @@ namespace com.espertech.esper.regression.view
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(1200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
-            expected.AddResultInsert(2200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+            expected.AddResultInsert(1200, 0, new Object[][] { new Object[] { "MSFT", 5000L, 9d } });
+            expected.AddResultInsert(2200, 0, new Object[][] { new Object[] { "IBM", 155L, 26d } });
             expected.AddResultInsRem(3200, 0, null, null);
-            expected.AddResultInsert(4200, 0,
-                new Object[][]
-                {
-                    new Object[]
-                    {
-                        "YAH", 11000L, 2d
-                    }
-                });
-            expected.AddResultInsert(5200, 0,
-                new Object[][]
-                {
-                    new Object[]
-                    {
-                        "YAH", 11500L, 3d
-                    }
-                });
-            expected.AddResultInsRem(6200, 0,
-                new Object[][]
-                {
-                    new Object[]
-                    {
-                        "YAH", 10500L, 1d
-                    }
-                },
-                new Object[][]
-                {
-                    new Object[]
-                    {
-                        "IBM", 100L, 25d
-                    }
-                });
-            expected.AddResultRemove(7200, 0,
-                new Object[][]
-                {
-                    new Object[]
-                    {
-                        "YAH", 10000L, 1d
-                    },
-                });
+            expected.AddResultInsert(4200, 0, new Object[][] { new Object[] { "YAH", 11000L, 2d } });
+            expected.AddResultInsert(5200, 0, new Object[][] { new Object[] { "YAH", 11500L, 3d } });
+            expected.AddResultInsRem(6200, 0, new Object[][] { new Object[] { "YAH", 10500L, 1d } }, new Object[][] { new Object[] { "IBM", 100L, 25d } });
+            expected.AddResultRemove(7200, 0, new Object[][] { new Object[] { "YAH", 10000L, 1d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
@@ -396,63 +162,18 @@ namespace com.espertech.esper.regression.view
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(1200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(2200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+            expected.AddResultInsert(1200, 0, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultInsert(2200, 0, new Object[][] { new Object[] { "IBM", 150L, 24d }, new Object[] { "IBM", 155L, 26d } } );
             expected.AddResultInsRem(3200, 0, null, null);
             expected.AddResultInsRem(4200, 0, null, null);
-            expected.AddResultInsert(5200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                }
-            }
-                );
-            expected.AddResultInsRem(6200, 0, null, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultRemove(7200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
+            expected.AddResultInsert(5200, 0, new Object[][] { new Object[] { "IBM", 150L, 22d } } );
+            expected.AddResultInsRem(6200, 0, null, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultRemove(7200, 0, new Object[][] { new Object[] { "IBM", 150L, 24d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
@@ -464,167 +185,60 @@ namespace com.espertech.esper.regression.view
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(1200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
-            expected.AddResultInsert(2200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+            expected.AddResultInsert(1200, 0, new Object[][] { new Object[] { "IBM", 100L, 25d }, new Object[] { "MSFT", 5000L, 9d } } );
+            expected.AddResultInsert(2200, 0, new Object[][] { new Object[] { "IBM", 150L, 24d }, new Object[] { "YAH", 10000L, 1d }, new Object[] { "IBM", 155L, 26d } } );
             expected.AddResultInsRem(3200, 0, null, null);
-            expected.AddResultInsert(4200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                }
-            }
-                );
-            expected.AddResultInsert(5200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                },
-                new Object[]
-                {
-                    "YAH", 11500L, 3d
-                }
-            }
-                );
-            expected.AddResultInsRem(6200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 10500L, 1d
-                }
-            }, new Object[][]
-                                     {
-                                         new Object[]
-                                         {
-                                             "IBM", 100L, 25d
-                                         }
-                                     }
-                );
-            expected.AddResultRemove(7200, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-            }
-                );
+            expected.AddResultInsert(4200, 0, new Object[][] { new Object[] { "YAH", 11000L, 2d } } );
+            expected.AddResultInsert(5200, 0, new Object[][] { new Object[] { "IBM", 150L, 22d }, new Object[] { "YAH", 11500L, 3d } } );
+            expected.AddResultInsRem(6200, 0, new Object[][] { new Object[] { "YAH", 10500L, 1d } }, new Object[][] { new Object[] { "IBM", 100L, 25d } } );
+            expected.AddResultRemove(7200, 0, new Object[][] { new Object[] { "MSFT", 5000L, 9d }, new Object[] { "IBM", 150L, 24d }, new Object[] { "YAH", 10000L, 1d } } );
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
 
-        private void RunAssertion17(String stmtText, String outputLimit)
+        private void RunAssertion17IStream(String stmtText, String outputLimit)
+        {
+            SendTimer(0);
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
+            stmt.Events += _listener.Update;
+
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+            expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 100L, 25d } });
+            expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 150L, 24d } });
+            expected.AddResultInsert(3500, 1, new Object[][] { new Object[] { "YAH", 11000L, 2d } });
+            expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 150L, 22d } });
+            expected.AddResultInsert(5900, 1, new Object[][] { new Object[] { "YAH", 10500L, 1.0d } });
+
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
+
+            execution.Execute();
+        }
+
+        private void RunAssertion17IRStream(String stmtText, String outputLimit)
         {
             SendTimer(0);
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
-            expected.AddResultInsert(200, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultInsert(1500, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                }
-            }
-                );
-            expected.AddResultInsRem(3200, 0, null, null);
-            expected.AddResultInsert(3500, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                }
-            }
-                );
-            expected.AddResultInsert(4300, 1, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                }
-            }
-                );
-            expected.AddResultRemove(5700, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                }
-            }
-                );
-            expected.AddResultRemove(6300, 0, new Object[][]
-            {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
+            expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 100L, 25d } });
+            expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 150L, 24d } });
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            expected.AddResultInsert(3500, 1, new Object[][] { new Object[] { "YAH", 11000L, 2d } });
+            expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 150L, 22d } });
+            expected.AddResultRemove(5700, 0, new Object[][] { new Object[] { "IBM", 100L, 25d } });
+            expected.AddResultRemove(6300, 0, new Object[][] { new Object[] { "MSFT", 5000L, 9d } });
+
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
 
             execution.Execute();
         }
@@ -636,201 +250,71 @@ namespace com.espertech.esper.regression.view
 
             stmt.Events += _listener.Update;
 
-            var fields = new String[]
-            {
-                "symbol", "volume", "price"
-            }
-                ;
-            var expected = new ResultAssertTestResult(CATEGORY,
-                                                      outputLimit, fields);
+            var fields = new String[] { "symbol", "volume", "price" };
+            var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
             expected.AddResultInsert(1200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                }
-            }
-                );
+                new Object[] { "IBM", 100L, 25d },
+                new Object[] { "MSFT", 5000L, 9d }
+            });
             expected.AddResultInsert(2200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+                new Object[] { "IBM", 100L, 25d },
+                new Object[] { "MSFT", 5000L, 9d },
+                new Object[] { "IBM", 150L, 24d },
+                new Object[] { "YAH", 10000L, 1d },
+                new Object[] { "IBM", 155L, 26d }
+            });
             expected.AddResultInsert(3200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                }
-            }
-                );
+                new Object[] { "IBM", 100L, 25d },
+                new Object[] { "MSFT", 5000L, 9d },
+                new Object[] { "IBM", 150L, 24d },
+                new Object[] { "YAH", 10000L, 1d },
+                new Object[] { "IBM", 155L, 26d }
+            });
             expected.AddResultInsert(4200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                },
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                }
-            }
-                );
+                new Object[] { "IBM", 100L, 25d },
+                new Object[] { "MSFT", 5000L, 9d },
+                new Object[] { "IBM", 150L, 24d },
+                new Object[] { "YAH", 10000L, 1d },
+                new Object[] { "IBM", 155L, 26d },
+                new Object[] { "YAH", 11000L, 2d }
+            });
             expected.AddResultInsert(5200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 100L, 25d
-                },
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                },
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                },
-                new Object[]
-                {
-                    "YAH", 11500L, 3d
-                }
-            }
-                );
+                new Object[] { "IBM", 100L, 25d },
+                new Object[] { "MSFT", 5000L, 9d },
+                new Object[] { "IBM", 150L, 24d },
+                new Object[] { "YAH", 10000L, 1d },
+                new Object[] { "IBM", 155L, 26d },
+                new Object[] { "YAH", 11000L, 2d },
+                new Object[] { "IBM", 150L, 22d },
+                new Object[] { "YAH", 11500L, 3d }
+            });
             expected.AddResultInsert(6200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "MSFT", 5000L, 9d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 24d
-                },
-                new Object[]
-                {
-                    "YAH", 10000L, 1d
-                },
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                },
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                },
-                new Object[]
-                {
-                    "YAH", 11500L, 3d
-                },
-                new Object[]
-                {
-                    "YAH", 10500L, 1d
-                }
-            }
-                );
+                new Object[] { "MSFT", 5000L, 9d },
+                new Object[] { "IBM", 150L, 24d },
+                new Object[] { "YAH", 10000L, 1d },
+                new Object[] { "IBM", 155L, 26d },
+                new Object[] { "YAH", 11000L, 2d },
+                new Object[] { "IBM", 150L, 22d },
+                new Object[] { "YAH", 11500L, 3d },
+                new Object[] { "YAH", 10500L, 1d }
+            });
             expected.AddResultInsert(7200, 0, new Object[][]
             {
-                new Object[]
-                {
-                    "IBM", 155L, 26d
-                },
-                new Object[]
-                {
-                    "YAH", 11000L, 2d
-                },
-                new Object[]
-                {
-                    "IBM", 150L, 22d
-                },
-                new Object[]
-                {
-                    "YAH", 11500L, 3d
-                },
-                new Object[]
-                {
-                    "YAH", 10500L, 1d
-                }
-            }
-                );
+                new Object[] { "IBM", 155L, 26d },
+                new Object[] { "YAH", 11000L, 2d },
+                new Object[] { "IBM", 150L, 22d },
+                new Object[] { "YAH", 11500L, 3d },
+                new Object[] { "YAH", 10500L, 1d }
+            });
 
-            var execution = new ResultAssertExecution(_epService,
-                                                      stmt, _listener, expected);
+            var execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
 
             execution.Execute();
         }
@@ -1023,12 +507,12 @@ namespace com.espertech.esper.regression.view
 
         private void SendCurrentTime(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendCurrentTimeWithMinus(String time, long minus)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
 
         private void SendJoinEvents(String s)
@@ -1074,12 +558,32 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test10AllNoHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where theString=symbol " +
+                    "output all every 1 seconds";
+            RunAssertion56(stmtText, "all");
+        }
+
+        [Test]
         public void Test11AllHavingNoJoin()
         {
             String stmtText = "select symbol, volume, price "
                               + "from MarketData.win:time(5.5 sec) " + "having price > 10"
                               + "output all every 1 seconds";
 
+            RunAssertion78(stmtText, "all");
+        }
+
+        [Test]
+        public void Test11AllHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "having price > 10" +
+                    "output all every 1 seconds";
             RunAssertion78(stmtText, "all");
         }
 
@@ -1091,6 +595,17 @@ namespace com.espertech.esper.regression.view
                               + "SupportBean.win:keepall() where TheString=symbol "
                               + "having price > 10" + "output all every 1 seconds";
 
+            RunAssertion78(stmtText, "all");
+        }
+
+        [Test]
+        public void Test12AllHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where theString=symbol " +
+                    "having price > 10" +
+                    "output all every 1 seconds";
             RunAssertion78(stmtText, "all");
         }
 
@@ -1137,13 +652,21 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
-        public void Test17FirstNoHavingNoJoin()
+        public void Test17FirstNoHavingNoJoinIStream()
         {
-            String stmtText = "select symbol, volume, price "
-                              + "from MarketData.win:time(5.5 sec) "
-                              + "output first every 1 seconds";
+            String stmtText = "select symbol, volume, price " +
+                                "from MarketData.win:time(5.5 sec) " +
+                                "output first every 1 seconds";
+            RunAssertion17IStream(stmtText, "first");
+        }
 
-            RunAssertion17(stmtText, "first");
+        [Test]
+        public void Test17FirstNoHavingNoJoinIRStream()
+        {
+            String stmtText = "select irstream symbol, volume, price " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "output first every 1 seconds";
+            RunAssertion17IRStream(stmtText, "first");
         }
 
         [Test]
@@ -1248,6 +771,15 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test9AllNoHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select symbol, volume, price " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "output all every 1 seconds";
+            RunAssertion56(stmtText, "all");
+        }
+
+        [Test]
         public void TestAggAllHaving()
         {
             String stmtText = "select symbol, volume " + "from "
@@ -1271,19 +803,8 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendMDEvent("IBM", 0);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                                              new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "S0", 20L
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "YAH", 10L
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData, fields, new Object[][] { new Object[] { "S0", 20L }, new Object[] { "YAH", 10L } } );
             listener.Reset();
         }
 
@@ -1296,15 +817,11 @@ namespace com.espertech.esper.regression.view
                               + ".win:length(10) as two " + "where one.symbol=two.TheString "
                               + "having volume > 0 " + "output every 5 events";
 
-            EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
+            var stmt = _epService.EPAdministrator.CreateEPL(stmtText);
             var listener = new SupportUpdateListener();
 
             stmt.Events += listener.Update;
-            var fields = new String[]
-            {
-                "symbol", "volume"
-            }
-                ;
+            var fields = new String[] { "symbol", "volume" };
 
             _epService.EPRuntime.SendEvent(new SupportBean("S0", 0));
             _epService.EPRuntime.SendEvent(new SupportBean("IBM", 0));
@@ -1318,36 +835,21 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendMDEvent("IBM", 0);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields,
-                                              new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "S0", 20L
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "YAH", 10L
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData, fields, new Object[][] { new Object[] { "S0", 20L }, new Object[] { "YAH", 10L } } );
             listener.Reset();
         }
 
         [Test]
         public void TestIterator()
         {
-            var fields = new String[]
-            {
-                "symbol", "price"
-            }
-                ;
+            var fields = new String[] { "symbol", "price" };
             String statementString = "select symbol, TheString, price from "
                                      + typeof (SupportMarketDataBean).FullName
                                      + ".win:length(10) as one, " + typeof (SupportBeanString).FullName
                                      + ".win:length(100) as two "
                                      + "where one.symbol = two.TheString " + "output every 3 events";
-            EPStatement statement = _epService.EPAdministrator.CreateEPL(
+            var statement = _epService.EPAdministrator.CreateEPL(
                 statementString);
 
             _epService.EPRuntime.SendEvent(new SupportBeanString("CAT"));
@@ -1355,72 +857,20 @@ namespace com.espertech.esper.regression.view
 
             // Output limit clause ignored when iterating, for both joins and no-join
             SendEvent("CAT", 50);
-            EPAssertionUtil.AssertPropsPerRow(statement.GetEnumerator(), fields,
-                                              new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "CAT", 50d
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                statement.GetEnumerator(), fields, new Object[][] { new Object[] { "CAT", 50d } } );
 
             SendEvent("CAT", 60);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields,
-                                                      new Object[][]
-                                                      {
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 50d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 60d
-                                                          }
-                                                      }
-                );
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                statement.GetEnumerator(), fields, new Object[][] { new Object[] { "CAT", 50d }, new Object[] { "CAT", 60d } } );
 
             SendEvent("IBM", 70);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields,
-                                                      new Object[][]
-                                                      {
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 50d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 60d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "IBM", 70d
-                                                          }
-                                                      }
-                );
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                statement.GetEnumerator(), fields, new Object[][] { new Object[] { "CAT", 50d }, new Object[] { "CAT", 60d }, new Object[] { "IBM", 70d } } );
 
             SendEvent("IBM", 90);
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(statement.GetEnumerator(), fields,
-                                                      new Object[][]
-                                                      {
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 50d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "CAT", 60d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "IBM", 70d
-                                                          },
-                                                          new Object[]
-                                                          {
-                                                              "IBM", 90d
-                                                          }
-                                                      }
-                );
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                statement.GetEnumerator(), fields, new Object[][] { new Object[] { "CAT", 50d }, new Object[] { "CAT", 60d }, new Object[] { "IBM", 70d }, new Object[] { "IBM", 90d } } );
         }
 
         [Test]
@@ -1435,10 +885,8 @@ namespace com.espertech.esper.regression.view
             String outputStmt1 = joinStatement + " output every 1 events";
             String outputStmt3 = joinStatement + " output every 3 events";
 
-            EPStatement fireEvery1 = _epService.EPAdministrator.CreateEPL(
-                outputStmt1);
-            EPStatement fireEvery3 = _epService.EPAdministrator.CreateEPL(
-                outputStmt3);
+            var fireEvery1 = _epService.EPAdministrator.CreateEPL(outputStmt1);
+            var fireEvery3 = _epService.EPAdministrator.CreateEPL(outputStmt3);
 
             var updateListener1 = new SupportUpdateListener();
 
@@ -1558,7 +1006,7 @@ namespace com.espertech.esper.regression.view
             String selectStmt = "select * from " + typeof (SupportBean).FullName
                                 + ".win:time(10) output snapshot every 3 events";
 
-            EPStatement stmt = _epService.EPAdministrator.CreateEPL(selectStmt);
+            var stmt = _epService.EPAdministrator.CreateEPL(selectStmt);
 
             stmt.Events += listener.Update;
 
@@ -1569,26 +1017,14 @@ namespace com.espertech.esper.regression.view
 
             SendTimer(2000);
             SendEvent("YAH");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "IBM"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "MSFT"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "YAH"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "IBM" },
+                    new Object[] { "MSFT" },
+                    new Object[] { "YAH" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1599,38 +1035,17 @@ namespace com.espertech.esper.regression.view
 
             SendTimer(10000);
             SendEvent("s6");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "IBM"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "MSFT"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "YAH"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s4"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s5"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "IBM" },
+                    new Object[] { "MSFT" },
+                    new Object[] { "YAH" },
+                    new Object[] { "s4" },
+                    new Object[] { "s5" },
+                    new Object[] { "s6" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1642,70 +1057,31 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendEvent("s9");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "YAH"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s4"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s5"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s7"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s8"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s9"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "YAH" },
+                    new Object[] { "s4" },
+                    new Object[] { "s5" },
+                    new Object[] { "s6" },
+                    new Object[] { "s7" },
+                    new Object[] { "s8" },
+                    new Object[] { "s9" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
             SendTimer(14000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s7"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s8"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s9"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s6" },
+                    new Object[] { "s7" },
+                    new Object[] { "s8" },
+                    new Object[] { "s9" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1714,27 +1090,48 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendTimer(23000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s10"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s11"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s10" },
+                    new Object[] { "s11" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
             SendEvent("s12");
             Assert.IsFalse(listener.IsInvoked);
+        }
+
+        [Test]
+        public void TestFirstSimpleHavingAndNoHaving()
+        {
+            RunAssertionFirstSimpleHavingAndNoHaving("");
+            RunAssertionFirstSimpleHavingAndNoHaving("having intPrimitive != 0");
+        }
+
+        private void RunAssertionFirstSimpleHavingAndNoHaving(String having)
+        {
+            String epl = "select TheString from SupportBean " + having + " output first every 3 events";
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
+            stmt.Events += _listener.Update;
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "TheString".Split(','), new Object[] { "E1" });
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
+            Assert.IsFalse(_listener.IsInvoked);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E4", 4));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "TheString".Split(','), new Object[] { "E4" });
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
+            Assert.IsFalse(_listener.IsInvoked);
+
+            stmt.Dispose();
         }
 
         [Test]
@@ -1766,26 +1163,14 @@ namespace com.espertech.esper.regression.view
 
             SendTimer(2000);
             SendEvent("s2");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s0"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s1"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s2"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s0" },
+                    new Object[] { "s1" },
+                    new Object[] { "s2" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1796,38 +1181,17 @@ namespace com.espertech.esper.regression.view
 
             SendTimer(10000);
             SendEvent("s6");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s0"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s1"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s2"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s4"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s5"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s0" },
+                    new Object[] { "s1" },
+                    new Object[] { "s2" },
+                    new Object[] { "s4" },
+                    new Object[] { "s5" },
+                    new Object[] { "s6" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1839,70 +1203,31 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendEvent("s9");
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s2"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s4"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s5"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s7"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s8"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s9"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s2" },
+                    new Object[] { "s4" },
+                    new Object[] { "s5" },
+                    new Object[] { "s6" },
+                    new Object[] { "s7" },
+                    new Object[] { "s8" },
+                    new Object[] { "s9" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
             SendTimer(14000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s6"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s7"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s8"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s9"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s6" },
+                    new Object[] { "s7" },
+                    new Object[] { "s8" },
+                    new Object[] { "s9" }
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1911,22 +1236,13 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(listener.IsInvoked);
 
             SendTimer(23000);
-            EPAssertionUtil.AssertPropsPerRow(listener.LastNewData,
-                                              new String[]
-                                              {
-                                                  "TheString"
-                                              }, new Object[][]
-                                              {
-                                                  new Object[]
-                                                  {
-                                                      "s10"
-                                                  },
-                                                  new Object[]
-                                                  {
-                                                      "s11"
-                                                  }
-                                              }
-                );
+            EPAssertionUtil.AssertPropsPerRow(
+                listener.LastNewData,
+                new String[] { "TheString" },
+                new Object[][] {
+                    new Object[] { "s10" },
+                    new Object[] { "s11" } 
+                });
             Assert.IsNull(listener.LastOldData);
             listener.Reset();
 
@@ -1988,16 +1304,11 @@ namespace com.espertech.esper.regression.view
         public void TestOutputEveryTimePeriodVariable()
         {
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(2000));
-            _epService.EPAdministrator.Configuration.AddVariable("D",
-                                                                 typeof (int), 1);
-            _epService.EPAdministrator.Configuration.AddVariable("H",
-                                                                 typeof (int), 2);
-            _epService.EPAdministrator.Configuration.AddVariable("M",
-                                                                 typeof (int), 3);
-            _epService.EPAdministrator.Configuration.AddVariable("S",
-                                                                 typeof (int), 4);
-            _epService.EPAdministrator.Configuration.AddVariable("MS",
-                                                                 typeof (int), 5);
+            _epService.EPAdministrator.Configuration.AddVariable("D", typeof (int), 1);
+            _epService.EPAdministrator.Configuration.AddVariable("H", typeof (int), 2);
+            _epService.EPAdministrator.Configuration.AddVariable("M", typeof (int), 3);
+            _epService.EPAdministrator.Configuration.AddVariable("S", typeof (int), 4);
+            _epService.EPAdministrator.Configuration.AddVariable("MS", typeof (int), 5);
 
             String stmtText =
                 "select symbol from MarketData.win:keepall() output snapshot every D days H hours M minutes S seconds MS milliseconds";
@@ -2025,7 +1336,14 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestSimpleJoinAll()
         {
-            String viewExpr = "select LongBoxed  " + "from "
+            RunAssertionSimpleJoinAll(false);
+            RunAssertionSimpleJoinAll(true);
+        }
+
+        private void RunAssertionSimpleJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt')" : "";
+            String viewExpr = hint + "select LongBoxed  " + "from "
                               + typeof (SupportBeanString).FullName + ".win:length(3) as one, "
                               + typeof (SupportBean).FullName + ".win:length(3) as two "
                               + "output all every 2 events";
@@ -2047,18 +1365,25 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestSimpleNoJoinAll()
         {
-            String viewExpr = "select LongBoxed " + "from "
+            RunAssertionSimpleNoJoinAll(false);
+            RunAssertionSimpleNoJoinAll(true);
+        }
+
+        public void RunAssertionSimpleNoJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt')" : "";
+            String viewExpr = hint + "select LongBoxed " + "from "
                               + typeof (SupportBean).FullName + ".win:length(3) "
                               + "output all every 2 events";
 
             RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
 
-            viewExpr = "select LongBoxed " + "from " + typeof (SupportBean).FullName
+            viewExpr = hint + "select LongBoxed " + "from " + typeof (SupportBean).FullName
                        + ".win:length(3) " + "output every 2 events";
 
             RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));
 
-            viewExpr = "select * " + "from " + typeof (SupportBean).FullName
+            viewExpr = hint + "select * " + "from " + typeof (SupportBean).FullName
                        + ".win:length(3) " + "output every 2 events";
 
             RunAssertAll(CreateStmtAndListenerNoJoin(viewExpr));

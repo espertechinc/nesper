@@ -6,13 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+using System.Threading;
+
+using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.support.epl;
 using com.espertech.esper.type;
 
 using NUnit.Framework;
-
 
 namespace com.espertech.esper.epl.expression
 {
@@ -25,12 +28,6 @@ namespace com.espertech.esper.epl.expression
         public void SetUp()
         {
             _concatNode = new ExprConcatNode();
-        }
-    
-        [Test]
-        public void TestGetType()
-        {
-            Assert.AreEqual(typeof(string), _concatNode.ReturnType);
         }
     
         [Test]
@@ -78,11 +75,12 @@ namespace com.espertech.esper.epl.expression
             _concatNode.AddChildNode(new SupportExprNode("x"));
             _concatNode.AddChildNode(new SupportExprNode("y"));
             SupportExprNodeUtil.Validate(_concatNode);
-            Assert.AreEqual("xy", _concatNode.Evaluate(new EvaluateParams(null, false, null)));
+            Assert.AreEqual(typeof (string), _concatNode.ExprEvaluator.ReturnType);
+            Assert.AreEqual("xy", _concatNode.ExprEvaluator.Evaluate(EvaluateParams.Empty));
     
             _concatNode.AddChildNode(new SupportExprNode("z"));
             SupportExprNodeUtil.Validate(_concatNode);
-            Assert.AreEqual("xyz", _concatNode.Evaluate(new EvaluateParams(null, false, null)));
+            Assert.AreEqual("xyz", _concatNode.ExprEvaluator.Evaluate(EvaluateParams.Empty));
         }
     
         [Test]
@@ -90,6 +88,80 @@ namespace com.espertech.esper.epl.expression
         {
             Assert.IsTrue(_concatNode.EqualsNode(_concatNode));
             Assert.IsFalse(_concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
+        }
+
+        [Test]
+        public void TestThreading() 
+        {
+            runAssertionThreading(ConfigurationEngineDefaults.ThreadingProfile.LARGE);
+            runAssertionThreading(ConfigurationEngineDefaults.ThreadingProfile.NORMAL);
+        }
+
+        private void runAssertionThreading(ConfigurationEngineDefaults.ThreadingProfile threadingProfile) 
+        {
+            _concatNode = new ExprConcatNode();
+            var textA = "This is the first text";
+            var textB = "Second text";
+            var textC = "Third text, some more";
+            foreach (var text in new[]{ textA, textB, textC }) {
+                _concatNode.AddChildNode(new ExprConstantNodeImpl(text));
+            }
+            _concatNode.Validate(ExprValidationContextFactory.MakeEmpty(threadingProfile));
+
+            var numThreads = 4;
+            var numLoop = 10000;
+
+            var threads = new List<SupportConcatThread>(numThreads);
+            for (var i = 0; i < numThreads; i++) {
+                var thread = new SupportConcatThread(_concatNode, numLoop, textA + textB + textC);
+                threads.Add(thread);
+                thread.Start();
+            }
+
+            foreach (var thread in threads) {
+                thread.Join();
+                Assert.IsFalse(thread.IsFail);
+            }
+        }
+
+        private class SupportConcatThread
+        {
+            private readonly ExprConcatNode _node;
+            private readonly int _numLoop;
+            private readonly string _expectedResult;
+            private readonly Thread _thread;
+
+            public SupportConcatThread(ExprConcatNode node, int numLoop, string expectedResult)
+            {
+                _node = node;
+                _numLoop = numLoop;
+                _expectedResult = expectedResult;
+                _thread = new Thread(Run);
+            }
+
+            public void Start()
+            {
+                _thread.Start();
+            }
+
+            public void Join()
+            {
+                _thread.Join();
+            }
+
+            public void Run()
+            {
+                var eval = _node.ExprEvaluator;
+                for(var i = 0; i < _numLoop; i++) {
+                    var result = (string) eval.Evaluate(new EvaluateParams(null, true, null));
+                    if (!_expectedResult.Equals(result)) {
+                        IsFail = true;
+                        break;
+                    }
+                }
+            }
+
+            public bool IsFail { get; private set; }
         }
     }
 }

@@ -44,12 +44,12 @@ namespace com.espertech.esper.filter
             }
         }
 
-        protected internal override EventEvaluator Get(Object filterConstant)
+        public override EventEvaluator Get(Object filterConstant)
         {
             return _constantsMap.Get(filterConstant);
         }
 
-        protected internal override void Put(Object filterConstant, EventEvaluator matcher)
+        public override void Put(Object filterConstant, EventEvaluator matcher)
         {
             _constantsMap.Put(filterConstant, matcher);
         }

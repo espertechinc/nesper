@@ -18,9 +18,9 @@ namespace com.espertech.esper.filter
     public class ExprNodeAdapterMultiStreamStmtLock : ExprNodeAdapterMultiStream
     {
         public static readonly int LOCK_BACKOFF_MSEC = 10;
-    
-        public ExprNodeAdapterMultiStreamStmtLock(String statementName, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
-                    : base(statementName, exprNode, evaluatorContext, variableService, prototype)
+
+        public ExprNodeAdapterMultiStreamStmtLock(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
+            : base(filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext, variableService, prototype)
         {
         }
     

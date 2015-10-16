@@ -16,6 +16,7 @@ using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
@@ -47,7 +48,6 @@ namespace com.espertech.esper.core.start
     
             // determine context
             var contextName = StatementSpec.OptionalContextName;
-            var singleInstanceContext = contextName == null ? false : services.ContextManagementService.GetContextDescriptor(contextName).IsSingleInstanceContext;
     
             // register agent instance resources for use in HA
             var epStatementAgentInstanceHandle = GetDefaultAgentInstanceHandle(statementContext);
@@ -70,7 +70,7 @@ namespace com.espertech.esper.core.start
                     },
                 };
             }
-            var activator = new ViewableActivatorFilterProxy(services, filterStreamSpec.FilterSpec, statementContext.Annotations, false, instrumentationAgentCreateWindowInsert, false);
+            var activator = services.ViewableActivatorFactory.CreateFilterProxy(services, filterStreamSpec.FilterSpec, statementContext.Annotations, false, instrumentationAgentCreateWindowInsert, false);
     
             // create data window view factories
             var unmaterializedViewChain = services.ViewService.CreateFactories(0, filterStreamSpec.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext);
@@ -91,8 +91,9 @@ namespace com.espertech.esper.core.start
             var isBatchingDataWindow = DetermineBatchingDataWindow(unmaterializedViewChain.FactoryChain);
             var virtualDataWindowFactory = DetermineVirtualDataWindow(unmaterializedViewChain.FactoryChain);
             var optionalUniqueKeyProps = ViewServiceHelper.GetUniqueCandidateProperties(unmaterializedViewChain.FactoryChain, StatementSpec.Annotations);
-            var processor = services.NamedWindowService.AddProcessor(windowName, contextName, singleInstanceContext, filterStreamSpec.FilterSpec.ResultEventType, statementContext.StatementResultService, optionalRevisionProcessor, statementContext.Expression, statementContext.StatementName, isPrioritized, isEnableSubqueryIndexShare, isBatchingDataWindow, virtualDataWindowFactory != null, statementContext.EpStatementHandle.MetricsHandle, optionalUniqueKeyProps,
-                    StatementSpec.CreateWindowDesc.AsEventTypeName);
+            var processor = services.NamedWindowService.AddProcessor(windowName, contextName, filterStreamSpec.FilterSpec.ResultEventType, statementContext.StatementResultService, optionalRevisionProcessor, statementContext.Expression, statementContext.StatementName, isPrioritized, isEnableSubqueryIndexShare, isBatchingDataWindow, virtualDataWindowFactory != null, statementContext.EpStatementHandle.MetricsHandle, optionalUniqueKeyProps,
+                    StatementSpec.CreateWindowDesc.AsEventTypeName,
+                    statementContext.StatementExtensionServicesContext.StmtResources);
     
             Viewable finalViewable;
             EPStatementStopMethod stopStatementMethod;
@@ -118,9 +119,10 @@ namespace com.espertech.esper.core.start
                         StatementSpec, statementContext, typeService, null, new bool[0], true, null, null, services.ConfigSnapshot);
     
                 // obtain factory for output limiting
-                var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultSetProcessorPrototype.ResultSetProcessorFactory.ResultEventType, null, services.TableService);
+                var outputViewFactory = OutputProcessViewFactoryFactory.Make(StatementSpec, services.InternalEventRouter, statementContext, resultSetProcessorPrototype.ResultSetProcessorFactory.ResultEventType, null, services.TableService, resultSetProcessorPrototype.ResultSetProcessorFactory.ResultSetProcessorType);
     
                 // create context factory
+                // Factory for statement-context instances
                 var contextFactory = new StatementAgentInstanceFactoryCreateWindow(statementContext, StatementSpec, services, activator, unmaterializedViewChain, resultSetProcessorPrototype, outputViewFactory, isRecoveringStatement);
     
                 // With context - delegate instantiation to context
@@ -149,7 +151,7 @@ namespace com.espertech.esper.core.start
                     var agentInstanceContext = GetDefaultAgentInstanceContext(statementContext);
                     StatementAgentInstanceFactoryCreateWindowResult resultOfStart;
                     try {
-                        resultOfStart = (StatementAgentInstanceFactoryCreateWindowResult) contextFactory.NewContext(agentInstanceContext, false);
+                        resultOfStart = (StatementAgentInstanceFactoryCreateWindowResult)contextFactory.NewContext(agentInstanceContext, isRecoveringResilient);
                     }
                     catch (Exception ex) {
                         services.NamedWindowService.RemoveProcessor(windowName);
@@ -162,9 +164,12 @@ namespace com.espertech.esper.core.start
                         stopMethod.Invoke();
                     };
                     destroyStatementMethod = null;
-    
-                    if (statementContext.ExtensionServicesContext != null && statementContext.ExtensionServicesContext.StmtResources != null) {
-                        statementContext.ExtensionServicesContext.StmtResources.StartContextPartition(resultOfStart, 0);
+
+                    if (statementContext.StatementExtensionServicesContext != null && statementContext.StatementExtensionServicesContext.StmtResources != null)
+                    {
+                        StatementResourceHolder holder = statementContext.StatementExtensionServicesContext.ExtractStatementResourceHolder(resultOfStart);
+                        statementContext.StatementExtensionServicesContext.StmtResources.Unpartitioned = holder;
+                        statementContext.StatementExtensionServicesContext.PostProcessStart(resultOfStart, isRecoveringResilient);
                     }
                 }
             }

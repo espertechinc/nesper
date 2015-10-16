@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
@@ -36,9 +37,11 @@ namespace com.espertech.esper.epl.datetime.calop
             }
         }
     
-        public void Evaluate(ref DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
-            dateTime = ApacheCommonsDateUtils.Modify(dateTime, _fieldName.ToDateTimeFieldEnum(), _code);
+            dateTime.Set(
+                ApacheCommonsDateUtils.Modify(
+                    dateTime.DateTime, _fieldName.ToDateTimeFieldEnum(), _code, dateTime.TimeZone));
         }
     }
 }

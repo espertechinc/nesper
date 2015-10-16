@@ -12,9 +12,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml;
 
-using com.espertech.esper.compat.collections;
-
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     public static class GenericExtensions
     {

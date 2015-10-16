@@ -200,7 +200,7 @@ namespace com.espertech.esper.epl.methodbase
                                       message, boxedExpectedType.Name, parameterNum, providedType.FullName));
                 }
             }
-            if (expectedTypeEnum == DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC)
+            else if (expectedTypeEnum == DotMethodFPParamTypeEnum.TIME_PERIOD_OR_SEC)
             {
                 if (parameterExpression is ExprTimePeriod || parameterExpression is ExprStreamUnderlyingNode)
                 {
@@ -214,7 +214,7 @@ namespace com.espertech.esper.epl.methodbase
                                                       TypeHelper.GetTypeNameFullyQualPretty(providedType));
                 }
             }
-            if (expectedTypeEnum == DotMethodFPParamTypeEnum.DATETIME)
+            else if (expectedTypeEnum == DotMethodFPParamTypeEnum.DATETIME)
             {
                 if (!providedType.IsDateTime())
                 {

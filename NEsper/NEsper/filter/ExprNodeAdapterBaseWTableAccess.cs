@@ -17,11 +17,11 @@ namespace com.espertech.esper.filter
         private readonly ExprNodeAdapterBase _evalBase;
         private readonly TableService _tableService;
     
-        public ExprNodeAdapterBaseWTableAccess(string statementName, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, ExprNodeAdapterBase evalBase, TableService tableService)
-            : base(statementName, exprNode, evaluatorContext)
+        public ExprNodeAdapterBaseWTableAccess(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, ExprNodeAdapterBase evalBase, TableService tableService)
+            : base (filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext)
         {
-            this._evalBase = evalBase;
-            this._tableService = tableService;
+            _evalBase = evalBase;
+            _tableService = tableService;
         }
     
         public override bool Evaluate(EventBean theEvent)

@@ -73,5 +73,13 @@ namespace com.espertech.esper.core.context.factory
             stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
             return new StatementAgentInstanceFactoryUpdateResult(_onExprView, stopCallback, agentInstanceContext, subselectStrategies);
         }
+
+        public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public override void UnassignExpressions()
+        {
+        }
     }
 }

@@ -139,7 +139,7 @@ namespace com.espertech.esper.epl.variable
             get { return _marks; }
         }
 
-        // Make a random list between 0 and N for each variable
+        // Make a random list between 0 and Count for each variable
         private static int[] GetIndexesShuffled(int length, Random random, int loopNum)
         {
             int[] indexRandomized = new int[length];

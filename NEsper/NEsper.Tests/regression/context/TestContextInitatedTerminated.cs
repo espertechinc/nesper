@@ -39,6 +39,8 @@ namespace com.espertech.esper.regression.context
             configuration.AddEventType("SupportBean", typeof(SupportBean));
             configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
             configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            configuration.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = true;
+
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
@@ -959,7 +961,7 @@ namespace com.espertech.esper.regression.context
         }
 
         private void SendTimeEvent(String time) {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
     
         private SupportBean MakeEvent(String theString, int intPrimitive, long longPrimitive) {
@@ -988,12 +990,12 @@ namespace com.espertech.esper.regression.context
 
         private void SendCurrentTime(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendCurrentTimeWithMinus(String time, long minus)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
     }
 }

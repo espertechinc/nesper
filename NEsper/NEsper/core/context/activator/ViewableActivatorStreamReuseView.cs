@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.context.activator
         private readonly int _streamNum;
         private readonly bool _isCanIterateUnbound;
 
-        public ViewableActivatorStreamReuseView(EPServicesContext services, StatementContext statementContext, StatementSpecCompiled statementSpec, FilterStreamSpecCompiled filterStreamSpec, bool join, ExprEvaluatorContextStatement evaluatorContextStmt, bool filterSubselectSameStream, int streamNum, bool isCanIterateUnbound)
+        internal ViewableActivatorStreamReuseView(EPServicesContext services, StatementContext statementContext, StatementSpecCompiled statementSpec, FilterStreamSpecCompiled filterStreamSpec, bool join, ExprEvaluatorContextStatement evaluatorContextStmt, bool filterSubselectSameStream, int streamNum, bool isCanIterateUnbound)
         {
             _services = services;
             _statementContext = statementContext;
@@ -51,12 +51,17 @@ namespace com.espertech.esper.core.context.activator
                 _statementContext.IsStatelessSelect,
                 _streamNum,
                 _isCanIterateUnbound);
-            return new ViewableActivationResult(pair.First, Stop, pair.Second, null, false, false);
+            return new ViewableActivationResult(pair.First, Stop, pair.Second, null, null, false, false, null);
         }
     
         public void Stop()
         {
             _services.StreamService.DropStream(_filterStreamSpec.FilterSpec, _statementContext.FilterService, _join, _statementSpec.OrderByList.Length > 0, _filterSubselectSameStream, _statementContext.IsStatelessSelect);
+        }
+
+        public FilterStreamSpecCompiled FilterStreamSpec
+        {
+            get { return _filterStreamSpec; }
         }
     }
 }

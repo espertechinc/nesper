@@ -108,7 +108,10 @@ namespace com.espertech.esper.client.scopetest
 
         public void Update(object sender, UpdateEventArgs e)
         {
-            Update(e.NewEvents, e.OldEvents);
+            lock (this)
+            {
+                Update(e.NewEvents, e.OldEvents);
+            }
         }
 
         public void Update(EventBean[] newData, EventBean[] oldData)

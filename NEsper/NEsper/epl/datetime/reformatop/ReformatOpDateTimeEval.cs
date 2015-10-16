@@ -22,21 +22,23 @@ namespace com.espertech.esper.epl.datetime.reformatop
     {
         private readonly Type _returnType;
         private readonly DateTimeEval _dateTimeEval;
+        private readonly TimeZoneInfo _timeZone;
 
-        public ReformatOpDateTimeEval(DateTimeEval dateTimeEval, Type returnType)
+        public ReformatOpDateTimeEval(DateTimeEval dateTimeEval, Type returnType, TimeZoneInfo timeZone)
         {
             _dateTimeEval = dateTimeEval;
             _returnType = returnType;
+            _timeZone = timeZone;
         }
 
         public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return _dateTimeEval.Invoke(ts.TimeFromMillis());
+            return _dateTimeEval.Invoke(ts.TimeFromMillis(_timeZone));
         }
 
-        public Object Evaluate(DateTime dateTime, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(DateTimeOffset dateTime, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return _dateTimeEval.Invoke(dateTime);
+            return _dateTimeEval.Invoke(dateTime.TranslateTo(_timeZone));
         }
 
         public Type ReturnType

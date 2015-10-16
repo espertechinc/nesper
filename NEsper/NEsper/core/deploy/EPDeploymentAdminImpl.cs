@@ -8,8 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Runtime.InteropServices;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.compat;
@@ -37,6 +40,7 @@ namespace com.espertech.esper.core.deploy
         private readonly StatementIsolationService _statementIsolationService;
         private readonly StatementIdGenerator _optionalStatementIdGenerator;
         private readonly FilterService _filterService;
+        private readonly TimeZoneInfo _timeZone;
 
         private readonly ILockable _iLock = LockManager.CreateDefaultLock();
 
@@ -50,13 +54,15 @@ namespace com.espertech.esper.core.deploy
         /// <param name="statementIsolationService">for isolated statement execution</param>
         /// <param name="optionalStatementIdGenerator">The optional statement id generator.</param>
         /// <param name="filterService">The filter service.</param>
+        /// <param name="timeZone">The time zone.</param>
         public EPDeploymentAdminImpl(EPAdministratorSPI epService,
                                      DeploymentStateService deploymentStateService,
                                      StatementEventTypeRef statementEventTypeRef,
                                      EventAdapterService eventAdapterService,
                                      StatementIsolationService statementIsolationService,
                                      StatementIdGenerator optionalStatementIdGenerator,
-                                     FilterService filterService)
+                                     FilterService filterService,
+                                     TimeZoneInfo timeZone)
         {
             _epService = epService;
             _deploymentStateService = deploymentStateService;
@@ -65,6 +71,7 @@ namespace com.espertech.esper.core.deploy
             _statementIsolationService = statementIsolationService;
             _optionalStatementIdGenerator = optionalStatementIdGenerator;
             _filterService = filterService;
+            _timeZone = timeZone;
         }
     
         public Module Read(Stream stream, String uri)
@@ -117,7 +124,8 @@ namespace com.espertech.esper.core.deploy
                     throw new ArgumentException("Assigned deployment id '" + assignedDeploymentId +
                                                 "' is already in use");
                 }
-                return DeployInternal(module, options, assignedDeploymentId, DateTime.Now);
+
+                return DeployInternal(module, options, assignedDeploymentId, DateTimeOffsetHelper.Now(_timeZone));
             }
         }
     
@@ -126,11 +134,11 @@ namespace com.espertech.esper.core.deploy
             using(_iLock.Acquire())
             {
                 var deploymentId = _deploymentStateService.NextDeploymentId;
-                return DeployInternal(module, options, deploymentId, DateTime.Now);
+                return DeployInternal(module, options, deploymentId, DateTimeOffsetHelper.Now(_timeZone));
             }
         }
     
-        private DeploymentResult DeployInternal(Module module, DeploymentOptions options, String deploymentId, DateTime addedDate)
+        private DeploymentResult DeployInternal(Module module, DeploymentOptions options, String deploymentId, DateTimeOffset addedDate)
         {
             if (options == null) {
                 options = new DeploymentOptions();
@@ -268,7 +276,7 @@ namespace com.espertech.esper.core.deploy
             }
     
             var deploymentInfoArr = statementNames.ToArray();
-            var desc = new DeploymentInformation(deploymentId, module, addedDate, DateTime.Now, deploymentInfoArr, DeploymentState.DEPLOYED);
+            var desc = new DeploymentInformation(deploymentId, module, addedDate.TranslateTo(_timeZone), DateTime.Now, deploymentInfoArr, DeploymentState.DEPLOYED);
             _deploymentStateService.AddUpdateDeployment(desc);
     
             if (Log.IsDebugEnabled) {
@@ -636,8 +644,9 @@ namespace com.espertech.esper.core.deploy
     
         private void AddInternal(Module module, String deploymentId)
         {
+            var now = DateTimeOffsetHelper.Now(_timeZone);
             var desc = new DeploymentInformation(
-                deploymentId, module, DateTime.Now, DateTime.Now, new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+                deploymentId, module, now, now, new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
             _deploymentStateService.AddUpdateDeployment(desc);
         }
     
@@ -707,7 +716,7 @@ namespace com.espertech.esper.core.deploy
             }
 
             var result = UndeployRemoveInternal(info, undeploymentOptions);
-            var updated = new DeploymentInformation(deploymentId, info.Module, info.AddedDate, DateTime.Now, new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+            var updated = new DeploymentInformation(deploymentId, info.Module, info.AddedDate, DateTimeOffsetHelper.Now(_timeZone), new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
             _deploymentStateService.AddUpdateDeployment(updated);
             return result;
         }

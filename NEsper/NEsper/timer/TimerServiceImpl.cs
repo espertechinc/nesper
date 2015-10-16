@@ -21,10 +21,10 @@ namespace com.espertech.esper.timer
 
     public class TimerServiceImpl : TimerService
     {
-        private ITimer timer ;
-        private TimerCallback timerCallback;
-        private EPLTimerTask timerTask;
-        private bool timerTaskCancelled;
+        private ITimer _timer ;
+        private TimerCallback _timerCallback;
+        private EPLTimerTask _timerTask;
+        private bool _timerTaskCancelled;
 
         /// <summary>
         /// Set the callback method to invoke for clock ticks.
@@ -33,7 +33,7 @@ namespace com.espertech.esper.timer
 
         public TimerCallback Callback
         {
-            set { this.timerCallback = value; }
+            set { this._timerCallback = value; }
         }
 
         /// <summary>
@@ -48,23 +48,30 @@ namespace com.espertech.esper.timer
 
         public bool AreStatsEnabled
         {
-            get { return timerTask.EnableStats; }
-            set { timerTask.EnableStats = value; }
+            get { return _timerTask.EnableStats; }
+            set
+            {
+                if (value) {
+                    EnableStats();
+                } else {
+                    DisableStats();
+                }
+            }
         }
 
         public long MaxDrift
         {
-            get { return timerTask.MaxDrift; }
+            get { return _timerTask.MaxDrift; }
         }
 
         public long LastDrift
         {
-            get { return timerTask.LastDrift; }
+            get { return _timerTask.LastDrift; }
         }
 
         public long TotalDrift
         {
-            get { return timerTask.TotalDrift; }
+            get { return _timerTask.TotalDrift; }
         }
 
         ///<summary>
@@ -72,7 +79,7 @@ namespace com.espertech.esper.timer
         ///</summary>
         public long InvocationCount
         {
-            get { return timerTask.InvocationCount; }
+            get { return _timerTask.InvocationCount; }
         }
 
         /// <summary>
@@ -95,7 +102,7 @@ namespace com.espertech.esper.timer
             Id = Guid.NewGuid();
             EngineURI = engineURI;
             MsecTimerResolution = msecTimerResolution;
-            timerTaskCancelled = false;
+            _timerTaskCancelled = false;
         }
 
         /// <summary>
@@ -105,11 +112,11 @@ namespace com.espertech.esper.timer
 
         private void OnTimerElapsed(Object state)
         {
-            if (! timerTaskCancelled)
+            if (! _timerTaskCancelled)
             {
-                if (timerCallback != null)
+                if (_timerCallback != null)
                 {
-                    timerCallback();
+                    _timerCallback();
                 }
             }
         }
@@ -120,7 +127,7 @@ namespace com.espertech.esper.timer
         /// </summary>
         public void StartInternalClock()
         {
-            if (timer != null)
+            if (_timer != null)
             {
                 Log.Warn(".StartInternalClock Internal clock is already started, stop first before starting, operation not completed");
                 return;
@@ -131,15 +138,15 @@ namespace com.espertech.esper.timer
                 Log.Debug(".StartInternalClock Starting internal clock daemon thread, resolution=" + MsecTimerResolution);
             }
 
-            if (timerCallback == null)
+            if (_timerCallback == null)
             {
                 throw new IllegalStateException("Timer callback not set");
             }
 
-            timerTask = new EPLTimerTask(timerCallback);
+            _timerTask = new EPLTimerTask(_timerCallback);
 
-            timerTaskCancelled = false;
-            timer = TimerFactory.DefaultTimerFactory.CreateTimer(
+            _timerTaskCancelled = false;
+            _timer = TimerFactory.DefaultTimerFactory.CreateTimer(
                 OnTimerElapsed, MsecTimerResolution);
         }
 
@@ -150,7 +157,7 @@ namespace com.espertech.esper.timer
         /// and expect the clock to be not Started.</param>
         public void StopInternalClock(bool warnIfNotStarted)
         {
-            if (timer == null)
+            if (_timer == null)
             {
                 if (warnIfNotStarted)
                 {
@@ -164,8 +171,8 @@ namespace com.espertech.esper.timer
                 Log.Debug(".StopInternalClock Stopping internal clock daemon thread");
             }
 
-            timerTaskCancelled = true;
-            timer.Dispose();
+            _timerTaskCancelled = true;
+            _timer.Dispose();
 
             try
             {
@@ -176,7 +183,25 @@ namespace com.espertech.esper.timer
             {
             }
 
-            timer = null;
+            _timer = null;
+        }
+
+        public void EnableStats()
+        {
+            if (_timerTask != null)
+            {
+                _timerTask.EnableStats = true;
+            }
+        }
+
+        public void DisableStats()
+        {
+            if (_timerTask != null)
+            {
+                _timerTask.EnableStats = false;
+                // now it is safe to reset stats without any synchronization
+                _timerTask.ResetStats();
+            }
         }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

@@ -10,5 +10,5 @@ using System;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
-    public delegate Object DateTimeEval(DateTime cal);
+    public delegate Object DateTimeEval(DateTimeOffset cal);
 }

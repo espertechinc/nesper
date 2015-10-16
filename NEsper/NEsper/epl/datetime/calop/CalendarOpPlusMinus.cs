@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -28,20 +27,20 @@ namespace com.espertech.esper.epl.datetime.calop
             _factor = factor;
         }
 
-        public void Evaluate(ref DateTime dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             var value = _param.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
             if (value.IsNumber())
             {
-                dateTime = Action(dateTime, _factor, value.AsLong());
+                Action(dateTime, _factor, value.AsLong());
             }
             else
             {
-                dateTime = Action(dateTime, _factor, (TimePeriod)value);
+                Action(dateTime, _factor, (TimePeriod) value);
             }
         }
 
-        internal static DateTime Action(DateTime dateTime, int factor, long? duration)
+        internal static DateTimeEx Action(DateTimeEx dateTime, int factor, long? duration)
         {
             if (duration == null)
             {
@@ -55,93 +54,86 @@ namespace com.espertech.esper.epl.datetime.calop
 
             var days = (int)(duration / (1000L * 60 * 60 * 24));
             var msec = (int)(duration - days * (1000L * 60 * 60 * 24));
-            return dateTime
+            var newDate = dateTime
                 .AddMilliseconds(factor * msec)
-                .AddDays(factor * days);
+                .AddDays(factor * days, DateTimeMathStyle.Java);
+
+            return newDate;
         }
 
-        public static DateTime ActionSafeOverflow(DateTime dateTime, int factor, TimePeriod tp)
+        public static void ActionSafeOverflow(DateTimeEx dateTime, int factor, TimePeriod tp)
         {
             if (Math.Abs(factor) == 1)
             {
-                return Action(dateTime, factor, tp);
+                Action(dateTime, factor, tp);
+                return;
             }
 
             var max = tp.LargestAbsoluteValue();
             if (max == null || max == 0)
             {
-                return dateTime;
+                return;
             }
 
-            return ActionHandleOverflow(dateTime, factor, tp, max.Value);
+            ActionHandleOverflow(dateTime, factor, tp, max.Value);
         }
 
-        public static DateTime Action(DateTime dateTime, int factor, TimePeriod tp)
+        public static void Action(DateTimeEx dateTime, int factor, TimePeriod tp)
         {
             if (tp == null)
             {
-                return dateTime;
+                return;
             }
-
-            TimeZone zone;
-
-            //dateTime = dateTime.ToUniversalTime();
 
             if (tp.Years != null)
             {
-                dateTime = dateTime.AddYears(tp.Years.Value * factor);
+                dateTime.AddYears(tp.Years.Value * factor);
             }
             if (tp.Months != null)
             {
-                dateTime = dateTime.AddMonths(tp.Months.Value * factor);
+                dateTime.AddMonths(tp.Months.Value * factor, DateTimeMathStyle.Java);
             }
             if (tp.Weeks != null)
             {
-                dateTime = dateTime.AddDays(tp.Weeks.Value * 7 * factor);
+                dateTime.AddDays(tp.Weeks.Value * 7 * factor, DateTimeMathStyle.Java);
             }
             if (tp.Days != null)
             {
-                dateTime = dateTime.AddDays(tp.Days.Value * factor);
+                dateTime.AddDays(tp.Days.Value * factor, DateTimeMathStyle.Java);
             }
             if (tp.Hours != null)
             {
-                dateTime = dateTime.AddHours(tp.Hours.Value * factor);
+                dateTime.AddHours(tp.Hours.Value * factor, DateTimeMathStyle.Java);
             }
             if (tp.Minutes != null)
             {
-                dateTime = dateTime.AddMinutes(tp.Minutes.Value * factor);
+                dateTime.AddMinutes(tp.Minutes.Value * factor, DateTimeMathStyle.Java);
             }
             if (tp.Seconds != null)
             {
-                dateTime = dateTime.AddSeconds(tp.Seconds.Value * factor);
+                dateTime.AddSeconds(tp.Seconds.Value * factor, DateTimeMathStyle.Java);
             }
             if (tp.Milliseconds != null)
             {
-                dateTime = dateTime.AddMilliseconds(tp.Milliseconds.Value * factor);
+                dateTime.AddMilliseconds(tp.Milliseconds.Value * factor, DateTimeMathStyle.Java);
             }
-
-            //dateTime = dateTime.ToLocalTime();
-
-            return dateTime;
         }
 
-        private static DateTime ActionHandleOverflow(DateTime dateTime, int factor, TimePeriod tp, int max)
+        private static void ActionHandleOverflow(DateTimeEx dateTime, int factor, TimePeriod tp, int max)
         {
             if (max != 0 && factor > int.MaxValue / max)
             {
                 // overflow
                 int first = factor / 2;
                 int second = (factor - first * 2) + first;
-                dateTime = ActionHandleOverflow(dateTime, first, tp, max);
-                dateTime = ActionHandleOverflow(dateTime, second, tp, max);
+                ActionHandleOverflow(dateTime, first, tp, max);
+                ActionHandleOverflow(dateTime, second, tp, max);
             }
             else
             {
                 // no overflow
-                dateTime = Action(dateTime, factor, tp);
+                Action(dateTime, factor, tp);
             }
-
-            return dateTime;
         }
     }
 }

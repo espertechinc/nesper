@@ -57,8 +57,8 @@ namespace com.espertech.esper.pattern
             return new EvalOrFactoryNode();
         }
     
-        public EvalRootFactoryNode MakeRootNode() {
-            return new EvalRootFactoryNode();
+        public EvalRootFactoryNode MakeRootNode(EvalFactoryNode childNode) {
+            return new EvalRootFactoryNode(childNode);
         }
     }
 }

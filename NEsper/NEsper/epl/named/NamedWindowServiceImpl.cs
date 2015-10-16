@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.table.mgmt;
@@ -146,7 +147,6 @@ namespace com.espertech.esper.epl.named
 	    public NamedWindowProcessor AddProcessor(
 	        string name,
 	        string contextName,
-	        bool singleInstanceContext,
 	        EventType eventType,
 	        StatementResultService statementResultService,
 	        ValueAddEventProcessor revisionProcessor,
@@ -158,7 +158,8 @@ namespace com.espertech.esper.epl.named
 	        bool isVirtualDataWindow,
 	        StatementMetricHandle statementMetricHandle,
 	        ICollection<string> optionalUniqueKeyProps,
-	        string eventTypeAsName)
+	        string eventTypeAsName,
+            StatementResourceService statementResourceService)
 	    {
 	        if (_processors.ContainsKey(name))
 	        {
@@ -166,10 +167,10 @@ namespace com.espertech.esper.epl.named
 	        }
 
 	        var processor = new NamedWindowProcessor(
-	            name, this, contextName, singleInstanceContext, eventType, statementResultService, revisionProcessor,
+	            name, this, contextName, eventType, statementResultService, revisionProcessor,
 	            eplExpression, statementName, isPrioritized, isEnableSubqueryIndexShare, _enableQueryPlanLog,
 	            _metricReportingService, isBatchingDataWindow, isVirtualDataWindow, statementMetricHandle,
-	            optionalUniqueKeyProps, eventTypeAsName);
+	            optionalUniqueKeyProps, eventTypeAsName, statementResourceService);
 	        _processors.Put(name, processor);
 
 	        if (!_observers.IsEmpty())

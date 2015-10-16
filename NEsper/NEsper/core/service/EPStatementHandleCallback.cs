@@ -21,8 +21,8 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class EPStatementHandleCallback : FilterHandle, ScheduleHandle
     {
-        private readonly EPStatementAgentInstanceHandle _agentInstanceHandle;
-        private readonly FilterHandleCallback _filterCallback;
+        private EPStatementAgentInstanceHandle _agentInstanceHandle;
+        private FilterHandleCallback _filterCallback;
         private ScheduleHandleCallback _scheduleCallback;
     
         /// <summary>Ctor. </summary>
@@ -65,6 +65,7 @@ namespace com.espertech.esper.core.service
         public FilterHandleCallback FilterCallback
         {
             get { return _filterCallback; }
+            set { _filterCallback = value; }
         }
 
         /// <summary>Returns the statement schedule callback, or null if this is a filter callback handle. </summary>

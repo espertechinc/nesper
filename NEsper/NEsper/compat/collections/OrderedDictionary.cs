@@ -15,7 +15,7 @@ namespace com.espertech.esper.compat.collections
     public class OrderedDictionary<TK,TV> : IDictionary<TK,TV>
     {
         /// <summary>
-        /// Key List
+        /// Value List
         /// </summary>
         private readonly List<TK> _keyList;
         /// <summary>
@@ -23,7 +23,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         private readonly List<TV> _valList;
         /// <summary>
-        /// Key comparer
+        /// Value comparer
         /// </summary>
         private readonly IComparer<TK> _keyComparer;
 

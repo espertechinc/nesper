@@ -34,7 +34,7 @@ namespace com.espertech.esper.filter
             _rangesRwLock = readWriteLock;
         }
 
-        protected internal override EventEvaluator Get(Object expressionValue)
+        public override EventEvaluator Get(Object expressionValue)
         {
             if (!(expressionValue is DoubleRange))
             {
@@ -50,7 +50,7 @@ namespace com.espertech.esper.filter
             return Ranges.Get(range);
         }
 
-        protected internal override void Put(Object expressionValue, EventEvaluator matcher)
+        public override void Put(Object expressionValue, EventEvaluator matcher)
         {
             if (!(expressionValue is DoubleRange))
             {

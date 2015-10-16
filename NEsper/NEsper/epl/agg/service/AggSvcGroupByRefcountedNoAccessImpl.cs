@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.agg.service
     public class AggSvcGroupByRefcountedNoAccessImpl : AggregationServiceBaseGrouped
     {
         // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
-        protected IDictionary<Object, AggregationMethodRow> AggregatorsPerGroup;
+        private readonly IDictionary<Object, AggregationMethodRow> _aggregatorsPerGroup;
     
         // maintain a current row for random access into the aggregator state table
         // (row=groups, columns=expression nodes that have aggregation functions)
@@ -50,13 +50,13 @@ namespace com.espertech.esper.epl.agg.service
             : base(evaluators, prototypes, groupKeyBinding)
         {
             _methodResolutionService = methodResolutionService;
-            AggregatorsPerGroup = new Dictionary<Object, AggregationMethodRow>();
+            _aggregatorsPerGroup = new Dictionary<Object, AggregationMethodRow>();
             _removedKeys = new List<Object>();
         }
     
         public override void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
         {
-            AggregatorsPerGroup.Clear();
+            _aggregatorsPerGroup.Clear();
         }
     
         public override void ApplyEnter(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
@@ -67,11 +67,11 @@ namespace com.espertech.esper.epl.agg.service
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationMethodRow row;
             AggregationMethod[] groupAggregators;
-            if (!AggregatorsPerGroup.TryGetValue(groupByKey, out row))
+            if (!_aggregatorsPerGroup.TryGetValue(groupByKey, out row))
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
                 row = new AggregationMethodRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
-                AggregatorsPerGroup[groupByKey] = row;
+                _aggregatorsPerGroup[groupByKey] = row;
             }
             else
             {
@@ -98,7 +98,7 @@ namespace com.espertech.esper.epl.agg.service
         public override void ApplyLeave(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, Aggregators.Length, 0, groupByKey);}
-            var row = AggregatorsPerGroup.Get(groupByKey);
+            var row = _aggregatorsPerGroup.Get(groupByKey);
     
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationMethod[] groupAggregators;
@@ -110,7 +110,7 @@ namespace com.espertech.esper.epl.agg.service
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
                 row = new AggregationMethodRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
-                AggregatorsPerGroup[groupByKey] = row;
+                _aggregatorsPerGroup[groupByKey] = row;
             }
 
             var evaluateParams = new EvaluateParams(eventsPerStream, false, exprEvaluatorContext);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.epl.agg.service
 
         public override void SetCurrentAccess(Object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
         {
-            var row = AggregatorsPerGroup.Get(groupByKey);
+            var row = _aggregatorsPerGroup.Get(groupByKey);
     
             if (row != null) {
                 _currentAggregatorRow = row.Methods;
@@ -175,12 +175,12 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public override void Accept(AggregationServiceVisitor visitor) {
-            visitor.VisitAggregations(AggregatorsPerGroup.Count, AggregatorsPerGroup);
+            visitor.VisitAggregations(_aggregatorsPerGroup.Count, _aggregatorsPerGroup);
         }
     
         public override void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
-            visitor.VisitGrouped(AggregatorsPerGroup.Count);
-            foreach (var entry in AggregatorsPerGroup) {
+            visitor.VisitGrouped(_aggregatorsPerGroup.Count);
+            foreach (var entry in _aggregatorsPerGroup) {
                 visitor.VisitGroup(entry.Key, entry.Value);
             }
         }
@@ -199,7 +199,7 @@ namespace com.espertech.esper.epl.agg.service
             {
                 foreach (var removedKey in _removedKeys)
                 {
-                    AggregatorsPerGroup.Remove(removedKey);
+                    _aggregatorsPerGroup.Remove(removedKey);
                 }
                 _removedKeys.Clear();
             }
@@ -207,7 +207,7 @@ namespace com.espertech.esper.epl.agg.service
     
         public override ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
             HandleRemovedKeys();
-            return AggregatorsPerGroup.Keys;
+            return _aggregatorsPerGroup.Keys;
         }
     }
 }

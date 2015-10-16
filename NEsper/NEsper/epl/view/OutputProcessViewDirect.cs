@@ -32,6 +32,11 @@ namespace com.espertech.esper.epl.view
         {
             _parent = parent;
         }
+
+        public override int NumChangesetRows
+        {
+            get { return 0; }
+        }
     
         /// <summary>The Update method is called if the view does not participate in a join. </summary>
         /// <param name="newData">new events</param>

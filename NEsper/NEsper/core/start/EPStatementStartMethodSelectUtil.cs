@@ -104,7 +104,7 @@ namespace com.espertech.esper.core.start
                     // create activator
                     ViewableActivator activatorDeactivator;
                     if (optionalViewableActivatorFactory != null) {
-                        activatorDeactivator = optionalViewableActivatorFactory.Invoke(filterStreamSpec);
+                        activatorDeactivator = optionalViewableActivatorFactory.CreateActivatorSimple(filterStreamSpec);
                         if (activatorDeactivator == null) {
                             throw new IllegalStateException("Viewable activate is null for " + filterStreamSpec.FilterSpec.FilterForEventType.Name);
                         }
@@ -112,7 +112,7 @@ namespace com.espertech.esper.core.start
                     else {
                         if (!hasContext)
                         {
-                            activatorDeactivator = new ViewableActivatorStreamReuseView(
+                            activatorDeactivator = services.ViewableActivatorFactory.CreateStreamReuseView(
                                 services, statementContext, statementSpec, filterStreamSpec, isJoin,
                                 evaluatorContextStmt, filterSubselectSameStream, i, isCanIterateUnbound);
                         }
@@ -128,7 +128,7 @@ namespace com.espertech.esper.core.start
                                 };
                             }
 
-                            activatorDeactivator = new ViewableActivatorFilterProxy(
+                            activatorDeactivator = services.ViewableActivatorFactory.CreateFilterProxy(
                                 services, filterStreamSpec.FilterSpec, statementSpec.Annotations, false,
                                 instrumentationAgentFilter, isCanIterateUnbound);
                         }
@@ -147,14 +147,11 @@ namespace com.espertech.esper.core.start
                     var eventType = services.EventAdapterService.CreateSemiAnonymousMapType(patternTypeName, patternStreamSpec.TaggedEventTypes, patternStreamSpec.ArrayEventTypes, usedByChildViews);
                     unmaterializedViewChain[i] = services.ViewService.CreateFactories(i, eventType, streamSpec.ViewSpecs, streamSpec.Options, statementContext);
     
-                    var rootFactoryNode = services.PatternNodeFactory.MakeRootNode();
-                    rootFactoryNode.AddChildNode(patternStreamSpec.EvalFactoryNode);
-    
+                    var rootFactoryNode = services.PatternNodeFactory.MakeRootNode(patternStreamSpec.EvalFactoryNode);
                     var patternContext = statementContext.PatternContextFactory.CreateContext(statementContext, i, rootFactoryNode, patternStreamSpec.MatchedEventMapMeta, true);
     
                     // create activator
-                    ViewableActivator patternActivator =
-                        new ViewableActivatorPattern(
+                    ViewableActivator patternActivator = services.ViewableActivatorFactory.CreatePattern(
                             patternContext, rootFactoryNode, eventType,
                             EPStatementStartMethodHelperUtil.IsConsumingFilters(patternStreamSpec.EvalFactoryNode),
                             patternStreamSpec.IsSuppressSameEventMatches, patternStreamSpec.IsDiscardPartialsOnMatch,
@@ -181,7 +178,7 @@ namespace com.espertech.esper.core.start
                     historicalEventViewables[i] = historicalEventViewable;
                     unmaterializedViewChain[i] = ViewFactoryChain.FromTypeNoViews(historicalEventViewable.EventType);
                     eventStreamParentViewableActivators[i] = new ProxyViewableActivator(
-                        (agentInstanceContext, isSubselect, isRecoveringResilient) => new ViewableActivationResult(historicalEventViewable, CollectionUtil.STOP_CALLBACK_NONE, null, null, false, false));
+                        (agentInstanceContext, isSubselect, isRecoveringResilient) => new ViewableActivationResult(historicalEventViewable, CollectionUtil.STOP_CALLBACK_NONE, null, null, null, false, false, null));
                     stopCallbacks.Add(historicalEventViewable.Stop);
                 }
                 else if (streamSpec is MethodStreamSpec)
@@ -193,7 +190,8 @@ namespace com.espertech.esper.core.start
                     var historicalEventViewable = MethodPollingViewableFactory.CreatePollMethodView(i, methodStreamSpec, services.EventAdapterService, epStatementAgentInstanceHandle, statementContext.MethodResolutionService, services.EngineImportService, statementContext.SchedulingService, statementContext.ScheduleBucket, evaluatorContextStmt, statementContext.VariableService, statementContext.ContextName);
                     historicalEventViewables[i] = historicalEventViewable;
                     unmaterializedViewChain[i] = ViewFactoryChain.FromTypeNoViews(historicalEventViewable.EventType);
-                    eventStreamParentViewableActivators[i] = new ProxyViewableActivator((agentInstanceContext, isSubselect, isRecoveringResilient) => new ViewableActivationResult(historicalEventViewable, CollectionUtil.STOP_CALLBACK_NONE, null, null, false, false));
+                    eventStreamParentViewableActivators[i] = new ProxyViewableActivator(
+                        (agentInstanceContext, isSubselect, isRecoveringResilient) => new ViewableActivationResult(historicalEventViewable, CollectionUtil.STOP_CALLBACK_NONE, null, null, null, false, false, null));
                     stopCallbacks.Add(historicalEventViewable.Stop);
                 }
                 else if (streamSpec is TableQueryStreamSpec)
@@ -232,8 +230,7 @@ namespace com.espertech.esper.core.start
                         namedWindowType = namedSpec.OptPropertyEvaluator.FragmentEventType;
                     }
 
-                    eventStreamParentViewableActivators[i] = new ViewableActivatorNamedWindow(
-                        processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
+                    eventStreamParentViewableActivators[i] = services.ViewableActivatorFactory.CreateNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
                     unmaterializedViewChain[i] = services.ViewService.CreateFactories(i, namedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
                     joinAnalysisResult.SetNamedWindow(i);
                     eventTypeNames[i] = namedSpec.WindowName;
@@ -260,7 +257,7 @@ namespace com.espertech.esper.core.start
                     throw new ExprValidationException("Tables cannot be used with match-recognize");
                 }
                 var isUnbound = (unmaterializedViewChain[0].FactoryChain.IsEmpty()) && (!(statementSpec.StreamSpecs[0] is NamedWindowConsumerStreamSpec));
-                var factory = new EventRowRegexNFAViewFactory(unmaterializedViewChain[0], statementSpec.MatchRecognizeSpec, defaultAgentInstanceContext, isUnbound, statementSpec.Annotations);
+                var factory = services.RegexHandlerFactory.MakeViewFactory(unmaterializedViewChain[0], statementSpec.MatchRecognizeSpec, defaultAgentInstanceContext, isUnbound, statementSpec.Annotations, services.ConfigSnapshot.EngineDefaults.MatchRecognizeConfig);
                 unmaterializedViewChain[0].FactoryChain.Add(factory);
     
                 EPStatementStartMethodHelperAssignExpr.AssignAggregations(factory.AggregationService, factory.AggregationExpressions);
@@ -361,7 +358,8 @@ namespace com.espertech.esper.core.start
                 statementContext,
                 resultSetProcessorPrototypeDesc.ResultSetProcessorFactory.ResultEventType,
                 optionalOutputProcessViewCallback,
-                services.TableService);
+                services.TableService,
+                resultSetProcessorPrototypeDesc.ResultSetProcessorFactory.ResultSetProcessorType);
     
             // Factory for statement-context instances
             var factoryX = new StatementAgentInstanceFactorySelect(

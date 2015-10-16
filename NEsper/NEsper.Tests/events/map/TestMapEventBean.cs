@@ -75,7 +75,7 @@ namespace com.espertech.esper.events.map
         {
             SupportBean beanOne = new SupportBean();
             SupportBean_A beanTwo = new SupportBean_A("a");
-    
+
             // Set up event type
             _testTypesMap.Clear();
             _testTypesMap["a"] = typeof(SupportBean);

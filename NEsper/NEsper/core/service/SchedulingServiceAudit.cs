@@ -112,6 +112,11 @@ namespace com.espertech.esper.core.service
         {
             get { return _spi.ScheduleHandleCount; }
         }
+        
+        public void Init()
+        {
+            // no action required
+        }
 
         private void PrintHandle(StringWriter message, ScheduleHandle handle)
         {

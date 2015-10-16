@@ -19,8 +19,9 @@ namespace com.espertech.esper.filter
     public class ExprNodeAdapterBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
-        private readonly String _statementName;
+
+        private readonly int _filterSpecId;
+        private readonly int _filterSpecParamPathNum;
         private readonly ExprNode _exprNode;
         private readonly ExprEvaluator _exprNodeEval;
         private readonly ExprEvaluatorContext _evaluatorContext;
@@ -28,12 +29,14 @@ namespace com.espertech.esper.filter
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="filterSpecId">The filter spec identifier.</param>
+        /// <param name="filterSpecParamPathNum">The filter spec parameter path number.</param>
         /// <param name="exprNode">is the bool expression</param>
         /// <param name="evaluatorContext">The evaluator context.</param>
-        public ExprNodeAdapterBase(String statementName, ExprNode exprNode, ExprEvaluatorContext evaluatorContext)
+        public ExprNodeAdapterBase(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext)
         {
-            _statementName = statementName;
+            _filterSpecId = filterSpecId;
+            _filterSpecParamPathNum = filterSpecParamPathNum;
             _exprNode = exprNode;
             _exprNodeEval = exprNode.ExprEvaluator;
             _evaluatorContext = evaluatorContext;
@@ -60,19 +63,34 @@ namespace com.espertech.esper.filter
             }
             catch (Exception ex)
             {
-                Log.Error("Error evaluating expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_exprNode) + "' statement '" + _statementName + "': " + ex.Message, ex);
+                Log.Error("Error evaluating expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_exprNode) + "' statement '" + StatementName + "': " + ex.Message, ex);
                 return false;
             }
         }
 
         public string StatementName
         {
-            get { return _statementName; }
+            get { return _evaluatorContext.StatementName; ; }
+        }
+
+        public string StatementId
+        {
+            get { return _evaluatorContext.StatementId; }
         }
 
         public ExprNode ExprNode
         {
             get { return _exprNode; }
+        }
+
+        public int FilterSpecId
+        {
+            get { return _filterSpecId; }
+        }
+
+        public int FilterSpecParamPathNum
+        {
+            get { return _filterSpecParamPathNum; }
         }
 
         public ExprEvaluator ExprNodeEval

@@ -15,7 +15,7 @@ Studio adds them anyway -->
 <RootNamespace>Documentation</RootNamespace>
 <Name>Documentation</Name>
 <!-- SHFB properties -->
-<OutputPath>.\build\NEsper-5.2.6\docs\</OutputPath>
+<OutputPath>.\build\NEsper-5.3.0\docs\</OutputPath>
 <HtmlHelpName>NEsper</HtmlHelpName>
 <ProjectSummary>
 </ProjectSummary>

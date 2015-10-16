@@ -10,9 +10,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.view;
 using com.espertech.esper.events;
 using com.espertech.esper.view;
 
@@ -95,6 +96,16 @@ namespace com.espertech.esper.epl.core
         public abstract void ApplyViewResult(EventBean[] newData, EventBean[] oldData);
         public abstract void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
 
+        public abstract void ProcessOutputLimitedLastAllNonBufferedView(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isGenerateSynthetic,
+            bool isAll);
+
+        public abstract void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll);
+        public abstract UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll);
+        public abstract UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll);
+
         #endregion
 
         /// <summary>Processes batched events in case of output-rate limiting.</summary>
@@ -110,46 +121,7 @@ namespace com.espertech.esper.epl.core
                 return ProcessJoinResult(flattened.First, flattened.Second, generateSynthetic);
             }
 
-            // Determine the last event of the insert and remove stream that matches having-criteria
-            int index = joinEventsSet.Count - 1;
-            EventBean lastNonEmptyNew = null;
-            EventBean lastNonEmptyOld = null;
-            while (index >= 0)
-            {
-                var pair = joinEventsSet[index];
-                if (((pair.First != null) && (!pair.First.IsEmpty()) && (lastNonEmptyNew == null)) ||
-                     ((pair.Second != null) && (!pair.Second.IsEmpty()) && (lastNonEmptyOld == null)))
-                {
-                    UniformPair<EventBean[]> result = ProcessJoinResult(pair.First, pair.Second, generateSynthetic);
-
-                    if ((lastNonEmptyNew == null) && (result != null) && (result.First != null) && (result.First.Length > 0))
-                    {
-                        lastNonEmptyNew = result.First[result.First.Length - 1];
-                    }
-                    if ((lastNonEmptyOld == null) && (result != null) && (result.Second != null) && (result.Second.Length > 0))
-                    {
-                        lastNonEmptyOld = result.Second[result.Second.Length - 1];
-                    }
-                }
-                if ((lastNonEmptyNew != null) && (lastNonEmptyOld != null))
-                {
-                    break;
-                }
-                index--;
-            }
-
-            EventBean[] lastNew = null;
-            if (lastNonEmptyNew != null)
-            {
-                lastNew = new[] { lastNonEmptyNew };
-            }
-            EventBean[] lastOld = null;
-            if (lastNonEmptyOld != null)
-            {
-                lastOld = new[] { lastNonEmptyOld };
-            }
-
-            return new UniformPair<EventBean[]>(lastNew, lastOld);
+            throw new IllegalStateException("Output last is provided by " + typeof(OutputProcessViewConditionLastAllUnord).Name);
         }
 
         /// <summary>Processes batched events in case of output-rate limiting.</summary>
@@ -167,46 +139,7 @@ namespace com.espertech.esper.epl.core
                 return ProcessViewResult(pair.First, pair.Second, generateSynthetic);
             }
 
-            // Determine the last event of the insert and remove stream that matches having-criteria
-            int index = viewEventsList.Count - 1;
-            EventBean lastNonEmptyNew = null;
-            EventBean lastNonEmptyOld = null;
-            while (index >= 0)
-            {
-                UniformPair<EventBean[]> pair = viewEventsList[index];
-                if (((pair.First != null) && (pair.First.Length != 0) && (lastNonEmptyNew == null)) ||
-                     ((pair.Second != null) && (pair.Second.Length != 0) && (lastNonEmptyOld == null)))
-                {
-                    UniformPair<EventBean[]> result = ProcessViewResult(pair.First, pair.Second, generateSynthetic);
-
-                    if ((lastNonEmptyNew == null) && (result != null) && (result.First != null) && (result.First.Length > 0))
-                    {
-                        lastNonEmptyNew = result.First[result.First.Length - 1];
-                    }
-                    if ((lastNonEmptyOld == null) && (result != null) && (result.Second != null) && (result.Second.Length > 0))
-                    {
-                        lastNonEmptyOld = result.Second[result.Second.Length - 1];
-                    }
-                }
-                if ((lastNonEmptyNew != null) && (lastNonEmptyOld != null))
-                {
-                    break;
-                }
-                index--;
-            }
-
-            EventBean[] lastNew = null;
-            if (lastNonEmptyNew != null)
-            {
-                lastNew = new[] { lastNonEmptyNew };
-            }
-            EventBean[] lastOld = null;
-            if (lastNonEmptyOld != null)
-            {
-                lastOld = new[] { lastNonEmptyOld };
-            }
-
-            return new UniformPair<EventBean[]>(lastNew, lastOld);
+            throw new IllegalStateException("Output last is provided by " + typeof(OutputProcessViewConditionLastAllUnord).Name);
         }
     }
 }

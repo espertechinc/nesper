@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.core.context.mgr
 {
     public interface ContextControllerFactoryService
     {
-        ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext context);
-        ContextPartitionIdManager AllocatePartitionIdMgr(String contextName, String contextStmtId);
-    }
-}
+	    ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext context) ;
+	    ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, string contextStmtId);
+	}
+} // end of namespace

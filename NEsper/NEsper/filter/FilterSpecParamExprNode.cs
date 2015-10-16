@@ -29,7 +29,6 @@ namespace com.espertech.esper.filter
 	[Serializable]
     public class FilterSpecParamExprNode : FilterSpecParam
 	{
-	    private readonly string _statementName;
 	    private readonly ExprNode _exprNode;
         private readonly IDictionary<string, Pair<EventType, string>> _taggedEventTypes;
         private readonly IDictionary<string, Pair<EventType, string>> _arrayEventTypes;
@@ -40,6 +39,9 @@ namespace com.espertech.esper.filter
 	    private readonly bool _useLargeThreadingProfile;
 	    private readonly bool _hasFilterStreamSubquery;
 	    private readonly bool _hasTableAccess;
+
+        private int _filterSpecId;
+        private int _filterSpecParamPathNum;
 
         /// <summary>
         /// Ctor.
@@ -84,7 +86,6 @@ namespace com.espertech.esper.filter
 	        _tableService = tableService;
 	        _eventAdapterService = eventAdapterService;
 	        _useLargeThreadingProfile = configurationInformation.EngineDefaults.ExecutionConfig.ThreadingProfile == ConfigurationEngineDefaults.ThreadingProfile.LARGE;
-	        _statementName = statementName;
 	        _hasFilterStreamSubquery = hasSubquery;
 	        _hasTableAccess = hasTableAccess;
 
@@ -154,15 +155,15 @@ namespace com.espertech.esper.filter
 
 	            // if a subquery is present in a filter stream acquire the agent instance lock
 	            if (_hasFilterStreamSubquery) {
-	                adapter = new ExprNodeAdapterBaseStmtLock(_statementName, _exprNode, exprEvaluatorContext, _variableService);
+                    adapter = new ExprNodeAdapterBaseStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, _variableService);
 	            }
 	            // no-variable no-prior event evaluation
 	            else if (!_hasVariable) {
-	                adapter = new ExprNodeAdapterBase(_statementName, _exprNode, exprEvaluatorContext);
+                    adapter = new ExprNodeAdapterBase(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext);
 	            }
 	            else {
 	                // with-variable no-prior event evaluation
-	                adapter = new ExprNodeAdapterBaseVariables(_statementName, _exprNode, exprEvaluatorContext, _variableService);
+                    adapter = new ExprNodeAdapterBaseVariables(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, _variableService);
 	            }
 	        }
 	        else {
@@ -172,19 +173,19 @@ namespace com.espertech.esper.filter
 	                // no-threadlocal evaluation
 	                // if a subquery is present in a pattern filter acquire the agent instance lock
 	                if (_hasFilterStreamSubquery) {
-	                    adapter = new ExprNodeAdapterMultiStreamNoTLStmtLock(_statementName, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStreamNoTLStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
 	                }
 	                else {
-	                    adapter = new ExprNodeAdapterMultiStreamNoTL(_statementName, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStreamNoTL(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
 	                }
 	            }
 	            else {
 	                if (_hasFilterStreamSubquery) {
-	                    adapter = new ExprNodeAdapterMultiStreamStmtLock(_statementName, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStreamStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
 	                }
 	                else {
 	                    // evaluation with threadlocal cache
-	                    adapter = new ExprNodeAdapterMultiStream(_statementName, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                        adapter = new ExprNodeAdapterMultiStream(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
 	                }
 	            }
 	        }
@@ -194,7 +195,7 @@ namespace com.espertech.esper.filter
 	        }
 
 	        // handle table
-	        return new ExprNodeAdapterBaseWTableAccess(_statementName, _exprNode, exprEvaluatorContext, adapter, _tableService);
+            return new ExprNodeAdapterBaseWTableAccess(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, adapter, _tableService);
 	    }
 
 	    public override string ToString()
@@ -233,6 +234,18 @@ namespace com.espertech.esper.filter
 	        var result = base.GetHashCode();
             result = 31 * result + _exprNode.GetHashCode();
 	        return result;
+	    }
+
+	    public int FilterSpecId
+	    {
+	        get { return _filterSpecId; }
+	        set { _filterSpecId = value; }
+	    }
+
+	    public int FilterSpecParamPathNum
+	    {
+	        get { return _filterSpecParamPathNum; }
+	        set { _filterSpecParamPathNum = value; }
 	    }
 	}
 } // end of namespace

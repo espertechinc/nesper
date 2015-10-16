@@ -103,7 +103,7 @@ namespace com.espertech.esper.epl.named
 	        }
 	        var selectNoWildcard = CompileSelectNoWildcard(triggeringStreamName, desc.SelectClauseCompiled);
 
-	        // Set up event types for select-clause evaluation: The first type does not contain anything as its the named window row which is not present for insert
+            // Set up event types for select-clause evaluation: The first type does not contain anything as its the named window row which is not present for insert
 	        EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.CreateAnonymous("merge_named_window_insert"), "merge_named_window_insert", 0, null, Collections.GetEmptyMap<string, object>(), null, null, null);
 	        var eventTypes = new EventType[] {dummyTypeNoProperties, triggeringEventType};
 	        var streamNames = new string[] {UuidGenerator.Generate(), triggeringStreamName};

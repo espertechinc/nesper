@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.join.assemble
 	    public abstract void Print(IndentWriter indentWriter);
 
 	    /// <summary>
-	    /// Set parent node.
+        /// Set parent node.
 	    /// </summary>
 	    public void SetParent(BaseAssemblyNodeFactory parent)
 	    {
@@ -132,7 +132,7 @@ namespace com.espertech.esper.epl.join.assemble
 	    {
 	        var result = new List<BaseAssemblyNodeFactory>();
 
-	        // Map to hold per level of the node (1 to N depth) of node a list of nodes, if any
+	        // Map to hold per level of the node (1 to Count depth) of node a list of nodes, if any
 	        // exist at that level
             var nodesPerLevel = new OrderedDictionary<int, ICollection<BaseAssemblyNodeFactory>>();
 

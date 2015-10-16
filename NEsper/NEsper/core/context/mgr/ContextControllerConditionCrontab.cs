@@ -71,7 +71,7 @@ namespace com.espertech.esper.core.context.mgr
             var agentHandle = new EPStatementAgentInstanceHandle(_statementContext.EpStatementHandle, _statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion());
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
             var schedulingService = _statementContext.SchedulingService;
-            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time);
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, _statementContext.MethodResolutionService.EngineImportService.TimeZone);
             _statementContext.SchedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
         }
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public long? ExpectedEndTime
         {
-            get { return ScheduleComputeHelper.ComputeNextOccurance(_spec.Schedule, _statementContext.TimeProvider.Time); }
+            get { return ScheduleComputeHelper.ComputeNextOccurance(_spec.Schedule, _statementContext.TimeProvider.Time, _statementContext.MethodResolutionService.EngineImportService.TimeZone); }
         }
 
         public bool IsImmediate

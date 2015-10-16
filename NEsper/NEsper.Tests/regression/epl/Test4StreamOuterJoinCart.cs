@@ -309,16 +309,16 @@ namespace com.espertech.esper.regression.epl
     
             // Test s3 and s0=1, s1=2, s2=1
             //
-            s0Events = SupportBean_S0.MakeS0("N", new[]{"N-s0-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new[]{"Count-s0-1"});
             SendEventsAndReset(s0Events);
     
-            s1Events = SupportBean_S1.MakeS1("N", new[]{"N-s1-1", "N-s1-2"});
+            s1Events = SupportBean_S1.MakeS1("Count", new[]{"Count-s1-1", "Count-s1-2"});
             SendEventsAndReset(s1Events);
     
-            s2Events = SupportBean_S2.MakeS2("N", new[]{"N-s2-1"});
+            s2Events = SupportBean_S2.MakeS2("Count", new[]{"Count-s2-1"});
             SendEventsAndReset(s2Events);
     
-            s3Events = SupportBean_S3.MakeS3("N", new[]{"N-s3-1"});
+            s3Events = SupportBean_S3.MakeS3("Count", new[]{"Count-s3-1"});
             SendEvent(s3Events);
             EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
                     new Object[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0]},

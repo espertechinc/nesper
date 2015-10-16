@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client.context;
 using com.espertech.esper.compat.collections;
@@ -19,9 +20,15 @@ namespace com.espertech.esper.regression.context
             : this(new ContextPartitionSelector[] {s0, s1})
         {
         }
-    
-        public SupportSelectorNested(ContextPartitionSelector[] selectors) {
+
+        public SupportSelectorNested(ContextPartitionSelector[] selectors)
+        {
             Selectors = Collections.SingletonList(selectors);
+        }
+
+        public SupportSelectorNested(IEnumerable<ContextPartitionSelector> selectors)
+        {
+            Selectors = Collections.SingletonList(selectors.ToArray());
         }
     
         public SupportSelectorNested(IList<ContextPartitionSelector[]> selectors) {

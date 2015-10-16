@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.core
     /// by computing MultiKey group-by keys for each row. The processor generates one row for 
     /// each event entering (new event) and one row for each event leaving (old event).
     /// <para/>
-    /// Aggregation state is a table of rows held by <seealso cref="AggregationService"/> 
+    /// Aggregation state is a table of rows held by <seealso cref="agg.service.AggregationService"/> 
     /// where the row key is the group-by MultiKey.
     /// </summary>
     public class ResultSetProcessorAggregateGrouped
@@ -43,13 +43,13 @@ namespace com.espertech.esper.epl.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly ResultSetProcessorAggregateGroupedFactory _prototype;
+        internal readonly ResultSetProcessorAggregateGroupedFactory Prototype;
         private readonly SelectExprProcessor _selectExprProcessor;
         private readonly OrderByProcessor _orderByProcessor;
-        private readonly AggregationService _aggregationService;
+        internal readonly AggregationService AggregationService;
         private AgentInstanceContext _agentInstanceContext;
     
-        private readonly EventBean[] _eventsPerStreamOneStream = new EventBean[1];
+        internal readonly EventBean[] EventsPerStreamOneStream = new EventBean[1];
     
         // For output limiting, keep a representative of each group-by group
         private readonly IDictionary<Object, EventBean[]> _eventGroupReps = new Dictionary<Object, EventBean[]>();
@@ -61,15 +61,27 @@ namespace com.espertech.esper.epl.core
         private readonly IDictionary<Object, EventBean[]> _oldGenerators = new Dictionary<Object, EventBean[]>();
 
         private readonly IDictionary<Object, OutputConditionPolled> _outputState = new Dictionary<Object, OutputConditionPolled>();
-    
+
+        private ResultSetProcessorAggregateGroupedOutputLastHelper _outputLastHelper;
+        private ResultSetProcessorAggregateGroupedOutputAllHelper _outputAllHelper;
+
         public ResultSetProcessorAggregateGrouped(ResultSetProcessorAggregateGroupedFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
-            _prototype = prototype;
+            Prototype = prototype;
             _selectExprProcessor = selectExprProcessor;
             _orderByProcessor = orderByProcessor;
-            _aggregationService = aggregationService;
+            AggregationService = aggregationService;
             _agentInstanceContext = agentInstanceContext;
             aggregationService.SetRemovedCallback(this);
+        
+            if (prototype.IsOutputLast)
+            {
+                _outputLastHelper = new ResultSetProcessorAggregateGroupedOutputLastHelper(this);
+            }
+            else if (prototype.IsOutputAll)
+            {
+                _outputAllHelper = new ResultSetProcessorAggregateGroupedOutputAllHelper(this);
+            }
         }
 
         public AgentInstanceContext AgentInstanceContext
@@ -80,27 +92,27 @@ namespace com.espertech.esper.epl.core
 
         public EventType ResultEventType
         {
-            get { return _prototype.ResultEventType; }
+            get { return Prototype.ResultEventType; }
         }
 
         public void ApplyViewResult(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
             if (newData != null)
             {
                 // apply new data to aggregates
-                foreach (EventBean aNewData in newData) {
+                foreach (var aNewData in newData) {
                     eventsPerStream[0] = aNewData;
-                    Object mk = GenerateGroupKey(eventsPerStream, true);
-                    _aggregationService.ApplyEnter(eventsPerStream, mk, AgentInstanceContext);
+                    var mk = GenerateGroupKey(eventsPerStream, true);
+                    AggregationService.ApplyEnter(eventsPerStream, mk, _agentInstanceContext);
                 }
             }
             if (oldData != null) {
                 // apply old data to aggregates
-                foreach (EventBean anOldData in oldData) {
+                foreach (var anOldData in oldData) {
                     eventsPerStream[0] = anOldData;
-                    Object mk = GenerateGroupKey(eventsPerStream, false);
-                    _aggregationService.ApplyLeave(eventsPerStream, mk, AgentInstanceContext);
+                    var mk = GenerateGroupKey(eventsPerStream, false);
+                    AggregationService.ApplyLeave(eventsPerStream, mk, _agentInstanceContext);
                 }
             }
         }
@@ -109,16 +121,16 @@ namespace com.espertech.esper.epl.core
         {
             if (!newEvents.IsEmpty()) {
                 // apply old data to aggregates
-                foreach (MultiKey<EventBean> eventsPerStream in newEvents) {
-                    Object mk = GenerateGroupKey(eventsPerStream.Array, true);
-                    _aggregationService.ApplyEnter(eventsPerStream.Array, mk, AgentInstanceContext);
+                foreach (var eventsPerStream in newEvents) {
+                    var mk = GenerateGroupKey(eventsPerStream.Array, true);
+                    AggregationService.ApplyEnter(eventsPerStream.Array, mk, _agentInstanceContext);
                 }
             }
             if (oldEvents != null && !oldEvents.IsEmpty()) {
                 // apply old data to aggregates
-                foreach (MultiKey<EventBean> eventsPerStream in oldEvents) {
-                    Object mk = GenerateGroupKey(eventsPerStream.Array, false);
-                    _aggregationService.ApplyLeave(eventsPerStream.Array, mk, AgentInstanceContext);
+                foreach (var eventsPerStream in oldEvents) {
+                    var mk = GenerateGroupKey(eventsPerStream.Array, false);
+                    AggregationService.ApplyLeave(eventsPerStream.Array, mk, _agentInstanceContext);
                 }
             }
         }
@@ -131,7 +143,7 @@ namespace com.espertech.esper.epl.core
             var oldDataGroupByKeys = GenerateGroupKeys(oldEvents, false);
     
             // generate old events
-            if (_prototype.IsUnidirectional)
+            if (Prototype.IsUnidirectional)
             {
                 Clear();
             }
@@ -143,7 +155,7 @@ namespace com.espertech.esper.epl.core
                 var count = 0;
                 foreach (var eventsPerStream in newEvents)
                 {
-                    _aggregationService.ApplyEnter(eventsPerStream.Array, newDataGroupByKeys[count], _agentInstanceContext);
+                    AggregationService.ApplyEnter(eventsPerStream.Array, newDataGroupByKeys[count], _agentInstanceContext);
                     count++;
                 }
             }
@@ -153,13 +165,13 @@ namespace com.espertech.esper.epl.core
                 var count = 0;
                 foreach (var eventsPerStream in oldEvents)
                 {
-                    _aggregationService.ApplyLeave(eventsPerStream.Array, oldDataGroupByKeys[count], _agentInstanceContext);
+                    AggregationService.ApplyLeave(eventsPerStream.Array, oldDataGroupByKeys[count], _agentInstanceContext);
                     count++;
                 }
             }
     
             EventBean[] selectOldEvents = null;
-            if (_prototype.IsSelectRStream)
+            if (Prototype.IsSelectRStream)
             {
                 selectOldEvents = GenerateOutputEventsJoin(oldEvents, oldDataGroupByKeys, _oldGenerators, false, isSynthesize);
             }
@@ -190,7 +202,7 @@ namespace com.espertech.esper.epl.core
                 for (var i = 0; i < newData.Length; i++)
                 {
                     eventsPerStream[0] = newData[i];
-                    _aggregationService.ApplyEnter(eventsPerStream, newDataGroupByKeys[i], _agentInstanceContext);
+                    AggregationService.ApplyEnter(eventsPerStream, newDataGroupByKeys[i], _agentInstanceContext);
                 }
             }
             if (oldData != null)
@@ -199,12 +211,12 @@ namespace com.espertech.esper.epl.core
                 for (var i = 0; i < oldData.Length; i++)
                 {
                     eventsPerStream[0] = oldData[i];
-                    _aggregationService.ApplyLeave(eventsPerStream, oldDataGroupByKeys[i], _agentInstanceContext);
+                    AggregationService.ApplyLeave(eventsPerStream, oldDataGroupByKeys[i], _agentInstanceContext);
                 }
             }
     
             EventBean[] selectOldEvents = null;
-            if (_prototype.IsSelectRStream)
+            if (Prototype.IsSelectRStream)
             {
                 selectOldEvents = GenerateOutputEventsView(oldData, oldDataGroupByKeys, _oldGenerators, false, isSynthesize);
             }
@@ -230,65 +242,65 @@ namespace com.espertech.esper.epl.core
             var events = new EventBean[outputEvents.Length];
             var keys = new Object[outputEvents.Length];
             EventBean[][] currentGenerators = null;
-            if(_prototype.IsSorting)
+            if(Prototype.IsSorting)
             {
             	currentGenerators = new EventBean[outputEvents.Length][];
             }
     
-            var count = 0;
+            var countOutputRows = 0;
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
-            for (var i = 0; i < outputEvents.Length; i++)
+            for (var countInputRows = 0; countInputRows < outputEvents.Length; countInputRows++)
             {
-                _aggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
-                eventsPerStream[0] = outputEvents[count];
+                AggregationService.SetCurrentAccess(groupByKeys[countInputRows], _agentInstanceContext.AgentInstanceId, null);
+                eventsPerStream[0] = outputEvents[countInputRows];
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(outputEvents[count]);}
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(outputEvents[countOutputRows]);}
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean());}
                     if ((result == null) || (false.Equals(result))) {
                         continue;
                     }
                 }
-    
-                events[count] = _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
-                keys[count] = groupByKeys[count];
-                if(_prototype.IsSorting)
+
+                events[countOutputRows] = _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
+                keys[countOutputRows] = groupByKeys[countInputRows];
+                if(Prototype.IsSorting)
                 {
-                	var currentEventsPerStream = new EventBean[] { outputEvents[count] };
-                	generators.Put(keys[count], currentEventsPerStream);
-                	currentGenerators[count] = currentEventsPerStream;
+                    var currentEventsPerStream = new EventBean[] { outputEvents[countInputRows] };
+                	generators.Put(keys[countOutputRows], currentEventsPerStream);
+                	currentGenerators[countOutputRows] = currentEventsPerStream;
                 }
     
-                count++;
+                countOutputRows++;
             }
     
             // Resize if some rows were filtered out
-            if (count != events.Length)
+            if (countOutputRows != events.Length)
             {
-                if (count == 0)
+                if (countOutputRows == 0)
                 {
                     return null;
                 }
-                var outEvents = new EventBean[count];
-                Array.Copy(events, 0, outEvents, 0, count);
+                var outEvents = new EventBean[countOutputRows];
+                Array.Copy(events, 0, outEvents, 0, countOutputRows);
                 events = outEvents;
     
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
-                	var outKeys = new Object[count];
-                	Array.Copy(keys, 0, outKeys, 0, count);
+                	var outKeys = new Object[countOutputRows];
+                	Array.Copy(keys, 0, outKeys, 0, countOutputRows);
                 	keys = outKeys;
     
-                	var outGens = new EventBean[count][];
-                	Array.Copy(currentGenerators, 0, outGens, 0, count);
+                	var outGens = new EventBean[countOutputRows][];
+                	Array.Copy(currentGenerators, 0, outGens, 0, countOutputRows);
                 	currentGenerators = outGens;
                 }
             }
     
-            if(_prototype.IsSorting)
+            if(Prototype.IsSorting)
             {
                 events = _orderByProcessor.Sort(events, currentGenerators, keys, isNewData, _agentInstanceContext);
             }
@@ -296,7 +308,7 @@ namespace com.espertech.esper.epl.core
             return events;
         }
     
-        private Object[] GenerateGroupKeys(ISet<MultiKey<EventBean>> resultSet, bool isNewData)
+        internal Object[] GenerateGroupKeys(ISet<MultiKey<EventBean>> resultSet, bool isNewData)
         {
             if (resultSet.IsEmpty())
             {
@@ -314,8 +326,8 @@ namespace com.espertech.esper.epl.core
     
             return keys;
         }
-    
-        private Object[] GenerateGroupKeys(EventBean[] events, bool isNewData)
+
+        internal Object[] GenerateGroupKeys(EventBean[] events, bool isNewData)
         {
             if (events == null) {
                 return null;
@@ -337,23 +349,24 @@ namespace com.espertech.esper.epl.core
         /// <param name="eventsPerStream">is the row of events</param>
         /// <param name="isNewData">is true for new data</param>
         /// <returns>grouping keys</returns>
-        protected Object GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
+        public Object GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData)
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
 
             if (InstrumentationHelper.ENABLED)
             {
-                InstrumentationHelper.Get().QResultSetProcessComputeGroupKeys(isNewData, _prototype.GroupKeyNodeExpressions, eventsPerStream);
+                InstrumentationHelper.Get().QResultSetProcessComputeGroupKeys(isNewData, Prototype.GroupKeyNodeExpressions, eventsPerStream);
     
                 Object keyObject;
-                if (_prototype.GroupKeyNode != null)
+                if (Prototype.GroupKeyNode != null)
                 {
-                    keyObject = _prototype.GroupKeyNode.Evaluate(evaluateParams);
+                    keyObject = Prototype.GroupKeyNode.Evaluate(evaluateParams);
                 }
-                else {
-                    var keysX = new Object[_prototype.GroupKeyNodes.Length];
+                else
+                {
+                    var keysX = new Object[Prototype.GroupKeyNodes.Length];
                     var countX = 0;
-                    foreach (var exprNode in _prototype.GroupKeyNodes)
+                    foreach (var exprNode in Prototype.GroupKeyNodes)
                     {
                         keysX[countX] = exprNode.Evaluate(evaluateParams);
                         countX++;
@@ -364,13 +377,13 @@ namespace com.espertech.esper.epl.core
                 return keyObject;
             }
     
-            if (_prototype.GroupKeyNode != null) {
-                return _prototype.GroupKeyNode.Evaluate(evaluateParams);
+            if (Prototype.GroupKeyNode != null) {
+                return Prototype.GroupKeyNode.Evaluate(evaluateParams);
             }
     
-            var keys = new Object[_prototype.GroupKeyNodes.Length];
+            var keys = new Object[Prototype.GroupKeyNodes.Length];
             var count = 0;
-            foreach (var exprNode in _prototype.GroupKeyNodes) {
+            foreach (var exprNode in Prototype.GroupKeyNodes) {
                 keys[count] = exprNode.Evaluate(evaluateParams);
                 count++;
             }
@@ -387,66 +400,68 @@ namespace com.espertech.esper.epl.core
             var events = new EventBean[resultSet.Count];
             var keys = new Object[resultSet.Count];
             EventBean[][] currentGenerators = null;
-            if(_prototype.IsSorting)
+            if(Prototype.IsSorting)
             {
             	currentGenerators = new EventBean[resultSet.Count][];
             }
     
-            var count = 0;
+            var countOutputRows = 0;
+            var countInputRows = -1;
             foreach (var row in resultSet)
             {
+                countInputRows++;
                 var eventsPerStream = row.Array;
                 var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
 
-                _aggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupByKeys[countInputRows], _agentInstanceContext.AgentInstanceId, null);
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream);}
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
                         continue;
                     }
                 }
-    
-                events[count] = _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
-                keys[count] = groupByKeys[count];
-                if(_prototype.IsSorting)
+
+                events[countOutputRows] = _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
+                keys[countOutputRows] = groupByKeys[countOutputRows];
+                if(Prototype.IsSorting)
                 {
-                	generators.Put(keys[count], eventsPerStream);
-                	currentGenerators[count] = eventsPerStream;
+                	generators.Put(keys[countOutputRows], eventsPerStream);
+                	currentGenerators[countOutputRows] = eventsPerStream;
                 }
     
-                count++;
+                countOutputRows++;
             }
     
             // Resize if some rows were filtered out
-            if (count != events.Length)
+            if (countOutputRows != events.Length)
             {
-                if (count == 0)
+                if (countOutputRows == 0)
                 {
                     return null;
                 }
-                var outEvents = new EventBean[count];
-                Array.Copy(events, 0, outEvents, 0, count);
+                var outEvents = new EventBean[countOutputRows];
+                Array.Copy(events, 0, outEvents, 0, countOutputRows);
                 events = outEvents;
     
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
-                	var outKeys = new Object[count];
-                	Array.Copy(keys, 0, outKeys, 0, count);
+                	var outKeys = new Object[countOutputRows];
+                	Array.Copy(keys, 0, outKeys, 0, countOutputRows);
                 	keys = outKeys;
     
-                	var outGens = new EventBean[count][];
-                	Array.Copy(currentGenerators, 0, outGens, 0, count);
+                	var outGens = new EventBean[countOutputRows][];
+                	Array.Copy(currentGenerators, 0, outGens, 0, countOutputRows);
                 	currentGenerators = outGens;
                 }
             }
     
-            if(_prototype.IsSorting)
+            if(Prototype.IsSorting)
             {
                 events = _orderByProcessor.Sort(events, currentGenerators, keys, isNewData, _agentInstanceContext);
             }
@@ -457,12 +472,12 @@ namespace com.espertech.esper.epl.core
         {
             var eventsPerStream = new EventBean[1];
 
-            foreach (EventBean candidate in baseEnum)
+            foreach (var candidate in baseEnum)
             {
                 eventsPerStream[0] = candidate;
 
                 var groupKey = GenerateGroupKey(eventsPerStream, true);
-                _aggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
 
                 bool? pass = true;
                 if (OptionalHavingNode != null)
@@ -478,23 +493,23 @@ namespace com.espertech.esper.epl.core
         }
         public IEnumerator<EventBean> GetEnumerator(Viewable parent)
         {
-            if (!_prototype.IsHistoricalOnly)
+            if (!Prototype.IsHistoricalOnly)
             {
                 return ObtainIterator(parent);
             }
 
-            _aggregationService.ClearResults(AgentInstanceContext);
+            AggregationService.ClearResults(_agentInstanceContext);
             var it = parent.GetEnumerator();
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
             for (; it.MoveNext(); )
             {
                 eventsPerStream[0] = it.Current;
-                Object groupKey = GenerateGroupKey(eventsPerStream, true);
-                _aggregationService.ApplyEnter(eventsPerStream, groupKey, AgentInstanceContext);
+                var groupKey = GenerateGroupKey(eventsPerStream, true);
+                AggregationService.ApplyEnter(eventsPerStream, groupKey, _agentInstanceContext);
             }
 
-            ArrayDeque<EventBean> deque = ResultSetProcessorUtil.EnumeratorToDeque(ObtainIterator(parent));
-            _aggregationService.ClearResults(AgentInstanceContext);
+            var deque = ResultSetProcessorUtil.EnumeratorToDeque(ObtainIterator(parent));
+            AggregationService.ClearResults(_agentInstanceContext);
             return deque.GetEnumerator();
         }
 
@@ -515,20 +530,20 @@ namespace com.espertech.esper.epl.core
                 eventsPerStream[0] = candidate;
     
                 var groupKey = GenerateGroupKey(eventsPerStream, true);
-                _aggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
     
-                if (_prototype.OptionalHavingNode != null) {
+                if (Prototype.OptionalHavingNode != null) {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(candidate);}
-                    var pass = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var pass = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(pass.AsBoxedBoolean()); }
                     if ((pass == null) || (false.Equals(pass)))
                     {
                         continue;
                     }
                 }
-    
+
                 outgoingEvents.Add(_selectExprProcessor.Process(eventsPerStream, true, true, _agentInstanceContext));
-    
+
                 var orderKey = _orderByProcessor.GetSortKey(eventsPerStream, true, _agentInstanceContext);
                 orderKeys.Add(orderKey);
             }
@@ -552,7 +567,7 @@ namespace com.espertech.esper.epl.core
         /// <value>having expression</value>
         public ExprEvaluator OptionalHavingNode
         {
-            get { return _prototype.OptionalHavingNode; }
+            get { return Prototype.OptionalHavingNode; }
         }
 
         public IEnumerator<EventBean> GetEnumerator(ISet<MultiKey<EventBean>> joinSet)
@@ -567,7 +582,7 @@ namespace com.espertech.esper.epl.core
     
         public void Clear()
         {
-            _aggregationService.ClearResults(_agentInstanceContext);
+            AggregationService.ClearResults(_agentInstanceContext);
         }
     
         public UniformPair<EventBean[]> ProcessOutputLimitedJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
@@ -576,7 +591,7 @@ namespace com.espertech.esper.epl.core
             {
                 var newEvents = new List<EventBean>();
                 LinkedList<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                      oldEvents = new LinkedList<EventBean>();
                 }
@@ -586,7 +601,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -600,7 +615,7 @@ namespace com.espertech.esper.epl.core
                     var newDataMultiKey = GenerateGroupKeys(newData, true);
                     var oldDataMultiKey = GenerateGroupKeys(oldData, false);
     
-                    if (_prototype.IsUnidirectional)
+                    if (Prototype.IsUnidirectional)
                     {
                         Clear();
                     }
@@ -611,7 +626,7 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var aNewData in newData)
                         {
-                            _aggregationService.ApplyEnter(aNewData.Array, newDataMultiKey[count], _agentInstanceContext);
+                            AggregationService.ApplyEnter(aNewData.Array, newDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
@@ -621,21 +636,21 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var anOldData in oldData)
                         {
-                            _aggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
+                            AggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
                     }
                     GenerateOutputBatchedJoin(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
                 }
     
-                EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+                var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
@@ -644,7 +659,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
@@ -661,7 +676,7 @@ namespace com.espertech.esper.epl.core
             {
                 var newEvents = new List<EventBean>();
                 LinkedList<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEvents = new LinkedList<EventBean>();
                 }
@@ -671,7 +686,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -687,7 +702,7 @@ namespace com.espertech.esper.epl.core
                     var newDataMultiKey = GenerateGroupKeys(newData, true);
                     var oldDataMultiKey = GenerateGroupKeys(oldData, false);
     
-                    if (_prototype.IsUnidirectional)
+                    if (Prototype.IsUnidirectional)
                     {
                         Clear();
                     }
@@ -699,7 +714,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var aNewData in newData)
                         {
                             var mk = newDataMultiKey[count];
-                            _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
+                            AggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
                             count++;
     
                             // keep the new event as a representative for the group
@@ -713,12 +728,12 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var anOldData in oldData)
                         {
-                            _aggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
+                            AggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
                     }
@@ -738,7 +753,7 @@ namespace com.espertech.esper.epl.core
     
                 var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
@@ -747,7 +762,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
@@ -769,14 +784,14 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null) {
                     resultNewSortKeys = new List<Object>();
                 }
-                if (_prototype.IsSelectRStream) {
+                if (Prototype.IsSelectRStream) {
                     resultOldEvents = new List<EventBean>();
                     resultOldSortKeys = new List<Object>();
                 }
     
                 _workCollection.Clear();
     
-                if (_prototype.OptionalHavingNode == null) {
+                if (Prototype.OptionalHavingNode == null) {
                     foreach (var pair in joinEventsSet)
                     {
                         var newData = pair.First;
@@ -795,7 +810,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -806,7 +821,7 @@ namespace com.espertech.esper.epl.core
                                 if (pass) {
                                     _workCollection.Put(mk, aNewData.Array);
                                 }
-                                _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
+                                AggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
                                 count++;
                             }
                         }
@@ -821,7 +836,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -832,7 +847,7 @@ namespace com.espertech.esper.epl.core
                                 if (pass) {
                                     _workCollection.Put(mk, aOldData.Array);
                                 }
-                                _aggregationService.ApplyLeave(aOldData.Array, mk, _agentInstanceContext);
+                                AggregationService.ApplyLeave(aOldData.Array, mk, _agentInstanceContext);
                                 count++;
                             }
                         }
@@ -857,7 +872,7 @@ namespace com.espertech.esper.epl.core
                             foreach (var aNewData in newData)
                             {
                                 var mk = newDataMultiKey[count];
-                                _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
+                                AggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
                                 count++;
                             }
                         }
@@ -868,7 +883,7 @@ namespace com.espertech.esper.epl.core
                             foreach (var aOldData in oldData)
                             {
                                 var mk = oldDataMultiKey[count];
-                                _aggregationService.ApplyLeave(aOldData.Array, mk, _agentInstanceContext);
+                                AggregationService.ApplyLeave(aOldData.Array, mk, _agentInstanceContext);
                                 count++;
                             }
                         }
@@ -880,12 +895,12 @@ namespace com.espertech.esper.epl.core
                             foreach (var aNewData in newData)
                             {
                                 var mk = newDataMultiKey[count];
-                                _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
+                                AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
     
                                 // Filter the having clause
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(aNewData.Array);}
                                 var evaluateParams = new EvaluateParams(aNewData.Array, true, _agentInstanceContext);
-                                var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                                var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                                 if ((result == null) || (false.Equals(result)))
                                 {
@@ -896,7 +911,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -918,12 +933,12 @@ namespace com.espertech.esper.epl.core
                             foreach (var aOldData in oldData)
                             {
                                 var mk = oldDataMultiKey[count];
-                                _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
+                                AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
     
                                 // Filter the having clause
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(aOldData.Array);}
                                 var evaluateParams = new EvaluateParams(aOldData.Array, true, _agentInstanceContext);
-                                var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                                var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                                 if ((result == null) || (false.Equals(result)))
                                 {
@@ -934,7 +949,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -966,7 +981,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var sortKeysNew = (resultNewSortKeys.IsEmpty()) ? null : resultNewSortKeys.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         var sortKeysOld = (resultOldSortKeys.IsEmpty()) ? null : resultOldSortKeys.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
@@ -983,7 +998,7 @@ namespace com.espertech.esper.epl.core
             {
                 IDictionary<Object, EventBean> lastPerGroupNew = new LinkedHashMap<Object, EventBean>();
                 IDictionary<Object, EventBean> lastPerGroupOld = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     lastPerGroupOld = new LinkedHashMap<Object, EventBean>();
                 }
@@ -993,7 +1008,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedHashMap<Object, Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedHashMap<Object, Object>();
                     }
@@ -1007,7 +1022,7 @@ namespace com.espertech.esper.epl.core
                     var newDataMultiKey = GenerateGroupKeys(newData, true);
                     var oldDataMultiKey = GenerateGroupKeys(oldData, false);
     
-                    if (_prototype.IsUnidirectional)
+                    if (Prototype.IsUnidirectional)
                     {
                         Clear();
                     }
@@ -1019,7 +1034,7 @@ namespace com.espertech.esper.epl.core
                         foreach (var aNewData in newData)
                         {
                             var mk = newDataMultiKey[count];
-                            _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
+                            AggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
                             count++;
                         }
                     }
@@ -1030,32 +1045,32 @@ namespace com.espertech.esper.epl.core
                         foreach (var anOldData in oldData)
                         {
                             _workCollection.Put(oldDataMultiKey[count], anOldData.Array);
-                            _aggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
+                            AggregationService.ApplyLeave(anOldData.Array, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
                     }
                     GenerateOutputBatchedJoin(newData, newDataMultiKey, false, generateSynthetic, lastPerGroupNew, newEventsSortKey);
                 }
     
-                EventBean[] newEventsArr = (lastPerGroupNew.IsEmpty()) ? null : lastPerGroupNew.Values.ToArray();
+                var newEventsArr = (lastPerGroupNew.IsEmpty()) ? null : lastPerGroupNew.Values.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (lastPerGroupOld.IsEmpty()) ? null : lastPerGroupOld.Values.ToArray();
                 }
     
                 if (_orderByProcessor != null)
                 {
-                    Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.Values.ToArray();
+                    var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.Values.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
-                        Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.Values.ToArray();
+                        var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.Values.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
                     }
                 }
@@ -1072,9 +1087,9 @@ namespace com.espertech.esper.epl.core
         {
             if (outputLimitLimitType == OutputLimitLimitType.DEFAULT)
             {
-                LinkedList<EventBean> newEvents = new LinkedList<EventBean>();
+                var newEvents = new LinkedList<EventBean>();
                 LinkedList<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEvents = new LinkedList<EventBean>();
                 }
@@ -1084,7 +1099,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -1104,8 +1119,8 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var aNewData in newData)
                         {
-                            _eventsPerStreamOneStream[0] = aNewData;
-                            _aggregationService.ApplyEnter(_eventsPerStreamOneStream, newDataMultiKey[count], _agentInstanceContext);
+                            EventsPerStreamOneStream[0] = aNewData;
+                            AggregationService.ApplyEnter(EventsPerStreamOneStream, newDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
@@ -1115,33 +1130,33 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var anOldData in oldData)
                         {
-                            _eventsPerStreamOneStream[0] = anOldData;
-                            _aggregationService.ApplyLeave(_eventsPerStreamOneStream, oldDataMultiKey[count], _agentInstanceContext);
+                            EventsPerStreamOneStream[0] = anOldData;
+                            AggregationService.ApplyLeave(EventsPerStreamOneStream, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
                     }
                     GenerateOutputBatchedView(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
                 }
     
-                EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+                var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
     
                 if (_orderByProcessor != null)
                 {
-                    Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
+                    var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
-                        Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
+                        var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
                     }
                 }
@@ -1154,9 +1169,9 @@ namespace com.espertech.esper.epl.core
             }
             else if (outputLimitLimitType == OutputLimitLimitType.ALL)
             {
-                LinkedList<EventBean> newEvents = new LinkedList<EventBean>();
+                var newEvents = new LinkedList<EventBean>();
                 LinkedList<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEvents = new LinkedList<EventBean>();
                 }
@@ -1166,7 +1181,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -1191,7 +1206,7 @@ namespace com.espertech.esper.epl.core
                         {
                             var mk = newDataMultiKey[count];
                             eventsPerStream[0] = aNewData;
-                            _aggregationService.ApplyEnter(eventsPerStream, mk, _agentInstanceContext);
+                            AggregationService.ApplyEnter(eventsPerStream, mk, _agentInstanceContext);
                             count++;
     
                             // keep the new event as a representative for the group
@@ -1206,12 +1221,12 @@ namespace com.espertech.esper.epl.core
                         foreach (var anOldData in oldData)
                         {
                             eventsPerStream[0] = anOldData;
-                            _aggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[count], _agentInstanceContext);
+                            AggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
                     }
@@ -1229,9 +1244,9 @@ namespace com.espertech.esper.epl.core
                     }
                 }
     
-                EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+                var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
@@ -1240,7 +1255,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
@@ -1263,13 +1278,13 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null) {
                     resultNewSortKeys = new List<Object>();
                 }
-                if (_prototype.IsSelectRStream) {
+                if (Prototype.IsSelectRStream) {
                     resultOldEvents = new List<EventBean>();
                     resultOldSortKeys = new List<Object>();
                 }
     
                 _workCollection.Clear();
-                if (_prototype.OptionalHavingNode == null) {
+                if (Prototype.OptionalHavingNode == null) {
                     foreach (var pair in viewEventsList)
                     {
                         var newData = pair.First;
@@ -1283,12 +1298,12 @@ namespace com.espertech.esper.epl.core
                             // apply new data to aggregates
                             for (var i = 0; i < newData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = newData[i];
+                                EventsPerStreamOneStream[0] = newData[i];
                                 var mk = newDataMultiKey[i];
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException e) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -1299,7 +1314,7 @@ namespace com.espertech.esper.epl.core
                                 if (pass) {
                                     _workCollection.Put(mk, new EventBean[]{newData[i]});
                                 }
-                                _aggregationService.ApplyEnter(_eventsPerStreamOneStream, mk, _agentInstanceContext);
+                                AggregationService.ApplyEnter(EventsPerStreamOneStream, mk, _agentInstanceContext);
                             }
                         }
     
@@ -1308,12 +1323,12 @@ namespace com.espertech.esper.epl.core
                             // apply new data to aggregates
                             for (var i = 0; i < oldData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = oldData[i];
+                                EventsPerStreamOneStream[0] = oldData[i];
                                 var mk = oldDataMultiKey[i];
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException e) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -1324,7 +1339,7 @@ namespace com.espertech.esper.epl.core
                                 if (pass) {
                                     _workCollection.Put(mk, new EventBean[]{oldData[i]});
                                 }
-                                _aggregationService.ApplyLeave(_eventsPerStreamOneStream, mk, _agentInstanceContext);
+                                AggregationService.ApplyLeave(EventsPerStreamOneStream, mk, _agentInstanceContext);
                             }
                         }
     
@@ -1346,9 +1361,9 @@ namespace com.espertech.esper.epl.core
                             // apply new data to aggregates
                             for (var i = 0; i < newData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = newData[i];
+                                EventsPerStreamOneStream[0] = newData[i];
                                 var mk = newDataMultiKey[i];
-                                _aggregationService.ApplyEnter(_eventsPerStreamOneStream, mk, _agentInstanceContext);
+                                AggregationService.ApplyEnter(EventsPerStreamOneStream, mk, _agentInstanceContext);
                             }
                         }
     
@@ -1356,9 +1371,9 @@ namespace com.espertech.esper.epl.core
                         {
                             for (var i = 0; i < oldData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = oldData[i];
+                                EventsPerStreamOneStream[0] = oldData[i];
                                 var mk = oldDataMultiKey[i];
-                                _aggregationService.ApplyLeave(_eventsPerStreamOneStream, mk, _agentInstanceContext);
+                                AggregationService.ApplyLeave(EventsPerStreamOneStream, mk, _agentInstanceContext);
                             }
                         }
     
@@ -1367,14 +1382,14 @@ namespace com.espertech.esper.epl.core
                             // check having clause and first-condition
                             for (var i = 0; i < newData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = newData[i];
+                                EventsPerStreamOneStream[0] = newData[i];
                                 var mk = newDataMultiKey[i];
-                                _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
+                                AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
     
                                 // Filter the having clause
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(newData[i]);}
-                                var evaluateParams = new EvaluateParams(_eventsPerStreamOneStream, true, _agentInstanceContext);
-                                var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                                var evaluateParams = new EvaluateParams(EventsPerStreamOneStream, true, _agentInstanceContext);
+                                var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); }
                                 if ((result == null) || (false.Equals(result)))
                                 {
@@ -1384,7 +1399,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -1403,14 +1418,14 @@ namespace com.espertech.esper.epl.core
                             // apply new data to aggregates
                             for (var i = 0; i < oldData.Length; i++)
                             {
-                                _eventsPerStreamOneStream[0] = oldData[i];
+                                EventsPerStreamOneStream[0] = oldData[i];
                                 var mk = oldDataMultiKey[i];
-                                _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
+                                AggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
     
                                 // Filter the having clause
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(oldData[i]);}
-                                var evaluateParams = new EvaluateParams(_eventsPerStreamOneStream, true, _agentInstanceContext);
-                                var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                                var evaluateParams = new EvaluateParams(EventsPerStreamOneStream, true, _agentInstanceContext);
+                                var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); }
                                 if ((result == null) || (false.Equals(result)))
                                 {
@@ -1420,7 +1435,7 @@ namespace com.espertech.esper.epl.core
                                 var outputStateGroup = _outputState.Get(mk);
                                 if (outputStateGroup == null) {
                                     try {
-                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(_prototype.OutputLimitSpec, _agentInstanceContext);
+                                        outputStateGroup = OutputConditionPolledFactory.CreateCondition(Prototype.OutputLimitSpec, _agentInstanceContext);
                                     }
                                     catch (ExprValidationException) {
                                         Log.Error("Error starting output limit for group for statement '" + _agentInstanceContext.StatementContext.StatementName + "'");
@@ -1452,7 +1467,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var sortKeysNew = (resultNewSortKeys.IsEmpty()) ? null : resultNewSortKeys.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         var sortKeysOld = (resultOldSortKeys.IsEmpty()) ? null : resultOldSortKeys.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
@@ -1469,7 +1484,7 @@ namespace com.espertech.esper.epl.core
             {
                 IDictionary<Object, EventBean> lastPerGroupNew = new LinkedHashMap<Object, EventBean>();
                 IDictionary<Object, EventBean> lastPerGroupOld = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     lastPerGroupOld = new LinkedHashMap<Object, EventBean>();
                 }
@@ -1479,7 +1494,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedHashMap<Object, Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedHashMap<Object, Object>();
                     }
@@ -1500,8 +1515,8 @@ namespace com.espertech.esper.epl.core
                         foreach (var aNewData in newData)
                         {
                             var mk = newDataMultiKey[count];
-                            _eventsPerStreamOneStream[0] = aNewData;
-                            _aggregationService.ApplyEnter(_eventsPerStreamOneStream, mk, _agentInstanceContext);
+                            EventsPerStreamOneStream[0] = aNewData;
+                            AggregationService.ApplyEnter(EventsPerStreamOneStream, mk, _agentInstanceContext);
                             count++;
                         }
                     }
@@ -1511,33 +1526,33 @@ namespace com.espertech.esper.epl.core
                         var count = 0;
                         foreach (var anOldData in oldData)
                         {
-                            _eventsPerStreamOneStream[0] = anOldData;
-                            _aggregationService.ApplyLeave(_eventsPerStreamOneStream, oldDataMultiKey[count], _agentInstanceContext);
+                            EventsPerStreamOneStream[0] = anOldData;
+                            AggregationService.ApplyLeave(EventsPerStreamOneStream, oldDataMultiKey[count], _agentInstanceContext);
                             count++;
                         }
                     }
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GenerateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
                     }
                     GenerateOutputBatchedView(newData, newDataMultiKey, false, generateSynthetic, lastPerGroupNew, newEventsSortKey);
                 }
     
-                EventBean[] newEventsArr = (lastPerGroupNew.IsEmpty()) ? null : lastPerGroupNew.Values.ToArray();
+                var newEventsArr = (lastPerGroupNew.IsEmpty()) ? null : lastPerGroupNew.Values.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (lastPerGroupOld.IsEmpty()) ? null : lastPerGroupOld.Values.ToArray();
                 }
     
                 if (_orderByProcessor != null)
                 {
-                    Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.Values.ToArray();
+                    var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.Values.ToArray();
                     newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _agentInstanceContext);
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
-                        Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.Values.ToArray();
+                        var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.Values.ToArray();
                         oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _agentInstanceContext);
                     }
                 }
@@ -1557,14 +1572,14 @@ namespace com.espertech.esper.epl.core
                 var eventsPerStream = entry.Value;
     
                 // Set the current row of aggregation states
-                _aggregationService.SetCurrentAccess(entry.Key, _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(entry.Key, _agentInstanceContext.AgentInstanceId, null);
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(entry.Value);}
                     var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
@@ -1574,14 +1589,14 @@ namespace com.espertech.esper.epl.core
     
                 resultEvents.Add(_selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext));
     
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
                     optSortKeys.Add(_orderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext));
                 }
             }
         }
     
-        private void GenerateOutputBatchedView(EventBean[] outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
+        internal void GenerateOutputBatchedView(EventBean[] outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
         {
             if (outputEvents == null)
             {
@@ -1595,14 +1610,14 @@ namespace com.espertech.esper.epl.core
 
             for (var i = 0; i < outputEvents.Length; i++)
             {
-                _aggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
                 eventsPerStream[0] = outputEvents[count];
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(outputEvents[count]);}
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
@@ -1611,7 +1626,7 @@ namespace com.espertech.esper.epl.core
                 }
     
                 resultEvents.Add(_selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext));
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
                     optSortKeys.Add(_orderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext));
                 }
@@ -1620,7 +1635,7 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        private void GenerateOutputBatchedJoin(ISet<MultiKey<EventBean>> outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
+        internal void GenerateOutputBatchedJoin(ISet<MultiKey<EventBean>> outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
         {
             if (outputEvents == null)
             {
@@ -1632,15 +1647,15 @@ namespace com.espertech.esper.epl.core
             var count = 0;
             foreach (var row in outputEvents)
             {
-                _aggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupByKeys[count], _agentInstanceContext.AgentInstanceId, null);
                 eventsPerStream = row.Array;
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream);}
                     var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext);
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
@@ -1649,7 +1664,7 @@ namespace com.espertech.esper.epl.core
                 }
     
                 resultEvents.Add(_selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext));
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
                     optSortKeys.Add(_orderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext));
                 }
@@ -1657,8 +1672,27 @@ namespace com.espertech.esper.epl.core
                 count++;
             }
         }
-    
-        private void GenerateOutputBatchedView(EventBean[] outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents, IDictionary<Object, Object> optSortKeys)
+
+        internal EventBean GenerateOutputBatchedSingle(Object groupByKey, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize)
+        {
+            AggregationService.SetCurrentAccess(groupByKey, _agentInstanceContext.AgentInstanceId, null);
+
+            // Filter the having clause
+            if (Prototype.OptionalHavingNode != null)
+            {
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream); }
+                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext)).AsBoxedBoolean();
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result); }
+                if ((result == null) || (false.Equals(result)))
+                {
+                    return null;
+                }
+            }
+
+            return _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
+        }
+
+        internal void GenerateOutputBatchedView(EventBean[] outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents, IDictionary<Object, Object> optSortKeys)
         {
             if (outputEvents == null)
             {
@@ -1671,15 +1705,15 @@ namespace com.espertech.esper.epl.core
             for (var i = 0; i < outputEvents.Length; i++)
             {
                 var groupKey = groupByKeys[count];
-                _aggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
                 eventsPerStream[0] = outputEvents[count];
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseNonJoin(outputEvents[count]);}
                     var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext); 
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
@@ -1688,7 +1722,7 @@ namespace com.espertech.esper.epl.core
                 }
     
                 resultEvents.Put(groupKey, _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext));
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
                     optSortKeys.Put(groupKey, _orderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext));
                 }
@@ -1696,8 +1730,8 @@ namespace com.espertech.esper.epl.core
                 count++;
             }
         }
-    
-        private void GenerateOutputBatchedJoin(ISet<MultiKey<EventBean>> outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents, IDictionary<Object, Object> optSortKeys)
+
+        internal void GenerateOutputBatchedJoin(ISet<MultiKey<EventBean>> outputEvents, Object[] groupByKeys, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents, IDictionary<Object, Object> optSortKeys)
         {
             if (outputEvents == null)
             {
@@ -1708,14 +1742,14 @@ namespace com.espertech.esper.epl.core
             foreach (var row in outputEvents)
             {
                 var groupKey = groupByKeys[count];
-                _aggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
+                AggregationService.SetCurrentAccess(groupKey, _agentInstanceContext.AgentInstanceId, null);
     
                 // Filter the having clause
-                if (_prototype.OptionalHavingNode != null)
+                if (Prototype.OptionalHavingNode != null)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(row.Array);}
                     var evaluateParams = new EvaluateParams(row.Array, isNewData, _agentInstanceContext);
-                    var result = _prototype.OptionalHavingNode.Evaluate(evaluateParams);
+                    var result = Prototype.OptionalHavingNode.Evaluate(evaluateParams);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                     if ((result == null) || (false.Equals(result)))
                     {
@@ -1724,7 +1758,7 @@ namespace com.espertech.esper.epl.core
                 }
     
                 resultEvents.Put(groupKey, _selectExprProcessor.Process(row.Array, isNewData, isSynthesize, _agentInstanceContext));
-                if(_prototype.IsSorting)
+                if(Prototype.IsSorting)
                 {
                     optSortKeys.Put(groupKey, _orderByProcessor.GetSortKey(row.Array, isNewData, _agentInstanceContext));
                 }
@@ -1741,6 +1775,48 @@ namespace com.espertech.esper.epl.core
         public void Removed(Object key)
         {
             _eventGroupReps.Remove(key);
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessJoin(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessJoin(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputView(isSynthesize);
+            }
+            return _outputLastHelper.OutputView(isSynthesize);
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputJoin(isSynthesize);
+            }
+            return _outputLastHelper.OutputJoin(isSynthesize);
         }
     }
 }

@@ -11,11 +11,5 @@ namespace com.espertech.esper.util
     /// <summary>
     /// General pupose callback to destroy a resource and free it's underlying resources.
     /// </summary>
-    interface DestroyCallback
-    {
-        /// <summary>
-        /// Destroys the underlying resources.
-        /// </summary>
-        void Destroy();
-    }
+    public delegate void DestroyCallback();
 }

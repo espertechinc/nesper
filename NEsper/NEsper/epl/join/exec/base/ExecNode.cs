@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.join.exec.@base
     {
         /// <summary>Process single event using the prefill events to compile lookup results. </summary>
         /// <param name="lookupEvent">event to look up for or query for</param>
-        /// <param name="prefillPath">set of events currently in the example tuple to serveas a prototype for result rows. </param>
+        /// <param name="prefillPath">set of events currently in the example tuple to serveas a Prototype for result rows. </param>
         /// <param name="result">is the list of tuples to add a result row to</param>
         /// <param name="exprEvaluatorContext">context for expression evaluation</param>
         public abstract void Process(EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext);

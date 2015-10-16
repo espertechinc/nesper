@@ -6,29 +6,24 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    public class EPStatementDestroyCallbackTableUpdStr : DestroyCallback
+    public class EPStatementDestroyCallbackTableUpdStr
     {
-        private readonly TableService tableService;
-        private readonly TableMetadata tableMetadata;
-        private readonly string statementName;
+        private readonly TableService _tableService;
+        private readonly TableMetadata _tableMetadata;
+        private readonly string _statementName;
     
         public EPStatementDestroyCallbackTableUpdStr(TableService tableService, TableMetadata tableMetadata, string statementName) {
-            this.tableService = tableService;
-            this.tableMetadata = tableMetadata;
-            this.statementName = statementName;
+            _tableService = tableService;
+            _tableMetadata = tableMetadata;
+            _statementName = statementName;
         }
     
         public void Destroy() {
-            tableService.RemoveTableUpdateStrategyReceivers(tableMetadata, statementName);
+            _tableService.RemoveTableUpdateStrategyReceivers(_tableMetadata, _statementName);
         }
     }
 }

@@ -21,9 +21,9 @@ namespace com.espertech.esper.pattern
         {
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext);
+            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalEveryNode(agentInstanceContext, this, child);
         }
     

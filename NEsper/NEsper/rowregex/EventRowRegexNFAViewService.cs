@@ -16,9 +16,8 @@ namespace com.espertech.esper.rowregex
     public interface EventRowRegexNFAViewService
     {
         void Init(EventBean[] newEvents);
-
         RegexExprPreviousEvalStrategy PreviousEvaluationStrategy { get; }
-
         void Accept(EventRowRegexNFAViewServiceVisitor visitor);
+        void Stop();
     }
 }

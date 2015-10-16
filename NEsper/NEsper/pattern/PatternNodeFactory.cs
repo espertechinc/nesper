@@ -27,6 +27,6 @@ namespace com.espertech.esper.pattern
         EvalFactoryNode MakeNotNode();
         EvalFactoryNode MakeObserverNode(PatternObserverSpec patternObserverSpec);
         EvalFactoryNode MakeOrNode();
-        EvalRootFactoryNode MakeRootNode();
+        EvalRootFactoryNode MakeRootNode(EvalFactoryNode childNode);
     }
 }

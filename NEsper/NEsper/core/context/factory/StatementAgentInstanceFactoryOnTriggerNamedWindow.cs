@@ -94,6 +94,14 @@ namespace com.espertech.esper.core.context.factory
     
             return new OnExprViewResult(onExprBaseView, pair.Second);
         }
+
+        public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public override void UnassignExpressions()
+        {
+        }
     
         public override View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView)
         {

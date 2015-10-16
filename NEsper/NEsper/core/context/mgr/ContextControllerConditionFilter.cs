@@ -28,6 +28,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly ContextInternalFilterAddendum _filterAddendum;
 
         private EPStatementHandleCallback _filterHandle;
+        private FilterServiceEntry _filterServiceEntry;
 
         public ContextControllerConditionFilter(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, ContextDetailConditionFilter endpointFilterSpec, ContextControllerConditionCallback callback, ContextInternalFilterAddendum filterAddendum)
         {
@@ -55,8 +56,8 @@ namespace com.espertech.esper.core.context.mgr
             }
 
             _filterHandle = new EPStatementHandleCallback(_agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
-            FilterValueSet filterValueSet = _endpointFilterSpec.FilterSpecCompiled.GetValueSet(null, null, addendum);
-            _servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+            FilterValueSet filterValueSet = _endpointFilterSpec.FilterSpecCompiled.GetValueSet(null, _agentInstanceContext, addendum);
+            _filterServiceEntry = _servicesContext.FilterService.Add(filterValueSet, _filterHandle);
 
             if (optionalTriggeringEvent != null)
             {
@@ -83,8 +84,9 @@ namespace com.espertech.esper.core.context.mgr
         {
             if (_filterHandle != null)
             {
-                _servicesContext.FilterService.Remove(_filterHandle);
+                _servicesContext.FilterService.Remove(_filterHandle, _filterServiceEntry);
                 _filterHandle = null;
+                _filterServiceEntry = null;
                 long filtersVersion = _agentInstanceContext.StatementContext.FilterService.FiltersVersion;
                 _agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
             }

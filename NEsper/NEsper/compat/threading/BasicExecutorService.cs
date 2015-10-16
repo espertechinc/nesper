@@ -293,6 +293,15 @@ namespace com.espertech.esper.compat.threading
         {
             return new BasicExecutorService(maxNumThreads);
         }
+
+        /// <summary>
+        /// Supposably creates a new thread pool and returns the executor.
+        /// </summary>
+        /// <returns></returns>
+        public static BasicExecutorService NewSingleThreadExecutor()
+        {
+            return new BasicExecutorService(1);
+        }
     }
 
     public interface Future<T>

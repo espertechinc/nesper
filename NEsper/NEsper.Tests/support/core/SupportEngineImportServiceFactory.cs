@@ -6,28 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 
-using System.Xml;
+using com.espertech.esper.client;
+using com.espertech.esper.epl.core;
 
-namespace com.espertech.esper.compat.collections
+namespace com.espertech.esper.support.core
 {
-    public static class XmlExtensions
+	public class SupportEngineImportServiceFactory
     {
-        /// <summary>
-        /// Gets the declaration (if any) from the document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <returns></returns>
-        public static XmlDeclaration GetDeclaration(this XmlDocument document)
+	    public static EngineImportServiceImpl Make()
         {
-            foreach (var node in document.ChildNodes)
-            {
-                if ( node is XmlDeclaration ) {
-                    return (XmlDeclaration) node;
-                }
-            }
-
-            return null;
-        }
-    }
-}
+	        return new EngineImportServiceImpl(true, true, true, false, null, TimeZoneInfo.Local, ConfigurationEngineDefaults.ThreadingProfile.NORMAL);
+	    }
+	}
+} // end of namespace

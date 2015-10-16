@@ -26,6 +26,7 @@ using com.espertech.esper.epl.variable;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.pattern;
 using com.espertech.esper.schedule;
+using com.espertech.esper.support.core;
 using com.espertech.esper.support.events;
 using com.espertech.esper.support.schedule;
 using com.espertech.esper.view;
@@ -74,18 +75,23 @@ namespace com.espertech.esper.support.view
 	        var config = new Configuration();
 	        config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies = true;
 
-	        var stmtEngineServices = new StatementContextEngineServices("engURI",
-	                SupportEventAdapterService.Service,
-	                new NamedWindowServiceImpl(null, variableService, new TableServiceImpl(), false, ReaderWriterLockManager.CreateDefaultLock(), new ExceptionHandlingService("engURI", Collections.GetEmptyList<ExceptionHandler>(), Collections.GetEmptyList<ConditionHandler>()), false, null),
-	                null, new TableServiceImpl(),
-	                new EngineSettingsService(new Configuration().EngineDefaults, new Uri[0]),
-	                new ValueAddEventServiceImpl(),
-	                config,
-	                null,
-	                null,
-	                null,
-	                null,
-	                new StatementEventTypeRefImpl(), null);
+	        var stmtEngineServices = new StatementContextEngineServices(
+                "engURI",
+	            SupportEventAdapterService.Service,
+	            new NamedWindowServiceImpl(null, variableService, new TableServiceImpl(), false, ReaderWriterLockManager.CreateDefaultLock(), new ExceptionHandlingService("engURI", Collections.GetEmptyList<ExceptionHandler>(), Collections.GetEmptyList<ConditionHandler>()), false, null),
+	            null, new TableServiceImpl(),
+	            new EngineSettingsService(new Configuration().EngineDefaults, new Uri[0]),
+	            new ValueAddEventServiceImpl(),
+	            config,
+	            null,
+	            null,
+	            null,
+	            null,
+	            new StatementEventTypeRefImpl(),
+                null,
+                null,
+                null,
+                null);
 
 	        return new StatementContext(
                 stmtEngineServices,
@@ -97,11 +103,12 @@ namespace com.espertech.esper.support.view
 	                new PatternObjectResolutionServiceImpl(null),
 	                null,
 	                null,
-	                new MethodResolutionServiceImpl(new EngineImportServiceImpl(true, true, true, false, null), null),
-	                null,
+                    new MethodResolutionServiceImpl(SupportEngineImportServiceFactory.Make(), null),
+                    null,
 	                null,
 	                new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
-	                null,
+                    null,
+                    null,
 	                null,
 	                null,
 	                null,

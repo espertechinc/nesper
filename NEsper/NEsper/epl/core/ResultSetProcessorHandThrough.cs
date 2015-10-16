@@ -26,11 +26,11 @@ namespace com.espertech.esper.epl.core
     /// </summary>
     public class ResultSetProcessorHandThrough : ResultSetProcessorBaseSimple
     {
-        private readonly ResultSetProcessorHandThrougFactory _prototype;
+        private readonly ResultSetProcessorHandThroughFactory _prototype;
         private readonly SelectExprProcessor _selectExprProcessor;
         private AgentInstanceContext _agentInstanceContext;
     
-        public ResultSetProcessorHandThrough(ResultSetProcessorHandThrougFactory prototype, SelectExprProcessor selectExprProcessor, AgentInstanceContext agentInstanceContext)
+        public ResultSetProcessorHandThrough(ResultSetProcessorHandThroughFactory prototype, SelectExprProcessor selectExprProcessor, AgentInstanceContext agentInstanceContext)
         {
             _prototype = prototype;
             _selectExprProcessor = selectExprProcessor;
@@ -162,6 +162,25 @@ namespace com.espertech.esper.epl.core
 
         public override void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
+        }
+
+
+        public override void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+        }
+
+        public override void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
+        {
+        }
+
+        public override UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            return null;
+        }
+
+        public override UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            return null;
         }
     }
 }

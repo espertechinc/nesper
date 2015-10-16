@@ -45,12 +45,22 @@ namespace com.espertech.esper.regression.view
     
         [Test]
         public void TestOutputLastNonJoin() {
-            RunAssertionOutputLast(false);
+            RunAssertionOutputLast(false, false);
         }
     
         [Test]
         public void TestOutputLastJoin() {
-            RunAssertionOutputLast(true);
+            RunAssertionOutputLast(false, true);
+        }
+
+        [Test]
+        public void TestOutputLastNonJoinHinted() {
+            RunAssertionOutputLast(true, false);
+        }
+
+        [Test]
+        public void TestOutputLastJoinHinted() {
+            RunAssertionOutputLast(true, true);
         }
     
         [Test]
@@ -65,12 +75,22 @@ namespace com.espertech.esper.regression.view
     
         [Test]
         public void TestOutputAllNonJoin() {
-            RunAssertionOutputAll(false);
+            RunAssertionOutputAll(false, false);
         }
-    
+
+        [Test]
+        public void TestOutputAllNonJoinHinted() {
+            RunAssertionOutputAll(false, true);
+        }
+
         [Test]
         public void TestOutputAllJoin() {
-            RunAssertionOutputAll(true);
+            RunAssertionOutputAll(true, false);
+        }
+
+        [Test]
+        public void TestOutputAllJoinHinted() {
+            RunAssertionOutputAll(true, true);
         }
     
         [Test]
@@ -198,11 +218,23 @@ namespace com.espertech.esper.regression.view
             ResultAssertExecution execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
             execution.Execute();
         }
-    
+
         [Test]
         public void Test3OutputLimitAll()
         {
-            string stmtText = "select symbol, sum(price) " +
+            RunAssertion3OutputLimitAll(false);
+        }
+
+        [Test]
+        public void Test3OutputLimitAllHinted()
+        {
+            RunAssertion3OutputLimitAll(true);
+        }
+
+        private void RunAssertion3OutputLimitAll(bool hinted)
+        {
+            string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            string stmtText = hint + "select symbol, sum(price) " +
                     "from MarketData.win:time(5.5 sec)" +
                     "group by rollup(symbol)" +
                     "output all every 1 seconds";
@@ -237,11 +269,21 @@ namespace com.espertech.esper.regression.view
             ResultAssertExecution execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
             execution.Execute();
         }
-    
+
         [Test]
-        public void Test4OutputLimitLast()
+        public void Test4OutputLimitLast() {
+            RunAssertion4OutputLimitLast(false);
+        }
+
+        [Test]
+        public void Test4OutputLimitLastHinted() {
+            RunAssertion4OutputLimitLast(true);
+        }
+
+        private void RunAssertion4OutputLimitLast(bool hinted)
         {
-            string stmtText = "select symbol, sum(price) " +
+            string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+            string stmtText = hint + "select symbol, sum(price) " +
                     "from MarketData.win:time(5.5 sec)" +
                     "group by rollup(symbol)" +
                     "output last every 1 seconds";
@@ -717,15 +759,17 @@ namespace com.espertech.esper.regression.view
                             new object[] {"E1", 1, 210L}, new object[] {"E1", 1, 300L}});
         }
     
-        private void RunAssertionOutputAll(bool join) {
-    
+        private void RunAssertionOutputAll(bool join, bool hinted)
+        {
+            string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             string[] fields = "c0,c1,c2".Split(',');
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            _epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                    "from SupportBean.win:time(3.5 sec) " + (join ? ", SupportBean_S0.std:lastevent()" : "") +
-                    "group by rollup(TheString, IntPrimitive) " +
-                    "output all every 1 second").Events += _listener.Update;
+            _epService.EPAdministrator.CreateEPL(hint + 
+                "@Name('s1')" +
+                "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
+                "from SupportBean.win:time(3.5 sec) " + (join ? ", SupportBean_S0.std:lastevent()" : "") +
+                "group by rollup(TheString, IntPrimitive) " +
+                "output all every 1 second").Events += _listener.Update;
             _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             _epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));
@@ -768,7 +812,8 @@ namespace com.espertech.esper.regression.view
                     new object[][] {new object[] {"E1", 1, 210L}, new object[] {"E1", 2, null}, new object[] {"E2", 1, null}, new object[] {"E1", null, 210L}, new object[] {"E2", null, null}, new object[] {null, null, 210L}});
         }
     
-        private void RunAssertionOutputAllSorted(bool join) {
+        private void RunAssertionOutputAllSorted(bool join)
+        {
             string[] fields = "c0,c1,c2".Split(',');
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             _epService.EPAdministrator.CreateEPL("@Name('s1')" +
@@ -819,14 +864,17 @@ namespace com.espertech.esper.regression.view
                     new object[][] {new object[] {null, null, 210L}, new object[] {"E1", null, 210L}, new object[] {"E1", 1, 210L}, new object[] {"E1", 2, null}, new object[] {"E2", null, null}, new object[] {"E2", 1, null}});
         }
     
-        private void RunAssertionOutputLast(bool join) {
+        private void RunAssertionOutputLast(bool hinted, bool join)
+        {
+            string hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             string[] fields = "c0,c1,c2".Split(',');
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
-            _epService.EPAdministrator.CreateEPL("@Name('s1')" +
-                    "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                    "from SupportBean.win:time(3.5 sec) " + (join ? ", SupportBean_S0.std:lastevent()" : "") +
-                    "group by rollup(TheString, IntPrimitive) " +
-                    "output last every 1 second").Events += _listener.Update;
+            _epService.EPAdministrator.CreateEPL(hint + 
+                "@Name('s1')" +
+                "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
+                "from SupportBean.win:time(3.5 sec) " + (join ? ", SupportBean_S0.std:lastevent()" : "") +
+                "group by rollup(TheString, IntPrimitive) " +
+                "output last every 1 second").Events += _listener.Update;
             _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
     
             _epService.EPRuntime.SendEvent(MakeEvent("E1", 1, 10L));

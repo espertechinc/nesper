@@ -16,7 +16,6 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -35,7 +34,8 @@ namespace com.espertech.esper.epl.expression.time
         , ExprEvaluator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
+        private readonly TimeZoneInfo _timeZone;
         private readonly bool _hasYear;
         private readonly bool _hasMonth;
         private readonly bool _hasWeek;
@@ -51,6 +51,7 @@ namespace com.espertech.esper.epl.expression.time
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="timeZone">The time zone.</param>
         /// <param name="hasYear">if set to <c>true</c> [has year].</param>
         /// <param name="hasMonth">if set to <c>true</c> [has month].</param>
         /// <param name="hasWeek">if set to <c>true</c> [has week].</param>
@@ -59,8 +60,9 @@ namespace com.espertech.esper.epl.expression.time
         /// <param name="hasMinute">true if the expression has that part, false if not</param>
         /// <param name="hasSecond">true if the expression has that part, false if not</param>
         /// <param name="hasMillisecond">true if the expression has that part, false if not</param>
-        public ExprTimePeriodImpl(bool hasYear, bool hasMonth, bool hasWeek, bool hasDay, bool hasHour, bool hasMinute, bool hasSecond, bool hasMillisecond)
+        public ExprTimePeriodImpl(TimeZoneInfo timeZone, bool hasYear, bool hasMonth, bool hasWeek, bool hasDay, bool hasHour, bool hasMinute, bool hasSecond, bool hasMillisecond)
         {
+            _timeZone = timeZone;
             _hasYear = hasYear;
             _hasMonth = hasMonth;
             _hasWeek = hasWeek;
@@ -87,7 +89,7 @@ namespace com.espertech.esper.epl.expression.time
                 {
                     values[i] = _evaluators[i].Evaluate(evaluateParams).AsInt();
                 }
-                return new ExprTimePeriodEvalDeltaConstDateTimeAdd(_adders, values);
+                return new ExprTimePeriodEvalDeltaConstDateTimeAdd(_adders, values, _timeZone);
             }
         }
 
@@ -99,7 +101,7 @@ namespace com.espertech.esper.epl.expression.time
             }
             else
             {
-                return new ExprTimePeriodEvalDeltaNonConstDateTimeAdd(this);
+                return new ExprTimePeriodEvalDeltaNonConstDateTimeAdd(_timeZone, this);
             }
         }
 
@@ -249,7 +251,8 @@ namespace com.espertech.esper.epl.expression.time
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprTimePeriod(this);}
             double seconds = 0;
-            for (int i = 0; i < _adders.Length; i++) {
+            for (int i = 0; i < _adders.Length; i++)
+            {
                 var result = Eval(_evaluators[i], eventsPerStream, newData, context);
                 if (result == null)
                 {
@@ -322,115 +325,134 @@ namespace com.espertech.esper.epl.expression.time
             return new TimePeriod(year, month, week, day, hours, minutes, seconds, milliseconds);
         }
     
-        private int? GetInt(Object evaluated) {
-            if (evaluated == null) {
+        private int? GetInt(Object evaluated)
+        {
+            if (evaluated == null)
+            {
                 return null;
             }
             return (evaluated).AsInt();
         }
     
-        public interface TimePeriodAdder {
+        public interface TimePeriodAdder
+        {
             double Compute(Double value);
-            void Add(ref DateTime dateTime, int value);
+            void Add(DateTimeEx dateTime, int value);
         }
     
-        public class TimePeriodAdderYear : TimePeriodAdder {
+        public class TimePeriodAdderYear : TimePeriodAdder
+        {
             private const double MULTIPLIER = 365*24*60*60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddYears(value);
+                dateTime.AddYears(value, DateTimeMathStyle.Java);
             }
         }
     
-        public class TimePeriodAdderMonth : TimePeriodAdder {
+        public class TimePeriodAdderMonth : TimePeriodAdder
+        {
             private const double MULTIPLIER = 30*24*60*60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddMonths(value);
+                dateTime.AddMonths(value, DateTimeMathStyle.Java);
             }
         }
     
-        public class TimePeriodAdderWeek : TimePeriodAdder {
+        public class TimePeriodAdderWeek : TimePeriodAdder
+        {
             private const double MULTIPLIER = 7*24*60*60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddDays(7*value);
+                dateTime.AddDays(7 * value, DateTimeMathStyle.Java);
             }
         }
     
-        public class TimePeriodAdderDay : TimePeriodAdder {
+        public class TimePeriodAdderDay : TimePeriodAdder
+        {
             private const double MULTIPLIER = 24*60*60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddDays(value);
+                dateTime.AddDays(value, DateTimeMathStyle.Java);
             }
         }
     
-        public class TimePeriodAdderHour : TimePeriodAdder {
+        public class TimePeriodAdderHour : TimePeriodAdder
+        {
             private const double MULTIPLIER = 60*60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddHours(value);
+                dateTime.AddHours(value);
             }
         }
     
-        public class TimePeriodAdderMinute : TimePeriodAdder {
+        public class TimePeriodAdderMinute : TimePeriodAdder
+        {
             private const double MULTIPLIER = 60;
 
-            public double Compute(Double value) {
+            public double Compute(Double value)
+            {
                 return value*MULTIPLIER;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime = dateTime.AddMinutes(value);
             }
         }
     
-        public class TimePeriodAdderSecond : TimePeriodAdder {
-            public double Compute(Double value) {
+        public class TimePeriodAdderSecond : TimePeriodAdder
+        {
+            public double Compute(Double value)
+            {
                 return value;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddSeconds(value);
+                dateTime.AddSeconds(value);
             }
         }
     
-        public class TimePeriodAdderMSec : TimePeriodAdder {
-            public double Compute(Double value) {
+        public class TimePeriodAdderMSec : TimePeriodAdder
+        {
+            public double Compute(Double value)
+            {
                 return value / 1000d;
             }
 
-            public void Add(ref DateTime dateTime, int value)
+            public void Add(DateTimeEx dateTime, int value)
             {
-                dateTime = dateTime.AddMilliseconds(value);
+                dateTime.AddMilliseconds(value);
             }
         }
 

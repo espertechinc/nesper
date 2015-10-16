@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.soda;
 using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
@@ -27,6 +28,7 @@ namespace com.espertech.esper.pattern
     
         protected bool IsStarted;
         protected EPStatementHandleCallback Handle;
+        protected FilterServiceEntry FilterServiceEntry;
         protected MatchedEventMap BeginState;
     
         /// <summary>Constructor. </summary>
@@ -185,7 +187,7 @@ namespace com.espertech.esper.pattern
             FilterService filterService = _evalFilterNode.Context.PatternContext.FilterService;
             Handle = new EPStatementHandleCallback(_evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
             FilterValueSet filterValues = _evalFilterNode.FactoryNode.FilterSpec.GetValueSet(BeginState, _evalFilterNode.Context.AgentInstanceContext, _evalFilterNode.AddendumFilters);
-            filterService.Add(filterValues, Handle);
+            FilterServiceEntry = filterService.Add(filterValues, Handle);
             long filtersVersion = filterService.FiltersVersion;
             _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
@@ -194,9 +196,10 @@ namespace com.espertech.esper.pattern
         {
             PatternContext context = _evalFilterNode.Context.PatternContext;
             if (Handle != null) {
-                context.FilterService.Remove(Handle);
+                context.FilterService.Remove(Handle, FilterServiceEntry);
             }
             Handle = null;
+            FilterServiceEntry = null;
             IsStarted = false;
             long filtersVersion = context.FilterService.FiltersVersion;
             _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;

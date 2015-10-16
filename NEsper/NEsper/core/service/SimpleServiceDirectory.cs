@@ -61,7 +61,7 @@ namespace com.espertech.esper.core
 #else
                 if ( m_dataTable.ContainsKey( name ) )
 				{
-					throw new DirectoryException( "Key '" + name + "' was already bound" ) ;
+					throw new DirectoryException( "Value '" + name + "' was already bound" ) ;
 				}
 				
 				m_dataTable[name] = obj ;
@@ -107,12 +107,12 @@ namespace com.espertech.esper.core
 				object tempObj = m_dataTable.Get( oldName );
 				if ( tempObj == null )
 				{
-					throw new DirectoryException( "Key '" + oldName + "' was not found" ) ;
+					throw new DirectoryException( "Value '" + oldName + "' was not found" ) ;
 				}
 				
 				if ( m_dataTable.ContainsKey( newName ) )
 				{
-					throw new DirectoryException( "Key '" + newName + "' was already bound" ) ;
+					throw new DirectoryException( "Value '" + newName + "' was already bound" ) ;
 				}
 				
 				m_dataTable.Remove(oldName) ;

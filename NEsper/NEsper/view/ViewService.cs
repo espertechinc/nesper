@@ -19,7 +19,7 @@ namespace com.espertech.esper.view
     public interface ViewService
     {
         /// <summary>Returns a chain of view factories that can be used to obtain the readonly event type, and that can later be used to actually create the chain of views or reuse existing views. <para />Does not actually hook up the view factories or views against the event stream, but creates view factories and sets parameters on each view factory as supplied. Determines if view factories are compatible in the chain via the attach method. </summary>
-        /// <param name="streamNum">the stream number starting at zero, a join would have N streams</param>
+        /// <param name="streamNum">the stream number starting at zero, a join would have Count streams</param>
         /// <param name="parentEventType">is the event type of the event stream that originates the raw events</param>
         /// <param name="viewSpecList">the specification for each view factory in the chain to be created</param>
         /// <param name="context">dependent services</param>

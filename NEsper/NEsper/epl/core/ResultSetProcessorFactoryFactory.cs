@@ -396,7 +396,7 @@ namespace com.espertech.esper.epl.core
                 if (orderByNodes.IsEmpty() && optionalHavingNode == null && !isOutputLimitingNoSnapshot && statementSpec.RowLimitSpec == null)
                 {
                     Log.Debug(".getProcessor Using no result processor");
-                    var factoryX = new ResultSetProcessorHandThrougFactory(selectExprProcessor, isSelectRStream);
+                    var factoryX = new ResultSetProcessorHandThroughFactory(selectExprProcessor, isSelectRStream);
                     return new ResultSetProcessorFactoryDesc(factoryX, orderByProcessorFactory, aggregationServiceFactory);
                 }
     
@@ -405,7 +405,7 @@ namespace com.espertech.esper.epl.core
                 // directly generating one row, and no need to update aggregate state since there is no aggregate function.
                 // There might be some order-by expressions.
                 Log.Debug(".getProcessor Using ResultSetProcessorSimple");
-                var factoryY = new ResultSetProcessorSimpleFactory(selectExprProcessor, optionHavingEval, isSelectRStream);
+                var factoryY = new ResultSetProcessorSimpleFactory(selectExprProcessor, optionHavingEval, isSelectRStream, outputLimitSpec);
                 return new ResultSetProcessorFactoryDesc(factoryY, orderByProcessorFactory, aggregationServiceFactory);
             }
     
@@ -416,7 +416,7 @@ namespace com.espertech.esper.epl.core
             if ((namedSelectionList.IsEmpty()) && (propertiesAggregatedHaving.IsEmpty()) && (havingAggregateExprNodes.IsEmpty()) && !isLast && !isFirst)
             {
                 Log.Debug(".getProcessor Using ResultSetProcessorSimple");
-                var factoryX = new ResultSetProcessorSimpleFactory(selectExprProcessor, optionHavingEval, isSelectRStream);
+                var factoryX = new ResultSetProcessorSimpleFactory(selectExprProcessor, optionHavingEval, isSelectRStream, outputLimitSpec);
                 return new ResultSetProcessorFactoryDesc(factoryX, orderByProcessorFactory, aggregationServiceFactory);
             }
     
@@ -429,7 +429,7 @@ namespace com.espertech.esper.epl.core
                 if ((nonAggregatedPropsSelect.IsEmpty()) && !hasStreamSelect && !isUsingWildcard && !isUsingStreamSelect && localGroupByMatchesGroupBy && (viewResourceDelegate == null || viewResourceDelegate.PreviousRequests.IsEmpty()))
                 {
                     Log.Debug(".getProcessor Using ResultSetProcessorRowForAll");
-                    var factoryZ = new ResultSetProcessorRowForAllFactory(selectExprProcessor, optionHavingEval, isSelectRStream, isUnidirectional, isHistoricalOnly);
+                    var factoryZ = new ResultSetProcessorRowForAllFactory(selectExprProcessor, optionHavingEval, isSelectRStream, isUnidirectional, isHistoricalOnly, outputLimitSpec);
                     return new ResultSetProcessorFactoryDesc(factoryZ, orderByProcessorFactory, aggregationServiceFactory);
                 }
     
@@ -437,7 +437,7 @@ namespace com.espertech.esper.epl.core
                 // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
                 // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
                 Log.Debug(".getProcessor Using ResultSetProcessorAggregateAll");
-                var factoryR = new ResultSetProcessorAggregateAllFactory(selectExprProcessor, optionHavingEval, isSelectRStream, isUnidirectional, isHistoricalOnly);
+                var factoryR = new ResultSetProcessorAggregateAllFactory(selectExprProcessor, optionHavingEval, isSelectRStream, isUnidirectional, isHistoricalOnly, outputLimitSpec);
                 return new ResultSetProcessorFactoryDesc(factoryR, orderByProcessorFactory, aggregationServiceFactory);
             }
     

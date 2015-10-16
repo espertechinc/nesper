@@ -17,6 +17,7 @@ using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.events.vaevent;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.service
@@ -39,7 +40,10 @@ namespace com.espertech.esper.core.service
             ExceptionHandlingService exceptionHandlingService,
             ExpressionResultCacheService expressionResultCacheService,
             StatementEventTypeRef statementEventTypeRef,
-            TableExprEvaluatorContext tableExprEvaluatorContext)
+            TableExprEvaluatorContext tableExprEvaluatorContext,
+            EngineLevelExtensionServicesContext engineLevelExtensionServicesContext, 
+            RegexHandlerFactory regexHandlerFactory, 
+            StatementLockFactory statementLockFactory)
         {
             EngineURI = engineURI;
             EventAdapterService = eventAdapterService;
@@ -55,6 +59,9 @@ namespace com.espertech.esper.core.service
             ExpressionResultCacheService = expressionResultCacheService;
             StatementEventTypeRef = statementEventTypeRef;
             TableExprEvaluatorContext = tableExprEvaluatorContext;
+            EngineLevelExtensionServicesContext = engineLevelExtensionServicesContext;
+            RegexHandlerFactory = regexHandlerFactory;
+            StatementLockFactory = statementLockFactory;
         }
 
         public string EngineURI { get; private set; }
@@ -87,5 +94,11 @@ namespace com.espertech.esper.core.service
         public TableService TableService { get; private set; }
 
         public TableExprEvaluatorContext TableExprEvaluatorContext { get; private set; }
+
+        public EngineLevelExtensionServicesContext EngineLevelExtensionServicesContext { get; private set; }
+
+        public RegexHandlerFactory RegexHandlerFactory { get; private set; }
+
+        public StatementLockFactory StatementLockFactory { get; private set; }
     }
 }

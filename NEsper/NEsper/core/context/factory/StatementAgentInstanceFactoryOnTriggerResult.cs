@@ -9,10 +9,10 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.expression.subquery;
@@ -32,8 +32,13 @@ namespace com.espertech.esper.core.context.factory
             AggregationService aggregationService,
             IDictionary<ExprSubselectNode, SubSelectStrategyHolder> subselectStrategies,
             EvalRootState optPatternRoot,
-            IDictionary<ExprTableAccessNode, ExprTableAccessEvalStrategy> tableAccessStrategies)
-            : base(finalView, stopCallback, agentInstanceContext, aggregationService, subselectStrategies,
+            IDictionary<ExprTableAccessNode, ExprTableAccessEvalStrategy> tableAccessStrategies,
+            ViewableActivationResult viewableActivationResult) : base(
+                finalView,
+                stopCallback,
+                agentInstanceContext,
+                aggregationService,
+                subselectStrategies,
                 Collections.GetEmptyMap<ExprPriorNode, ExprPriorEvalStrategy>(),
                 Collections.GetEmptyMap<ExprPreviousNode, ExprPreviousEvalStrategy>(),
                 null,
@@ -41,8 +46,11 @@ namespace com.espertech.esper.core.context.factory
                 Collections.GetEmptyList<StatementAgentInstancePreload>())
         {
             OptPatternRoot = optPatternRoot;
+            ViewableActivationResult = viewableActivationResult;
         }
 
         public EvalRootState OptPatternRoot { get; private set; }
+
+        public ViewableActivationResult ViewableActivationResult { get; private set; }
     }
 }

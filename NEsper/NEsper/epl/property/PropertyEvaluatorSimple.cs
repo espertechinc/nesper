@@ -16,7 +16,7 @@ using com.espertech.esper.epl.expression;
 namespace com.espertech.esper.epl.property
 {
     /// <summary>
-    /// Property evaluator that considers only level one and considers a where-clause, but does not consider a select clause or N-level.
+    /// Property evaluator that considers only level one and considers a where-clause, but does not consider a select clause or Count-level.
     /// </summary>
     public class PropertyEvaluatorSimple : PropertyEvaluator
     {

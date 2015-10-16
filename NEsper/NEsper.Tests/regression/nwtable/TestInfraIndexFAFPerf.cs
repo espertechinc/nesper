@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.nwtable
                     }
                 });
 
-            Assert.IsTrue(delta < 1000, "delta=" + delta);
+            Assert.That(delta, Is.LessThan(1000));
         }
     
         private void RunAssertionFAFKeyAndRangePerformance(bool namedWindow)
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regression.nwtable
                 _epService.EPRuntime.SendEvent(new SupportBean("K" + i, i));
             }
     
-            // fire N queries each returning 1 row
+            // fire Count queries each returning 1 row
             var queryText = "select * from MyInfraOne where f1='K10'";
             var query = _epService.EPRuntime.PrepareQuery(queryText);
             const int loops = 10000;

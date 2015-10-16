@@ -35,7 +35,7 @@ namespace com.espertech.esper.filter
         [SetUp]
         public void SetUp()
         {
-            _filterService = new FilterServiceLockCoarse();
+            _filterService = new FilterServiceLockCoarse(false);
     
             _eventTypeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _eventTypeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
@@ -126,22 +126,12 @@ namespace com.espertech.esper.filter
                 }
             }
         }
-    
-        [Test]
-        public void TestReusedCallback()
-        {
-            try
-            {
-                _filterService.Add(_filterSpecs[0], _filterCallbacks[0]);
-                Assert.IsTrue(false);
-            }
-            catch (IllegalStateException ex)
-            {
-                // Expected exception
-            }
-        }
-    
-        /// <summary>Test for removing a callback that is waiting to occur, ie. a callback is removed which was a result of an evaluation and it thus needs to be removed from the tree AND the current dispatch list. </summary>
+
+        /// <summary>
+        /// Test for removing a callback that is waiting to occur,
+        /// ie. a callback is removed which was a result of an evaluation and it 
+        /// thus needs to be removed from the tree AND the current dispatch list.
+        /// </summary>
         [Test]
         public void TestActiveCallbackRemove()
         {
@@ -149,6 +139,7 @@ namespace com.espertech.esper.filter
             var callbackTwo = new SupportFilterHandle();
     
             // callback that removes another matching filter spec callback
+            Atomic<FilterServiceEntry> filterServiceEntryOne = new Atomic<FilterServiceEntry>();
             FilterHandleCallback callbackOne = new ProxyFilterHandleCallback
             {
                 ProcStatementId = () => "",
@@ -156,11 +147,12 @@ namespace com.espertech.esper.filter
                 ProcMatchFound = (e, allStmtMatches) =>
                 {
                     Log.Debug(".matchFound Removing callbackTwo");
-                    _filterService.Remove(callbackTwo);
+                    _filterService.Remove(callbackTwo, filterServiceEntryOne.Value);
                 }
             };
-    
-            _filterService.Add(spec, callbackOne);
+
+            FilterServiceEntry filterServiceEntry = _filterService.Add(spec, callbackOne);
+            filterServiceEntryOne.Set(filterServiceEntry);
             _filterService.Add(spec, callbackTwo);
     
             // send event

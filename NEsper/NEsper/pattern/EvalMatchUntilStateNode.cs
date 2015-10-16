@@ -224,7 +224,7 @@ namespace com.espertech.esper.pattern
                 });
         }
     
-        private static MatchedEventMap Consolidate(MatchedEventMap beginState, IList<EventBean>[] matchedEventList, int[] tagsArrayed)
+        public static MatchedEventMap Consolidate(MatchedEventMap beginState, IList<EventBean>[] matchedEventList, int[] tagsArrayed)
         {
             if (tagsArrayed == null)
             {

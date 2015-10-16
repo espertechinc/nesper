@@ -25,7 +25,7 @@ namespace com.espertech.esper.view.std
     /// of new data and also 4 pieces of old data which is the first 4 elements of new data.
     /// i.e. New data elements immediatly gets to be old data elements. Old data received from
     /// parent is not handled, it is ignored. We thus post old data as follows: last event is
-    /// not null + new data from index zero to N-1, where N is the index of the last element in
+    /// not null + new data from index zero to Count-1, where Count is the index of the last element in
     /// new data
     /// </summary>
     public class LastElementView

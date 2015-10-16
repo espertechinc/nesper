@@ -35,30 +35,40 @@ namespace com.espertech.esper.epl.core
     /// </summary>
     public class ResultSetProcessorRowForAll : ResultSetProcessor
     {
-        private readonly ResultSetProcessorRowForAllFactory _prototype;
+        internal readonly ResultSetProcessorRowForAllFactory Prototype;
         private readonly SelectExprProcessor _selectExprProcessor;
         private readonly OrderByProcessor _orderByProcessor;
-        private readonly AggregationService _aggregationService;
-        private ExprEvaluatorContext _exprEvaluatorContext;
-    
+        internal readonly AggregationService AggregationService;
+        internal ExprEvaluatorContext ExprEvaluatorContext;
+        private ResultSetProcessorRowForAllOutputLastHelper _outputLastHelper;
+        private ResultSetProcessorRowForAllOutputAllHelper _outputAllHelper;
+
         public ResultSetProcessorRowForAll(ResultSetProcessorRowForAllFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
         {
-            _prototype = prototype;
+            this.Prototype = prototype;
             _selectExprProcessor = selectExprProcessor;
             _orderByProcessor = orderByProcessor;
-            _aggregationService = aggregationService;
-            _exprEvaluatorContext = exprEvaluatorContext;
+            this.AggregationService = aggregationService;
+            this.ExprEvaluatorContext = exprEvaluatorContext;
+            if (prototype.IsOutputLast)
+            {
+                _outputLastHelper = new ResultSetProcessorRowForAllOutputLastHelper(this);
+            }
+            else if (prototype.IsOutputAll)
+            {
+                _outputAllHelper = new ResultSetProcessorRowForAllOutputAllHelper(this);
+            }
         }
 
         public AgentInstanceContext AgentInstanceContext
         {
-            set { _exprEvaluatorContext = value; }
-            get { return (AgentInstanceContext) _exprEvaluatorContext; }
+            set { ExprEvaluatorContext = value; }
+            get { return (AgentInstanceContext) ExprEvaluatorContext; }
         }
 
         public EventType ResultEventType
         {
-            get { return _prototype.ResultEventType; }
+            get { return Prototype.ResultEventType; }
         }
 
         public UniformPair<EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize)
@@ -67,17 +77,17 @@ namespace com.espertech.esper.epl.core
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents;
     
-            if (_prototype.IsUnidirectional)
+            if (Prototype.IsUnidirectional)
             {
                 Clear();
             }
     
-            if (_prototype.IsSelectRStream)
+            if (Prototype.IsSelectRStream)
             {
                 selectOldEvents = GetSelectListEvents(false, isSynthesize, true);
             }
 
-            ResultSetProcessorUtil.ApplyAggJoinResult(_aggregationService, _exprEvaluatorContext, newEvents, oldEvents);
+            ResultSetProcessorUtil.ApplyAggJoinResult(AggregationService, ExprEvaluatorContext, newEvents, oldEvents);
     
             selectNewEvents = GetSelectListEvents(true, isSynthesize, true);
     
@@ -96,13 +106,13 @@ namespace com.espertech.esper.epl.core
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents;
     
-            if (_prototype.IsSelectRStream)
+            if (Prototype.IsSelectRStream)
             {
                 selectOldEvents = GetSelectListEvents(false, isSynthesize, false);
             }
     
             EventBean[] eventsPerStream = new EventBean[1];
-            ResultSetProcessorUtil.ApplyAggViewResult(_aggregationService, _exprEvaluatorContext, newData, oldData, eventsPerStream);
+            ResultSetProcessorUtil.ApplyAggViewResult(AggregationService, ExprEvaluatorContext, newData, oldData, eventsPerStream);
     
             // generate new events using select expressions
             selectNewEvents = GetSelectListEvents(true, isSynthesize, false);
@@ -117,12 +127,12 @@ namespace com.espertech.esper.epl.core
             return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
         }
     
-        private EventBean[] GetSelectListEvents(bool isNewData, bool isSynthesize, bool join)
+        internal EventBean[] GetSelectListEvents(bool isNewData, bool isSynthesize, bool join)
         {
-            if (_prototype.OptionalHavingNode != null)
+            if (Prototype.OptionalHavingNode != null)
             {
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                 if ((result == null) || (false.Equals(result)))
                 {
@@ -131,7 +141,7 @@ namespace com.espertech.esper.epl.core
             }
     
             // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
+            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
     
             // The result is always a single row
             return new EventBean[] {theEvent};
@@ -139,10 +149,10 @@ namespace com.espertech.esper.epl.core
     
         private EventBean GetSelectListEvent(bool isNewData, bool isSynthesize, bool join)
         {
-            if (_prototype.OptionalHavingNode != null)
+            if (Prototype.OptionalHavingNode != null)
             {
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
     
                 if ((result == null) || (false.Equals(result)))
@@ -152,7 +162,7 @@ namespace com.espertech.esper.epl.core
             }
     
             // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
+            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
     
             // The result is always a single row
             return theEvent;
@@ -160,15 +170,15 @@ namespace com.espertech.esper.epl.core
     
         public IEnumerator<EventBean> GetEnumerator(Viewable parent)
         {
-            if (!_prototype.IsHistoricalOnly)
+            if (!Prototype.IsHistoricalOnly)
             {
                 return ObtainEnumerator();
             }
 
-            ResultSetProcessorUtil.ClearAndAggregateUngrouped(_exprEvaluatorContext, _aggregationService, parent);
+            ResultSetProcessorUtil.ClearAndAggregateUngrouped(ExprEvaluatorContext, AggregationService, parent);
 
             var enumerator = ObtainEnumerator();
-            _aggregationService.ClearResults(_exprEvaluatorContext);
+            AggregationService.ClearResults(ExprEvaluatorContext);
             return enumerator;
         }
 
@@ -191,7 +201,7 @@ namespace com.espertech.esper.epl.core
     
         public void Clear()
         {
-            _aggregationService.ClearResults(_exprEvaluatorContext);
+            AggregationService.ClearResults(ExprEvaluatorContext);
         }
     
         public UniformPair<EventBean[]> ProcessOutputLimitedJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
@@ -204,7 +214,7 @@ namespace com.espertech.esper.epl.core
                 // if empty (nothing to post)
                 if (joinEventsSet.IsEmpty())
                 {
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
                         lastNewEvent = lastOldEvent;
@@ -217,7 +227,7 @@ namespace com.espertech.esper.epl.core
     
                 foreach (UniformPair<ISet<MultiKey<EventBean>>> pair in joinEventsSet)
                 {
-                    if (_prototype.IsUnidirectional)
+                    if (Prototype.IsUnidirectional)
                     {
                         Clear();
                     }
@@ -225,7 +235,7 @@ namespace com.espertech.esper.epl.core
                     ICollection<MultiKey<EventBean>> newData = pair.First;
                     ICollection<MultiKey<EventBean>> oldData = pair.Second;
     
-                    if ((lastOldEvent == null) && (_prototype.IsSelectRStream))
+                    if ((lastOldEvent == null) && (Prototype.IsSelectRStream))
                     {
                         lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
                     }
@@ -235,7 +245,7 @@ namespace com.espertech.esper.epl.core
                         // apply new data to aggregates
                         foreach (MultiKey<EventBean> eventsPerStream in newData)
                         {
-                            _aggregationService.ApplyEnter(eventsPerStream.Array, null, _exprEvaluatorContext);
+                            AggregationService.ApplyEnter(eventsPerStream.Array, null, ExprEvaluatorContext);
                         }
                     }
                     if (oldData != null)
@@ -243,7 +253,7 @@ namespace com.espertech.esper.epl.core
                         // apply old data to aggregates
                         foreach (MultiKey<EventBean> eventsPerStream in oldData)
                         {
-                            _aggregationService.ApplyLeave(eventsPerStream.Array, null, _exprEvaluatorContext);
+                            AggregationService.ApplyLeave(eventsPerStream.Array, null, ExprEvaluatorContext);
                         }
                     }
     
@@ -263,7 +273,7 @@ namespace com.espertech.esper.epl.core
             {
                 ICollection<EventBean> newEvents = new List<EventBean>();
                 ICollection<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEvents = new LinkedList<EventBean>();
                 }
@@ -273,7 +283,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -281,7 +291,7 @@ namespace com.espertech.esper.epl.core
     
                 foreach (UniformPair<ISet<MultiKey<EventBean>>> pair in joinEventsSet)
                 {
-                    if (_prototype.IsUnidirectional)
+                    if (Prototype.IsUnidirectional)
                     {
                         Clear();
                     }
@@ -289,7 +299,7 @@ namespace com.espertech.esper.epl.core
                     ICollection<MultiKey<EventBean>> newData = pair.First;
                     ICollection<MultiKey<EventBean>> oldData = pair.Second;
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GetSelectListEvent(false, generateSynthetic, oldEvents, true);
                     }
@@ -299,7 +309,7 @@ namespace com.espertech.esper.epl.core
                         // apply new data to aggregates
                         foreach (MultiKey<EventBean> row in newData)
                         {
-                            _aggregationService.ApplyEnter(row.Array, null, _exprEvaluatorContext);
+                            AggregationService.ApplyEnter(row.Array, null, ExprEvaluatorContext);
                         }
                     }
                     if (oldData != null)
@@ -307,7 +317,7 @@ namespace com.espertech.esper.epl.core
                         // apply old data to aggregates
                         foreach (MultiKey<EventBean> row in oldData)
                         {
-                            _aggregationService.ApplyLeave(row.Array, null, _exprEvaluatorContext);
+                            AggregationService.ApplyLeave(row.Array, null, ExprEvaluatorContext);
                         }
                     }
     
@@ -316,7 +326,7 @@ namespace com.espertech.esper.epl.core
     
                 EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
@@ -324,17 +334,17 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
-                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _exprEvaluatorContext);
-                    if (_prototype.IsSelectRStream)
+                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, ExprEvaluatorContext);
+                    if (Prototype.IsSelectRStream)
                     {
                         Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
-                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _exprEvaluatorContext);
+                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, ExprEvaluatorContext);
                     }
                 }
     
                 if (joinEventsSet.IsEmpty())
                 {
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsArr = GetSelectListEvents(false, generateSynthetic, true);
                     }
@@ -367,7 +377,7 @@ namespace com.espertech.esper.epl.core
                 // if empty (nothing to post)
                 if (viewEventsList.IsEmpty())
                 {
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
                         lastNewEvent = lastOldEvent;
@@ -383,7 +393,7 @@ namespace com.espertech.esper.epl.core
                     EventBean[] newData = pair.First;
                     EventBean[] oldData = pair.Second;
     
-                    if ((lastOldEvent == null) && (_prototype.IsSelectRStream))
+                    if ((lastOldEvent == null) && (Prototype.IsSelectRStream))
                     {
                         lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
                     }
@@ -394,7 +404,7 @@ namespace com.espertech.esper.epl.core
                         foreach (EventBean aNewData in newData)
                         {
                             eventsPerStream[0] = aNewData;
-                            _aggregationService.ApplyEnter(eventsPerStream, null, _exprEvaluatorContext);
+                            AggregationService.ApplyEnter(eventsPerStream, null, ExprEvaluatorContext);
                         }
                     }
                     if (oldData != null)
@@ -403,7 +413,7 @@ namespace com.espertech.esper.epl.core
                         foreach (EventBean anOldData in oldData)
                         {
                             eventsPerStream[0] = anOldData;
-                            _aggregationService.ApplyLeave(eventsPerStream, null, _exprEvaluatorContext);
+                            AggregationService.ApplyLeave(eventsPerStream, null, ExprEvaluatorContext);
                         }
                     }
     
@@ -423,7 +433,7 @@ namespace com.espertech.esper.epl.core
             {
                 ICollection<EventBean> newEvents = new List<EventBean>();
                 ICollection<EventBean> oldEvents = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEvents = new LinkedList<EventBean>();
                 }
@@ -433,7 +443,7 @@ namespace com.espertech.esper.epl.core
                 if (_orderByProcessor != null)
                 {
                     newEventsSortKey = new LinkedList<Object>();
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsSortKey = new LinkedList<Object>();
                     }
@@ -444,7 +454,7 @@ namespace com.espertech.esper.epl.core
                     EventBean[] newData = pair.First;
                     EventBean[] oldData = pair.Second;
     
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         GetSelectListEvent(false, generateSynthetic, oldEvents, false);
                     }
@@ -456,7 +466,7 @@ namespace com.espertech.esper.epl.core
                         foreach (EventBean aNewData in newData)
                         {
                             eventsPerStream[0] = aNewData;
-                            _aggregationService.ApplyEnter(eventsPerStream, null, _exprEvaluatorContext);
+                            AggregationService.ApplyEnter(eventsPerStream, null, ExprEvaluatorContext);
                         }
                     }
                     if (oldData != null)
@@ -465,7 +475,7 @@ namespace com.espertech.esper.epl.core
                         foreach (EventBean anOldData in oldData)
                         {
                             eventsPerStream[0] = anOldData;
-                            _aggregationService.ApplyLeave(eventsPerStream, null, _exprEvaluatorContext);
+                            AggregationService.ApplyLeave(eventsPerStream, null, ExprEvaluatorContext);
                         }
                     }
     
@@ -474,24 +484,24 @@ namespace com.espertech.esper.epl.core
     
                 EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
                 EventBean[] oldEventsArr = null;
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
                 }
                 if (_orderByProcessor != null)
                 {
                     Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
-                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _exprEvaluatorContext);
-                    if (_prototype.IsSelectRStream)
+                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, ExprEvaluatorContext);
+                    if (Prototype.IsSelectRStream)
                     {
                         Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
-                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _exprEvaluatorContext);
+                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, ExprEvaluatorContext);
                     }
                 }
     
                 if (viewEventsList.IsEmpty())
                 {
-                    if (_prototype.IsSelectRStream)
+                    if (Prototype.IsSelectRStream)
                     {
                         oldEventsArr = GetSelectListEvents(false, generateSynthetic, false);
                     }
@@ -514,20 +524,62 @@ namespace com.espertech.esper.epl.core
         public void ApplyViewResult(EventBean[] newData, EventBean[] oldData)
         {
             EventBean[] events = new EventBean[1];
-            ResultSetProcessorUtil.ApplyAggViewResult(_aggregationService, _exprEvaluatorContext, newData, oldData, events);
+            ResultSetProcessorUtil.ApplyAggViewResult(AggregationService, ExprEvaluatorContext, newData, oldData, events);
         }
 
         public void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
-            ResultSetProcessorUtil.ApplyAggJoinResult(_aggregationService, _exprEvaluatorContext, newEvents, oldEvents);
+            ResultSetProcessorUtil.ApplyAggJoinResult(AggregationService, ExprEvaluatorContext, newEvents, oldEvents);
         }
-    
+
+        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputView(isSynthesize);
+            }
+            return _outputLastHelper.OutputView(isSynthesize);
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputJoin(isSynthesize);
+            }
+            return _outputLastHelper.OutputJoin(isSynthesize);
+        }
+
         private void GetSelectListEvent(bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, bool join)
         {
-            if (_prototype.OptionalHavingNode != null)
+            if (Prototype.OptionalHavingNode != null)
             {
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
                 if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
                 if ((result == null) || (false.Equals(result)))
                 {
@@ -536,7 +588,7 @@ namespace com.espertech.esper.epl.core
             }
     
             // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
+            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
     
             resultEvents.Add(theEvent);
         }

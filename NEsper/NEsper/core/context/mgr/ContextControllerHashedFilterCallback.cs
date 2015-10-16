@@ -23,6 +23,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly EventPropertyGetter _getter;
         private readonly ContextControllerHashedInstanceCallback _callback;
         private readonly EPStatementHandleCallback _filterHandle;
+        private readonly FilterServiceEntry _filterServiceEntry;
 
         public ContextControllerHashedFilterCallback(
             EPServicesContext servicesContext,
@@ -39,7 +40,10 @@ namespace com.espertech.esper.core.context.mgr
     
             FilterValueSetParam[][] addendum = filterAddendum != null ? filterAddendum.GetFilterAddendum(hashItem.FilterSpecCompiled) : null;
             FilterValueSet filterValueSet = hashItem.FilterSpecCompiled.GetValueSet(null, null, addendum);
-            servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+            _filterServiceEntry = servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+
+            long filtersVersion = servicesContext.FilterService.FiltersVersion;
+            agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
     
         public void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches) {
@@ -59,7 +63,9 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Destroy(FilterService filterService)
         {
-            filterService.Remove(_filterHandle);
+            filterService.Remove(_filterHandle, _filterServiceEntry);
+            var filtersVersion = _agentInstanceContextCreateContext.StatementContext.FilterService.FiltersVersion;
+            _agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
 
         public EPStatementHandleCallback FilterHandle

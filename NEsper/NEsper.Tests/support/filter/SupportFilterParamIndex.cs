@@ -21,13 +21,13 @@ namespace com.espertech.esper.support.filter
             : base(FilterOperator.EQUAL, lookupable)
         {
         }
-    
-        protected internal override EventEvaluator Get(Object expressionValue)
+
+        public override EventEvaluator Get(Object expressionValue)
         {
             return null;
         }
-    
-        protected internal override void Put(Object expressionValue, EventEvaluator evaluator)
+
+        public override void Put(Object expressionValue, EventEvaluator evaluator)
         {
         }
 

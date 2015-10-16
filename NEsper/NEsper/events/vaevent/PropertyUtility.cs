@@ -140,7 +140,7 @@ namespace com.espertech.esper.events.vaevent
         private static MultiKey<String> GetPropertiesContributed(EventType deltaEventType,
                                                                  ICollection<string> allPropertiesSorted)
         {
-            var props = new TreeSet<String>();
+            var props = new SortedSet<String>();
             foreach (String property in deltaEventType.PropertyNames) {
                 if (allPropertiesSorted.Contains(property)) {
                     props.Add(property);

@@ -79,5 +79,13 @@ namespace com.espertech.esper.core.context.factory
     
             return new StatementAgentInstanceFactoryCreateIndexResult(finalView, stopCallback, agentInstanceContext);
         }
+
+        public void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public void UnassignExpressions()
+        {
+        }
     }
 }

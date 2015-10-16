@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     /// <summary>
     /// A wrapper that provide a list that is readonly.

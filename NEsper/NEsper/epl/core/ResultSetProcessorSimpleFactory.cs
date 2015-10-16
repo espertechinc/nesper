@@ -11,6 +11,7 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.epl.core
 {
@@ -22,20 +23,29 @@ namespace com.espertech.esper.epl.core
         private readonly bool _isSelectRStream;
         private readonly SelectExprProcessor _selectExprProcessor;
         private readonly ExprEvaluator _optionalHavingExpr;
-    
+        private readonly OutputLimitSpec _outputLimitSpec;
+
         /// <summary>Ctor. </summary>
         /// <param name="selectExprProcessor">for processing the select expression and generting the readonly output rows</param>
         /// <param name="optionalHavingNode">having clause expression node</param>
         /// <param name="isSelectRStream">true if remove stream events should be generated</param>
-        public ResultSetProcessorSimpleFactory(SelectExprProcessor selectExprProcessor,
-                                               ExprEvaluator optionalHavingNode,
-                                               bool isSelectRStream)
+        public ResultSetProcessorSimpleFactory(
+            SelectExprProcessor selectExprProcessor,
+            ExprEvaluator optionalHavingNode,
+            bool isSelectRStream,
+            OutputLimitSpec outputLimitSpec)
         {
             _selectExprProcessor = selectExprProcessor;
             _optionalHavingExpr = optionalHavingNode;
             _isSelectRStream = isSelectRStream;
+            _outputLimitSpec = outputLimitSpec;
         }
-    
+
+        public ResultSetProcessorType ResultSetProcessorType
+        {
+            get { return ResultSetProcessorType.UNAGGREGATED_UNGROUPED; }
+        }
+
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext) 
         {
             return new ResultSetProcessorSimple(this, _selectExprProcessor, orderByProcessor, agentInstanceContext);
@@ -59,6 +69,16 @@ namespace com.espertech.esper.epl.core
         public ExprEvaluator OptionalHavingExpr
         {
             get { return _optionalHavingExpr; }
+        }
+
+        public bool IsOutputLast
+        {
+            get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST; }
+        }
+
+        public bool IsOutputAll
+        {
+            get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
     }
 }

@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.datetime
         public void TestToDateCalMilli()
         {
             String startTime = "2002-05-30 09:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
             String[] fields = "val0,val1,val2,val4,val5,val6,val8,val9,val10".Split(',');
             String eplFragment = "select " +
@@ -66,8 +66,8 @@ namespace com.espertech.esper.regression.datetime
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
             LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{
-                typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), 
-                typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), 
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), 
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?), typeof(DateTimeOffset?), 
                 typeof(long?), typeof(long?), typeof(long?)
             });
     

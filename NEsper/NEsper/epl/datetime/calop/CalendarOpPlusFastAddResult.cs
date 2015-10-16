@@ -12,7 +12,7 @@ namespace com.espertech.esper.epl.datetime.calop
 {
 	public class CalendarOpPlusFastAddResult
     {
-	    public CalendarOpPlusFastAddResult(long factor, DateTime scheduled)
+        public CalendarOpPlusFastAddResult(long factor, DateTimeOffset scheduled)
         {
 	        Factor = factor;
 	        Scheduled = scheduled;
@@ -20,6 +20,6 @@ namespace com.espertech.esper.epl.datetime.calop
 
 	    public long Factor { get; private set; }
 
-	    public DateTime Scheduled { get; private set; }
+        public DateTimeOffset Scheduled { get; private set; }
     }
 } // end of namespace

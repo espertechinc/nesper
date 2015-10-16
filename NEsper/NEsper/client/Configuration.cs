@@ -1091,6 +1091,12 @@ namespace com.espertech.esper.client
             set { EngineDefaults.PatternsConfig.MaxSubexpressions = value; }
         }
 
+        public long? MatchRecognizeMaxStates
+        {
+            get { return EngineDefaults.MatchRecognizeConfig.MaxStates; }
+            set { EngineDefaults.MatchRecognizeConfig.MaxStates = value; }
+        }
+
         public bool RemoveEventType(String eventTypeName, bool force)
         {
             _eventClasses.Remove(eventTypeName);

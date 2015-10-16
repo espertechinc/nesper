@@ -56,6 +56,7 @@ namespace com.espertech.esper.core.context.factory
             AggregationService aggregationService;
             EvalRootState optPatternRoot;
             IDictionary<ExprTableAccessNode, ExprTableAccessEvalStrategy> tableAccessStrategies;
+            ViewableActivationResult activationResult;
 
             StopCallback stopCallback;
             try {
@@ -68,7 +69,7 @@ namespace com.espertech.esper.core.context.factory
                 aggregationService = onExprViewResult.OptionalAggregationService;
     
                 // attach stream to view
-                ViewableActivationResult activationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
+                activationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
                 activationResult.Viewable.AddView(view);
                 stopCallbacks.Add(activationResult.StopCallback);
                 optPatternRoot = activationResult.OptionalPatternRoot;
@@ -82,16 +83,32 @@ namespace com.espertech.esper.core.context.factory
                 // plan table access
                 tableAccessStrategies = EPStatementStartMethodHelperTableAccess.AttachTableAccess(Services, agentInstanceContext, StatementSpec.TableNodes);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
                 StatementAgentInstanceUtil.StopSafe(stopCallback, StatementContext);
                 throw;
             }
-    
+
+            StatementAgentInstanceFactoryOnTriggerResult onTriggerResult = new StatementAgentInstanceFactoryOnTriggerResult(view, null, agentInstanceContext, aggregationService, subselectStrategies, optPatternRoot, tableAccessStrategies, activationResult);
+            if (StatementContext.StatementExtensionServicesContext != null)
+            {
+                StatementContext.StatementExtensionServicesContext.ContributeStopCallback(onTriggerResult, stopCallbacks);
+            }
+
             Log.Debug(".start Statement start completed");
             stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
-            return new StatementAgentInstanceFactoryOnTriggerResult(view, stopCallback, agentInstanceContext, aggregationService, subselectStrategies, optPatternRoot, tableAccessStrategies);
+            onTriggerResult.StopCallback = stopCallback;
+
+            return onTriggerResult;
+        }
+
+        public virtual void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public virtual void UnassignExpressions()
+        {
         }
     
         public class OnExprViewResult

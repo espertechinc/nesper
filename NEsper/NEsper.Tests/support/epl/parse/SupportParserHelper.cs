@@ -19,6 +19,7 @@ using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.support.bean;
+using com.espertech.esper.support.core;
 using com.espertech.esper.support.events;
 
 namespace com.espertech.esper.support.epl.parse
@@ -27,7 +28,7 @@ namespace com.espertech.esper.support.epl.parse
     {
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression)
         {
-            return ParseAndWalkEPL(expression, new EngineImportServiceImpl(true, true, true, false, null), new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null));
+            return ParseAndWalkEPL(expression, SupportEngineImportServiceFactory.Make(), new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null));
         }
 
         public static EPLTreeWalkerListener ParseAndWalkEPL(String expression, EngineImportService engineImportService, VariableService variableService)

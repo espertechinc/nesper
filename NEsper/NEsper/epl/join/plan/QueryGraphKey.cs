@@ -14,7 +14,7 @@ using com.espertech.esper.collection;
 namespace com.espertech.esper.epl.join.plan
 {
     /// <summary>
-    /// Key consisting of 2 integer stream numbers, for use by <seealso cref="QueryGraph"/>.
+    /// Value consisting of 2 integer stream numbers, for use by <seealso cref="QueryGraph"/>.
     /// </summary>
     public class QueryGraphKey
     {

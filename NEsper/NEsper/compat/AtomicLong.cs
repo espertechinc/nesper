@@ -58,12 +58,30 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
+        /// Increments and returns the value.
+        /// </summary>
+        /// <returns></returns>
+        public long IncrementAndGet(long value)
+        {
+            return Interlocked.Add(ref _value, value);
+        }
+
+        /// <summary>
         /// Decrements and returns the value.
         /// </summary>
         /// <returns></returns>
         public long DecrementAndGet()
         {
             return Interlocked.Decrement(ref _value);
+        }
+
+        /// <summary>
+        /// Increments and returns the value.
+        /// </summary>
+        /// <returns></returns>
+        public long DecrementAndGet(long value)
+        {
+            return Interlocked.Add(ref _value, -value);
         }
     }
 }

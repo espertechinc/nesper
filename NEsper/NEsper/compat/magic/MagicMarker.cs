@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.compat.magic

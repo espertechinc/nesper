@@ -72,7 +72,7 @@ namespace com.espertech.esper.core.start
     
         public override ICollection<int> GetProcessorInstancesAll()
         {
-            return _namedWindowProcessor.ProcessorInstancesAll;
+            return _namedWindowProcessor.GetProcessorInstancesAll();
         }
 
         public override string NamedWindowOrTableName

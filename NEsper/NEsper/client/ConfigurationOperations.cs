@@ -577,7 +577,15 @@ namespace com.espertech.esper.client
         /// Use null to indicate that there is not current maximum.
         /// </summary>
         /// <value>to set</value>
-        long PatternMaxSubexpressions { get;  set; }
+        long PatternMaxSubexpressions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current maximum match-recognize state count.
+        /// <para>
+        /// Use null to indicate that there is no current maximum.
+        /// </para>
+        /// </summary>
+        long? MatchRecognizeMaxStates { get; set; }
 
         /// <summary>
         /// Updates an existing Object-array event type with additional properties. 

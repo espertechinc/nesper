@@ -24,6 +24,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly EventPropertyGetter[] _getters;
         private readonly ContextControllerPartitionedInstanceCreateCallback _callback;
         private readonly EPStatementHandleCallback _filterHandle;
+        private readonly FilterServiceEntry _filterServiceEntry;
     
         public ContextControllerPartitionedFilterCallback(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContextCreateContext, ContextDetailPartitionItem partitionItem, ContextControllerPartitionedInstanceCreateCallback callback, ContextInternalFilterAddendum filterAddendum)
         {
@@ -42,7 +43,11 @@ namespace com.espertech.esper.core.context.mgr
     
             var addendum = filterAddendum != null ? filterAddendum.GetFilterAddendum(partitionItem.FilterSpecCompiled) : null;
             var filterValueSet = partitionItem.FilterSpecCompiled.GetValueSet(null, null, addendum);
-            servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+
+            _filterServiceEntry = servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+            var filtersVersion = servicesContext.FilterService.FiltersVersion;
+            agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+
         }
     
         public void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
@@ -77,7 +82,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Destroy(FilterService filterService)
         {
-            filterService.Remove(_filterHandle);
+            filterService.Remove(_filterHandle, _filterServiceEntry);
             long filtersVersion = _agentInstanceContextCreateContext.StatementContext.FilterService.FiltersVersion;
             _agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }

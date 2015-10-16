@@ -112,10 +112,10 @@ namespace com.espertech.esper.epl.expression.dot
 	            }
 
 	            // resolve datetime
-	            if (chainElement.Name.IsDateTimeMethod() && (!matchingMethod  || methodTarget == typeof(DateTime)))
+	            if (chainElement.Name.IsDateTimeMethod() && (!matchingMethod  || methodTarget == typeof(DateTimeOffset?)))
                 {
 	                var datetimeMethod = DatetimeMethodEnumExtensions.FromName(chainElement.Name);
-	                var datetimeImpl = ExprDotEvalDTFactory.ValidateMake(validationContext.StreamTypeService, chainSpecStack, datetimeMethod, chainElement.Name, currentInputType, chainElement.Parameters, inputDesc);
+                    var datetimeImpl = ExprDotEvalDTFactory.ValidateMake(validationContext.StreamTypeService, chainSpecStack, datetimeMethod, chainElement.Name, currentInputType, chainElement.Parameters, inputDesc, validationContext.MethodResolutionService.EngineImportService.TimeZone);
 	                currentInputType = datetimeImpl.ReturnType;
 	                if (currentInputType == null) {
 	                    throw new IllegalStateException("Date-time method '" + chainElement.Name + "' has not returned type information");

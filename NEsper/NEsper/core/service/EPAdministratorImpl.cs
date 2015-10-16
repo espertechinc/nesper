@@ -50,7 +50,16 @@ namespace com.espertech.esper.core.service
                 var statementIdGeneratorFactory = TypeHelper.Instantiate<StatementIdGeneratorFactory>(alternativeContext.StatementIdGeneratorFactory);
                 statementIdGenerator = statementIdGeneratorFactory.Invoke(new StatementIdGeneratorFactoryContext(_services.EngineURI));
             }
-            _deploymentAdminService = new EPDeploymentAdminImpl(this, adminContext.Services.DeploymentStateService, adminContext.Services.StatementEventTypeRefService, adminContext.Services.EventAdapterService, adminContext.Services.StatementIsolationService, statementIdGenerator, adminContext.Services.FilterService);
+
+            _deploymentAdminService = new EPDeploymentAdminImpl(
+                this,
+                adminContext.Services.DeploymentStateService,
+                adminContext.Services.StatementEventTypeRefService,
+                adminContext.Services.EventAdapterService, 
+                adminContext.Services.StatementIsolationService,
+                statementIdGenerator, 
+                adminContext.Services.FilterService,
+                _services.ConfigSnapshot.EngineDefaults.ExpressionConfig.TimeZone);
         }
 
         public EPDeploymentAdmin DeploymentAdmin

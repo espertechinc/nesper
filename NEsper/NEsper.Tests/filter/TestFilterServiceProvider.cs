@@ -18,8 +18,8 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestGetService()
         {
-            FilterService serviceOne = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY);
-            FilterService serviceTwo = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY);
+            FilterService serviceOne = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
+            FilterService serviceTwo = FilterServiceProvider.NewService(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, false);
     
             Assert.IsTrue(serviceOne != null);
             Assert.IsTrue(serviceOne != serviceTwo);

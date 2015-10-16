@@ -100,14 +100,20 @@
     <Reference Include="Antlr4.Runtime.net40">
       <HintPath>..\..\packages\Antlr4.Runtime.4.3.0\lib\net40-client\Antlr4.Runtime.net40.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging, Version=2.1.2.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    <Reference Include="Common.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Common.Logging.3.3.0\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging.Log4Net1211">
-      <HintPath>..\..\packages\Common.Logging.Log4Net1211.2.1.2\lib\net40\Common.Logging.Log4Net1211.dll</HintPath>
+    <Reference Include="Common.Logging.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Common.Logging.Core.3.3.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="Common.Logging.Log4Net1213">
+      <HintPath>..\..\packages\Common.Logging.Log4Net1213.3.3.0\lib\net40\Common.Logging.Log4Net1213.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -170,6 +176,7 @@
     <Compile Include="collection\TestTransformEvent.cs" />
     <Compile Include="collection\TestUniformPair.cs" />
     <Compile Include="compat\TestChainedArrayList.cs" />
+    <Compile Include="compat\TestDateTimeMath.cs" />
     <Compile Include="compat\TestOrderedDictionary.cs" />
     <Compile Include="compat\TestTypeResolution.cs" />
     <Compile Include="core\deploy\TestEPLModuleUtil.cs" />
@@ -566,7 +573,6 @@
     <Compile Include="regression\context\TestContextVariables.cs" />
     <Compile Include="regression\context\TestContextWDeclaredExpression.cs" />
     <Compile Include="regression\context\TestDocExamples.cs" />
-    <Compile Include="regression\context\TestPrioritizedExec.cs" />
     <Compile Include="regression\dataflow\MyLineFeedSource.cs" />
     <Compile Include="regression\dataflow\MyObjectArrayGraphSource.cs" />
     <Compile Include="regression\dataflow\MyTokenizerCounter.cs" />
@@ -685,6 +691,7 @@
     <Compile Include="regression\epl\TestFromClauseMethodVariable.cs" />
     <Compile Include="regression\epl\TestInKeywordQueryPlan.cs" />
     <Compile Include="regression\epl\TestInsertInto.cs" />
+    <Compile Include="regression\epl\TestInsertIntoEmptyPropType.cs" />
     <Compile Include="regression\epl\TestInsertIntoIRStreamFunc.cs" />
     <Compile Include="regression\epl\TestInsertIntoPopulateCreateStream.cs" />
     <Compile Include="regression\epl\TestInsertIntoPopulateUnderlying.cs" />
@@ -909,6 +916,7 @@
     <Compile Include="regression\pattern\TestTimerAtObserver.cs" />
     <Compile Include="regression\pattern\TestTimerIntervalObserver.cs" />
     <Compile Include="regression\pattern\TestTimerScheduleObserver.cs" />
+    <Compile Include="regression\pattern\TestTimerScheduleObserverTimeZoneEST.cs" />
     <Compile Include="regression\pattern\TestTimerWithinGuard.cs" />
     <Compile Include="regression\pattern\TestTimerWithinOrMaxGuard.cs" />
     <Compile Include="regression\pattern\TestUseResultPattern.cs" />
@@ -917,6 +925,7 @@
     <Compile Include="regression\rowrecog\SupportTestCaseHolder.cs" />
     <Compile Include="regression\rowrecog\SupportTestCaseItem.cs" />
     <Compile Include="regression\rowrecog\TestRowPatternInvalid.cs" />
+    <Compile Include="regression\rowrecog\TestRowPatternMaxStatesEngineWide.cs" />
     <Compile Include="regression\rowrecog\TestRowPatternRecognitionAfter.cs" />
     <Compile Include="regression\rowrecog\TestRowPatternRecognitionAggregation.cs" />
     <Compile Include="regression\rowrecog\TestRowPatternRecognitionArrayAccess.cs" />
@@ -947,6 +956,7 @@
     <Compile Include="regression\support\EventSendDesc.cs" />
     <Compile Include="regression\support\PatternTestHarness.cs" />
     <Compile Include="regression\support\ResultAssertExecution.cs" />
+    <Compile Include="regression\support\ResultAssertExecutionTestSelector.cs" />
     <Compile Include="regression\support\ResultAssertInput.cs" />
     <Compile Include="regression\support\ResultAssertTestResult.cs" />
     <Compile Include="regression\support\StepDesc.cs" />
@@ -1021,6 +1031,7 @@
     <Compile Include="regression\view\TestOrderBySimple.cs" />
     <Compile Include="regression\view\TestOutputLimitAfter.cs" />
     <Compile Include="regression\view\TestOutputLimitAggregateAll.cs" />
+    <Compile Include="regression\view\TestOutputLimitChangeSetOpt.cs" />
     <Compile Include="regression\view\TestOutputLimitCrontabWhen.cs" />
     <Compile Include="regression\view\TestOutputLimitEventPerGroup.cs" />
     <Compile Include="regression\view\TestOutputLimitEventPerRow.cs" />
@@ -1241,6 +1252,7 @@
     <Compile Include="support\collections\SupportDataMapFactory.cs" />
     <Compile Include="support\collections\SupportDataMapList.cs" />
     <Compile Include="support\collections\ISupportDataMapCollection.cs" />
+    <Compile Include="support\core\SupportEngineImportServiceFactory.cs" />
     <Compile Include="support\core\SupportEPStatementSPI.cs" />
     <Compile Include="support\core\SupportExprEvaluatorContext.cs" />
     <Compile Include="support\core\SupportInternalEventRouter.cs" />

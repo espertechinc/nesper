@@ -400,12 +400,12 @@ namespace com.espertech.esper.regression.pattern
 
         private void SendCurrentTimeWithMinus(EPServiceProvider epService, String time, long minus)
         {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
 
         private void SendCurrentTime(EPServiceProvider epService, String time)
         {
-            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void RunAssertion(EPServiceProvider epService, SupportUpdateListener testListener)

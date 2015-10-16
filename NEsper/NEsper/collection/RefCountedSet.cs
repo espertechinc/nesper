@@ -121,7 +121,7 @@ namespace com.espertech.esper.collection
                 _numValues += numReferences;
                 return;
             }
-            throw new ArgumentException("Key '" + key + "' already in collection");
+            throw new ArgumentException("Value '" + key + "' already in collection");
         }
 
 		/// <summary> Removed a key to the set. Removes the key if the reference count is one.

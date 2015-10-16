@@ -104,7 +104,8 @@ namespace com.espertech.esper.epl.view
             var handle = new EPStatementHandleCallback(_context.EpStatementAgentInstanceHandle, callback);
             var schedulingService = _context.StatementContext.SchedulingService;
             var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                _factory.ScheduleSpec, schedulingService.Time);
+                _factory.ScheduleSpec, schedulingService.Time,
+                _context.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
             schedulingService.Add(nextScheduledTime, handle, _scheduleSlot);
         }
 

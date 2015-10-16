@@ -29,6 +29,7 @@ namespace com.espertech.esper.epl.view
         {
             SNAPSHOT,
             POLICY_FIRST,
+            POLICY_LASTALL_UNORDERED,
             POLICY_NONFIRST
         }
 
@@ -42,6 +43,10 @@ namespace com.espertech.esper.epl.view
         private readonly int _streamCount;
         private readonly bool _terminable;
 
+        private readonly bool _hasAfter;
+        private readonly bool _isUnaggregatedUngrouped;
+        private readonly SelectClauseStreamSelectorEnum _selectClauseStreamSelectorEnum;
+
         public OutputProcessViewConditionFactory(
             StatementContext statementContext,
             OutputStrategyPostProcessFactory postProcessFactory,
@@ -53,7 +58,10 @@ namespace com.espertech.esper.epl.view
             int streamCount,
             ConditionType conditionType,
             OutputLimitLimitType outputLimitLimitType,
-            bool terminable)
+            bool terminable,
+            bool hasAfter,
+            bool isUnaggregatedUngrouped,
+            SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum)
             : base(statementContext, postProcessFactory, distinct, afterTimePeriod, afterConditionNumberOfEvents, resultEventType)
         {
             _outputConditionFactory = outputConditionFactory;
@@ -61,6 +69,9 @@ namespace com.espertech.esper.epl.view
             _conditionType = conditionType;
             _outputLimitLimitType = outputLimitLimitType;
             _terminable = terminable;
+            _hasAfter = hasAfter;
+            _isUnaggregatedUngrouped = isUnaggregatedUngrouped;
+            _selectClauseStreamSelectorEnum = selectClauseStreamSelectorEnum;
         }
 
         public OutputConditionFactory OutputConditionFactory
@@ -83,8 +94,22 @@ namespace com.espertech.esper.epl.view
             get { return _terminable; }
         }
 
-        public override OutputProcessViewBase MakeView(ResultSetProcessor resultSetProcessor,
-                                                       AgentInstanceContext agentInstanceContext)
+        public bool HasAfter
+        {
+            get { return _hasAfter; }
+        }
+
+        public bool IsUnaggregatedUngrouped
+        {
+            get { return _isUnaggregatedUngrouped; }
+        }
+
+        public SelectClauseStreamSelectorEnum SelectClauseStreamSelectorEnum
+        {
+            get { return _selectClauseStreamSelectorEnum; }
+        }
+
+        public override OutputProcessViewBase MakeView(ResultSetProcessor resultSetProcessor, AgentInstanceContext agentInstanceContext)
         {
             // determine after-stuff
             bool isAfterConditionSatisfied = true;
@@ -114,7 +139,7 @@ namespace com.espertech.esper.epl.view
                                                                          isAfterConditionSatisfied, this,
                                                                          agentInstanceContext, postProcess);
             }
-            if (_conditionType == ConditionType.POLICY_FIRST)
+            else if (_conditionType == ConditionType.POLICY_FIRST)
             {
                 if (PostProcessFactory == null)
                 {
@@ -127,6 +152,15 @@ namespace com.espertech.esper.epl.view
                                                                       AfterConditionNumberOfEvents,
                                                                       isAfterConditionSatisfied, this,
                                                                       agentInstanceContext, postProcess);
+            }
+            else if (_conditionType == ConditionType.POLICY_LASTALL_UNORDERED)
+            {
+                if (PostProcessFactory == null)
+                {
+                    return new OutputProcessViewConditionLastAllUnord(resultSetProcessor, afterConditionTime, base.AfterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext);
+                }
+                OutputStrategyPostProcess postProcess = PostProcessFactory.Make(agentInstanceContext);
+                return new OutputProcessViewConditionLastAllUnordPostProcessAll(resultSetProcessor, afterConditionTime, base.AfterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext, postProcess);
             }
             else
             {

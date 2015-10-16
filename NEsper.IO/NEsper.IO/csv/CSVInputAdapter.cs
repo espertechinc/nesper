@@ -532,8 +532,8 @@ namespace com.espertech.esperio.csv
             {
                 return false;
             }
-            ICollection<String> firstRowSet = new TreeSet<String>(firstRow);
-            ICollection<String> propertyOrderSet = new TreeSet<String>(propertyOrder);
+            ICollection<String> firstRowSet = new SortedSet<String>(firstRow);
+            ICollection<String> propertyOrderSet = new SortedSet<String>(propertyOrder);
             return Equals(firstRowSet, propertyOrderSet);
         }
 

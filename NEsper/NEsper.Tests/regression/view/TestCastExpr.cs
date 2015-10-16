@@ -84,14 +84,14 @@ namespace com.espertech.esper.regression.view
 
             _epService.EPRuntime.SendEvent(new SupportBean());
             var @event = _listener.AssertOneGetNewAndReset();
-            SupportDateTimeUtil.CompareDate(@event.Get("c0").AsDateTime(), 1997, 7, 16, 19, 20, 30, 0, "GMT+00:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c1").AsDateTime(), 1997, 7, 16, 19, 20, 30, 0, "GMT+01:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c2").AsDateTime(), 1997, 7, 16, 19, 20, 30, 0, TimeZone.CurrentTimeZone.StandardName);
-            SupportDateTimeUtil.CompareDate(@event.Get("c3").AsDateTime(), 1997, 7, 16, 19, 20, 30, 450, "GMT+00:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c4").AsDateTime(), 1997, 7, 16, 19, 20, 30, 450, "GMT+01:00");
-            SupportDateTimeUtil.CompareDate(@event.Get("c5").AsDateTime(), 1997, 7, 16, 19, 20, 30, 450, TimeZone.CurrentTimeZone.StandardName);
+            SupportDateTimeUtil.CompareDate(@event.Get("c0").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, "GMT+00:00");
+            SupportDateTimeUtil.CompareDate(@event.Get("c1").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, "GMT+01:00");
+            SupportDateTimeUtil.CompareDate(@event.Get("c2").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 0, TimeZone.CurrentTimeZone.StandardName);
+            SupportDateTimeUtil.CompareDate(@event.Get("c3").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, "GMT+00:00");
+            SupportDateTimeUtil.CompareDate(@event.Get("c4").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, "GMT+01:00");
+            SupportDateTimeUtil.CompareDate(@event.Get("c5").AsDateTimeOffset(), 1997, 7, 16, 19, 20, 30, 450, TimeZone.CurrentTimeZone.StandardName);
             Assert.That(@event.Get("c6").GetType(), Is.EqualTo(typeof (long)));
-            Assert.That(@event.Get("c7").GetType(), Is.EqualTo(typeof (DateTime)));
+            Assert.That(@event.Get("c7").GetType(), Is.EqualTo(typeof (DateTimeOffset)));
             foreach (var prop in "c8,c9,c10".Split(',')) {
                 Assert.IsNull(@event.Get(prop));
             }
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regression.view
             var stmt = _epService.EPAdministrator.CreateEPL(epl);
             stmt.AddListener(_listener);
 
-            var expectedDate = DateTime.ParseExact("20030201", "yyyyMMdd", null, DateTimeStyles.None);
+            var expectedDate = DateTimeOffset.ParseExact("20030201", "yyyyMMdd", null, DateTimeStyles.None);
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "c0".Split(','), new Object[] {expectedDate});
 
@@ -148,9 +148,9 @@ namespace com.espertech.esper.regression.view
         {
             _epService.EPRuntime.SendEvent(new SupportBean_StringAlphabetic(date, format));
 
-            DateTime? expectedDate = null;
+            DateTimeOffset? expectedDate = null;
             if (date != null) {
-                expectedDate = DateTime.ParseExact(date, format, null, DateTimeStyles.None);
+                expectedDate = DateTimeOffset.ParseExact(date, format, null, DateTimeStyles.None);
             }
 
             long? theLong = null;
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regression.view
             _epService.EPRuntime.SendEvent(values, "MyType");
 
             var formatYYYYMMdd = "yyyyMMdd";
-            var dateYYMMddDate = DateTime.ParseExact("20100510", formatYYYYMMdd, null, DateTimeStyles.None);
+            var dateYYMMddDate = DateTimeOffset.ParseExact("20100510", formatYYYYMMdd, null, DateTimeStyles.None);
             
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "c0,c1,c2,c3,c6,c8".Split(','), new Object[] {
                     dateYYMMddDate, 

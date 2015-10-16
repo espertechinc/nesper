@@ -11,7 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     public class FixedDictionary<K,V> : IDictionary<K,V>
     {
@@ -206,7 +206,7 @@ namespace com.espertech.esper.compat
         {
             int index;
             if (!_dictionarySchema.TryGetIndex(key, out index)) {
-                throw new ArgumentException("Key '" + key + "' is not supported by schema");
+                throw new ArgumentException("Value '" + key + "' is not supported by schema");
             }
 
             // Entry was found in the schema, check our local table

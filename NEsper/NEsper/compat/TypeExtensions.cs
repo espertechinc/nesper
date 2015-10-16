@@ -210,7 +210,28 @@ namespace com.espertech.esper.compat
             if (value is DateTime)
                 return (DateTime) value;
             if (value is int)
-                return DateTimeHelper.TimeFromMillis((int) value);
+                return DateTimeHelper.FromMillis((int) value);
+            if (value is long)
+                return DateTimeHelper.FromMillis((long) value);
+
+            throw new ArgumentException("invalid value for datetime", "value");
+        }
+
+        public static DateTimeOffset AsDateTimeOffset(this object value)
+        {
+            return AsDateTimeOffset(value, TimeZoneInfo.Local);
+        }
+
+        public static DateTimeOffset AsDateTimeOffset(this object value, TimeZoneInfo timeZone)
+        {
+            if (value is DateTimeOffset)
+                return ((DateTimeOffset) value).TranslateTo(timeZone);
+            if (value is DateTime)
+                return ((DateTime) value).TranslateTo(timeZone);
+            if (value is long)
+                return DateTimeOffsetHelper.TimeFromMillis((long) value, timeZone);
+            if (value is int)
+                return DateTimeOffsetHelper.TimeFromMillis((int) value, timeZone);
 
             throw new ArgumentException("invalid value for datetime", "value");
         }
@@ -259,7 +280,8 @@ namespace com.espertech.esper.compat
                 return false;
 
             asType = asType.GetBoxedType();
-            return (asType == typeof(DateTime?)) ||
+            return (asType == typeof(DateTimeOffset?)) ||
+                   (asType == typeof(DateTime?)) ||
                    (asType == typeof(long?));
         }
 

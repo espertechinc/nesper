@@ -8,11 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -28,50 +28,78 @@ namespace com.espertech.esper.rowregex
     
         private readonly RegexPartitionStateRepoGroupMeta _meta;
         private readonly RegexPartitionStateRandomAccessGetter _getter;
-        private readonly IDictionary<Object, RegexPartitionState> _states;
+        private readonly IDictionary<Object, RegexPartitionStateImpl> _states;
+        private readonly RegexPartitionStateRepoScheduleStateImpl _optionalIntervalSchedules;
     
         private int _currentCollectionSize = INITIAL_COLLECTION_MIN;
-    
-        /// <summary>Ctor. </summary>
+        private int _eventSequenceNumber;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="getter">for "prev" function access</param>
         /// <param name="meta">general metadata for grouping</param>
         public RegexPartitionStateRepoGroup(RegexPartitionStateRandomAccessGetter getter,
-                                            RegexPartitionStateRepoGroupMeta meta)
+                                            RegexPartitionStateRepoGroupMeta meta,
+                                            bool keepScheduleState,
+                                            RegexPartitionTerminationStateComparator terminationStateCompare)
         {
             _getter = getter;
             _meta = meta;
-            _states = new Dictionary<Object, RegexPartitionState>();
+            _states = new HashMap<Object, RegexPartitionStateImpl>();
+            _optionalIntervalSchedules = keepScheduleState ? new RegexPartitionStateRepoScheduleStateImpl(terminationStateCompare) : null;
         }
-    
+
+        public int IncrementAndGetEventSequenceNum()
+        {
+            ++_eventSequenceNumber;
+            return _eventSequenceNumber;
+        }
+
+        public int EventSequenceNum
+        {
+            get { return _eventSequenceNumber; }
+            set { _eventSequenceNumber = value; }
+        }
+
+        public RegexPartitionStateRepoScheduleState ScheduleState
+        {
+            get { return _optionalIntervalSchedules; }
+        }
+
         public void RemoveState(Object partitionKey)
         {
             _states.Remove(partitionKey);
         }
     
-        public RegexPartitionStateRepo CopyForIterate()
+        public RegexPartitionStateRepo CopyForIterate(bool forOutOfOrderReprocessing)
         {
-            var copy = new RegexPartitionStateRepoGroup(_getter, _meta);
+            var copy = new RegexPartitionStateRepoGroup(_getter, _meta, false, null);
             foreach (var entry in _states)
             {
-                copy._states.Put(entry.Key, new RegexPartitionState(entry.Value.RandomAccess, entry.Key, _meta.HasInterval));
+                copy._states[entry.Key] = new RegexPartitionStateImpl(entry.Value.RandomAccess, entry.Key);
             }
             return copy;
         }
-    
-        public void RemoveOld(EventBean[] oldData, bool isEmpty, bool[] found)
+
+        public int RemoveOld(EventBean[] oldData, bool isEmpty, bool[] found)
         {
+            int countRemoved = 0;
+
             if (isEmpty)
             {
                 if (_getter == null)
                 {
                     // no "prev" used, clear all state
+                    countRemoved = StateCount;
                     _states.Clear();
                 }
                 else
                 {
                     foreach (var entry in _states)
                     {
-                        entry.Value.CurrentStates.Clear();
+                        countRemoved += entry.Value.NumStates;
+                        entry.Value.CurrentStates = Collections.GetEmptyList<RegexNFAStateEntry>();
                     }
                 }
     
@@ -81,7 +109,7 @@ namespace com.espertech.esper.rowregex
                     // we will need to remove event-by-event
                     for (var i = 0; i < oldData.Length; i++)
                     {
-                        var partitionState = GetState(oldData[i], true);
+                        var partitionState = GetState(oldData[i], true) as RegexPartitionStateImpl;
                         if (partitionState == null)
                         {
                             continue;
@@ -89,14 +117,14 @@ namespace com.espertech.esper.rowregex
                         partitionState.RemoveEventFromPrev(oldData);
                     }
                 }
-    
-                return;
+
+                return countRemoved;
             }
     
             // we will need to remove event-by-event
             for (var i = 0; i < oldData.Length; i++)
             {
-                var partitionState = GetState(oldData[i], true);
+                var partitionState = GetState(oldData[i], true) as RegexPartitionStateImpl;
                 if (partitionState == null)
                 {
                     continue;
@@ -104,7 +132,8 @@ namespace com.espertech.esper.rowregex
     
                 if (found[i])
                 {
-                    var cleared = partitionState.RemoveEventFromState(oldData[i]);
+                    countRemoved += partitionState.RemoveEventFromState(oldData[i]);
+                    var cleared = partitionState.NumStates == 0;
                     if (cleared)
                     {
                         if (_getter == null)
@@ -116,6 +145,8 @@ namespace com.espertech.esper.rowregex
     
                 partitionState.RemoveEventFromPrev(oldData[i]);
             }
+
+            return countRemoved;
         }
        
         public RegexPartitionState GetState(Object key)
@@ -133,8 +164,8 @@ namespace com.espertech.esper.rowregex
                 IList<Object> removeList = new List<Object>();
                 foreach (var entry in _states)
                 {
-                    if ((entry.Value.CurrentStates.IsEmpty()) &&
-                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty()))
+                    if ((entry.Value.IsEmptyCurrentState) &&
+                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty))
                     {
                         removeList.Add(entry.Key);
                     }
@@ -151,7 +182,7 @@ namespace com.espertech.esper.rowregex
                 }
             }
     
-            var key = GetKeys(theEvent);
+            var key = GetKeys(theEvent, _meta);
             
             var state = _states.Get(key);
             if (state != null)
@@ -160,7 +191,7 @@ namespace com.espertech.esper.rowregex
                 return state;
             }
     
-            state = new RegexPartitionState(_getter, new List<RegexNFAStateEntry>(), key, _meta.HasInterval);
+            state = new RegexPartitionStateImpl(_getter, new List<RegexNFAStateEntry>(), key);
             _states.Put(key, state);
     
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExPartition(false, state); }
@@ -168,7 +199,7 @@ namespace com.espertech.esper.rowregex
         }
     
         public void Accept(EventRowRegexNFAViewServiceVisitor visitor) {
-            visitor.VisitPartitioned(_states);
+            visitor.VisitPartitioned((IDictionary<object, RegexPartitionState>) _states);
         }
 
         public bool IsPartitioned
@@ -176,29 +207,39 @@ namespace com.espertech.esper.rowregex
             get { return true; }
         }
 
-        private Object GetKeys(EventBean theEvent)
+        public IDictionary<object, RegexPartitionStateImpl> States
         {
-            var eventsPerStream = _meta.EventsPerStream;
+            get { return _states; }
+        }
+
+        public int StateCount
+        {
+            get { return _states.Sum(entry => entry.Value.NumStates); }
+        }
+
+        public static Object GetKeys(EventBean theEvent, RegexPartitionStateRepoGroupMeta meta)
+        {
+            var eventsPerStream = meta.EventsPerStream;
             eventsPerStream[0] = theEvent;
     
-            var partitionExpressions = _meta.PartitionExpressions;
+            var partitionExpressions = meta.PartitionExpressions;
             if (partitionExpressions.Length == 1) {
                 if (InstrumentationHelper.ENABLED) {
-                    InstrumentationHelper.Get().QExprValue(_meta.PartitionExpressionNodes[0], eventsPerStream);
-                    var value = partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, _meta.ExprEvaluatorContext));
+                    InstrumentationHelper.Get().QExprValue(meta.PartitionExpressionNodes[0], eventsPerStream);
+                    var value = partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, meta.ExprEvaluatorContext));
                     InstrumentationHelper.Get().AExprValue(value);
                     return value;
                 }
                 else {
-                    return partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, _meta.ExprEvaluatorContext));
+                    return partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, meta.ExprEvaluatorContext));
                 }
             }
     
             var keys = new Object[partitionExpressions.Length];
             var count = 0;
-            var exprEvaluatorContext = _meta.ExprEvaluatorContext;
+            var exprEvaluatorContext = meta.ExprEvaluatorContext;
             foreach (var node in partitionExpressions) {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprValue(_meta.PartitionExpressionNodes[count], eventsPerStream); }
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprValue(meta.PartitionExpressionNodes[count], eventsPerStream); }
                 keys[count] = node.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprValue(keys[count]); }
                 count++;

@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -7,16 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-using com.espertech.esper.compat;
-
-namespace com.espertech.esper.epl.datetime.eval
+namespace com.espertech.esper.compat
 {
-    public class DatetimeLongCoercerCal : DatetimeLongCoercer
+    public enum DateTimeMathStyle
     {
-        public long Coerce(Object date)
-        {
-            return ((DateTime)date).TimeInMillis();
-        }
+        CLR,
+        Java
     }
 }

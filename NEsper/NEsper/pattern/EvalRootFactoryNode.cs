@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.compat.collections;
@@ -20,18 +21,17 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalRootFactoryNode : EvalNodeFactoryBase
     {
-        public EvalRootFactoryNode()
+        public readonly int _numTreeChildNodes;
+
+        public EvalRootFactoryNode(EvalFactoryNode childNode)
         {
+            AddChildNode(childNode);
+            _numTreeChildNodes = AssignFactoryNodeIds();
         }
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            return MakeEvalNodeRoot(agentInstanceContext);
-        }
-
-        public EvalRootNode MakeEvalNodeRoot(PatternAgentInstanceContext agentInstanceContext)
-        {
-            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext);
+            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalRootNode(agentInstanceContext, this, child);
         }
 
@@ -50,6 +50,11 @@ namespace com.espertech.esper.pattern
             get { return ChildNodes[0].IsStateful; }
         }
 
+        public int NumTreeChildNodes
+        {
+            get { return _numTreeChildNodes; }
+        }
+
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             if (!ChildNodes.IsEmpty())
@@ -61,6 +66,39 @@ namespace com.espertech.esper.pattern
         public override PatternExpressionPrecedenceEnum Precedence
         {
             get { return PatternExpressionPrecedenceEnum.MINIMUM; }
+        }
+
+        // assign factory ids, a short-type number assigned once-per-statement to each pattern node
+        // return the count of all ids
+        private int AssignFactoryNodeIds()
+        {
+            short count = 0;
+            FactoryNodeId = count;
+            var factories = CollectFactories(this);
+            foreach (EvalFactoryNode factoryNode in factories) {
+                count++;
+                factoryNode.FactoryNodeId = count;
+            }
+            return count;
+        }
+
+        private static IList<EvalFactoryNode> CollectFactories(EvalRootFactoryNode rootFactory)
+        {
+            var factories = new List<EvalFactoryNode>(8);
+            foreach (EvalFactoryNode factoryNode in rootFactory.ChildNodes)
+            {
+                CollectFactoriesRecursive(factoryNode, factories);
+            }
+            return factories;
+        }
+
+        private static void CollectFactoriesRecursive(EvalFactoryNode factoryNode, IList<EvalFactoryNode> factories)
+        {
+            factories.Add(factoryNode);
+            foreach (EvalFactoryNode childNode in factoryNode.ChildNodes)
+            {
+                CollectFactoriesRecursive(childNode, factories);
+            }
         }
     }
 }

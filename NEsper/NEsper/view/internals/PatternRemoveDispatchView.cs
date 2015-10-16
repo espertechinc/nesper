@@ -22,15 +22,16 @@ namespace com.espertech.esper.view.internals
     /// </summary>
     public sealed class PatternRemoveDispatchView : ViewSupport, EPStatementDispatch
     {
-        private readonly EvalRootState _patternRoot;
+        private readonly EvalRootMatchRemover _matchRemoveCallback;
         private readonly bool _suppressSameEventMatches;
         private readonly bool _discardPartialsOnMatch;
 
         private bool _hasData = false;
         private readonly FlushedEventBuffer _newDataBuffer = new FlushedEventBuffer();
 
-        public PatternRemoveDispatchView(EvalRootState patternRoot, bool suppressSameEventMatches, bool discardPartialsOnMatch) {
-            _patternRoot = patternRoot;
+        public PatternRemoveDispatchView(EvalRootMatchRemover matchRemoveCallback, bool suppressSameEventMatches, bool discardPartialsOnMatch)
+        {
+            _matchRemoveCallback = matchRemoveCallback;
             _suppressSameEventMatches = suppressSameEventMatches;
             _discardPartialsOnMatch = discardPartialsOnMatch;
         }
@@ -64,7 +65,7 @@ namespace com.espertech.esper.view.internals
                         AddEventsFromMatch(match, events);
                     }
                     if (events.Count > 0) {
-                        _patternRoot.RemoveMatch(events);
+                        _matchRemoveCallback.RemoveMatch(events);
                     }
                 }
 

@@ -18,7 +18,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.view;
@@ -45,15 +44,15 @@ namespace com.espertech.esper.epl.core
         private readonly AggregationService _aggregationService;
         private AgentInstanceContext _agentInstanceContext;
 
-        private static int seq = 0;
-        private readonly int id = seq++;
-
         // For output rate limiting, keep a representative event for each group for
         // representing each group in an output limit clause
         private readonly IDictionary<Object, EventBean[]> _groupRepsView = new LinkedHashMap<Object, EventBean[]>();
 
         private readonly IDictionary<Object, OutputConditionPolled> _outputState = new Dictionary<Object, OutputConditionPolled>();
-    
+
+        private ResultSetProcessorRowPerGroupOutputLastHelper _outputLastHelper;
+        private ResultSetProcessorRowPerGroupOutputAllHelper _outputAllHelper;
+
         public ResultSetProcessorRowPerGroup(ResultSetProcessorRowPerGroupFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
             _prototype = prototype;
@@ -62,6 +61,15 @@ namespace com.espertech.esper.epl.core
             _aggregationService = aggregationService;
             _agentInstanceContext = agentInstanceContext;
             aggregationService.SetRemovedCallback(this);
+
+            if (prototype.IsOutputLast)
+            {
+                _outputLastHelper = new ResultSetProcessorRowPerGroupOutputLastHelper(this);
+            }
+            else if (prototype.IsOutputAll)
+            {
+                _outputAllHelper = new ResultSetProcessorRowPerGroupOutputAllHelper(this);
+            }
         }
 
         public AggregationService AggregationService
@@ -310,7 +318,7 @@ namespace com.espertech.esper.epl.core
             return events;
         }
     
-        private void GenerateOutputBatched(IDictionary<Object, EventBean> keysAndEvents, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys, AgentInstanceContext agentInstanceContext)
+        private void GenerateOutputBatchedRow(IDictionary<Object, EventBean> keysAndEvents, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys, AgentInstanceContext agentInstanceContext)
         {
             var eventsPerStream = new EventBean[1];
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, agentInstanceContext);
@@ -343,15 +351,15 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        private void GenerateOutputBatchedArr(bool join, IDictionary<Object, EventBean[]> keysAndEvents, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
+        internal void GenerateOutputBatchedArr(bool join, IDictionary<Object, EventBean[]> keysAndEvents, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
         {
             foreach (var entry in keysAndEvents)
             {
-                GenerateOutputBatched(join, entry.Key, entry.Value, isNewData, isSynthesize, resultEvents, optSortKeys);
+                GenerateOutputBatchedRow(join, entry.Key, entry.Value, isNewData, isSynthesize, resultEvents, optSortKeys);
             }
         }
     
-        private void GenerateOutputBatched(bool join, Object mk, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
+        private void GenerateOutputBatchedRow(bool join, Object mk, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, ICollection<object> optSortKeys)
         {
             // Set the current row of aggregation states
             _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
@@ -376,7 +384,27 @@ namespace com.espertech.esper.epl.core
                 optSortKeys.Add(_orderByProcessor.GetSortKey(eventsPerStream, isNewData, _agentInstanceContext));
             }
         }
-    
+
+        internal void GenerateOutputBatchedNoSortWMap(bool join, Object mk, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, IDictionary<Object, EventBean> resultEvents)
+        {
+            // Set the current row of aggregation states
+            _aggregationService.SetCurrentAccess(mk, _agentInstanceContext.AgentInstanceId, null);
+
+            // Filter the having clause
+            if (_prototype.OptionalHavingNode != null)
+            {
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(eventsPerStream[0]); else InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream); }
+                var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(eventsPerStream, isNewData, _agentInstanceContext)).AsBoxedBoolean();
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result); else InstrumentationHelper.Get().AHavingClauseJoin(result); }
+                if ((result == null) || (false.Equals(result)))
+                {
+                    return;
+                }
+            }
+
+            resultEvents[mk] = _selectExprProcessor.Process(eventsPerStream, isNewData, isSynthesize, _agentInstanceContext);
+        }
+
         private EventBean[] GenerateOutputEventsJoin(IDictionary<Object, EventBean[]> keysAndEvents, bool isNewData, bool isSynthesize)
         {
             var events = new EventBean[keysAndEvents.Count];
@@ -554,7 +582,6 @@ namespace com.espertech.esper.epl.core
 
         protected IEnumerator<EventBean> GetEnumeratorSorted(IEnumerator<EventBean> parentIter)
         {
-    
             // Pull all parent events, generate order keys
             var eventsPerStream = new EventBean[1];
             var outgoingEvents = new List<EventBean>();
@@ -757,7 +784,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                             _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
@@ -774,7 +801,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
     
@@ -860,7 +887,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -890,7 +917,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -967,7 +994,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1011,7 +1038,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1090,7 +1117,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(true, mk, aNewData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                             _aggregationService.ApplyEnter(aNewData.Array, mk, _agentInstanceContext);
@@ -1107,7 +1134,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(true, mk, anOldData.Array, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
     
@@ -1179,7 +1206,7 @@ namespace com.espertech.esper.epl.core
     
                     if (_prototype.IsSelectRStream)
                     {
-                        GenerateOutputBatched(keysAndEvents, false, generateSynthetic, oldEvents, oldEventsSortKey, _agentInstanceContext);
+                        GenerateOutputBatchedRow(keysAndEvents, false, generateSynthetic, oldEvents, oldEventsSortKey, _agentInstanceContext);
                     }
     
                     var eventsPerStream = new EventBean[1];
@@ -1206,7 +1233,7 @@ namespace com.espertech.esper.epl.core
                         }
                     }
     
-                    GenerateOutputBatched(keysAndEvents, true, generateSynthetic, newEvents, newEventsSortKey, _agentInstanceContext);
+                    GenerateOutputBatchedRow(keysAndEvents, true, generateSynthetic, newEvents, newEventsSortKey, _agentInstanceContext);
     
                     keysAndEvents.Clear();
                 }
@@ -1280,7 +1307,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                             _aggregationService.ApplyEnter(eventsPerStream, mk, _agentInstanceContext);
@@ -1298,7 +1325,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
     
@@ -1386,7 +1413,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1417,7 +1444,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1494,7 +1521,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(false, mk, eventsPerStream, true, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(false, mk, eventsPerStream, true, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1538,7 +1565,7 @@ namespace com.espertech.esper.epl.core
                                     {
                                         if (_prototype.IsSelectRStream)
                                         {
-                                            GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                            GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                         }
                                     }
                                 }
@@ -1612,7 +1639,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
                             _aggregationService.ApplyEnter(eventsPerStream, mk, _agentInstanceContext);
@@ -1630,7 +1657,7 @@ namespace com.espertech.esper.epl.core
                             {
                                 if (_prototype.IsSelectRStream)
                                 {
-                                    GenerateOutputBatched(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                                    GenerateOutputBatchedRow(false, mk, eventsPerStream, false, generateSynthetic, oldEvents, oldEventsSortKey);
                                 }
                             }
     
@@ -1738,6 +1765,48 @@ namespace com.espertech.esper.epl.core
                 }
                 return new MultiKeyUntyped(keys);
             }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newData, ISet<MultiKey<EventBean>> oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessJoin(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastHelper.ProcessJoin(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputView(isSynthesize);
+            }
+            return _outputLastHelper.OutputView(isSynthesize);
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputJoin(isSynthesize);
+            }
+            return _outputLastHelper.OutputJoin(isSynthesize);
         }
     }
 }

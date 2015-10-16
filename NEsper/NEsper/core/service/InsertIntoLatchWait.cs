@@ -13,61 +13,74 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>A suspend-and-notify implementation of a latch for use in guaranteeing delivery between a single event produced by a single statement and consumable by another statement. </summary>
+    /// <summary>
+    /// A suspend-and-notify implementation of a latch for use in guaranteeing delivery 
+    /// between a single event produced by a single statement and consumable by another 
+    /// statement.
+    /// </summary>
     public class InsertIntoLatchWait
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         // The earlier latch is the latch generated before this latch
-        private InsertIntoLatchFactory _factory;
         private InsertIntoLatchWait _earlier;
         private readonly int _msecTimeout;
         private readonly EventBean _payload;
 
         // The later latch is the latch generated after this latch
-        private volatile bool _isCompleted;
         private InsertIntoLatchWait _later;
+        private volatile bool _isCompleted;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="factory">The factory.</param>
         /// <param name="earlier">the latch before this latch that this latch should be waiting for</param>
         /// <param name="msecTimeout">the timeout after which delivery occurs</param>
         /// <param name="payload">the payload is an event to deliver</param>
-        public InsertIntoLatchWait(InsertIntoLatchFactory factory, InsertIntoLatchWait earlier, long msecTimeout, EventBean payload)
+        public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, EventBean payload)
         {
-            _factory = factory;
             _earlier = earlier;
             _msecTimeout = (int) msecTimeout;
             _payload = payload;
         }
 
-        /// <summary>Ctor - use for the first and unused latch to indicate completion. </summary>
+        /// <summary>
+        /// Ctor - use for the first and unused latch to indicate completion.
+        /// </summary>
+        /// <param name="factory">The factory.</param>
         public InsertIntoLatchWait(InsertIntoLatchFactory factory)
         {
-            _factory = factory;
             _isCompleted = true;
             _earlier = null;
             _msecTimeout = 0;
         }
 
-        /// <summary>Returns true if the dispatch completed for this future. </summary>
-        /// <returns>true for completed, false if not</returns>
+        /// <summary>
+        /// Returns true if the dispatch completed for this future.
+        /// </summary>
+        /// <returns>
+        /// true for completed, false if not
+        /// </returns>
         public bool IsCompleted()
         {
             return _isCompleted;
         }
 
-        /// <summary>Hand a later latch to use for indicating completion via notify. </summary>
+        /// <summary>
+        /// Hand a later latch to use for indicating completion via notify.
+        /// </summary>
         /// <param name="later">is the later latch</param>
         public void SetLater(InsertIntoLatchWait later)
         {
             _later = later;
         }
 
-        /// <summary>Blcking call that returns only when the earlier latch completed. </summary>
-        /// <returns>payload of the latch</returns>
+        /// <summary>
+        /// Blocking call that returns only when the earlier latch completed.
+        /// </summary>
+        /// <returns>
+        /// payload of the latch
+        /// </returns>
         public EventBean Await()
         {
             if (!_earlier._isCompleted)
@@ -89,7 +102,9 @@ namespace com.espertech.esper.core.service
             return _payload;
         }
 
-        /// <summary>Called to indicate that the latch completed and a later latch can start. </summary>
+        /// <summary>
+        /// Called to indicate that the latch completed and a later latch can start.
+        /// </summary>
         public void Done()
         {
             _isCompleted = true;

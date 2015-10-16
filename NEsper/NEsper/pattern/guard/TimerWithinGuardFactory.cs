@@ -47,7 +47,7 @@ namespace com.espertech.esper.pattern.guard
             MillisecondsExpr = parameters[0];
         }
 
-        protected long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (MillisecondsExpr is ExprTimePeriod)
             {

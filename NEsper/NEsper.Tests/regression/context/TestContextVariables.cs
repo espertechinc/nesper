@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
+using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
@@ -124,6 +125,19 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[] {5});
     
             _epService.EPAdministrator.DestroyAllStatements();
+
+
+            // test module deployment and undeployment
+            String epl = "@Name(\"context\")\n" +
+                    "create context MyContext\n" +
+                    "initiated by distinct(theString) SupportBean as input\n" +
+                    "terminated by SupportBean(theString = input.theString);\n" +
+                    "\n" +
+                    "@Name(\"ctx variable counter\")\n" +
+                    "context MyContext create variable integer counter = 0;\n";
+            DeploymentResult result = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            _epService.EPAdministrator.DeploymentAdmin.Undeploy(result.DeploymentId);
+            _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
         }
     
         [Test]

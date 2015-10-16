@@ -16,7 +16,7 @@ using com.espertech.esper.epl.spec;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor prototype for the fully-grouped case:
+    /// Result set processor Prototype for the fully-grouped case:
     /// there is a group-by and all non-aggregation event properties in the select clause are listed in the group by,
     /// and there are aggregation functions.
     /// </summary>
@@ -139,6 +139,21 @@ namespace com.espertech.esper.epl.core
         public bool IsHistoricalOnly
         {
             get { return _isHistoricalOnly; }
+        }
+
+        public ResultSetProcessorType ResultSetProcessorType
+        {
+            get { return ResultSetProcessorType.FULLYAGGREGATED_GROUPED; }
+        }
+
+        public bool IsOutputLast
+        {
+            get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST; }
+        }
+
+        public bool IsOutputAll
+        {
+            get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
     }
 }

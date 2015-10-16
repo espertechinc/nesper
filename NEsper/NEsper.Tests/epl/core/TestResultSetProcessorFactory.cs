@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.core
             var wildcardSelect = new SelectClauseElementCompiled[] {new SelectClauseElementWildcard()};
             var spec = MakeSpec(new SelectClauseSpecCompiled(wildcardSelect, false), null, _groupByList, null, null, _orderByList);
             var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
-            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThrougFactory);
+            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
         }
     
         [Test]
@@ -61,13 +61,13 @@ namespace com.espertech.esper.epl.core
             var wildcardSelect = new SelectClauseElementCompiled[] {new SelectClauseElementWildcard()};
             var spec = MakeSpec(new SelectClauseSpecCompiled(wildcardSelect, false), null, _groupByList, null, null, _orderByList);
             var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
-            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThrougFactory);
+            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
     
             // empty group-by with select clause elements
             var selectList = SupportSelectExprFactory.MakeNoAggregateSelectListUnnamed();
             spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
             processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
-            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThrougFactory);
+            Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
     
             // non-empty group-by and wildcard select, group by ignored
             _groupByList.Add(SupportExprNodeFactory.MakeIdentNode("DoubleBoxed", "s0"));

@@ -20,7 +20,7 @@ namespace com.espertech.esper.epl.join.@base
 /// <summary>
 /// Query strategy for building a join tuple set by using an execution node tree.
 /// </summary>
-[EsperVersion("5.2.6.*")]
+[EsperVersion("5.3.0.*")]
 public sealed class ExecNodeQueryStrategy : QueryStrategy
 {
 /// <summary>CTor. </summary>
@@ -47,7 +47,7 @@ for (int ii = 0; ii < count; ii++)
 var theEvent = lookupEvents[ii];
 var prototype = new EventBean[NumStreams];
 
-// Set up prototype row
+// Set up Prototype row
 prototype[ForStream] = theEvent;
 
 // Perform execution

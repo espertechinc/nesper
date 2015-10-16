@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.client
 	        Configuration config = SupportConfigFactory.GetConfiguration();
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();
-	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().Name);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName); }
 	    }
 
         [TearDown]

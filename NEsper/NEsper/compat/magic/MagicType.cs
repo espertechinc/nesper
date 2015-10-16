@@ -414,7 +414,7 @@ namespace com.espertech.esper.compat.magic
                 }
             }
 
-            // Start by removing the "Set" from the front of the mutatorMethod name
+            // Start by removing the "Insert" from the front of the mutatorMethod name
             String inferredName = mutatorMethod.Name.Substring(3);
             String newInferredName = null;
             // Leave uppercase inferred names such as URL

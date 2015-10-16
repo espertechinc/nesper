@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.datetime
     
             _epService.EPAdministrator.CreateEPL("create variable long varmsec");
             String startTime = "2002-05-30 9:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
             String[] fields = "val0,val1,val2,val4,val5,val6".Split(',');
             String eplFragment = "select " +
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(long?), typeof(DateTime?), typeof(long?), typeof(long?), typeof(DateTime?), typeof(long?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(long?), typeof(DateTimeOffset?), typeof(long?), typeof(long?), typeof(DateTimeOffset?), typeof(long?) });
     
             _epService.EPRuntime.SendEvent(SupportDateTime.Make(null));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[]{
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.datetime
         public void TestPlusMinusTimePeriod() {
     
             String startTime = "2002-05-30 9:00:00.000";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
     
             String[] fields = "val0,val1,val2,val4,val5,val6".Split(',');
             String eplFragment = "select " +
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(long?), typeof(DateTime?), typeof(long?), typeof(long?), typeof(DateTime?), typeof(long?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(long?), typeof(DateTimeOffset?), typeof(long?), typeof(long?), typeof(DateTimeOffset?), typeof(long?) });
     
             _epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             Object[] expectedPlus = SupportDateTime.GetArrayCoerced("2002-05-30 10:00:10.020", "msec", "util", "msec");

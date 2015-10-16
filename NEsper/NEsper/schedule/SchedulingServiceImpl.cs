@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -197,9 +198,14 @@ namespace com.espertech.esper.schedule
             }
         }
 
+        public void Init()
+        {
+            // no action required
+        }
+
         private void AddTrigger(ScheduleSlot slot, ScheduleHandle handle, long triggerTime)
         {
-            IDictionary<ScheduleSlot, ScheduleHandle> handleSet = _timeHandleMap.Get(triggerTime);
+            var handleSet = _timeHandleMap.Get(triggerTime);
             if (handleSet == null)
             {
                 handleSet = new NullableDictionary<ScheduleSlot, ScheduleHandle>(
@@ -223,7 +229,7 @@ namespace com.espertech.esper.schedule
                 var handle = FurthestTimeHandle;
                 if (handle != null)
                 {
-                    return handle.Value.TimeFromMillis().ToString();
+                    return handle.Value.TimeFromMillis(null).ToString();
                 }
                 return null;
             }
@@ -236,7 +242,7 @@ namespace com.espertech.esper.schedule
                 var handle = NearestTimeHandle;
                 if (handle != null)
                 {
-                    return handle.Value.TimeFromMillis().ToString();
+                    return handle.Value.TimeFromMillis(null).ToString();
                 }
                 return null;
             }

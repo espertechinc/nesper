@@ -44,7 +44,12 @@ namespace com.espertech.esper.epl.view
         	OutputCallback outputCallback = GetCallbackToLocal(parent.StreamCount);
         	_outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
         }
-    
+
+        public override int NumChangesetRows
+        {
+            get { return 0; }
+        }
+
         /// <summary>The Update method is called if the view does not participate in a join. </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>

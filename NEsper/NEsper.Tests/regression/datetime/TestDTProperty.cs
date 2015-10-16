@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.datetime
         {
             public MyImplOne(String datestr, long duration)
             {
-                StartTS = DateTimeHelper.ParseDefaultMSec(datestr);
+                StartTS = DateTimeParser.ParseDefaultMSec(datestr);
                 EndTS = StartTS + duration;
             }
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.datetime
         public void TestProp()
         {
             String startTime = "2002-05-30 9:01:02.003";
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(startTime)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(startTime)));
 
             String[] fields =
                 "valmoh,valmoy,valdom,valdow,valdoy,valhod,valmos,valsom,valwye,valyea,val1,val2".Split(',');

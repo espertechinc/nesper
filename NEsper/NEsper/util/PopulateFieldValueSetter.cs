@@ -19,7 +19,7 @@ namespace com.espertech.esper.util
 #else
     public interface PopulateFieldValueSetter
     {
-        void Set(object value) ;
+        void Insert(object value) ;
     }
 #endif
 }

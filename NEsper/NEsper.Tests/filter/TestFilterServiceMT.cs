@@ -24,8 +24,8 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestFilterService() 
         {
-            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse());
-            RunAssertionAddRemoveFilter(new FilterServiceLockFine());
+            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(false));
+            RunAssertionAddRemoveFilter(new FilterServiceLockFine(false));
         }
 
         private void RunAssertionAddRemoveFilter(FilterService service)
@@ -43,8 +43,8 @@ namespace com.espertech.esper.filter
                         var handle = new SupportFilterHandle();
                         for (int jj = 0; jj < 10000; jj++)
                         {
-                            service.Add(filterValues, handle);
-                            service.Remove(handle);
+                            var entry = service.Add(filterValues, handle);
+                            service.Remove(handle, entry);
                         }
                         return true;
                     };

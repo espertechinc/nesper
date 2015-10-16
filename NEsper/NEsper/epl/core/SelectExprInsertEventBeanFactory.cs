@@ -53,6 +53,25 @@ namespace com.espertech.esper.epl.core
                 }
                 return new SelectExprInsertNativeExpressionCoerceObjectArray(eventType, expressionNodes[0], eventAdapterService);
             }
+
+            // handle special case where the target type has no properties and there is a single "null" value selected
+            if (eventType.PropertyDescriptors.Count == 0 &&
+                columnNames.Length == 1 &&
+                columnNames[0] == "null" &&
+                expressionReturnTypes[0] == null &&
+                !isUsingWildcard)
+            {
+                EventBeanManufacturer eventManufacturer;
+                try
+                {
+                    eventManufacturer = eventAdapterService.GetManufacturer(eventType, new WriteablePropertyDescriptor[0], engineImportService, true);
+                }
+                catch (EventBeanManufactureException e)
+                {
+                    throw new ExprValidationException(e.Message, e);
+                }
+                return new SelectExprInsertNativeNoEval(eventType, eventManufacturer);
+            }
     
             // handle writing to defined columns
             var writableProps = eventAdapterService.GetWriteableProperties(eventType, false);
@@ -64,7 +83,7 @@ namespace com.espertech.esper.epl.core
             try {
                 return InitializeSetterManufactor(eventType, writableProps, isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, engineImportService, eventAdapterService);
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 if (!(eventType is BeanEventType)) {
                     throw;
                 }
@@ -616,6 +635,29 @@ namespace com.espertech.esper.epl.core
                 }
     
                 return EventManufacturer.Make(values);
+            }
+        }
+
+        internal class SelectExprInsertNativeNoEval : SelectExprProcessor
+        {
+            private readonly static Object[] EMPTY_PROPS = new Object[0];
+
+            private readonly EventType _eventType;
+            private readonly EventBeanManufacturer _eventManufacturer;
+
+            public SelectExprInsertNativeNoEval(EventType eventType, EventBeanManufacturer eventManufacturer) {
+                _eventType = eventType;
+                _eventManufacturer = eventManufacturer;
+            }
+
+            public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+            {
+                return _eventManufacturer.Make(EMPTY_PROPS);
+            }
+
+            public EventType ResultEventType
+            {
+                get { return _eventType; }
             }
         }
 

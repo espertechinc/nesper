@@ -20,8 +20,8 @@ namespace com.espertech.esper.filter
             ReaderWriterLockManager.CreateDefaultLock();
 
 
-        public FilterServiceLockFine()
-            : base(new FilterServiceGranularLockFactoryReentrant())
+        public FilterServiceLockFine(bool allowIsolation)
+            : base(new FilterServiceGranularLockFactoryReentrant(), allowIsolation)
         {
         }
 
@@ -62,14 +62,14 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override void Add(FilterValueSet filterValueSet, FilterHandle callback)
+        public override FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback)
         {
-            base.AddInternal(filterValueSet, callback);
+            return base.AddInternal(filterValueSet, callback);
         }
 
-        public override void Remove(FilterHandle callback)
+        public override void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry)
         {
-            base.RemoveInternal(callback);
+            base.RemoveInternal(callback, filterServiceEntry);
         }
 
         public override void RemoveType(EventType type)

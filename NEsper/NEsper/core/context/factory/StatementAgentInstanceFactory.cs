@@ -13,5 +13,7 @@ namespace com.espertech.esper.core.context.factory
     public interface StatementAgentInstanceFactory
     {
         StatementAgentInstanceFactoryResult NewContext(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient);
+        void AssignExpressions(StatementAgentInstanceFactoryResult result);
+        void UnassignExpressions();
     }
 }

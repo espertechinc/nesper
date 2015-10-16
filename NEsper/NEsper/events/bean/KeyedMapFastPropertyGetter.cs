@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat.collections;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client;

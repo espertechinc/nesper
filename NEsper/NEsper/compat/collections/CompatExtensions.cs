@@ -120,6 +120,11 @@ namespace com.espertech.esper.compat.collections
             return Array.IndexOf(array, value) != -1;
         }
 
+        public static HashSet<T> AsHashSet<T>(params T[] values)
+        {
+            return new HashSet<T>(values);
+        } 
+
         public static HashSet<T> AsHashSet<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null)
@@ -129,15 +134,27 @@ namespace com.espertech.esper.compat.collections
             return new HashSet<T>(enumerable);
         }
 
-        public static SynchronizedSet<T> AsSyncCollection<T>(this ICollection<T> unsyncCollection)
+        public static SynchronizedCollection<T> AsSyncCollection<T>(this ICollection<T> unsyncCollection)
         {
-            return new SynchronizedSet<T>(unsyncCollection);
+            return new SynchronizedCollection<T>(unsyncCollection);
         }
 
         public static SynchronizedList<T> AsSyncList<T>( this IList<T> unsyncList )
         {
             return new SynchronizedList<T>(unsyncList);
         }
+
+        public static SynchronizedSet<T> AsSyncSet<T>(this ISet<T> unsyncSet)
+        {
+            return new SynchronizedSet<T>(unsyncSet);
+        }
+
+        public static LinkedList<T> AsLinkedList<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable is LinkedList<T>)
+                return (LinkedList<T>) enumerable;
+            return new LinkedList<T>(enumerable);
+        } 
 
         public static IList<T> AsList<T>( this IEnumerable<T> enumerable )
         {
@@ -515,6 +532,20 @@ namespace com.espertech.esper.compat.collections
             return tableEnum.Current;
         }
 
+        public static void RemoveWhere<T>(this LinkedList<T> list, Func<T, bool> where)
+        {
+            for (var curr = list.First; curr != null; )
+            {
+                var next = curr.Next;
+                if (where.Invoke(curr.Value))
+                {
+                    list.Remove(curr);
+                }
+
+                curr = next;
+            }
+        }
+
         public static void RemoveWhere<T>(this IList<T> list, Func<T, bool> where)
         {
             for (int ii = 0; ii < list.Count;)
@@ -529,6 +560,28 @@ namespace com.espertech.esper.compat.collections
                     ii++;
                 }
             }
+        }
+
+        public static int RemoveWhere<T>(this IList<T> list, Func<T, bool> where, Action<T> collector)
+        {
+            var count = 0;
+
+            for (int ii = 0; ii < list.Count; )
+            {
+                var testItem = where.Invoke(list[ii]);
+                if (testItem)
+                {
+                    count++;
+                    collector.Invoke(list[ii]);
+                    list.RemoveAt(ii);
+                }
+                else
+                {
+                    ii++;
+                }
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -900,7 +953,25 @@ namespace com.espertech.esper.compat.collections
 
                 return text;
             }
-            
+
+            if (value is DateTimeOffset)
+            {
+                var dateTime = (DateTimeOffset)value;
+                var dateOnly = dateTime.Date;
+                if (dateTime == dateOnly)
+                {
+                    return dateTime.ToString("yyyy-MM-dd z");
+                }
+                else if (dateTime.Millisecond == 0)
+                {
+                    return dateTime.ToString("yyyy-MM-dd hh:mm:ss z");
+                }
+                else
+                {
+                    return dateTime.ToString("yyyy-MM-dd hh:mm:ss.ffff z");
+                }
+            }
+
             if (value is DateTime)
             {
                 var dateTime = (DateTime) value;

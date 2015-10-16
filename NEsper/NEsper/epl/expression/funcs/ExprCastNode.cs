@@ -14,7 +14,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.pattern.observer;
 using com.espertech.esper.schedule;
 using com.espertech.esper.util;
@@ -124,14 +123,14 @@ namespace com.espertech.esper.epl.expression.funcs
                     _targetType = typeof(DateTime?);
                     if (staticDateFormat != null) {
                         if (iso8601Format) {
-                            _typeCaster = StringToDateWStaticISOFormatComputer();
+                            _typeCaster = StringToDateTimeWStaticISOFormatComputer();
                         }
                         else {
-                            _typeCaster = StringToDateWStaticFormatComputer(staticDateFormat);
+                            _typeCaster = StringToDateTimeWStaticFormatComputer(staticDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
                         }
                     }
                     else {
-                        _typeCaster = StringToDateWDynamicFormatComputer(dynamicDateFormat);
+                        _typeCaster = StringToDateTimeWDynamicFormatComputer(dynamicDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
                         _isConstant = false;
                     }
                 }
@@ -142,11 +141,11 @@ namespace com.espertech.esper.epl.expression.funcs
                             _typeCaster = StringToLongWStaticISOFormatComputer();
                         }
                         else {
-                            _typeCaster = StringToLongWStaticFormatComputer(staticDateFormat);
+                            _typeCaster = StringToLongWStaticFormatComputer(staticDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
                         }
                     }
                     else {
-                        _typeCaster = StringToLongWDynamicFormatComputer(dynamicDateFormat);
+                        _typeCaster = StringToLongWDynamicFormatComputer(dynamicDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
                         _isConstant = false;
                     }
                 }
@@ -222,58 +221,6 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return _targetType; }
         }
 
-        /*
-        public Object Evaluate(EvaluateParams evaluateParams)
-        {
-            Mutable<object> result = new Mutable<object>();
-
-            using (Instrument.With(
-                i => i.QExprCast(this),
-                i => i.AExprCast(result)))
-            {
-                result.Value = _exprEvaluator.Evaluate(evaluateParams);
-                if (result.Value == null)
-                {
-                    return null;
-                }
-
-                if (_typeCaster != null)
-                {
-                    result.Value = _typeCaster.Invoke(result.Value);
-                    if (result.Value != null)
-                    {
-                        return result.Value;
-                    }
-                }
-
-                // Simple dynamic-cast
-                if (_targetType.IsInstanceOfType(result.Value))
-                {
-                    if (!_targetType.IsValueType)
-                    {
-                        return result.Value;
-                    }
-                }
-
-                try
-                {
-                    result.Value = Convert.ChangeType(result.Value, _targetType);
-                    return result.Value;
-                }
-                catch (FormatException) // Occurs when numeric types parse strings
-                {
-                    result.Value = null;
-                    return null;
-                }
-                catch (InvalidCastException)
-                {
-                    result.Value = null;
-                    return null;
-                }
-            }
-        }
-        */
-
         internal static EPException HandleParseException(string formatString, string date, FormatException ex)
         {
             return new EPException("Exception parsing date '" + date + "' format '" + formatString + "': " + ex.Message, ex);
@@ -284,7 +231,7 @@ namespace com.espertech.esper.epl.expression.funcs
             return new EPException("Exception parsing iso8601 date '" + date + "': " + ex.Message, ex);
         }
 
-        internal static DateTime ParseSafe(string input, string dateFormat)
+        internal static DateTimeOffset ParseSafe(string input, string dateFormat, TimeZoneInfo timeZone)
         {
             try
             {
@@ -297,11 +244,11 @@ namespace com.espertech.esper.epl.expression.funcs
             }
         }
 
-        internal static DateTime StringToDateWStaticISOFormat(object input)
+        internal static DateTimeOffset StringToDateTimeWStaticISOFormat(object input)
         {
             try
             {
-                return TimerScheduleISO8601Parser.ParseDate(input.ToString()).Value;
+                return TimerScheduleISO8601Parser.ParseDate(input.ToString()).DateTime;
             }
             catch (ScheduleParameterException e)
             {
@@ -311,28 +258,25 @@ namespace com.espertech.esper.epl.expression.funcs
 
         internal static ComputeCaster StringToLongWStaticISOFormatComputer()
         {
-            return (input, evaluateParams) => StringToDateWStaticISOFormat(input).TimeInMillis();
+            return (input, evaluateParams) => StringToDateTimeWStaticISOFormat(input).TimeInMillis();
         }
 
-        internal static ComputeCaster StringToDateWStaticISOFormatComputer()
+        internal static ComputeCaster StringToDateTimeWStaticISOFormatComputer()
         {
-            return (input, evaluateParams) => StringToDateWStaticISOFormat(input);
+            return (input, evaluateParams) => StringToDateTimeWStaticISOFormat(input);
         }
 
-        internal static ComputeCaster StringToLongWStaticFormatComputer(string dateFormat)
+        internal static ComputeCaster StringToLongWStaticFormatComputer(string dateFormat, TimeZoneInfo timeZone)
         {
-            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat).TimeInMillis();
+            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat, timeZone).TimeInMillis();
         }
         
-        internal static ComputeCaster StringToDateWStaticFormatComputer(string dateFormat)
+        internal static ComputeCaster StringToDateTimeWStaticFormatComputer(string dateFormat, TimeZoneInfo timeZone)
         {
-            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat);
+            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat, timeZone);
         }
 
-        internal static DateTime StringToDateWDynamicFormat(
-            ExprEvaluator dateFormatEval,
-            EvaluateParams evaluateParams,
-            object input)
+        internal static DateTimeOffset StringToDateTimeWDynamicFormat(ExprEvaluator dateFormatEval, EvaluateParams evaluateParams, object input, TimeZoneInfo timeZone)
         {
             var format = dateFormatEval.Evaluate(evaluateParams);
             if (format == null)
@@ -340,17 +284,17 @@ namespace com.espertech.esper.epl.expression.funcs
                 throw new EPException("Null date format returned by 'dateformat' expression");
             }
 
-            return ParseSafe(input.ToString(), (string)format);
+            return ParseSafe(input.ToString(), (string) format, timeZone);
         }
 
-        internal static ComputeCaster StringToLongWDynamicFormatComputer(ExprEvaluator dateFormatEval)
+        internal static ComputeCaster StringToLongWDynamicFormatComputer(ExprEvaluator dateFormatEval, TimeZoneInfo timeZone)
         {
-            return (input, evaluateParams) => StringToDateWDynamicFormat(dateFormatEval, evaluateParams, input).TimeInMillis();
+            return (input, evaluateParams) => StringToDateTimeWDynamicFormat(dateFormatEval, evaluateParams, input, timeZone).TimeInMillis();
         }
 
-        internal static ComputeCaster StringToDateWDynamicFormatComputer(ExprEvaluator dateFormatEval)
+        internal static ComputeCaster StringToDateTimeWDynamicFormatComputer(ExprEvaluator dateFormatEval, TimeZoneInfo timeZone)
         {
-            return (input, evaluateParams) => StringToDateWDynamicFormat(dateFormatEval, evaluateParams, input);
+            return (input, evaluateParams) => StringToDateTimeWDynamicFormat(dateFormatEval, evaluateParams, input, timeZone);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

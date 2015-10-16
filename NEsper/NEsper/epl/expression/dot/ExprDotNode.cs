@@ -573,6 +573,13 @@ namespace com.espertech.esper.epl.expression.dot
 	        get { return ExprNodeUtility.CollectChainParameters(_chainSpec); }
 	    }
 
+        public bool IsVariableOp(VariableService variableService)
+        {
+            return _chainSpec.Count > 0 &&
+                   _chainSpec[0].IsProperty &&
+                   variableService.GetVariableMetaData(_chainSpec[0].Name) != null;
+        }
+
 	    private ExprValidationException HandleNotFound(string name)
         {
 	        return new ExprValidationException("Unknown single-row function, expression declaration, script or aggregation function named '" + name + "' could not be resolved");

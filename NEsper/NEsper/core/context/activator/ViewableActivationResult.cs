@@ -20,15 +20,19 @@ namespace com.espertech.esper.core.context.activator
             StopCallback stopCallback,
             IReaderWriterLock optionalLock,
             EvalRootState optionalPatternRoot,
+            EvalRootMatchRemover optEvalRootMatchRemover,
             bool suppressSameEventMatches,
-            bool discardPartialsOnMatch)
+            bool discardPartialsOnMatch,
+            ViewableActivationResultExtension viewableActivationResultExtension)
         {
             Viewable = viewable;
             StopCallback = stopCallback;
             OptionalLock = optionalLock;
             OptionalPatternRoot = optionalPatternRoot;
+            OptEvalRootMatchRemover = optEvalRootMatchRemover;
             IsSuppressSameEventMatches = suppressSameEventMatches;
             IsDiscardPartialsOnMatch = discardPartialsOnMatch;
+            ViewableActivationResultExtension = viewableActivationResultExtension;
         }
 
         public StopCallback StopCallback { get; private set; }
@@ -39,8 +43,12 @@ namespace com.espertech.esper.core.context.activator
 
         public EvalRootState OptionalPatternRoot { get; private set; }
 
+        public EvalRootMatchRemover OptEvalRootMatchRemover { get; private set; }
+
         public bool IsSuppressSameEventMatches { get; private set; }
 
         public bool IsDiscardPartialsOnMatch { get; private set; }
+
+        public ViewableActivationResultExtension ViewableActivationResultExtension { get; private set; }
     }
 }

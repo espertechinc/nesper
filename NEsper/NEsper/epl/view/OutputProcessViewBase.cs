@@ -41,6 +41,8 @@ namespace com.espertech.esper.epl.view
             set { ParentView = value; }
         }
 
+        public abstract int NumChangesetRows { get; }
+
         public abstract void Update(EventBean[] newData, EventBean[] oldData);
 
         public View AddView(View view)

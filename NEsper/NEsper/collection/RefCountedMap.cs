@@ -60,7 +60,7 @@ namespace com.espertech.esper.collection
                 }
                 if (_refMap.ContainsKey(key))
                 {
-                    throw new IllegalStateException("Key value already in collection");
+                    throw new IllegalStateException("Value value already in collection");
                 }
 
                 Pair<V, Int32> refValue = new Pair<V, Int32>(value, 1);
@@ -81,7 +81,7 @@ namespace com.espertech.esper.collection
             Pair<V, Int32> refValue ;
             if (!_refMap.TryGetValue(key, out refValue))
             {
-                throw new IllegalStateException("Key value not found in collection");
+                throw new IllegalStateException("Value value not found in collection");
             }
             refValue.Second = refValue.Second + 1;
         }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.collection
             Pair<V, Int32> refValue ;
             if (!_refMap.TryGetValue(key, out refValue))
             {
-                throw new IllegalStateException("Key value not found in collection");
+                throw new IllegalStateException("Value value not found in collection");
             }
 
             int refCounter = refValue.Second;

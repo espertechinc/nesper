@@ -10,78 +10,116 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.rowregex
 {
-    /// <summary>State for when no partitions (single partition) is required. </summary>
+    /// <summary>
+    /// State for when no partitions (single partition) is required.
+    /// </summary>
     public class RegexPartitionStateRepoNoGroup : RegexPartitionStateRepo
     {
-        private readonly RegexPartitionState singletonState;
-        private readonly bool hasInterval;
-    
-        /// <summary>Ctor. </summary>
+        private readonly RegexPartitionStateImpl _singletonState;
+        private readonly RegexPartitionStateRepoScheduleStateImpl _optionalIntervalSchedules;
+        private int _eventSequenceNumber;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="singletonState">state</param>
-        /// <param name="hasInterval">true for interval</param>
-        public RegexPartitionStateRepoNoGroup(RegexPartitionState singletonState, bool hasInterval)
+        public RegexPartitionStateRepoNoGroup(RegexPartitionStateImpl singletonState)
         {
-            this.singletonState = singletonState;
-            this.hasInterval = hasInterval;
+            _singletonState = singletonState;
+            _optionalIntervalSchedules = null;
         }
-    
-        /// <summary>Ctor. </summary>
-        /// <param name="getter">"prev" getter</param>
-        /// <param name="hasInterval">true for interval</param>
-        public RegexPartitionStateRepoNoGroup(RegexPartitionStateRandomAccessGetter getter, bool hasInterval)
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="getter">The getter.</param>
+        /// <param name="keepScheduleState">if set to <c>true</c> [keep schedule state].</param>
+        /// <param name="terminationStateCompare">The termination state compare.</param>
+        public RegexPartitionStateRepoNoGroup(RegexPartitionStateRandomAccessGetter getter, bool keepScheduleState, RegexPartitionTerminationStateComparator terminationStateCompare)
         {
-            singletonState = new RegexPartitionState(getter, new List<RegexNFAStateEntry>(), hasInterval);
-            this.hasInterval = hasInterval;
+            _singletonState = new RegexPartitionStateImpl(getter, new List<RegexNFAStateEntry>());
+            _optionalIntervalSchedules = keepScheduleState ? new RegexPartitionStateRepoScheduleStateImpl(terminationStateCompare) : null;
         }
-    
-        public void RemoveState(Object partitionKey) {
+
+        public int IncrementAndGetEventSequenceNum()
+        {
+            ++_eventSequenceNumber;
+            return _eventSequenceNumber;
+        }
+
+        public int EventSequenceNum
+        {
+            get { return _eventSequenceNumber; }
+            set { _eventSequenceNumber = value; }
+        }
+
+        public RegexPartitionStateRepoScheduleState ScheduleState
+        {
+            get { return _optionalIntervalSchedules; }
+        }
+
+
+        public void RemoveState(Object partitionKey)
+        {
             // not an operation
         }
-    
-        /// <summary>Copy state for iteration. </summary>
-        /// <returns>copy</returns>
-        public RegexPartitionStateRepo CopyForIterate()
+
+        /// <summary>
+        /// Copy state for iteration.
+        /// </summary>
+        /// <param name="forOutOfOrderReprocessing">For out of order reprocessing.</param>
+        /// <returns></returns>
+        public RegexPartitionStateRepo CopyForIterate(bool forOutOfOrderReprocessing)
         {
-            RegexPartitionState state = new RegexPartitionState(singletonState.RandomAccess, null, hasInterval);
-            return new RegexPartitionStateRepoNoGroup(state, hasInterval);
+            var state = new RegexPartitionStateImpl(_singletonState.RandomAccess, null);
+            return new RegexPartitionStateRepoNoGroup(state);
         }
-    
-        public void RemoveOld(EventBean[] oldEvents, bool isEmpty, bool[] found)
+
+        public int RemoveOld(EventBean[] oldEvents, bool isEmpty, bool[] found)
         {
+            int countRemoved = 0;
             if (isEmpty)
             {
-                singletonState.CurrentStates.Clear();
+                countRemoved = _singletonState.NumStates;
+                _singletonState.CurrentStates = Collections.GetEmptyList<RegexNFAStateEntry>();
             }
             else
             {
-                foreach (EventBean oldEvent in oldEvents)
-                {
-                    singletonState.RemoveEventFromState(oldEvent);
+                foreach (EventBean oldEvent in oldEvents) {
+                    countRemoved += _singletonState.RemoveEventFromState(oldEvent);
                 }
             }
-            singletonState.RemoveEventFromPrev(oldEvents);
+            _singletonState.RemoveEventFromPrev(oldEvents);
+            return countRemoved;
         }
-    
+
         public RegexPartitionState GetState(EventBean theEvent, bool collect)
         {
-            return singletonState;
+            return _singletonState;
         }
-    
+
         public RegexPartitionState GetState(Object key)
         {
-            return singletonState;
+            return _singletonState;
         }
-    
-        public void Accept(EventRowRegexNFAViewServiceVisitor visitor) {
-            visitor.VisitUnpartitioned(singletonState);
+
+        public void Accept(EventRowRegexNFAViewServiceVisitor visitor)
+        {
+            visitor.VisitUnpartitioned(_singletonState);
         }
 
         public bool IsPartitioned
         {
             get { return false; }
+        }
+
+        public int StateCount
+        {
+            get { return _singletonState.NumStates; }
         }
     }
 }

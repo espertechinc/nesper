@@ -6,12 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
-    using IEnumerator = System.Collections.IEnumerator;
-
     /// <summary>
     /// FixedDictionarySchema is a class that represents the structure of a map who's
     /// keys are known when the schema is created.  FixedSchemas are immutable

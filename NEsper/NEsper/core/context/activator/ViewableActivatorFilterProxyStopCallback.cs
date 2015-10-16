@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.core.service;
+using com.espertech.esper.filter;
 
 namespace com.espertech.esper.core.context.activator
 {
@@ -14,18 +15,22 @@ namespace com.espertech.esper.core.context.activator
     {
         private readonly ViewableActivatorFilterProxy _parent;
         private EPStatementHandleCallback _filterHandle;
-    
-        public ViewableActivatorFilterProxyStopCallback(ViewableActivatorFilterProxy parent, EPStatementHandleCallback filterHandle) {
+        private readonly FilterServiceEntry _filterServiceEntry;
+
+        public ViewableActivatorFilterProxyStopCallback(ViewableActivatorFilterProxy parent, EPStatementHandleCallback filterHandle, FilterServiceEntry filterServiceEntry)
+        {
             _parent = parent;
             _filterHandle = filterHandle;
+            _filterServiceEntry = filterServiceEntry;
         }
     
-        public void Stop() {
+        public void Stop()
+        {
             lock (this)
             {
                 if (_filterHandle != null)
                 {
-                    _parent.Services.FilterService.Remove(_filterHandle);
+                    _parent.Services.FilterService.Remove(_filterHandle, _filterServiceEntry);
                 }
                 _filterHandle = null;
             }

@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.datetime.reformatop
             return EvaluateInternal(ts);
         }
 
-        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateInternal(d.TimeInMillis());
         }

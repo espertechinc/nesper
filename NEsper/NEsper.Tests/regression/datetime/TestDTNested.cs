@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(DateTime?), typeof(long?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(DateTimeOffset?), typeof(long?)});
     
             String startTime = "2002-05-30 09:00:00.000";
             String expectedTime = "2002-05-30 1:02:03.000";
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             stmtFragment = _epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += _listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTime?), typeof(DateTime?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTimeOffset?), typeof(DateTimeOffset?) });
     
             _epService.EPRuntime.SendEvent(SupportDateTime.Make(startTime));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, SupportDateTime.GetArrayCoerced(expectedTime, "cal", "cal"));

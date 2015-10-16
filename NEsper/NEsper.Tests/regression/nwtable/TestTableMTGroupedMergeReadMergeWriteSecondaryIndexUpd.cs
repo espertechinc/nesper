@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.nwtable
         /// <summary>
         /// Primary key is composite: {topgroup, subgroup}. Secondary index on {topgroup}.
         /// For a given number of seconds:
-        /// Single writer inserts such as {0,1}, {0,2} to {0, N}, each event a new subgroup and topgroup always 0.
+        /// Single writer inserts such as {0,1}, {0,2} to {0, Count}, each event a new subgroup and topgroup always 0.
         /// Single reader tries to count all values where subgroup equals 0, should always receive a count of 1 and increasing.
         /// </summary>
         [Test]

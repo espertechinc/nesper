@@ -41,7 +41,7 @@ namespace com.espertech.esper.filter
         /// <returns>
         /// event evaluator stored for the filter constant, or null if not found
         /// </returns>
-        protected internal abstract EventEvaluator Get(Object filterConstant);
+        public abstract EventEvaluator Get(Object filterConstant);
 
         /// <summary>
         /// Store the event evaluation instance for the given constant. Can override an existing value for 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="filterConstant">is the constant supplied in the filter parameter</param>
         /// <param name="evaluator">to be stored for the constant</param>
-        protected internal abstract void Put(Object filterConstant, EventEvaluator evaluator);
+        public abstract void Put(Object filterConstant, EventEvaluator evaluator);
 
         public override EventEvaluator this[Object filterConstant]
         {

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.util;
@@ -19,6 +20,7 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.script;
+using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
@@ -26,6 +28,7 @@ using com.espertech.esper.events.vaevent;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.pattern.pool;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.schedule;
 using com.espertech.esper.script;
 using com.espertech.esper.view;
@@ -90,6 +93,7 @@ namespace com.espertech.esper.core.service
                                 IReaderWriterLock defaultAgentInstanceLock,
                                 ContextDescriptor contextDescriptor,
                                 PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc,
+                                MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc,
                                 bool statelessSelect,
                                 ContextControllerFactoryService contextControllerFactoryService,
                                 AgentInstanceScriptContext defaultAgentInstanceScriptContext,
@@ -105,7 +109,7 @@ namespace com.espertech.esper.core.service
             EpStatementHandle = epStatementHandle;
             ViewResolutionService = viewResultionService;
             PatternResolutionService = patternResolutionService;
-            ExtensionServicesContext = statementExtensionSvcContext;
+            StatementExtensionServicesContext = statementExtensionSvcContext;
             StatementStopService = statementStopService;
             MethodResolutionService = methodResolutionService;
             PatternContextFactory = patternContextFactory;
@@ -118,6 +122,7 @@ namespace com.espertech.esper.core.service
             DefaultAgentInstanceLock = defaultAgentInstanceLock;
             ContextDescriptor = contextDescriptor;
             PatternSubexpressionPoolSvc = patternSubexpressionPoolSvc;
+            MatchRecognizeStatePoolStmtSvc = matchRecognizeStatePoolStmtSvc;
             IsStatelessSelect = statelessSelect;
             ContextControllerFactoryService = contextControllerFactoryService;
             DefaultAgentInstanceScriptContext = defaultAgentInstanceScriptContext;
@@ -173,7 +178,7 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns extension context for statements. </summary>
         /// <value>context</value>
-        public StatementExtensionSvcContext ExtensionServicesContext { get; private set; }
+        public StatementExtensionSvcContext StatementExtensionServicesContext { get; private set; }
 
         /// <summary>Returns statement stop subscription taker. </summary>
         /// <value>stop service</value>
@@ -186,6 +191,30 @@ namespace com.espertech.esper.core.service
         /// <summary>Returns the pattern context factory for the statement. </summary>
         /// <value>pattern context factory</value>
         public PatternContextFactory PatternContextFactory { get; private set; }
+
+        public MatchRecognizeStatePoolStmtSvc MatchRecognizeStatePoolStmtSvc { get; private set; }
+
+        /// <summary>Gets or sets the compiled statement spec.</summary>
+        public StatementSpecCompiled StatementSpecCompiled { get; set; }
+        /// <summary>Gets or sets the statement agent instance factory.</summary>
+        public StatementAgentInstanceFactory StatementAgentInstanceFactory { get; set; }
+        /// <summary>Gets or sets the statement.</summary>
+        public EPStatementSPI Statement { get; set; }
+
+        public EngineLevelExtensionServicesContext EngineExtensionServicesContext
+        {
+            get { return _stmtEngineServices.EngineLevelExtensionServicesContext; }
+        }
+
+        public RegexHandlerFactory RegexPartitionStateRepoFactory
+        {
+            get { return _stmtEngineServices.RegexHandlerFactory; }
+        }
+
+        public StatementLockFactory StatementLockFactory
+        {
+            get { return _stmtEngineServices.StatementLockFactory; }
+        }
 
         /// <summary>Returns the statement expression text </summary>
         /// <value>expression text</value>

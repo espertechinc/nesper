@@ -33,5 +33,13 @@ namespace com.espertech.esper.core.context.factory
             var finalView = new TableStateViewablePublic(_tableMetadata, tableState);
             return new StatementAgentInstanceFactoryCreateTableResult(finalView, CollectionUtil.STOP_CALLBACK_NONE, agentInstanceContext, aggregationReportingService);
         }
+
+        public void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+        }
+
+        public void UnassignExpressions()
+        {
+        }
     }
 }

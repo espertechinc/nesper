@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.util;
 
@@ -115,6 +116,11 @@ namespace com.espertech.esper.type
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTime), RelationalOpEnum.GE }), GEDateTimeComputer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTime), RelationalOpEnum.LT }), LTDateTimeComputer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTime), RelationalOpEnum.LE }), LEDateTimeComputer);
+
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTimeOffset), RelationalOpEnum.GT }), GTDateTimeOffsetComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTimeOffset), RelationalOpEnum.GE }), GEDateTimeOffsetComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTimeOffset), RelationalOpEnum.LT }), LTDateTimeOffsetComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(DateTimeOffset), RelationalOpEnum.LE }), LEDateTimeOffsetComputer);
 
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(short), RelationalOpEnum.GT }), GTInt16Computer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(short), RelationalOpEnum.GE }), GEInt16Computer);
@@ -806,6 +812,60 @@ namespace com.espertech.esper.type
         {
             DateTime s1 = Convert.ToDateTime(objOne);
             DateTime s2 = Convert.ToDateTime(objTwo);
+            return s1 <= s2;
+        }
+        #endregion
+
+        #region DateTimeOffset
+        /// <summary>
+        /// Greater-than datetime offset computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool GTDateTimeOffsetComputer(Object objOne, Object objTwo)
+        {
+            DateTimeOffset s1 = objOne.AsDateTimeOffset();
+            DateTimeOffset s2 = objTwo.AsDateTimeOffset();
+            return s1 > s2;
+        }
+
+        /// <summary>
+        /// Greater-than or equal to datetime offset computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool GEDateTimeOffsetComputer(Object objOne, Object objTwo)
+        {
+            DateTimeOffset s1 = objOne.AsDateTimeOffset();
+            DateTimeOffset s2 = objTwo.AsDateTimeOffset();
+            return s1 >= s2;
+        }
+
+        /// <summary>
+        /// Less-than datetime offset computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool LTDateTimeOffsetComputer(Object objOne, Object objTwo)
+        {
+            DateTimeOffset s1 = objOne.AsDateTimeOffset();
+            DateTimeOffset s2 = objTwo.AsDateTimeOffset();
+            return s1 < s2;
+        }
+
+        /// <summary>
+        /// Less-than or equal to datetime offset computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool LEDateTimeOffsetComputer(Object objOne, Object objTwo)
+        {
+            DateTimeOffset s1 = objOne.AsDateTimeOffset();
+            DateTimeOffset s2 = objTwo.AsDateTimeOffset();
             return s1 <= s2;
         }
         #endregion

@@ -147,33 +147,48 @@ namespace com.espertech.esper.pattern
                 return;
             }
     
-            // Add the event received to the list of events per child
-            AddMatchEvent(EventsPerChild, indexFrom.Value, matchEvent);
-    
             // If all nodes have events received, the AND expression turns true
-            bool allHaveEvents = true;
-            for (int i = 0; i < EventsPerChild.Length; i++) {
-                if (EventsPerChild[i] == null) {
-                    allHaveEvents = false;
+            var allHaveEventsExcludingFromChild = true;
+            for (int i = 0; i < EventsPerChild.Length; i++)
+            {
+                if (indexFrom != i && EventsPerChild[i] == null)
+                {
+                    allHaveEventsExcludingFromChild = false;
                     break;
                 }
             }
-            if (!allHaveEvents)
+
+            // if we don't have events from all child nodes, add event and done
+            if (!allHaveEventsExcludingFromChild)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(false);}
+                AddMatchEvent(EventsPerChild, indexFrom.Value, matchEvent);
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(false); }
                 return;
             }
-    
-            // For each combination in eventsPerChild for all other state nodes generate an event to the parent
-            List<MatchedEventMap> result = GenerateMatchEvents(matchEvent, EventsPerChild, indexFrom.Value);
-    
-            bool hasActive = false;
-            for (int i = 0 ; i < ActiveChildNodes.Length; i++) {
-                if (ActiveChildNodes[i] != null) {
+
+            // if all other nodes have quit other then the from-node, don't retain matching event
+            var allOtherNodesQuit = true;
+            var hasActive = false;
+            for (int i = 0; i < EventsPerChild.Length; i++)
+            {
+                if (ActiveChildNodes[i] != null)
+                {
                     hasActive = true;
-                    break;
+                    if (i != indexFrom)
+                    {
+                        allOtherNodesQuit = false;
+                    }
                 }
             }
+
+            // if not all other nodes have quit, add event to received list
+            if (!allOtherNodesQuit)
+            {
+                AddMatchEvent(EventsPerChild, indexFrom.Value, matchEvent);
+            }
+
+            // For each combination in eventsPerChild for all other state nodes generate an event to the parent
+            List<MatchedEventMap> result = GenerateMatchEvents(matchEvent, EventsPerChild, indexFrom.Value);
     
             // Check if this is quitting
             bool quitted = true;

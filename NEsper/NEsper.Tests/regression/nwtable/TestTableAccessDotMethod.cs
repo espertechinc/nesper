@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.nwtable
         private object[] MakePopulateEvent() {
             return new object[] {
                     "E1",
-                    DateTimeHelper.ParseDefaultMSec("2002-05-30T9:55:00.000"), // ts
+                    DateTimeParser.ParseDefaultMSec("2002-05-30T9:55:00.000"), // ts
                     new MyBean(),   // mb
                     new MyBean[] {new MyBean(), new MyBean()},   // mbarr
                     new object[] {"p0value"},   // me

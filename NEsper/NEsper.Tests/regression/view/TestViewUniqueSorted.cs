@@ -30,9 +30,9 @@ namespace com.espertech.esper.regression.view
     [TestFixture]
     public class TestViewUniqueSorted  {
         private const String SYMBOL_CSCO = "CSCO.O";
-        private const String SYMBOL_IBM = "IBM.N";
+        private const String SYMBOL_IBM = "IBM.Count";
         private const String SYMBOL_MSFT = "MSFT.O";
-        private const String SYMBOL_C = "C.N";
+        private const String SYMBOL_C = "C.Count";
     
         private EPServiceProvider _epService;
         private SupportUpdateListener _testListener;

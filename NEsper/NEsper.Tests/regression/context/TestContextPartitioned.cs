@@ -243,6 +243,12 @@ namespace com.espertech.esper.regression.context
             _epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() as SupportBean");
             epl = "create context SegmentedByWhat partition by TheString from MyWindow";
             TryInvalid(epl, "Error starting statement: Partition criteria may not include named windows [create context SegmentedByWhat partition by TheString from MyWindow]");
+
+            // partitioned with named window
+            _epService.EPAdministrator.CreateEPL("create schema SomeSchema(ipAddress string)");
+            _epService.EPAdministrator.CreateEPL("create context TheSomeSchemaCtx Partition By ipAddress From SomeSchema");
+            epl = "context TheSomeSchemaCtx create window MyEvent.win:time(30 sec) (ipAddress string)";
+            TryInvalid(epl, "Error starting statement: Segmented context 'TheSomeSchemaCtx' requires that named windows are associated to an existing event type and that the event type is listed among the partitions defined by the create-context statement");
         }
     
         private void TryInvalid(String epl, String expected)

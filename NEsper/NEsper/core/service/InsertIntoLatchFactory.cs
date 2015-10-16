@@ -19,24 +19,28 @@ namespace com.espertech.esper.core.service
     public class InsertIntoLatchFactory
     {
         private readonly String _name;
+        private readonly bool _stateless;
         private readonly bool _useSpin;
         private readonly TimeSourceService _timeSourceService;
         private readonly long _msecWait;
     
         private InsertIntoLatchSpin _currentLatchSpin;
         private InsertIntoLatchWait _currentLatchWait;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="name">the factory name</param>
+        /// <param name="stateless">if set to <c>true</c> [stateless].</param>
         /// <param name="msecWait">the number of milliseconds latches will await maximually</param>
         /// <param name="locking">the blocking strategy to employ</param>
         /// <param name="timeSourceService">time source provider</param>
-        public InsertIntoLatchFactory(String name, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking,
-                                      TimeSourceService timeSourceService)
+        public InsertIntoLatchFactory(String name, bool stateless, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService)
         {
             _name = name;
             _msecWait = msecWait;
             _timeSourceService = timeSourceService;
+            _stateless = stateless;
     
             _useSpin = (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
     
@@ -51,11 +55,20 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        /// <summary>Returns a new latch. <para /> Need not be synchronized as there is one per statement and execution is during statement lock. </summary>
+        /// <summary>Returns a new latch.
+        /// <para>
+        /// Need not be synchronized as there is one per statement and execution is during statement lock.
+        /// </para>
+        /// </summary>
         /// <param name="payload">is the object returned by the await.</param>
         /// <returns>latch</returns>
         public Object NewLatch(EventBean payload)
         {
+            if (_stateless)
+            {
+                return payload;
+            }
+
             if (_useSpin)
             {
                 var nextLatch = new InsertIntoLatchSpin(this, _currentLatchSpin, _msecWait, payload);
@@ -64,7 +77,7 @@ namespace com.espertech.esper.core.service
             }
             else
             {
-                var nextLatch = new InsertIntoLatchWait(this, _currentLatchWait, _msecWait, payload);
+                var nextLatch = new InsertIntoLatchWait(_currentLatchWait, _msecWait, payload);
                 _currentLatchWait.SetLater(nextLatch);
                 _currentLatchWait = nextLatch;
                 return nextLatch;

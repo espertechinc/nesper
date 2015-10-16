@@ -33,8 +33,8 @@ namespace com.espertech.esper.pattern.observer
     
         /// <summary>The schedule specification for the timer-at. </summary>
         protected ScheduleSpec spec = null;
-    
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor)
+
+        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
         {
             ObserverParameterUtil.ValidateNoNamedParameters("timer:at", parameters);
 
@@ -75,7 +75,7 @@ namespace com.espertech.esper.pattern.observer
             }
         }
     
-        protected ScheduleSpec ComputeSpec(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public ScheduleSpec ComputeSpec(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (spec != null) {
                 return spec;

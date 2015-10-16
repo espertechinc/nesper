@@ -69,8 +69,8 @@ namespace com.espertech.esper.regression.datetime
             var stmt = _epService.EPAdministrator.CreateEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
             stmt.Events += _listener.Update;
     
-            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeHelper.ParseDefaultMSec("2002-05-30T9:00:00.000"), DateTimeHelper.ParseDefaultMSec("2002-05-30T9:00:01.000"));
-            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeHelper.ParseDefaultMSec("2002-05-30T9:00:00.500"), DateTimeHelper.ParseDefaultMSec("2002-05-30T9:00:00.700"));
+            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeParser.ParseDefaultMSec("2002-05-30T9:00:00.000"), DateTimeParser.ParseDefaultMSec("2002-05-30T9:00:01.000"));
+            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeParser.ParseDefaultMSec("2002-05-30T9:00:00.500"), DateTimeParser.ParseDefaultMSec("2002-05-30T9:00:00.700"));
             Assert.AreEqual(true, _listener.AssertOneGetNewAndReset().Get("val0"));
     
             _epService.EPAdministrator.DestroyAllStatements();
@@ -83,9 +83,9 @@ namespace com.espertech.esper.regression.datetime
     
             stmt = _epService.EPAdministrator.CreateEPL("select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
             stmt.Events += _listener.Update;
-    
-            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeHelper.ParseDefault("2002-05-30T9:00:00.000"), DateTimeHelper.ParseDefault("2002-05-30T9:00:01.000"));
-            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeHelper.ParseDefault("2002-05-30T9:00:00.500"), DateTimeHelper.ParseDefault("2002-05-30T9:00:00.700"));
+
+            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeParser.ParseDefault("2002-05-30T9:00:00.000"), DateTimeParser.ParseDefault("2002-05-30T9:00:01.000"));
+            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeParser.ParseDefault("2002-05-30T9:00:00.500"), DateTimeParser.ParseDefault("2002-05-30T9:00:00.700"));
             Assert.AreEqual(true, _listener.AssertOneGetNewAndReset().Get("val0"));
     
             _epService.EPAdministrator.DestroyAllStatements();
@@ -98,9 +98,9 @@ namespace com.espertech.esper.regression.datetime
     
             stmt = _epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " select a.includes(b) as val0 from TypeA.std:lastevent() as a, TypeB.std:lastevent() as b");
             stmt.Events += _listener.Update;
-    
-            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeHelper.ParseDefaultDate("2002-05-30T9:00:00.000"), DateTimeHelper.ParseDefaultDate("2002-05-30T9:00:01.000"));
-            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeHelper.ParseDefaultDate("2002-05-30T9:00:00.500"), DateTimeHelper.ParseDefaultDate("2002-05-30T9:00:00.700"));
+
+            MakeSendEvent("TypeA", eventRepresentationEnum, DateTimeParser.ParseDefaultDate("2002-05-30T9:00:00.000"), DateTimeParser.ParseDefaultDate("2002-05-30T9:00:01.000"));
+            MakeSendEvent("TypeB", eventRepresentationEnum, DateTimeParser.ParseDefaultDate("2002-05-30T9:00:00.500"), DateTimeParser.ParseDefaultDate("2002-05-30T9:00:00.700"));
             Assert.AreEqual(true, _listener.AssertOneGetNewAndReset().Get("val0"));
             _epService.EPAdministrator.DestroyAllStatements();
     
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.datetime
             stmt.Events += _listener.Update;
     
             var theEvent = new SupportBean();
-            theEvent.LongPrimitive = DateTimeHelper.ParseDefaultMSec("2002-05-30T9:00:00.000");
+            theEvent.LongPrimitive = DateTimeParser.ParseDefaultMSec("2002-05-30T9:00:00.000");
             _epService.EPRuntime.SendEvent(theEvent);
             Assert.AreEqual(5, _listener.AssertOneGetNewAndReset().Get("val0"));
     
@@ -1172,9 +1172,9 @@ namespace com.espertech.esper.regression.datetime
                 var testduration = test[1].AsLong();
                 var expected = (Boolean) test[2];
     
-                var rightStart = DateTimeHelper.ParseDefaultMSec(seedTime);
+                var rightStart = DateTimeParser.ParseDefaultMSec(seedTime);
                 var rightEnd = rightStart + seedDuration;
-                var leftStart = DateTimeHelper.ParseDefaultMSec(testtime);
+                var leftStart = DateTimeParser.ParseDefaultMSec(testtime);
                 long leftEnd = leftStart + testduration;
                 var message = "time " + testtime + " duration " + testduration + " for '" + whereClause + "'";
     

@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
@@ -24,7 +26,7 @@ namespace com.espertech.esper.epl.view
 	/// </summary>
 	public class OutputProcessViewFactoryFactory
 	{
-	    public static OutputProcessViewFactory Make(StatementSpecCompiled statementSpec, InternalEventRouter internalEventRouter, StatementContext statementContext, EventType resultEventType, OutputProcessViewCallback optionalOutputProcessViewCallback, TableService tableService)
+	    public static OutputProcessViewFactory Make(StatementSpecCompiled statementSpec, InternalEventRouter internalEventRouter, StatementContext statementContext, EventType resultEventType, OutputProcessViewCallback optionalOutputProcessViewCallback, TableService tableService, ResultSetProcessorType resultSetProcessorType)
 	    {
 	        // determine direct-callback
 	        if (optionalOutputProcessViewCallback != null) {
@@ -116,26 +118,50 @@ namespace com.espertech.esper.epl.view
 	                var isWithHavingClause = statementSpec.HavingExprRootNode != null;
 	                var isStartConditionOnCreation = HasOnlyTables(statementSpec.StreamSpecs);
 	                var outputConditionFactory = OutputConditionFactoryFactory.CreateCondition(outputLimitSpec, statementContext, isGrouped, isWithHavingClause, isStartConditionOnCreation);
+                    var hasOrderBy = statementSpec.OrderByList != null && statementSpec.OrderByList.Length > 0;
 
 	                OutputProcessViewConditionFactory.ConditionType conditionType;
 
-	                if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT)
+                    var hasAfter = outputLimitSpec.AfterNumberOfEvents != null || outputLimitSpec.AfterTimePeriodExpr != null;
+                    var isUnaggregatedUngrouped = resultSetProcessorType == ResultSetProcessorType.HANDTHROUGH || resultSetProcessorType == ResultSetProcessorType.UNAGGREGATED_UNGROUPED;
+
+                    // hint checking with order-by
+                    var hasOptHint = HintEnum.ENABLE_OUTPUTLIMIT_OPT.GetHint(statementSpec.Annotations) != null;
+                    if (hasOptHint && hasOrderBy) {
+                        throw new ExprValidationException("The " + HintEnum.ENABLE_OUTPUTLIMIT_OPT + " hint is not supported with order-by");
+                    }
+
+                    if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT)
 	                {
 	                    conditionType = OutputProcessViewConditionFactory.ConditionType.SNAPSHOT;
 	                }
 	                // For FIRST without groups we are using a special logic that integrates the first-flag, in order to still conveniently use all sorts of output conditions.
 	                // FIRST with group-by is handled by setting the output condition to null (OutputConditionNull) and letting the ResultSetProcessor handle first-per-group.
 	                // Without having-clause there is no required order of processing, thus also use regular policy.
-	                else if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST && statementSpec.GroupByExpressions == null && isWithHavingClause) {
+	                else if (outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST && statementSpec.GroupByExpressions == null)
+                    {
 	                    conditionType = OutputProcessViewConditionFactory.ConditionType.POLICY_FIRST;
 	                }
+                    else if (isUnaggregatedUngrouped && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST)
+                    {
+                        conditionType = OutputProcessViewConditionFactory.ConditionType.POLICY_LASTALL_UNORDERED;
+                    }
+                    else if (hasOptHint && outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL && !hasOrderBy)
+                    {
+                        conditionType = OutputProcessViewConditionFactory.ConditionType.POLICY_LASTALL_UNORDERED;
+                    }
+                    else if (hasOptHint && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST && !hasOrderBy)
+                    {
+                        conditionType = OutputProcessViewConditionFactory.ConditionType.POLICY_LASTALL_UNORDERED;
+                    }
 	                else
 	                {
 	                    conditionType = OutputProcessViewConditionFactory.ConditionType.POLICY_NONFIRST;
 	                }
 
+                    var selectClauseStreamSelectorEnum = statementSpec.SelectStreamSelectorEnum;
 	                var terminable = outputLimitSpec.RateType == OutputLimitRateType.TERM || outputLimitSpec.IsAndAfterTerminate;
-	                outputProcessViewFactory = new OutputProcessViewConditionFactory(statementContext, outputStrategyPostProcessFactory, isDistinct, outputLimitSpec.AfterTimePeriodExpr, outputLimitSpec.AfterNumberOfEvents, resultEventType, outputConditionFactory, streamCount, conditionType, outputLimitSpec.DisplayLimit, terminable);
+                    outputProcessViewFactory = new OutputProcessViewConditionFactory(statementContext, outputStrategyPostProcessFactory, isDistinct, outputLimitSpec.AfterTimePeriodExpr, outputLimitSpec.AfterNumberOfEvents, resultEventType, outputConditionFactory, streamCount, conditionType, outputLimitSpec.DisplayLimit, terminable, hasAfter, isUnaggregatedUngrouped, selectClauseStreamSelectorEnum);
 	            }
 	            catch (Exception ex) {
 	                throw new ExprValidationException("Error in the output rate limiting clause: " + ex.Message, ex);

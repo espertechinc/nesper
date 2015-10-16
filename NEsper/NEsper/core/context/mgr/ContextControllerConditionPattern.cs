@@ -49,11 +49,10 @@ namespace com.espertech.esper.core.context.mgr
     
             PatternStreamSpecCompiled patternStreamSpec = _endpointPatternSpec.PatternCompiled;
             StatementContext stmtContext = _agentInstanceContext.StatementContext;
-    
-            EvalRootFactoryNode rootFactoryNode = _servicesContext.PatternNodeFactory.MakeRootNode();
+
+            EvalRootFactoryNode rootFactoryNode = _servicesContext.PatternNodeFactory.MakeRootNode(patternStreamSpec.EvalFactoryNode);
             int streamNum = _isStartEndpoint ? _contextStatePathKey.SubPath : -1 * _contextStatePathKey.SubPath;
             bool allowResilient = _contextStatePathKey.Level == 1;
-            rootFactoryNode.AddChildNode(patternStreamSpec.EvalFactoryNode);
             PatternContext patternContext = stmtContext.PatternContextFactory.CreateContext(stmtContext, streamNum, rootFactoryNode, new MatchedEventMapMeta(patternStreamSpec.AllTags, !patternStreamSpec.ArrayEventTypes.IsEmpty()), allowResilient);
     
             PatternAgentInstanceContext patternAgentInstanceContext = stmtContext.PatternContextFactory.CreatePatternAgentContext(patternContext, _agentInstanceContext, false);
@@ -67,9 +66,12 @@ namespace com.espertech.esper.core.context.mgr
             ConditionPatternMatchCallback callback = new ConditionPatternMatchCallback(this);
             PatternStopCallback = rootNode.Start(callback.MatchFound, patternContext, priorMatches, isRecoveringReslient);
             callback.ForwardCalls = true;
-    
-            if (_agentInstanceContext.StatementContext.ExtensionServicesContext != null && _agentInstanceContext.StatementContext.ExtensionServicesContext.StmtResources != null) {
-                _agentInstanceContext.StatementContext.ExtensionServicesContext.StmtResources.StartContextPattern(PatternStopCallback, _isStartEndpoint, _contextStatePathKey);
+
+            if (_agentInstanceContext.StatementContext.StatementExtensionServicesContext != null &&
+                _agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources != null)
+            {
+                _agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources
+                    .StartContextPattern(PatternStopCallback, _isStartEndpoint, _contextStatePathKey);
             }
     
             if (callback.IsInvoked) {
@@ -102,8 +104,9 @@ namespace com.espertech.esper.core.context.mgr
             if (PatternStopCallback != null) {
                 PatternStopCallback.Stop();
                 PatternStopCallback = null;
-                if (_agentInstanceContext.StatementContext.ExtensionServicesContext != null && _agentInstanceContext.StatementContext.ExtensionServicesContext.StmtResources != null) {
-                    _agentInstanceContext.StatementContext.ExtensionServicesContext.StmtResources.StopContextPattern(_isStartEndpoint, _contextStatePathKey);
+                if (_agentInstanceContext.StatementContext.StatementExtensionServicesContext != null &&
+                    _agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources != null) {
+                    _agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources.StopContextPattern(_isStartEndpoint, _contextStatePathKey);
                 }
             }
         }

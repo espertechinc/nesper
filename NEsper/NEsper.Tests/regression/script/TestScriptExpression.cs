@@ -376,7 +376,7 @@ namespace com.espertech.esper.regression.script
     
         private void TryDatetime(String dialect)
         {
-            long msecDate = DateTimeHelper.ParseDefaultMSec("2002-05-30 09:00:00.000");
+            long msecDate = DateTimeParser.ParseDefaultMSec("2002-05-30 09:00:00.000");
             String expression = "expression long " + dialect + ":callIt() [ " + msecDate + "]";
             String epl = expression + " select callIt().GetHourOfDay() as val0, callIt().GetDayOfWeek() as val1 from SupportBean";
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);

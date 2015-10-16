@@ -28,11 +28,11 @@ namespace com.espertech.esper.pattern.observer
 	    private readonly bool _isFilterChildNonQuitting;
 
 	    // we always keep the anchor time, which could be engine time or the spec time, and never changes in computations
-	    private DateTime? _anchorTime;
+        private DateTimeEx _anchorTime;
 
 	    // for fast computation, keep some last-value information around for the purpose of caching
 	    private bool _isTimerActive = false;
-        private DateTime? _cachedLastScheduled;
+        private DateTimeEx _cachedLastScheduled;
 	    private long _cachedCountRepeated = 0;
 
 	    private EPStatementHandleCallback _scheduleHandle;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.pattern.observer
 	        get { return _beginState; }
 	    }
 
-	    public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+	    public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
 	    {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverScheduledEval();}
 
@@ -93,7 +93,10 @@ namespace com.espertech.esper.pattern.observer
 	        if (_anchorTime == null) {
 	            if (_spec.OptionalDate == null)
 	            {
-	                _anchorTime = schedulingService.Time.TimeFromMillis();
+	                _anchorTime = new DateTimeEx(
+	                    schedulingService.Time.TimeFromMillis(_observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone),
+	                    _observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone
+                    );
 	            }
 	            else {
 	                _anchorTime = _spec.OptionalDate;
@@ -139,7 +142,7 @@ namespace com.espertech.esper.pattern.observer
 	        // handle date-only-form: "<date>"
 	        if (_spec.OptionalRepeatCount == null && _spec.OptionalDate != null && _spec.OptionalTimePeriod == null) {
 	            _cachedCountRepeated = long.MaxValue;
-                var anchorTimeInMillis = _anchorTime.Value.TimeInMillis();
+                var anchorTimeInMillis = _anchorTime.TimeInMillis;
                 if (anchorTimeInMillis > currentTime)
                 {
 	                return anchorTimeInMillis - currentTime;
@@ -152,8 +155,9 @@ namespace com.espertech.esper.pattern.observer
 	        if (_spec.OptionalRepeatCount == null && _spec.OptionalTimePeriod != null)
 	        {
 	            _cachedCountRepeated = long.MaxValue;
-	            _cachedLastScheduled = CalendarOpPlusMinus.Action(_anchorTime.Value, 1, _spec.OptionalTimePeriod);
-                var cachedLastTimeInMillis = _cachedLastScheduled.Value.TimeInMillis();
+	            _cachedLastScheduled = new DateTimeEx(_anchorTime);
+                CalendarOpPlusMinus.Action(_cachedLastScheduled, 1, _spec.OptionalTimePeriod);
+                var cachedLastTimeInMillis = _cachedLastScheduled.TimeInMillis;
                 if (cachedLastTimeInMillis > currentTime)
                 {
 	                return cachedLastTimeInMillis - currentTime;
@@ -164,7 +168,7 @@ namespace com.espertech.esper.pattern.observer
 	        // handle partial-form-1: "R<?>/<period>"
 	        // handle full form
 	        if (_cachedLastScheduled == null) {
-	            _cachedLastScheduled = _anchorTime;
+	            _cachedLastScheduled = new DateTimeEx(_anchorTime);
 	            if (_spec.OptionalDate != null) {
 	                _cachedCountRepeated = 1;
 	            }
@@ -172,16 +176,16 @@ namespace com.espertech.esper.pattern.observer
 
 	        if (_spec.OptionalRepeatCount == -1)
 	        {
-                var nextDueInner = CalendarOpPlusFastAddHelper.ComputeNextDue(currentTime, _spec.OptionalTimePeriod, _cachedLastScheduled.Value);
-	            _cachedLastScheduled = nextDueInner.Scheduled;
-	            return _cachedLastScheduled.Value.TimeInMillis() - currentTime;
+                var nextDueInner = CalendarOpPlusFastAddHelper.ComputeNextDue(currentTime, _spec.OptionalTimePeriod, _cachedLastScheduled);
+	            _cachedLastScheduled.Set(nextDueInner.Scheduled);
+	            return _cachedLastScheduled.TimeInMillis - currentTime;
 	        }
 
-	        var nextDue = CalendarOpPlusFastAddHelper.ComputeNextDue(currentTime, _spec.OptionalTimePeriod, _cachedLastScheduled.Value);
+	        var nextDue = CalendarOpPlusFastAddHelper.ComputeNextDue(currentTime, _spec.OptionalTimePeriod, _cachedLastScheduled);
 	        _cachedCountRepeated += nextDue.Factor;
 	        if (_cachedCountRepeated <= _spec.OptionalRepeatCount) {
-	            _cachedLastScheduled = nextDue.Scheduled;
-	            var cachedLastTimeInMillis = _cachedLastScheduled.Value.TimeInMillis();
+	            _cachedLastScheduled.Set(nextDue.Scheduled);
+	            var cachedLastTimeInMillis = _cachedLastScheduled.TimeInMillis;
 	            if (cachedLastTimeInMillis > currentTime) {
 	                return cachedLastTimeInMillis - currentTime;
 	            }

@@ -71,7 +71,7 @@ namespace com.espertech.esper.pattern.guard
 
         #endregion
 
-        protected long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (_millisecondsExpr is ExprTimePeriod)
             {
@@ -90,7 +90,7 @@ namespace com.espertech.esper.pattern.guard
             }
         }
 
-        protected int ComputeNumCountTo(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public int ComputeNumCountTo(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             object numCountToVal = PatternExpressionUtil.Evaluate(
                 "Timer-Within-Or-Max-Count guard", beginState, _numCountToExpr, _convertor, context.AgentInstanceContext);

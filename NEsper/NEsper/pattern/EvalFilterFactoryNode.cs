@@ -45,7 +45,7 @@ namespace com.espertech.esper.pattern
             _consumptionLevel = consumptionLevel;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             return new EvalFilterNode(agentInstanceContext, this);
         }

@@ -408,22 +408,22 @@ namespace com.espertech.esper.regression.epl
     
             // Test s5
             //
-            s6Events = SupportBean_S6.MakeS6("N-s2-31", new[]{"N-s6-1", "N-s6-2"});
+            s6Events = SupportBean_S6.MakeS6("Count-s2-31", new[]{"Count-s6-1", "Count-s6-2"});
             SendEventsAndReset(s6Events);
     
-            s2Events = SupportBean_S2.MakeS2("N-s2-1", new[]{"N-s2-30", "N-s2-31"});
+            s2Events = SupportBean_S2.MakeS2("Count-s2-1", new[]{"Count-s2-30", "Count-s2-31"});
             SendEvent(s2Events);
     
-            s0Events = SupportBean_S0.MakeS0("N", new[]{"N-s2-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new[]{"Count-s2-1"});
             SendEventsAndReset(s0Events);
     
-            s1Events = SupportBean_S1.MakeS1("N", new[]{"N-s1-1", "N-s1-2", "N-s1-3"});
+            s1Events = SupportBean_S1.MakeS1("Count", new[]{"Count-s1-1", "Count-s1-2", "Count-s1-3"});
             SendEventsAndReset(s1Events);
     
-            s3Events = SupportBean_S3.MakeS3("N-s1-3", new[]{"N-s3-1"});
+            s3Events = SupportBean_S3.MakeS3("Count-s1-3", new[]{"Count-s3-1"});
             SendEventsAndReset(s3Events);
     
-            s5Events = SupportBean_S5.MakeS5("N-s2-31", new[]{"N-s5-1"});
+            s5Events = SupportBean_S5.MakeS5("Count-s2-31", new[]{"Count-s5-1"});
             SendEvent(s5Events);
             EPAssertionUtil.AssertSameAnyOrder(new[]{
                     new[] {s0Events[0], s1Events[2], s2Events[1], s3Events[0], null, s5Events[0], s6Events[0]},
@@ -921,22 +921,22 @@ namespace com.espertech.esper.regression.epl
     
             // Test s2 and s0=1, s1=1, s3=1, s4=0, s5=1, s6=1
             //
-            s0Events = SupportBean_S0.MakeS0("N", new[]{"N-s0-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new[]{"Count-s0-1"});
             SendEventsAndReset(s0Events);
     
-            s1Events = SupportBean_S1.MakeS1("N", new[]{"N-s1-1"});
+            s1Events = SupportBean_S1.MakeS1("Count", new[]{"Count-s1-1"});
             SendEventsAndReset(s1Events);
     
-            s3Events = SupportBean_S3.MakeS3("N", new[]{"N-s3-1"});
+            s3Events = SupportBean_S3.MakeS3("Count", new[]{"Count-s3-1"});
             SendEventsAndReset(s3Events);
     
-            s5Events = SupportBean_S5.MakeS5("N", new[]{"N-s5-1"});
+            s5Events = SupportBean_S5.MakeS5("Count", new[]{"Count-s5-1"});
             SendEventsAndReset(s5Events);
     
-            s6Events = SupportBean_S6.MakeS6("N", new[]{"N-s6-1"});
+            s6Events = SupportBean_S6.MakeS6("Count", new[]{"Count-s6-1"});
             SendEventsAndReset(s6Events);
     
-            s2Events = SupportBean_S2.MakeS2("N", new[]{"N-s2-1"});
+            s2Events = SupportBean_S2.MakeS2("Count", new[]{"Count-s2-1"});
             SendEvent(s2Events);
             EPAssertionUtil.AssertSameAnyOrder(new[]{
                     new[] {s0Events[0], s1Events[0], s2Events[0], s3Events[0], null, s5Events[0], s6Events[0]}

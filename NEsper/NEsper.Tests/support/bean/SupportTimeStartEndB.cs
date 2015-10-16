@@ -15,11 +15,11 @@ namespace com.espertech.esper.support.bean
     {
         public SupportTimeStartEndB(String key,
                                     long? msecdateStart,
-                                    DateTime? utildateStart,
-                                    DateTime? caldateStart,
+                                    DateTimeOffset? utildateStart,
+                                    DateTimeOffset? caldateStart,
                                     long? msecdateEnd,
-                                    DateTime? utildateEnd,
-                                    DateTime? caldateEnd)
+                                    DateTimeOffset? utildateEnd,
+                                    DateTimeOffset? caldateEnd)
         {
             Key = key;
             MsecdateStart = msecdateStart;
@@ -32,15 +32,15 @@ namespace com.espertech.esper.support.bean
 
         public long? MsecdateStart { get; private set; }
 
-        public DateTime? UtildateStart { get; private set; }
+        public DateTimeOffset? UtildateStart { get; private set; }
 
-        public DateTime? CaldateStart { get; private set; }
+        public DateTimeOffset? CaldateStart { get; private set; }
 
         public long? MsecdateEnd { get; private set; }
 
-        public DateTime? UtildateEnd { get; private set; }
+        public DateTimeOffset? UtildateEnd { get; private set; }
 
-        public DateTime? CaldateEnd { get; private set; }
+        public DateTimeOffset? CaldateEnd { get; private set; }
 
         public string Key { get; set; }
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.support.bean
                 return new SupportTimeStartEndB(key, null, null, null, null, null, null);
             }
             // expected : 2002-05-30T09:00:00.000
-            long start = DateTimeHelper.ParseDefaultMSec(datestr);
+            long start = DateTimeParser.ParseDefaultMSec(datestr);
             long end = start + duration;
 
             return new SupportTimeStartEndB(key, start, SupportDateTime.ToDate(start), SupportDateTime.ToCalendar(start),

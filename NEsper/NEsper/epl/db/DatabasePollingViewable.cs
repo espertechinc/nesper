@@ -179,7 +179,7 @@ namespace com.espertech.esper.epl.db
             Attribute[] annotations)
         {
             _evaluators = new ExprEvaluator[_inputParameters.Count];
-            _subordinateStreams = new TreeSet<int>();
+            _subordinateStreams = new SortedSet<int>();
             _exprEvaluatorContext = exprEvaluatorContext;
 
             int count = 0;

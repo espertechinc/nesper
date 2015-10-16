@@ -6,10 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     /// <summary>
     /// Helper class that assists with operations on arrays.

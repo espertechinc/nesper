@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.db
 
 	        _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 	        _epService.Initialize();
-	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().Name);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName); }
 	    }
 
         [TearDown]

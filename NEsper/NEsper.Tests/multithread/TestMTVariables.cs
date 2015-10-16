@@ -104,7 +104,7 @@ namespace com.espertech.esper.multithread
     
             // Determine if we have all numbers for var3 and didn't skip one.
             // Since "var3 = var3 + 1" is executed by multiple statements and threads we need to have
-            // this counter have all the values from 0 to N-1.
+            // this counter have all the values from 0 to Count-1.
             var var3Values = new SortedSet<long>();
             foreach (EventBean theEvent in _listenerSetOne.GetNewDataListFlattened())
             {

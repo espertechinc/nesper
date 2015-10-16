@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.rettype;

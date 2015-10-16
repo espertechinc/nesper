@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.filter
     /// </summary>
     public class EventTypeIndexBuilder
     {
-        private readonly IDictionary<FilterHandle, EventTypeIndexBuilderValueIndexesPair> _callbacks;
+        private readonly IDictionary<FilterHandle, EventTypeIndexBuilderValueIndexesPair> _isolatableCallbacks;
         private readonly ILockable _callbacksLock;
         private readonly EventTypeIndex _eventTypeIndex;
 
@@ -33,11 +34,11 @@ namespace com.espertech.esper.filter
         /// Constructor - takes the event type index to manipulate as its parameter.
         /// </summary>
         /// <param name="eventTypeIndex">index to manipulate</param>
-        public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex)
+        public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex, bool allowIsolation)
         {
             _eventTypeIndex = eventTypeIndex;
-            _callbacks = new Dictionary<FilterHandle, EventTypeIndexBuilderValueIndexesPair>();
             _callbacksLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _isolatableCallbacks = allowIsolation ? new Dictionary<FilterHandle, EventTypeIndexBuilderValueIndexesPair>() : null;
         }
 
         /// <summary>
@@ -45,7 +46,9 @@ namespace com.espertech.esper.filter
         /// </summary>
         public void Destroy()
         {
-            _callbacks.Clear();
+            _eventTypeIndex.Dispose();
+            if (_isolatableCallbacks != null)
+                _isolatableCallbacks.Clear();
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace com.espertech.esper.filter
         /// <param name="filterCallback">is the callback</param>
         /// <param name="lockFactory">The lock factory.</param>
         /// <exception cref="IllegalStateException">Callback for filter specification already exists in collection</exception>
-        public void Add(FilterValueSet filterValueSet, FilterHandle filterCallback, FilterServiceGranularLockFactory lockFactory)
+        public FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle filterCallback, FilterServiceGranularLockFactory lockFactory)
         {
             using (Instrument.With(
                 i => i.QFilterAdd(filterValueSet, filterCallback),
@@ -81,24 +84,22 @@ namespace com.espertech.esper.filter
                     }
                 }
     
-                // Make sure the filter callback doesn't already exist
-                using(_callbacksLock.Acquire())
-                {
-                    if (_callbacks.ContainsKey(filterCallback))
-                    {
-                        throw new IllegalStateException("Callback for filter specification already exists in collection");
-                    }
-                }
-    
                 // Now add to tree
                 var path = IndexTreeBuilder.Add(filterValueSet, filterCallback, rootNode, lockFactory);
                 var pathArray = path.Select(p => p.ToArray()).ToArray();
                 var pair = new EventTypeIndexBuilderValueIndexesPair(filterValueSet, pathArray);
     
-                using(_callbacksLock.Acquire())
-                {
-                    _callbacks.Put(filterCallback, pair);
+                // for non-isolatable callbacks the consumer keeps track of tree location
+                if (_isolatableCallbacks == null) {
+                    return pair;
                 }
+
+                // for isolatable callbacks this class is keeping track of tree location
+                using (_callbacksLock.Acquire()) {
+                    _isolatableCallbacks.Put(filterCallback, pair);
+                }
+
+                return null;
             }
         }
 
@@ -106,24 +107,29 @@ namespace com.espertech.esper.filter
         /// Remove a filter callback from the given index node.
         /// </summary>
         /// <param name="filterCallback">is the callback to remove</param>
-        public void Remove(FilterHandle filterCallback)
+        public void Remove(FilterHandle filterCallback, FilterServiceEntry filterServiceEntry)
         {
             EventTypeIndexBuilderValueIndexesPair pair;
-
-            using(_callbacksLock.Acquire())
+            if (_isolatableCallbacks != null)
             {
-                pair = _callbacks.Get(filterCallback);
+                using (_callbacksLock.Acquire())
+                {
+                    pair = _isolatableCallbacks.Pluck(filterCallback);
+                }
+                if (pair == null)
+                {
+                    return;
+                }
+            }
+            else
+            {
+                pair = (EventTypeIndexBuilderValueIndexesPair) filterServiceEntry;
             }
 
             using (Instrument.With(
                 i => i.QFilterRemove(filterCallback, pair),
                 i => i.AFilterRemove()))
             {
-                if (pair == null)
-                {
-                    return;
-                }
-
                 var eventType = pair.FilterValueSet.EventType;
                 var rootNode = _eventTypeIndex.Get(eventType);
 
@@ -132,12 +138,6 @@ namespace com.espertech.esper.filter
                 {
                     pair.IndexPairs.ForEach(
                         indexPair => IndexTreeBuilder.Remove(eventType, filterCallback, indexPair, rootNode));
-                }
-
-                // Remove from callbacks list
-                using (_callbacksLock.Acquire())
-                {
-                    _callbacks.Remove(filterCallback);
                 }
             }
         }
@@ -149,10 +149,15 @@ namespace com.espertech.esper.filter
         /// <returns>set of filters for taken statements</returns>
         public FilterSet Take(ICollection<String> statementIds)
         {
+            if (_isolatableCallbacks == null)
+            {
+                throw new EPException("Operation not supported, please enable isolation in the engine configuration");
+            }
+
             IList<FilterSetEntry> list = new List<FilterSetEntry>();
             using (_callbacksLock.Acquire())
             {
-                foreach (var entry in _callbacks)
+                foreach (var entry in _isolatableCallbacks)
                 {
                     var pair = entry.Value;
                     if (statementIds.Contains(entry.Key.StatementId))
@@ -170,7 +175,7 @@ namespace com.espertech.esper.filter
                 
                 foreach (var removed in list)
                 {
-                    _callbacks.Remove(removed.Handle);
+                    _isolatableCallbacks.Remove(removed.Handle);
                 }
             }
     

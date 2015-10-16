@@ -15,7 +15,7 @@ namespace com.espertech.esper.core.context.activator
     {
         public ViewableActivationResult Activate(AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
         {
-            return new ViewableActivationResult(null, CollectionUtil.STOP_CALLBACK_NONE, null, null, false, false);
+            return new ViewableActivationResult(null, CollectionUtil.STOP_CALLBACK_NONE, null, null, null, false, false, null);
         }
     }
 }

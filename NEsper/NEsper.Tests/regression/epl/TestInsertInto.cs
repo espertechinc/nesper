@@ -225,6 +225,15 @@ namespace com.espertech.esper.regression.epl
         }
     
         [Test]
+        public void TestVariantOneStateless()
+        {
+            String stmtTextStateless = "insert into Event_1 (delta, product) " +
+                    "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                    "from " + typeof(SupportBean).FullName;
+            RunAsserts(stmtTextStateless, null);
+        }
+
+        [Test]
         public void TestVariantOneWildcard() {
             var stmtText = "insert into Event_1 (delta, product) " +
                     "select * from " + typeof(SupportBean).FullName + ".win:length(100)";

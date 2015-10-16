@@ -64,7 +64,7 @@ namespace com.espertech.esper.pattern.guard
             return true;
         }
     
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardScheduledEval();}
             // Timer callback is automatically removed when triggering

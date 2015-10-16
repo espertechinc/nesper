@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;

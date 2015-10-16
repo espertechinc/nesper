@@ -753,6 +753,17 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test11AllHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, Volume, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "group by Symbol " +
+                    "having sum(Price) > 50 " +
+                    "output all every 1 seconds";
+            RunAssertion11_12(stmtText, "all");
+        }
+
+        [Test]
         public void Test12AllHavingJoin()
         {
             const string stmtText =
@@ -762,6 +773,18 @@ namespace com.espertech.esper.regression.view
                 "group by Symbol " +
                 "having sum(Price) > 50 " +
                 "output all every 1 seconds";
+            RunAssertion11_12(stmtText, "all");
+        }
+
+        [Test]
+        public void Test12AllHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, Volume, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where TheString=Symbol " +
+                    "group by Symbol " +
+                    "having sum(Price) > 50 " +
+                    "output all every 1 seconds";
             RunAssertion11_12(stmtText, "all");
         }
 
@@ -803,6 +826,17 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test15LastHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, Volume, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec)" +
+                    "group by Symbol " +
+                    "having sum(Price) > 50 " +
+                    "output last every 1 seconds";
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
         public void Test16LastHavingJoin()
         {
             const string stmtText =
@@ -812,6 +846,18 @@ namespace com.espertech.esper.regression.view
                 "group by Symbol " +
                 "having sum(Price) > 50 " +
                 "output last every 1 seconds";
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
+        public void Test16LastHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, Volume, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where TheString=Symbol " +
+                    "group by Symbol " +
+                    "having sum(Price) > 50 " +
+                    "output last every 1 seconds";
             RunAssertion15_16(stmtText, "last");
         }
 
@@ -992,8 +1038,16 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestJoinAll()
         {
+            RunAssertionJoinAll(false);
+            RunAssertionJoinAll(true);
+        }
+
+        private void RunAssertionJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+
             // Every event generates a new row, this time we sum the price by Symbol and output volume
-            String viewExpr = "select Symbol, Volume, sum(Price) as mySum " +
+            String viewExpr = hint + "select Symbol, Volume, sum(Price) as mySum " +
                               "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
                               typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
                               "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
@@ -1008,6 +1062,9 @@ namespace com.espertech.esper.regression.view
             _epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
 
             RunAssertionAll(selectTestView);
+
+            selectTestView.Dispose();
+            _listener.Reset();
         }
 
         [Test]
@@ -1034,8 +1091,16 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestJoinLast()
         {
+            RunAssertionJoinLast(true);
+            RunAssertionJoinLast(false);
+        }
+
+        private void RunAssertionJoinLast(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+
             // Every event generates a new row, this time we sum the price by Symbol and output volume
-            String viewExpr = "select Symbol, Volume, sum(Price) as mySum " +
+            String viewExpr = hint + "select Symbol, Volume, sum(Price) as mySum " +
                               "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
                               typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
                               "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
@@ -1050,6 +1115,9 @@ namespace com.espertech.esper.regression.view
             _epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
 
             RunAssertionLast();
+
+            _listener.Reset();
+            selectTestView.Dispose();
         }
 
         [Test]
@@ -1242,8 +1310,15 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestNoJoinAll()
         {
+            RunAssertionNoJoinAll(false);
+            RunAssertionNoJoinAll(true);
+        }
+
+        private void RunAssertionNoJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             // Every event generates a new row, this time we sum the price by Symbol and output volume
-            String viewExpr = "select Symbol, Volume, sum(Price) as mySum " +
+            String viewExpr = hint + "select Symbol, Volume, sum(Price) as mySum " +
                               "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
                               "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                               "group by Symbol " +
@@ -1253,6 +1328,9 @@ namespace com.espertech.esper.regression.view
             selectTestView.Events += _listener.Update;
 
             RunAssertionAll(selectTestView);
+
+            selectTestView.Dispose();
+            _listener.Reset();
         }
 
         [Test]
@@ -1274,8 +1352,16 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestNoJoinLast()
         {
+            RunAssertionNoJoinLast(true);
+            RunAssertionNoJoinLast(false);
+        }
+
+        private void RunAssertionNoJoinLast(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
             // Every event generates a new row, this time we sum the price by Symbol and output volume
-            String viewExpr = "select Symbol, Volume, sum(Price) as mySum " +
+            String viewExpr = hint +
+                              "select Symbol, Volume, sum(Price) as mySum " +
                               "from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
                               "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                               "group by Symbol " +
@@ -1285,27 +1371,9 @@ namespace com.espertech.esper.regression.view
             selectTestView.Events += _listener.Update;
 
             RunAssertionLast();
-        }
 
-        [Test]
-        public void TestNoOutputClauseJoin()
-        {
-            // Every event generates a new row, this time we sum the price by Symbol and output volume
-            String viewExpr = "select Symbol, Volume, sum(Price) as mySum " +
-                              "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
-                              typeof(SupportMarketDataBean).FullName + ".win:length(5) as two " +
-                              "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
-                              "  and one.TheString = two.Symbol " +
-                              "group by Symbol " +
-                              "output last every 2 events";
-
-            EPStatement selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
-            selectTestView.Events += _listener.Update;
-
-            _epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_DELL));
-            _epService.EPRuntime.SendEvent(new SupportBeanString(SYMBOL_IBM));
-
-            RunAssertionLast();
+            selectTestView.Dispose();
+            _listener.Reset();
         }
 
         [Test]

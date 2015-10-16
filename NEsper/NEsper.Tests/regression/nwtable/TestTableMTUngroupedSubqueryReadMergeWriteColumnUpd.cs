@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable
         /// <summary>
         /// Tests column-consistency for subquery:
         /// create table MyTable(p0 string, p1 string, ..., p4 string)   (5 props)
-        /// Insert row single: MyTable={p0="1", p1="1", p2="1", p3="1", p4="1"}
+        /// Set row single: MyTable={p0="1", p1="1", p2="1", p3="1", p4="1"}
         /// A writer-thread uses an on-merge statement to update the p0 to p4 columns from "1" to "2", then "2" to "1"
         /// A reader-thread uses a subquery checking ("p1="1" and p2="1" and p3="1" and p4="1")
         /// </summary>

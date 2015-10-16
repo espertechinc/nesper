@@ -34,7 +34,8 @@ namespace com.espertech.esper.core.start
             IDictionary<ExprTableAccessNode, ExprTableAccessEvalStrategy> tableAccessStrategyInstances)
         {
             // initialize aggregation expression nodes
-            if (selectDesc.ResultSetProcessorPrototypeDesc.AggregationServiceFactoryDesc != null) {
+            if (selectDesc.ResultSetProcessorPrototypeDesc.AggregationServiceFactoryDesc != null && aggregationService != null)
+            {
                 EPStatementStartMethodHelperAssignExpr.AssignAggregations(aggregationService, selectDesc.ResultSetProcessorPrototypeDesc.AggregationServiceFactoryDesc.Expressions);
             }
     
@@ -62,7 +63,7 @@ namespace com.espertech.esper.core.start
             }
         }
 
-        private static void AssignMatchRecognizePreviousStrategies(IEnumerable<ExprPreviousMatchRecognizeNode> matchRecognizeNodes, RegexExprPreviousEvalStrategy strategy) {
+        public static void AssignMatchRecognizePreviousStrategies(IEnumerable<ExprPreviousMatchRecognizeNode> matchRecognizeNodes, RegexExprPreviousEvalStrategy strategy) {
             if (matchRecognizeNodes != null && strategy != null) {
                 foreach (var node in matchRecognizeNodes) {
                     node.Strategy = strategy;

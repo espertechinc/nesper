@@ -288,7 +288,7 @@ namespace com.espertech.esper.script
 
         private static CodeDomProvider CreateCodeDomProvider(string typeName, string assemblyName)
         {
-            Assembly providerAssembly = Assembly.LoadWithPartialName(assemblyName);
+            Assembly providerAssembly = Assembly.Load(assemblyName);
             if (providerAssembly == null)
             {
                 throw new ArgumentException("unable to find assembly: " + assemblyName);

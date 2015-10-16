@@ -59,6 +59,7 @@ namespace com.espertech.esper.support.core
 
         public Viewable ParentView
         {
+            get { return null; }
             set { }
         }
 

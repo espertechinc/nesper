@@ -15,7 +15,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    public class EPStatementDestroyCallbackContext : DestroyCallback
+    public class EPStatementDestroyCallbackContext
     {
         private readonly ContextManagementService _contextManagementService;
         private readonly string _contextName;
@@ -37,10 +37,10 @@ namespace com.espertech.esper.core.start
     
         public EPStatementDestroyCallbackContext(ContextManagementService contextManagementService, string optionalContextName, string statementName, string statementId)
         {
-            this._contextManagementService = contextManagementService;
-            this._contextName = optionalContextName;
-            this._statementName = statementName;
-            this._statementId = statementId;
+            _contextManagementService = contextManagementService;
+            _contextName = optionalContextName;
+            _statementName = statementName;
+            _statementId = statementId;
         }
     
         public void Destroy() {

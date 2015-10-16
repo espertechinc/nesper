@@ -31,5 +31,10 @@ namespace com.espertech.esper.schedule
         long? NearestTimeHandle { get; }
 
         void VisitSchedules(ScheduleVisitor visitor);
+
+        /// <summary>
+        /// Initialization is optional and provides a chance to preload things after statements are available.
+        /// </summary>
+        void Init();
     }
 }

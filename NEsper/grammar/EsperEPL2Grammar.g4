@@ -543,7 +543,7 @@ intoTableExpr
 insertIntoExpr
 @init  { paraphrases.Push("insert-into clause"); }
 @after { paraphrases.Pop(); }
-		: (i=ISTREAM | r=RSTREAM | ir=IRSTREAM)? INTO classIdentifier (LPAREN columnList RPAREN)?;
+		: (i=ISTREAM | r=RSTREAM | ir=IRSTREAM)? INTO classIdentifier (LPAREN columnList? RPAREN)?;
 		
 columnList : IDENT (COMMA IDENT)*;
 	
@@ -1453,7 +1453,7 @@ IntegerTypeSuffix
 fragment
 DecimalNumeral
     :   '0'
-    |   NonZeroDigit (Digits? | Underscores Digits)
+    |   ('0')* NonZeroDigit (Digits? | Underscores Digits)
     ;
 
 fragment

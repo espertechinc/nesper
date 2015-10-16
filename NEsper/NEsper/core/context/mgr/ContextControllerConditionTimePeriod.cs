@@ -80,17 +80,10 @@ namespace com.espertech.esper.core.context.mgr
             {
                 ProcScheduledTrigger = extensionServicesContext =>
                 {
-                    if (InstrumentationHelper.ENABLED)
-                    {
-                        InstrumentationHelper.Get()
-                            .QContextScheduledEval(_agentInstanceContext.StatementContext.ContextDescriptor);
-                    }
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QContextScheduledEval(_agentInstanceContext.StatementContext.ContextDescriptor); }
                     _scheduleHandle = null; // terminates automatically unless scheduled again
                     _callback.RangeNotification(Collections.GetEmptyMap<String, Object>(), this, null, null, _filterAddendum);
-                    if (InstrumentationHelper.ENABLED)
-                    {
-                        InstrumentationHelper.Get().AContextScheduledEval();
-                    }
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AContextScheduledEval(); }
                 }
             };
             var agentHandle =

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.collection
 {
-	/// <summary> Provides a N! (n-faculty) number of permutations for N elements.
+	/// <summary> Provides a Count! (n-faculty) number of permutations for Count elements.
 	/// Example: for 3 elements provides 6 permutations exactly as follows:
 	/// {0, 1, 2}
 	/// {0, 2, 1}
@@ -112,9 +112,9 @@ namespace com.espertech.esper.collection
             return facultyFactors;
         }
 
-        /// <summary>Computes faculty of N.</summary>
+        /// <summary>Computes faculty of Count.</summary>
         /// <param name="num">to compute faculty for</param>
-        /// <returns>N!</returns>
+        /// <returns>Count!</returns>
 
         public static int Faculty(int num)
         {

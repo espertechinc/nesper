@@ -138,6 +138,15 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test9AllNoHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "output all every 1 seconds";
+            RunAssertion56(stmtText, "all");
+        }
+
+        [Test]
         public void Test10AllNoHavingJoin()
         {
             String stmtText = "select Symbol, sum(Price) " +
@@ -148,12 +157,32 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test10AllNoHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where TheString=Symbol " +
+                    "output all every 1 seconds";
+            RunAssertion56(stmtText, "all");
+        }
+
+        [Test]
         public void Test11AllHavingNoJoin()
         {
             String stmtText = "select Symbol, sum(Price) " +
                                 "from MarketData.win:time(5.5 sec) " +
                                 "having sum(Price) > 100" +
                                 "output all every 1 seconds";
+            RunAssertion78(stmtText, "all");
+        }
+
+        [Test]
+        public void Test11AllHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "having sum(Price) > 100" +
+                    "output all every 1 seconds";
             RunAssertion78(stmtText, "all");
         }
 
@@ -169,11 +198,31 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test12AllHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where TheString=Symbol " +
+                    "having sum(Price) > 100" +
+                    "output all every 1 seconds";
+            RunAssertion78(stmtText, "all");
+        }
+
+        [Test]
         public void Test13LastNoHavingNoJoin()
         {
             String stmtText = "select Symbol, sum(Price) " +
                                 "from MarketData.win:time(5.5 sec)" +
                                 "output last every 1 seconds";
+            RunAssertion13_14(stmtText, "last");
+        }
+
+        [Test]
+        public void Test13LastNoHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec)" +
+                    "output last every 1 seconds";
             RunAssertion13_14(stmtText, "last");
         }
 
@@ -188,12 +237,32 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
+        public void Test14LastNoHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where theString=symbol " +
+                    "output last every 1 seconds";
+            RunAssertion13_14(stmtText, "last");
+        }
+
+        [Test]
         public void Test15LastHavingNoJoin()
         {
             String stmtText = "select Symbol, sum(Price) " +
                                 "from MarketData.win:time(5.5 sec)" +
                                 "having sum(Price) > 100 " +
                                 "output last every 1 seconds";
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
+        public void Test15LastHavingNoJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec)" +
+                    "having sum(Price) > 100 " +
+                    "output last every 1 seconds";
             RunAssertion15_16(stmtText, "last");
         }
 
@@ -209,12 +278,32 @@ namespace com.espertech.esper.regression.view
         }
 
         [Test]
-        public void Test17FirstNoHavingNoJoin()
+        public void Test16LastHavingJoinHinted()
+        {
+            String stmtText = "@Hint('enable_outputlimit_opt') select Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec), " +
+                    "SupportBean.win:keepall() where TheString=Symbol " +
+                    "having sum(Price) > 100 " +
+                    "output last every 1 seconds";
+            RunAssertion15_16(stmtText, "last");
+        }
+
+        [Test]
+        public void Test17FirstNoHavingNoJoinIStreamOnly()
         {
             String stmtText = "select Symbol, sum(Price) " +
                                 "from MarketData.win:time(5.5 sec) " +
                                 "output first every 1 seconds";
-            RunAssertion17(stmtText, "first");
+            RunAssertion17IStreamOnly(stmtText, "first");
+        }
+
+        [Test]
+        public void Test17FirstNoHavingNoJoinIRStream()
+        {
+            String stmtText = "select irstream Symbol, sum(Price) " +
+                    "from MarketData.win:time(5.5 sec) " +
+                    "output first every 1 seconds";
+            RunAssertion17IRStream(stmtText, "first");
         }
 
         [Test]
@@ -346,7 +435,7 @@ namespace com.espertech.esper.regression.view
             execution.Execute();
         }
 
-        private void RunAssertion17(String stmtText, String outputLimit)
+        private void RunAssertion17IStreamOnly(String stmtText, String outputLimit)
         {
             SendTimer(0);
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
@@ -356,13 +445,30 @@ namespace com.espertech.esper.regression.view
             ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 25d } });
             expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 58d } });
-            expected.AddResultInsRem(3200, 0, null, null);
+            expected.AddResultInsert(3500, 1, new Object[][] { new Object[] { "YAH", 87d } });
+            expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 109d } });
+            expected.AddResultInsert(5900, 1, new Object[][] { new Object[] { "YAH", 88d } });
+
+            ResultAssertExecution execution = new ResultAssertExecution(_epService, stmt, _listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
+            execution.Execute();
+        }
+
+        private void RunAssertion17IRStream(String stmtText, String outputLimit)
+        {
+            SendTimer(0);
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
+            stmt.Events += _listener.Update;
+
+            String[] fields = new String[] { "Symbol", "sum(Price)" };
+            ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+            expected.AddResultInsert(200, 1, new Object[][] { new Object[] { "IBM", 25d } });
+            expected.AddResultInsert(1500, 1, new Object[][] { new Object[] { "IBM", 58d } });
             expected.AddResultInsert(3500, 1, new Object[][] { new Object[] { "YAH", 87d } });
             expected.AddResultInsert(4300, 1, new Object[][] { new Object[] { "IBM", 109d } });
             expected.AddResultRemove(5700, 0, new Object[][] { new Object[] { "IBM", 87d } });
             expected.AddResultRemove(6300, 0, new Object[][] { new Object[] { "MSFT", 79d } });
 
-            ResultAssertExecution execution = new ResultAssertExecution(_epService, stmt, _listener, expected);
+            ResultAssertExecution execution = new ResultAssertExecution(_epService, stmt, _listener, expected, ResultAssertExecutionTestSelector.TEST_ONLY_AS_PROVIDED);
             execution.Execute();
         }
 
@@ -470,7 +576,7 @@ namespace com.espertech.esper.regression.view
         public void TestLimitSnapshot()
         {
             SendTimer(0);
-            String selectStmt = "select Symbol, sum(Price) as sumPrice from " + typeof (SupportMarketDataBean).FullName +
+            String selectStmt = "select Symbol, sum(Price) as sumPrice from " + typeof(SupportMarketDataBean).FullName +
                                 ".win:time(10 seconds) output snapshot every 1 seconds order by Symbol asc";
 
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(selectStmt);
@@ -483,7 +589,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(_listener.GetAndClearIsInvoked());
 
             SendTimer(1000);
-            String[] fields = new String[] {"Symbol", "sumPrice"};
+            String[] fields = new String[] { "Symbol", "sumPrice" };
             EPAssertionUtil.AssertPropsPerRow(
                 _listener.LastNewData, fields, new Object[][]
                 {
@@ -619,24 +725,39 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestAggregateAllNoJoinLast()
         {
-            String viewExpr = "select LongBoxed, sum(LongBoxed) as result " +
-            "from " + typeof(SupportBean).FullName + ".win:length(3) " +
-            "having sum(LongBoxed) > 0 " +
-            "output last every 2 events";
+            RunAssertionAggregateAllNoJoinLast(true);
+            RunAssertionAggregateAllNoJoinLast(false);
+        }
+
+        private void RunAssertionAggregateAllNoJoinLast(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+
+            String viewExpr = hint + "select LongBoxed, sum(LongBoxed) as result " +
+                            "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+                            "having sum(longBoxed) > 0 " +
+                            "output last every 2 events";
 
             RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-            viewExpr = "select LongBoxed, sum(LongBoxed) as result " +
-            "from " + typeof(SupportBean).FullName + ".win:length(3) " +
-            "output last every 2 events";
-
+            viewExpr = hint + "select LongBoxed, sum(LongBoxed) as result " +
+                        "from " + typeof(SupportBean).FullName + ".win:length(3) " +
+                        "output last every 2 events";
             RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
         }
 
         [Test]
         public void TestAggregateAllJoinAll()
         {
-            String viewExpr = "select LongBoxed, sum(LongBoxed) as result " +
+            RunAssertionAggregateAllJoinAll(true);
+            RunAssertionAggregateAllJoinAll(false);
+        }
+
+        private void RunAssertionAggregateAllJoinAll(bool hinted)
+        {
+            String hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
+
+            String viewExpr = hint + "select LongBoxed, sum(LongBoxed) as result " +
                             "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
                             typeof(SupportBean).FullName + ".win:length(3) as two " +
                             "having sum(LongBoxed) > 0 " +
@@ -644,7 +765,7 @@ namespace com.espertech.esper.regression.view
 
             RunAssertAllSum(CreateStmtAndListenerJoin(viewExpr));
 
-            viewExpr = "select LongBoxed, sum(LongBoxed) as result " +
+            viewExpr = hint + "select LongBoxed, sum(LongBoxed) as result " +
                         "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
                         typeof(SupportBean).FullName + ".win:length(3) as two " +
                         "output every 2 events";
@@ -723,9 +844,7 @@ namespace com.espertech.esper.regression.view
             // Update time: no first event this batch, so a callback
             // is made at the end of the interval
             SendTimeEventRelative(3000);
-            Assert.IsTrue(updateListener.GetAndClearIsInvoked());
-            Assert.IsNull(updateListener.LastNewData);
-            Assert.IsNull(updateListener.LastOldData);
+            Assert.IsFalse(updateListener.GetAndClearIsInvoked());
         }
 
         [Test]

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.calop;
@@ -20,7 +22,7 @@ namespace com.espertech.esper.epl.datetime
         [Test]
         public void TestCompute()
         {
-            var defaultCurrent = DateTimeHelper.ParseDefaultMSec("2002-05-30T9:51:01.150");
+            var defaultCurrent = DateTimeParser.ParseDefaultMSec("2002-05-30T9:51:01.150");
 
             // millisecond adds
             var oneMsec = new TimePeriod().SetMillis(1);
@@ -153,11 +155,11 @@ namespace com.espertech.esper.epl.datetime
             LongAssertion factorAssertion,
             string expectedTarget)
         {
-            var referenceDate = DateTimeHelper.ParseDefault(reference);
-            var result = CalendarOpPlusFastAddHelper.ComputeNextDue(
-                current, timePeriod, referenceDate);
+            var referenceDate = DateTimeParser.ParseDefaultEx(reference);
+            // new DateTimeEx(DateTimeParser.ParseDefault(reference), TimeZoneInfo.Local);
+            var result = CalendarOpPlusFastAddHelper.ComputeNextDue(current, timePeriod, referenceDate);
             Assert.AreEqual(
-                DateTimeHelper.ParseDefault(expectedTarget), result.Scheduled,
+                DateTimeParser.ParseDefault(expectedTarget), result.Scheduled,
                 string.Format("\nExpected {0}\n" + "Received {1}\n", expectedTarget, DateTimeHelper.Print(result.Scheduled)));
             factorAssertion.AssertLong(result.Factor);
         }

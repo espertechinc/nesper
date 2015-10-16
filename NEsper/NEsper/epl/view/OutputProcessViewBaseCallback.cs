@@ -27,6 +27,11 @@ namespace com.espertech.esper.epl.view
             _callback = callback;
         }
 
+        public override int NumChangesetRows
+        {
+            get { return 0; }
+        }
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetEnumerator(

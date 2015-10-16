@@ -44,7 +44,7 @@ namespace com.espertech.esper.filter
         /// <returns>
         /// true if there are neither indizes nor filter callbacks stored, false if either exist.
         /// </returns>
-        internal bool IsEmpty()
+        public bool IsEmpty()
         {
             return _callbackSet.IsEmpty() && _indizes.Count == 0;
         }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.filter
         /// the read-write lock of this object to lock, if required by the client code.
         /// </summary>
         /// <value>number of filter callbacks stored</value>
-        internal int FilterCallbackCount
+        public int FilterCallbackCount
         {
             get { return _callbackSet.Count; }
         }
@@ -63,7 +63,7 @@ namespace com.espertech.esper.filter
         /// Returns to lock to use for making changes to the filter callback or inzides collections stored by this node.
         /// </summary>
         /// <value>lock to use in multithreaded environment</value>
-        internal IReaderWriterLock NodeRWLock
+        public IReaderWriterLock NodeRWLock
         {
             get { return _nodeRwLock; }
         }
@@ -130,7 +130,7 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="filterCallback">is the filter callback to check for</param>
         /// <returns>true if callback found, false if not</returns>
-        internal bool Contains(FilterHandle filterCallback)
+        public bool Contains(FilterHandle filterCallback)
         {
             return _callbackSet.Contains(filterCallback);
         }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.filter
         /// to lock, if required by the client code.
         /// </summary>
         /// <param name="index">index to add</param>
-        internal void Add(FilterParamIndexBase index)
+        public void Add(FilterParamIndexBase index)
         {
             _indizes.Add(index);
         }
@@ -153,7 +153,7 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="index">is the index to remove</param>
         /// <returns>true if found, false if not existing</returns>
-        internal bool Remove(FilterParamIndexBase index)
+        public bool Remove(FilterParamIndexBase index)
         {
             return _indizes.Remove(index);
         }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.filter
         /// by the client code.
         /// </summary>
         /// <param name="filterCallback">is the callback to add</param>
-        internal void Add(FilterHandle filterCallback)
+        public void Add(FilterHandle filterCallback)
         {
             _callbackSet.Add(filterCallback);
         }
@@ -176,7 +176,7 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="filterCallback">is the callback to remove</param>
         /// <returns>true if found, false if not existing</returns>
-        internal bool Remove(FilterHandle filterCallback)
+        public bool Remove(FilterHandle filterCallback)
         {
             return _callbackSet.Remove(filterCallback);
         }

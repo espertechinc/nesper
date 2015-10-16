@@ -53,8 +53,8 @@ namespace com.espertech.esper.epl.parse
             }
             statementSpec.ReferencedVariables.Add(variableName);
         }
-    
-        public static ExprTimePeriod TimePeriodGetExprAllParams(EsperEPL2GrammarParser.TimePeriodContext ctx, IDictionary<ITree, ExprNode> astExprNodeMap, VariableService variableService, StatementSpecRaw spec)
+
+        public static ExprTimePeriod TimePeriodGetExprAllParams(EsperEPL2GrammarParser.TimePeriodContext ctx, IDictionary<ITree, ExprNode> astExprNodeMap, VariableService variableService, StatementSpecRaw spec, ConfigurationInformation config)
         {
             var nodes = new ExprNode[8];
             for (var i = 0; i < ctx.ChildCount; i++) {
@@ -100,8 +100,9 @@ namespace com.espertech.esper.epl.parse
                     nodes[0] = valueExpr;
                 }
             }
-    
-            ExprTimePeriod timeNode = new ExprTimePeriodImpl(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null, nodes[5]!= null, nodes[6]!= null, nodes[7]!= null);
+
+            ExprTimePeriod timeNode = new ExprTimePeriodImpl(config.EngineDefaults.ExpressionConfig.TimeZone,
+                nodes[0] != null, nodes[1] != null, nodes[2] != null, nodes[3] != null, nodes[4] != null, nodes[5] != null, nodes[6] != null, nodes[7] != null);
             if (nodes[0] != null) timeNode.AddChildNode(nodes[0]);
             if (nodes[1] != null) timeNode.AddChildNode(nodes[1]);
             if (nodes[2] != null) timeNode.AddChildNode(nodes[2]);
@@ -113,9 +114,10 @@ namespace com.espertech.esper.epl.parse
             return timeNode;
         }
     
-        public static ExprTimePeriod TimePeriodGetExprJustSeconds(EsperEPL2GrammarParser.ExpressionContext expression, IDictionary<ITree, ExprNode> astExprNodeMap) {
+        public static ExprTimePeriod TimePeriodGetExprJustSeconds(EsperEPL2GrammarParser.ExpressionContext expression, IDictionary<ITree, ExprNode> astExprNodeMap, ConfigurationInformation config) {
             var node = ExprCollectSubNodes(expression, 0, astExprNodeMap)[0];
-            ExprTimePeriod timeNode = new ExprTimePeriodImpl(false, false, false, false, false, false, true, false);
+            var timeNode = new ExprTimePeriodImpl(config.EngineDefaults.ExpressionConfig.TimeZone,
+                false, false, false, false, false, false, true, false);
             timeNode.AddChildNode(node);
             return timeNode;
         }

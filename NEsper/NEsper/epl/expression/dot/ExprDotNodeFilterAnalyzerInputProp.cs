@@ -6,14 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.epl.expression.dot
 {
     public class ExprDotNodeFilterAnalyzerInputProp : ExprDotNodeFilterAnalyzerInput
     {
-        public ExprDotNodeFilterAnalyzerInputProp(int streamNum,
-                                                  String propertyName)
+        public ExprDotNodeFilterAnalyzerInputProp(int streamNum, string propertyName)
         {
             StreamNum = streamNum;
             PropertyName = propertyName;

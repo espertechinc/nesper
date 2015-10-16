@@ -30,16 +30,24 @@ namespace com.espertech.esper.rowregex
         /// <param name="events">to remove</param>
         /// <param name="isEmpty">indicator if there are not matches</param>
         /// <param name="found">indicator if any partial matches exist to be deleted</param>
-        void RemoveOld(EventBean[] events, bool isEmpty, bool[] found);
+        int RemoveOld(EventBean[] events, bool isEmpty, bool[] found);
     
         /// <summary>Copy state for iteration. </summary>
         /// <returns>copied state</returns>
-        RegexPartitionStateRepo CopyForIterate();
+        RegexPartitionStateRepo CopyForIterate(bool forOutOfOrderReprocessing);
     
         void RemoveState(Object partitionKey);
     
         void Accept(EventRowRegexNFAViewServiceVisitor visitor);
 
         bool IsPartitioned { get; }
+
+        int StateCount { get; }
+
+        int IncrementAndGetEventSequenceNum();
+
+        int EventSequenceNum { set; }
+
+        RegexPartitionStateRepoScheduleState ScheduleState { get; }
     }
 }

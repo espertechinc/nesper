@@ -109,7 +109,7 @@ namespace com.espertech.esper.epl.agg.rollup
     
             // enumerate combinations building an index list
             var combinationEnumeration = new CombinationEnumeration(perNodeCombinations);
-            ICollection<int> combination = new TreeSet<int>();
+            ICollection<int> combination = new SortedSet<int>();
             ICollection<MultiKeyInt> indexList = new LinkedHashSet<MultiKeyInt>();
             while(combinationEnumeration.MoveNext())
             {

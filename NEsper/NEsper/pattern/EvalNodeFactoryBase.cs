@@ -24,7 +24,7 @@ namespace com.espertech.esper.pattern
         private readonly List<EvalFactoryNode> _childNodes;
         private short _factoryNodeId;
     
-        public abstract EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext);
+        public abstract EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode);
         public abstract void ToPrecedenceFreeEPL(TextWriter writer);
     
         /// <summary>Constructor creates a list of child nodes. </summary>

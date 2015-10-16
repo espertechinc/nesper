@@ -91,7 +91,7 @@ namespace com.espertech.esper.epl.core
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="namesAndTypes">is the ordered list of stream names and event types available (stream zero to N)</param>
+        /// <param name="namesAndTypes">is the ordered list of stream names and event types available (stream zero to Count)</param>
         /// <param name="isStreamZeroUnambigous">indicates whether when a property is found in stream zero and another stream an exception should bethrown or the stream zero should be assumed
         /// </param>
         /// <param name="engineURI">uri of the engine</param>

@@ -18,6 +18,7 @@ using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.annotation;
@@ -113,8 +114,10 @@ namespace com.espertech.esper.core.start
             else {
                 var defaultAgentInstanceContext = GetDefaultAgentInstanceContext(statementContext);
                 var result = contextFactory.NewContext(defaultAgentInstanceContext, false);
-                if (statementContext.ExtensionServicesContext != null && statementContext.ExtensionServicesContext.StmtResources != null) {
-                    statementContext.ExtensionServicesContext.StmtResources.StartContextPartition(result, 0);
+                if (statementContext.StatementExtensionServicesContext != null && statementContext.StatementExtensionServicesContext.StmtResources != null)
+                {
+                    StatementResourceHolder holder = statementContext.StatementExtensionServicesContext.ExtractStatementResourceHolder(result);
+                    statementContext.StatementExtensionServicesContext.StmtResources.Unpartitioned = holder;
                 }
                 outputView = result.FinalView;
             }

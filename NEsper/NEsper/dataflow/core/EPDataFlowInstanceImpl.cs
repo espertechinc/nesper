@@ -208,9 +208,11 @@ namespace com.espertech.esper.dataflow.core
                             }
                         });
                     _threads.Add(thread);
-                    thread.Start();
                 }
+
                 SetState(EPDataFlowState.RUNNING);
+
+                _threads.ForEach(t => t.Start());
             }
         }
 
@@ -231,10 +233,7 @@ namespace com.espertech.esper.dataflow.core
             // latch used for non-blocking start
             if (_threads != null)
             {
-                foreach (Thread thread in _threads)
-                {
-                    thread.Join();
-                }
+                _threads.ForEach(t => t.Join());
             }
             else
             {

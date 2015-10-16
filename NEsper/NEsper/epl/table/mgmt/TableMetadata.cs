@@ -182,19 +182,19 @@ namespace com.espertech.esper.epl.table.mgmt
         public TableStateInstance GetState(int agentInstanceId)
         {
             StatementResourceHolder holder = null;
-            if (ContextName == null || agentInstanceId == 0) {
-                holder = _createTableResources.ResourcesZero;
+            if (ContextName == null) {
+                holder = _createTableResources.ResourcesUnpartitioned;
             }
             else {
-                if (_createTableResources.ResourcesNonZero != null) {
-                    holder = _createTableResources.ResourcesNonZero.Get(agentInstanceId);
+                if (_createTableResources.ResourcesPartitioned != null) {
+                    holder = _createTableResources.ResourcesPartitioned.Get(agentInstanceId);
                 }
             }
             if (holder == null) {
                 return null;
             }
     
-            var aggsvc = (AggregationServiceTable) holder.AggegationService;
+            var aggsvc = (AggregationServiceTable) holder.AggregationService;
             return aggsvc.TableState;
         }
 
@@ -206,9 +206,9 @@ namespace com.espertech.esper.epl.table.mgmt
                 {
                     return Collections.SingletonList<int>(-1);
                 }
-                if (_createTableResources.ResourcesNonZero != null)
+                if (_createTableResources.ResourcesPartitioned != null)
                 {
-                    return _createTableResources.ResourcesNonZero.Keys;
+                    return _createTableResources.ResourcesPartitioned.Keys;
                 }
                 return Collections.SingletonList(-1);
             }

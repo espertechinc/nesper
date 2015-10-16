@@ -15,7 +15,7 @@ namespace com.espertech.esper.pattern
     /// <summary>
     /// Interface for a root state node accepting a callback to use to indicate pattern results.
     /// </summary>
-    public interface EvalRootState : PatternStopCallback
+    public interface EvalRootState : PatternStopCallback, EvalRootMatchRemover
     {
         /// <summary>Accept callback to indicate pattern results. </summary>
         /// <value>is a pattern result call</value>
@@ -24,7 +24,5 @@ namespace com.espertech.esper.pattern
         void StartRecoverable(bool startRecoverable, MatchedEventMap beginState);
     
         void Accept(EvalStateNodeVisitor visitor);
-    
-        void RemoveMatch(ISet<EventBean> matchEvent);
     }
 }

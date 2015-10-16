@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.view
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("select rstream * from SupportBeanTimestamp.ext:time_order(timestamp, 1 month)");
             stmt.Events += _listener.Update;
 
-            SendEvent("E1", DateTimeHelper.ParseDefaultMSec("2002-02-01T9:00:00.000"));
+            SendEvent("E1", DateTimeParser.ParseDefaultMSec("2002-02-01T9:00:00.000"));
             SendCurrentTimeWithMinus("2002-03-01T9:00:00.000", 1);
             Assert.IsFalse(_listener.IsInvoked);
 
@@ -496,12 +496,12 @@ namespace com.espertech.esper.regression.view
 
         private void SendCurrentTime(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendCurrentTimeWithMinus(String time, long minus)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time) - minus));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time) - minus));
         }
     }
 }

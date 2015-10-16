@@ -44,7 +44,7 @@ namespace com.espertech.esper.compat
                     }
                     catch (TimeZoneNotFoundException)
                     {
-                        var regex = new Regex("^GMT([+-])(\\d{2}):(\\d{2})$");
+                        var regex = new Regex("^GMT([+-])(\\d{1,2}):(\\d{2})$");
                         var match = regex.Match(specOrId);
                         if (match == Match.Empty)
                         {

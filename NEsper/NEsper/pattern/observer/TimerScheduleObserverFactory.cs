@@ -50,7 +50,7 @@ namespace com.espertech.esper.pattern.observer
 
         internal TimerScheduleSpec Spec;
 
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor)
+        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
         {
             Convertor = convertor;
 
@@ -112,6 +112,7 @@ namespace com.espertech.esper.pattern.observer
                             {
                                 typeof (string),
                                 typeof (DateTime),
+                                typeof (DateTimeOffset),
                                 typeof (long?)
                             });
                     }
@@ -150,7 +151,7 @@ namespace com.espertech.esper.pattern.observer
                 try
                 {
                     Spec = ScheduleComputer.Compute(
-                        convertor, new MatchedEventMapImpl(convertor.MatchedEventMapMeta), null);
+                        convertor, new MatchedEventMapImpl(convertor.MatchedEventMapMeta), null, validationContext.MethodResolutionService.EngineImportService.TimeZone);
                 }
                 catch (ScheduleParameterException ex)
                 {
@@ -184,7 +185,7 @@ namespace com.espertech.esper.pattern.observer
             }
             try
             {
-                return ScheduleComputer.Compute(Convertor, beginState, context.AgentInstanceContext);
+                return ScheduleComputer.Compute(Convertor, beginState, context.AgentInstanceContext, context.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
             }
             catch (ScheduleParameterException e)
             {
@@ -194,10 +195,7 @@ namespace com.espertech.esper.pattern.observer
 
         internal interface ITimerScheduleSpecCompute
         {
-            TimerScheduleSpec Compute(
-                MatchedEventConvertor convertor,
-                MatchedEventMap beginState,
-                ExprEvaluatorContext exprEvaluatorContext);
+            TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone);
         }
 
         internal class TimerScheduleSpecComputeFromExpr : ITimerScheduleSpecCompute
@@ -216,12 +214,9 @@ namespace com.espertech.esper.pattern.observer
                 _periodNode = periodNode;
             }
 
-            public TimerScheduleSpec Compute(
-                MatchedEventConvertor convertor,
-                MatchedEventMap beginState,
-                ExprEvaluatorContext exprEvaluatorContext)
+            public TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone)
             {
-                DateTime? optionalDate = null;
+                DateTimeEx optionalDate = null;
                 if (_dateNode != null)
                 {
                     object param = PatternExpressionUtil.Evaluate(
@@ -230,13 +225,17 @@ namespace com.espertech.esper.pattern.observer
                     {
                         optionalDate = TimerScheduleISO8601Parser.ParseDate((string) param);
                     }
-                    if (param.IsInt())
+                    else if (param.IsLong())
                     {
-                        optionalDate = param.AsDateTime();
+                        optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
                     }
-                    if (param is DateTime)
+                    else if (param.IsInt())
                     {
-                        optionalDate = param.AsDateTime();
+                        optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
+                    }
+                    else if (param is DateTimeOffset || param is DateTime)
+                    {
+                        optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
                     }
                 }
 
@@ -277,10 +276,7 @@ namespace com.espertech.esper.pattern.observer
                 _parameter = parameter;
             }
 
-            public TimerScheduleSpec Compute(
-                MatchedEventConvertor convertor,
-                MatchedEventMap beginState,
-                ExprEvaluatorContext exprEvaluatorContext)
+            public TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone)
             {
                 object param = PatternExpressionUtil.Evaluate(
                     NAME_OBSERVER, beginState, _parameter, convertor, exprEvaluatorContext);

@@ -46,13 +46,13 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="filterValueSet">is a specification of filter parameters, containsevent type information, event property values and operators</param>
         /// <param name="callback">is the callback to be invoked when the filter matches an event</param>
-        void Add(FilterValueSet filterValueSet, FilterHandle callback);
+        FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback);
 
         /// <summary>
         /// Remove a filter callback.
         /// </summary>
         /// <param name="callback">is the callback to be removed</param>
-        void Remove(FilterHandle callback);
+        void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry);
 
         /// <summary>
         /// Return a count of the number of events evaluated by this service.

@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.script
         /// </summary>
         public ScriptCompiler()
         {
-            RootClassName = "esper" + Guid.NewGuid().ToString("N",
+            RootClassName = "esper" + Guid.NewGuid().ToString("Count",
                 CultureInfo.InvariantCulture);
             References = new StringCollection();
             Imports = new StringCollection();

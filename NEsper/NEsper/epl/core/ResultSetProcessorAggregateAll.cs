@@ -40,6 +40,8 @@ namespace com.espertech.esper.epl.core
         private readonly OrderByProcessor _orderByProcessor;
         private readonly AggregationService _aggregationService; 
         private ExprEvaluatorContext _exprEvaluatorContext;
+        private ResultSetProcessorAggregateAllOutputLastHelper _outputLastUnordHelper;
+        private ResultSetProcessorAggregateAllOutputAllHelper _outputAllUnordHelper;
     
         public ResultSetProcessorAggregateAll(ResultSetProcessorAggregateAllFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
         {
@@ -48,6 +50,8 @@ namespace com.espertech.esper.epl.core
             _orderByProcessor = orderByProcessor;
             _aggregationService = aggregationService;
             _exprEvaluatorContext = exprEvaluatorContext;
+            _outputLastUnordHelper = prototype.IsOutputLast ? new ResultSetProcessorAggregateAllOutputLastHelper(this) : null;
+            _outputAllUnordHelper = prototype.IsOutputAll ? new ResultSetProcessorAggregateAllOutputAllHelper(this) : null;
         }
 
         public AgentInstanceContext AgentInstanceContext
@@ -682,6 +686,49 @@ namespace com.espertech.esper.epl.core
         public bool HasAggregation
         {
             get { return true; }
+        }
+
+
+        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllUnordHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastUnordHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+            }
+        }
+
+        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllUnordHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+            else
+            {
+                _outputLastUnordHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+            }
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllUnordHelper.Output();
+            }
+            return _outputLastUnordHelper.Output();
+        }
+
+        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllUnordHelper.Output();
+            }
+            return _outputLastUnordHelper.Output();
         }
     }
 }

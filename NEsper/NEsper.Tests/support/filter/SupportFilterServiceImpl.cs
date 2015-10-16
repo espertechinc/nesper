@@ -33,12 +33,13 @@ namespace com.espertech.esper.support.filter
             throw new UnsupportedOperationException();
         }
 
-        public void Add(FilterValueSet filterValueSet, FilterHandle callback)
+        public FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback)
         {
             _added.Add(new Pair<FilterValueSet, FilterHandle>(filterValueSet, callback));
+            return null;
         }
 
-        public void Remove(FilterHandle callback)
+        public void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry)
         {
             _removed.Add(callback);
         }

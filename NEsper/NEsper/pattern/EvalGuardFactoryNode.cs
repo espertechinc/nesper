@@ -31,9 +31,9 @@ namespace com.espertech.esper.pattern
             _patternGuardSpec = patternGuardSpec;
         }
 
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext)
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext);
+            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalGuardNode(agentInstanceContext, this, child);
         }
 

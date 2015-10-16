@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.expression.baseagg
         /// <param name="aggregateNodes">is a list of node to populate into</param>
         public static void GetAggregatesBottomUp(ExprNode topNode, IList<ExprAggregateNode> aggregateNodes)
         {
-            // Map to hold per level of the node (1 to N depth) of expression node a list of aggregation expr nodes, if any
+            // Map to hold per level of the node (1 to Count depth) of expression node a list of aggregation expr nodes, if any
             // exist at that level
             var aggregateExprPerLevel = new OrderedDictionary<int, IList<ExprAggregateNode>>();
 

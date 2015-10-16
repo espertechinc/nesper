@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.join.@base
             }
             else
             {
-                // Prepare rows with each row N events where N is the number of streams
+                // Prepare rows with each row Count events where Count is the number of streams
                 lookupRows = new EventBean[lookupEvents.Length][];
                 for (int i = 0; i < lookupEvents.Length; i++)
                 {

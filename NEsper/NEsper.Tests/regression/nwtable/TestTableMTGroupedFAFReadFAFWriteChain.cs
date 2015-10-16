@@ -39,8 +39,8 @@ namespace com.espertech.esper.regression.nwtable
         /// Tests fire-and-forget lock cleanup:
         /// create table MyTable(key int primary key, p0 int)   (5 props)
         /// The following threads are in a chain communicating by queue holding key values:
-        /// - Insert: populates MyTable={key=N, p0=N}, last row indicated by -1
-        /// - Select-Table-Access: select MyTable[N].p0 from SupportBean
+        /// - Insert: populates MyTable={key=Count, p0=Count}, last row indicated by -1
+        /// - Select-Table-Access: select MyTable[Count].p0 from SupportBean
         /// </summary>
         [Test]
         public void TestMT() 

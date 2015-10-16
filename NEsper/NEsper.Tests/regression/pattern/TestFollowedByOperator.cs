@@ -30,17 +30,18 @@ namespace com.espertech.esper.regression.pattern
         private static long DateToLong(String dateText)
         {
             //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            DateTime date = DateTime.Parse(dateText);
+            var date = DateTimeOffset.Parse(dateText);
             Log.Debug(".dateToLong out=" + date);
             return date.TimeInMillis();
         }
 
-        private static SupportCallEvent SendEvent(EPRuntime runtime,
-                                                  long callId,
-                                                  String source,
-                                                  String destination,
-                                                  long startTime,
-                                                  long endTime)
+        private static SupportCallEvent SendEvent(
+            EPRuntime runtime,
+            long callId,
+            String source,
+            String destination,
+            long startTime,
+            long endTime)
         {
             var theEvent = new SupportCallEvent(callId, source, destination, startTime, endTime);
             runtime.SendEvent(theEvent);

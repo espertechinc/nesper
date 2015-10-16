@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.epl
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             _listener = new SupportUpdateListener();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().Name);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
         }
     
         [TearDown]

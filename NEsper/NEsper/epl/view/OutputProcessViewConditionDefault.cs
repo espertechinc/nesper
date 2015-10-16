@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -52,6 +53,11 @@ namespace com.espertech.esper.epl.view
             _outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
         }
 
+        public override int NumChangesetRows
+        {
+            get { return Math.Max(_viewEventsList.Count, _joinEventsSet.Count); }
+        }
+
         /// <summary>
         /// The Update method is called if the view does not participate in a join.
         /// </summary>
@@ -69,10 +75,27 @@ namespace com.espertech.esper.epl.view
                     "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
             }
 
-            if (!base.CheckAfterCondition(newData, _parent.StatementContext))
+            // add the incoming events to the event batches
+            if (_parent.HasAfter)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AOutputProcessWCondition(false); }
-                return;
+                var afterSatisfied = base.CheckAfterCondition(newData, _parent.StatementContext);
+                if (!afterSatisfied)
+                {
+                    if (!_parent.IsUnaggregatedUngrouped)
+                    {
+                        _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
+                    }
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AOutputProcessWCondition(false); }
+                    return;
+                }
+                else
+                {
+                    _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
+                }
+            }
+            else
+            {
+                _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
             }
 
             int newDataLength = 0;
@@ -85,9 +108,6 @@ namespace com.espertech.esper.epl.view
             {
                 oldDataLength = oldData.Length;
             }
-
-            // add the incoming events to the event batches
-            _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QOutputRateConditionUpdate(newDataLength, oldDataLength); }
             _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
@@ -117,10 +137,27 @@ namespace com.espertech.esper.epl.view
                     "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
             }
 
-            if (!base.CheckAfterCondition(newEvents, _parent.StatementContext))
+            // add the incoming events to the event batches
+            if (_parent.HasAfter)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AOutputProcessWConditionJoin(false); }
-                return;
+                var afterSatisfied = base.CheckAfterCondition(newEvents, _parent.StatementContext);
+                if (!afterSatisfied)
+                {
+                    if (!_parent.IsUnaggregatedUngrouped)
+                    {
+                        AddToChangeset(newEvents, oldEvents, _joinEventsSet);
+                    }
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AOutputProcessWConditionJoin(false); }
+                    return;
+                }
+                else
+                {
+                    AddToChangeset(newEvents, oldEvents, _joinEventsSet);
+                }
+            }
+            else
+            {
+                AddToChangeset(newEvents, oldEvents, _joinEventsSet);
             }
 
             int newEventsSize = 0;
@@ -134,23 +171,6 @@ namespace com.espertech.esper.epl.view
             {
                 oldEventsSize = oldEvents.Count;
             }
-
-            // add the incoming events to the event batches
-            ISet<MultiKey<EventBean>> copyNew;
-            if (newEvents != null)
-            {
-                copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
-            }
-            else
-            {
-                copyNew = new LinkedHashSet<MultiKey<EventBean>>();
-            }
-
-            ISet<MultiKey<EventBean>> copyOld = oldEvents != null 
-                ? new LinkedHashSet<MultiKey<EventBean>>(oldEvents) 
-                : new LinkedHashSet<MultiKey<EventBean>>();
-
-            _joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QOutputRateConditionUpdate(newEventsSize, oldEventsSize); }
             _outputCondition.UpdateOutputCondition(newEventsSize, oldEventsSize);
@@ -299,6 +319,35 @@ namespace com.espertech.esper.epl.view
             {
                 _outputCondition.Terminated();
             }
+        }
+
+        private static void AddToChangeset(
+            IEnumerable<MultiKey<EventBean>> newEvents, 
+            IEnumerable<MultiKey<EventBean>> oldEvents,
+            ICollection<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet)
+        {
+            // add the incoming events to the event batches
+            ISet<MultiKey<EventBean>> copyNew;
+            if (newEvents != null)
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
+            }
+            else
+            {
+                copyNew = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+
+            ISet<MultiKey<EventBean>> copyOld;
+            if (oldEvents != null)
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
+            }
+            else
+            {
+                copyOld = new LinkedHashSet<MultiKey<EventBean>>();
+            }
+
+            joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
         }
     }
 }

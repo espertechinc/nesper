@@ -31,7 +31,7 @@ namespace com.espertech.esper.core.context.activator
         public ViewableActivationResult Activate(AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
         {
             TableStateInstance state = agentInstanceContext.StatementContext.TableService.GetState(_tableMetadata.TableName, agentInstanceContext.AgentInstanceId);
-            return new ViewableActivationResult(new TableStateViewableInternal(_tableMetadata, state, _optionalTableFilters), CollectionUtil.STOP_CALLBACK_NONE, null, null, false, false);
+            return new ViewableActivationResult(new TableStateViewableInternal(_tableMetadata, state, _optionalTableFilters), CollectionUtil.STOP_CALLBACK_NONE, null, null, null, false, false, null);
         }
     }
 }

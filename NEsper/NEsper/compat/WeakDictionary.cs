@@ -305,7 +305,7 @@ namespace com.espertech.esper.compat
             		this.dictionary.Remove( key ) ;            		
             	}
             	
-            	throw new KeyNotFoundException( "Key '" + key + "' not found" ) ;
+            	throw new KeyNotFoundException( "Value '" + key + "' not found" ) ;
             }
             set
             {

@@ -45,10 +45,10 @@ namespace com.espertech.esper.regression.nwtable
         /// create table MyTable (key string primary key, value int)
         /// create index MyIndex on MyTable (value)
         /// select * from SupportBean_S0, MyTable where intPrimitive = id
-        /// Prefill MyTable with MyTable={key='A_N', value=N} with N between 0 and NUM_KEYS-1
+        /// Prefill MyTable with MyTable={key='A_N', value=Count} with Count between 0 and NUM_KEYS-1
         /// For x seconds:
         /// Single reader thread sends SupportBean events, asserts that either one or two rows are found (A_N and maybe B_N)
-        /// Single writer thread inserts MyTable={key='B_N', value=100000+N} and deletes each row.
+        /// Single writer thread inserts MyTable={key='B_N', value=100000+Count} and deletes each row.
         /// </summary>
         [Test]
         public void TestMT() 

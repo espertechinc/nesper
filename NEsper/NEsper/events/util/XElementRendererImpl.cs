@@ -443,6 +443,10 @@ namespace com.espertech.esper.events.util
             {
                 return XmlTypeCode.DateTime;
             }
+            else if (type == typeof(DateTimeOffset?))
+            {
+                return XmlTypeCode.DateTime;
+            }
             else if (type == typeof(string))
             {
                 return XmlTypeCode.String;

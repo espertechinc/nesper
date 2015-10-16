@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.context
             configuration.EngineDefaults.ExecutionConfig.IsPrioritized = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().Name);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName); }
     
             _listener = new SupportUpdateListener();
         }

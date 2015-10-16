@@ -92,6 +92,8 @@ namespace com.espertech.esper.client
             Assert.AreEqual(15000, _config.EngineDefaults.VariablesConfig.MsecVersionRelease);
             Assert.AreEqual(null, _config.EngineDefaults.PatternsConfig.MaxSubexpressions);
             Assert.AreEqual(true, _config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
+            Assert.AreEqual(null, _config.EngineDefaults.MatchRecognizeConfig.MaxStates);
+            Assert.AreEqual(true, _config.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart);
             Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.MILLI, _config.EngineDefaults.TimeSourceConfig.TimeSourceType);
             Assert.IsFalse(_config.EngineDefaults.ExecutionConfig.IsPrioritized);
             Assert.IsFalse(_config.EngineDefaults.ExecutionConfig.IsDisableLocking);
@@ -109,6 +111,7 @@ namespace com.espertech.esper.client
             Assert.IsTrue(_config.EngineDefaults.ExpressionConfig.IsExtendedAggregation);
             Assert.IsFalse(_config.EngineDefaults.ExpressionConfig.IsDuckTyping);
             Assert.IsNull(_config.EngineDefaults.ExpressionConfig.MathContext);
+            Assert.AreEqual(TimeZoneInfo.Local, _config.EngineDefaults.ExpressionConfig.TimeZone);
             Assert.IsNull(_config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories);
             Assert.IsNull(_config.EngineDefaults.ConditionHandlingConfig.HandlerFactories);
             Assert.AreEqual("js", _config.EngineDefaults.ScriptsConfig.DefaultDialect);
@@ -410,6 +413,8 @@ namespace com.espertech.esper.client
             Assert.AreEqual(30000, config.EngineDefaults.VariablesConfig.MsecVersionRelease);
             Assert.AreEqual(3L, (long) config.EngineDefaults.PatternsConfig.MaxSubexpressions);
             Assert.AreEqual(false, config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
+            Assert.AreEqual(3L, (long)config.EngineDefaults.MatchRecognizeConfig.MaxStates);
+            Assert.AreEqual(false, config.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart);
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, config.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector);
     
             Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.NANO, config.EngineDefaults.TimeSourceConfig.TimeSourceType);
@@ -454,6 +459,7 @@ namespace com.espertech.esper.client
             Assert.IsTrue(config.EngineDefaults.ExpressionConfig.IsDuckTyping);
             Assert.AreEqual(2, config.EngineDefaults.ExpressionConfig.MathContext.Precision);
             Assert.AreEqual(MidpointRounding.ToEven, config.EngineDefaults.ExpressionConfig.MathContext.RoundingMode);
+            Assert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), config.EngineDefaults.ExpressionConfig.TimeZone);
             Assert.AreEqual(2, config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories.Count);
             Assert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories[0]);
             Assert.AreEqual("my.company.cep.AlertExceptionHandlerFactory", config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories[1]);

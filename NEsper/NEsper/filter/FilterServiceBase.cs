@@ -36,11 +36,11 @@ namespace com.espertech.esper.filter
         private readonly CopyOnWriteArraySet<FilterServiceListener> _filterServiceListeners;
     
         /// <summary>Constructor. </summary>
-        protected FilterServiceBase(FilterServiceGranularLockFactory lockFactory)
+        protected FilterServiceBase(FilterServiceGranularLockFactory lockFactory, bool allowIsolation)
         {
-            this._lockFactory = lockFactory;
+            _lockFactory = lockFactory;
             _eventTypeIndex = new EventTypeIndex(lockFactory);
-            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex);
+            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex, allowIsolation);
             _filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
         }
 
@@ -55,16 +55,17 @@ namespace com.espertech.esper.filter
             _eventTypeIndex.Dispose();
             _indexBuilder.Destroy();
         }
-    
-        protected void AddInternal(FilterValueSet filterValueSet, FilterHandle filterCallback)
+
+        protected FilterServiceEntry AddInternal(FilterValueSet filterValueSet, FilterHandle filterCallback)
         {
-            _indexBuilder.Add(filterValueSet, filterCallback, _lockFactory);
+            var entry = _indexBuilder.Add(filterValueSet, filterCallback, _lockFactory);
             _filtersVersion++;
+            return entry;
         }
     
-        protected void RemoveInternal(FilterHandle filterCallback)
+        protected void RemoveInternal(FilterHandle filterCallback, FilterServiceEntry filterServiceEntry)
         {
-            _indexBuilder.Remove(filterCallback);
+            _indexBuilder.Remove(filterCallback, filterServiceEntry);
             _filtersVersion++;
         }
     
@@ -161,6 +162,11 @@ namespace com.espertech.esper.filter
             get { return _eventTypeIndex.Count; }
         }
 
+        public void Init()
+        {
+            // no initialization required
+        }
+
         protected void RemoveTypeInternal(EventType type)
         {
             _eventTypeIndex.RemoveType(type);
@@ -207,8 +213,8 @@ namespace com.espertech.esper.filter
 
         public abstract long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, string statementId);
         public abstract long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches);
-        public abstract void Add(FilterValueSet filterValueSet, FilterHandle callback);
-        public abstract void Remove(FilterHandle callback);
+        public abstract FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback);
+        public abstract void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry);
         public abstract void RemoveType(EventType type);
         public abstract FilterSet Take(ICollection<string> statementId);
         public abstract void Apply(FilterSet filterSet);

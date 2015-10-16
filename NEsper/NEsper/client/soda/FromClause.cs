@@ -13,7 +13,7 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.client.soda
 {
-    /// <summary>The from-clause names the streams to select upon. <para /> The most common projected stream is a filter-based stream which is created by <seealso cref="FilterStream" />. <para /> Multiple streams can be joined by adding each stream individually. <para /> Outer joins are also handled by this class. To create an outer join consisting of 2 streams, add one <seealso cref="OuterJoinQualifier" /> that defines the outer join relationship between the 2 streams. The outer joins between N streams, add N-1 <seealso cref="OuterJoinQualifier" /> qualifiers. </summary>
+    /// <summary>The from-clause names the streams to select upon. <para /> The most common projected stream is a filter-based stream which is created by <seealso cref="FilterStream" />. <para /> Multiple streams can be joined by adding each stream individually. <para /> Outer joins are also handled by this class. To create an outer join consisting of 2 streams, add one <seealso cref="OuterJoinQualifier" /> that defines the outer join relationship between the 2 streams. The outer joins between Count streams, add Count-1 <seealso cref="OuterJoinQualifier" /> qualifiers. </summary>
     [Serializable]
     public class FromClause
     {
@@ -89,7 +89,7 @@ namespace com.espertech.esper.client.soda
             return this;
         }
 
-        /// <summary>Adds an outer join descriptor that defines how the streams are related via outer joins. <para /> For joining N streams, add N-1 outer join qualifiers. </summary>
+        /// <summary>Adds an outer join descriptor that defines how the streams are related via outer joins. <para /> For joining Count streams, add Count-1 outer join qualifiers. </summary>
         /// <param name="outerJoinQualifier">is the type of outer join and the fields in the outer join</param>
         /// <returns>from clause</returns>
         public FromClause Add(OuterJoinQualifier outerJoinQualifier)

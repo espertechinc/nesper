@@ -46,6 +46,8 @@ namespace com.espertech.esper.epl.core
         private readonly bool _allowExtendedAggregationFunc;
         private readonly bool _sortUsingCollator;
         private readonly MathContext _optionalDefaultMathContext;
+        private readonly TimeZoneInfo _timeZone;
+        private readonly ConfigurationEngineDefaults.ThreadingProfile _threadingProfile;
 
         /// <summary>
         /// Ctor
@@ -60,7 +62,9 @@ namespace com.espertech.esper.epl.core
             bool isUdfCache,
             bool isDuckType,
             bool sortUsingCollator,
-            MathContext optionalDefaultMathContext)
+            MathContext optionalDefaultMathContext, 
+            TimeZoneInfo timeZone,
+            ConfigurationEngineDefaults.ThreadingProfile threadingProfile)
         {
             _imports = new List<AutoImportDesc>();
             _aggregationFunctions = new Dictionary<String, ConfigurationPlugInAggregationFunction>();
@@ -72,6 +76,8 @@ namespace com.espertech.esper.epl.core
             IsDuckType = isDuckType;
             _sortUsingCollator = sortUsingCollator;
             _optionalDefaultMathContext = optionalDefaultMathContext;
+            _timeZone = timeZone;
+            _threadingProfile = threadingProfile;
         }
 
         public bool IsUdfCache { get; private set; }
@@ -630,6 +636,16 @@ namespace com.espertech.esper.epl.core
         public MathContext DefaultMathContext
         {
             get { return _optionalDefaultMathContext; }
+        }
+
+        public TimeZoneInfo TimeZone
+        {
+            get { return _timeZone; }
+        }
+
+        public ConfigurationEngineDefaults.ThreadingProfile ThreadingProfile
+        {
+            get { return _threadingProfile; }
         }
 
         public bool IsSortUsingCollator

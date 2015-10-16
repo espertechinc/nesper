@@ -83,7 +83,7 @@ namespace com.espertech.esper.collection
                 _refSet[key] = new MutableInt(numReferences);
                 return;
             }
-            throw new ArgumentException("Key '" + key + "' already in collection");
+            throw new ArgumentException("Value '" + key + "' already in collection");
         }
 
         /// <summary>

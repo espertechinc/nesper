@@ -71,20 +71,20 @@ namespace com.espertech.esper.pattern
 
         public static EvalRootNode MakeRootNodeFromFactory(EvalRootFactoryNode rootFactoryNode, PatternAgentInstanceContext patternAgentInstanceContext)
         {
-            return (EvalRootNode)rootFactoryNode.MakeEvalNode(patternAgentInstanceContext);
+            return (EvalRootNode)rootFactoryNode.MakeEvalNode(patternAgentInstanceContext, null);
         }
 
-        public static EvalNode MakeEvalNodeSingleChild(IList<EvalFactoryNode> childNodes, PatternAgentInstanceContext agentInstanceContext)
+        public static EvalNode MakeEvalNodeSingleChild(IList<EvalFactoryNode> childNodes, PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            return childNodes[0].MakeEvalNode(agentInstanceContext);
+            return childNodes[0].MakeEvalNode(agentInstanceContext, parentNode);
         }
 
-        public static EvalNode[] MakeEvalNodeChildren(IList<EvalFactoryNode> childNodes, PatternAgentInstanceContext agentInstanceContext)
+        public static EvalNode[] MakeEvalNodeChildren(IList<EvalFactoryNode> childNodes, PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             var children = new EvalNode[childNodes.Count];
             for (int i = 0; i < childNodes.Count; i++)
             {
-                children[i] = childNodes[i].MakeEvalNode(agentInstanceContext);
+                children[i] = childNodes[i].MakeEvalNode(agentInstanceContext, parentNode);
             }
             return children;
         }

@@ -11,6 +11,6 @@ using System;
 namespace com.espertech.esper.epl.datetime.eval
 {
     public interface DatetimeLongCoercer {
-        long Coerce(Object date);
+        long Coerce(Object value);
     }
 }

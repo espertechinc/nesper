@@ -126,7 +126,7 @@ namespace com.espertech.esper.epl.db
             }
         }
 
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext extensionServicesContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHistoricalScheduledEval();}
             // purge expired

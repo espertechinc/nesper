@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(DateTime?), typeof(long?)});
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]{typeof(DateTimeOffset?), typeof(long?)});
     
             String startTime = "2002-05-30 09:00:00.000";
             String expectedTime = "2002-01-30 09:00:00.000";
@@ -60,8 +60,8 @@ namespace com.espertech.esper.regression.datetime
         }
     
         [Test]
-        public void TestFields() {
-    
+        public void TestFields()
+        {
             String[] fields = "val0,val1,val2,val3,val4,val5,val6,val7".Split(',');
             String eplFragment = "select " +
                     "utildate.WithMin('msec') as val0," +
@@ -75,7 +75,13 @@ namespace com.espertech.esper.regression.datetime
                     " from SupportDateTime";
             EPStatement stmtFragment = epService.EPAdministrator.CreateEPL(eplFragment);
             stmtFragment.Events += listener.Update;
-            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[] { typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?), typeof(DateTime?) });
+            LambdaAssertionUtil.AssertTypes(stmtFragment.EventType, fields, new Type[]
+            {
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?), 
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?),
+                typeof(DateTimeOffset?), typeof(DateTimeOffset?)
+            });
     
             String[] expected = {
                     "2002-05-30 09:01:02.000",

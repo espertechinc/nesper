@@ -118,8 +118,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Common.Logging">
-      <HintPath>..\..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+      <HintPath>..\..\packages\Common.Logging.3.3.0\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\..\packages\Common.Logging.Core.3.3.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.JScript" />
@@ -310,7 +313,6 @@
     <Compile Include="client\EPServiceProviderManager.cs" />
     <Compile Include="client\EPStatementStateListener.cs" />
     <Compile Include="client\EPStatementSyntaxException.cs" />
-    <Compile Include="client\EPSubscriber.cs" />
     <Compile Include="client\EPSubscriberException.cs" />
     <Compile Include="client\EventBean.cs" />
     <Compile Include="client\EventBeanFactory.cs" />
@@ -326,6 +328,7 @@
     <Compile Include="client\hook\ConditionHandlerContext.cs" />
     <Compile Include="client\hook\ConditionHandlerFactory.cs" />
     <Compile Include="client\hook\ConditionHandlerFactoryContext.cs" />
+    <Compile Include="client\hook\ConditionMatchRecognizeStatesMax.cs" />
     <Compile Include="client\hook\ConditionPatternEngineSubexpressionMax.cs" />
     <Compile Include="client\hook\ConditionPatternSubexpressionMax.cs" />
     <Compile Include="client\hook\EPLExpressionEvaluationContext.cs" />
@@ -372,6 +375,8 @@
     <Compile Include="client\scopetest\SupportSubscriber.cs" />
     <Compile Include="client\scopetest\SupportSubscriberMRD.cs" />
     <Compile Include="client\scopetest\SupportUpdateListener.cs" />
+    <Compile Include="compat\DateTimeConstants.cs" />
+    <Compile Include="compat\DateTimeEx.cs" />
     <Compile Include="client\soda\AccessProjectionExpressionBase.cs" />
     <Compile Include="client\soda\AnnotationAttribute.cs" />
     <Compile Include="client\soda\AssignmentPair.cs" />
@@ -490,6 +495,7 @@
     <Compile Include="client\soda\UpdateClause.cs" />
     <Compile Include="client\soda\WindowProjectionExpression.cs" />
     <Compile Include="client\StatementEventArgs.cs" />
+    <Compile Include="client\EPSubscriber.cs" />
     <Compile Include="client\time\CurrentTimeSpanEvent.cs" />
     <Compile Include="client\UnmatchedListener.cs" />
     <Compile Include="client\UpdateEventArgs.cs" />
@@ -505,6 +511,7 @@
     <Compile Include="client\VariableNotFoundException.cs" />
     <Compile Include="client\VariableValueException.cs" />
     <Compile Include="collection\ArrayWrap.cs" />
+    <Compile Include="compat\collections\DebugDictionary.cs" />
     <Compile Include="collection\FilteredEventEnumerator.cs" />
     <Compile Include="collection\MixedEventBeanAndCollectionEnumeratorBase.cs" />
     <Compile Include="collection\MultiKeyInt.cs" />
@@ -518,7 +525,6 @@
     <Compile Include="collection\OneEventCollection.cs" />
     <Compile Include="compat\attributes\RenderWithToStringAttribute.cs" />
     <Compile Include="compat\Blob.cs" />
-    <Compile Include="compat\collections\DebugDictionary.cs" />
     <Compile Include="compat\collections\SubList.cs" />
     <Compile Include="collection\TimeWindowPair.cs" />
     <Compile Include="compat\AtomicLong.cs" />
@@ -556,11 +562,16 @@
     <Compile Include="compat\collections\StringDictionary.cs" />
     <Compile Include="compat\Cache3D.cs" />
     <Compile Include="compat\collections\SubmapDictionary.cs" />
+    <Compile Include="compat\collections\SynchronizedSet.cs" />
     <Compile Include="compat\collections\TransformCollection.cs" />
     <Compile Include="compat\collections\Tuple.cs" />
     <Compile Include="compat\AtomicBoolean.cs" />
     <Compile Include="compat\Atomic.cs" />
     <Compile Include="compat\collections\TransformDictionary.cs" />
+    <Compile Include="compat\DateTimeMath.cs" />
+    <Compile Include="compat\DateTimeMathStyle.cs" />
+    <Compile Include="compat\DateTimeOffsetHelper.cs" />
+    <Compile Include="compat\DateTimeParser.cs" />
     <Compile Include="compat\HighResolutionTimeProvider.cs" />
     <Compile Include="compat\ICache.cs" />
     <Compile Include="compat\logging\ILog.cs" />
@@ -614,7 +625,7 @@
     <Compile Include="compat\TrackedDisposable.cs" />
     <Compile Include="compat\StringExtensions.cs" />
     <Compile Include="compat\collections\SynchronizedList.cs" />
-    <Compile Include="compat\collections\XmlExtensions.cs" />
+    <Compile Include="compat\xml\XmlExtensions.cs" />
     <Compile Include="compat\ContextVar.cs" />
     <Compile Include="compat\DefaultTypeCasterFactory.cs" />
     <Compile Include="compat\Runnable.cs" />
@@ -655,7 +666,9 @@
     <Compile Include="compat\xml\IXPathFunctionResolver.cs" />
     <Compile Include="compat\xml\IXPathVariableResolver.cs" />
     <Compile Include="compat\xml\XPathIteratorNodeList.cs" />
+    <Compile Include="core\context\activator\ViewableActivationResultExtension.cs" />
     <Compile Include="core\context\activator\ViewableActivatorFactory.cs" />
+    <Compile Include="core\context\activator\ViewableActivatorFactoryDefault.cs" />
     <Compile Include="core\context\factory\StatementAgentInstanceFactoryCreateVariable.cs" />
     <Compile Include="core\context\factory\StatementAgentInstanceFactoryCreateVariableResult.cs" />
     <Compile Include="core\context\factory\StatementAgentInstancePostLoad.cs" />
@@ -677,6 +690,8 @@
     <Compile Include="core\context\mgr\ContextControllerFactory.cs" />
     <Compile Include="core\context\mgr\ContextControllerFactoryBase.cs" />
     <Compile Include="core\context\mgr\ContextControllerFactoryContext.cs" />
+    <Compile Include="core\context\mgr\ContextControllerFactoryFactorySvc.cs" />
+    <Compile Include="core\context\mgr\ContextControllerFactoryFactorySvcImpl.cs" />
     <Compile Include="core\context\mgr\ContextControllerFactoryHelper.cs" />
     <Compile Include="core\context\mgr\ContextControllerFactoryService.cs" />
     <Compile Include="core\context\mgr\ContextControllerFactoryServiceContext.cs" />
@@ -714,6 +729,8 @@
     <Compile Include="core\context\mgr\ContextManagedStatementCreateAggregationVariableDesc.cs" />
     <Compile Include="core\context\mgr\ContextManagedStatementCreateIndexDesc.cs" />
     <Compile Include="core\context\mgr\ContextManagedStatementCreateVariableDesc.cs" />
+    <Compile Include="core\context\mgr\ContextManagerFactoryService.cs" />
+    <Compile Include="core\context\mgr\ContextManagerFactoryServiceImpl.cs" />
     <Compile Include="core\context\mgr\ContextManagerImpl.cs" />
     <Compile Include="core\context\mgr\ContextManagerNested.cs" />
     <Compile Include="core\context\mgr\ContextManagerNestedInstanceHandle.cs" />
@@ -841,6 +858,7 @@
     <Compile Include="core\service\DeliveryConvertorNull.cs" />
     <Compile Include="core\service\DeliveryConvertorObjectArr.cs" />
     <Compile Include="core\service\DeliveryConvertorWidener.cs" />
+    <Compile Include="core\service\EngineLevelExtensionServicesContext.cs" />
     <Compile Include="core\service\EPAdministratorContext.cs" />
     <Compile Include="core\service\EPAdministratorHelper.cs" />
     <Compile Include="core\service\EPAdministratorImpl.cs" />
@@ -865,6 +883,8 @@
     <Compile Include="core\service\EPServicesContextFactory.cs" />
     <Compile Include="core\service\EPServicesContextFactoryDefault.cs" />
     <Compile Include="core\service\EPStatementDispatch.cs" />
+    <Compile Include="core\service\EPStatementFactory.cs" />
+    <Compile Include="core\service\EPStatementFactoryDefault.cs" />
     <Compile Include="core\service\EPStatementHandle.cs" />
     <Compile Include="core\service\EPStatementHandleCallback.cs" />
     <Compile Include="core\service\EPStatementHandlePrioritySort.cs" />
@@ -880,7 +900,6 @@
     <Compile Include="core\service\ExpressionResultCacheStackEntry.cs" />
     <Compile Include="core\service\ExprEvaluatorContextStatement.cs" />
     <Compile Include="core\service\ExprEvaluatorContextWTableAccess.cs" />
-    <Compile Include="core\service\ExtensionServicesContext.cs" />
     <Compile Include="core\service\InsertIntoLatchFactory.cs" />
     <Compile Include="core\service\InsertIntoLatchSpin.cs" />
     <Compile Include="core\service\InsertIntoLatchWait.cs" />
@@ -901,7 +920,9 @@
     <Compile Include="core\service\multimatch\MultiMatchHandlerSubqueryWDedup.cs" />
     <Compile Include="core\service\NamedWindowSelectedProps.cs" />
     <Compile Include="core\service\PatternListenerDispatch.cs" />
+    <Compile Include="core\service\resource\StatementResourceExtension.cs" />
     <Compile Include="core\service\resource\StatementResourceHolder.cs" />
+    <Compile Include="core\service\resource\StatementResourceHolderUtil.cs" />
     <Compile Include="core\service\resource\StatementResourceService.cs" />
     <Compile Include="core\service\ResultDeliveryStrategy.cs" />
     <Compile Include="core\service\ResultDeliveryStrategyFactory.cs" />
@@ -1372,28 +1393,42 @@
     <Compile Include="epl\core\PropertyNotFoundException.cs" />
     <Compile Include="epl\core\PropertyResolutionDescriptor.cs" />
     <Compile Include="epl\core\ResultSetAggregateAllEnumerator.cs" />
+    <Compile Include="epl\core\ResultSetAggregateGroupedIterator.cs" />
     <Compile Include="epl\core\ResultSetProcessor.cs" />
     <Compile Include="epl\core\ResultSetProcessorAggregateAll.cs" />
     <Compile Include="epl\core\ResultSetProcessorAggregateAllFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorAggregateAllOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorAggregateAllOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorAggregateGrouped.cs" />
     <Compile Include="epl\core\ResultSetProcessorAggregateGroupedFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorAggregateGroupedOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorAggregateGroupedOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorBaseSimple.cs" />
     <Compile Include="epl\core\ResultSetProcessorFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorFactoryDesc.cs" />
     <Compile Include="epl\core\ResultSetProcessorFactoryFactory.cs" />
-    <Compile Include="epl\core\ResultSetProcessorHandThrougFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorHandThrough.cs" />
+    <Compile Include="epl\core\ResultSetProcessorHandThroughFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowForAll.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowForAllFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowForAllOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowForAllOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroup.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroupFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowPerGroupOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowPerGroupOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroupRollup.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroupRollupFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowPerGroupRollupOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorRowPerGroupRollupOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroupRollupUnbound.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowPerGroupUnbound.cs" />
     <Compile Include="epl\core\ResultSetProcessorSimple.cs" />
     <Compile Include="epl\core\ResultSetProcessorSimpleFactory.cs" />
+    <Compile Include="epl\core\ResultSetProcessorSimpleOutputAllHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorSimpleOutputLastHelper.cs" />
     <Compile Include="epl\core\ResultSetProcessorSimpleTransform.cs" />
+    <Compile Include="epl\core\ResultSetProcessorType.cs" />
     <Compile Include="epl\core\ResultSetProcessorUtil.cs" />
     <Compile Include="epl\core\ResultSetRowPerGroupEnumerator.cs" />
     <Compile Include="epl\core\RowLimitProcessor.cs" />
@@ -1438,7 +1473,6 @@
     <Compile Include="epl\datetime\calop\DateTimeFieldEnum.cs" />
     <Compile Include="epl\datetime\calop\DateTimeFieldMath.cs" />
     <Compile Include="epl\datetime\eval\DatetimeLongCoercer.cs" />
-    <Compile Include="epl\datetime\eval\DatetimeLongCoercerCal.cs" />
     <Compile Include="epl\datetime\eval\DatetimeLongCoercerDate.cs" />
     <Compile Include="epl\datetime\eval\DatetimeLongCoercerFactory.cs" />
     <Compile Include="epl\datetime\eval\DatetimeLongCoercerLong.cs" />
@@ -1815,6 +1849,8 @@
     <Compile Include="epl\expression\ops\ExprBetweenNodeImpl.cs" />
     <Compile Include="epl\expression\ops\ExprBitWiseNode.cs" />
     <Compile Include="epl\expression\ops\ExprConcatNode.cs" />
+    <Compile Include="epl\expression\ops\ExprConcatNodeEvalThreadLocal.cs" />
+    <Compile Include="epl\expression\ops\ExprConcatNodeEvalWNew.cs" />
     <Compile Include="epl\expression\ops\ExprEqualsAllAnyNode.cs" />
     <Compile Include="epl\expression\ops\ExprEqualsNode.cs" />
     <Compile Include="epl\expression\ops\ExprEqualsNodeImpl.cs" />
@@ -1876,14 +1912,10 @@
     <Compile Include="epl\expression\table\ExprTableNodeUtil.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriod.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaConst.cs" />
-    <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaConstDateTimeAdd.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaConstDateTimeAdd.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaConstMsec.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaNonConst.cs" />
-    <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaNonConstDateTimeAdd.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaNonConstDateTimeAdd.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaNonConstMsec.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalDeltaResult.cs" />
     <Compile Include="epl\expression\time\ExprTimePeriodEvalMillis.cs" />
@@ -2358,6 +2390,8 @@
     <Compile Include="epl\variable\VariableStateFactory.cs" />
     <Compile Include="epl\variable\VariableStateFactoryConst.cs" />
     <Compile Include="epl\view\OutputConditionExpressionTypeUtil.cs" />
+    <Compile Include="epl\view\OutputProcessViewConditionLastAllUnord.cs" />
+    <Compile Include="epl\view\OutputProcessViewConditionLastAllUnordPostProcessAll.cs" />
     <Compile Include="epl\virtualdw\VirtualDWViewProviderForAgentInstance.cs" />
     <Compile Include="events\bean\EventBeanManufacturerCtor.cs" />
     <Compile Include="events\bean\InstanceManufacturer.cs" />
@@ -2365,6 +2399,7 @@
     <Compile Include="events\bean\InstanceManufacturerFastCtor.cs" />
     <Compile Include="events\bean\InstanceManufacturerUtil.cs" />
     <Compile Include="filter\FilterServiceBase.cs" />
+    <Compile Include="filter\FilterServiceEntry.cs" />
     <Compile Include="filter\FilterServiceGranularLockFactory.cs" />
     <Compile Include="filter\FilterServiceGranularLockFactoryNone.cs" />
     <Compile Include="filter\FilterServiceGranularLockFactoryReentrant.cs" />
@@ -2402,6 +2437,7 @@
     <Compile Include="metrics\instrumentation\InstrumentationHelper.cs" />
     <Compile Include="metrics\instrumentation\Instrument.cs" />
     <Compile Include="pattern\EvalMatchUntilStateBounds.cs" />
+    <Compile Include="pattern\EvalRootMatchRemover.cs" />
     <Compile Include="pattern\guard\EventGuardVisitor.cs" />
     <Compile Include="pattern\observer\EventObserverVisitor.cs" />
     <Compile Include="pattern\observer\ObserverParameterUtil.cs" />
@@ -2414,9 +2450,22 @@
     <Compile Include="pattern\PatternLevelAnnotationFlags.cs" />
     <Compile Include="pattern\PatternLevelAnnotationUtil.cs" />
     <Compile Include="rowregex\EventRowRegexNFAViewFactoryHelper.cs" />
+    <Compile Include="rowregex\EventRowRegexNFAViewScheduleCallback.cs" />
+    <Compile Include="rowregex\EventRowRegexNFAViewScheduler.cs" />
+    <Compile Include="rowregex\EventRowRegexNFAViewSchedulerImpl.cs" />
     <Compile Include="rowregex\EventRowRegexNFAViewServiceVisitor.cs" />
+    <Compile Include="rowregex\EventRowRegexNFAViewUtil.cs" />
+    <Compile Include="rowregex\MatchRecognizeStatePoolEngineSvc.cs" />
+    <Compile Include="rowregex\MatchRecognizeStatePoolStmtHandler.cs" />
+    <Compile Include="rowregex\MatchRecognizeStatePoolStmtSvc.cs" />
     <Compile Include="rowregex\RegexExprPreviousEvalStrategy.cs" />
+    <Compile Include="rowregex\RegexHandlerFactory.cs" />
+    <Compile Include="rowregex\RegexHandlerFactoryDefault.cs" />
+    <Compile Include="rowregex\RegexPartitionStateImpl.cs" />
     <Compile Include="rowregex\RegexPartitionStateRepoGroupMeta.cs" />
+    <Compile Include="rowregex\RegexPartitionStateRepoScheduleState.cs" />
+    <Compile Include="rowregex\RegexPartitionStateRepoScheduleStateImpl.cs" />
+    <Compile Include="rowregex\RegexPartitionTerminationStateComparator.cs" />
     <Compile Include="rowregex\RegexPatternExpandUtil.cs" />
     <Compile Include="rowregex\RowRegexExprNodePermute.cs" />
     <Compile Include="rowregex\RowRegexExprNodePrecedenceEnum.cs" />
@@ -3400,9 +3449,8 @@
     <Compile Include="compat\ObjectFactory.cs" />
     <Compile Include="compat\ScopedInstance.cs" />
     <Compile Include="compat\threading\SlimLock.cs" />
-    <Compile Include="compat\collections\SynchronizedSet.cs" />
+    <Compile Include="compat\collections\SynchronizedCollection.cs" />
     <Compile Include="compat\threading\IThreadLocal.cs" />
-    <Compile Include="compat\collections\TreeSet.cs" />
     <Compile Include="compat\timers\HighResolutionTimer.cs" />
     <Compile Include="compat\timers\HighResolutionTimerFactory.cs" />
     <Compile Include="compat\collections\IdentityDictionary.cs" />
@@ -3474,6 +3522,7 @@
     <Compile Include="util\PopulateUtil.cs" />
     <Compile Include="util\SerializerFactory.cs" />
     <Compile Include="util\SerializerUtil.cs" />
+    <Compile Include="util\StopCallbackNoAction.cs" />
     <Compile Include="util\TypeInstantiationException.cs" />
     <Compile Include="util\CoercerFactory.cs" />
     <Compile Include="util\CollectionUtil.cs" />

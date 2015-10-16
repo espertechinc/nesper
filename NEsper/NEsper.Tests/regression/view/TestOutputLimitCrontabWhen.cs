@@ -429,8 +429,8 @@ namespace com.espertech.esper.regression.view
     
         private void SendTimeEvent(int day, int hour, int minute, int second, int millis)
         {
-            DateTime dateTime = new DateTime(2008, 1, day, hour, minute, second, millis);
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(dateTime.TimeInMillis()));
+            var dateTime = new DateTime(2008, 1, day, hour, minute, second, millis, DateTimeKind.Local);
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(dateTime));
         }
     
         [Test]

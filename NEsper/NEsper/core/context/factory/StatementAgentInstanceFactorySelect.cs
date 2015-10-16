@@ -122,6 +122,7 @@ namespace com.espertech.esper.core.context.factory
             StatementAgentInstancePostLoad postLoadJoin = null;
             var suppressSameEventMatches = false;
             var discardPartialsOnMatch = false;
+            EvalRootMatchRemover evalRootMatchRemover = null;
 
             StopCallback stopCallback;
             try {
@@ -138,6 +139,10 @@ namespace com.espertech.esper.core.context.factory
     
                     eventStreamParentViewable[stream] = activationResult.Viewable;
                     patternRoots[stream] = activationResult.OptionalPatternRoot;
+                    if (stream == 0)
+                    {
+                        evalRootMatchRemover = activationResult.OptEvalRootMatchRemover;
+                    }
     
                     if (activationResult.OptionalLock != null) {
                         agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock = activationResult.OptionalLock;
@@ -195,9 +200,10 @@ namespace com.espertech.esper.core.context.factory
                 }
     
                 // determine match-recognize "previous"-node strategy (none if not present, or one handling and number of nodes)
-                var matchRecognize = EventRowRegexHelper.RecursiveFindRegexService(topViews[0]);
+                EventRowRegexNFAViewService matchRecognize = EventRowRegexHelper.RecursiveFindRegexService(topViews[0]);
                 if (matchRecognize != null) {
                     regexExprPreviousEvalStrategy = matchRecognize.PreviousEvaluationStrategy;
+                    stopCallbacks.Add(matchRecognize.Stop);
                 }
     
                 // start subselects
@@ -216,7 +222,7 @@ namespace com.espertech.esper.core.context.factory
                 JoinSetComposerDesc joinSetComposer = null;
                 if (streamViews.Length == 1)
                 {
-                    finalView = HandleSimpleSelect(streamViews[0], resultSetProcessor, agentInstanceContext, patternRoots, suppressSameEventMatches, discardPartialsOnMatch);
+                    finalView = HandleSimpleSelect(streamViews[0], resultSetProcessor, agentInstanceContext, evalRootMatchRemover, suppressSameEventMatches, discardPartialsOnMatch);
                     joinPreloadMethod = null;
                 }
                 else
@@ -335,16 +341,96 @@ namespace com.espertech.esper.core.context.factory
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AContextPartitionAllocate();}
                 throw;
             }
+
+            StatementAgentInstanceFactorySelectResult selectResult = new StatementAgentInstanceFactorySelectResult(
+                finalView, null, agentInstanceContext, aggregationService, subselectStrategies, priorNodeStrategies, previousNodeStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList, patternRoots, postLoadJoin, topViews, eventStreamParentViewable, viewableActivationResult);
+            if (_statementContext.StatementExtensionServicesContext != null)
+            {
+                _statementContext.StatementExtensionServicesContext.ContributeStopCallback(selectResult, stopCallbacks);
+            }
     
             stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
-            return new StatementAgentInstanceFactorySelectResult(finalView, stopCallback, agentInstanceContext, aggregationService, subselectStrategies, priorNodeStrategies, previousNodeStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList, patternRoots, postLoadJoin, topViews, eventStreamParentViewable);
+            selectResult.StopCallback = stopCallback;
+
+            return selectResult;
+        }
+
+        public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
+        {
+            StatementAgentInstanceFactorySelectResult selectResult = (StatementAgentInstanceFactorySelectResult)result;
+            EPStatementStartMethodHelperAssignExpr.AssignAggregations(selectResult.OptionalAggegationService, _resultSetProcessorFactoryDesc.AggregationServiceFactoryDesc.Expressions);
+        }
+
+        public override void UnassignExpressions()
+        {
+            EPStatementStartMethodHelperAssignExpr.AssignAggregations(null, _resultSetProcessorFactoryDesc.AggregationServiceFactoryDesc.Expressions);
+        }
+
+        public ViewableActivator[] EventStreamParentViewableActivators
+        {
+            get { return _eventStreamParentViewableActivators; }
+        }
+
+        public ViewFactoryChain[] UnmaterializedViewChain
+        {
+            get { return _unmaterializedViewChain; }
+        }
+
+        public int NumStreams
+        {
+            get { return _numStreams; }
+        }
+
+        public StatementContext StatementContext
+        {
+            get { return _statementContext; }
+        }
+
+        public StatementSpecCompiled StatementSpec
+        {
+            get { return _statementSpec; }
+        }
+
+        public EPServicesContext Services
+        {
+            get { return _services; }
+        }
+
+        public StreamTypeService TypeService
+        {
+            get { return _typeService; }
+        }
+
+        public ResultSetProcessorFactoryDesc RetResultSetProcessorFactoryDesc
+        {
+            get { return _resultSetProcessorFactoryDesc; }
+        }
+
+        public StreamJoinAnalysisResult JoinAnalysisResult
+        {
+            get { return _joinAnalysisResult; }
+        }
+
+        public JoinSetComposerPrototype JoinSetComposerPrototype
+        {
+            get { return _joinSetComposerPrototype; }
+        }
+
+        public SubSelectStrategyCollection SubSelectStrategyCollection
+        {
+            get { return _subSelectStrategyCollection; }
+        }
+
+        public OutputProcessViewFactory OutputProcessViewFactory
+        {
+            get { return _outputProcessViewFactory; }
         }
 
         private Viewable HandleSimpleSelect(
             Viewable view,
             ResultSetProcessor resultSetProcessor,
             AgentInstanceContext agentInstanceContext,
-            EvalRootState[] patternRoots,
+            EvalRootMatchRemover evalRootMatchRemover,
             bool suppressSameEventMatches,
             bool discardPartialsOnMatch)
         {
@@ -359,9 +445,10 @@ namespace com.espertech.esper.core.context.factory
             }
     
             Deque<EPStatementDispatch> dispatches = null;
-    
-            if (patternRoots[0] != null && (suppressSameEventMatches || discardPartialsOnMatch)) {
-                var v = new PatternRemoveDispatchView(patternRoots[0], suppressSameEventMatches, discardPartialsOnMatch);
+
+            if (evalRootMatchRemover != null && (suppressSameEventMatches || discardPartialsOnMatch))
+            {
+                var v = new PatternRemoveDispatchView(evalRootMatchRemover, suppressSameEventMatches, discardPartialsOnMatch);
                 dispatches = new ArrayDeque<EPStatementDispatch>(2);
                 dispatches.Add(v);
                 finalView.AddView(v);

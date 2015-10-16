@@ -18,15 +18,15 @@ namespace com.espertech.esper.filter
 		/// <summary> Creates an implementation of the FilterEvaluationService interface.</summary>
 		/// <returns> implementation
 		/// </returns>
-        public static FilterServiceSPI NewService(ConfigurationEngineDefaults.FilterServiceProfile filterServiceProfile)
+        public static FilterServiceSPI NewService(ConfigurationEngineDefaults.FilterServiceProfile filterServiceProfile, bool allowIsolation)
         {
             if (filterServiceProfile == ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY)
             {
-                return new FilterServiceLockCoarse();
+                return new FilterServiceLockCoarse(allowIsolation);
             }
             else
             {
-                return new FilterServiceLockFine();
+                return new FilterServiceLockFine(allowIsolation);
             }
         }
 	}

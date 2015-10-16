@@ -12,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace com.espertech.esper.compat
+namespace com.espertech.esper.compat.collections
 {
     /// <summary>
     /// Used to debug calls to a list.

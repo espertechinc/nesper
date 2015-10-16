@@ -246,6 +246,18 @@ namespace com.espertech.esper.filter
             return hashCode;
         }
 
+        public int GetFilterSpecIndexAmongAll(FilterSpecCompiled[] filterSpecAll)
+        {
+            for (int i = 0; i < filterSpecAll.Length; i++)
+            {
+                if (ReferenceEquals(this, filterSpecAll[i]))
+                {
+                    return i;
+                }
+            }
+            throw new EPException("Failed to find find filter spec among list of known filters");
+        }
+
         public static FilterSpecParam[][] SortRemoveDups(IList<FilterSpecParam>[] parameters)
         {
             var processed = new FilterSpecParam[parameters.Length][];

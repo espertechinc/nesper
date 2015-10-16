@@ -30,7 +30,7 @@ namespace com.espertech.esper.client.annotation
         /// <returns>property names array</returns>
         public String[] PropertyNames { get; set; }
 
-        /// <summary>Key generator function. </summary>
+        /// <summary>Value generator function. </summary>
         /// <returns>function name</returns>
         public String Function { get; set; }
     }

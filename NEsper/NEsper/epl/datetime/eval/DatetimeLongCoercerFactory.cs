@@ -18,7 +18,8 @@ namespace com.espertech.esper.epl.datetime.eval
 
         public static DatetimeLongCoercer GetCoercer(Type clazz)
         {
-            if (clazz.GetBoxedType() == typeof(DateTime?))
+            clazz = clazz.GetBoxedType();
+            if (clazz == typeof(DateTime?) || clazz == typeof(DateTimeOffset?))
             {
                 return DatetimeLongCoercerDate;
             }

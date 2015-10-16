@@ -23,5 +23,15 @@ namespace com.espertech.esper.rowregex
         /// new data event
         /// </returns>
         EventBean GetPreviousEvent(int index);
+
+        void NewEventPrepare(EventBean newEvent);
+
+        void ExistingEventPrepare(EventBean theEvent);
+
+        void Remove(EventBean[] oldEvents);
+
+        void Remove(EventBean oldEvent);
+
+        bool IsEmpty { get; }
     }
 }

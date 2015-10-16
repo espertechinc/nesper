@@ -20,7 +20,13 @@ namespace com.espertech.esper.rowregex
     {
         private int _count;
         private EventBean[] _events;
-    
+
+        public MultimatchState(int count, EventBean[] events)
+        {
+            _count = count;
+            _events = events;
+        }
+        
         /// <summary>Ctor. </summary>
         /// <param name="theEvent">first event to hold</param>
         public MultimatchState(EventBean theEvent)
@@ -74,7 +80,7 @@ namespace com.espertech.esper.rowregex
         {
             for (var i = 0; i < _count; i++)
             {
-                if (_events[i] == theEvent)
+                if (Equals(_events[i], theEvent))
                 {
                     return true;
                 }
@@ -85,19 +91,24 @@ namespace com.espertech.esper.rowregex
         /// <summary>
         /// Returns the buffer sized to only the contained events, and shrinks the event array unless it is empty
         /// </summary>
-        /// <returns>events</returns>
-        public EventBean[] GetShrinkEventArray()
+        /// <value>events</value>
+        public EventBean[] ShrinkEventArray
         {
-            if (_count == 0) {
-                return CollectionUtil.EVENTBEANARRAY_EMPTY;
+            get
+            {
+                if (_count == 0)
+                {
+                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
+                }
+                if (_count == _events.Length)
+                {
+                    return _events;
+                }
+                var array = new EventBean[_count];
+                Array.Copy(_events, 0, array, 0, _count);
+                _events = array; // we hold on to the result, avoiding future shrinking
+                return array;
             }
-            if (_count == _events.Length) {
-                return _events;
-            }
-            var array = new EventBean[_count];
-            Array.Copy(_events, 0, array, 0, _count);
-            _events = array; // we hold on to the result, avoiding future shrinking
-            return array;
         }
     }
 }

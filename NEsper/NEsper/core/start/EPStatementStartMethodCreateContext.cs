@@ -45,23 +45,18 @@ namespace com.espertech.esper.core.start
             ValidateContextDetail(services, statementContext, eventTypesReferenced, context.ContextDetail);
             services.StatementEventTypeRefService.AddReferences(statementContext.StatementName, CollectionUtil.ToArray(eventTypesReferenced));
     
-            // add context - does not activate that context
-            services.ContextManagementService.AddContextSpec(services, agentInstanceContext, context, isRecoveringResilient);
-    
             // define output event type
             var typeName = "EventType_Context_" + context.ContextName;
-            var resultType = services.EventAdapterService.CreateAnonymousMapType(typeName, Collections.GetEmptyMap<String, Object>());
+            var statementResultEventType = services.EventAdapterService.CreateAnonymousMapType(typeName, Collections.GetEmptyMap<String, Object>());
 
-            var stopMethod = new EPStatementStopMethod(
-                () =>
-                {
-                    // no action
-                });
+            // add context - does not activate that context
+            services.ContextManagementService.AddContextSpec(services, agentInstanceContext, context, isRecoveringResilient, statementResultEventType);
 
+            var stopMethod = new EPStatementStopMethod(() => { });
             var destroyMethod = new EPStatementDestroyMethod(
                 () => services.ContextManagementService.DestroyedContext(context.ContextName));
 
-            return new EPStatementStartResult(new ZeroDepthStreamNoIterate(resultType), stopMethod, destroyMethod);
+            return new EPStatementStartResult(new ZeroDepthStreamNoIterate(statementResultEventType), stopMethod, destroyMethod);
         }
     
         private void ValidateContextDetail(EPServicesContext servicesContext, StatementContext statementContext, ISet<String> eventTypesReferenced, ContextDetail contextDetail)

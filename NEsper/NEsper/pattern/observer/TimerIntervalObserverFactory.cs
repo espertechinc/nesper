@@ -34,7 +34,7 @@ namespace com.espertech.esper.pattern.observer
         /// <summary>Parameters. </summary>
         private ExprNode _parameter;
 
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor)
+        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
         {
             ObserverParameterUtil.ValidateNoNamedParameters(NAME, parameters);
             const string errorMessage = NAME + " requires a single numeric or time period parameter";
@@ -57,7 +57,7 @@ namespace com.espertech.esper.pattern.observer
             _convertor = convertor;
         }
 
-        protected long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (_parameter is ExprTimePeriod)
             {

@@ -248,8 +248,8 @@ namespace com.espertech.esper.regression.events
             EPAssertionUtil.AssertAllPropsSortedByName(_listeners[2].AssertOneGetNewAndReset(), new Object[]{"I", "J"});
             dynamicSender.SendEvent(MakeProperties(new String[][] { new String[] { "r1", "K" }, new String[] { "t1", "L" } }));
             EPAssertionUtil.AssertAllPropsSortedByName(_listeners[0].AssertOneGetNewAndReset(), new Object[]{"K", "L"});
-            dynamicSender.SendEvent(MakeProperties(new String[][] { new String[] { "r2", "M" }, new String[] { "t2", "N" } }));
-            EPAssertionUtil.AssertAllPropsSortedByName(_listeners[1].AssertOneGetNewAndReset(), new Object[]{"M", "N"});
+            dynamicSender.SendEvent(MakeProperties(new String[][] { new String[] { "r2", "M" }, new String[] { "t2", "Count" } }));
+            EPAssertionUtil.AssertAllPropsSortedByName(_listeners[1].AssertOneGetNewAndReset(), new Object[]{"M", "Count"});
             dynamicSender.SendEvent(MakeProperties(new String[][] { new String[] { "r2", "O" }, new String[] { "t4", "P" } }));
             EPAssertionUtil.AssertAllPropsSortedByName(_listeners[3].AssertOneGetNewAndReset(), new Object[]{"O", "P"});
             dynamicSender.SendEvent(MakeProperties(new String[][] { new String[] { "r2", "O" }, new String[] { "t3", "P" } }));

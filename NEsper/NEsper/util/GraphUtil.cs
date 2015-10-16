@@ -97,7 +97,7 @@ namespace com.espertech.esper.util
             }
     
             // Determine all root nodes, which are those without parent
-            var roots = new TreeSet<String>();
+            var roots = new SortedSet<String>();
             foreach (var parents in graph.Values)
             {
                 if (parents == null)

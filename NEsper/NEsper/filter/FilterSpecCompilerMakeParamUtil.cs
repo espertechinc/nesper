@@ -209,7 +209,11 @@ namespace com.espertech.esper.filter
             {
                 var node = (ExprConstantNode) endpoint;
                 var value = node.GetConstantValue(exprEvaluatorContext);
-                if (value is string)
+                if (value == null)
+                {
+                    return null;
+                }
+                else if (value is string)
                 {
                     return new RangeValueString((string) value);
                 }

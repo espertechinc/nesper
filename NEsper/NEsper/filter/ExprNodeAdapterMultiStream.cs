@@ -25,9 +25,9 @@ namespace com.espertech.esper.filter
 
         private readonly IThreadLocal<EventBean[]> _arrayPerThread;
 
-        public ExprNodeAdapterMultiStream(String statementName, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
-            : base(statementName, exprNode, evaluatorContext, variableService)
-        {
+        public ExprNodeAdapterMultiStream(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
+            : base(filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext, variableService)
+         {
             _prototypeArray = prototype;
             _arrayPerThread = ThreadLocalManager.Create(
                 () =>

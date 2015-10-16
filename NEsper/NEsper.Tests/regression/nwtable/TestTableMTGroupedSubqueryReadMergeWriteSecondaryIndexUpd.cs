@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable
         /// Primary key is composite: {topgroup, subgroup}. Secondary index on {topgroup}.
         /// Single group that always exists is {0,0}. Topgroup is always zero.
         /// For a given number of seconds:
-        /// Single writer merge-inserts such as {0,1}, {0,2} to {0, N} then merge-deletes all rows one by one.
+        /// Single writer merge-inserts such as {0,1}, {0,2} to {0, Count} then merge-deletes all rows one by one.
         /// Single reader subquery-selects the count all values where subgroup equals 0, should always receive a count of 1 and up.
         /// </summary>
         [Test]

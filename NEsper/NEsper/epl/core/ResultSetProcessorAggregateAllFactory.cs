@@ -11,6 +11,7 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.epl.core
 {
@@ -36,9 +37,11 @@ namespace com.espertech.esper.epl.core
             ExprEvaluator optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
-            bool isHistoricalOnly)
+            bool isHistoricalOnly,
+            OutputLimitSpec outputLimitSpec)
         {
             _selectExprProcessor = selectExprProcessor;
+            OutputLimitSpec = outputLimitSpec;
             OptionalHavingNode = optionalHavingNode;
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
@@ -52,6 +55,23 @@ namespace com.espertech.esper.epl.core
         public bool IsUnidirectional { get; private set; }
 
         public bool IsHistoricalOnly { get; private set; }
+
+        public bool IsOutputLast
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST; }
+        }
+
+        public bool IsOutputAll
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
+        }
+
+        public ResultSetProcessorType ResultSetProcessorType
+        {
+            get { return ResultSetProcessorType.AGGREGATED_UNGROUPED; }
+        }
+
+        public OutputLimitSpec OutputLimitSpec { get; private set; }
 
         #region ResultSetProcessorFactory Members
 

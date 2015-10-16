@@ -19,20 +19,26 @@ namespace com.espertech.esper.epl.datetime.reformatop
 {
     public class ReformatOpToDateTime : ReformatOp
     {
-        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        private readonly TimeZoneInfo _timeZone;
+
+        public ReformatOpToDateTime(TimeZoneInfo timeZone)
         {
-            DateTime dateTime = ts.TimeFromMillis();
-            return dateTime;
+            _timeZone = timeZone;
         }
 
-        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return d;
+            return ts.TimeFromMillis(_timeZone);
+        }
+
+        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return d.TranslateTo(_timeZone);
         }
 
         public Type ReturnType
         {
-            get { return typeof (DateTime?); }
+            get { return typeof(DateTimeOffset?); }
         }
 
         public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,

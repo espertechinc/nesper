@@ -16,6 +16,7 @@ using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.pattern;
+using com.espertech.esper.support.core;
 using com.espertech.esper.support.events;
 using com.espertech.esper.support.schedule;
 
@@ -36,8 +37,8 @@ namespace com.espertech.esper.support.epl.parse
         public static EPLTreeWalkerListener MakeWalker(CommonTokenStream tokenStream)
         {
             return MakeWalker(
-                tokenStream, 
-                new EngineImportServiceImpl(true, true, true, false, null),
+                tokenStream,
+                SupportEngineImportServiceFactory.Make(),
                 new VariableServiceImpl(0, null, SupportEventAdapterService.Service, null));
         }
     }

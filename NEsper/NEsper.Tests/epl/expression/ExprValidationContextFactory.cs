@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.client;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.core;
@@ -16,7 +19,16 @@ namespace com.espertech.esper.epl.expression
     {
         public static ExprValidationContext MakeEmpty()
         {
-            return new ExprValidationContext(null, new MethodResolutionServiceImpl(new EngineImportServiceImpl(false, false, false, false, null), null), null, null, null, null, new SupportExprEvaluatorContext(null), null, null, null, null, null, null, false, false, false, false, null, false);
+            return MakeEmpty(ConfigurationEngineDefaults.ThreadingProfile.NORMAL);
+        }
+
+        public static ExprValidationContext MakeEmpty(ConfigurationEngineDefaults.ThreadingProfile threadingProfile)
+        {
+            return new ExprValidationContext(
+                null,
+                new MethodResolutionServiceImpl(new EngineImportServiceImpl(false, false, false, false, null, TimeZoneInfo.Local, threadingProfile), null), 
+                null, null, null, null, new SupportExprEvaluatorContext(null), null, null, null, null, null, null,
+                false, false, false, false, null, false);
         }
 
         public static ExprValidationContext Make(StreamTypeService streamTypeService)

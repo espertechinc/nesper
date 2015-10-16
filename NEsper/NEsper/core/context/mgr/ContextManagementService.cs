@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
@@ -16,7 +17,7 @@ namespace com.espertech.esper.core.context.mgr
 {
     public interface ContextManagementService
     {
-        void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient);
+        void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient, EventType statementResultEventType);
         int ContextCount { get; }
 
         ContextDescriptor GetContextDescriptor(String contextName);

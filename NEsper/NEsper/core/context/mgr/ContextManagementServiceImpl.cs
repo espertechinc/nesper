@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
@@ -30,8 +31,8 @@ namespace com.espertech.esper.core.context.mgr
         {
             _contexts = new Dictionary<String, ContextManagerEntry>();
         }
-    
-        public void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient)
+
+        public void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient, EventType statementResultEventType)
         {
             var mgr = _contexts.Get(contextDesc.ContextName);
             if (mgr != null) {
@@ -40,15 +41,9 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 throw new ExprValidationException("Context by name '" + contextDesc.ContextName + "' already exists");
             }
-    
-            var factoryServiceContext = new ContextControllerFactoryServiceContext(contextDesc.ContextName, servicesContext, contextDesc.ContextDetail, agentInstanceContext, isRecoveringResilient);
-            ContextManager contextManager;
-            if (contextDesc.ContextDetail is ContextDetailNested) {
-                contextManager = new ContextManagerNested(factoryServiceContext);
-            }
-            else {
-                contextManager = new ContextManagerImpl(factoryServiceContext);
-            }
+
+            var factoryServiceContext = new ContextControllerFactoryServiceContext(contextDesc.ContextName, servicesContext, contextDesc.ContextDetail, agentInstanceContext, isRecoveringResilient, statementResultEventType);
+            var contextManager = servicesContext.ContextManagerFactoryService.Make(contextDesc.ContextDetail, factoryServiceContext);
     
             factoryServiceContext.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.FilterFaultHandler = contextManager;
     

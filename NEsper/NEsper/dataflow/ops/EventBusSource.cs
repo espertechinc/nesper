@@ -41,6 +41,7 @@ namespace com.espertech.esper.dataflow.ops
         private EventType _eventType;
         private AgentInstanceContext _agentInstanceContext;
         private EPStatementHandleCallback _callbackHandle;
+        private FilterServiceEntry _filterServiceEntry;
         private readonly IBlockingQueue<Object> _emittables = new LinkedBlockingQueue<Object>();
         private bool _submitEventBean;
 
@@ -145,7 +146,7 @@ namespace com.espertech.esper.dataflow.ops
 
             var handle = new EPStatementAgentInstanceHandle(_agentInstanceContext.StatementContext.EpStatementHandle, _agentInstanceContext.AgentInstanceLock, 0, new StatementAgentInstanceFilterVersion());
             _callbackHandle = new EPStatementHandleCallback(handle, this);
-            _agentInstanceContext.StatementContext.FilterService.Add(valueSet, _callbackHandle);
+            _filterServiceEntry = _agentInstanceContext.StatementContext.FilterService.Add(valueSet, _callbackHandle);
         }
 
         public void Close(DataFlowOpCloseContext openContext)
@@ -154,8 +155,9 @@ namespace com.espertech.esper.dataflow.ops
             {
                 if (_callbackHandle != null)
                 {
-                    _agentInstanceContext.StatementContext.FilterService.Remove(_callbackHandle);
+                    _agentInstanceContext.StatementContext.FilterService.Remove(_callbackHandle, _filterServiceEntry);
                     _callbackHandle = null;
+                    _filterServiceEntry = null;
                 }
             }
         }

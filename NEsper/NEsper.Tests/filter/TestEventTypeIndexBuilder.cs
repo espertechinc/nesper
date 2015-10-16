@@ -40,7 +40,7 @@ namespace com.espertech.esper.filter
         public void SetUp()
         {
             _eventTypeIndex = new EventTypeIndex(_lockFactory);
-            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex);
+            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex, true);
     
             _typeOne = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             _typeTwo = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
@@ -58,25 +58,15 @@ namespace com.espertech.esper.filter
             Assert.IsNull(_eventTypeIndex.Get(_typeOne));
             Assert.IsNull(_eventTypeIndex.Get(_typeTwo));
     
-            _indexBuilder.Add(_valueSetOne, _callbackOne, _lockFactory);
+            var entryOne = _indexBuilder.Add(_valueSetOne, _callbackOne, _lockFactory);
             _indexBuilder.Add(_valueSetTwo, _callbackTwo, _lockFactory);
     
             Assert.IsTrue(_eventTypeIndex.Get(_typeOne) != null);
             Assert.IsTrue(_eventTypeIndex.Get(_typeTwo) != null);
     
-            try
-            {
-                _indexBuilder.Add(_valueSetOne, _callbackOne, _lockFactory);
-                Assert.IsTrue(false);
-            }
-            catch (IllegalStateException ex)
-            {
-                // Expected exception
-            }
-    
-            _indexBuilder.Remove(_callbackOne);
+            _indexBuilder.Remove(_callbackOne, entryOne);
             _indexBuilder.Add(_valueSetOne, _callbackOne, _lockFactory);
-            _indexBuilder.Remove(_callbackOne);
+            _indexBuilder.Remove(_callbackOne, entryOne);
         }
     }
 }

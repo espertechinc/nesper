@@ -14,14 +14,15 @@ namespace com.espertech.esper.epl.expression.time
 {
     public class ExprTimePeriodEvalDeltaConstDateTimeAdd : ExprTimePeriodEvalDeltaConst
     {
-        private DateTime _dateTime = DateTime.Now;
+        private DateTimeEx _dateTime;
         private readonly ExprTimePeriodImpl.TimePeriodAdder[] _adders;
         private readonly int[] _added;
-    
-        public ExprTimePeriodEvalDeltaConstDateTimeAdd(ExprTimePeriodImpl.TimePeriodAdder[] adders, int[] added)
+
+        public ExprTimePeriodEvalDeltaConstDateTimeAdd(ExprTimePeriodImpl.TimePeriodAdder[] adders, int[] added, TimeZoneInfo timeZone)
         {
             _adders = adders;
             _added = added;
+            _dateTime = new DateTimeEx(DateTimeOffsetHelper.Now(timeZone), timeZone);
         }
     
         public bool EqualsTimePeriod(ExprTimePeriodEvalDeltaConst otherComputation)
@@ -49,9 +50,9 @@ namespace com.espertech.esper.epl.expression.time
         {
             lock (this)
             {
-                _dateTime = fromTime.TimeFromMillis();
-                AddSubtract(_adders, _added, ref _dateTime, 1);
-                return _dateTime.TimeInMillis() - fromTime;
+                _dateTime.SetUtcMillis(fromTime);
+                AddSubtract(_adders, _added, _dateTime, 1);
+                return _dateTime.TimeInMillis - fromTime;
             }
         }
     
@@ -59,9 +60,9 @@ namespace com.espertech.esper.epl.expression.time
         {
             lock (this)
             {
-                _dateTime = fromTime.TimeFromMillis();
-                AddSubtract(_adders, _added, ref _dateTime, -1);
-                return fromTime - _dateTime.TimeInMillis();
+                _dateTime.SetUtcMillis(fromTime);
+                AddSubtract(_adders, _added, _dateTime, -1);
+                return fromTime - _dateTime.TimeInMillis;
             }
         }
 
@@ -89,11 +90,11 @@ namespace com.espertech.esper.epl.expression.time
             }
         }
 
-        private static void AddSubtract(ExprTimePeriodImpl.TimePeriodAdder[] adders, int[] added, ref DateTime dateTime, int factor)
+        private static void AddSubtract(ExprTimePeriodImpl.TimePeriodAdder[] adders, int[] added, DateTimeEx dateTime, int factor)
         {
             for (int i = 0; i < adders.Length; i++)
             {
-                adders[i].Add(ref dateTime, factor*added[i]);
+                adders[i].Add(dateTime, factor*added[i]);
             }
         }
     }

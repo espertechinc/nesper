@@ -32,10 +32,12 @@ namespace com.espertech.esper.epl.core
     /// </summary>
     public class ResultSetProcessorSimple : ResultSetProcessorBaseSimple
     {
-        private readonly ResultSetProcessorSimpleFactory _prototype;
+        internal readonly ResultSetProcessorSimpleFactory Prototype;
         private readonly SelectExprProcessor _selectExprProcessor;
         private readonly OrderByProcessor _orderByProcessor;
-        private ExprEvaluatorContext _exprEvaluatorContext;
+        internal ExprEvaluatorContext ExprEvaluatorContext;
+        private ResultSetProcessorSimpleOutputLastHelper _outputLastHelper;
+        private ResultSetProcessorSimpleOutputAllHelper _outputAllHelper;
 
         public ResultSetProcessorSimple(
             ResultSetProcessorSimpleFactory prototype,
@@ -43,21 +45,29 @@ namespace com.espertech.esper.epl.core
             OrderByProcessor orderByProcessor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            _prototype = prototype;
+            Prototype = prototype;
             _selectExprProcessor = selectExprProcessor;
             _orderByProcessor = orderByProcessor;
-            _exprEvaluatorContext = exprEvaluatorContext;
+            ExprEvaluatorContext = exprEvaluatorContext;
+            if (prototype.IsOutputLast)
+            {
+                _outputLastHelper = new ResultSetProcessorSimpleOutputLastHelper(this);
+            }
+            else if (prototype.IsOutputAll)
+            {
+                _outputAllHelper = new ResultSetProcessorSimpleOutputAllHelper(this);
+            }
         }
 
         public override AgentInstanceContext AgentInstanceContext
         {
-            set { _exprEvaluatorContext = value; }
-            get { return (AgentInstanceContext) _exprEvaluatorContext; }
+            set { ExprEvaluatorContext = value; }
+            get { return (AgentInstanceContext) ExprEvaluatorContext; }
         }
 
         public override EventType ResultEventType
         {
-            get { return _prototype.ResultEventType; }
+            get { return Prototype.ResultEventType; }
         }
 
         public override UniformPair<EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize)
@@ -67,42 +77,42 @@ namespace com.espertech.esper.epl.core
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents;
     
-            if (_prototype.OptionalHavingExpr == null)
+            if (Prototype.OptionalHavingExpr == null)
             {
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     if (_orderByProcessor == null) {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHaving(_selectExprProcessor, oldEvents, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHaving(_selectExprProcessor, oldEvents, false, isSynthesize, ExprEvaluatorContext);
                     }
                     else {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldEvents, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldEvents, false, isSynthesize, ExprEvaluatorContext);
                     }
                 }
     
                 if (_orderByProcessor == null) {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHaving(_selectExprProcessor, newEvents, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHaving(_selectExprProcessor, newEvents, true, isSynthesize, ExprEvaluatorContext);
                 }
                 else {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newEvents, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newEvents, true, isSynthesize, ExprEvaluatorContext);
                 }
             }
             else
             {
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     if (_orderByProcessor == null) {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsHaving(_selectExprProcessor, oldEvents, _prototype.OptionalHavingExpr, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsHaving(_selectExprProcessor, oldEvents, Prototype.OptionalHavingExpr, false, isSynthesize, ExprEvaluatorContext);
                     }
                     else {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldEvents, _prototype.OptionalHavingExpr, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectJoinEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldEvents, Prototype.OptionalHavingExpr, false, isSynthesize, ExprEvaluatorContext);
                     }
                 }
     
                 if (_orderByProcessor == null) {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsHaving(_selectExprProcessor, newEvents, _prototype.OptionalHavingExpr, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsHaving(_selectExprProcessor, newEvents, Prototype.OptionalHavingExpr, true, isSynthesize, ExprEvaluatorContext);
                 }
                 else {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newEvents, _prototype.OptionalHavingExpr, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectJoinEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newEvents, Prototype.OptionalHavingExpr, true, isSynthesize, ExprEvaluatorContext);
                 }
             }
     
@@ -116,41 +126,41 @@ namespace com.espertech.esper.epl.core
     
             EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents;
-            if (_prototype.OptionalHavingExpr == null)
+            if (Prototype.OptionalHavingExpr == null)
             {
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     if (_orderByProcessor == null) {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, oldData, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, oldData, false, isSynthesize, ExprEvaluatorContext);
                     }
                     else {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldData, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldData, false, isSynthesize, ExprEvaluatorContext);
                     }
                 }
     
                 if (_orderByProcessor == null) {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, newData, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, newData, true, isSynthesize, ExprEvaluatorContext);
                 }
                 else {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newData, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newData, true, isSynthesize, ExprEvaluatorContext);
                 }
             }
             else
             {
-                if (_prototype.IsSelectRStream)
+                if (Prototype.IsSelectRStream)
                 {
                     if (_orderByProcessor == null) {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, oldData, _prototype.OptionalHavingExpr, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, oldData, Prototype.OptionalHavingExpr, false, isSynthesize, ExprEvaluatorContext);
                     }
                     else {
-                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldData, _prototype.OptionalHavingExpr, false, isSynthesize, _exprEvaluatorContext);
+                        selectOldEvents = ResultSetProcessorUtil.GetSelectEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, oldData, Prototype.OptionalHavingExpr, false, isSynthesize, ExprEvaluatorContext);
                     }
                 }
                 if (_orderByProcessor == null) {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, newData, _prototype.OptionalHavingExpr, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, newData, Prototype.OptionalHavingExpr, true, isSynthesize, ExprEvaluatorContext);
                 }
                 else {
-                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newData, _prototype.OptionalHavingExpr, true, isSynthesize, _exprEvaluatorContext);
+                    selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHavingWithOrderBy(_selectExprProcessor, _orderByProcessor, newData, Prototype.OptionalHavingExpr, true, isSynthesize, ExprEvaluatorContext);
                 }
             }
     
@@ -163,20 +173,19 @@ namespace com.espertech.esper.epl.core
         /// <returns>pair of insert and remove stream</returns>
         public UniformPair<EventBean[]> ProcessViewResultIterator(EventBean[] newData)
         {
-            EventBean[] selectOldEvents = null;
             EventBean[] selectNewEvents;
-            if (_prototype.OptionalHavingExpr == null)
+            if (Prototype.OptionalHavingExpr == null)
             {
                 // ignore orderByProcessor
-                selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, newData, true, true, _exprEvaluatorContext);
+                selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, newData, true, true, ExprEvaluatorContext);
             }
             else
             {
                 // ignore orderByProcessor
-                selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, newData, _prototype.OptionalHavingExpr, true, true, _exprEvaluatorContext);
+                selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, newData, Prototype.OptionalHavingExpr, true, true, ExprEvaluatorContext);
             }
     
-            return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
+            return new UniformPair<EventBean[]>(selectNewEvents, null);
         }
     
         public override IEnumerator<EventBean> GetEnumerator(Viewable parent)
@@ -198,7 +207,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var aParent = parentEnumerator.Current;
                     eventsPerStream[0] = aParent;
-                    var orderKey = _orderByProcessor.GetSortKey(eventsPerStream, true, _exprEvaluatorContext);
+                    var orderKey = _orderByProcessor.GetSortKey(eventsPerStream, true, ExprEvaluatorContext);
                     var pair = ProcessViewResultIterator(eventsPerStream);
                     var result = pair.First;
                     if (result != null && result.Length != 0)
@@ -211,7 +220,7 @@ namespace com.espertech.esper.epl.core
                 // sort
                 var outgoingEvents = events.ToArray();
                 var orderKeysArr = orderKeys.ToArray();
-                var orderedEvents = _orderByProcessor.Sort(outgoingEvents, orderKeysArr, _exprEvaluatorContext);
+                var orderedEvents = _orderByProcessor.Sort(outgoingEvents, orderKeysArr, ExprEvaluatorContext);
                 if (orderedEvents == null)
                     return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
 
@@ -249,6 +258,48 @@ namespace com.espertech.esper.epl.core
 
         public override void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
         {
+        }
+
+        public override void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessView(newData, oldData);
+            }
+            else
+            {
+                _outputLastHelper.ProcessView(newData, oldData);
+            }
+        }
+
+        public override void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
+        {
+            if (isAll)
+            {
+                _outputAllHelper.ProcessJoin(newEvents, oldEvents);
+            }
+            else
+            {
+                _outputLastHelper.ProcessJoin(newEvents, oldEvents);
+            }
+        }
+
+        public override UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputView(isSynthesize);
+            }
+            return _outputLastHelper.OutputView(isSynthesize);
+        }
+
+        public override UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+        {
+            if (isAll)
+            {
+                return _outputAllHelper.OutputJoin(isSynthesize);
+            }
+            return _outputLastHelper.OutputJoin(isSynthesize);
         }
     }
 }

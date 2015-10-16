@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.expression.subquery;

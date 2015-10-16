@@ -15,6 +15,7 @@ using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.filter;
 
 namespace com.espertech.esper.epl.spec
 {
@@ -348,5 +349,7 @@ namespace com.espertech.esper.epl.spec
 	    public ExprTableAccessNode[] TableNodes { get; private set; }
 
 	    public CreateTableDesc CreateTableDesc { get; private set; }
+
+        public FilterSpecCompiled[] FilterSpecsOverall { get; set; }
 	}
 } // end of namespace

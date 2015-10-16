@@ -60,8 +60,7 @@ namespace com.espertech.esper.events
         /// <param name="type">The type.</param>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns></returns>
-        public static EventPropertyGetter GetAssertPropertyGetter(EventType type,
-                                                                  String propertyName)
+        public static EventPropertyGetter GetAssertPropertyGetter(EventType type, String propertyName)
         {
             EventPropertyGetter getter = type.GetGetter(propertyName);
             if (getter == null)
@@ -71,9 +70,7 @@ namespace com.espertech.esper.events
             return getter;
         }
 
-        public static EventPropertyGetter GetAssertPropertyGetter(EventType[] eventTypes,
-                                                                  int keyStreamNum,
-                                                                  String property)
+        public static EventPropertyGetter GetAssertPropertyGetter(EventType[] eventTypes, int keyStreamNum, String property)
         {
             return GetAssertPropertyGetter(eventTypes[keyStreamNum], property);
         }
@@ -84,8 +81,7 @@ namespace com.espertech.esper.events
         /// <param name="oldArray">array to resize</param>
         /// <param name="newSize">new array size</param>
         /// <returns>/// resized array</returns>
-        public static T[] ResizeArray<T>(T[] oldArray,
-                                         int newSize)
+        public static T[] ResizeArray<T>(T[] oldArray, int newSize)
         {
             if (oldArray == null)
             {
@@ -319,9 +315,7 @@ namespace com.espertech.esper.events
             }
         }
 
-        public static Object[] GetPropertyArray(EventBean[] eventsPerStream,
-                                                IList<EventPropertyGetter> propertyGetters,
-                                                int[] streamNums)
+        public static Object[] GetPropertyArray(EventBean[] eventsPerStream, IList<EventPropertyGetter> propertyGetters,  int[] streamNums)
         {
             unchecked
             {
@@ -419,25 +413,21 @@ namespace com.espertech.esper.events
             {
                 return new MultiKeyUntyped(keyValues);
             }
-            Coerce(keyValues, coercionTypes);
-            return new MultiKeyUntyped(keyValues);
-        }
 
-        private static void Coerce(Object[] keyValues,
-                                   Type[] coercionTypes)
-        {
-            for (int i = 0; i < coercionTypes.Length; i++)
+            for (int ii = 0; ii < coercionTypes.Length; ii++)
             {
-                Object key = keyValues[i];
-                if ((key != null) && (!Equals(key.GetType().GetBoxedType(), coercionTypes[i])))
+                var key = keyValues[ii];
+                if ((key != null) && (key.GetType() != coercionTypes[ii]))
                 {
                     if (key.IsNumber())
                     {
-                        key = CoercerFactory.CoerceBoxed(key, coercionTypes[i]);
-                        keyValues[i] = key;
+                        key = CoercerFactory.CoerceBoxed(key, coercionTypes[ii]);
+                        keyValues[ii] = key;
                     }
                 }
             }
+
+            return new MultiKeyUntyped(keyValues);
         }
 
         public static Object Coerce(Object target, Type coercionType)
@@ -736,21 +726,13 @@ namespace com.espertech.esper.events
             return result;
         }
 
-        public static bool CompareReferences(EventBean[] reference,
-                                             EventBean[] eventsPerStream)
+        public static bool EventsAreEqualsAllowNull(EventBean first, EventBean second)
         {
-            if (reference.Length != eventsPerStream.Length)
+            if (first == null)
             {
-                return false;
+                return second == null;
             }
-            for (int i = 0; i < reference.Length; i++)
-            {
-                if (reference[i] != eventsPerStream[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            return second != null && Equals(first, second);
         }
 
         public static String Summarize(EventBean theEvent)
@@ -979,6 +961,75 @@ namespace com.espertech.esper.events
                 delimiter = ", ";
             }
             return buf.ToString();
+        }
+
+        public static void AddToCollection(EventBean[] toAdd, ICollection<EventBean> events)
+        {
+            if (toAdd == null)
+            {
+                return;
+            }
+            events.AddAll(toAdd);
+        }
+
+        public static void AddToCollection(ISet<MultiKey<EventBean>> toAdd, ICollection<MultiKey<EventBean>> events)
+        {
+            if (toAdd == null)
+            {
+                return;
+            }
+            events.AddAll(toAdd);
+        }
+
+        public static EventBean[] ToArrayNullIfEmpty(ICollection<EventBean> events)
+        {
+            if (events == null || events.IsEmpty())
+            {
+                return null;
+            }
+            return events.ToArray();
+        }
+
+        public static ISet<MultiKey<EventBean>> ToLinkedHashSetNullIfEmpty(ICollection<MultiKey<EventBean>> events)
+        {
+            if (events == null || events.IsEmpty())
+            {
+                return null;
+            }
+            return new LinkedHashSet<MultiKey<EventBean>>(events);
+        }
+
+        public static ISet<MultiKey<EventBean>> ToSingletonSetIfNotNull(MultiKey<EventBean> row)
+        {
+            if (row == null)
+            {
+                return null;
+            }
+            return Collections.SingletonSet(row);
+        }
+
+        public static MultiKey<EventBean> GetLastInSet(ISet<MultiKey<EventBean>> events)
+        {
+            if (events.IsEmpty()) {
+                return null;
+            }
+            int count = 0;
+            foreach (MultiKey<EventBean> row in events) {
+                count++;
+                if (count == events.Count) {
+                    return row;
+                }
+            }
+            throw new IllegalStateException("Cannot get last on empty collection");
+        }
+
+        public static EventBean[] ToArrayIfNotNull(EventBean optionalEvent)
+        {
+            if (optionalEvent == null)
+            {
+                return null;
+            }
+            return new EventBean[] { optionalEvent };
         }
 
         private static bool FindEvent<T>(T theEvent, T[][] eventsPerView)

@@ -12,6 +12,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
@@ -681,8 +682,7 @@ namespace com.espertech.esper.client
                 }
             }
 
-            ConfigurationPlugInAggregationMultiFunction config = new ConfigurationPlugInAggregationMultiFunction(
-                functionNames.Split(','), factoryClassName);
+            var config = new ConfigurationPlugInAggregationMultiFunction(functionNames.Split(','), factoryClassName);
             config.AdditionalConfiguredProperties = additionalProps;
             configuration.AddPlugInAggregationMultiFunction(config);
         }
@@ -1091,6 +1091,9 @@ namespace com.espertech.esper.client
                     case "patterns":
                         HandleDefaultsPatterns(configuration, subElement);
                         break;
+                    case "match-recognize":
+                        HandleDefaultsMatchRecognize(configuration, subElement);
+                        break;
                     case "stream-selection":
                         HandleDefaultsStreamSelection(configuration, subElement);
                         break;
@@ -1357,6 +1360,25 @@ namespace com.espertech.esper.client
             }
         }
 
+        private static void HandleDefaultsMatchRecognize(Configuration configuration, XmlElement parentElement)
+        {
+            foreach (XmlElement subElement in CreateElementEnumerable(parentElement.ChildNodes))
+            {
+                if (subElement.Name == "max-state")
+                {
+                    var valueText = GetRequiredAttribute(subElement, "value");
+                    var value = Int64.Parse(valueText);
+                    configuration.EngineDefaults.MatchRecognizeConfig.MaxStates = value;
+
+                    var preventText = GetOptionalAttribute(subElement, "prevent-start");
+                    if (preventText != null)
+                    {
+                        configuration.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart = Boolean.Parse(preventText);
+                    }
+                }
+            }
+        }
+
         private static void HandleDefaultsStreamSelection(Configuration configuration, XmlElement parentElement)
         {
             foreach (XmlElement subElement in CreateElementEnumerable(parentElement.ChildNodes))
@@ -1403,21 +1425,6 @@ namespace com.espertech.esper.client
                     }
 
                     var timeSourceType = EnumHelper.Parse<ConfigurationEngineDefaults.TimeSourceType>(valueText, true);
-
-                    //if (valueText.toUpperCase().trim().equals("NANO"))
-                    //{
-                    //    timeSourceType = ConfigurationEngineDefaults.TimeSourceType.NANO;
-                    //}
-                    //else if (valueText.toUpperCase().trim().equals("MILLI"))
-                    //{
-                    //    timeSourceType = ConfigurationEngineDefaults.TimeSourceType.MILLI;
-                    //}
-                    //else
-                    //{
-                    //    throw new ConfigurationException("ConstantValue attribute for time-source element invalid, " +
-                    //            "expected one of the following keywords: nano, milli");
-                    //}
-
                     configuration.EngineDefaults.TimeSourceConfig.TimeSourceType = timeSourceType;
                 }
             }
@@ -1586,10 +1593,15 @@ namespace com.espertech.esper.client
                     var mathContext = new MathContext(mathContextStr);
                     configuration.EngineDefaults.ExpressionConfig.MathContext = mathContext;
                 }
-                catch (ArgumentException ex)
+                catch (ArgumentException)
                 {
                     throw new ConfigurationException("Failed to parse '" + mathContextStr + "' as a MathContext");
                 }
+            }
+            String timeZoneStr = GetOptionalAttribute(parentElement, "time-zone");
+            if (timeZoneStr != null)
+            {
+                configuration.EngineDefaults.ExpressionConfig.TimeZone = TimeZoneHelper.GetTimeZoneInfo(timeZoneStr);
             }
         }
 
@@ -1602,7 +1614,7 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static string[] GetHandlerFactories(XmlElement parentElement)
+        private static IEnumerable<string> GetHandlerFactories(XmlElement parentElement)
         {
             return CreateElementEnumerable(parentElement.ChildNodes)
                 .Where(subElement => subElement.Name == "handlerFactory")

@@ -196,5 +196,28 @@ namespace com.espertech.esper.regression.pattern
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
 
         }
+
+        [Test]
+        public void TestAndWithEveryAndTerminationOptimization()
+        {
+            // When all other sub-expressions to an AND are gone,
+            // then there is no need to retain events of the subexpression still active
+            EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
+            engine.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
+            engine.EPAdministrator.Configuration.AddEventType<SupportBean_B>();
+
+            String epl = "select * from pattern [a=SupportBean_A and every b=SupportBean_B]";
+            EPStatement stmt = engine.EPAdministrator.CreateEPL(epl);
+
+            engine.EPRuntime.SendEvent(new SupportBean_A("A1"));
+            for (int i = 0; i < 10; i++) {
+                engine.EPRuntime.SendEvent(new SupportBean_B("B" + i));
+            }
+
+            SupportUpdateListener listener = new SupportUpdateListener();
+            stmt.AddListener(listener);
+            engine.EPRuntime.SendEvent(new SupportBean_B("B_last"));
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "a.id,b.id".Split(','), new Object[] {"A1", "B_last"});
+        }
     }
 }

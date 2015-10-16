@@ -22,87 +22,87 @@ namespace com.espertech.esper.epl.datetime.calop
 	    public static CalendarOpPlusFastAddResult ComputeNextDue(
 	        long currentTime,
 	        TimePeriod timePeriod,
-	        DateTime reference)
+            DateTimeEx reference)
         {
-            if (reference.TimeInMillis() > currentTime)
+            if (reference.TimeInMillis > currentTime)
             {
-                return new CalendarOpPlusFastAddResult(0, reference);
+                return new CalendarOpPlusFastAddResult(0, reference.DateTime);
             }
 
             // add one time period
-            var work = reference;
+	        var work = new DateTimeEx(reference);
             if (DEBUG && Log.IsDebugEnabled)
             {
-                Log.Debug("Work date is " + work.Print());
+                Log.Debug("Work date is " + work.DateTime.Print());
             }
 
-            work = CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
-            long inMillis = work.TimeInMillis();
+            CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
+            long inMillis = work.TimeInMillis;
             if (inMillis > currentTime)
             {
-                return new CalendarOpPlusFastAddResult(1, work);
+                return new CalendarOpPlusFastAddResult(1, work.DateTime);
             }
             if (DEBUG && Log.IsDebugEnabled)
             {
-                Log.Debug("Work date is " + work.Print());
+                Log.Debug("Work date is " + work.DateTime.Print());
             }
 
             long factor = 1;
 
             // determine multiplier
-            long deltaCurrentToStart = currentTime - reference.TimeInMillis();
-            long deltaAddedOne = work.TimeInMillis() - reference.TimeInMillis();
+            long deltaCurrentToStart = currentTime - reference.TimeInMillis;
+            long deltaAddedOne = work.TimeInMillis - reference.TimeInMillis;
             double multiplierDbl = (deltaCurrentToStart/deltaAddedOne) - 1;
             long multiplierRoundedLong = (long) multiplierDbl;
 
             // handle integer max
             while (multiplierRoundedLong > int.MaxValue)
             {
-                work = CalendarOpPlusMinus.ActionSafeOverflow(work, int.MaxValue, timePeriod);
+                CalendarOpPlusMinus.ActionSafeOverflow(work, int.MaxValue, timePeriod);
                 factor += int.MaxValue;
                 multiplierRoundedLong -= int.MaxValue;
                 if (DEBUG && Log.IsDebugEnabled)
                 {
-                    Log.Debug("Work date is " + work.Print() + " factor " + factor);
+                    Log.Debug("Work date is " + work.DateTime.Print() + " factor " + factor);
                 }
             }
 
             // add
             int multiplierRoundedInt = (int) multiplierRoundedLong;
-            work = CalendarOpPlusMinus.ActionSafeOverflow(work, multiplierRoundedInt, timePeriod);
+            CalendarOpPlusMinus.ActionSafeOverflow(work, multiplierRoundedInt, timePeriod);
             factor += multiplierRoundedInt;
 
             // if below, add more
-            if (work.TimeInMillis() <= currentTime)
+            if (work.TimeInMillis <= currentTime)
             {
-                while (work.TimeInMillis() <= currentTime)
+                while (work.TimeInMillis <= currentTime)
                 {
-                    work = CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
+                    CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
                     factor += 1;
                     if (DEBUG && Log.IsDebugEnabled)
                     {
-                        Log.Debug("Work date is " + work.Print() + " factor " + factor);
+                        Log.Debug("Work date is " + work.DateTime.Print() + " factor " + factor);
                     }
                 }
-                return new CalendarOpPlusFastAddResult(factor, work);
+                return new CalendarOpPlusFastAddResult(factor, work.DateTime);
             }
 
             // we are over
-            while (work.TimeInMillis() > currentTime)
+            while (work.TimeInMillis > currentTime)
             {
-                work = CalendarOpPlusMinus.ActionSafeOverflow(work, -1, timePeriod);
+                CalendarOpPlusMinus.ActionSafeOverflow(work, -1, timePeriod);
                 factor -= 1;
                 if (DEBUG && Log.IsDebugEnabled)
                 {
-                    Log.Debug("Work date is " + work.Print() + " factor " + factor);
+                    Log.Debug("Work date is " + work.DateTime.Print() + " factor " + factor);
                 }
             }
-            work = CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
+            CalendarOpPlusMinus.ActionSafeOverflow(work, 1, timePeriod);
             if (DEBUG && Log.IsDebugEnabled)
             {
-                Log.Debug("Work date is " + work.Print() + " factor " + factor);
+                Log.Debug("Work date is " + work.DateTime.Print() + " factor " + factor);
             }
-            return new CalendarOpPlusFastAddResult(factor + 1, work);
+            return new CalendarOpPlusFastAddResult(factor + 1, work.DateTime);
         }
     }
 } // end of namespace

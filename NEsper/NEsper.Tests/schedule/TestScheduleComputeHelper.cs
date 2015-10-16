@@ -81,7 +81,7 @@ namespace com.espertech.esper.schedule
     
             // Try hours combined with seconds
             spec = new ScheduleSpec();
-            for (int i = 10; i <= 14; i++)
+            for (var i = 10; i <= 14; i++)
             {
                 spec.AddValue(ScheduleUnit.HOURS, i);
             }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.schedule
             spec = new ScheduleSpec();
             spec.AddValue(ScheduleUnit.HOURS, 10);
             spec.AddValue(ScheduleUnit.MINUTES, 0);
-            for (int i = 1; i <= 5; i++)
+            for (var i = 1; i <= 5; i++)
             {
                 spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
@@ -187,11 +187,11 @@ namespace com.espertech.esper.schedule
     
             // Every second month on every second weekday
             spec = new ScheduleSpec();
-            for (int i = 1; i <= 12; i += 2)
+            for (var i = 1; i <= 12; i += 2)
             {
                 spec.AddValue(ScheduleUnit.MONTHS, i);
             }
-            for (int i = 0; i <= 6; i += 2) // Adds Sunday, Tuesday, Thursday, Saturday
+            for (var i = 0; i <= 6; i += 2) // Adds Sunday, Tuesday, Thursday, Saturday
             {
                 spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
@@ -208,11 +208,11 @@ namespace com.espertech.esper.schedule
     
             // Every second month on every second weekday
             spec = new ScheduleSpec();
-            for (int i = 1; i <= 12; i += 2)
+            for (var i = 1; i <= 12; i += 2)
             {
                 spec.AddValue(ScheduleUnit.MONTHS, i);
             }
-            for (int i = 0; i <= 6; i += 2) // Adds Sunday, Tuesday, Thursday, Saturday
+            for (var i = 0; i <= 6; i += 2) // Adds Sunday, Tuesday, Thursday, Saturday
             {
                 spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
@@ -227,15 +227,15 @@ namespace com.espertech.esper.schedule
     
             // Every 5 seconds, between 9am and until 4pm, all weekdays except Saturday and Sunday
             spec = new ScheduleSpec();
-            for (int i = 0; i <= 59; i+=5)
+            for (var i = 0; i <= 59; i+=5)
             {
                 spec.AddValue(ScheduleUnit.SECONDS, i);
             }
-            for (int i = 1; i <= 5; i++)
+            for (var i = 1; i <= 5; i++)
             {
                 spec.AddValue(ScheduleUnit.DAYS_OF_WEEK, i);
             }
-            for (int i = 9; i <= 15; i++)
+            for (var i = 9; i <= 15; i++)
             {
                 spec.AddValue(ScheduleUnit.HOURS, i);
             }
@@ -305,12 +305,12 @@ namespace com.espertech.esper.schedule
     
         public void CheckCorrect(ScheduleSpec spec, String now, String expected)
         {
-            CultureInfo provider = Thread.CurrentThread.CurrentCulture;
-            DateTime nowDate = DateTime.ParseExact(now, "yyyy-MM-d H:mm:ss", provider);
-            DateTime expectedDate = DateTime.ParseExact(expected, "yyyy-MM-d H:mm:ss", provider);
+            var provider = Thread.CurrentThread.CurrentCulture;
+            var nowDate = DateTimeOffset.ParseExact(now, "yyyy-MM-d H:mm:ss", provider);
+            var expectedDate = DateTimeOffset.ParseExact(expected, "yyyy-MM-d H:mm:ss", provider);
 
-            long result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate.TimeInMillis());
-            DateTime resultDate = result.TimeFromMillis();
+            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate.TimeInMillis(), TimeZoneInfo.Local);
+            var resultDate = result.TimeFromMillis(expectedDate.Offset);
             if (resultDate != expectedDate)
             {
                 Log.Debug(".checkCorrect Difference in result found, spec=" + spec);
@@ -323,12 +323,13 @@ namespace com.espertech.esper.schedule
     
         public void CheckCorrectWZone(ScheduleSpec spec, String nowWZone, String expectedWZone)
         {
-            long nowDate = DateTimeHelper.ParseDefaultMSecWZone(nowWZone);
-            long expectedDate = DateTimeHelper.ParseDefaultMSecWZone(expectedWZone);
+            var nowDate = DateTimeParser.ParseDefaultMSecWZone(nowWZone);
+            var nowDateJava = DateTimeOffsetHelper.MillisToJavaMillis(nowDate);
+            var expectedDate = DateTimeParser.ParseDefaultMSecWZone(expectedWZone);
 
-            long result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate);
+            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate, TimeZoneInfo.Local);
 
-            DateTime resultDate = result.TimeFromMillis();
+            var resultDate = result.TimeFromMillis(null);
 
             if (result != expectedDate)
             {

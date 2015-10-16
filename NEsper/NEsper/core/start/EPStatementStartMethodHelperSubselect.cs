@@ -76,7 +76,7 @@ namespace com.espertech.esper.core.start
                     }
     
                     // Register filter, create view factories
-                    ViewableActivator activatorDeactivator = new ViewableActivatorFilterProxy(services, filterStreamSpec.FilterSpec, statementSpec.Annotations, true, instrumentationAgentSubquery, false);
+                    ViewableActivator activatorDeactivator = services.ViewableActivatorFactory.CreateFilterProxy(services, filterStreamSpec.FilterSpec, statementSpec.Annotations, true, instrumentationAgentSubquery, false);
                     var viewFactoryChain = services.ViewService.CreateFactories(subselectStreamNumber, filterStreamSpec.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext);
                     subselect.RawEventType = viewFactoryChain.EventType;
     
@@ -106,7 +106,7 @@ namespace com.espertech.esper.core.start
                         disableIndexShare = false;
                     }
                     if (!namedSpec.FilterExpressions.IsEmpty() || !processor.IsEnableSubqueryIndexShare || disableIndexShare) {
-                        var activatorNamedWindow = new ViewableActivatorNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
+                        var activatorNamedWindow = services.ViewableActivatorFactory.CreateNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
                         var viewFactoryChain = services.ViewService.CreateFactories(0, namedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
                         subselect.RawEventType = viewFactoryChain.EventType;
                         subSelectStreamDesc.Add(subselect, new SubSelectActivationHolder(subselectStreamNumber, namedWindowType, viewFactoryChain, activatorNamedWindow, streamSpec));

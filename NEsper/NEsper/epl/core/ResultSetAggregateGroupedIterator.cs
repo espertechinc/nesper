@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -14,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.core
@@ -23,13 +25,14 @@ namespace com.espertech.esper.epl.core
     /// </summary>
     public class ResultSetAggregateGroupedIterator : IEnumerator<EventBean>
     {
-        private readonly IEnumerator<EventBean> sourceIterator;
-        private readonly ResultSetProcessorAggregateGrouped resultSetProcessor;
-        private readonly AggregationService aggregationService;
-        private EventBean nextResult;
-        private readonly EventBean[] eventsPerStream;
-        private readonly ExprEvaluatorContext exprEvaluatorContext;
-    
+        private readonly IEnumerator<EventBean> _sourceIterator;
+        private readonly ResultSetProcessorAggregateGrouped _resultSetProcessor;
+        private readonly AggregationService _aggregationService;
+        private EventBean _currResult;
+        private bool _iterate;
+        private readonly EventBean[] _eventsPerStream;
+        private readonly ExprEvaluatorContext _exprEvaluatorContext;
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -37,78 +40,87 @@ namespace com.espertech.esper.epl.core
         /// <param name="resultSetProcessor">for constructing result rows</param>
         /// <param name="aggregationService">for pointing to the right aggregation row</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
-        public ResultSetAggregateGroupedIterator(IEnumerator<EventBean> sourceIterator, ResultSetProcessorAggregateGrouped resultSetProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
+        public ResultSetAggregateGroupedIterator(
+            IEnumerator<EventBean> sourceIterator,
+            ResultSetProcessorAggregateGrouped resultSetProcessor,
+            AggregationService aggregationService,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            this.sourceIterator = sourceIterator;
-            this.resultSetProcessor = resultSetProcessor;
-            this.aggregationService = aggregationService;
-            eventsPerStream = new EventBean[1];
-            this.exprEvaluatorContext = exprEvaluatorContext;
+            _sourceIterator = sourceIterator;
+            _resultSetProcessor = resultSetProcessor;
+            _aggregationService = aggregationService;
+            _eventsPerStream = new EventBean[1];
+            _exprEvaluatorContext = exprEvaluatorContext;
+            _currResult = null;
+            _iterate = true;
         }
-    
-        public bool HasNext()
+
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        object IEnumerator.Current
         {
-            if (nextResult != null)
-            {
-                return true;
-            }
-            FindNext();
-            if (nextResult != null)
-            {
-                return true;
-            }
-            return false;
+            get { return Current; }
         }
-    
-        public EventBean Next()
+
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        public EventBean Current
         {
-            if (nextResult != null)
-            {
-                EventBean result = nextResult;
-                nextResult = null;
-                return result;
-            }
-            FindNext();
-            if (nextResult != null)
-            {
-                EventBean result = nextResult;
-                nextResult = null;
-                return result;
-            }
-            throw new NoSuchElementException();
+            get { return _currResult; }
         }
-    
-        private void FindNext()
+
+        /// <summary>
+        /// Advances the enumerator to the next element of the collection.
+        /// </summary>
+        /// <returns>
+        /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.
+        /// </returns>
+        public bool MoveNext()
         {
-            while (sourceIterator.HasNext())
+            while (_iterate && _sourceIterator.MoveNext())
             {
-                EventBean candidate = sourceIterator.Next();
-                eventsPerStream[0] = candidate;
+                var candidate = _sourceIterator.Current;
+                _eventsPerStream[0] = candidate;
     
-                Object groupKey = resultSetProcessor.GenerateGroupKey(eventsPerStream, true);
-                aggregationService.SetCurrentAccess(groupKey, exprEvaluatorContext.AgentInstanceId, null);
+                var groupKey = _resultSetProcessor.GenerateGroupKey(_eventsPerStream, true);
+                _aggregationService.SetCurrentAccess(groupKey, _exprEvaluatorContext.AgentInstanceId, null);
     
-                Boolean pass = true;
-                if (resultSetProcessor.OptionalHavingNode != null)
+                bool? pass = true;
+                if (_resultSetProcessor.OptionalHavingNode != null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(eventsPerStream);}
-                    pass = (Boolean) resultSetProcessor.OptionalHavingNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHavingClauseJoin(_eventsPerStream);}
+                    pass = _resultSetProcessor.OptionalHavingNode.Evaluate(new EvaluateParams(_eventsPerStream, true, _exprEvaluatorContext)).AsBoxedBoolean();
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHavingClauseJoin(pass);}
                 }
-                if (!pass)
+               
+                if (false.Equals(pass))
                 {
                     continue;
                 }
     
-                nextResult = resultSetProcessor.SelectExprProcessor.Process(eventsPerStream, true, true, exprEvaluatorContext);
-    
-                break;
+                _currResult = _resultSetProcessor.SelectExprProcessor.Process(_eventsPerStream, true, true, _exprEvaluatorContext);
+                return true;
             }
+
+            return _iterate = false;
         }
-    
-        public void Remove()
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
         {
-            throw new UnsupportedOperationException();
+        }
+
+        /// <summary>
+        /// Sets the enumerator to its initial position, which is before the first element in the collection.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException"></exception>
+        public void Reset()
+        {
+            throw new NotSupportedException();
         }
     }
 }

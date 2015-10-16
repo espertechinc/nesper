@@ -133,6 +133,14 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
+	    public void QRegExStateStart(RegexNFAState startState, IDictionary<String, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
+	        
+	    }
+
+	    public void ARegExStateStart(IList<RegexNFAStateEntry> nextStates, IDictionary<String, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
+
+        }
+
 	    public void QRegExPartition(ExprNode[] partitionExpressionNodes) {
 
 	    }

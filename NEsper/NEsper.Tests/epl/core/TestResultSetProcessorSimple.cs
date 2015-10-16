@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.core
             _selectExprProcessor = factory.Evaluator;
             _orderByProcessor = null;
     
-            var prototype = new ResultSetProcessorSimpleFactory(_selectExprProcessor, null, true);
+            var prototype = new ResultSetProcessorSimpleFactory(_selectExprProcessor, null, true, null);
     		_outputProcessorAll = (ResultSetProcessorSimple) prototype.Instantiate(null, null, null);
         }
     

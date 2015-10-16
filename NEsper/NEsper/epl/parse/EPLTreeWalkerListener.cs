@@ -314,7 +314,7 @@ namespace com.espertech.esper.epl.parse
 	    }
 
 	    public void ExitLibFunction(EsperEPL2GrammarParser.LibFunctionContext ctx) {
-	        ASTLibFunctionHelper.HandleLibFunc(_tokenStream, ctx, _configurationInformation, _engineImportService, _astExprNodeMap, _plugInAggregations, _engineURI, _expressionDeclarations, _exprDeclaredService, _scriptExpressions, _contextDescriptor, _tableService, _statementSpec);
+	        ASTLibFunctionHelper.HandleLibFunc(_tokenStream, ctx, _configurationInformation, _engineImportService, _astExprNodeMap, _plugInAggregations, _engineURI, _expressionDeclarations, _exprDeclaredService, _scriptExpressions, _contextDescriptor, _tableService, _statementSpec, _variableService);
 	    }
 
 	    public void ExitMatchRecog(EsperEPL2GrammarParser.MatchRecogContext ctx) {
@@ -440,7 +440,7 @@ namespace com.espertech.esper.epl.parse
 	    }
 
 	    public void ExitTimePeriod(EsperEPL2GrammarParser.TimePeriodContext ctx) {
-	        var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(ctx, _astExprNodeMap, _variableService, _statementSpec);
+	        var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(ctx, _astExprNodeMap, _variableService, _statementSpec, _configurationInformation);
 	        ASTExprHelper.ExprCollectAddSubNodesAddParentNode(timeNode, ctx, _astExprNodeMap);
 	    }
 
@@ -818,7 +818,7 @@ namespace com.espertech.esper.epl.parse
 	            return;
 	        }
 	        if (ctx.s != null) {
-	            ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(ctx.expression(), _astExprNodeMap);
+	            ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(ctx.expression(), _astExprNodeMap, _configurationInformation);
 	            _astExprNodeMap.Put(ctx, node);
 	        }
 	        else if (ctx.a != null || ctx.d != null) {

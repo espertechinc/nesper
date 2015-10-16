@@ -30,7 +30,7 @@ namespace com.espertech.esper.pattern.observer
         public void TestIntervalWait()
         {
             var factory = new TimerIntervalObserverFactory();
-            factory.SetObserverParameters(TestViewSupport.ToExprListBean(new Object[] {1}), new SupportMatchedEventConvertor());
+            factory.SetObserverParameters(TestViewSupport.ToExprListBean(new Object[] {1}), new SupportMatchedEventConvertor(), null);
             var eventObserver = factory.MakeObserver(_patternContext, null, new SupportObserverEventEvaluator(_patternContext), null, null, false);
     
             Assert.IsTrue(eventObserver is TimerIntervalObserver);

@@ -25,7 +25,7 @@ namespace com.espertech.esper.core.context.subselect
         /// Add lookup.
         /// </summary>
         /// <param name="subselectNode">is the subselect expression node</param>
-        /// <param name="prototypeHolder">The prototype holder.</param>
+        /// <param name="prototypeHolder">The Prototype holder.</param>
         public void Add(ExprSubselectNode subselectNode, SubSelectStrategyFactoryDesc prototypeHolder)
         {
             if (_subqueries == null)

@@ -35,7 +35,8 @@ namespace com.espertech.esper.epl.datetime.eval
             String dtMethodName,
             EPType inputType,
             IList<ExprNode> parameters,
-            ExprDotNodeFilterAnalyzerInput inputDesc)
+            ExprDotNodeFilterAnalyzerInput inputDesc,
+            TimeZoneInfo timeZone)
         {
             // verify input
             String message = "Date-time enumeration method '" + dtMethodName +
@@ -97,7 +98,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 }
                 else if (opFactory is ReformatOpFactory)
                 {
-                    reformatOp = ((ReformatOpFactory) opFactory).GetOp(currentMethod, currentMethodName, currentParameters);
+                    reformatOp = ((ReformatOpFactory) opFactory).GetOp(timeZone, currentMethod, currentMethodName, currentParameters);
 
                     // compile filter analyzer information if there are no calendar ops in the chain
                     if (calendarOps.IsEmpty())
@@ -149,7 +150,7 @@ namespace com.espertech.esper.epl.datetime.eval
             ExprDotEval dotEval;
             EPType returnType;
 
-            dotEval = new ExprDotEvalDT(calendarOps, reformatOp, intervalOp, EPTypeHelper.GetClassSingleValued(inputType), EPTypeHelper.GetEventTypeSingleValued(inputType));
+            dotEval = new ExprDotEvalDT(calendarOps, timeZone, reformatOp, intervalOp, EPTypeHelper.GetClassSingleValued(inputType), EPTypeHelper.GetEventTypeSingleValued(inputType));
             returnType = dotEval.TypeInfo;
             return new ExprDotEvalDTMethodDesc(dotEval, returnType, filterAnalyzerDesc);
         }

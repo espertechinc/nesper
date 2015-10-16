@@ -26,7 +26,9 @@ namespace com.espertech.esper.core.context.factory
         }
     
         protected abstract StatementAgentInstanceFactoryResult NewContextInternal(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient);
-    
+        public abstract void AssignExpressions(StatementAgentInstanceFactoryResult result);
+        public abstract void UnassignExpressions();
+
         public StatementAgentInstanceFactoryResult NewContext(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             if (!_audit || agentInstanceContext.AgentInstanceId == -1) {

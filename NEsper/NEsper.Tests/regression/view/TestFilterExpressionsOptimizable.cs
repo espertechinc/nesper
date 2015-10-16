@@ -42,6 +42,7 @@ namespace com.espertech.esper.regression.view
 	        config.AddEventType(typeof(SupportBean));
 	        config.AddEventType(typeof(SupportBean_IntAlphabetic));
 	        config.AddEventType(typeof(SupportBean_StringAlphabetic));
+            config.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = true;
 
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();

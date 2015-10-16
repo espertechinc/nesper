@@ -701,6 +701,13 @@ namespace com.espertech.esper.events.bean
             return EventBeanUtility.CreateNativeFragmentType(genericPropertyDesc.PropertyType, genericPropertyDesc.GenericType, _eventAdapterService);
         }
 
+        /// <summary>
+        /// Return a writer for writing a single property value.
+        /// </summary>
+        /// <param name="propertyName">to write to</param>
+        /// <returns>
+        /// null or writer if writable
+        /// </returns>
         public EventPropertyWriter GetWriter(String propertyName)
         {
             if (_writeablePropertyDescriptors == null)

@@ -46,7 +46,7 @@ namespace com.espertech.esper.pattern.observer
             get { return _beginState; }
         }
 
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverScheduledEval();}
             _observerEventEvaluator.ObserverEvaluateTrue(_beginState, true);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.pattern.observer
     
             _scheduleHandle = new EPStatementHandleCallback(_observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
             SchedulingService schedulingService = _observerEventEvaluator.Context.PatternContext.SchedulingService;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_scheduleSpec, schedulingService.Time);
+            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_scheduleSpec, schedulingService.Time, _observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
             schedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
             _isTimerActive = true;
         }

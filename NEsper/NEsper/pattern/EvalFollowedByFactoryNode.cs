@@ -35,12 +35,12 @@ namespace com.espertech.esper.pattern
             _hasEngineWidePatternCount = hasEngineWidePatternCount;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext) {
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
             if (_opType == null) {
                 InitOpType();
             }
     
-            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext);
+            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext, parentNode);
             return new EvalFollowedByNode(agentInstanceContext, this, children);
         }
 

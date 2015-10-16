@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
@@ -26,18 +27,17 @@ namespace com.espertech.esper.pattern
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        public static Object GetKeys(MatchedEventMap currentState, EvalEveryDistinctNode everyDistinctNode)
+        public static Object GetKeys(MatchedEventMap matchEvent, MatchedEventConvertor convertor, ExprEvaluator[] expressions, AgentInstanceContext agentInstanceContext)
         {
-            var eventsPerStream = everyDistinctNode.FactoryNode.Convertor.Convert(currentState);
-            var expressions = everyDistinctNode.FactoryNode.DistinctExpressionsArray;
+            var eventsPerStream = convertor.Convert(matchEvent);
             if (expressions.Length == 1) {
-                return expressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, everyDistinctNode.Context.AgentInstanceContext));
+                return expressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, agentInstanceContext));
             }
     
             var keys = new Object[expressions.Length];
             for (var i = 0; i < keys.Length; i++)
             {
-                keys[i] = expressions[i].Evaluate(new EvaluateParams(eventsPerStream, true, everyDistinctNode.Context.AgentInstanceContext));
+                keys[i] = expressions[i].Evaluate(new EvaluateParams(eventsPerStream, true, agentInstanceContext));
             }
             return new MultiKeyUntyped(keys);
         }

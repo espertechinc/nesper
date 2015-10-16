@@ -90,5 +90,20 @@ namespace com.espertech.esper.epl.core
         public ExprEvaluator GroupKeyNode { get; private set; }
 
         public ExprNode[] GroupKeyNodeExpressions { get; private set; }
+
+        public bool IsOutputLast
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST; }
+        }
+
+        public bool IsOutputAll
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
+        }
+
+        public ResultSetProcessorType ResultSetProcessorType
+        {
+            get { return ResultSetProcessorType.AGGREGATED_GROUPED; }
+        }
     }
 }

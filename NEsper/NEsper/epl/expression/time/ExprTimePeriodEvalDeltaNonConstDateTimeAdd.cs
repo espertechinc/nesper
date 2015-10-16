@@ -17,21 +17,22 @@ namespace com.espertech.esper.epl.expression.time
 {
     public class ExprTimePeriodEvalDeltaNonConstDateTimeAdd : ExprTimePeriodEvalDeltaNonConst
     {
-        private DateTime _dateTime = DateTime.Now;
+        private DateTimeEx _dateTime;
         private readonly ExprTimePeriodImpl _parent;
-    
-        public ExprTimePeriodEvalDeltaNonConstDateTimeAdd(ExprTimePeriodImpl parent)
+
+        public ExprTimePeriodEvalDeltaNonConstDateTimeAdd(TimeZoneInfo timeZone, ExprTimePeriodImpl parent)
         {
             _parent = parent;
+            _dateTime = new DateTimeEx(DateTimeOffsetHelper.Now(timeZone), timeZone);
         }
     
         public long DeltaMillisecondsAdd(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             lock (this)
             {
-                _dateTime = currentTime.TimeFromMillis();
-                AddSubtract(_parent, ref _dateTime, 1, eventsPerStream, isNewData, context);
-                return _dateTime.TimeInMillis() - currentTime;
+                _dateTime.SetUtcMillis(currentTime);
+                AddSubtract(_parent, _dateTime, 1, eventsPerStream, isNewData, context);
+                return _dateTime.TimeInMillis - currentTime;
             }
         }
     
@@ -39,9 +40,9 @@ namespace com.espertech.esper.epl.expression.time
         {
             lock (this)
             {
-                _dateTime = currentTime.TimeFromMillis();
-                AddSubtract(_parent, ref _dateTime, -1, eventsPerStream, isNewData, context);
-                return _dateTime.TimeInMillis() - currentTime;
+                _dateTime.SetUtcMillis(currentTime);
+                AddSubtract(_parent, _dateTime, -1, eventsPerStream, isNewData, context);
+                return _dateTime.TimeInMillis - currentTime;
             }
         }
     
@@ -50,9 +51,9 @@ namespace com.espertech.esper.epl.expression.time
             lock (this)
             {
                 long currentTime = agentInstanceContext.StatementContext.SchedulingService.Time;
-                _dateTime = currentTime.TimeFromMillis();
-                AddSubtract(_parent, ref _dateTime, 1, eventsPerStream, true, agentInstanceContext);
-                return _dateTime.TimeInMillis() - currentTime;
+                _dateTime.SetUtcMillis(currentTime);
+                AddSubtract(_parent, _dateTime, 1, eventsPerStream, true, agentInstanceContext);
+                return _dateTime.TimeInMillis - currentTime;
             }
         }
 
@@ -81,7 +82,7 @@ namespace com.espertech.esper.epl.expression.time
             }
         }
     
-        private void AddSubtract(ExprTimePeriodImpl parent, ref DateTime dateTime, int factor, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
+        private void AddSubtract(ExprTimePeriodImpl parent, DateTimeEx dateTime, int factor, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
             var adders = parent.Adders;
             var evaluators = parent.Evaluators;
@@ -89,7 +90,7 @@ namespace com.espertech.esper.epl.expression.time
             for (int i = 0; i < adders.Length; i++)
             {
                 var value = evaluators[i].Evaluate(evaluateParams).AsInt();
-                adders[i].Add(ref dateTime, factor * value);
+                adders[i].Add(dateTime, factor * value);
             }
         }
     }

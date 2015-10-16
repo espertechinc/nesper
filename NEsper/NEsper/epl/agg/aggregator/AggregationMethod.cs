@@ -14,7 +14,7 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// Maintains aggregation state applying values as entering and leaving the state.
     /// <para>
     /// Implementations must also act as a factory for further independent copies of aggregation 
-    /// states such that new aggregation state holders and be created from a prototype.
+    /// states such that new aggregation state holders and be created from a Prototype.
     /// </para>
     /// </summary>
     public interface AggregationMethod

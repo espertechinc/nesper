@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.variable
 
         private VariableService _service;
 
-        // Start N threads
+        // Start Count threads
         // each thread performs X loops
         // each loop gets a unique number Y from a shared object and performs setVersion in the synchronized block
         // then the thread performs reads, write and read of shared variables, writing the number Y

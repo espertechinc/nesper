@@ -25,6 +25,7 @@ using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.property;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.epl.util;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.schedule;
@@ -305,7 +306,8 @@ namespace com.espertech.esper.filter
 	                var processor = statementContext.NamedWindowService.GetProcessor(namedSpec.WindowName);
 	                viewFactoryChain = statementContext.ViewService.CreateFactories(0, processor.NamedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
 	                subselecteventTypeName = namedSpec.WindowName;
-	            }
+                    EPLValidationUtil.ValidateContextName(false, processor.NamedWindowName, processor.ContextName, statementContext.ContextName, true);
+                }
 	        }
 	        catch (ViewProcessingException ex) {
 	            throw new ExprValidationException("Error validating subexpression: " + ex.Message, ex);

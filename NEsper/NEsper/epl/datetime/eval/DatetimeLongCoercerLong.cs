@@ -8,15 +8,18 @@
 
 using System;
 
-using com.espertech.esper.compat;
-
 namespace com.espertech.esper.epl.datetime.eval
 {
     public class DatetimeLongCoercerLong : DatetimeLongCoercer
     {
-        public long Coerce(Object date)
+        public long Coerce(Object value)
         {
-            return date.AsLong();
+            if (value is long)
+                return ((long) value);
+            if (value is int)
+                return ((int) value);
+
+            throw new ArgumentException("invalid value for datetime", "value");
         }
     }
 }

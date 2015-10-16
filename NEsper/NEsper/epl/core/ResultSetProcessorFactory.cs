@@ -13,7 +13,7 @@ using com.espertech.esper.epl.agg.service;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Processor prototype for result sets for instances that apply the select-clause, group-by-clause and having-clauses as supplied.
+    /// Processor Prototype for result sets for instances that apply the select-clause, group-by-clause and having-clauses as supplied.
     /// </summary>
     public interface ResultSetProcessorFactory
     {
@@ -39,5 +39,13 @@ namespace com.espertech.esper.epl.core
         /// <param name="agentInstanceContext">The agent instance context.</param>
         /// <returns></returns>
         ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext);
+
+        /// <summary>
+        /// Gets the type of the result set processor.
+        /// </summary>
+        /// <value>
+        /// The type of the result set processor.
+        /// </value>
+        ResultSetProcessorType ResultSetProcessorType { get; }
     }
 }

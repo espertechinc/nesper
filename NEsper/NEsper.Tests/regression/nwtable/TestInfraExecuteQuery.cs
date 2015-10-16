@@ -151,8 +151,9 @@ namespace com.espertech.esper.regression.nwtable
         }
     
         [Test]
-        public void TestExecuteFilter() {
-            //runAssertionExecuteFilter(true);
+        public void TestExecuteFilter()
+        {
+            RunAssertionExecuteFilter(true);
             RunAssertionExecuteFilter(false);
         }
     

@@ -11,11 +11,12 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor prototype for the case: aggregation functions used in the 
+    /// Result set processor Prototype for the case: aggregation functions used in the 
     /// select clause, and no group-by, and all properties in the select clause are under 
     /// an aggregation function.
     /// </summary>
@@ -36,9 +37,11 @@ namespace com.espertech.esper.epl.core
             ExprEvaluator optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
-            bool isHistoricalOnly)
+            bool isHistoricalOnly,
+            OutputLimitSpec outputLimitSpec)
         {
             _selectExprProcessor = selectExprProcessor;
+            OutputLimitSpec = outputLimitSpec;
             OptionalHavingNode = optionalHavingNode;
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
@@ -67,5 +70,22 @@ namespace com.espertech.esper.epl.core
         public bool IsHistoricalOnly { get; private set; }
 
         public ExprEvaluator OptionalHavingNode { get; private set; }
+
+        public OutputLimitSpec OutputLimitSpec { get; private set; }
+
+        public ResultSetProcessorType ResultSetProcessorType
+        {
+            get { return ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED; }
+        }
+
+        public bool IsOutputLast
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST; }
+        }
+
+        public bool IsOutputAll
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
+        }
     }
 }

@@ -12,11 +12,13 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
+using com.espertech.esper.support.util;
 
 using NUnit.Framework;
 
@@ -332,6 +334,56 @@ namespace com.espertech.esper.regression.context
 
             _epService.EPRuntime.SendEvent(new SupportBean_S1(3, "A"));
             _epService.EPAdministrator.DestroyAllStatements();
+        }
+
+        [Test]
+        public void TestNonOverlappingSubqueryAndInvalid()
+        {
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();} // using a separate engine instance
+
+            Configuration configuration = SupportConfigFactory.GetConfiguration();
+            configuration.EngineDefaults.ExecutionConfig.IsPrioritized = true;
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            _epService.Initialize();
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName);}
+                _epService.EPAdministrator.Configuration.AddEventType<Event>();
+
+            SendTimeEvent("2002-05-1T10:00:00.000");
+
+            String epl =
+                    "\n @Name('ctx') create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
+                            "\n @Name('window') context RuleActivityTime create window EventsWindow.std:firstunique(productID) as Event;" +
+                            "\n @Name('variable') create variable boolean IsOutputTriggered_2 = false;" +
+                            "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('C') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('D') context RuleActivityTime insert into EventsWindow select * from Event(not exists (select * from EventsWindow));" +
+                            "\n @Name('out') context RuleActivityTime select * from EventsWindow";
+
+            _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            _epService.EPAdministrator.GetStatement("out").AddListener(new SupportUpdateListener());
+
+            _epService.EPRuntime.SendEvent(new Event("A1"));
+
+            // invalid - subquery not the same context
+            SupportMessageAssertUtil.TryInvalid(_epService, "insert into EventsWindow select * from Event(not exists (select * from EventsWindow))",
+                    "Failed to validate subquery number 1 querying EventsWindow: Named window by name 'EventsWindow' has been declared for context 'RuleActivityTime' and can only be used within the same context");
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();}
+        }
+
+        private void SendTimeEvent(String time)
+        {
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
+        }
+
+        public class Event
+        {
+            public string ProductID { get; private set; }
+            public Event(String productId)
+            {
+                ProductID = productId;
+            }
         }
     }
 }

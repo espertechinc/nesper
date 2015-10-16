@@ -6,19 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using System.Collections.Generic;
 
-namespace com.espertech.esper.core.service
+using com.espertech.esper.epl.spec;
+using com.espertech.esper.filter;
+
+namespace com.espertech.esper.core.context.mgr
 {
-    /// <summary>
-    /// Marker interface for extension services that provide additional engine or 
-    /// statement-level extensions, such as views backed by a write-behind store.
-    /// </summary>
-    public interface ExtensionServicesContext : IDisposable
+    public interface ContextControllerFactoryFactorySvc
     {
-        /// <summary>Invoked to initialize extension services after engine services initialization. </summary>
-        void Init(EPServicesContext engine, EPRuntimeSPI runtimeSPI, EPAdministratorSPI adminSPI);
-
-        bool IsHAEnabled { get; }
-    }
-}
+	    ContextControllerFactory Make(ContextControllerFactoryContext factoryContext, ContextDetail detail, IList<FilterSpecCompiled> optFiltersNested, ContextStateCache contextStateCache);
+	}
+} // end of namespace

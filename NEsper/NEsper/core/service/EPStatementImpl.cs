@@ -245,6 +245,7 @@ namespace com.espertech.esper.core.service
         /// <listenerSet>is the statement viewable</listenerSet>
         public Viewable ParentView
         {
+            get { return _parentView; }
             set
             {
                 if (value == null)
@@ -549,7 +550,7 @@ namespace com.espertech.esper.core.service
 
         public object UserObject { get; private set; }
 
-        public StatementContext StatementContext { get; private set; }
+        public StatementContext StatementContext { get; internal set; }
 
         public string ExpressionNoAnnotations { get; private set; }
 
@@ -557,6 +558,11 @@ namespace com.espertech.esper.core.service
 
         public bool IsNameProvided { get; private set; }
 
+        public UpdateDispatchViewBase DispatchChildView
+        {
+            get { return _dispatchChildView; }
+        }
+        
         public void Dispose()
         {
             if (State == EPStatementState.DESTROYED)

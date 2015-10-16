@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.nwtable
         /// <summary>
         /// Primary key is single: {id}
         /// For a given number of seconds:
-        /// Single writer insert-into such as {0} to {N}.
+        /// Single writer insert-into such as {0} to {Count}.
         /// Single reader subquery-selects the count all rows.
         /// </summary>
         [Test]

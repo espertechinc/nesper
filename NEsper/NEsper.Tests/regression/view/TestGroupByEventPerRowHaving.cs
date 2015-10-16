@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -41,6 +42,36 @@ namespace com.espertech.esper.regression.view
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _testListener = null;
+        }
+
+        [Test]
+        public void TestGroupByHaving()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
+
+            RunAssertionGroupByHaving(false);
+            RunAssertionGroupByHaving(true);
+        }
+
+        private void RunAssertionGroupByHaving(bool join)
+        {
+            String epl = !join ?
+                    "select * from SupportBean.win:length_batch(3) group by theString having count(*) > 1" :
+                    "select theString, intPrimitive from SupportBean_S0.std:lastevent(), SupportBean.win:length_batch(3) group by theString having count(*) > 1";
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
+            stmt.AddListener(_testListener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 21));
+
+            EventBean[] received = _testListener.GetNewDataListFlattened();
+            EPAssertionUtil.AssertPropsPerRow(received, "theString,intPrimitive".SplitCsv(),
+                    new Object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } });
+            _testListener.Reset();
+            stmt.Dispose();
         }
 
         [Test]

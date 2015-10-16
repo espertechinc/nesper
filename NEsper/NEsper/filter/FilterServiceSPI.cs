@@ -38,5 +38,10 @@ namespace com.espertech.esper.filter
         int CountTypes { get; }
 
         ILockable WriteLock { get; }
+
+        /// <summary>
+        /// Initialization is optional and provides a chance to preload things after statements are available.
+        /// </summary>
+        void Init();
     }
 }

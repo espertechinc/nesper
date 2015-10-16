@@ -330,7 +330,7 @@ namespace com.espertech.esper.compat.collections
             	    return rvalue;
             	}
             	
-            	throw new KeyNotFoundException( "Key '" + key + "' not found" ) ;
+            	throw new KeyNotFoundException( "Value '" + key + "' not found" ) ;
             }
             set
             {

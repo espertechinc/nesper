@@ -219,8 +219,8 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields,
                                         new Object[]
                                         {
-                                            DateTimeHelper.ParseDefaultMSec("2002-05-1 8:00:05.000"),
-                                            DateTimeHelper.ParseDefaultMSec("2002-05-1 8:00:15.000"), 2
+                                            DateTimeParser.ParseDefaultMSec("2002-05-1 8:00:05.000"),
+                                            DateTimeParser.ParseDefaultMSec("2002-05-1 8:00:15.000"), 2
                                         });
 
             SendTimeEvent("2002-05-1 8:00:14.999");
@@ -237,8 +237,8 @@ namespace com.espertech.esper.regression.context
 
             _epService.EPRuntime.SendEvent(new SupportBean("E5", 5));
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[]{
-                DateTimeHelper.ParseDefaultMSec("2002-05-1 8:00:20.000"),
-                DateTimeHelper.ParseDefaultMSec("2002-05-1 8:00:30.000"), 5});
+                DateTimeParser.ParseDefaultMSec("2002-05-1 8:00:20.000"),
+                DateTimeParser.ParseDefaultMSec("2002-05-1 8:00:30.000"), 5});
 
             SendTimeEvent("2002-05-1 8:00:30.000");
 
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regression.context
             _epService.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(listener.GetAndClearIsInvoked());
 
-            long start = DateTimeHelper.ParseDefaultMSec("2002-05-1 8:00:01.999");
+            long start = DateTimeParser.ParseDefaultMSec("2002-05-1 8:00:01.999");
             for (int i = 0; i < 10; i++)
             {
                 SendTimeEvent(start);
@@ -834,7 +834,7 @@ namespace com.espertech.esper.regression.context
 
         private void SendTimeEvent(String time)
         {
-            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.ParseDefaultMSec(time)));
+            _epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec(time)));
         }
 
         private void SendTimeEvent(long time)

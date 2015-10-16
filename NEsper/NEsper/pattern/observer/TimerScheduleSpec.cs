@@ -9,20 +9,21 @@
 using System;
 
 using com.espertech.esper.client.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.pattern.observer
 {
     [Serializable]
     public class TimerScheduleSpec
     {
-        public TimerScheduleSpec(DateTime? optionalDate, long? optionalRepeatCount, TimePeriod optionalTimePeriod)
+        public TimerScheduleSpec(DateTimeEx optionalDate, long? optionalRepeatCount, TimePeriod optionalTimePeriod)
         {
             OptionalDate = optionalDate;
             OptionalRepeatCount = optionalRepeatCount;
             OptionalTimePeriod = optionalTimePeriod;
         }
 
-        public DateTime? OptionalDate { get; private set; }
+        public DateTimeEx OptionalDate { get; private set; }
 
         public long? OptionalRepeatCount { get; private set; }
 

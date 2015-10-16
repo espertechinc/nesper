@@ -10,29 +10,19 @@ using System;
 using System.IO;
 using System.Text;
 
+using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.expression.ops
 {
     /// <summary>
-    /// Represents a simple Math (+/-/divide/*) in a filter expression tree.
+    /// Represents a string concatenation.
     /// </summary>
     [Serializable]
-    public class ExprConcatNode : ExprNodeBase, ExprEvaluator
+    public class ExprConcatNode : ExprNodeBase
     {
-        private readonly StringBuilder _buffer;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
-        /// <summary>Ctor. </summary>
-        public ExprConcatNode()
-        {
-            _buffer = new StringBuilder();
-        }
-
-        public override ExprEvaluator ExprEvaluator
-        {
-            get { return this; }
-        }
+        private ExprEvaluator _evaluator;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -40,11 +30,12 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 throw new ExprValidationException("Concat node must have at least 2 parameters");
             }
-            _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
+
+            ExprEvaluator[] evaluators = ExprNodeUtility.GetEvaluators(this.ChildNodes);
     
-            for (var i = 0; i < _evaluators.Length; i++)
+            for (var i = 0; i < evaluators.Length; i++)
             {
-                var childType = _evaluators[i].ReturnType;
+                var childType = evaluators[i].ReturnType;
                 var childTypeName = childType == null ? "null" : childType.FullName;
                 if (childType != typeof(String))
                 {
@@ -52,42 +43,27 @@ namespace com.espertech.esper.epl.expression.ops
                 }
             }
 
+            ConfigurationEngineDefaults.ThreadingProfile threadingProfile = validationContext.MethodResolutionService.EngineImportService.ThreadingProfile;
+            if (threadingProfile == ConfigurationEngineDefaults.ThreadingProfile.LARGE)
+            {
+                _evaluator = new ExprConcatNodeEvalWNew(this, evaluators);
+            }
+            else
+            {
+                _evaluator = new ExprConcatNodeEvalThreadLocal(this, evaluators);
+            }
+
             return null;
         }
 
-        public Type ReturnType
+        public override ExprEvaluator ExprEvaluator
         {
-            get { return typeof (string); }
+            get { return _evaluator; }
         }
 
         public override bool IsConstantResult
         {
             get { return false; }
-        }
-
-        public object Evaluate(EvaluateParams evaluateParams)
-        {
-            string[] result = { null };
-
-            using (Instrument.With(
-                i => i.QExprConcat(this),
-                i => i.AExprConcat(result[0])))
-            {
-                _buffer.Length = 0;
-
-                foreach (var child in _evaluators)
-                {
-                    result[0] = (String) child.Evaluate(evaluateParams);
-                    if (result[0] == null)
-                    {
-                        return null;
-                    }
-                    _buffer.Append(result[0]);
-                }
-
-                result[0] = _buffer.ToString();
-                return result[0];
-            }
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

@@ -95,13 +95,13 @@ namespace com.espertech.esper.epl.view
             if (_currentReferencePoint == null)
             {
                 _currentReferencePoint = currentTime;
-                _nextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_scheduleSpec, currentTime);
+                _nextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_scheduleSpec, currentTime, _agentInstanceContext.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
                 output = true;
             }
 
             if (_nextScheduledTime <= currentTime)
             {
-                _nextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_scheduleSpec, currentTime);
+                _nextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_scheduleSpec, currentTime, _agentInstanceContext.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
                 output = true;
             }
 

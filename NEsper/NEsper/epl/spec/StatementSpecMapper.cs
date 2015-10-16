@@ -2253,7 +2253,9 @@ namespace com.espertech.esper.epl.spec
             else if (expr is TimePeriodExpression)
             {
                 var tpe = (TimePeriodExpression)expr;
-                return new ExprTimePeriodImpl(tpe.HasYears, tpe.HasMonths, tpe.HasWeeks, tpe.HasDays, tpe.HasHours, tpe.HasMinutes, tpe.HasSeconds, tpe.HasMilliseconds);
+                return new ExprTimePeriodImpl(
+                    mapContext.Configuration.EngineDefaults.ExpressionConfig.TimeZone, 
+                    tpe.HasYears, tpe.HasMonths, tpe.HasWeeks, tpe.HasDays, tpe.HasHours, tpe.HasMinutes, tpe.HasSeconds, tpe.HasMilliseconds);
             }
             else if (expr is NewOperatorExpression)
             {
@@ -2415,9 +2417,14 @@ namespace com.espertech.esper.epl.spec
                         return script;
                     }
                 }
-                return new ExprDotNode(chain,
+                var dotNode = new ExprDotNode(chain,
                         mapContext.Configuration.EngineDefaults.ExpressionConfig.IsDuckTyping,
                         mapContext.Configuration.EngineDefaults.ExpressionConfig.IsUdfCache);
+                if (dotNode.IsVariableOp(mapContext.VariableService))
+                {
+                    mapContext.HasVariables = true;
+                }
+                return dotNode;
             }
             else if (expr is LambdaExpression)
             {

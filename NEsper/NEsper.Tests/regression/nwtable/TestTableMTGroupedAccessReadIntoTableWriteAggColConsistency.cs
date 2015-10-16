@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.nwtable
         /// Seed the table with a number of groups, no new ones are added or deleted during the test.
         /// For a given number of seconds and a given number of groups:
         /// - Single writer updates a group (round-robin), each group associates with 10 columns .
-        /// - N readers pull a group's columns, round-robin, check that all 10 values are consistent.
+        /// - Count readers pull a group's columns, round-robin, check that all 10 values are consistent.
         /// - The 10 values are sum-int totals that are expected to all have the same value.
         /// </summary>
         [Test]

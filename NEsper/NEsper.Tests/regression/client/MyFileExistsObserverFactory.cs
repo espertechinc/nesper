@@ -20,8 +20,8 @@ namespace com.espertech.esper.regression.client
     {
         protected ExprNode FilenameExpression;
         protected MatchedEventConvertor Convertor;
-    
-        public override void SetObserverParameters(IList<ExprNode> expressionParameters, MatchedEventConvertor convertor)
+
+        public override void SetObserverParameters(IList<ExprNode> expressionParameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
         {
             const string message = "File exists observer takes a single string filename parameter";
             if (expressionParameters.Count != 1)

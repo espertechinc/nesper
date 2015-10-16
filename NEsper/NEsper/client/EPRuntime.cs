@@ -301,6 +301,7 @@ namespace com.espertech.esper.client
         ///     re-evaluate such new variable value for any given statement. The timer thread performs this work.
         /// </para>
         /// Only for use with context-partitioned variables.
+        /// </summary>
         /// <param name="variableValues">is the map of variable name and variable value, with null an allowed value</param>
         /// <param name="agentInstanceId">the id of the context partition</param>
         /// <throws>VariableValueException if any value does not match variable type or cannot be safely coerced to the variable type</throws>
@@ -368,45 +369,66 @@ namespace com.espertech.esper.client
         EPOnDemandQueryResult ExecuteQuery(string epl);
 
         /// <summary>
-        /// For use with named windows that have a context declared and that may therefore have multiple context partitions, allows to target context partitions for query execution selectively.
+        /// For use with named windows that have a context declared and that may therefore have multiple 
+        /// context partitions, allows to target context partitions for query execution selectively.
         /// </summary>
         /// <param name="epl">is the EPL query to execute</param>
         /// <param name="contextPartitionSelectors">selects context partitions to consider</param>
         /// <returns>result</returns>
         EPOnDemandQueryResult ExecuteQuery(String epl, ContextPartitionSelector[] contextPartitionSelectors);
 
-        /// <summary>Execute an on-demand query. &lt;p&gt; On-demand queries are EPL queries that execute non-continuous fire-and-forget queries against named windows. </summary>
+        /// <summary>
+        /// Execute an on-demand query. &lt;p&gt; On-demand queries are EPL queries that execute 
+        /// non-continuous fire-and-forget queries against named windows. 
+        /// </summary>
         /// <param name="model">is the EPL query to execute, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
         /// <returns>query result</returns>
         EPOnDemandQueryResult ExecuteQuery(EPStatementObjectModel model);
 
-        /// <summary>For use with named windows that have a context declared and that may therefore have multiple context partitions, allows to target context partitions for query execution selectively. </summary>
+        /// <summary>
+        /// For use with named windows that have a context declared and that may therefore have multiple context
+        /// partitions, allows to target context partitions for query execution selectively.
+        /// </summary>
         /// <param name="model">is the EPL query to execute, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
         /// <param name="contextPartitionSelectors">selects context partitions to consider</param>
         /// <returns>result</returns>
         EPOnDemandQueryResult ExecuteQuery(EPStatementObjectModel model, ContextPartitionSelector[] contextPartitionSelectors);
 
-        /// <summary>Prepare an unparameterized on-demand query before execution and for repeated execution. </summary>
+        /// <summary>
+        /// Prepare an unparameterized on-demand query before execution and for repeated execution.
+        /// </summary>
         /// <param name="epl">to prepare</param>
         /// <returns>proxy to execute upon, that also provides the event type of the returned results</returns>
         EPOnDemandPreparedQuery PrepareQuery(String epl);
 
-        /// <summary>Prepare an unparameterized on-demand query before execution and for repeated execution. </summary>
+        /// <summary>
+        /// Prepare an unparameterized on-demand query before execution and for repeated execution.
+        /// </summary>
         /// <param name="model">is the EPL query to prepare, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
         /// <returns>proxy to execute upon, that also provides the event type of the returned results</returns>
         EPOnDemandPreparedQuery PrepareQuery(EPStatementObjectModel model);
 
-        /// <summary>Prepare a parameterized on-demand query for repeated parameter setting and execution. Set all values on the returned holder then execute using {@link #executeQuery(EPOnDemandPreparedQueryParameterized)}. </summary>
+        /// <summary>
+        /// Prepare a parameterized on-demand query for repeated parameter setting and execution. Set all values on the 
+        /// returned holder then execute using {@link #executeQuery(EPOnDemandPreparedQueryParameterized)}.
+        /// </summary>
         /// <param name="epl">to prepare</param>
         /// <returns>parameter holder upon which to set values</returns>
         EPOnDemandPreparedQueryParameterized PrepareQueryWithParameters(String epl);
 
-        /// <summary>Execute an on-demand parameterized query. &lt;p&gt; On-demand queries are EPL queries that execute non-continuous fire-and-forget queries against named windows. </summary>
+        /// <summary>
+        /// Execute an on-demand parameterized query. &lt;p&gt; On-demand queries are EPL queries that 
+        /// execute non-continuous fire-and-forget queries against named windows.
+        /// </summary>
         /// <param name="parameterizedQuery">contains the query and parameter values</param>
         /// <returns>query result</returns>
         EPOnDemandQueryResult ExecuteQuery(EPOnDemandPreparedQueryParameterized parameterizedQuery);
 
-        /// <summary>Execute an on-demand parameterized query. &lt;p&gt; On-demand queries are EPL queries that execute non-continuous fire-and-forget queries against named windows. </summary>
+        /// <summary>
+        /// Execute an on-demand parameterized query.
+        /// <para />
+        /// On-demand queries are EPL queries that execute non-continuous fire-and-forget queries against named windows.
+        /// </summary>
         /// <param name="parameterizedQuery">contains the query and parameter values</param>
         /// <param name="contextPartitionSelectors">selects context partitions to consider</param>
         /// <returns>query result</returns>
@@ -432,8 +454,8 @@ namespace com.espertech.esper.client
         long CurrentTime { get; }
 
         /// <summary>
-        /// Returns the time at which the next schedule execution is expected, returns null if no schedule execution is
-        /// outstanding.
+        /// Returns the time at which the next schedule execution is expected, returns null
+        /// if no schedule execution is outstanding.
         /// </summary>
         long? NextScheduledTime { get; }
 

@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.join.table
         private readonly int _historicalStreamNum;
         private readonly EventType[] _typesPerStream;
         private readonly QueryGraph _queryGraph;
-        private readonly TreeSet<int> _pollingStreams;
+        private readonly SortedSet<int> _pollingStreams;
     
         private IDictionary<HistoricalStreamIndexDesc, IList<int>> _indexesUsedByStreams;
         private PollResultIndexingStrategy _masterIndexingStrategy;
@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.join.table
             _historicalStreamNum = historicalStreamNum;
             _typesPerStream = typesPerStream;
             _queryGraph = queryGraph;
-            _pollingStreams = new TreeSet<int>();
+            _pollingStreams = new SortedSet<int>();
         }
     
         /// <summary>Used during query plan phase to indicate that an index must be provided for use in lookup of historical events by using a stream's events. </summary>

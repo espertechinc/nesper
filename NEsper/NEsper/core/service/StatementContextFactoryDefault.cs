@@ -28,6 +28,7 @@ using com.espertech.esper.epl.script;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
 using com.espertech.esper.pattern.pool;
+using com.espertech.esper.rowregex;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
 
@@ -87,7 +88,10 @@ namespace com.espertech.esper.core.service
                 services.ExceptionHandlingService,
                 services.ExpressionResultCacheSharable,
                 services.StatementEventTypeRefService,
-                services.TableService.TableExprEvaluatorContext
+                services.TableService.TableExprEvaluatorContext,
+                services.EngineLevelExtensionServicesContext,
+                services.RegexHandlerFactory,
+                services.StatementLockFactory
                 );
         }
 
@@ -206,8 +210,7 @@ namespace com.espertech.esper.core.service
                 }
             }
 
-            var countSubexpressions = engineServices.ConfigSnapshot.EngineDefaults.PatternsConfig.MaxSubexpressions !=
-                                       null;
+            var countSubexpressions = engineServices.ConfigSnapshot.EngineDefaults.PatternsConfig.MaxSubexpressions != null;
             PatternSubexpressionPoolStmtSvc patternSubexpressionPoolStmtSvc = null;
             if (countSubexpressions)
             {
@@ -215,6 +218,15 @@ namespace com.espertech.esper.core.service
                 patternSubexpressionPoolStmtSvc =
                     new PatternSubexpressionPoolStmtSvc(engineServices.PatternSubexpressionPoolSvc, stmtCounter);
                 engineServices.PatternSubexpressionPoolSvc.AddPatternContext(statementName, stmtCounter);
+            }
+
+            var countMatchRecogStates = engineServices.ConfigSnapshot.EngineDefaults.MatchRecognizeConfig.MaxStates != null;
+            MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc = null;
+            if (countMatchRecogStates && statementSpecRaw.MatchRecognizeSpec != null)
+            {
+                var stmtCounter = new MatchRecognizeStatePoolStmtHandler();
+                matchRecognizeStatePoolStmtSvc = new MatchRecognizeStatePoolStmtSvc(engineServices.MatchRecognizeStatePoolEngineSvc, stmtCounter);
+                engineServices.MatchRecognizeStatePoolEngineSvc.AddPatternContext(statementName, stmtCounter);
             }
 
             AgentInstanceScriptContext defaultAgentInstanceScriptContext = null;
@@ -228,10 +240,11 @@ namespace com.espertech.esper.core.service
                 GetContextControllerFactoryService(annotations);
 
             // may use resource tracking
-            var statementResourceService = new StatementResourceService();
+            var statementResourceService = new StatementResourceService(optionalContextName != null);
             StatementExtensionSvcContext extensionSvcContext = new ProxyStatementExtensionSvcContext
             {
-                ProcStmtResources = () => statementResourceService
+                ProcStmtResources = () => statementResourceService,
+                ProcExtractStatementResourceHolder = resultOfStart => StatementResourceHolderUtil.PopulateHolder(resultOfStart)
             };
 
             // Create statement context
@@ -257,6 +270,7 @@ namespace com.espertech.esper.core.service
                 defaultStatementAgentInstanceLock,
                 contextDescriptor,
                 patternSubexpressionPoolStmtSvc,
+                matchRecognizeStatePoolStmtSvc,
                 stateless,
                 contextControllerFactoryService,
                 defaultAgentInstanceScriptContext,

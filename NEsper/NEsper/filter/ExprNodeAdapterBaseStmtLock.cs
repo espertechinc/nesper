@@ -24,11 +24,8 @@ namespace com.espertech.esper.filter
             get { return _variableService; }
         }
 
-        public ExprNodeAdapterBaseStmtLock(String statementName,
-                                           ExprNode exprNode,
-                                           ExprEvaluatorContext evaluatorContext,
-                                           VariableService variableService)
-            : base(statementName, exprNode, evaluatorContext)
+        public ExprNodeAdapterBaseStmtLock(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService)
+            : base (filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext)
         {
             _variableService = variableService;
         }

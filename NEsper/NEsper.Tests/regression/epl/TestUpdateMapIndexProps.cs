@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.epl
                 "insert into MyStream select * from MyMapPropEvent");
 
             EPStatement stmtUpdOne = _epService.EPAdministrator.CreateEPL(
-                "Update istream MyStream set Props('abc') = 1, Array[2] = 10");
+                "update istream MyStream set Props('abc') = 1, Array[2] = 10");
 
             stmtUpdOne.Events += _listener.Update;
 

@@ -38,6 +38,7 @@ namespace com.espertech.esper.client
             AlternativeContextConfig = new AlternativeContext();
             ClusterConfig = new Cluster();
             PatternsConfig = new Patterns();
+            MatchRecognizeConfig = new MatchRecognize();
             ScriptsConfig = new Scripts();
         }
 
@@ -104,6 +105,10 @@ namespace com.espertech.esper.client
         /// <summary>Return pattern settings. </summary>
         /// <value>pattern settings</value>
         public Patterns PatternsConfig { get; set; }
+
+        /// <summary>Gets or sets the match-recognize settings.</summary>
+        /// <value>The match-recognize settings.</value>
+        public MatchRecognize MatchRecognizeConfig { get; set; }
 
         /// <summary>Returns script engine settings. </summary>
         /// <value>script engine settings</value>
@@ -339,12 +344,26 @@ namespace com.espertech.esper.client
                 IsEnableADO = false;
             }
 
-            /// <summary>Returns true if execution path debug logging is enabled. <para /> Only if this flag is set to true, in addition to LOG4J settings set to DEBUG, does an engine instance, produce debug out. </summary>
-            /// <value>true if debug logging through Log4j is enabled for any event processing execution paths</value>
+            /// <summary>
+            /// Returns true if execution path debug logging is enabled.
+            /// <para />
+            /// Only if this flag is set to true, in addition to LOG4J settings set to DEBUG, 
+            /// does an engine instance, produce debug out.
+            /// </summary>
+            /// <value>
+            /// true if debug logging through Log4j is enabled for any event processing execution paths
+            /// </value>
             public bool IsEnableExecutionDebug { get; set; }
 
-            /// <summary>Returns true if timer debug level logging is enabled (true by default). <para /> Set this value to false to reduce the debug-level logging output for the timer Thread(s). For use only when debug-level logging is enabled. </summary>
-            /// <value>indicator whether timer execution is noisy in debug or not</value>
+            /// <summary>
+            /// Returns true if timer debug level logging is enabled (true by default).
+            /// <para />
+            /// Set this value to false to reduce the debug-level logging output for the timer Thread(s).
+            /// For use only when debug-level logging is enabled.
+            /// </summary>
+            /// <value>
+            /// indicator whether timer execution is noisy in debug or not
+            /// </value>
             public bool IsEnableTimerDebug { get; set; }
 
             /// <summary>Returns indicator whether query plan logging is enabled or not. </summary>
@@ -398,7 +417,7 @@ namespace com.espertech.esper.client
             }
         }
     
-        /// <summary>Holds variables settings. </summary>
+        /// <summary>Holds pattern settings. </summary>
         [Serializable]
         public class Patterns 
         {
@@ -416,6 +435,30 @@ namespace com.espertech.esper.client
             public bool IsMaxSubexpressionPreventStart { get; set; }
         }
     
+        /// <summary>Holds match-reconize settings.</summary>
+        [Serializable]
+        public class MatchRecognize
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="MatchRecognize"/> class.
+            /// </summary>
+            public MatchRecognize()
+            {
+                IsMaxStatesPreventStart = true;
+            }
+
+            /// <summary>
+            /// Returns the maximum number of states
+            /// </summary>
+            public long? MaxStates { get; set; }
+
+            /// <summary>
+            /// Returns true, the default, to indicate that if there is a maximum defined
+            /// it is being enforced and new states are not allowed.
+            /// </summary>
+            public bool IsMaxStatesPreventStart { get; set; }
+        }
+
         /// <summary>Holds default settings for stream selection in the select-clause. </summary>
         [Serializable]
         public class StreamSelection 
@@ -473,6 +516,7 @@ namespace com.espertech.esper.client
                 IsUdfCache = true;
                 IsSelfSubselectPreeval = true;
                 IsExtendedAggregation = true;
+                TimeZone = TimeZoneInfo.Local;
             }
 
             /// <summary>Returns false (the default) for integer division returning double values. <para /> Returns true to signal that Java-convention integer division semantics are used for divisions, whereas the division between two non-FP numbers returns only the whole number part of the result and any fractional part is dropped. </summary>
@@ -504,6 +548,11 @@ namespace com.espertech.esper.client
             /// </summary>
             /// <value>The math context.</value>
             public MathContext MathContext { get; set; }
+
+            /// <summary>
+            /// Gets or sets the time zone.
+            /// </summary>
+            public TimeZoneInfo TimeZone { get; set; }
         }
     
         /// <summary>Holds engine execution-related settings. </summary>

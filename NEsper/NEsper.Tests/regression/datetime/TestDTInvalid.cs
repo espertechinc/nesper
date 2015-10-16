@@ -57,28 +57,28 @@ namespace com.espertech.esper.regression.datetime
             TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'window(*).set(\"hour\",1)': Date-time enumeration method 'set' requires either a DateTime or long value as input or events of an event type that declares a timestamp property but received collection of events of type 'SupportBean' [select window(*).set('hour', 1) from SupportBean.win:keepall()]");
 
             // invalid incompatible params
-            epl = "select utildate.set('invalid') from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set('invalid') from SupportDateTime]");
+            epl = "select Utildate.set('invalid') from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select Utildate.set('invalid') from SupportDateTime]");
 
             // invalid lambda parameter
-            epl = "select utildate.set(x => true) from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set(x => true) from SupportDateTime]");
+            epl = "select Utildate.set(x => true) from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select Utildate.set(x => true) from SupportDateTime]");
 
             // invalid no parameter
-            epl = "select utildate.set() from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set() from SupportDateTime]");
+            epl = "select Utildate.set() from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select Utildate.set() from SupportDateTime]");
 
             // invalid wrong parameter
-            epl = "select utildate.set(1) from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.set(1)': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select utildate.set(1) from SupportDateTime]");
+            epl = "select Utildate.set(1) from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.set(1)': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value [select Utildate.set(1) from SupportDateTime]");
 
             // invalid wrong parameter
-            epl = "select utildate.between('a', 'b') from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed or DateTime-typed result for expression parameter 0 but received System.String [select utildate.between('a', 'b') from SupportDateTime]");
+            epl = "select Utildate.between('a', 'b') from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed or DateTime-typed result for expression parameter 0 but received System.String [select Utildate.between('a', 'b') from SupportDateTime]");
 
             // invalid wrong parameter
-            epl = "select utildate.between(utildate, utildate, 1, true) from SupportDateTime";
-            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'utildate.between(utildate,utildate,...(42 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received " + Name.Of<int>() + " [select utildate.between(utildate, utildate, 1, true) from SupportDateTime]");
+            epl = "select Utildate.between(Utildate, Utildate, 1, true) from SupportDateTime";
+            TryInvalid(epl, "Error starting statement: Failed to validate select-clause expression 'Utildate.between(Utildate,Utildate,...(42 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received " + Name.Of<int>() + " [select Utildate.between(Utildate, Utildate, 1, true) from SupportDateTime]");
         }
 
         private void TryInvalid(String epl, String message)

@@ -13,10 +13,10 @@ using System.Collections.Generic;
 namespace com.espertech.esper.collection
 {
     /// <summary>
-    /// Provides an enumeration of each combination of numbers between zero and N-1 with N must 
+    /// Provides an enumeration of each combination of numbers between zero and Count-1 with Count must 
     /// be at least 1, with each combination cannot have duplicates, with each combination at least 
     /// one element, with the longest combination gets returned first and the least long combination 
-    /// of the highest N-1 value last. <para/>For example, for N=3:
+    /// of the highest Count-1 value last. <para/>For example, for Count=3:
     ///     {0, 1, 2} {0, 1} {0, 2} {1, 2} {0} {1} {2}
     /// </summary>
     public class NumberAscCombinationEnumeration : IEnumerator<int[]>

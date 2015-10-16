@@ -449,10 +449,10 @@ namespace com.espertech.esper.regression.epl
     
             // Test s1 and s0=1, s2=0, s3=0, s4=0
             //
-            s0Events = SupportBean_S0.MakeS0("N", new String[]{"N-s0-1"});
+            s0Events = SupportBean_S0.MakeS0("Count", new String[]{"Count-s0-1"});
             SendEvent(s0Events);
     
-            s1Events = SupportBean_S1.MakeS1("N", new String[]{"N-s1-1"});
+            s1Events = SupportBean_S1.MakeS1("Count", new String[]{"Count-s1-1"});
             SendEvent(s1Events);
             EPAssertionUtil.AssertSameAnyOrder(new Object[][]{
                     new Object[] {s0Events[0], s1Events[0], null, null, null}

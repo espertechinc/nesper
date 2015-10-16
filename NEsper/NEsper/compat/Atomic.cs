@@ -48,5 +48,13 @@ namespace com.espertech.esper.compat
             Interlocked.Exchange(ref _value, value);
         }
 
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        public T Value
+        {
+            get { return _value; }
+        }
+
     }
 }

@@ -50,11 +50,10 @@ namespace com.espertech.esper.view.stream
 
         // Using identify hash map - ignoring the equals semantics on filter specs
         // Thus two filter specs objects are always separate entries in the map
-        private readonly IdentityDictionary<Object, Pair<EventStream, EPStatementHandleCallback>> _eventStreamsIdentity;
+        private readonly IdentityDictionary<Object, StreamEntry> _eventStreamsIdentity;
 
         // Using a reference-counted map for non-join statements
-        private readonly RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>
-            _eventStreamsRefCounted;
+        private readonly RefCountedMap<FilterSpecCompiled, StreamEntry> _eventStreamsRefCounted;
 
         private readonly String _engineURI;
         private readonly bool _isReuseViews;
@@ -67,9 +66,8 @@ namespace com.espertech.esper.view.stream
         public StreamFactorySvcImpl(String engineURI, bool isReuseViews)
         {
             _engineURI = engineURI;
-            _eventStreamsRefCounted =
-                new RefCountedMap<FilterSpecCompiled, Pair<EventStream, EPStatementHandleCallback>>();
-            _eventStreamsIdentity = new IdentityDictionary<Object, Pair<EventStream, EPStatementHandleCallback>>();
+            _eventStreamsRefCounted = new RefCountedMap<FilterSpecCompiled, StreamEntry>();
+            _eventStreamsIdentity = new IdentityDictionary<Object, StreamEntry>();
             _isReuseViews = isReuseViews;
         }
 
@@ -122,19 +120,19 @@ namespace com.espertech.esper.view.stream
             }
 
             // Check if a stream for this filter already exists
-            Pair<EventStream, EPStatementHandleCallback> pair;
+            StreamEntry entry;
             var forceNewStream = isJoin || (!_isReuseViews) || hasOrderBy || filterWithSameTypeSubselect || stateless;
             if (forceNewStream)
             {
-                pair = _eventStreamsIdentity.Get(filterSpec);
+                entry = _eventStreamsIdentity.Get(filterSpec);
             }
             else
             {
-                pair = _eventStreamsRefCounted[filterSpec];
+                entry = _eventStreamsRefCounted[filterSpec];
             }
 
             // If pair exists, either reference count or illegal state
-            if (pair != null)
+            if (entry != null)
             {
                 if (forceNewStream)
                 {
@@ -148,11 +146,11 @@ namespace com.espertech.esper.view.stream
                     // audit proxy
                     eventStream = EventStreamProxy.GetAuditProxy(
                         _engineURI, epStatementAgentInstanceHandle.StatementHandle.StatementName, annotations,
-                        filterSpec, pair.First);
+                        filterSpec, entry.EventStream);
 
                     // We return the lock of the statement first establishing the stream to use that as the new statement's lock
                     return new Pair<EventStream, IReaderWriterLock>(
-                        eventStream, pair.Second.AgentInstanceHandle.StatementAgentInstanceLock);
+                        eventStream, entry.Callback.AgentInstanceHandle.StatementAgentInstanceLock);
                 }
             }
 
@@ -203,19 +201,20 @@ namespace com.espertech.esper.view.stream
             var handle = new EPStatementHandleCallback(epStatementAgentInstanceHandle, filterCallback);
 
             // Store stream for reuse
-            pair = new Pair<EventStream, EPStatementHandleCallback>(eventStream, handle);
+            entry = new StreamEntry(eventStream, handle);
             if (forceNewStream)
             {
-                _eventStreamsIdentity.Put(filterSpec, pair);
+                _eventStreamsIdentity.Put(filterSpec, entry);
             }
             else
             {
-                _eventStreamsRefCounted[filterSpec] = pair;
+                _eventStreamsRefCounted[filterSpec] = entry;
             }
 
             // Activate filter
             var filterValues = filterSpec.GetValueSet(null, exprEvaluatorContext, null);
-            filterService.Add(filterValues, handle);
+            var filterServiceEntry = filterService.Add(filterValues, handle);
+            entry.FilterServiceEntry = filterServiceEntry;
 
             return new Pair<EventStream, IReaderWriterLock>(inputStream, null);
         }
@@ -237,28 +236,43 @@ namespace com.espertech.esper.view.stream
             bool filterWithSameTypeSubselect,
             bool stateless)
         {
-            Pair<EventStream, EPStatementHandleCallback> pair;
+            StreamEntry entry;
             var forceNewStream = isJoin || (!_isReuseViews) || hasOrderBy || filterWithSameTypeSubselect || stateless;
 
             if (forceNewStream)
             {
-                pair = _eventStreamsIdentity.Get(filterSpec);
-                if (pair == null)
+                entry = _eventStreamsIdentity.Get(filterSpec);
+                if (entry == null)
                 {
                     throw new IllegalStateException("Filter spec object not in collection");
                 }
                 _eventStreamsIdentity.Remove(filterSpec);
-                filterService.Remove(pair.Second);
+                filterService.Remove(entry.Callback, entry.FilterServiceEntry);
             }
             else
             {
-                pair = _eventStreamsRefCounted[filterSpec];
+                entry = _eventStreamsRefCounted[filterSpec];
                 var isLast = _eventStreamsRefCounted.Dereference(filterSpec);
                 if (isLast)
                 {
-                    filterService.Remove(pair.Second);
+                    filterService.Remove(entry.Callback, entry.FilterServiceEntry);
                 }
             }
+        }
+
+        public sealed class StreamEntry
+        {
+            public StreamEntry(EventStream eventStream, EPStatementHandleCallback callback)
+            {
+                EventStream = eventStream;
+                Callback = callback;
+            }
+
+            public EventStream EventStream { get; private set; }
+
+            public EPStatementHandleCallback Callback { get; private set; }
+
+            public FilterServiceEntry FilterServiceEntry { get; set; }
         }
     }
 }

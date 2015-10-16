@@ -803,7 +803,7 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        private void ProcessScheduleHandles(ArrayBackedCollection<ScheduleHandle> handles)
+        public void ProcessScheduleHandles(ArrayBackedCollection<ScheduleHandle> handles)
         {
             if (ThreadLogUtil.ENABLED_TRACE)
             {
@@ -1108,7 +1108,7 @@ namespace com.espertech.esper.core.service
             Dispatch();
         }
     
-        private void ProcessMatches(EventBean theEvent)
+        protected internal void ProcessMatches(EventBean theEvent)
         {
             var localData = ThreadData;
 
@@ -1266,13 +1266,13 @@ namespace com.espertech.esper.core.service
                                 var callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
                                 foreach (var callback in callbackList)
                                 {
-                                    callback.ScheduledTrigger(services.ExtensionServicesContext);
+                                    callback.ScheduledTrigger(services.EngineLevelExtensionServicesContext);
                                 }
                             }
                             else
                             {
                                 var callback = (ScheduleHandleCallback) callbackObject;
-                                callback.ScheduledTrigger(services.ExtensionServicesContext);
+                                callback.ScheduledTrigger(services.EngineLevelExtensionServicesContext);
                             }
 
                             // internal join processing, if applicable
@@ -1322,7 +1322,7 @@ namespace com.espertech.esper.core.service
                                 services.VariableService.SetLocalVersion();
                             }
 
-                            handle.ScheduleCallback.ScheduledTrigger(services.ExtensionServicesContext);
+                            handle.ScheduleCallback.ScheduledTrigger(services.EngineLevelExtensionServicesContext);
                             handle.AgentInstanceHandle.InternalDispatch();
                         }
                     }
@@ -1477,7 +1477,7 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        private void HandleFilterFault(EPStatementAgentInstanceHandle faultingHandle, EventBean theEvent)
+        protected internal void HandleFilterFault(EPStatementAgentInstanceHandle faultingHandle, EventBean theEvent)
         {
             var callbacksForStatement = new ArrayDeque<FilterHandle>();
             var version = _services.FilterService.Evaluate(theEvent, callbacksForStatement, faultingHandle.StatementId);

@@ -16,13 +16,13 @@ namespace com.espertech.esper.schedule
     public interface ScheduleHandleCallback 
     {
         /// <summary>Callback that is invoked as indicated by a schedule added to the scheduling service. </summary>
-        /// <param name="extensionServicesContext">is a marker interface for providing custom extension servicespassed to the triggered class </param>
-        void ScheduledTrigger(ExtensionServicesContext extensionServicesContext);
+        /// <param name="engineLevelExtensionServicesContext"></param>
+        void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext);
     }
 
     public class ProxyScheduleHandleCallback : ScheduleHandleCallback
     {
-        public Action<ExtensionServicesContext> ProcScheduledTrigger { get; set; }
+        public Action<EngineLevelExtensionServicesContext> ProcScheduledTrigger { get; set; }
 
         public ProxyScheduleHandleCallback()
         {
@@ -32,7 +32,7 @@ namespace com.espertech.esper.schedule
         /// Initializes a new instance of the <see cref="ProxyScheduleHandleCallback"/> class.
         /// </summary>
         /// <param name="dg">The dg.</param>
-        public ProxyScheduleHandleCallback(Action<ExtensionServicesContext> dg)
+        public ProxyScheduleHandleCallback(Action<EngineLevelExtensionServicesContext> dg)
         {
             ProcScheduledTrigger = dg;
         }
@@ -40,11 +40,10 @@ namespace com.espertech.esper.schedule
         /// <summary>
         /// Callback that is invoked as indicated by a schedule added to the scheduling service.
         /// </summary>
-        /// <param name="extensionServicesContext">is a marker interface for providing custom extension services
-        /// passed to the triggered class</param>
-        public void ScheduledTrigger(ExtensionServicesContext extensionServicesContext)
+        /// <param name="engineLevelExtensionServicesContext"></param>
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
-            ProcScheduledTrigger(extensionServicesContext);
+            ProcScheduledTrigger(engineLevelExtensionServicesContext);
         }
     }
 }

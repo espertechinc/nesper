@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.context.activator
         private readonly bool _discardPartialsOnMatch;
         private readonly bool _isCanIterate;
 
-        public ViewableActivatorPattern(
+        internal ViewableActivatorPattern(
             PatternContext patternContext,
             EvalRootFactoryNode rootFactoryNode,
             EventType eventType,
@@ -65,7 +65,42 @@ namespace com.espertech.esper.core.context.activator
 
             var rootState = (EvalRootState) rootNode.Start(callback, _patternContext, isRecoveringResilient);
             return new ViewableActivationResult(
-                sourceEventStream, rootState.Stop, null, rootState, _suppressSameEventMatches, _discardPartialsOnMatch);
+                sourceEventStream, rootState.Stop, null, rootState, rootState, _suppressSameEventMatches, _discardPartialsOnMatch, null);
+        }
+
+        public EvalRootFactoryNode RootFactoryNode
+        {
+            get { return _rootFactoryNode; }
+        }
+
+        public PatternContext PatternContext
+        {
+            get { return _patternContext; }
+        }
+
+        public EventType EventType
+        {
+            get { return _eventType; }
+        }
+
+        public bool HasConsumingFilter
+        {
+            get { return _hasConsumingFilter; }
+        }
+
+        public bool IsSuppressSameEventMatches
+        {
+            get { return _suppressSameEventMatches; }
+        }
+
+        public bool IsDiscardPartialsOnMatch
+        {
+            get { return _discardPartialsOnMatch; }
+        }
+
+        public bool IsCanIterate
+        {
+            get { return _isCanIterate; }
         }
     }
 }

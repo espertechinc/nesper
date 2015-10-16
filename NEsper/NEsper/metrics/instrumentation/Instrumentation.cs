@@ -41,6 +41,8 @@ using com.espertech.esper.schedule;
 using com.espertech.esper.type;
 using com.espertech.esper.view;
 
+using Microsoft.JScript;
+
 namespace com.espertech.esper.metrics.instrumentation
 {
 	public interface Instrumentation
@@ -74,6 +76,9 @@ namespace com.espertech.esper.metrics.instrumentation
 	    void ARegEx(RegexPartitionState partitionState, IList<RegexNFAStateEntry> endStates, IList<RegexNFAStateEntry> terminationStates);
 	    void QRegExState(RegexNFAStateEntry currentState, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable);
 	    void ARegExState(IList<RegexNFAStateEntry> next, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable);
+        void QRegExStateStart(RegexNFAState startState, IDictionary<String, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable);
+        void ARegExStateStart(IList<RegexNFAStateEntry> nextStates, IDictionary<String, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable);
+ 
 	    void QRegExPartition(ExprNode[] partitionExpressionNodes);
 	    void ARegExPartition(bool exists, RegexPartitionState state);
 	    void QRegIntervalValue(ExprNode exprNode);
