@@ -1360,10 +1360,14 @@ namespace com.espertech.esper.util
                 case "system.uint64":
                     return typeof(ulong);
                 case "string":
+                case "system.string":
                     return typeof(string);
                 case "datetime":
                 case "system.datetime":
                     return typeof(DateTime);
+                case "datetimeoffset":
+                case "system.datetimeoffset":
+                    return typeof(DateTimeOffset);
                 default:
                     return null;
             }
