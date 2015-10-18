@@ -73,8 +73,12 @@
 	</Target>
 
 	<Target Name="VeryClean">
-		<MSBuild Projects="NEsper.proj" Properties="Configuration=Debug" Targets="Clean"/>
-		<MSBuild Projects="NEsper.proj" Properties="Configuration=Release" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=Any CPU" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=Any CPU" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=x86" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=x86" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Debug;Platform=x64" Targets="Clean"/>
+		<MSBuild Projects="NEsper.proj" Properties="Configuration=Release;Platform=x64" Targets="Clean"/>
 	</Target>
 
 	<Target Name="Release-All" DependsOnTargets="Update-Packages">
@@ -261,13 +265,14 @@
 	<Target Name="Documentation">
 		<Message Text="Building NEsper Documentation - Configuration: $(Configuration)" />
 		<MSBuild Projects="NEsper.shfbproj"
-			Properties="Configuration=$(Configuration)"
+			Properties="Configuration=$(Configuration);Platform=Any CPU"
 			Condition="!Exists('$(BuildRoot)\docs\NEsper.chm')"/>
 		<Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
 	</Target>
 
 	<Target Name="Reference-Documentation">
 		<MSBuild Projects="$(MSBuildProjectDirectory)\docs\reference\Documentation.proj"
+			Properties="Configuration=$(Configuration);Platform=Any CPU"
 			Condition="!Exists('$(BuildRoot)\docs\reference')"/>
 
 		<ItemGroup>
@@ -280,7 +285,7 @@
 	</Target>
 
 	<Target Name="Tests">
-		<MSBuild Projects="NEsper\NEsperTest.proj"/>
+		<MSBuild Projects="NEsper\NEsperTest.proj" />
 	</Target>
 
 	<Target Name="ZipDistribution" DependsOnTargets="ApplyLabel;Documentation">
