@@ -10,11 +10,14 @@ using System;
 using System.IO;
 
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.script;
 
+#if X86 || X64
 using Jurassic;
+#endif
 
 namespace NEsper.Scripting.Jurassic
 {
@@ -32,10 +35,15 @@ namespace NEsper.Scripting.Jurassic
 
         public Func<ScriptArgs, Object> Compile(ExpressionScriptProvided expressionScript)
         {
+#if X86 || X64
             var script = new StringScriptSource(expressionScript.Expression);
             return args => ExecuteWithScriptArgs(script, args);
+#else
+            throw new UnsupportedOperationException("jurassic engine is not supported outside of x86 and x64 builds");
+#endif
         }
 
+#if X86 || X64
         private object ExecuteWithScriptArgs(ScriptSource script, ScriptArgs args)
         {
             var engine = new ScriptEngine();
@@ -51,11 +59,16 @@ namespace NEsper.Scripting.Jurassic
 
             return engine.Evaluate(script);
         }
+#endif
 
         public void Verify(ExpressionScriptProvided expressionScript)
         {
+#if X86 || X64
             var script = new StringScriptSource(expressionScript.Expression);
             ScopeTestHelper.AssertNotNull(script);
+#else
+            throw new UnsupportedOperationException("jurassic engine is not supported outside of x86 and x64 builds");
+#endif
         }
 
         public class ClrBinding

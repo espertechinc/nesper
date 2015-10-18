@@ -9,12 +9,15 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.script;
 using com.espertech.esper.util;
 
+#if X86 || X64
 using Noesis.Javascript;
+#endif
 
 namespace NEsper.Scripting.Noesis
 {
@@ -37,6 +40,7 @@ namespace NEsper.Scripting.Noesis
 
         private object ExecuteWithScriptArgs(ExpressionScriptProvided expressionScript, ScriptArgs args)
         {
+#if X86 || X64
             using (var context = new JavascriptContext())
             {
                 foreach (var binding in args.Bindings)
@@ -49,10 +53,17 @@ namespace NEsper.Scripting.Noesis
                 context.SetParameter("render", new Action<object>(value => value.Render()));
                 return context.Run(expressionScript.Expression);
             }
+#else
+            throw new UnsupportedOperationException("noesis engine is not supported outside of x86 and x64 builds");
+#endif
         }
 
         public void Verify(ExpressionScriptProvided script)
         {
+#if X86 || X64
+#else
+            throw new UnsupportedOperationException("noesis engine is not supported outside of x86 and x64 builds");
+#endif
         }
 
         public class TypeWrapper    
