@@ -340,7 +340,7 @@
 
 		<CallTarget Targets="Release-All" />
 		<CallTarget Targets="Documentation" />
-		<CallTarget Targets="Reference-Documentation" />
+		<!-- <CallTarget Targets="Reference-Documentation" /> -->
 		<CallTarget Targets="ZipDistribution" />
 	</Target>
 </Project>
