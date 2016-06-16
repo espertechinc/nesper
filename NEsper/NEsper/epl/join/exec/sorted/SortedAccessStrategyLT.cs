@@ -23,23 +23,23 @@ namespace com.espertech.esper.epl.join.exec.sorted
         {
         }
     
-        public ISet<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context) {
+        public ICollection<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context) {
             return index.LookupLess(base.EvaluateLookup(theEvent, context));
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<Object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object point = base.EvaluateLookup(theEvent, context);
             keys.Add(point);
             return index.LookupLess(point);
         }
     
-        public ISet<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
         {
             return index.LookupLessThenColl(base.EvaluatePerStream(eventsPerStream, context));
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object point = base.EvaluatePerStream(eventsPerStream, context);
             keys.Add(point);

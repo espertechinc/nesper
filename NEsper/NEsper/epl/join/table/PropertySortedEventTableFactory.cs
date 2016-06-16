@@ -19,12 +19,6 @@ namespace com.espertech.esper.epl.join.table
     /// </summary>
     public class PropertySortedEventTableFactory : EventTableFactory
     {
-        protected readonly int StreamNum;
-        protected readonly String PropertyName;
-    
-        /// <summary>Getters for properties. </summary>
-        protected readonly EventPropertyGetter PropertyGetter;
-
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -38,13 +32,10 @@ namespace com.espertech.esper.epl.join.table
             PropertyGetter = EventBeanUtility.GetAssertPropertyGetter(eventType, propertyName);
         }
 
-        public virtual EventTable[] MakeEventTables()
+        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(null, false, false, StreamNum, new String[] {PropertyName}, EventTableOrganization.EventTableOrganizationType.BTREE);
-            return new EventTable[]
-            {
-                new PropertySortedEventTable(PropertyGetter, organization)
-            };
+            EventTableOrganization organization = Organization;
+            return new EventTable[] { new PropertySortedEventTableImpl(PropertyGetter, organization) };
         }
 
         public virtual Type EventTableType
@@ -57,6 +48,20 @@ namespace com.espertech.esper.epl.join.table
             return GetType().FullName +
                     " streamNum=" + StreamNum +
                     " propertyName=" + PropertyName;
+        }
+
+        public int StreamNum { get; private set; }
+
+        public string PropertyName { get; private set; }
+
+        public EventPropertyGetter PropertyGetter { get; private set; }
+
+        protected virtual EventTableOrganization Organization
+        {
+            get
+            {
+                return new EventTableOrganization(null, false, false, StreamNum, new string[] { PropertyName }, EventTableOrganizationType.BTREE);
+            }
         }
     }
 }

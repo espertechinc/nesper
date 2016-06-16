@@ -165,7 +165,7 @@ namespace com.espertech.esper.schedule
             }
         }
 
-        public ScheduleSet Take(ICollection<string> statementIds)
+        public ScheduleSet Take(ICollection<int> statementIds)
         {
             var list = new List<ScheduleSetEntry>();
             var currentTime = Time;

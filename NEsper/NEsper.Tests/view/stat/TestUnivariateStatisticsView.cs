@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.epl;
 using com.espertech.esper.support.events;
@@ -32,9 +33,9 @@ namespace com.espertech.esper.view.stat
         public void SetUp()
         {
             // Set up sum view and a test child view
-            EventType type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+            var type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
 
-            UnivariateStatisticsViewFactory factory = new UnivariateStatisticsViewFactory();
+            var factory = new UnivariateStatisticsViewFactory();
             factory.EventType = type;
             factory.FieldExpression = SupportExprNodeFactory.MakeIdentNodeMD("Price");
             _myView = new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
@@ -48,14 +49,14 @@ namespace com.espertech.esper.view.stat
         public void TestViewComputedValues()
         {
             // Set up feed for sum view
-            SupportStreamImpl stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
+            var stream = new SupportStreamImpl(typeof(SupportMarketDataBean), 3);
             stream.AddView(_myView);
     
             // Send two events to the stream
             Assert.IsTrue(_childView.LastNewData == null);
     
             // Send a first event, checkNew values
-            EventBean marketData = MakeBean("IBM", 10, 0);
+            var marketData = MakeBean("IBM", 10, 0);
             stream.Insert(marketData);
             CheckOld(0, 0, Double.NaN, Double.NaN, Double.NaN, Double.NaN);
             CheckNew(1, 10, 10, 0, Double.NaN, Double.NaN);
@@ -93,36 +94,36 @@ namespace com.espertech.esper.view.stat
         [Test]
         public void TestCopyView()
         {
-            UnivariateStatisticsView copied = (UnivariateStatisticsView) _myView.CloneView();
+            var copied = (UnivariateStatisticsView) _myView.CloneView();
             Assert.IsTrue(_myView.FieldExpression.Equals(copied.FieldExpression));
         }
     
         private void CheckNew(long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE)
         {
-            IEnumerator<EventBean> iterator = _myView.GetEnumerator();
+            var iterator = _myView.GetEnumerator();
             CheckValues(iterator.Advance(), countE, sumE, avgE, stdevpaE, stdevE, varianceE);
             Assert.IsTrue(iterator.MoveNext() == false);
     
             Assert.IsTrue(_childView.LastNewData.Length == 1);
-            EventBean childViewValues = _childView.LastNewData[0];
+            var childViewValues = _childView.LastNewData[0];
             CheckValues(childViewValues, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
         }
     
         private void CheckOld(long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE)
         {
             Assert.IsTrue(_childView.LastOldData.Length == 1);
-            EventBean childViewValues = _childView.LastOldData[0];
+            var childViewValues = _childView.LastOldData[0];
             CheckValues(childViewValues, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
         }
     
         private void CheckValues(EventBean values, long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE)
         {
-            long count = GetLongValue(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS, values);
-            double sum = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL, values);
-            double avg = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE, values);
-            double stdevpa = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA, values);
-            double stdev = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV, values);
-            double variance = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE, values);
+            var count = GetLongValue(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS, values);
+            var sum = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL, values);
+            var avg = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE, values);
+            var stdevpa = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA, values);
+            var stdev = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV, values);
+            var variance = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE, values);
     
             Assert.AreEqual(count, countE);
             Assert.AreEqual(sum, sumE);
@@ -144,7 +145,7 @@ namespace com.espertech.esper.view.stat
     
         private EventBean MakeBean(String symbol, double price, long volume)
         {
-            SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, volume, "");
+            var bean = new SupportMarketDataBean(symbol, price, volume, "");
             return SupportEventBeanFactory.CreateObject(bean);
         }
     }

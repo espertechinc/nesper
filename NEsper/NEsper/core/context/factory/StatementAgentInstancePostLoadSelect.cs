@@ -51,7 +51,7 @@ namespace com.espertech.esper.core.context.factory
 
         public void ExecutePostLoad()
         {
-            if (_joinSetComposer == null)
+            if ((_joinSetComposer == null) || (!_joinSetComposer.JoinSetComposer.AllowsInit))
             {
                 return;
             }

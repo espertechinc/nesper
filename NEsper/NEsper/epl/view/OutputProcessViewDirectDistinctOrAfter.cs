@@ -11,10 +11,10 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
 
@@ -30,8 +30,8 @@ namespace com.espertech.esper.epl.view
     
         private readonly OutputProcessViewDirectDistinctOrAfterFactory _parent;
     
-        public OutputProcessViewDirectDistinctOrAfter(ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewDirectDistinctOrAfterFactory parent)
-            : base(resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
+        public OutputProcessViewDirectDistinctOrAfter(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewDirectDistinctOrAfterFactory parent)
+            : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
         {
             _parent = parent;
         }
@@ -40,7 +40,12 @@ namespace com.espertech.esper.epl.view
         {
             get { return 0; }
         }
-    
+
+        public override OutputCondition OptionalOutputCondition
+        {
+            get { return null; }
+        }
+
         /// <summary>The Update method is called if the view does not participate in a join. </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>

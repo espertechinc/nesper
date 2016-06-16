@@ -15,8 +15,8 @@ namespace com.espertech.esper.epl.view
 {
     public sealed class OutputConditionCountFactory : OutputConditionFactory
     {
-        private readonly long _eventRate;
-        private readonly VariableMetaData _variableMetaData;
+        internal long EventRate;
+        internal readonly VariableMetaData VariableMetaData;
 
         /// <summary>
         /// Constructor.
@@ -29,30 +29,20 @@ namespace com.espertech.esper.epl.view
             {
                 throw new ArgumentException("Limiting output by event count requires an event count of at least 1 or a variable name");
             }
-            _eventRate = eventRate;
-            _variableMetaData = variableMetaData;
+            EventRate = eventRate;
+            VariableMetaData = variableMetaData;
         }
 
         public OutputCondition Make(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
         {
             VariableReader variableReader = null;
-            if (_variableMetaData != null)
+            if (VariableMetaData != null)
             {
                 variableReader = agentInstanceContext.StatementContext.VariableService.GetReader(
-                    _variableMetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                    VariableMetaData.VariableName, agentInstanceContext.AgentInstanceId);
             }
 
-            return new OutputConditionCount(outputCallback, _eventRate, variableReader);
-        }
-
-        public long EventRate
-        {
-            get { return _eventRate; }
-        }
-
-        public VariableMetaData VariableMetaData
-        {
-            get { return _variableMetaData; }
+            return new OutputConditionCount(outputCallback, EventRate, variableReader);
         }
     }
 }

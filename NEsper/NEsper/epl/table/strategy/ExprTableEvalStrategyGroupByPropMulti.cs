@@ -20,8 +20,8 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly ExprEvaluator[] _groupExpr;
 
-        public ExprTableEvalStrategyGroupByPropMulti(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval, ExprEvaluator[] groupExpr)
-                : base(@lock, aggregationState, propertyIndex, optionalEnumEval)
+        public ExprTableEvalStrategyGroupByPropMulti(TableAndLockProviderGrouped provider, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval, ExprEvaluator[] groupExpr)
+                : base(provider, propertyIndex, optionalEnumEval)
         {
             this._groupExpr = groupExpr;
         }

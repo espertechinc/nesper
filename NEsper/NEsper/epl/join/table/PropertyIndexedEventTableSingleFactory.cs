@@ -51,17 +51,17 @@ namespace com.espertech.esper.epl.join.table
             PropertyGetter = EventBeanUtility.GetAssertPropertyGetter(eventType, propertyName);
         }
 
-        public virtual EventTable[] MakeEventTables()
+        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(
-                OptionalIndexName, Unique, false, StreamNum, new String[]{ PropertyName }, EventTableOrganization.EventTableOrganizationType.HASH);
-            var eventTable = Unique 
-                ? new PropertyIndexedEventTableSingleUnique(PropertyGetter, organization) 
-                : new PropertyIndexedEventTableSingle(PropertyGetter, organization, true);
-            return new EventTable[]
+            var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] { PropertyName }, EventTableOrganizationType.HASH);
+            if (Unique)
             {
-                eventTable
-            };
+                return new EventTable[] { new PropertyIndexedEventTableSingleUnique(PropertyGetter, organization) };
+            }
+            else
+            {
+                return new EventTable[] { new PropertyIndexedEventTableSingleUnadorned(PropertyGetter, organization) };
+            }
         }
 
         public virtual Type EventTableType

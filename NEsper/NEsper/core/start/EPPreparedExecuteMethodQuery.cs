@@ -49,19 +49,21 @@ namespace com.espertech.esper.core.start
         private readonly JoinSetComposerPrototype _joinSetComposerPrototype;
         private readonly FilterSpecCompiled[] _filters;
         private readonly bool _hasTableAccess;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="statementSpec">is a container for the definition of all statement constructs thatmay have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
+        /// <param name="statementSpec">
+        /// is a container for the definition of all statement constructs that may have been used in the
+        /// statement, i.e. if defines the select clauses, insert into, outer joins etc.
         /// </param>
         /// <param name="services">is the service instances for dependency injection</param>
         /// <param name="statementContext">is statement-level information and statement services</param>
         /// <throws>ExprValidationException if the preparation failed</throws>
-        public EPPreparedExecuteMethodQuery(StatementSpecCompiled statementSpec,
-                                            EPServicesContext services,
-                                            StatementContext statementContext)
-                
+        public EPPreparedExecuteMethodQuery(
+            StatementSpecCompiled statementSpec,
+            EPServicesContext services,
+            StatementContext statementContext)
         {
             var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
             if (queryPlanLogging) {
@@ -121,9 +123,9 @@ namespace com.espertech.esper.core.start
             StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, services.EngineURI, true);
             EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec, statementContext, typeService, null);
     
-            var resultSetProcessorPrototype = ResultSetProcessorFactoryFactory.GetProcessorPrototype(statementSpec, statementContext, typeService, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, _services.ConfigSnapshot);
-            _resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(_agentInstanceContext, resultSetProcessorPrototype);
-    
+            var resultSetProcessorPrototype = ResultSetProcessorFactoryFactory.GetProcessorPrototype(statementSpec, statementContext, typeService, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, services.ConfigSnapshot, services.ResultSetProcessorHelperFactory, true, false);
+            _resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(_agentInstanceContext, resultSetProcessorPrototype, false, null, true);
+
             if (statementSpec.SelectClauseSpec.IsDistinct)
             {
                 if (_resultSetProcessor.ResultEventType is EventTypeSPI) {
@@ -133,7 +135,16 @@ namespace com.espertech.esper.core.start
                     _eventBeanReader = new EventBeanReaderDefaultImpl(_resultSetProcessor.ResultEventType);
                 }
             }
-    
+
+            // check context partition use
+            if (statementSpec.OptionalContextName != null)
+            {
+                if (numStreams > 1)
+                {
+                    throw new ExprValidationException("Joins in runtime queries for context partitions are not supported");
+                }
+            }
+
             // plan joins or simple queries
             if (numStreams > 1)
             {
@@ -149,18 +160,12 @@ namespace com.espertech.esper.core.start
                 }
     
                 var hasAggregations = !resultSetProcessorPrototype.AggregationServiceFactoryDesc.Expressions.IsEmpty();
-                _joinSetComposerPrototype = JoinSetComposerPrototypeFactory.MakeComposerPrototype(
-                    null, null,
+
+                _joinSetComposerPrototype = JoinSetComposerPrototypeFactory.MakeComposerPrototype(null, -1,
                     statementSpec.OuterJoinDescList, statementSpec.FilterRootNode, typesPerStream, namesPerStream,
-                    streamJoinAnalysisResult, queryPlanLogging, statementContext, new HistoricalViewableDesc(numStreams),
-                    _agentInstanceContext, false, hasAggregations, services.TableService, true);
-            }
-    
-            // check context partition use
-            if (statementSpec.OptionalContextName != null) {
-                if (numStreams > 1) {
-                    throw new ExprValidationException("Joins in runtime queries for context partitions are not supported");
-                }
+                    streamJoinAnalysisResult, queryPlanLogging, statementContext, new HistoricalViewableDesc(numStreams), 
+                    _agentInstanceContext, false, hasAggregations, services.TableService, true,
+                    services.EventTableIndexService.AllowInitIndex(false));
             }
         }
 
@@ -223,7 +228,19 @@ namespace com.espertech.esper.core.start
                     if (_statementSpec.FilterRootNode != null) {
                         snapshot = GetFiltered(snapshot, Collections.SingletonList(_statementSpec.FilterRootNode));
                     }
-                    EventBean[] rows = snapshot.ToArray();
+
+                    EventBean[] rows;
+
+                    var snapshotAsArrayDeque = snapshot as ArrayDeque<EventBean>;
+                    if (snapshotAsArrayDeque != null)
+                    {
+                        rows = snapshotAsArrayDeque.Array;
+                    }
+                    else
+                    {
+                        rows = snapshot.ToArray();
+                    }
+
                     _resultSetProcessor.AgentInstanceContext = contextPartitionResult.Context;
                     var results = _resultSetProcessor.ProcessViewResult(rows, null, true);
                     if (results != null && results.First != null && results.First.Length > 0) {
@@ -275,8 +292,12 @@ namespace com.espertech.esper.core.start
             }
             return events;
         }
-    
-        private ICollection<EventBean> GetStreamSnapshotInstance(int streamNum, IList<ExprNode> filterExpressions, FireAndForgetInstance processorInstance) {
+
+        private ICollection<EventBean> GetStreamSnapshotInstance(
+            int streamNum,
+            IList<ExprNode> filterExpressions,
+            FireAndForgetInstance processorInstance)
+        {
             var coll = processorInstance.SnapshotBestEffort(this, _filters[streamNum], _statementSpec.Annotations);
             if (filterExpressions.Count != 0) {
                 coll = GetFiltered(coll, filterExpressions);
@@ -309,7 +330,7 @@ namespace com.espertech.esper.core.start
                     viewablePerStream[i] = instance.TailViewInstance;
                 }
     
-                var joinSetComposerDesc = _joinSetComposerPrototype.Create(viewablePerStream, true, _agentInstanceContext);
+                var joinSetComposerDesc = _joinSetComposerPrototype.Create(viewablePerStream, true, _agentInstanceContext, false);
                 var joinComposer = joinSetComposerDesc.JoinSetComposer;
                 JoinSetFilter joinFilter;
                 if (joinSetComposerDesc.PostJoinFilterEvaluator != null) {
@@ -342,7 +363,7 @@ namespace com.espertech.esper.core.start
     
         private ICollection<EventBean> GetFiltered(ICollection<EventBean> snapshot, IList<ExprNode> filterExpressions)
         {
-            var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count, 16));
+            var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count + 1, 16));
             ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, filterExpressions, _agentInstanceContext, deque);
             return deque;
         }

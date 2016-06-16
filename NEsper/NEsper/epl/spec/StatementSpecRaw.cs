@@ -160,6 +160,6 @@ namespace com.espertech.esper.epl.spec
 
         public IntoTableSpec IntoTableSpec { get; set; }
 
-        public IList<ExprTableAccessNode> TableExpressions { get; set; }
+        public ISet<ExprTableAccessNode> TableExpressions { get; set; }
     }
 }

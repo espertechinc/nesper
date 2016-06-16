@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat.collections
 		private IDictionary<K,V> _subDictionary;
 		
         /// <summary>
-        /// Entry for handling null keys.
+        /// Record for handling null keys.
         /// </summary>
 
         private KeyValuePair<K, V>? _nullEntry;

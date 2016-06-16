@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.core
 	        ExprEvaluatorContext exprEvaluatorContext,
 	        EventAdapterService eventAdapterService,
 	        string statementName,
-	        string statementId,
+            int statementId,
 	        Attribute[] annotations,
 	        ContextDescriptor contextDescriptor,
             ScriptingService scriptingService,
@@ -111,7 +111,7 @@ namespace com.espertech.esper.epl.expression.core
 
 	    public bool IsExpressionAudit { get; private set; }
 
-	    public string StatementId { get; private set; }
+	    public int StatementId { get; private set; }
 
 	    public ContextDescriptor ContextDescriptor { get; private set; }
 

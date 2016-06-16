@@ -54,16 +54,7 @@ namespace com.espertech.esper.epl.join.plan
             _childNodes.Add(childNode);
         }
 
-        public override ExecNode MakeExec(
-            string statementName,
-            string statementId,
-            Attribute[] annotations,
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexPerStream,
-            EventType[] streamTypes,
-            Viewable[] streamViews,
-            HistoricalStreamIndexList[] historicalStreamIndexList,
-            VirtualDWView[] viewExternal,
-            ILockable[] tableSecondaryIndexLocks)
+        public override ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexList, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
         {
             if (_childNodes.IsEmpty())
             {

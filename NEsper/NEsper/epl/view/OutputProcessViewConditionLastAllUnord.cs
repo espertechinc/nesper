@@ -32,10 +32,9 @@ namespace com.espertech.esper.epl.view
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-	    public OutputProcessViewConditionLastAllUnord(ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext)
-            : base(resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
+        public OutputProcessViewConditionLastAllUnord(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext)
+            : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
         {
-	        
 	        _parent = parent;
 	        _isAll = parent.OutputLimitLimitType == OutputLimitLimitType.ALL;
 
@@ -46,6 +45,11 @@ namespace com.espertech.esper.epl.view
 	    public override int NumChangesetRows
 	    {
 	        get { return 0; }
+	    }
+
+	    public override OutputCondition OptionalOutputCondition
+	    {
+	        get { return _outputCondition; }
 	    }
 
 	    public override void Update(EventBean[] newData, EventBean[] oldData)

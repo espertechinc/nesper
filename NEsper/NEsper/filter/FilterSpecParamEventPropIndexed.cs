@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
@@ -102,7 +103,7 @@ namespace com.espertech.esper.filter
             get { return _resultEventProperty; }
         }
 
-        public override Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
             EventBean[] events = (EventBean[])matchedEvents.GetMatchingEventAsObjectByTag(_resultEventAsName);
 

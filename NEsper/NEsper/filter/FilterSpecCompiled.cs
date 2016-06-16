@@ -14,6 +14,7 @@ using System.Text;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.mgr;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.property;
@@ -108,16 +109,21 @@ namespace com.espertech.esper.filter
         /// Returns the values for the filter, using the supplied result events to ask filter parameters for the value to filter for.
         /// </summary>
         /// <param name="matchedEvents">contains the result events to use for determining filter values</param>
-        /// <param name="evaluatorContext">The evaluator context.</param>
+        /// <param name="agentInstanceContext">The agent instance context.</param>
         /// <param name="addendum">The addendum.</param>
-        /// <returns>filter values</returns>
-        public FilterValueSet GetValueSet(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext, FilterValueSetParam[][] addendum)
+        /// <returns>
+        /// filter values
+        /// </returns>
+        public FilterValueSet GetValueSet(
+            MatchedEventMap matchedEvents,
+            AgentInstanceContext agentInstanceContext,
+            FilterValueSetParam[][] addendum)
         {
             var valueList = new FilterValueSetParam[Parameters.Length][];
             for (int i = 0; i < Parameters.Length; i++)
             {
                 valueList[i] = new FilterValueSetParam[Parameters[i].Length];
-                PopulateValueSet(valueList[i], matchedEvents, evaluatorContext, Parameters[i]);
+                PopulateValueSet(valueList[i], matchedEvents, agentInstanceContext, Parameters[i]);
             }
 
             if (addendum != null)
@@ -133,18 +139,19 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="valueList">The value list.</param>
         /// <param name="matchedEvents">The matched events.</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        /// <param name="specParams">The spec parameters.</param>
         private static void PopulateValueSet(
             FilterValueSetParam[] valueList,
             MatchedEventMap matchedEvents,
-            ExprEvaluatorContext exprEvaluatorContext,
+            AgentInstanceContext agentInstanceContext,
             FilterSpecParam[] specParams)
         {
             // Ask each filter specification parameter for the actual value to filter for
             var count = 0;
             foreach (var specParam in specParams)
             {
-                var filterForValue = specParam.GetFilterValue(matchedEvents, exprEvaluatorContext);
+                var filterForValue = specParam.GetFilterValue(matchedEvents, agentInstanceContext);
 
                 FilterValueSetParam valueParam = new FilterValueSetParamImpl(specParam.Lookupable, specParam.FilterOperator, filterForValue);
                 valueList[count] = valueParam;

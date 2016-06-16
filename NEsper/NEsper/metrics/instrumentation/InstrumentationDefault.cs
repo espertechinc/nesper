@@ -1441,7 +1441,7 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QEngineManagementStmtCompileStart(string engineURI, string statementId, string statementName, string epl, long engineTime) {
+	    public void QEngineManagementStmtCompileStart(string engineURI, int statementId, string statementName, string epl, long engineTime) {
 
 	    }
 
@@ -1449,11 +1449,11 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QaEngineManagementStmtStarted(string engineURI, string statementId, string statementName, string epl, long engineTime) {
+	    public void QaEngineManagementStmtStarted(string engineURI, int statementId, string statementName, string epl, long engineTime) {
 
 	    }
 
-	    public void QEngineManagementStmtStop(EPStatementState targetState, string engineURI, string statementId, string statementName, string epl, long engineTime) {
+	    public void QEngineManagementStmtStop(EPStatementState targetState, string engineURI, int statementId, string statementName, string epl, long engineTime) {
 
 	    }
 
@@ -1461,7 +1461,7 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QaStatementResultExecute(UniformPair<EventBean[]> events, string statementId, string statementName, int agentInstanceId, long threadId) {
+	    public void QaStatementResultExecute(UniformPair<EventBean[]> events, int statementId, string statementName, int agentInstanceId, long threadId) {
 
 	    }
 

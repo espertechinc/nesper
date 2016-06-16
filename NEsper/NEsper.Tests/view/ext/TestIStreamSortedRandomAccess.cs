@@ -31,7 +31,7 @@ namespace com.espertech.esper.view.ext
         {
             RandomAccessByIndexObserver updateObserver = new MyRandomAccessByIndexObserver();
 
-            _access = new IStreamSortRankRandomAccess(updateObserver);
+            _access = new IStreamSortRankRandomAccessImpl(updateObserver);
             _sortedEvents = new OrderedDictionary<Object, Object>(
                 new MultiKeyCastingComparator(
                     new MultiKeyComparator(new bool[]

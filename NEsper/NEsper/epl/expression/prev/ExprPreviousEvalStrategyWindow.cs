@@ -21,9 +21,9 @@ namespace com.espertech.esper.epl.expression.prev
         private readonly ExprEvaluator _evalNode;
         private readonly Type _componentType;
         private readonly RandomAccessByIndexGetter _randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexMap _relativeAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
 
-        public ExprPreviousEvalStrategyWindow(int streamNumber, ExprEvaluator evalNode, Type componentType, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexMap relativeAccessGetter)
+        public ExprPreviousEvalStrategyWindow(int streamNumber, ExprEvaluator evalNode, Type componentType, RandomAccessByIndexGetter randomAccessGetter, RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
             _streamNumber = streamNumber;
             _evalNode = evalNode;
@@ -51,8 +51,8 @@ namespace com.espertech.esper.epl.expression.prev
                     return null;
                 } 
                 
-                size = relativeAccess.GetWindowToEventCount(evalEvent);
-                events = relativeAccess.GetWindowToEvent(evalEvent);
+                size = relativeAccess.GetWindowToEventCount();
+                events = relativeAccess.GetWindowToEvent();
             }
 
             if (size <= 0)
@@ -92,13 +92,12 @@ namespace com.espertech.esper.epl.expression.prev
                     return null;
                 } 
                 
-                events = relativeAccess.GetWindowToEventCollReadOnly(evalEvent);
+                events = relativeAccess.GetWindowToEventCollReadOnly();
             }
             return events;
         }
 
-        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream,
-                                                 ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             IEnumerator<EventBean> events;
             int size;
@@ -116,8 +115,8 @@ namespace com.espertech.esper.epl.expression.prev
                 {
                     return null;
                 } 
-                size = relativeAccess.GetWindowToEventCount(evalEvent);
-                events = relativeAccess.GetWindowToEvent(evalEvent);
+                size = relativeAccess.GetWindowToEventCount();
+                events = relativeAccess.GetWindowToEvent();
             }
 
             if (size <= 0)

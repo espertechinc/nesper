@@ -13,58 +13,11 @@ using com.espertech.esper.collection;
 
 namespace com.espertech.esper.epl.core
 {
-	public class ResultSetProcessorAggregateAllOutputLastHelper
+	public interface ResultSetProcessorAggregateAllOutputLastHelper
 	{
-	    private readonly ResultSetProcessorAggregateAll _processor;
-
-	    private EventBean _lastEventIStreamForOutputLast;
-	    private EventBean _lastEventRStreamForOutputLast;
-
-	    public ResultSetProcessorAggregateAllOutputLastHelper(ResultSetProcessorAggregateAll processor) {
-	        _processor = processor;
-	    }
-
-	    public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic) {
-	        var pair = _processor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
-	        Apply(pair);
-	    }
-
-	    public void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic) {
-	        var pair = _processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
-	        Apply(pair);
-	    }
-
-	    public UniformPair<EventBean[]> Output() {
-	        UniformPair<EventBean[]> newOldEvents = null;
-	        if (_lastEventIStreamForOutputLast != null) {
-	            var istream = new EventBean[] {_lastEventIStreamForOutputLast};
-	            newOldEvents = new UniformPair<EventBean[]>(istream, null);
-	        }
-	        if (_lastEventRStreamForOutputLast != null) {
-	            var rstream = new EventBean[] {_lastEventRStreamForOutputLast};
-	            if (newOldEvents == null) {
-	                newOldEvents = new UniformPair<EventBean[]>(null, rstream);
-	            }
-	            else {
-	                newOldEvents.Second = rstream;
-	            }
-	        }
-
-	        _lastEventIStreamForOutputLast = null;
-	        _lastEventRStreamForOutputLast = null;
-	        return newOldEvents;
-	    }
-
-	    private void Apply(UniformPair<EventBean[]> pair) {
-	        if (pair == null) {
-	            return;
-	        }
-	        if (pair.First != null && pair.First.Length > 0) {
-	            _lastEventIStreamForOutputLast = pair.First[pair.First.Length - 1];
-	        }
-	        if (pair.Second != null && pair.Second.Length > 0) {
-	            _lastEventRStreamForOutputLast = pair.Second[pair.Second.Length - 1];
-	        }
-	    }
+	    void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic);
+	    void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic);
+	    UniformPair<EventBean[]> Output();
+	    void Destroy();
 	}
 } // end of namespace

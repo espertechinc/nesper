@@ -233,11 +233,14 @@ namespace com.espertech.esper.filter
         {
             bool hasSubselectFilterStream = DetermineSubselectFilterStream(exprNode);
             bool hasTableAccess = DetermineTableAccessFilterStream(exprNode);
-            var lookupable = new FilterSpecLookupable(
-                FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, null, exprNode.ExprEvaluator.ReturnType);
+            var lookupable = new FilterSpecLookupable(FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, null, exprNode.ExprEvaluator.ReturnType, false);
             return new FilterSpecParamExprNode(
                 lookupable, FilterOperator.BOOLEAN_EXPRESSION, exprNode, args.TaggedEventTypes, args.ArrayEventTypes,
-                args.VariableService, args.TableService, args.EventAdapterService, args.ConfigurationInformation,
+                args.VariableService, 
+                args.TableService, 
+                args.EventAdapterService,
+                args.FilterBooleanExpressionFactory, 
+                args.ConfigurationInformation,
                 args.StatementName, hasSubselectFilterStream, hasTableAccess);
         }
 

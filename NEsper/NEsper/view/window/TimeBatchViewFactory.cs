@@ -14,7 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
@@ -45,7 +44,7 @@ namespace com.espertech.esper.view.window
                     ViewName, viewFactoryContext.StatementContext, expressionParameters[i]);
             }
 
-            timeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
+            TimeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
                 ViewName, viewFactoryContext.StatementContext, expressionParameters[0],
                 ViewParamMessage, 0);
 
@@ -58,7 +57,7 @@ namespace com.espertech.esper.view.window
                 if (viewParamValues.Length >= 2)
                 {
                     Object paramRef = viewParamValues[1];
-                    if ((!(paramRef.IsNumber())) || (TypeHelper.IsFloatingPointNumber(paramRef)))
+                    if ((!(paramRef.IsNumber())) || (paramRef.IsFloatingPointNumber()))
                     {
                         throw new ViewParameterException(
                             ViewName + " view requires a Long-typed reference point in msec as a second parameter");
@@ -74,30 +73,25 @@ namespace com.espertech.esper.view.window
 
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
-            eventType = parentEventType;
+            EventType = parentEventType;
         }
     
         public Object MakePreviousGetter()
         {
-            return new RelativeAccessByEventNIndexMap();
+            return new RelativeAccessByEventNIndexGetterImpl();
         }
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRelativeAccess relativeAccessByEvent = ViewServiceHelper.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
+            var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
-                return new TimeBatchViewRStream(this, agentInstanceViewFactoryContext, timeDeltaComputation, OptionalReferencePoint, isForceUpdate, isStartEager);
+                return new TimeBatchViewRStream(this, agentInstanceViewFactoryContext, TimeDeltaComputation, OptionalReferencePoint, IsForceUpdate, IsStartEager);
             }
             else
             {
-                return new TimeBatchView(this, agentInstanceViewFactoryContext, timeDeltaComputation, OptionalReferencePoint, isForceUpdate, isStartEager, relativeAccessByEvent);
+                return new TimeBatchView(this, agentInstanceViewFactoryContext, TimeDeltaComputation, OptionalReferencePoint, IsForceUpdate, IsStartEager, viewUpdatedCollection);
             }
-        }
-
-        public EventType EventType
-        {
-            get { return eventType; }
         }
 
         public bool CanReuse(View view)
@@ -108,7 +102,7 @@ namespace com.espertech.esper.view.window
             }
     
             var myView = (TimeBatchView) view;
-            if (!timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
+            if (!TimeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
             {
                 return false;
             }
@@ -126,7 +120,7 @@ namespace com.espertech.esper.view.window
                 return false;
             }
     
-            if (myView.IsForceOutput != isForceUpdate)
+            if (myView.IsForceOutput != IsForceUpdate)
             {
                 return false;
             }

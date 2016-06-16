@@ -54,7 +54,7 @@ namespace com.espertech.esper.regression.dataflow
     
         [Test]
         public void TestFlowGraphSource() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddImport(typeof(SupportGraphSource));
             SupportGraphSource.GetAndResetLifecycle();
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.dataflow
     
         [Test]
         public void TestFlowGraphOperator() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddImport(typeof(MyLineFeedSource));
             _epService.EPAdministrator.Configuration.AddImport(typeof(SupportOperator));
             SupportGraphSource.GetAndResetLifecycle();

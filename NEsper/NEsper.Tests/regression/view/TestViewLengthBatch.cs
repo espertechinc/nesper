@@ -16,7 +16,6 @@ using com.espertech.esper.support.client;
 
 using NUnit.Framework;
 
-
 namespace com.espertech.esper.regression.view
 {
     [TestFixture]

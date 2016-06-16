@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.join.exec.composite
             _allowReverseRange = allowReverseRange;
         }
 
-        public ISet<EventBean> Lookup(EventBean theEvent, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
+        public ICollection<EventBean> Lookup(EventBean theEvent, Map parent, ICollection<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector, CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var comparableStart = base.EvaluateLookupStart(theEvent, context);
             if (optionalKeyCollector != null)
@@ -82,10 +82,10 @@ namespace com.espertech.esper.epl.join.exec.composite
                 }
             }
 
-            return CompositeIndexQueryRange.Handle(theEvent, submap, null, result, next);
+            return CompositeIndexQueryRange.Handle(theEvent, submap, null, result, next, postProcessor);
         }
 
-        public ISet<EventBean> Lookup(EventBean[] eventPerStream, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
+        public ICollection<EventBean> Lookup(EventBean[] eventPerStream, Map parent, ICollection<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector, CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var comparableStart = base.EvaluatePerStreamStart(eventPerStream, context);
             if (optionalKeyCollector != null)
@@ -126,7 +126,7 @@ namespace com.espertech.esper.epl.join.exec.composite
                 }
             }
 
-            return CompositeIndexQueryRange.Handle(eventPerStream, submap, null, result, next);
+            return CompositeIndexQueryRange.Handle(eventPerStream, submap, null, result, next, postProcessor);
         }
     }
 }

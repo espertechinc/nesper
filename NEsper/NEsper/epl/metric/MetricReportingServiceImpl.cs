@@ -181,7 +181,7 @@ namespace com.espertech.esper.epl.metric
             _stmtMetricRepository.AccountOutput(handle, numIStream, numRStream);
         }
     
-        public StatementMetricHandle GetStatementHandle(String statementId, String statementName)
+        public StatementMetricHandle GetStatementHandle(int statementId, string statementName)
         {
             if (!MetricReportingPath.IsMetricsEnabled)
             {

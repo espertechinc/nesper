@@ -10,6 +10,7 @@ using System;
 
 namespace com.espertech.esper.support.bean.bookexample
 {
+    [Serializable]
     public class GameDesc
     {
         private readonly String gameId;

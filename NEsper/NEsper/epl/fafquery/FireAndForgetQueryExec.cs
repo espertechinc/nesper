@@ -113,7 +113,7 @@ namespace com.espertech.esper.epl.fafquery
                     hook.FireAndForget(new QueryPlanIndexDescFAF(
                             new IndexNameAndDescPair[] {
                                     new IndexNameAndDescPair(indexName, tablePair != null ?
-                                            tablePair.Second.EventTable.GetType().Name : null)
+                                            tablePair.Second.EventTable.ProviderClass.Name : null)
                             }));
                 }
             }
@@ -215,7 +215,7 @@ namespace com.espertech.esper.epl.fafquery
                 var rangeCoercion = table.OptRangeCoercedTypes;
                 var lookup = CompositeIndexLookupFactory.Make(keyValues, rangeValues, rangeCoercion);
                 result = new HashSet<EventBean>();
-                lookup.Lookup(table.IndexTable, result);
+                lookup.Lookup(table.IndexTable, result, table.PostProcessor);
             }
             if (result != null) {
                 return result;

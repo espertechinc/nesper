@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.client
             config.EngineDefaults.ThreadingConfig.ThreadPoolInboundNumThreads = 4;
             config.EngineDefaults.ExpressionConfig.IsUdfCache = false;
             config.AddEventType("MyMap", new Dictionary<String, Object>());
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddImport(typeof(SupportStaticMethodLib).FullName);
     
             ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();

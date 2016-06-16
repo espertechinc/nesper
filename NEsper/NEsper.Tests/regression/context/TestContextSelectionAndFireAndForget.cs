@@ -33,9 +33,9 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
+            configuration.AddEventType<SupportBean_S1>();
             configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -92,7 +92,8 @@ namespace com.espertech.esper.regression.context
         }
     
         [Test]
-        public void TestContextNamedWindowQuery() {
+        public void TestContextNamedWindowQuery()
+        {
     
             _epService.EPAdministrator.CreateEPL("create context PartitionedByString partition by TheString from SupportBean");
             _epService.EPAdministrator.CreateEPL("context PartitionedByString create window MyWindow.win:keepall() as SupportBean");
@@ -118,7 +119,8 @@ namespace com.espertech.esper.regression.context
             RunQuery("context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1", new Object[][]{new Object[] {"E2", 20}, new Object[] {"E2", 21}}, new SupportSelectorPartitioned[]{new SupportSelectorPartitioned(Collections.SingletonList(new Object[]{"E2"}))});
             
-            try {
+            try
+            {
                 _epService.EPRuntime.ExecuteQuery("context PartitionedByString select * from MyWindow", new ContextPartitionSelector[] {
                     new ProxyContextPartitionSelectorCategory
                     {
@@ -156,7 +158,10 @@ namespace com.espertech.esper.regression.context
                     new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonList(2))});
 
             // extract path
-            GetSpi(_epService).ExtractPaths("NestedContext", new ContextPartitionSelectorAll());
+            if (GetSpi(_epService).IsSupportsExtract)
+            {
+                GetSpi(_epService).ExtractPaths("NestedContext", new ContextPartitionSelectorAll());
+            }
         }
     
         [Test]

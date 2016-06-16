@@ -17,6 +17,7 @@ using com.espertech.esper.dataflow.util;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
+using com.espertech.esper.util;
 
 using NUnit.Framework;
 
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regression.dataflow
         public void TestDeploymentAdmin()
         {
             _epService.EPAdministrator.Configuration.AddImport(typeof(DefaultSupportSourceOp).Namespace);
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String eplModule = "create dataflow TheGraph\n" +
                     "create schema ABC as " + typeof(SupportBean).FullName + "," +
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regression.dataflow
         {
             try
             {
-                _epService.EPAdministrator.CreateEPL(epl);
+                _epService.EPAdministrator.CreateEPL(epl, UuidGenerator.Generate());
                 Assert.Fail();
             }
             catch (EPStatementException ex)

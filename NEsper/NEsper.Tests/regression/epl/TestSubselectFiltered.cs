@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.epl
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType("Sensor", typeof(SupportSensorEvent));
             config.AddEventType("MyEvent", typeof(SupportBean));
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("S0", typeof(SupportBean_S0));
             config.AddEventType("S1", typeof(SupportBean_S1));
             config.AddEventType("S2", typeof(SupportBean_S2));
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void Test3StreamKeyRangeCoercion() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("ST0", typeof(SupportBean_ST0));
             _epService.EPAdministrator.Configuration.AddEventType("ST1", typeof(SupportBean_ST1));
             _epService.EPAdministrator.Configuration.AddEventType("ST2", typeof(SupportBean_ST2));
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.epl
         {
             String epl;
 
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("ST0", typeof(SupportBean_ST0));
             _epService.EPAdministrator.Configuration.AddEventType("ST1", typeof(SupportBean_ST1));
     

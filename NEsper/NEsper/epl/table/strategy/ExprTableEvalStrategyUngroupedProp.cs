@@ -9,11 +9,8 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
-using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.table.strategy
 {
@@ -23,9 +20,9 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly int _propertyIndex;
         private readonly ExprEvaluatorEnumerationGivenEvent _optionalEnumEval;
-    
-        public ExprTableEvalStrategyUngroupedProp(ILockable @lock, Atomic<ObjectArrayBackedEventBean> aggregationState, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval)
-            : base(@lock, aggregationState)
+
+        public ExprTableEvalStrategyUngroupedProp(TableAndLockProviderUngrouped provider, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval)
+            : base(provider)
         {
             _propertyIndex = propertyIndex;
             _optionalEnumEval = optionalEnumEval;

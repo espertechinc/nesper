@@ -12,7 +12,6 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -20,7 +19,6 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.epl.table.upd;
 using com.espertech.esper.epl.updatehelper;
 using com.espertech.esper.events;
 using com.espertech.esper.events.map;
@@ -33,20 +31,20 @@ namespace com.espertech.esper.epl.table.merge
     /// </summary>
     public class TableOnMergeHelper
     {
-        private IList<TableOnMergeMatch> matched;
-        private IList<TableOnMergeMatch> unmatched;
-        private bool requiresWriteLock;
-    
-        public TableOnMergeHelper(StatementContext statementContext,
-                                  OnTriggerMergeDesc onTriggerDesc,
-                                  EventType triggeringEventType,
-                                  string triggeringStreamName,
-                                  InternalEventRouter internalEventRouter,
-                                  TableMetadata tableMetadata)
-                
+        private readonly IList<TableOnMergeMatch> _matched;
+        private readonly IList<TableOnMergeMatch> _unmatched;
+        private readonly bool _requiresWriteLock;
+
+        public TableOnMergeHelper(
+            StatementContext statementContext,
+            OnTriggerMergeDesc onTriggerDesc,
+            EventType triggeringEventType,
+            string triggeringStreamName,
+            InternalEventRouter internalEventRouter,
+            TableMetadata tableMetadata)
         {
-            matched = new List<TableOnMergeMatch>();
-            unmatched = new List<TableOnMergeMatch>();
+            _matched = new List<TableOnMergeMatch>();
+            _unmatched = new List<TableOnMergeMatch>();
     
             var count = 1;
             var hasDeleteAction = false;
@@ -91,15 +89,15 @@ namespace com.espertech.esper.epl.table.merge
                 }
     
                 if (matchedItem.IsMatchedUnmatched) {
-                    matched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
+                    _matched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
                 }
                 else {
-                    unmatched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
+                    _unmatched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
                 }
             }
     
             // since updates may change future secondary keys
-            requiresWriteLock = hasDeleteAction || hasInsertIntoTableAction || hasUpdateAction;
+            _requiresWriteLock = hasDeleteAction || hasInsertIntoTableAction || hasUpdateAction;
         }
     
         private TableOnMergeActionIns SetupInsert(TableMetadata tableMetadata, InternalEventRouter internalEventRouter, int selectClauseNumber, OnTriggerMergeActionInsert desc, EventType triggeringEventType, string triggeringStreamName, StatementContext statementContext)
@@ -143,7 +141,7 @@ namespace com.espertech.esper.epl.table.merge
                 statementContext.Annotations,
                 statementContext.ContextDescriptor,
                 statementContext.ConfigSnapshot, null,
-                statementContext.NamedWindowService, null);
+                statementContext.NamedWindowMgmtService, null, null);
             var filterEval = desc.OptionalWhereClause == null ? null : desc.OptionalWhereClause.ExprEvaluator;
     
             var routerToUser = streamName.Equals(tableMetadata.TableName) ? null : internalEventRouter;
@@ -153,17 +151,17 @@ namespace com.espertech.esper.epl.table.merge
 
         public IList<TableOnMergeMatch> Matched
         {
-            get { return matched; }
+            get { return _matched; }
         }
 
         public IList<TableOnMergeMatch> Unmatched
         {
-            get { return unmatched; }
+            get { return _unmatched; }
         }
 
         public bool IsRequiresWriteLock
         {
-            get { return requiresWriteLock; }
+            get { return _requiresWriteLock; }
         }
     }
 }

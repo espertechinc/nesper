@@ -12,6 +12,6 @@ namespace com.espertech.esper.schedule
     {
         public int AgentInstanceId;
         public long Timestamp;
-        public string StatementId;
+        public int StatementId;
     }
 }

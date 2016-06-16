@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.agg.service
 	    protected readonly TableColumnMethodPair[] MethodPairs;
 	    protected readonly AggregationAccessorSlotPair[] Accessors;
 	    protected readonly bool IsJoin;
-	    protected readonly TableStateInstanceGroupBy TableStateInstance;
+        protected readonly TableStateInstanceGrouped TableStateInstance;
 	    protected readonly int[] TargetStates;
 	    protected readonly ExprNode[] AccessStateExpr;
 	    private readonly AggregationAgent[] _agents;
@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.agg.service
 	        TableColumnMethodPair[] methodPairs,
 	        AggregationAccessorSlotPair[] accessors,
 	        bool join,
-	        TableStateInstanceGroupBy tableStateInstance,
+            TableStateInstanceGrouped tableStateInstance,
 	        int[] targetStates,
 	        ExprNode[] accessStateExpr,
 	        AggregationAgent[] agents)
@@ -143,7 +143,7 @@ namespace com.espertech.esper.epl.agg.service
 
 	    public virtual void SetCurrentAccess(object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
 	    {
-	        var bean = TableStateInstance.Rows.Get(groupByKey);
+            var bean = TableStateInstance.GetRowForGroupKey(groupByKey);
 
 	        if (bean != null) {
 	            var row = (AggregationRowPair) bean.Properties[0];
@@ -224,12 +224,16 @@ namespace com.espertech.esper.epl.agg.service
 
 	    public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
 	    {
-	        return TableStateInstance.Rows.Keys;
+	        return TableStateInstance.GroupKeys;
 	    }
 
 	    public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
 	    {
-	        TableStateInstance.Rows.Clear();
+	        TableStateInstance.Clear();
+	    }
+
+	    public void Stop()
+	    {
 	    }
 	}
 } // end of namespace

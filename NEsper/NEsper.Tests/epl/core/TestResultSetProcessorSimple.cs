@@ -12,6 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.support.bean;
@@ -20,6 +21,8 @@ using com.espertech.esper.support.events;
 using com.espertech.esper.support.view;
 
 using NUnit.Framework;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -40,12 +43,12 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeNoAggregateSelectList(), 
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false,
                 new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null, 
-                selectExprEventTypeRegistry, statementContext.MethodResolutionService, null, null,
-                new Configuration(), null, new TableServiceImpl());
+                selectExprEventTypeRegistry, statementContext.MethodResolutionService, 1, null,
+                new Configuration(), null, new TableServiceImpl(), null);
             _selectExprProcessor = factory.Evaluator;
             _orderByProcessor = null;
     
-            var prototype = new ResultSetProcessorSimpleFactory(_selectExprProcessor, null, true, null);
+            var prototype = new ResultSetProcessorSimpleFactory(_selectExprProcessor, null, true, null, false, null, 1);
     		_outputProcessorAll = (ResultSetProcessorSimple) prototype.Instantiate(null, null, null);
         }
     

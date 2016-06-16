@@ -139,38 +139,38 @@ namespace com.espertech.esper.epl.parse
 	    private readonly ExpressionDeclDesc _expressionDeclarations;
 	    private readonly TableService _tableService;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="tokenStream">The token stream.</param>
-        /// <param name="engineImportService">is required to resolve lib-calls into static methods or configured aggregation functions</param>
-        /// <param name="variableService">for variable access</param>
-        /// <param name="schedulingService">The scheduling service.</param>
-        /// <param name="defaultStreamSelector">the configuration for which insert or remove streams (or both) to produce</param>
-        /// <param name="engineURI">engine URI</param>
-        /// <param name="configurationInformation">configuration info</param>
-        /// <param name="patternNodeFactory">The pattern node factory.</param>
-        /// <param name="contextManagementService">The context management service.</param>
-        /// <param name="scriptBodies">The script bodies.</param>
-        /// <param name="exprDeclaredService">The expr declared service.</param>
-        /// <param name="tableService">The table service.</param>
-	    public EPLTreeWalkerListener(CommonTokenStream tokenStream,
-	                                 EngineImportService engineImportService,
-	                                 VariableService variableService,
-	                                 SchedulingService schedulingService,
-	                                 SelectClauseStreamSelectorEnum defaultStreamSelector,
-	                                 string engineURI,
-	                                 ConfigurationInformation configurationInformation,
-	                                 PatternNodeFactory patternNodeFactory,
-	                                 ContextManagementService contextManagementService,
-	                                 IList<string> scriptBodies,
-	                                 ExprDeclaredService exprDeclaredService,
-	                                 TableService tableService)
+	    /// <summary>
+	    /// Ctor.
+	    /// </summary>
+	    /// <param name="tokenStream">The token stream.</param>
+	    /// <param name="engineImportService">is required to resolve lib-calls into static methods or configured aggregation functions</param>
+	    /// <param name="variableService">for variable access</param>
+	    /// <param name="schedulingService">The scheduling service.</param>
+	    /// <param name="defaultStreamSelector">the configuration for which insert or remove streams (or both) to produce</param>
+	    /// <param name="engineURI">engine URI</param>
+	    /// <param name="configurationInformation">configuration info</param>
+	    /// <param name="patternNodeFactory">The pattern node factory.</param>
+	    /// <param name="contextManagementService">The context management service.</param>
+	    /// <param name="scriptBodies">The script bodies.</param>
+	    /// <param name="exprDeclaredService">The expr declared service.</param>
+	    /// <param name="tableService">The table service.</param>
+	    public EPLTreeWalkerListener(
+	        CommonTokenStream tokenStream,
+	        EngineImportService engineImportService,
+	        VariableService variableService,
+	        SchedulingService schedulingService,
+	        SelectClauseStreamSelectorEnum? defaultStreamSelector,
+	        string engineURI,
+	        ConfigurationInformation configurationInformation,
+	        PatternNodeFactory patternNodeFactory,
+	        ContextManagementService contextManagementService,
+	        IList<string> scriptBodies,
+	        ExprDeclaredService exprDeclaredService,
+	        TableService tableService)
 	    {
 	        _tokenStream = tokenStream;
 	        _engineImportService = engineImportService;
 	        _variableService = variableService;
-	        _defaultStreamSelector = defaultStreamSelector;
 	        _timeProvider = schedulingService;
 	        _patternNodeFactory = patternNodeFactory;
 	        _exprEvaluatorContext = new ExprEvaluatorContextTimeOnly(_timeProvider);
@@ -187,7 +187,8 @@ namespace com.espertech.esper.epl.parse
 	            throw ASTWalkException.From("Default stream selector is null");
 	        }
 
-	        _statementSpec = new StatementSpecRaw(defaultStreamSelector);
+            _defaultStreamSelector = defaultStreamSelector.Value;
+	        _statementSpec = new StatementSpecRaw(_defaultStreamSelector);
 	        _statementSpecStack = new Stack<StatementSpecRaw>();
 	        _astExprNodeMapStack = new Stack<IDictionary<ITree, ExprNode>>();
 
@@ -1854,10 +1855,7 @@ namespace com.espertech.esper.epl.parse
 	    }
 
 	    public void ExitBuiltin_prior(EsperEPL2GrammarParser.Builtin_priorContext ctx) {
-	        var priorNode = new ExprPriorNode();
-	        ExprConstantNode number = new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx.number()));
-	        priorNode.AddChildNode(number);
-	        ASTExprHelper.ExprCollectAddSubNodesAddParentNode(priorNode, ctx, _astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprPriorNode(), ctx, _astExprNodeMap);
 	    }
 
 	    public void ExitBuiltin_instanceof(EsperEPL2GrammarParser.Builtin_instanceofContext ctx) {

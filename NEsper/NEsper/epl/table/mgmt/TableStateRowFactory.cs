@@ -34,9 +34,10 @@ namespace com.espertech.esper.epl.table.mgmt
             _groupKeyIndexes = groupKeyIndexes;
             _eventAdapterService = eventAdapterService;
         }
-    
-        public ObjectArrayBackedEventBean MakeOA(int agentInstanceId, object groupByKey, object groupKeyBinding) {
-            var row = MakeAggs(agentInstanceId, groupByKey, groupKeyBinding);
+
+        public ObjectArrayBackedEventBean MakeOA(int agentInstanceId, object groupByKey, object groupKeyBinding, AggregationServicePassThru passThru)
+        {
+            var row = MakeAggs(agentInstanceId, groupByKey, groupKeyBinding, passThru);
             var data = new object[_objectArrayEventType.PropertyDescriptors.Count];
             data[0] = row;
     
@@ -54,10 +55,12 @@ namespace com.espertech.esper.epl.table.mgmt
     
             return (ObjectArrayBackedEventBean) _eventAdapterService.AdapterForType(data, _objectArrayEventType);
         }
-    
-        public AggregationRowPair MakeAggs(int agentInstanceId, object groupByKey, object groupKeyBinding) {
+
+        public AggregationRowPair MakeAggs(int agentInstanceId, object groupByKey, object groupKeyBinding, AggregationServicePassThru passThru)
+        {
             AggregationMethod[] methods = _methodResolutionService.NewAggregators(_methodFactories, agentInstanceId, groupByKey, groupKeyBinding, null);
-            AggregationState[] states = _methodResolutionService.NewAccesses(agentInstanceId, false, _stateFactories, groupByKey, groupKeyBinding, null);   return new AggregationRowPair(methods, states);
+            AggregationState[] states = _methodResolutionService.NewAccesses(agentInstanceId, false, _stateFactories, groupByKey, groupKeyBinding, null, passThru);
+            return new AggregationRowPair(methods, states);
         }
     }
 }

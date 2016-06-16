@@ -38,11 +38,11 @@ namespace com.espertech.esper.core.context.factory
             AuditPath.AuditContextPartition(agentInstanceContext.EngineURI, agentInstanceContext.StatementName, true, agentInstanceContext.AgentInstanceId);
             var result = NewContextInternal(agentInstanceContext, isRecoveringResilient);
             var stopCallback = result.StopCallback;
-            result.StopCallback = () =>
+            result.StopCallback = new ProxyStopCallback(() =>
             {
                 AuditPath.AuditContextPartition(agentInstanceContext.EngineURI, agentInstanceContext.StatementName, false, agentInstanceContext.AgentInstanceId);
-                stopCallback.Invoke();
-            };
+                stopCallback.Stop();
+            });
             return result;
         }
     }

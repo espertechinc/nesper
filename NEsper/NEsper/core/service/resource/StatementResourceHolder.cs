@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.subselect;
@@ -26,6 +27,7 @@ namespace com.espertech.esper.core.service.resource
         public StatementResourceHolder(AgentInstanceContext agentInstanceContext)
         {
             AgentInstanceContext = agentInstanceContext;
+            SubselectStrategies = Collections.GetEmptyMap<ExprSubselectNode, SubSelectStrategyHolder>();
         }
 
         public AgentInstanceContext AgentInstanceContext { get; internal set; }

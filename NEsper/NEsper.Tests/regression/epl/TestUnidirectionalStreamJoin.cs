@@ -51,9 +51,9 @@ namespace com.espertech.esper.regression.epl
         {
             // test 2-stream left outer join and SODA
             //
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S1>();
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
 
             String stmtTextLO = "select sum(IntPrimitive) as c0, count(*) as c1 " +
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestPatternJoin()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
 
             // no iterator allowed
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestPatternJoinOutputRate()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPRuntime.SendEvent(new CurrentTimeEvent(1000));
 
             // no iterator allowed

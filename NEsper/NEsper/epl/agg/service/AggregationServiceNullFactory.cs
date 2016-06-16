@@ -20,7 +20,7 @@ namespace com.espertech.esper.epl.agg.service
 
         private static readonly AggregationServiceNull AGGREGATION_SERVICE_NULL = new AggregationServiceNull();
 
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService)
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber)
         {
             return AGGREGATION_SERVICE_NULL;
         }

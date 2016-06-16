@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestInvalidPropertyExpression()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("@IterableUnbound select * from SupportBean");
             _epService.EPRuntime.SendEvent(new SupportBean());
             EventBean theEvent = stmt.First();

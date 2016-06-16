@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.view;
@@ -20,36 +19,37 @@ namespace com.espertech.esper.epl.core
 {
     public class ResultSetProcessorRowPerGroupUnbound : ResultSetProcessorRowPerGroup, AggregationRowRemovedCallback
     {
-        protected readonly IDictionary<Object, EventBean> GroupReps = new LinkedHashMap<Object, EventBean>();
+        protected readonly ResultSetProcessorRowPerGroupUnboundGroupRep _groupReps;
     
         public ResultSetProcessorRowPerGroupUnbound(ResultSetProcessorRowPerGroupFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
-                    : base(prototype, selectExprProcessor, orderByProcessor, aggregationService, agentInstanceContext)
+            : base(prototype, selectExprProcessor, orderByProcessor, aggregationService, agentInstanceContext)
         {
-            aggregationService.SetRemovedCallback(this);
+            _groupReps = prototype.ResultSetProcessorHelperFactory.MakeRSRowPerGroupUnboundGroupRep(agentInstanceContext, prototype);
+            aggregationService.SetRemovedCallback(_groupReps);
         }
     
         public override void ApplyViewResult(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
             if (newData != null)
             {
-                var groupReps = GroupReps;
+                var groupReps = _groupReps;
                 var newDataLength = newData.Length;
-                for(int ii = 0 ; ii < newDataLength ; ii++)
+                for(var ii = 0 ; ii < newDataLength ; ii++)
                 {
                     eventsPerStream[0] = newData[ii];
-                    Object mk = GenerateGroupKey(eventsPerStream, true);
-                    groupReps[mk] = eventsPerStream[0];
+                    var mk = GenerateGroupKey(eventsPerStream, true);
+                    groupReps.Put(mk, eventsPerStream[0]);
                     AggregationService.ApplyEnter(eventsPerStream, mk, AgentInstanceContext);
                 }
             }
             if (oldData != null)
             {
                 var oldDataLength = oldData.Length;
-                for (int ii  = 0; ii < oldDataLength; ii++)
+                for (var ii  = 0; ii < oldDataLength; ii++)
                 {
                     eventsPerStream[0] = oldData[ii];
-                    Object mk = GenerateGroupKey(eventsPerStream, false);
+                    var mk = GenerateGroupKey(eventsPerStream, false);
                     AggregationService.ApplyLeave(eventsPerStream, mk, AgentInstanceContext);
                 }
             }
@@ -59,8 +59,8 @@ namespace com.espertech.esper.epl.core
         {
             // Generate group-by keys for all events, collect all keys in a set for later event generation
             IDictionary<Object, EventBean> keysAndEvents = new Dictionary<Object, EventBean>();
-            Object[] newDataMultiKey = GenerateGroupKeys(newData, keysAndEvents, true);
-            Object[] oldDataMultiKey = GenerateGroupKeys(oldData, keysAndEvents, false);
+            var newDataMultiKey = GenerateGroupKeys(newData, keysAndEvents, true);
+            var oldDataMultiKey = GenerateGroupKeys(oldData, keysAndEvents, false);
     
             EventBean[] selectOldEvents = null;
             if (Prototype.IsSelectRStream)
@@ -69,21 +69,21 @@ namespace com.espertech.esper.epl.core
             }
     
             // update aggregates
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
             if (newData != null)
             {
                 // apply new data to aggregates
-                for (int i = 0; i < newData.Length; i++)
+                for (var i = 0; i < newData.Length; i++)
                 {
                     eventsPerStream[0] = newData[i];
-                    GroupReps.Put(newDataMultiKey[i], eventsPerStream[0]);
+                    _groupReps.Put(newDataMultiKey[i], eventsPerStream[0]);
                     AggregationService.ApplyEnter(eventsPerStream, newDataMultiKey[i], AgentInstanceContext);
                 }
             }
             if (oldData != null)
             {
                 // apply old data to aggregates
-                for (int i = 0; i < oldData.Length; i++)
+                for (var i = 0; i < oldData.Length; i++)
                 {
                     eventsPerStream[0] = oldData[i];
                     AggregationService.ApplyLeave(eventsPerStream, oldDataMultiKey[i], AgentInstanceContext);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.epl.core
             }
     
             // generate new events using select expressions
-            EventBean[] selectNewEvents = GenerateOutputEventsView(keysAndEvents, true, isSynthesize);
+            var selectNewEvents = GenerateOutputEventsView(keysAndEvents, true, isSynthesize);
     
             if ((selectNewEvents != null) || (selectOldEvents != null))
             {
@@ -104,14 +104,15 @@ namespace com.espertech.esper.epl.core
         {
             if (OrderByProcessor == null)
             {
-                return ResultSetRowPerGroupEnumerator.New(GroupReps.Values, this, AggregationService, AgentInstanceContext);
+                return ResultSetRowPerGroupEnumerator.New(_groupReps.Values, this, AggregationService, AgentInstanceContext);
             }
-            return GetEnumeratorSorted(GroupReps.Values.GetEnumerator());
+            return GetEnumeratorSorted(_groupReps.Values.GetEnumerator());
         }
     
-        public override void Removed(Object optionalGroupKeyPerRow)
+        public override void Stop()
         {
-            GroupReps.Remove(optionalGroupKeyPerRow);
+            base.Stop();
+            _groupReps.Destroy();
         }
     }
 }

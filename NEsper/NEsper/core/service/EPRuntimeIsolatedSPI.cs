@@ -12,7 +12,9 @@ using com.espertech.esper.client;
 
 namespace com.espertech.esper.core.service
 {
-    public interface EPRuntimeIsolatedSPI : EPRuntimeIsolated
+    public interface EPRuntimeIsolatedSPI 
+        : EPRuntimeIsolated
+        , InternalEventRouteDest
     {
         IDictionary<string, long> StatementNearestSchedules { get; }
     }

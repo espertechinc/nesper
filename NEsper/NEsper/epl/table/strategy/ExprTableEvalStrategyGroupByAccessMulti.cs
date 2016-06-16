@@ -24,8 +24,8 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly ExprEvaluator[] _groupExpr;
 
-        public ExprTableEvalStrategyGroupByAccessMulti(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, AggregationAccessorSlotPair pair, ExprEvaluator[] groupExpr)
-            : base(@lock, aggregationState, pair)
+        public ExprTableEvalStrategyGroupByAccessMulti(TableAndLockProviderGrouped provider, AggregationAccessorSlotPair pair, ExprEvaluator[] groupExpr)
+            : base(provider, pair)
         {
             _groupExpr = groupExpr;
         }

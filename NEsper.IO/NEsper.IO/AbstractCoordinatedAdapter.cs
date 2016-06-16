@@ -361,10 +361,10 @@ namespace com.espertech.esperio
 		{
 		    var nextScheduleCallback = new ProxyScheduleHandleCallback(delegate { ContinueSendingEvents(); });
             var spi = (EPServiceProviderSPI)_epService;
-            var metricsHandle = spi.MetricReportingService.GetStatementHandle("AbstractCoordinatedAdapter", "AbstractCoordinatedAdapter");
+            var metricsHandle = spi.MetricReportingService.GetStatementHandle(-1, "AbstractCoordinatedAdapter");
             var lockImpl = ReaderWriterLockManager.CreateLock("CSV");
-            var stmtHandle = new EPStatementHandle("AbstractCoordinatedAdapter", "AbstractCoordinatedAdapter", null, StatementType.ESPERIO, "AbstractCoordinatedAdapter", false, metricsHandle, 0, false, false, MultiMatchHandlerFactory.DefaultHandler);
-            var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, lockImpl, -1, new StatementAgentInstanceFilterVersion());
+            var stmtHandle = new EPStatementHandle(-1, "AbstractCoordinatedAdapter", null, StatementType.ESPERIO, "AbstractCoordinatedAdapter", false, metricsHandle, 0, false, false, spi.ServicesContext.MultiMatchHandlerFactory.GetDefaultHandler());
+            var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, lockImpl, -1, new StatementAgentInstanceFilterVersion(), null);
             var scheduleCSVHandle = new EPStatementHandleCallback(agentInstanceHandle, nextScheduleCallback);
 
 	        ScheduleSlot nextScheduleSlot;

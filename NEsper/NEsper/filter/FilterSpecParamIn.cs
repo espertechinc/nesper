@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
@@ -35,9 +36,7 @@ namespace com.espertech.esper.filter
         /// <param name="filterOperator">is expected to be the IN-list operator</param>
         /// <param name="listofValues">is a list of constants and event property names</param>
         /// <throws>ArgumentException for illegal args</throws>
-        public FilterSpecParamIn(FilterSpecLookupable lookupable,
-                                 FilterOperator filterOperator,
-                                 IList<FilterSpecParamInValue> listofValues)
+        public FilterSpecParamIn(FilterSpecLookupable lookupable, FilterOperator filterOperator, IList<FilterSpecParamInValue> listofValues)
             : base(lookupable, filterOperator)
         {
             _listOfValues = listofValues;
@@ -74,9 +73,9 @@ namespace com.espertech.esper.filter
         /// Return the filter parameter constant to filter for.
         /// </summary>
         /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
-        /// <param name="evaluatorContext">The evaluator context.</param>
+        /// <param name="agentInstanceContext"></param>
         /// <returns>filter parameter constant's value</returns>
-        public override Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
             // If the list of values consists of all-constants and no event properties, then use cached version
             if (_inListConstantsOnly != null)
@@ -89,7 +88,7 @@ namespace com.espertech.esper.filter
             int count = 0;
             foreach (FilterSpecParamInValue valuePlaceholder in _listOfValues)
             {
-                actualValues[count++] = valuePlaceholder.GetFilterValue(matchedEvents, evaluatorContext);
+                actualValues[count++] = valuePlaceholder.GetFilterValue(matchedEvents, agentInstanceContext);
             }
             return new MultiKeyUntyped(actualValues);
         }

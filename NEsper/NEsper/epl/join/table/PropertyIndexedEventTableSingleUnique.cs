@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -19,7 +18,7 @@ namespace com.espertech.esper.epl.join.table
 	/// <summary>
 	/// Unique index.
 	/// </summary>
-	public class PropertyIndexedEventTableSingleUnique
+	public class PropertyIndexedEventTableSingleUnique 
         : PropertyIndexedEventTableSingle
         , EventTableAsSet
 	{
@@ -27,17 +26,36 @@ namespace com.espertech.esper.epl.join.table
 	    private readonly bool _canClear;
 
 	    public PropertyIndexedEventTableSingleUnique(EventPropertyGetter propertyGetter, EventTableOrganization organization)
-	        : base(propertyGetter, organization, false)
+	        : base(propertyGetter, organization)
 	    {
 	        _propertyIndex = new Dictionary<object, EventBean>().WithNullSupport();
 	        _canClear = true;
 	    }
 
 	    public PropertyIndexedEventTableSingleUnique(EventPropertyGetter propertyGetter, EventTableOrganization organization, IDictionary<object, EventBean> propertyIndex)
-	        : base(propertyGetter, organization, false)
+	        : base(propertyGetter, organization)
         {
 	        _propertyIndex = propertyIndex;
 	        _canClear = false;
+	    }
+
+	    public override ISet<EventBean> Lookup(object key)
+	    {
+	        EventBean @event = _propertyIndex.Get(key);
+	        if (@event != null) {
+	            return Collections.SingletonSet(@event);
+	        }
+	        return null;
+	    }
+
+	    public override int NumKeys
+	    {
+	        get { return _propertyIndex.Count; }
+	    }
+
+	    public override object Index
+	    {
+	        get { return _propertyIndex; }
 	    }
 
 	    /// <summary>
@@ -61,70 +79,13 @@ namespace com.espertech.esper.epl.join.table
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
 	    }
 
-	    public override void Add(EventBean[] events)
-	    {
-	        if (events != null) {
-
-	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
-	                InstrumentationHelper.Get().QIndexAdd(this, events);
-	                foreach (EventBean theEvent in events) {
-	                    Add(theEvent);
-	                }
-	                InstrumentationHelper.Get().AIndexAdd();
-	                return;
-	            }
-
-	            foreach (EventBean theEvent in events) {
-	                Add(theEvent);
-	            }
-	        }
-	    }
-
-	    public override void Remove(EventBean[] events)
-	    {
-	        if (events != null) {
-
-	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
-	                InstrumentationHelper.Get().QIndexRemove(this, events);
-	                foreach (EventBean theEvent in events) {
-	                    Remove(theEvent);
-	                }
-	                InstrumentationHelper.Get().AIndexRemove();
-	                return;
-	            }
-
-	            foreach (EventBean theEvent in events) {
-	                Remove(theEvent);
-	            }
-	        }
-	    }
-
-	    public override ISet<EventBean> Lookup(object key)
-	    {
-	        EventBean @event = _propertyIndex.Get(key);
-	        if (@event != null) {
-	            return Collections.SingletonSet(@event);
-	        }
-	        return null;
-	    }
-
-	    public override int NumKeys
-	    {
-	        get { return _propertyIndex.Count; }
-	    }
-
-	    public override object Index
-	    {
-	        get { return _propertyIndex; }
-	    }
-
 	    public override void Add(EventBean theEvent)
 	    {
 	        var key = GetKey(theEvent);
-
-	        var existing = _propertyIndex.Push(key, theEvent);
+	        
+            var existing = _propertyIndex.Push(key, theEvent);
 	        if (existing != null && !existing.Equals(theEvent)) {
-	            throw PropertyIndexedEventTableUnique.HandleUniqueIndexViolation(Organization.IndexName, key);
+	            throw PropertyIndexedEventTableUnique.HandleUniqueIndexViolation(organization.IndexName, key);
 	        }
 	    }
 
@@ -141,7 +102,7 @@ namespace com.espertech.esper.epl.join.table
 
 	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
-	        return _propertyIndex.Values.GetEnumerator();
+            return _propertyIndex.Values.GetEnumerator();
 	    }
 
 	    public override void Clear()
@@ -149,6 +110,10 @@ namespace com.espertech.esper.epl.join.table
 	        if (_canClear) {
 	            _propertyIndex.Clear();
 	        }
+	    }
+
+	    public override void Destroy() {
+	        Clear();
 	    }
 
 	    public override string ToString()
@@ -161,19 +126,21 @@ namespace com.espertech.esper.epl.join.table
 	        get { return _propertyIndex.Count; }
 	    }
 
-	    public override string ToQueryPlan()
-        {
-	        return GetType().Name +
-	                " streamNum=" + Organization.StreamNum +
-	                " propertyGetter=" + PropertyGetter;
+	    public ISet<EventBean> AllValues
+	    {
+	        get
+	        {
+	            if (_propertyIndex.IsEmpty())
+	            {
+	                return Collections.GetEmptySet<EventBean>();
+	            }
+	            return new HashSet<EventBean>(_propertyIndex.Values);
+	        }
 	    }
 
-	    public ISet<EventBean> AllValues()
-        {
-	        if (_propertyIndex.IsEmpty()) {
-	            return Collections.GetEmptySet<EventBean>();
-	        }
-	        return new HashSet<EventBean>(_propertyIndex.Values);
+	    public override Type ProviderClass
+	    {
+	        get { return typeof (PropertyIndexedEventTableSingleUnique); }
 	    }
 	}
 } // end of namespace

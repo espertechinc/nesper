@@ -275,7 +275,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // External clocking
             SendTimer(0, epService);
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // External clocking
             SendTimer(0, epService);

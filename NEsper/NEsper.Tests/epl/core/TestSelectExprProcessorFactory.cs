@@ -13,16 +13,18 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
 using com.espertech.esper.support.view;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -45,8 +47,10 @@ namespace com.espertech.esper.epl.core
 
 	        try
 	        {
-	            SelectExprProcessorFactory.GetProcessor(Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
-	                    new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Configuration(), null, null, null);
+	            SelectExprProcessorFactory.GetProcessor(
+	                Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
+	                new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, null, null,
+	                1, null, null, null, new Configuration(), null, null, null, null);
 	            Assert.Fail();
 	        }
 	        catch (ExprValidationException)
@@ -59,9 +63,11 @@ namespace com.espertech.esper.epl.core
 	    public void TestGetProcessorWildcard()
 	    {
 	        var selectionList = new SelectClauseElementCompiled[] {new SelectClauseElementWildcard()};
-	        var processor = SelectExprProcessorFactory.GetProcessor(Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
-	                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null, _selectExprEventTypeRegistry, null, null, null, null,
-                    new TableServiceImpl(), null, null, null, null, null, null, new Configuration(), null, null, null);
+            var processor = SelectExprProcessorFactory.GetProcessor(
+                Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null,
+                _selectExprEventTypeRegistry, null, null, null, null,
+                new TableServiceImpl(), null, null, 1, null, null, null, new Configuration(), null, null, null, null);
 	        Assert.IsTrue(processor is SelectExprResultProcessor);
 	    }
 
@@ -72,9 +78,12 @@ namespace com.espertech.esper.epl.core
 	        var identNode = SupportExprNodeFactory.MakeIdentNode("DoubleBoxed", "s0");
 	        selectionList[0] = new SelectClauseExprCompiledSpec(identNode, "result", null, false);
 	        var statementContext = SupportStatementContextFactory.MakeContext();
-	        var processor = SelectExprProcessorFactory.GetProcessor(Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
-	                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null, _selectExprEventTypeRegistry,
-                    statementContext.MethodResolutionService, null, null, null, null, null, null, null, null, null, null, new Configuration(), null, null, null);
+            var processor = SelectExprProcessorFactory.GetProcessor(
+                Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null,
+                _selectExprEventTypeRegistry,
+                statementContext.MethodResolutionService, null, null, null, null, null, null, 1, null, null, null,
+                new Configuration(), null, null, null, null);
 	        Assert.IsTrue(processor != null);
 	    }
 

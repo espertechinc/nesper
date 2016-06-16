@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.view
         {
             _listener = new SupportUpdateListener();
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }

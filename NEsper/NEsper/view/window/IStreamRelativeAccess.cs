@@ -35,7 +35,7 @@ namespace com.espertech.esper.view.window
     
         public void Update(EventBean[] newData, EventBean[] oldData)
         {
-            _updateObserver.Invoke(this, newData);
+            _updateObserver.Updated(this, newData);
             _indexPerEvent.Clear();
             _lastNewData = newData;
     
@@ -80,7 +80,7 @@ namespace com.espertech.esper.view.window
             return null;
         }
     
-        public EventBean GetRelativeToEnd(EventBean theEvent, int prevIndex)
+        public EventBean GetRelativeToEnd(int prevIndex)
         {
             if (_lastNewData == null)
             {
@@ -94,17 +94,17 @@ namespace com.espertech.esper.view.window
             return null;
         }
     
-        public IEnumerator<EventBean> GetWindowToEvent(Object evalEvent)
+        public IEnumerator<EventBean> GetWindowToEvent()
         {
             return Enumerable.Reverse(_lastNewData).GetEnumerator();
         }
     
-        public ICollection<EventBean> GetWindowToEventCollReadOnly(Object evalEvent)
+        public ICollection<EventBean> GetWindowToEventCollReadOnly()
         {
             return _lastNewData;
         }
     
-        public int GetWindowToEventCount(EventBean evalEvent)
+        public int GetWindowToEventCount()
         {
             if (_lastNewData == null) {
                 return 0;
@@ -123,11 +123,32 @@ namespace com.espertech.esper.view.window
         }
     }
 
-    /// <summary>
-    /// For indicating that the collection has been updated.
-    /// <param name="iStreamRelativeAccess">is the collection</param>
-    /// <param name="newData">is the new data available</param>
-    /// </summary>
-    public delegate void IStreamRelativeAccessUpdateObserver(IStreamRelativeAccess iStreamRelativeAccess, EventBean[] newData);
+    public interface IStreamRelativeAccessUpdateObserver
+    {
+        /// <summary>
+        /// For indicating that the collection has been updated.
+        /// <param name="iStreamRelativeAccess">is the collection</param>
+        /// <param name="newData">is the new data available</param>
+        /// </summary>
+        void Updated(RelativeAccessByEventNIndex iStreamRelativeAccess, EventBean[] newData);
+    }
 
+    public class ProxyIStreamRelativeAccessUpdateObserver : IStreamRelativeAccessUpdateObserver
+    {
+        public Action<RelativeAccessByEventNIndex, EventBean[]> ProcUpdated;
+
+        public ProxyIStreamRelativeAccessUpdateObserver()
+        {
+        }
+
+        public ProxyIStreamRelativeAccessUpdateObserver(Action<RelativeAccessByEventNIndex, EventBean[]> procUpdated)
+        {
+            ProcUpdated = procUpdated;
+        }
+
+        public void Updated(RelativeAccessByEventNIndex iStreamRelativeAccess, EventBean[] newData)
+        {
+            ProcUpdated.Invoke(iStreamRelativeAccess, newData);
+        }
+    }
 }

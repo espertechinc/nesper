@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.logging;
@@ -15,8 +16,8 @@ using com.espertech.esper.core.context.util;
 
 namespace com.espertech.esper.core.service
 {
-    public class ExceptionHandlingService {
-    
+    public class ExceptionHandlingService
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly String _engineURI;
@@ -24,9 +25,10 @@ namespace com.espertech.esper.core.service
         public event ExceptionHandler UnhandledException;
         public event ConditionHandler UnhandledCondition;
 
-        public ExceptionHandlingService(string engineURI,
-                                        IEnumerable<ExceptionHandler> exceptionHandlers,
-                                        IEnumerable<ConditionHandler> conditionHandlers)
+        public ExceptionHandlingService(
+            string engineURI,
+            IEnumerable<ExceptionHandler> exceptionHandlers,
+            IEnumerable<ConditionHandler> conditionHandlers)
         {
             _engineURI = engineURI;
             foreach (var handler in exceptionHandlers) UnhandledException += handler;
@@ -44,18 +46,51 @@ namespace com.espertech.esper.core.service
                 new ConditionHandlerContext(
                     _engineURI, handle.StatementName, handle.EPL, condition));
         }
-    
-        public void HandleException(Exception ex, EPStatementAgentInstanceHandle handle)
+
+        public void HandleException(
+            Exception ex,
+            EPStatementAgentInstanceHandle handle,
+            ExceptionHandlerExceptionType type)
+        {
+            HandleException(ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type);
+        }
+
+        public void HandleException(Exception ex, String statementName, String epl, ExceptionHandlerExceptionType type)
         {
             if (UnhandledException == null)
             {
-                Log.Error(string.Format("Exception encountered processing statement '{0}' statement text '{1}' : {2}", handle.StatementHandle.StatementName, handle.StatementHandle.EPL, ex.Message), ex);
+                var writer = new StringWriter();
+                if (type == ExceptionHandlerExceptionType.PROCESS)
+                {
+                    writer.Write("Exception encountered processing ");
+                }
+                else
+                {
+                    writer.Write("Exception encountered performing instance stop for ");
+                }
+                writer.Write("statement '");
+                writer.Write(statementName);
+                writer.Write("' expression '");
+                writer.Write(epl);
+                writer.Write("' : ");
+                writer.Write(ex.Message);
+                
+                var message = writer.ToString();
+
+                if (type == ExceptionHandlerExceptionType.PROCESS)
+                {
+                    Log.Error(message, ex);
+                }
+                else
+                {
+                    Log.Warn(message, ex);
+                }
+
                 return;
             }
 
             UnhandledException(
-                new ExceptionHandlerContext(
-                    _engineURI, ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL));
+                new ExceptionHandlerContext(_engineURI, ex, statementName, epl, type));
         }
 
         public string EngineURI

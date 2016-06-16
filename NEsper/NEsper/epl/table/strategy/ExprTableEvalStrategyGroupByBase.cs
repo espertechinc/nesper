@@ -6,39 +6,33 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.table.strategy
 {
     public abstract class ExprTableEvalStrategyGroupByBase
     {
-        private readonly ILockable _lock;
-        protected readonly IDictionary<Object, ObjectArrayBackedEventBean> AggregationState;
+        private readonly TableAndLockProviderGrouped _provider;
 
-        protected ExprTableEvalStrategyGroupByBase(
-            ILockable @lock,
-            IDictionary<Object, ObjectArrayBackedEventBean> aggregationState)
+        protected ExprTableEvalStrategyGroupByBase(TableAndLockProviderGrouped provider)
         {
-            _lock = @lock;
-            AggregationState = aggregationState;
+            _provider = provider;
         }
 
         protected ObjectArrayBackedEventBean LockTableReadAndGet(object group, ExprEvaluatorContext context)
         {
-            ExprTableEvalLockUtil.ObtainLockUnless(_lock, context);
-            return AggregationState.Get(group);
+            TableAndLockGrouped tableAndLockGrouped = _provider.Get();
+            ExprTableEvalLockUtil.ObtainLockUnless(tableAndLockGrouped.Lock, context);
+            return tableAndLockGrouped.Grouped.GetRowForGroupKey(group);
         }
 
-        protected void LockTableRead(ExprEvaluatorContext context)
+        protected TableStateInstanceGrouped LockTableRead(ExprEvaluatorContext context)
         {
-            ExprTableEvalLockUtil.ObtainLockUnless(_lock, context);
+            TableAndLockGrouped tableAndLockGrouped = _provider.Get();
+            ExprTableEvalLockUtil.ObtainLockUnless(tableAndLockGrouped.Lock, context);
+            return tableAndLockGrouped.Grouped;
         }
     }
-}
+} // end of namespace

@@ -131,7 +131,7 @@ namespace com.espertech.esper.epl.named
                 statementContext.Annotations, 
                 statementContext.ContextDescriptor, 
                 statementContext.ConfigSnapshot, null, 
-                statementContext.NamedWindowService, null);
+                statementContext.NamedWindowMgmtService, null, null);
 	        var filterEval = desc.OptionalWhereClause == null ? null : desc.OptionalWhereClause.ExprEvaluator;
 
 	        var routerToUser = streamName.Equals(namedWindowName) ? null : internalEventRouter;

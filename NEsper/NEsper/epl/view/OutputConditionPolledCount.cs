@@ -7,77 +7,73 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.view
 {
-    /// <summary>
-    /// Output limit condition that is satisfied when either the total number of new events arrived or the total number of old events arrived is greater than a preset value.
-    /// </summary>
-    public sealed class OutputConditionPolledCount : OutputConditionPolled
-    {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+	/// <summary>
+	/// Output limit condition that is satisfied when either
+	/// the total number of new events arrived or the total number
+	/// of old events arrived is greater than a preset value.
+	/// </summary>
+	public sealed class OutputConditionPolledCount : OutputConditionPolled
+	{
+	    private readonly OutputConditionPolledCountFactory _factory;
+	    private readonly OutputConditionPolledCountState _state;
+	    private readonly VariableReader _optionalVariableReader;
 
-        private long _eventRate;
-        private int _newEventsCount;
-        private int _oldEventsCount;
-        private readonly VariableReader _variableReader;
-        private bool _isFirst = true;
-
-        /// <summary>Constructor. </summary>
-        /// <param name="eventRate">is the number of old or new events thatmust arrive in order for the condition to be satisfied </param>
-        /// <param name="variableReader">is for reading the variable value, if a variable was supplied, else null</param>
-        public OutputConditionPolledCount(int eventRate, VariableReader variableReader)
+	    public OutputConditionPolledCount(OutputConditionPolledCountFactory factory, OutputConditionPolledCountState state, VariableReader optionalVariableReader)
         {
-            if ((eventRate < 1) && (variableReader == null))
-            {
-                throw new ArgumentException("Limiting output by event count requires an event count of at least 1 or a variable name");
-            }
-            _eventRate = eventRate;
-            _variableReader = variableReader;
-            _newEventsCount = eventRate;
-            _oldEventsCount = eventRate;
-        }
+	        _factory = factory;
+	        _state = state;
+	        _optionalVariableReader = optionalVariableReader;
+	    }
 
-        public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
-        {
-            if (_variableReader != null)
-            {
-                Object value = _variableReader.Value;
-                if (value != null) {
-                    _eventRate = value.AsLong();
-                }
-            }
+	    public OutputConditionPolledState State
+	    {
+	        get { return _state; }
+	    }
 
-            _newEventsCount += newDataCount;
-            _oldEventsCount += oldDataCount;
-
-            if (IsSatisfied() || _isFirst)
+	    public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
+	    {
+	        if (_optionalVariableReader != null)
             {
-                if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
+	            var value = _optionalVariableReader.Value;
+	            if (value != null)
+	            {
+	                _state.EventRate = value.AsLong();
+	            }
+	        }
+
+	        _state.NewEventsCount = _state.NewEventsCount + newDataCount;
+	        _state.OldEventsCount = _state.OldEventsCount + oldDataCount;
+
+	        if (IsSatisfied || _state.IsFirst)
+            {
+	        	if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled))
                 {
-                    Log.Debug(".UpdateOutputCondition() condition satisfied");
-                }
-                _isFirst = false;
-                _newEventsCount = 0;
-                _oldEventsCount = 0;
-                return true;
-            }
-            return false;
-        }
+	                log.Debug(".updateOutputCondition() condition satisfied");
+	            }
+	            _state.IsFirst = false;
+	            _state.NewEventsCount = 0;
+	            _state.OldEventsCount = 0;
+	            return true;
+	        }
 
-        public override String ToString()
-        {
-            return string.Format("{0} eventRate={1}", GetType().Name, _eventRate);
-        }
+	        return false;
+	    }
 
-        private bool IsSatisfied()
-        {
-            return (_newEventsCount >= _eventRate) || (_oldEventsCount >= _eventRate);
-        }
-    }
-}
+	    private bool IsSatisfied
+	    {
+	        get { return (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate); }
+	    }
+
+	    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+	}
+} // end of namespace

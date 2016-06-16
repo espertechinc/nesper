@@ -38,7 +38,7 @@ namespace com.espertech.esper.client.hook
             ExprEvaluatorContext = exprEvaluatorContext;
         }
 
-        /// <summary>Provides the filter expressions. <para />Evaluate filter expressions, if any, as follows: Boolean pass = filterExpressions[...].ExprEvaluator.Evaluate(new EventBean[] {vdwEvent}, true, addEvent.ExprEvaluatorContext); <para />Filter expressions must be evaluated using the same ExprEvaluatorContext instance as provided by this event. </summary>
+        /// <summary>Provides the filter expressions. <para />Evaluate filter expressions, if any, as follows: Boolean pass = filterExpressions[...].ExprEvaluator.Evaluate(new EventBean[] {vdwEvent}, true, addEvent._exprEvaluatorContext); <para />Filter expressions must be evaluated using the same _exprEvaluatorContext instance as provided by this event. </summary>
         /// <value>filter expression list</value>
         public ExprNode[] FilterExpressions { get; private set; }
 

@@ -43,7 +43,7 @@ namespace com.espertech.esper.core.service
             _scheduleCallback = callback;
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _agentInstanceHandle.StatementId; }
         }

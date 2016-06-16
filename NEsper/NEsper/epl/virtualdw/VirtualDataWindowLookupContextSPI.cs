@@ -17,25 +17,20 @@ namespace com.espertech.esper.epl.virtualdw
 {
     public class VirtualDataWindowLookupContextSPI : VirtualDataWindowLookupContext
     {
-        public VirtualDataWindowLookupContextSPI(String statementName,
-                                                 String statementId,
-                                                 Attribute[] statementAnnotations,
-                                                 bool fireAndForget,
-                                                 String namedWindowName,
-                                                 IList<VirtualDataWindowLookupFieldDesc> hashFields,
-                                                 IList<VirtualDataWindowLookupFieldDesc> btreeFields,
-                                                 SubordPropPlan joinDesc,
-                                                 bool forceTableScan,
-                                                 EventType[] outerTypePerStream,
-                                                 String accessedByStatementName,
-                                                 int accessedByStatementSequenceNum)
-            : base(statementName,
-                   statementId,
-                   statementAnnotations,
-                   fireAndForget,
-                   namedWindowName,
-                   hashFields,
-                   btreeFields)
+        public VirtualDataWindowLookupContextSPI(
+            string statementName,
+            int statementId,
+            Attribute[] statementAnnotations,
+            bool fireAndForget,
+            String namedWindowName,
+            IList<VirtualDataWindowLookupFieldDesc> hashFields,
+            IList<VirtualDataWindowLookupFieldDesc> btreeFields,
+            SubordPropPlan joinDesc,
+            bool forceTableScan,
+            EventType[] outerTypePerStream,
+            string accessedByStatementName,
+            int accessedByStatementSequenceNum)
+            : base(statementName,statementId,statementAnnotations,fireAndForget,namedWindowName,hashFields,btreeFields)
         {
             JoinDesc = joinDesc;
             IsForceTableScan = forceTableScan;

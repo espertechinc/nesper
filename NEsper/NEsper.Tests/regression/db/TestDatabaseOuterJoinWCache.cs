@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.db
         [Test]
 	    public void TestOuterJoinWithCache()
 	    {
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        string stmtText = "select * from SupportBean as sb " +
 	                "left outer join " +

@@ -33,22 +33,22 @@ namespace com.espertech.esper.view.internals
             return _buffer.GetRelativeToEvent(theEvent, _relativeIndex);
         }
     
-        public EventBean GetRelativeToEnd(EventBean theEvent, int index)
+        public EventBean GetRelativeToEnd(int index)
         {
             // No requirement to index from end of current buffer
             return null;
         }
     
-        public IEnumerator<EventBean> GetWindowToEvent(Object evalEvent)
+        public IEnumerator<EventBean> GetWindowToEvent()
         {
             return null;
         }
     
-        public ICollection<EventBean> GetWindowToEventCollReadOnly(Object evalEvent) {
+        public ICollection<EventBean> GetWindowToEventCollReadOnly() {
             return null;
         }
     
-        public int GetWindowToEventCount(EventBean evalEvent)
+        public int GetWindowToEventCount()
         {
             return 0;
         }

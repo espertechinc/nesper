@@ -43,21 +43,25 @@ namespace com.espertech.esper.epl.core
             ResultSetProcessorSimpleFactory prototype,
             SelectExprProcessor selectExprProcessor,
             OrderByProcessor orderByProcessor,
-            ExprEvaluatorContext exprEvaluatorContext)
+            AgentInstanceContext agentInstanceContext)
         {
             Prototype = prototype;
             _selectExprProcessor = selectExprProcessor;
             _orderByProcessor = orderByProcessor;
-            ExprEvaluatorContext = exprEvaluatorContext;
+            ExprEvaluatorContext = agentInstanceContext;
             if (prototype.IsOutputLast)
             {
-                _outputLastHelper = new ResultSetProcessorSimpleOutputLastHelper(this);
+                // output-last always uses this mechanism
+                _outputLastHelper = prototype.ResultSetProcessorHelperFactory
+                    .MakeRSSimpleOutputLast(prototype, this, agentInstanceContext);
             }
-            else if (prototype.IsOutputAll)
+            else if (prototype.IsOutputAll && prototype.IsEnableOutputLimitOpt)
             {
-                _outputAllHelper = new ResultSetProcessorSimpleOutputAllHelper(this);
+                _outputAllHelper = prototype.ResultSetProcessorHelperFactory
+                    .MakeRSSimpleOutputAll(prototype, this, agentInstanceContext);
             }
         }
+
 
         public override AgentInstanceContext AgentInstanceContext
         {
@@ -176,12 +180,12 @@ namespace com.espertech.esper.epl.core
             EventBean[] selectNewEvents;
             if (Prototype.OptionalHavingExpr == null)
             {
-                // ignore orderByProcessor
+                // ignore _orderByProcessor
                 selectNewEvents = ResultSetProcessorUtil.GetSelectEventsNoHaving(_selectExprProcessor, newData, true, true, ExprEvaluatorContext);
             }
             else
             {
-                // ignore orderByProcessor
+                // ignore _orderByProcessor
                 selectNewEvents = ResultSetProcessorUtil.GetSelectEventsHaving(_selectExprProcessor, newData, Prototype.OptionalHavingExpr, true, true, ExprEvaluatorContext);
             }
     
@@ -300,6 +304,18 @@ namespace com.espertech.esper.epl.core
                 return _outputAllHelper.OutputJoin(isSynthesize);
             }
             return _outputLastHelper.OutputJoin(isSynthesize);
+        }
+
+        public override void Stop()
+        {
+            if (_outputLastHelper != null)
+            {
+                _outputLastHelper.Destroy();
+            }
+            if (_outputAllHelper != null)
+            {
+                _outputAllHelper.Destroy();
+            }
         }
     }
 }

@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestRangeNullAndDupAndInvalid() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanComplexProps", typeof(SupportBeanComplexProps));
     

@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.support.epl;
@@ -50,7 +51,7 @@ namespace com.espertech.esper.epl.core
             // single stream, empty group-by and wildcard select, no having clause, no need for any output processing
             var wildcardSelect = new SelectClauseElementCompiled[] {new SelectClauseElementWildcard()};
             var spec = MakeSpec(new SelectClauseSpecCompiled(wildcardSelect, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
         }
     
@@ -60,19 +61,19 @@ namespace com.espertech.esper.epl.core
             // empty group-by and no event properties aggregated in select clause (wildcard), no having clause
             var wildcardSelect = new SelectClauseElementCompiled[] {new SelectClauseElementWildcard()};
             var spec = MakeSpec(new SelectClauseSpecCompiled(wildcardSelect, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
     
             // empty group-by with select clause elements
             var selectList = SupportSelectExprFactory.MakeNoAggregateSelectListUnnamed();
             spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorHandThroughFactory);
     
             // non-empty group-by and wildcard select, group by ignored
             _groupByList.Add(SupportExprNodeFactory.MakeIdentNode("DoubleBoxed", "s0"));
             spec = MakeSpec(new SelectClauseSpecCompiled(wildcardSelect, false), null, _groupByList, null, null, _orderByList);
-            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorSimpleFactory);
         }
     
@@ -83,13 +84,13 @@ namespace com.espertech.esper.epl.core
             // and one or more properties in the select clause is not aggregated
             var selectList = SupportSelectExprFactory.MakeAggregateMixed();
             var spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorAggregateAllFactory);
     
             // test a case where a property is both aggregated and non-aggregated: select volume, Sum(volume)
             selectList = SupportSelectExprFactory.MakeAggregatePlusNoAggregate();
             spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorAggregateAllFactory);
         }
     
@@ -100,7 +101,7 @@ namespace com.espertech.esper.epl.core
             // and all properties in the select clause are aggregated
             var selectList = SupportSelectExprFactory.MakeAggregateSelectListWithProps();
             var spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorRowForAllFactory);
         }
     
@@ -112,7 +113,7 @@ namespace com.espertech.esper.epl.core
             var selectList = SupportSelectExprFactory.MakeAggregateMixed();
             _groupByList.Add(SupportExprNodeFactory.MakeIdentNode("DoubleBoxed", "s0"));
             var spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorRowPerGroupFactory);
         }
     
@@ -128,7 +129,7 @@ namespace com.espertech.esper.epl.core
     
             _groupByList.Add(SupportExprNodeFactory.MakeIdentNode("DoubleBoxed", "s0"));
             var spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+            var processor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService1Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
             Assert.IsTrue(processor.ResultSetProcessorFactory is ResultSetProcessorAggregateGroupedFactory);
         }
     
@@ -139,7 +140,7 @@ namespace com.espertech.esper.epl.core
             // invalid select clause
             try
             {
-                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -152,7 +153,7 @@ namespace com.espertech.esper.epl.core
             try
             {
                 spec = MakeSpec(new SelectClauseSpecCompiled(SupportSelectExprFactory.MakeNoAggregateSelectListUnnamed(), false), null, _groupByList, null, null, _orderByList);
-                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -171,7 +172,7 @@ namespace com.espertech.esper.epl.core
             try
             {
                 spec = MakeSpec(new SelectClauseSpecCompiled(selectList, false), null, _groupByList, null, null, _orderByList);
-                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration());
+                ResultSetProcessorFactoryFactory.GetProcessorPrototype(spec, _stmtContext, _typeService3Stream, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, new Configuration(), null, false, false);
                 Assert.Fail();
             }
             catch (ExprValidationException)

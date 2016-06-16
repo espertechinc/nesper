@@ -72,44 +72,6 @@ namespace com.espertech.esper.view
             return null;
         }
 
-        public static IStreamRandomAccess GetOptPreviousExprRandomAccess(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
-        {
-            IStreamRandomAccess randomAccess = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
-                var getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
-                randomAccess = new IStreamRandomAccess(getter);
-                getter.Updated(randomAccess);
-            }
-            return randomAccess;
-        }
-    
-        public static IStreamRelativeAccess GetOptPreviousExprRelativeAccess(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
-        {
-            IStreamRelativeAccess relativeAccessByEvent = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
-                var getter = (RelativeAccessByEventNIndexMap) agentInstanceViewFactoryContext.PreviousNodeGetter;
-                relativeAccessByEvent = new IStreamRelativeAccess(getter.Updated);
-                getter.Updated(relativeAccessByEvent, null);
-            }
-    
-            return relativeAccessByEvent;
-        }
-    
-        public static IStreamSortRankRandomAccess GetOptPreviousExprSortedRankedAccess(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
-        {
-            IStreamSortRankRandomAccess rankedRandomAccess = null;
-            if (agentInstanceViewFactoryContext.PreviousNodeGetter != null)
-            {
-                RandomAccessByIndexGetter getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
-                rankedRandomAccess = new IStreamSortRankRandomAccess(getter);
-                getter.Updated(rankedRandomAccess);
-            }
-    
-            return rankedRandomAccess;
-        }
-    
         /// <summary>Add merge views for any views in the chain requiring a merge (group view). Appends to the list of view specifications passed in one ore more new view specifications that represent merge views. Merge views have the same parameter list as the (group) view they merge data for. </summary>
         /// <param name="specifications">is a list of view definitions defining the chain of views.</param>
         /// <throws>ViewProcessingException indicating that the view chain configuration is invalid</throws>
@@ -355,13 +317,15 @@ namespace com.espertech.esper.view
         /// <param name="streamNum">is the stream number</param>
         /// <param name="viewSpecList">is the view definition</param>
         /// <param name="statementContext">is statement service context and statement info</param>
+        /// <param name="isSubquery"></param>
+        /// <param name="subqueryNumber"></param>
         /// <returns>list of view factories</returns>
         /// <throws>ViewProcessingException if the factory cannot be creates such as for invalid view spec</throws>
-        public static IList<ViewFactory> InstantiateFactories(int streamNum, IList<ViewSpec> viewSpecList, StatementContext statementContext)
+        public static IList<ViewFactory> InstantiateFactories(int streamNum, IList<ViewSpec> viewSpecList, StatementContext statementContext, bool isSubquery, int subqueryNumber)
         {
             IList<ViewFactory> factoryChain = new List<ViewFactory>();
-    
-            int viewNum = 0;
+
+            bool grouped = false;
             foreach (ViewSpec spec in viewSpecList)
             {
                 // Create the new view factory
@@ -376,14 +340,20 @@ namespace com.espertech.esper.view
                 // Set view factory parameters
                 try
                 {
-                    ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNum, viewNum, spec.ObjectNamespace, spec.ObjectName);
+                    ViewFactoryContext context = new ViewFactoryContext(statementContext, streamNum, spec.ObjectNamespace, spec.ObjectName, isSubquery, subqueryNumber, grouped);
                     viewFactory.SetViewParameters(context, spec.ObjectParameters);
                 }
                 catch (ViewParameterException e)
                 {
                     throw new ViewProcessingException(string.Format("Error in view '{0}{1}{2}', {3}", spec.ObjectNamespace, ':', spec.ObjectName, e.Message), e);
                 }
-                viewNum++;
+
+                if (viewFactory is GroupByViewFactoryMarker) {
+                    grouped = true;
+                }
+                if (viewFactory is MergeViewFactoryMarker) {
+                    grouped = false;
+                }
             }
     
             return factoryChain;

@@ -135,6 +135,8 @@ namespace com.espertech.esper.regression.client
 
             Assert.AreSame(_epService, _listenerTwo.AssertOneGetAndResetInitializedEvents());
             Assert.IsTrue(_listener.InitializedEvents.IsEmpty());
+
+            _epService.Dispose();
         }
     
         [Test]

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -220,6 +221,50 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestExpressionAliasAndDecl()
         {
+            RunAssertionIntoTableFromExpression();
+            RunAssertionExpressionHasTableAccess();
+            RunAssertionSubqueryWithExpressionHasTableAccess();
+        }
+
+        private void RunAssertionSubqueryWithExpressionHasTableAccess()
+        {
+            _epService.EPAdministrator.CreateEPL("create table MyTableTwo(theString string primary key, intPrimitive int)");
+            _epService.EPAdministrator.CreateEPL("create expression getMyValue{o => (select MyTableTwo[o.p00].intPrimitive from SupportBean_S1.std:lastevent())}");
+            _epService.EPAdministrator.CreateEPL("insert into MyTableTwo select theString, intPrimitive from SupportBean");
+            _epService.EPAdministrator.CreateEPL("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0");
+
+            _epService.EPAdministrator.GetStatement("s0").AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean_S1(1000));
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
+
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "c0".SplitCsv(), new Object[] { 2 });
+
+            _epService.EPAdministrator.DestroyAllStatements();
+        }
+
+        private void RunAssertionExpressionHasTableAccess()
+        {
+            _epService.EPAdministrator.CreateEPL("create table MyTableOne(theString string primary key, intPrimitive int)");
+            _epService.EPAdministrator.CreateEPL("create expression getMyValue{o => MyTableOne[o.p00].intPrimitive}");
+            _epService.EPAdministrator.CreateEPL("insert into MyTableOne select theString, intPrimitive from SupportBean");
+            _epService.EPAdministrator.CreateEPL("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0");
+
+            _epService.EPAdministrator.GetStatement("s0").AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean_S0(0, "E2"));
+
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "c0".SplitCsv(), new Object[] { 2 });
+
+            _epService.EPAdministrator.DestroyAllStatements();
+        }
+
+        private void RunAssertionIntoTableFromExpression()
+        {
             _epService.EPAdministrator.CreateEPL("create expression sumi {a -> sum(IntPrimitive)}");
             _epService.EPAdministrator.CreateEPL("create expression sumd alias for {sum(DoublePrimitive)}");
             _epService.EPAdministrator.CreateEPL("create table varagg (" +
@@ -240,6 +285,8 @@ namespace com.espertech.esper.regression.nwtable
     
             _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields.Split(','), new object[]{21, 2001d, 20001f, 201L});
+
+            _epService.EPAdministrator.DestroyAllStatements();
         }
     
         [Test]

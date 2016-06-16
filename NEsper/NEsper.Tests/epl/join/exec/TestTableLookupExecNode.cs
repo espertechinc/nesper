@@ -29,11 +29,11 @@ namespace com.espertech.esper.epl.join.exec
         [SetUp]
         public void SetUp()
         {
-            EventType eventTypeIndex = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-            PropertyIndexedEventTableFactory factory = new PropertyIndexedEventTableFactory(0, eventTypeIndex, new String[] {"TheString"}, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables()[0];
+            var eventTypeIndex = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+            var factory = new PropertyIndexedEventTableFactory(0, eventTypeIndex, new String[] {"TheString"}, false, null);
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
     
-            EventType eventTypeKeyGen = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
+            var eventTypeKeyGen = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
     
             _exec = new TableLookupExecNode(1, new IndexedTableLookupStrategy(eventTypeKeyGen, new String[] {"Symbol"}, _index));
         }
@@ -41,18 +41,18 @@ namespace com.espertech.esper.epl.join.exec
         [Test]
         public void TestFlow()
         {
-            EventBean[] indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
+            var indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
             _index.Add(indexEvents);
     
-            EventBean[] lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents(new String[] {"a2", "a3"});
+            var lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents(new String[] {"a2", "a3"});
     
-            List<EventBean[]> result = new List<EventBean[]>();
-            EventBean[] prefill = new EventBean[] {lookupEvents[0], null};
+            var result = new List<EventBean[]>();
+            var prefill = new EventBean[] {lookupEvents[0], null};
             _exec.Process(lookupEvents[0], prefill, result, null);
     
             // Test lookup found 1 row
             Assert.AreEqual(1, result.Count);
-            EventBean[] events = result.FirstOrDefault();
+            var events = result.FirstOrDefault();
             Assert.AreSame(indexEvents[1], events[1]);
             Assert.AreSame(lookupEvents[0], events[0]);
     

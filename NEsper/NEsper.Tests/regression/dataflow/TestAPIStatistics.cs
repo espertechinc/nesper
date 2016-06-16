@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.dataflow
         [Test]
         public void TestOperatorStatistics() {
     
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             epService.EPAdministrator.CreateEPL("create dataflow MyGraph " +
                     "DefaultSupportSourceOp -> outstream<SupportBean> {} " +

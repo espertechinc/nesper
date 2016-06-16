@@ -105,7 +105,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestUniqueIndexCorrelated() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             String[] fields = "c0,c1".Split(',');
     

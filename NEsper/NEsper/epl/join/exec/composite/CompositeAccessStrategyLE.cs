@@ -33,7 +33,14 @@ namespace com.espertech.esper.epl.join.exec.composite
         {
         }
 
-        public ISet<EventBean> Lookup(EventBean theEvent, DataMap parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
+        public ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            DataMap parent,
+            ICollection<EventBean> result,
+            CompositeIndexQuery next,
+            ExprEvaluatorContext context,
+            IList<object> optionalKeyCollector,
+            CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var index = (OrderedDictionary<object, object>) parent;
             var comparable = base.EvaluateLookup(theEvent, context);
@@ -42,20 +49,27 @@ namespace com.espertech.esper.epl.join.exec.composite
             if (comparable == null)
                 return null;
             comparable = EventBeanUtility.Coerce(comparable, CoercionType);
-            return CompositeIndexQueryRange.Handle(theEvent, index.Head(comparable, true), null, result, next);
+            return CompositeIndexQueryRange.Handle(theEvent, index.Head(comparable, true), null, result, next, postProcessor);
         }
 
-        public ISet<EventBean> Lookup(EventBean[] eventPerStream, DataMap parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
-
-    {
-        var index = (OrderedDictionary<object, object>) parent;
-        var comparable = base.EvaluatePerStream(eventPerStream, context);
-        if (optionalKeyCollector != null)
-            optionalKeyCollector.Add(comparable);
-        if (comparable == null)
-            return null;
-        comparable = EventBeanUtility.Coerce(comparable, CoercionType);
-        return CompositeIndexQueryRange.Handle(eventPerStream, index.Head(comparable, true), null, result, next);
-    }
+        public ICollection<EventBean> Lookup(
+            EventBean[] eventPerStream,
+            DataMap parent,
+            ICollection<EventBean> result,
+            CompositeIndexQuery next,
+            ExprEvaluatorContext context,
+            IList<object> optionalKeyCollector,
+            CompositeIndexQueryResultPostProcessor postProcessor)
+        {
+            var index = (OrderedDictionary<object, object>) parent;
+            var comparable = base.EvaluatePerStream(eventPerStream, context);
+            if (optionalKeyCollector != null)
+                optionalKeyCollector.Add(comparable);
+            if (comparable == null)
+                return null;
+            comparable = EventBeanUtility.Coerce(comparable, CoercionType);
+            return CompositeIndexQueryRange.Handle(
+                eventPerStream, index.Head(comparable, true), null, result, next, postProcessor);
+        }
     }
 }

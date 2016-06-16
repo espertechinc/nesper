@@ -33,8 +33,8 @@ namespace com.espertech.esper.regression.client
 
 	        var configuration = SupportConfigFactory.GetConfiguration();
 	        configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).FullName);
-	        configuration.AddEventType("SupportBean", typeof(SupportBean));
-	        configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            configuration.AddEventType<SupportBean>();
+	        configuration.AddEventType<SupportBean_S0>();
 	        _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 	        _epService.Initialize();
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName);}

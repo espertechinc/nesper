@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.filter;
 
@@ -28,9 +29,9 @@ namespace com.espertech.esper.epl.spec
 
         public FilterValueSetParam[][] CompiledFilterParam { get; private set; }
 
-        public FilterSpecCompiled CompiledFilter
+        public void SetCompiledFilter(FilterSpecCompiled filterSpec, AgentInstanceContext agentInstanceContext)
         {
-            set { CompiledFilterParam = value.GetValueSet(null, null, null).Parameters; }
+            CompiledFilterParam = filterSpec.GetValueSet(null, agentInstanceContext, null).Parameters;
         }
     }
 }

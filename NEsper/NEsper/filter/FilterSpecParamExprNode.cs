@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.core.service;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.table.mgmt;
@@ -33,6 +33,7 @@ namespace com.espertech.esper.filter
         private readonly IDictionary<string, Pair<EventType, string>> _taggedEventTypes;
         private readonly IDictionary<string, Pair<EventType, string>> _arrayEventTypes;
 	    [NonSerialized] private readonly EventAdapterService _eventAdapterService;
+        [NonSerialized] private readonly FilterBooleanExpressionFactory _filterBooleanExpressionFactory;
 	    [NonSerialized] private readonly VariableService _variableService;
 	    [NonSerialized] private readonly TableService _tableService;
 	    private readonly bool _hasVariable;
@@ -54,6 +55,7 @@ namespace com.espertech.esper.filter
         /// <param name="variableService">provides access to variables</param>
         /// <param name="tableService">The table service.</param>
         /// <param name="eventAdapterService">for creating event types and event beans</param>
+        /// <param name="filterBooleanExpressionFactory">The filter boolean expression factory.</param>
         /// <param name="configurationInformation">The configuration information.</param>
         /// <param name="statementName">Name of the statement.</param>
         /// <param name="hasSubquery">if set to <c>true</c> [has subquery].</param>
@@ -69,6 +71,7 @@ namespace com.espertech.esper.filter
 	        VariableService variableService,
 	        TableService tableService,
 	        EventAdapterService eventAdapterService,
+            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
 	        ConfigurationInformation configurationInformation,
 	        string statementName,
 	        bool hasSubquery,
@@ -85,6 +88,7 @@ namespace com.espertech.esper.filter
 	        _variableService = variableService;
 	        _tableService = tableService;
 	        _eventAdapterService = eventAdapterService;
+            _filterBooleanExpressionFactory = filterBooleanExpressionFactory;
 	        _useLargeThreadingProfile = configurationInformation.EngineDefaults.ExecutionConfig.ThreadingProfile == ConfigurationEngineDefaults.ThreadingProfile.LARGE;
 	        _hasFilterStreamSubquery = hasSubquery;
 	        _hasTableAccess = hasTableAccess;
@@ -112,7 +116,7 @@ namespace com.espertech.esper.filter
 	        get { return _taggedEventTypes; }
 	    }
 
-	    public override object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
+	    public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
 	    {
 	        EventBean[] events = null;
 
@@ -144,58 +148,7 @@ namespace com.espertech.esper.filter
 	            }
 	        }
 
-	        // handle table evaluator context
-	        if (_hasTableAccess) {
-	            exprEvaluatorContext = new ExprEvaluatorContextWTableAccess(exprEvaluatorContext, _tableService);
-	        }
-
-	        // non-pattern case
-	        ExprNodeAdapterBase adapter;
-	        if (events == null) {
-
-	            // if a subquery is present in a filter stream acquire the agent instance lock
-	            if (_hasFilterStreamSubquery) {
-                    adapter = new ExprNodeAdapterBaseStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, _variableService);
-	            }
-	            // no-variable no-prior event evaluation
-	            else if (!_hasVariable) {
-                    adapter = new ExprNodeAdapterBase(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext);
-	            }
-	            else {
-	                // with-variable no-prior event evaluation
-                    adapter = new ExprNodeAdapterBaseVariables(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, _variableService);
-	            }
-	        }
-	        else {
-	            // pattern cases
-	            var variableServiceToUse = _hasVariable == false ? null : _variableService;
-	            if (_useLargeThreadingProfile) {
-	                // no-threadlocal evaluation
-	                // if a subquery is present in a pattern filter acquire the agent instance lock
-	                if (_hasFilterStreamSubquery) {
-                        adapter = new ExprNodeAdapterMultiStreamNoTLStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
-	                }
-	                else {
-                        adapter = new ExprNodeAdapterMultiStreamNoTL(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
-	                }
-	            }
-	            else {
-	                if (_hasFilterStreamSubquery) {
-                        adapter = new ExprNodeAdapterMultiStreamStmtLock(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
-	                }
-	                else {
-	                    // evaluation with threadlocal cache
-                        adapter = new ExprNodeAdapterMultiStream(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, variableServiceToUse, events);
-	                }
-	            }
-	        }
-
-	        if (!_hasTableAccess) {
-	            return adapter;
-	        }
-
-	        // handle table
-            return new ExprNodeAdapterBaseWTableAccess(_filterSpecId, _filterSpecParamPathNum, _exprNode, exprEvaluatorContext, adapter, _tableService);
+            return _filterBooleanExpressionFactory.Make(this, events, agentInstanceContext, agentInstanceContext.StatementContext, agentInstanceContext.AgentInstanceId);
 	    }
 
 	    public override string ToString()
@@ -246,6 +199,51 @@ namespace com.espertech.esper.filter
 	    {
 	        get { return _filterSpecParamPathNum; }
 	        set { _filterSpecParamPathNum = value; }
+	    }
+
+	    public IDictionary<string, Pair<EventType, string>> ArrayEventTypes
+	    {
+	        get { return _arrayEventTypes; }
+	    }
+
+	    public EventAdapterService EventAdapterService
+	    {
+	        get { return _eventAdapterService; }
+	    }
+
+	    public FilterBooleanExpressionFactory FilterBooleanExpressionFactory
+	    {
+	        get { return _filterBooleanExpressionFactory; }
+	    }
+
+	    public VariableService VariableService
+	    {
+	        get { return _variableService; }
+	    }
+
+	    public TableService TableService
+	    {
+	        get { return _tableService; }
+	    }
+
+	    public bool HasVariable
+	    {
+	        get { return _hasVariable; }
+	    }
+
+	    public bool UseLargeThreadingProfile
+	    {
+	        get { return _useLargeThreadingProfile; }
+	    }
+
+	    public bool HasFilterStreamSubquery
+	    {
+	        get { return _hasFilterStreamSubquery; }
+	    }
+
+	    public bool HasTableAccess
+	    {
+	        get { return _hasTableAccess; }
 	    }
 	}
 } // end of namespace

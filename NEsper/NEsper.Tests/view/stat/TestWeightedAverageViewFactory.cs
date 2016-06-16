@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.bean;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.view.stat
     public class TestWeightedAverageViewFactory 
     {
         private WeightedAverageViewFactory _factory;
-        private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(null, 1, 1, null, null);
+        private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(null, 1, null, null, false, -1, false);
     
         [SetUp]
         public void SetUp()

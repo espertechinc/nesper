@@ -105,7 +105,7 @@ namespace com.espertech.esper.compat.collections
 
         public LinkedHashMap(SerializationInfo info, StreamingContext context)
         {
-            var count = info.GetInt32("_count");
+            var count = info.GetInt32("Count");
             var pairList = (Pair<TK, TV>[]) info.GetValue("_hashList", typeof (Pair<TK, TV>[]));
             Debug.Assert(pairList.Length == count);
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.compat.collections
             // Note: henceforth, use an array to serialize and deserialize.
             info.AddValue("_hashList", _hashList.ToArray());
             info.AddValue("_shuffle", _shuffleOnAccess);
-            info.AddValue("_count", _hashList.Count);
+            info.AddValue("Count", _hashList.Count);
         }
 
         #region IDictionary<K,V> Members

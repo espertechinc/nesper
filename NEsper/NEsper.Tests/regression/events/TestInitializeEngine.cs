@@ -24,7 +24,8 @@ namespace com.espertech.esper.regression.events
         {
             Configuration config = new Configuration();
             config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider("TestInitializeEngine", config);
+            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
+            epService.Initialize();
     
             String eplOne = "insert into A(a) select 1 from " + typeof(SupportBean).FullName + ".win:length(100)";
             String eplTwo = "insert into A(a, b) select 1,2 from " + typeof(SupportBean).FullName + ".win:length(100)";

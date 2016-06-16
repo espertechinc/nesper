@@ -17,32 +17,52 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events.vaevent;
+using com.espertech.esper.timer;
 
 namespace com.espertech.esper.epl.named
 {
     /// <summary>
     /// This view is hooked into a named window's view chain as the last view and handles 
     /// dispatching of named window insert and remove stream results via 
-    /// <seealso cref="named.NamedWindowService" /> to consuming statements. 
+    /// <seealso cref="named.NamedWindowMgmtService" /> to consuming statements. 
     /// </summary>
     public class NamedWindowTailView
     {
         private readonly EventType _eventType;
-        private readonly NamedWindowService _namedWindowService;
+        private readonly NamedWindowMgmtService _namedWindowMgmtService;
+        private readonly NamedWindowDispatchService _namedWindowDispatchService;
         private readonly StatementResultService _statementResultService;
         private readonly ValueAddEventProcessor _revisionProcessor;
         private readonly bool _isPrioritized;
         private readonly bool _isParentBatchWindow;
         private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersNonContext;  // handles as copy-on-write
-    
-        public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, bool prioritized, bool parentBatchWindow) {
+        private readonly NamedWindowConsumerLatchFactory _latchFactory;
+
+        public NamedWindowTailView(
+            EventType eventType,
+            NamedWindowMgmtService namedWindowMgmtService,
+            NamedWindowDispatchService namedWindowDispatchService,
+            StatementResultService statementResultService,
+            ValueAddEventProcessor revisionProcessor,
+            bool prioritized,
+            bool parentBatchWindow,
+            TimeSourceService timeSourceService,
+            ConfigurationEngineDefaults.Threading threadingConfig)
+        {
             _eventType = eventType;
-            _namedWindowService = namedWindowService;
+            _namedWindowMgmtService = namedWindowMgmtService;
+            _namedWindowDispatchService = namedWindowDispatchService;
             _statementResultService = statementResultService;
             _revisionProcessor = revisionProcessor;
             _isPrioritized = prioritized;
             _isParentBatchWindow = parentBatchWindow;
             _consumersNonContext = NamedWindowUtil.CreateConsumerMap(_isPrioritized);
+            _latchFactory = new NamedWindowConsumerLatchFactory(
+                eventType.Name,
+                threadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
+                threadingConfig.NamedWindowConsumerDispatchTimeout,
+                threadingConfig.NamedWindowConsumerDispatchLocking,
+                timeSourceService);
         }
 
         /// <summary>Returns true to indicate that the data window view is a batch view. </summary>
@@ -62,9 +82,14 @@ namespace com.espertech.esper.epl.named
             get { return _statementResultService; }
         }
 
-        public NamedWindowService NamedWindowService
+        public NamedWindowMgmtService NamedWindowMgmtService
         {
-            get { return _namedWindowService; }
+            get { return _namedWindowMgmtService; }
+        }
+
+        public NamedWindowDispatchService NamedWindowDispatchService
+        {
+            get { return _namedWindowDispatchService; }
         }
 
         public bool IsPrioritized
@@ -143,6 +168,18 @@ namespace com.espertech.esper.epl.named
                 newConsumers.PutAll(_consumersNonContext);
                 newConsumers.Remove(handleRemoved);
                 _consumersNonContext = newConsumers;
+            }
+        }
+
+        public void AddDispatches(IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext, NamedWindowDeltaData delta, AgentInstanceContext agentInstanceContext)
+        {
+            if (!consumersInContext.IsEmpty())
+            {
+                _namedWindowDispatchService.AddDispatch(_latchFactory, delta, consumersInContext);
+            }
+            if (!_consumersNonContext.IsEmpty())
+            {
+                _namedWindowDispatchService.AddDispatch(_latchFactory, delta, _consumersNonContext);
             }
         }
     }

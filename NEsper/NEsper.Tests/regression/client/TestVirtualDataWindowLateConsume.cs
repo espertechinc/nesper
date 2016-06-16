@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.client
 
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).FullName, SupportVirtualDW.ITERATE);    // configure with iteration
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddEventType<SupportBean>();
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }

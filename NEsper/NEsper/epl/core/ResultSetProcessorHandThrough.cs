@@ -182,5 +182,10 @@ namespace com.espertech.esper.epl.core
         {
             return null;
         }
+
+        public override void Stop()
+        {
+            // no action required
+        }
     }
 }

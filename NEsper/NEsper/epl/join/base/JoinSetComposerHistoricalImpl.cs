@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.epl.db;
@@ -29,6 +30,7 @@ namespace com.espertech.esper.epl.join.@base
     /// </summary>
     public class JoinSetComposerHistoricalImpl : JoinSetComposer
     {
+        private readonly bool _allowInitIndex;
         private readonly EventTable[][] _repositories;
         private readonly QueryStrategy[] _queryStrategies;
     
@@ -38,23 +40,41 @@ namespace com.espertech.esper.epl.join.@base
         private readonly EventTable[][] _tables = new EventTable[0][];
         private readonly Viewable[] _streamViews;
         private readonly ExprEvaluatorContext _staticEvalExprEvaluatorContext;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="allowInitIndex">if set to <c>true</c> [allow initialize index].</param>
         /// <param name="repositories">indexes for non-historical streams</param>
         /// <param name="queryStrategies">for each stream a strategy to execute the join</param>
         /// <param name="streamViews">the viewable representing each stream</param>
         /// <param name="staticEvalExprEvaluatorContext">expression evaluation context for static (not runtime) evaluation</param>
-        public JoinSetComposerHistoricalImpl(IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews,
-                                             ExprEvaluatorContext staticEvalExprEvaluatorContext)
+        public JoinSetComposerHistoricalImpl(
+            bool allowInitIndex,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            QueryStrategy[] queryStrategies,
+            Viewable[] streamViews,
+            ExprEvaluatorContext staticEvalExprEvaluatorContext)
         {
+            _allowInitIndex = allowInitIndex;
             _repositories = JoinSetComposerUtil.ToArray(repositories, streamViews.Length);
             _queryStrategies = queryStrategies;
             _streamViews = streamViews;
             _staticEvalExprEvaluatorContext = staticEvalExprEvaluatorContext;
         }
-    
+
+        public bool AllowsInit
+        {
+            get { return _allowInitIndex; }
+        }
+
         public void Init(EventBean[][] eventsPerStream)
         {
+            if (!_allowInitIndex)
+            {
+                throw new IllegalStateException("Initialization by events not supported");
+            }
+
             if (_repositories == null)
             {
                 return;
@@ -85,7 +105,7 @@ namespace com.espertech.esper.epl.join.@base
                 {
                     foreach (var table in _repositories[i])
                     {
-                        table.Clear();
+                        table.Destroy();
                     }
                 }
             }

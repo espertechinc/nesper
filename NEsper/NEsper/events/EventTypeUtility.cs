@@ -148,7 +148,7 @@ namespace com.espertech.esper.events
             Type resolved = null;
             try
             {
-                resolved = engineImportService.ResolveType(column.Type);
+                resolved = engineImportService.ResolveType(column.Type, false);
             }
             catch (EngineImportException e)
             {
@@ -1321,7 +1321,7 @@ namespace com.espertech.esper.events
                 {
                     if (isAnonymous)
                     {
-                        eventType = eventAdapterService.CreateAnonymousMapType(spec.SchemaName, compiledTyping);
+                        eventType = eventAdapterService.CreateAnonymousMapType(spec.SchemaName, compiledTyping, true);
                     }
                     else
                     {
@@ -1376,7 +1376,7 @@ namespace com.espertech.esper.events
                         Type clazz;
                         try
                         {
-                            clazz = engineImportService.ResolveType(className);
+                            clazz = engineImportService.ResolveType(className, false);
                         }
                         catch (EngineImportException e)
                         {
@@ -1396,7 +1396,7 @@ namespace com.espertech.esper.events
                     Type clazz;
                     try
                     {
-                        clazz = engineImportService.ResolveType(typeName);
+                        clazz = engineImportService.ResolveType(typeName, false);
                         if (isAnonymous)
                         {
                             eventType = eventAdapterService.CreateAnonymousBeanType(spec.SchemaName, clazz);

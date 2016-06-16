@@ -18,13 +18,15 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.mgr;
-using com.espertech.esper.core.context.schedule;
 using com.espertech.esper.core.deploy;
+using com.espertech.esper.core.service.multimatch;
+using com.espertech.esper.core.start;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dataflow.core;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.db;
 using com.espertech.esper.epl.declexpr;
+using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
@@ -42,6 +44,7 @@ using com.espertech.esper.schedule;
 using com.espertech.esper.script;
 using com.espertech.esper.timer;
 using com.espertech.esper.util;
+using com.espertech.esper.view;
 using com.espertech.esper.view.stream;
 
 namespace com.espertech.esper.core.service
@@ -131,21 +134,23 @@ namespace com.espertech.esper.core.service
                 configSnapshot.EngineDefaults.ExecutionConfig.IsAllowIsolatedService);
 
             var metricsReporting = new MetricReportingServiceImpl(configSnapshot.EngineDefaults.MetricsReportingConfig, epServiceProvider.URI);
-            var namedWindowService = new NamedWindowServiceImpl(
-                schedulingService,
-                variableService,
-                tableService,
-                engineSettingsService.EngineSettings.ExecutionConfig.IsPrioritized, 
+
+            var namedWindowMgmtService = new NamedWindowMgmtServiceImpl(
+                configSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan, metricsReporting);
+            var namedWindowDispatchService = new NamedWindowDispatchServiceImpl(
+                schedulingService, 
+                variableService, 
+                tableService, 
+                engineSettingsService.EngineSettings.ExecutionConfig.IsPrioritized,
                 eventProcessingRwLock, 
                 exceptionHandlingService, 
-                configSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan, 
                 metricsReporting);
-    
+
             var valueAddEventService = new ValueAddEventServiceImpl();
             valueAddEventService.Init(configSnapshot.RevisionEventTypes, configSnapshot.VariantStreams, eventAdapterService, eventTypeIdGenerator);
     
             var statementEventTypeRef = new StatementEventTypeRefImpl();
-            var statementVariableRef = new StatementVariableRefImpl(variableService, tableService);
+            var statementVariableRef = new StatementVariableRefImpl(variableService, tableService, namedWindowMgmtService);
     
             var threadingService = new ThreadingServiceImpl(
                 configSnapshot.EngineDefaults.ThreadingConfig);
@@ -165,8 +170,6 @@ namespace com.espertech.esper.core.service
             }
     
             ContextManagementService contextManagementService = new ContextManagementServiceImpl();
-    
-            SchedulableAgentInstanceDirectory schedulableAgentInstanceDirectory = null;     // not required for Non-HA.
     
             PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc = null;
             if (configSnapshot.EngineDefaults.PatternsConfig.MaxSubexpressions != null) {
@@ -188,14 +191,43 @@ namespace com.espertech.esper.core.service
     
             // New services context
             EPServicesContext services = new EPServicesContext(
-                epServiceProvider.URI, schedulingService,
-                eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
-                statementLockFactory, eventProcessingRwLock, null, resourceDirectory, statementContextFactory,
-                plugInPatternObj, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService, tableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
-                statementVariableRef, configSnapshot, threadingService, internalEventRouterImpl, statementIsolationService, schedulingMgmtService,
-                deploymentStateService, exceptionHandlingService, new PatternNodeFactoryImpl(), eventTypeIdGenerator, stmtMetadataFactory,
-                contextManagementService, schedulableAgentInstanceDirectory, patternSubexpressionPoolSvc, matchRecognizeStatePoolEngineSvc,
+                epServiceProvider.URI, 
+                schedulingService,
+                eventAdapterService, 
+                engineImportService, 
+                engineSettingsService, 
+                databaseConfigService, 
+                plugInViews,
+                statementLockFactory, 
+                eventProcessingRwLock, null, 
+                resourceDirectory, 
+                statementContextFactory,
+                plugInPatternObj, 
+                timerService, 
+                filterService, 
+                streamFactoryService,
+                namedWindowMgmtService, 
+                namedWindowDispatchService, 
+                variableService, 
+                tableService, 
+                timeSourceService, 
+                valueAddEventService, 
+                metricsReporting, 
+                statementEventTypeRef,
+                statementVariableRef, 
+                configSnapshot, 
+                threadingService, 
+                internalEventRouterImpl, 
+                statementIsolationService, 
+                schedulingMgmtService, 
+                deploymentStateService, 
+                exceptionHandlingService, 
+                new PatternNodeFactoryImpl(),
+                eventTypeIdGenerator, 
+                stmtMetadataFactory, 
+                contextManagementService, 
+                patternSubexpressionPoolSvc, 
+                matchRecognizeStatePoolEngineSvc,
                 new DataFlowServiceImpl(epServiceProvider, new DataFlowConfigurationStateServiceImpl()),
                 new ExprDeclaredServiceImpl(),
                 new ContextControllerFactoryFactorySvcImpl(), 
@@ -203,8 +235,14 @@ namespace com.espertech.esper.core.service
                 new EPStatementFactoryDefault(), 
                 new RegexHandlerFactoryDefault(), 
                 new ViewableActivatorFactoryDefault(),
-                scriptingService
-                );
+                new FilterNonPropertyRegisteryServiceImpl(), new ResultSetProcessorHelperFactoryImpl(),
+                new ViewServicePreviousFactoryImpl(), 
+                new EventTableIndexServiceImpl(),
+                new EPRuntimeIsolatedFactoryImpl(),
+                new FilterBooleanExpressionFactoryImpl(), 
+                new DataCacheFactory(), new MultiMatchHandlerFactoryImpl(),
+                NamedWindowConsumerMgmtServiceImpl.INSTANCE, 
+                scriptingService);
 
             // Engine services subset available to statements
             statementContextFactory.StmtEngineServices = services;
@@ -306,7 +344,7 @@ namespace com.espertech.esper.core.service
                 {
                     var arrayType = TypeHelper.IsGetArrayType(entry.Value.VariableType);
                     variableService.CreateNewVariable(null, entry.Key, arrayType.First, entry.Value.IsConstant, arrayType.Second, false, entry.Value.InitializationValue, engineImportService);
-                    variableService.AllocateVariableState(entry.Key, 0, null);
+                    variableService.AllocateVariableState(entry.Key, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
                 }
                 catch (VariableExistsException e)
                 {
@@ -570,11 +608,15 @@ namespace com.espertech.esper.core.service
                     engineImportService.AddImport(importName);
                 }
     
+                foreach (var importName in configSnapshot.AnnotationImports)
+                {
+                    engineImportService.AddAnnotationImport(importName);
+                }
+
                 foreach (ConfigurationPlugInAggregationFunction config in configSnapshot.PlugInAggregationFunctions)
                 {
                     engineImportService.AddAggregation(config.Name, config);
                 }
-    
                 
                 foreach (ConfigurationPlugInAggregationMultiFunction config in configSnapshot.PlugInAggregationMultiFunctions)
                 {

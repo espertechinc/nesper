@@ -12,11 +12,10 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.events;
-using com.espertech.esper.support.schedule;
 using com.espertech.esper.support.view;
 
 using NUnit.Framework;

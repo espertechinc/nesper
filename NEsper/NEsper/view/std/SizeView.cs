@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.view.stat;
@@ -61,7 +60,7 @@ namespace com.espertech.esper.view.std
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, SizeViewFactory.NAME, newData, oldData);}
-            long priorSize = _size;
+            var priorSize = _size;
     
             // If we have child views, keep a reference to the old values, so we can Update them as old data event.
             EventBean oldDataMap = null;
@@ -85,7 +84,7 @@ namespace com.espertech.esper.view.std
                     if (_lastValuesEventNew == null) {
                         _lastValuesEventNew = new Object[_additionalProps.AdditionalExpr.Length];
                     }
-                    for (int val = 0; val < _additionalProps.AdditionalExpr.Length; val++) {
+                    for (var val = 0; val < _additionalProps.AdditionalExpr.Length; val++) {
                         _lastValuesEventNew[val] = _additionalProps.AdditionalExpr[val].Evaluate(
                             new EvaluateParams(new EventBean[] {newData[newData.Length - 1]}, true, _agentInstanceContext));
                     }
@@ -103,7 +102,7 @@ namespace com.espertech.esper.view.std
                 IDictionary<String, Object> postNewData = new Dictionary<String, Object>();
                 postNewData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), _size);
                 AddProperties(postNewData);
-                EventBean newEvent = _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(postNewData, _eventType);
+                var newEvent = _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(postNewData, _eventType);
     
                 EventBean[] oldEvents;
                 if (_lastSizeEvent != null) {
@@ -112,7 +111,7 @@ namespace com.espertech.esper.view.std
                 else {
                     oldEvents =  new EventBean[] {oldDataMap};
                 }
-                EventBean[] newEvents = new EventBean[] {newEvent};
+                var newEvents = new EventBean[] {newEvent};
     
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, SizeViewFactory.NAME, newEvents, oldEvents);}
                 UpdateChildren(newEvents, oldEvents);
@@ -126,7 +125,7 @@ namespace com.espertech.esper.view.std
     
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            Dictionary<String, Object> current = new Dictionary<String, Object>();
+            var current = new Dictionary<String, Object>();
             current.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), _size);
             AddProperties(current);
             yield return _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(current, _eventType);
@@ -146,11 +145,11 @@ namespace com.espertech.esper.view.std
         /// <returns>event type for view</returns>
         public static EventType CreateEventType(StatementContext statementContext, StatViewAdditionalProps additionalProps, int streamNum)
         {
-            Dictionary<string, object> schemaMap = new Dictionary<string, object>();
+            var schemaMap = new Dictionary<string, object>();
             schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long?));
             StatViewAdditionalProps.AddCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.SIZE_VIEW__SIZE);
-            String outputEventTypeName = statementContext.StatementId + "_sizeview_" + streamNum;
-            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, schemaMap);
+            var outputEventTypeName = statementContext.StatementId + "_sizeview_" + streamNum;
+            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, schemaMap, false);
         }
     
         private void AddProperties(IDictionary<String, Object> newDataMap)

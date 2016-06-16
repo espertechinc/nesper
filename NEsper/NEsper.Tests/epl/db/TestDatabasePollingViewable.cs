@@ -13,15 +13,17 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.pollindex;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
 
 using NUnit.Framework;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.db
 {
@@ -40,7 +42,7 @@ namespace com.espertech.esper.epl.db
     
             var resultProperties = new Dictionary<String, Object>();
             resultProperties["myvarchar"] = typeof(string);
-            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties);
+            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties, true);
     
             var pollResults = new Dictionary<MultiKey<Object>, IList<EventBean>>();
             pollResults.Put(new MultiKey<Object>(new Object[] {-1}), new List<EventBean>());
@@ -51,11 +53,11 @@ namespace com.espertech.esper.epl.db
     
             var sqlParameters = new Dictionary<int, IList<ExprNode>>();
             sqlParameters.Put(1, ((ExprNode) new ExprIdentNodeImpl("IntPrimitive", "s0")).AsSingleton());
-            _pollingViewable.Validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, sqlParameters, null, null, null, null);
+            _pollingViewable.Validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, sqlParameters, null, SupportStatementContextFactory.MakeContext());
     
             _indexingStrategy = new ProxyPollResultIndexingStrategy
             {
-                ProcIndex = (pollResult, isActiveCache) => new EventTable[] { new UnindexedEventTableList(pollResult, -1) },
+                ProcIndex = (pollResult, isActiveCache, statementContext) => new EventTable[] { new UnindexedEventTableList(pollResult, -1) },
                 ProcToQueryPlan = () => GetType().Name + " unindexed"
             };        
         }

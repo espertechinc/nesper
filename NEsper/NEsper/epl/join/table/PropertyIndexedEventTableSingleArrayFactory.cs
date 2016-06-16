@@ -49,19 +49,20 @@ namespace com.espertech.esper.epl.join.table
                 PropertyGetters[i] = EventBeanUtility.GetAssertPropertyGetter(eventType, propertyNames[i]);
             }
         }
-    
-        public EventTable[] MakeEventTables() {
+
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        {
             var tables = new EventTable[PropertyGetters.Length];
             if (Unique) {
                 for (var i = 0; i < tables.Length; i++) {
-                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganization.EventTableOrganizationType.HASH);
+                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganizationType.HASH);
                     tables[i] = new PropertyIndexedEventTableSingleUnique(PropertyGetters[i], organization);
                 }
             }
             else {
                 for (var i = 0; i < tables.Length; i++) {
-                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganization.EventTableOrganizationType.HASH);
-                    tables[i] = new PropertyIndexedEventTableSingle(PropertyGetters[i], organization, true);
+                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganizationType.HASH);
+                    tables[i] = new PropertyIndexedEventTableSingleUnadorned(PropertyGetters[i], organization);
                 }
             }
             return tables;

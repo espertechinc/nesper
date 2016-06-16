@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.expression.baseagg
     /// In terms of evaluation this base class will ask the assigned <seealso cref="agg.service.AggregationResultFuture"/> for the current state,
     /// using a column number assigned to the node.
     /// <para/>
-    /// Concrete subclasses must supply an aggregation state Prototype node <seealso cref="AggregationMethod"/> that reflects
+    /// Concrete subclasses must supply an aggregation state _prototype node <seealso cref="AggregationMethod"/> that reflects
     /// each group's (there may be group-by critera) current aggregation state.
     /// </summary>
 	[Serializable]
@@ -140,7 +140,7 @@ namespace com.espertech.esper.epl.expression.baseagg
         /// <summary>
 	    /// Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
 	    /// </summary>
-	    /// <value>Prototype aggregation state as a factory for aggregation states per group-by key value</value>
+	    /// <value>_prototype aggregation state as a factory for aggregation states per group-by key value</value>
 	    public AggregationMethodFactory Factory
 	    {
 	        get

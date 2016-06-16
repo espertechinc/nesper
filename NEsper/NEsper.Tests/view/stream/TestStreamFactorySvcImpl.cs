@@ -35,8 +35,8 @@ namespace com.espertech.esper.view.stream
 
         public TestStreamFactorySvcImpl()
         {
-            _handle = new EPStatementHandle("id", "name", "text", StatementType.SELECT, "text", false, null, 1, false, false, MultiMatchHandlerFactory.DefaultHandler);
-            _agentHandle = new EPStatementAgentInstanceHandle(_handle, ReaderWriterLockManager.CreateDefaultLock(), -1, null);
+            _handle = new EPStatementHandle(1, "name", "text", StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
+            _agentHandle = new EPStatementAgentInstanceHandle(_handle, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
         }
 
         [SetUp]
@@ -56,12 +56,12 @@ namespace com.espertech.esper.view.stream
         public void TestInvalidJoin()
         {
             _streams = new EventStream[3];
-            _streams[0] = _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
     
             try
             {
                 // try to reuse the same filter spec object, should fail
-                _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false);
+                _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false);
                 Assert.Fail();
             }
             catch (IllegalStateException)
@@ -74,9 +74,9 @@ namespace com.espertech.esper.view.stream
         public void TestCreateJoin()
         {
             _streams = new EventStream[3];
-            _streams[0] = _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
-            _streams[1] = _streamFactoryService.CreateStream("id1", _filterSpecs[1], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
-            _streams[2] = _streamFactoryService.CreateStream("id1", _filterSpecs[2], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[1] = _streamFactoryService.CreateStream(1, _filterSpecs[1], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[2] = _streamFactoryService.CreateStream(1, _filterSpecs[2], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
     
             // Streams are reused
             Assert.AreNotSame(_streams[0], _streams[1]);
@@ -94,9 +94,9 @@ namespace com.espertech.esper.view.stream
         public void TestDropJoin()
         {
             _streams = new EventStream[3];
-            _streams[0] = _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
-            _streams[1] = _streamFactoryService.CreateStream("id2", _filterSpecs[1], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
-            _streams[2] = _streamFactoryService.CreateStream("id3", _filterSpecs[2], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[1] = _streamFactoryService.CreateStream(2, _filterSpecs[1], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
+            _streams[2] = _streamFactoryService.CreateStream(3, _filterSpecs[2], _supportFilterService, _agentHandle, true, null, false, false, null, false, 0, false).First;
     
             _streamFactoryService.DropStream(_filterSpecs[0], _supportFilterService, true, false, false, false);
             _streamFactoryService.DropStream(_filterSpecs[1], _supportFilterService, true, false, false, false);
@@ -121,14 +121,14 @@ namespace com.espertech.esper.view.stream
         [Test]
         public void TestCreateNoJoin()
         {
-            var stmtHande = new EPStatementHandle("id", "id", null, StatementType.SELECT, "text", false, null, 1, false, false, MultiMatchHandlerFactory.DefaultHandler);
-            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null);
+            var stmtHande = new EPStatementHandle(1, "id", null, StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
+            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
     
             _streams = new EventStream[4];
-            _streams[0] = _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[1] = _streamFactoryService.CreateStream("id2", _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[2] = _streamFactoryService.CreateStream("id3", _filterSpecs[1], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[3] = _streamFactoryService.CreateStream("id4", _filterSpecs[2], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[1] = _streamFactoryService.CreateStream(2, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[2] = _streamFactoryService.CreateStream(3, _filterSpecs[1], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[3] = _streamFactoryService.CreateStream(4, _filterSpecs[2], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
     
             // Streams are reused
             Assert.AreSame(_streams[0], _streams[1]);
@@ -145,14 +145,14 @@ namespace com.espertech.esper.view.stream
         [Test]
         public void TestDropNoJoin()
         {
-            var stmtHande = new EPStatementHandle("id", "id", null, StatementType.SELECT, "text", false, null, 1, false, false, MultiMatchHandlerFactory.DefaultHandler);
-            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null);
+            var stmtHande = new EPStatementHandle(1, "id", null, StatementType.SELECT, "text", false, null, 1, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler());
+            var stmtAgentHandle = new EPStatementAgentInstanceHandle(stmtHande, ReaderWriterLockManager.CreateDefaultLock(), -1, null, null);
             _streams = new EventStream[4];
-            _streams[0] = _streamFactoryService.CreateStream("id1", _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[1] = _streamFactoryService.CreateStream("id2", _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[2] = _streamFactoryService.CreateStream("id3", _filterSpecs[1], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-            _streams[3] = _streamFactoryService.CreateStream("id4", _filterSpecs[2], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
-    
+            _streams[0] = _streamFactoryService.CreateStream(1, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[1] = _streamFactoryService.CreateStream(2, _filterSpecs[0], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[2] = _streamFactoryService.CreateStream(3, _filterSpecs[1], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+            _streams[3] = _streamFactoryService.CreateStream(4, _filterSpecs[2], _supportFilterService, stmtAgentHandle, false, null, false, false, null, false, 0, false).First;
+
             _streamFactoryService.DropStream(_filterSpecs[0], _supportFilterService, false, false, false, false);
             _streamFactoryService.DropStream(_filterSpecs[1], _supportFilterService, false, false, false, false);
             Assert.AreEqual(0, _supportFilterService.Removed.Count);

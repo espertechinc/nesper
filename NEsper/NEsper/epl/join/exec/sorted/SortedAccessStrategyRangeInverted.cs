@@ -23,12 +23,12 @@ namespace com.espertech.esper.epl.join.exec.sorted
         {
         }
     
-        public ISet<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context)
         {
             return index.LookupRangeInverted(base.EvaluateLookupStart(theEvent, context), IncludeStart, base.EvaluateLookupEnd(theEvent, context), IncludeEnd);
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<Object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object start = base.EvaluateLookupStart(theEvent, context);
             keys.Add(start);
@@ -37,12 +37,12 @@ namespace com.espertech.esper.epl.join.exec.sorted
             return index.LookupRangeInverted(start, IncludeStart, end, IncludeEnd);
         }
     
-        public ISet<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
         {
             return index.LookupRangeInvertedColl(base.EvaluatePerStreamStart(eventsPerStream, context), IncludeStart, base.EvaluatePerStreamEnd(eventsPerStream, context), IncludeEnd);
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object start = base.EvaluatePerStreamStart(eventsPerStream, context);
             keys.Add(start);

@@ -27,7 +27,7 @@ namespace com.espertech.esper.support.events
     
         public static EventType CreateMapType(IDictionary<String,Object> map)
         {
-            return SupportEventAdapterService.Service.CreateAnonymousMapType("test", map);
+            return SupportEventAdapterService.Service.CreateAnonymousMapType("test", map, true);
         }
     }
 }

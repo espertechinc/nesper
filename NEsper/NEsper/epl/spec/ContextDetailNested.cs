@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.filter;
 
 namespace com.espertech.esper.epl.spec
@@ -21,9 +22,17 @@ namespace com.espertech.esper.epl.spec
 
         public IList<CreateContextDesc> Contexts { get; private set; }
 
-        public IList<FilterSpecCompiled> FilterSpecsIfAny
+        public IList<FilterSpecCompiled> ContextDetailFilterSpecs
         {
-            get { return null; }
+            get
+            {
+                var filterSpecs = new List<FilterSpecCompiled>();
+                foreach (var desc in Contexts)
+                {
+                    filterSpecs.AddAll(desc.ContextDetail.ContextDetailFilterSpecs);
+                }
+                return filterSpecs;
+            }
         }
     }
 }

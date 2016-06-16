@@ -111,13 +111,14 @@ namespace com.espertech.esper.core.service
         /// <param name="isDistinct">true if using distinct</param>
         /// <param name="isForClause">if set to <c>true</c> [is for clause].</param>
         /// <param name="statementMetricHandle">handle for metrics reporting</param>
-        public void SetContext(EPStatementSPI epStatement,
-                               EPServiceProviderSPI epServiceProvider,
-                               bool isInsertInto,
-                               bool isPattern,
-                               bool isDistinct,
-                               bool isForClause,
-                               StatementMetricHandle statementMetricHandle)
+        public void SetContext(
+            EPStatementSPI epStatement,
+            EPServiceProviderSPI epServiceProvider,
+            bool isInsertInto,
+            bool isPattern,
+            bool isDistinct,
+            bool isForClause,
+            StatementMetricHandle statementMetricHandle)
         {
             _epStatement = epStatement;
             _epServiceProvider = epServiceProvider;
@@ -137,11 +138,12 @@ namespace com.espertech.esper.core.service
         /// <param name="forClauseDelivery">if set to <c>true</c> [for clause delivery].</param>
         /// <param name="groupDeliveryExpressions">The group delivery expressions.</param>
         /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
-        public void SetSelectClause(Type[] selectClauseTypes,
-                                    String[] selectClauseColumnNames,
-                                    bool forClauseDelivery,
-                                    ExprEvaluator[] groupDeliveryExpressions,
-                                    ExprEvaluatorContext exprEvaluatorContext)
+        public void SetSelectClause(
+            Type[] selectClauseTypes,
+            String[] selectClauseColumnNames,
+            bool forClauseDelivery,
+            ExprEvaluator[] groupDeliveryExpressions,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if ((selectClauseTypes == null) || (selectClauseTypes.Length == 0))
             {
@@ -158,7 +160,7 @@ namespace com.espertech.esper.core.service
             _groupDeliveryExpressions = groupDeliveryExpressions;
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _epStatement.StatementId; }
         }

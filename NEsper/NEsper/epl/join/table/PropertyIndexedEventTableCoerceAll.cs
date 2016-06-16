@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.join.table
                 }
             }
 
-            return PropertyIndex.Get(new MultiKeyUntyped(keys));
+            return propertyIndex.Get(new MultiKeyUntyped(keys));
         }
     }
 }

@@ -58,7 +58,7 @@ namespace com.espertech.esper.epl.join.plan
             _assemblyInstructionFactories = assemblyInstructionFactories;
         }
 
-        public override ExecNode MakeExec(string statementName, string statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
+        public override ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
         {
             var execs = new LookupInstructionExec[_lookupInstructions.Count];
 

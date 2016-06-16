@@ -12,7 +12,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.property;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -25,7 +24,9 @@ namespace com.espertech.esper.epl.named
     /// <para/> 
     /// The view simply dispatches directly to child views, and keeps the last new event for iteration.
     /// </summary>
-    public class NamedWindowConsumerView : ViewSupport
+    public class NamedWindowConsumerView
+        : ViewSupport
+        , StopCallback
     {
         private readonly ExprEvaluator[] _filterList;
         private readonly EventType _eventType;

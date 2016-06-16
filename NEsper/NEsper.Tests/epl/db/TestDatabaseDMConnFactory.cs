@@ -35,8 +35,9 @@ namespace com.espertech.esper.epl.db
                 {
                     var properties = new Properties();
                     var config = new ConfigurationDBRef();
-                    properties["Server"] = System.Net.Dns.GetHostName();
+                    properties["Server"] = "localhost"; // System.Net.Dns.GetHostName();
                     properties["Uid"] = "esper";
+                    properties["Pwd"] = "3sp3rP@ssw0rd";
                     config.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative, properties);
                     config.ConnectionCatalog = "test";
                     config.ConnectionAutoCommit = false; // not supported yet

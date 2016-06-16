@@ -108,7 +108,7 @@ namespace com.espertech.esper.regression.epl
             _listener = new SupportUpdateListener();
             _listenerSet = new SupportUpdateListener();
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
             _epService.EPAdministrator.CreateEPL("create variable SupportBean varbean");
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.epl
             _listenerSet = new SupportUpdateListener();
     
             _epService.EPAdministrator.Configuration.AddEventType("S0Type", typeof(SupportBean_S0));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // assign to properties of a variable
             // assign: configuration runtime + config static

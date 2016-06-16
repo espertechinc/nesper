@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
@@ -80,14 +81,29 @@ namespace com.espertech.esper.epl.expression.funcs
         {
             get
             {
-                // We disallow context properties in a filter-optimizable expression if they are passed in since
-                // the evaluation is context-free and shared.
-                var visitor = new ExprNodeContextPropertiesVisitor();
-                ExprNodeUtility.AcceptChain(visitor, _chainSpec);
-                return !visitor.IsFound &&
-                       _config.FilterOptimizable == FilterOptimizable.ENABLED &&
-                       _chainSpec.Count == 1 &&
-                       !_isReturnsConstantResult;
+                var eligible = !_isReturnsConstantResult;
+                if (eligible) {
+                    eligible = _chainSpec.Count == 1;
+                }
+                if (eligible) {
+                    eligible = _config.FilterOptimizable == FilterOptimizable.ENABLED;
+                }
+                if (eligible) {
+                    // We disallow context properties in a filter-optimizable expression if they are passed in since
+                    // the evaluation is context-free and shared.
+                    ExprNodeContextPropertiesVisitor visitor = new ExprNodeContextPropertiesVisitor();
+                    ExprNodeUtility.AcceptChain(visitor, _chainSpec);
+                    eligible = !visitor.IsFound;
+                }
+                if (eligible) {
+                    ExprNodeStreamRequiredVisitor visitor = new ExprNodeStreamRequiredVisitor();
+                    ExprNodeUtility.AcceptChain(visitor, _chainSpec);
+                    foreach (int stream in visitor.StreamsRequired.Where(stream => stream != 0))
+                    {
+                        eligible = false;
+                    }
+                }
+                return eligible;
             }
         }
 
@@ -96,7 +112,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get
             {
                 var eval = (ExprDotEvalStaticMethod) _evaluator;
-                return new FilterSpecLookupable(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this), eval, _evaluator.ReturnType);
+                return new FilterSpecLookupable(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this), eval, _evaluator.ReturnType, true);
             }
         }
 

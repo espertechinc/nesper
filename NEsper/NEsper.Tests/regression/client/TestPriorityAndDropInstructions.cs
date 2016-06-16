@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.client
             listenerTwo = new SupportUpdateListener();
     
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.EngineDefaults.ExecutionConfig.IsPrioritized = true;     // also sets share-views to false
     
             epService = EPServiceProviderManager.GetDefaultProvider(config);

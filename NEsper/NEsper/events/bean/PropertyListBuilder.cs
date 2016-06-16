@@ -19,5 +19,33 @@ namespace com.espertech.esper.events.bean
     /// </summary>
     /// <param name="clazz">to introspect</param>
     /// <returns>list of event property descriptors</returns>
-    public delegate IList<InternalEventPropDescriptor> PropertyListBuilder(Type clazz);
+
+    public interface PropertyListBuilder
+    {
+        /// <summary>
+        /// Introspect the clazz and deterime exposed event properties.
+        /// </summary>
+        /// <param name="clazz">The clazz to introspect</param>
+        /// <returns></returns>
+        IList<InternalEventPropDescriptor> AssessProperties(Type clazz);
+    }
+
+    public class ProxyPropertyListBuilder : PropertyListBuilder
+    {
+        public Func<Type, IList<InternalEventPropDescriptor>> ProcAssessProperties;
+
+        public ProxyPropertyListBuilder()
+        {
+        }
+
+        public ProxyPropertyListBuilder(Func<Type, IList<InternalEventPropDescriptor>> procAssessProperties)
+        {
+            ProcAssessProperties = procAssessProperties;
+        }
+
+        public IList<InternalEventPropDescriptor> AssessProperties(Type clazz)
+        {
+            return ProcAssessProperties.Invoke(clazz);
+        }
+    }
 }

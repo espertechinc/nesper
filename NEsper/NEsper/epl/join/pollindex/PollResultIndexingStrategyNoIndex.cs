@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.join.table;
 
 namespace com.espertech.esper.epl.join.pollindex
@@ -17,7 +18,7 @@ namespace com.espertech.esper.epl.join.pollindex
     /// <summary>Strategy of indexing that simply builds an unindexed table of poll results. <para />For use when caching is disabled or when no proper index could be build because no where-clause or on-clause exists or these clauses don't yield indexable columns on analysis. </summary>
     public class PollResultIndexingStrategyNoIndex : PollResultIndexingStrategy
     {
-        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache)
+        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
         {
             return new EventTable[]
             {

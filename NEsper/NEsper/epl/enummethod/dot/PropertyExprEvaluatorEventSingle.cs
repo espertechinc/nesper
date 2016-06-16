@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return (EventBean) _getter.GetFragment(@event);
         }
     
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId) {
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
             return _fragmentType;
         }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             get { return null; }
         }
 
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
             return null;
         }
     

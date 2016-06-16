@@ -112,7 +112,7 @@ namespace com.espertech.esper.epl.agg.service
             // acquire table-level write lock
             ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
     
-            var @event = _tableStateInstance.EventReference.Get();
+            var @event = _tableStateInstance.EventUngrouped;
             if (@event == null) {
                 return null;
             }
@@ -130,8 +130,8 @@ namespace com.espertech.esper.epl.agg.service
         public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
             // acquire table-level write lock
             ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
-    
-            var @event = _tableStateInstance.EventReference.Get();
+
+            var @event = _tableStateInstance.EventUngrouped;
             if (@event == null) {
                 return null;
             }
@@ -149,8 +149,8 @@ namespace com.espertech.esper.epl.agg.service
         public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
             // acquire table-level write lock
             ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
-    
-            var @event = _tableStateInstance.EventReference.Get();
+
+            var @event = _tableStateInstance.EventUngrouped;
             if (@event == null) {
                 return null;
             }
@@ -168,8 +168,8 @@ namespace com.espertech.esper.epl.agg.service
         public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
             // acquire table-level write lock
             ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
-    
-            var @event = _tableStateInstance.EventReference.Get();
+
+            var @event = _tableStateInstance.EventUngrouped;
             if (@event == null) {
                 return null;
             }
@@ -189,8 +189,8 @@ namespace com.espertech.esper.epl.agg.service
         {
             // acquire table-level write lock
             ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-    
-            var @event = _tableStateInstance.EventReference.Get();
+
+            var @event = _tableStateInstance.EventUngrouped;
             if (@event == null) {
                 return;
             }
@@ -205,15 +205,18 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
     
-        public void SetRemovedCallback(AggregationRowRemovedCallback callback) {
+        public void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
             // not applicable
         }
     
-        public void Accept(AggregationServiceVisitor visitor) {
+        public void Accept(AggregationServiceVisitor visitor)
+        {
             // not applicable
         }
     
-        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
+        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
         }
 
         public bool IsGrouped
@@ -221,12 +224,18 @@ namespace com.espertech.esper.epl.agg.service
             get { return false; }
         }
 
-        public object GetGroupKey(int agentInstanceId) {
+        public object GetGroupKey(int agentInstanceId) 
+        {
             return null;
         }
     
-        public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
             return null;
+        }
+
+        public void Stop()
+        {
         }
     }
 }

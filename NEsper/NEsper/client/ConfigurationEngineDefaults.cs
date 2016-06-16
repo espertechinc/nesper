@@ -128,6 +128,10 @@ namespace com.espertech.esper.client
                 InsertIntoDispatchTimeout = 100;
                 IsInsertIntoDispatchPreserveOrder = true;
                 InsertIntoDispatchLocking = Locking.SPIN;
+
+                NamedWindowConsumerDispatchTimeout = long.MaxValue;
+                IsNamedWindowConsumerDispatchPreserveOrder = true;
+                NamedWindowConsumerDispatchLocking = Locking.SPIN;
     
                 IsInternalTimerEnabled = true;
                 InternalTimerMsecResolution = 100;
@@ -243,6 +247,25 @@ namespace com.espertech.esper.client
             /// <summary>Returns true if the engine-level lock is configured as a fair lock (default is false). <para /> This lock coordinates event processing threads (threads that send events) with threads that perform administrative functions (threads that start or destroy statements, for example). </summary>
             /// <value>true for fair lock</value>
             public bool IsEngineFairlock { get; set; }
+
+            /// <summary>
+            /// In multithreaded environments, this setting controls whether named window dispatches to named window consumers preserve
+            /// the order of events inserted and removed such that statements that consume a named windows delta stream
+            /// behave deterministic (true by default).
+            /// </summary>
+            public Boolean IsNamedWindowConsumerDispatchPreserveOrder { get; set; }
+
+            /// <summary>
+            /// Gets or sets the timeout millisecond value for named window dispatches to named window consumers.
+            /// </summary>
+            /// <value>timeout milliseconds</value>
+            public long NamedWindowConsumerDispatchTimeout { get; set; }
+
+            /// <summary>
+            /// Gets or sets the locking strategy value for named window dispatches to named window consumers (default is spin).
+            /// </summary>
+            /// <value>strategy</value>
+            public Locking NamedWindowConsumerDispatchLocking { get; set; }
 
             /// <summary>Enumeration of blocking techniques. </summary>
             public enum Locking
@@ -667,13 +690,6 @@ namespace com.espertech.esper.client
             public string StatementMetadataFactory { get; set; }
 
             /// <summary>
-            /// Gets or sets the class name of the class for statement id generation, or 
-            /// null if using default.
-            /// </summary>
-            /// <value>The statement id generator factory.</value>
-            public String StatementIdGeneratorFactory { get; set; }
-
-            /// <summary>
             /// Gets or sets the application-provided configuration object carried as 
             /// part of the configurations.
             /// </summary>
@@ -691,9 +707,23 @@ namespace com.espertech.esper.client
         [Serializable]
         public class ExceptionHandling
         {
+            public ExceptionHandling()
+            {
+                UndeployRethrowPolicy = UndeployRethrowPolicy.WARN;
+            }
+
             /// <summary>Returns the list of exception handler factory class names, see <seealso cref="com.espertech.esper.client.hook.ExceptionHandlerFactory" /> </summary>
             /// <value>list of fully-qualified class names</value>
             public List<string> HandlerFactories { get; set; }
+
+            /// <summary>
+            /// Gets or sets the policy to instruct the engine whether a module un-deploy rethrows runtime exceptions that are encountered
+            /// during the undeploy for any statement that is undeployed. By default we are logging exceptions.
+            /// </summary>
+            /// <value>
+            /// The undeploy rethrow policy.
+            /// </value>
+            public UndeployRethrowPolicy UndeployRethrowPolicy { get; set; }
 
             /// <summary>Add an exception handler factory class name. <para /> Provide a fully-qualified class name of the implementation of the <seealso cref="com.espertech.esper.client.hook.ExceptionHandlerFactory" /> interface. </summary>
             /// <param name="exceptionHandlerFactoryClassName">class name of exception handler factory</param>
@@ -735,6 +765,17 @@ namespace com.espertech.esper.client
             {
                 AddClass(typeof (T));
             }
+        }
+
+        /// <summary>
+        /// Enumeration of blocking techniques.
+        /// </summary>
+        public enum UndeployRethrowPolicy
+        {            
+            /// <summary>Warn</summary>
+            WARN,
+            /// <summary>Rethrow First Encountered Exception.</summary>
+            RETHROW_FIRST
         }
     
         /// <summary>Configuration object for defining condition handling behavior. </summary>

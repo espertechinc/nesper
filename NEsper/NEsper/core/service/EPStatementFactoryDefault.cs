@@ -7,15 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.dispatch;
 using com.espertech.esper.timer;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
 	public class EPStatementFactoryDefault : EPStatementFactory
 	{
 	    public EPStatementSPI Make(
-            EPServiceProvider serviceProvider,
 	        string expressionNoAnnotations,
 	        bool isPattern,
 	        DispatchService dispatchService,
@@ -32,9 +33,14 @@ namespace com.espertech.esper.core.service
 	        bool nameProvided)
 	    {
 	        return new EPStatementImpl(
-	            serviceProvider, expressionNoAnnotations, isPattern, dispatchService, statementLifecycleSvc,
-	            timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout, timeSource, statementMetadata,
-	            statementUserObject, statementContext, isFailed, nameProvided);
+	            expressionNoAnnotations, isPattern, dispatchService, statementLifecycleSvc, timeLastStateChange,
+	            preserveDispatchOrder, isSpinLocks, blockingTimeout, timeSource, statementMetadata, statementUserObject,
+	            statementContext, isFailed, nameProvided);
 	    }
+
+        public StopCallback MakeStopMethod(StatementAgentInstanceFactoryResult startResult)
+        {
+            return startResult.StopCallback;
+        }
 	}
 } // end of namespace

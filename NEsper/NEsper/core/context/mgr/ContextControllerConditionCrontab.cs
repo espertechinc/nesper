@@ -68,7 +68,7 @@ namespace com.espertech.esper.core.context.mgr
                     })
             };
 
-            var agentHandle = new EPStatementAgentInstanceHandle(_statementContext.EpStatementHandle, _statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion());
+            var agentHandle = new EPStatementAgentInstanceHandle(_statementContext.EpStatementHandle, _statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion(), _statementContext.FilterFaultHandlerFactory);
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
             var schedulingService = _statementContext.SchedulingService;
             var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, _statementContext.MethodResolutionService.EngineImportService.TimeZone);

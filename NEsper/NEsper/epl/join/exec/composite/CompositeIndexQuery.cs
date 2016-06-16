@@ -17,12 +17,12 @@ namespace com.espertech.esper.epl.join.exec.composite
     using Map = IDictionary<object, object>;
     public interface CompositeIndexQuery
     {
-        void Add(EventBean theEvent, Map value, ISet<EventBean> result);
-        void Add(EventBean[] eventsPerStream, Map value, ISet<EventBean> result);
-        ICollection<EventBean> Get(EventBean theEvent, Map parent, ExprEvaluatorContext context);
-        ICollection<EventBean> Get(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context);
-        ISet<EventBean> GetCollectKeys(EventBean theEvent, Map parent, ExprEvaluatorContext context, IList<object> keys);
-        ISet<EventBean> GetCollectKeys(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context, IList<object> keys);
-        CompositeIndexQuery Next { set; }
+        void Add(EventBean theEvent, Map value, ICollection<EventBean> result, CompositeIndexQueryResultPostProcessor postProcessor);
+        void Add(EventBean[] eventsPerStream, Map value, ICollection<EventBean> result, CompositeIndexQueryResultPostProcessor postProcessor);
+        ICollection<EventBean> Get(EventBean theEvent, Map parent, ExprEvaluatorContext context, CompositeIndexQueryResultPostProcessor postProcessor);
+        ICollection<EventBean> Get(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context, CompositeIndexQueryResultPostProcessor postProcessor);
+        ICollection<EventBean> GetCollectKeys(EventBean theEvent, Map parent, ExprEvaluatorContext context, IList<object> keys, CompositeIndexQueryResultPostProcessor postProcessor);
+        ICollection<EventBean> GetCollectKeys(EventBean[] eventsPerStream, Map parent, ExprEvaluatorContext context, IList<object> keys, CompositeIndexQueryResultPostProcessor postProcessor);
+        void SetNext(CompositeIndexQuery value);
     }
 }

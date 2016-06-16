@@ -18,7 +18,9 @@ namespace com.espertech.esper.core.service
     /// <summary>
     /// Handles statement management.
     /// </summary>
-    public interface StatementLifecycleSvc : IDisposable
+    public interface StatementLifecycleSvc 
+        : StatementLifecycleStmtContextResolver
+        , IDisposable
     {
         /// <summary>Initialized the service before use. </summary>
         void Init();
@@ -43,27 +45,35 @@ namespace com.espertech.esper.core.service
         /// <param name="optStatementName">is an optional statement name, null if none was supplied</param>
         /// <param name="userObject">the application define user object associated to each statement, if supplied</param>
         /// <param name="isolationUnitServices">isolated service services</param>
-        /// <param name="statementId">The statement id.</param>
+        /// <param name="optionalStatementId">The statement id.</param>
         /// <param name="optionalModel">The optional model.</param>
         /// <returns>started statement</returns>
-        EPStatement CreateAndStart(StatementSpecRaw statementSpec, String expression, bool isPattern, String optStatementName, Object userObject, EPIsolationUnitServices isolationUnitServices, String statementId, EPStatementObjectModel optionalModel);
+        EPStatement CreateAndStart(
+            StatementSpecRaw statementSpec,
+            string expression,
+            bool isPattern,
+            string optStatementName,
+            object userObject,
+            EPIsolationUnitServices isolationUnitServices,
+            int? optionalStatementId,
+            EPStatementObjectModel optionalModel);
     
         /// <summary>Start statement by statement id. </summary>
         /// <param name="statementId">of the statement to start.</param>
-        void Start(String statementId);
+        void Start(int statementId);
     
         /// <summary>Stop statement by statement id. </summary>
         /// <param name="statementId">of the statement to stop.</param>
-        void Stop(String statementId);
+        void Stop(int statementId);
     
         /// <summary>Dispose statement by statement id. </summary>
         /// <param name="statementId">statementId of the statement to destroy</param>
-        void Destroy(String statementId);
+        void Dispose(int statementId);
     
         /// <summary>Returns the statement by the given name, or null if no such statement exists. </summary>
         /// <param name="name">is the statement name</param>
         /// <returns>statement for the given name, or null if no such statement existed</returns>
-        EPStatement GetStatementByName(String name);
+        EPStatement GetStatementByName(string name);
 
         /// <summary>
         /// Returns an array of statement names. If no statement has been created, an empty array is returned.
@@ -91,13 +101,13 @@ namespace com.espertech.esper.core.service
         /// <param name="listeners">is the set of listeners after adding the new listener</param>
         /// <param name="isRecovery">if set to <c>true</c> [is recovery].</param>
         void UpdatedListeners(EPStatement stmt, EPStatementListenerSet listeners, bool isRecovery);
-    
-        String GetStatementNameById(String id);
 
-        EPStatementSPI GetStatementById(String id);
+        string GetStatementNameById(int id);
 
-        IDictionary<String, EPStatement> StmtNameToStmt { get; }
+        EPStatementSPI GetStatementById(int id);
 
-        StatementSpecCompiled GetStatementSpec(String statementName);
+        IDictionary<string, EPStatement> StmtNameToStmt { get; }
+
+        StatementSpecCompiled GetStatementSpec(int statementName);
     }
 }

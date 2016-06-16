@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.expression
             };
 
             _context = new SupportExprEvaluatorContext(provider);
-            _node.Validate(new ExprValidationContext(null, null, null, provider, null, null, null, null, null, null, null, null, null, false, false, false, false, null, false));
+            _node.Validate(new ExprValidationContext(null, null, null, provider, null, null, null, null, null, 1, null, null, null, false, false, false, false, null, false));
 
             Assert.AreEqual(99L, _node.Evaluate(new EvaluateParams(null, false, _context)));
         }

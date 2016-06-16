@@ -22,7 +22,9 @@ namespace com.espertech.esper.view.std
     /// <summary>
     /// Factory for <seealso cref="MergeView"/> instances.
     /// </summary>
-    public class MergeViewFactory : ViewFactory
+    public class MergeViewFactory
+        : ViewFactory
+        , MergeViewFactoryMarker
     {
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
@@ -60,7 +62,7 @@ namespace com.espertech.esper.view.std
                 throw new ViewParameterException("Groupwin view for this merge view could not be found among parent views");
             }
             _criteriaExpressions = groupByViewFactory.CriteriaExpressions;
-            _removable = groupByViewFactory.IsRetainAged;
+            _removable = groupByViewFactory.IsReclaimAged;
     
             // determine types of fields
             var fieldTypes = new Type[_criteriaExpressions.Length];
@@ -129,6 +131,11 @@ namespace com.espertech.esper.view.std
                 return false;
             }
             return true;
+        }
+
+        public ExprNode[] CriteriaExpressions
+        {
+            get { return _criteriaExpressions; }
         }
 
         public string ViewName

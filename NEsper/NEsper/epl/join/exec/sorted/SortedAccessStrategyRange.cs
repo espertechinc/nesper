@@ -27,12 +27,12 @@ namespace com.espertech.esper.epl.join.exec.sorted
             this.allowRangeReversal = allowRangeReversal;
         }
     
-        public ISet<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context)
         {
             return index.LookupRange(base.EvaluateLookupStart(theEvent, context), IncludeStart, base.EvaluateLookupEnd(theEvent, context), IncludeEnd, allowRangeReversal);
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<Object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean theEvent, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object start = base.EvaluateLookupStart(theEvent, context);
             keys.Add(start);
@@ -41,12 +41,12 @@ namespace com.espertech.esper.epl.join.exec.sorted
             return index.LookupRange(start, IncludeStart, end, IncludeEnd, allowRangeReversal);
         }
     
-        public ISet<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
+        public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context)
         {
             return index.LookupRangeColl(base.EvaluatePerStreamStart(eventsPerStream, context), IncludeStart, base.EvaluatePerStreamEnd(eventsPerStream, context), IncludeEnd, allowRangeReversal);
         }
     
-        public ISet<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
+        public ICollection<EventBean> LookupCollectKeys(EventBean[] eventsPerStream, PropertySortedEventTable index, ExprEvaluatorContext context, IList<object> keys)
         {
             Object start = base.EvaluatePerStreamStart(eventsPerStream, context);
             keys.Add(start);

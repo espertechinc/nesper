@@ -12,6 +12,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.hook;
 using com.espertech.esper.client.time;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
@@ -278,7 +279,7 @@ namespace com.espertech.esper.core.service
         public void ProcessWrappedEvent(EventBean eventBean)
         {
             // Acquire main processing lock which locks out statement management
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 try
                 {
@@ -413,11 +414,11 @@ namespace com.espertech.esper.core.service
             // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
             // We want to stay in this order for allowing the engine lock as a second-order lock to the
             // services own lock, if it has one.
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 _services.SchedulingService.Evaluate(handles);
             }
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 try
                 {
@@ -517,7 +518,7 @@ namespace com.espertech.esper.core.service
             Object item;
             if (queues.FrontQueue.IsEmpty())
             {
-                bool haveDispatched = _unisolatedServices.NamedWindowService.Dispatch();
+                bool haveDispatched = _unisolatedServices.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     // Dispatch results to listeners
@@ -548,7 +549,7 @@ namespace com.espertech.esper.core.service
                     ProcessThreadWorkQueueUnlatched(item);
                 }
 
-                bool haveDispatched = _unisolatedServices.NamedWindowService.Dispatch();
+                bool haveDispatched = _unisolatedServices.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     Dispatch();
@@ -580,7 +581,7 @@ namespace com.espertech.esper.core.service
                     ProcessThreadWorkQueueUnlatched(item);
                 }
 
-                bool haveDispatched = _unisolatedServices.NamedWindowService.Dispatch();
+                bool haveDispatched = _unisolatedServices.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     Dispatch();
@@ -593,7 +594,7 @@ namespace com.espertech.esper.core.service
             // wait for the latch to complete
             EventBean eventBean = insertIntoLatch.Await();
 
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 try
                 {
@@ -618,7 +619,7 @@ namespace com.espertech.esper.core.service
             // wait for the latch to complete
             EventBean eventBean = insertIntoLatch.Await();
 
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 try
                 {
@@ -650,7 +651,7 @@ namespace com.espertech.esper.core.service
                 eventBean = _unisolatedServices.EventAdapterService.AdapterForObject(item);
             }
 
-            using (_unisolatedServices.EventProcessingRwLock.AcquireReadLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireReadLock())
             {
                 try
                 {
@@ -751,7 +752,7 @@ namespace com.espertech.esper.core.service
                 }
                 catch (Exception ex)
                 {
-                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle);
+                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
                 }
                 finally
                 {
@@ -785,7 +786,7 @@ namespace com.espertech.esper.core.service
                 }
                 catch (Exception ex)
                 {
-                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle);
+                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
                 }
                 finally
                 {

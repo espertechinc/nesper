@@ -392,17 +392,17 @@ namespace com.espertech.esper.regression.view
             String filter = "select * from " + typeof (SupportMarketDataBean).FullName;
 
             EPStatement priceLast3Stats =
-                epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).win:length(3).stat:uni(Price)");
+                epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).win:length(3).stat:uni(Price) order by Symbol asc");
             priceLast3Stats.Events += _priceLast3StatsListener.Update;
 
             EPStatement volumeLast3Stats =
-                epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).win:length(3).stat:uni(Volume)");
+                epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).win:length(3).stat:uni(Volume) order by Symbol asc");
             volumeLast3Stats.Events += _volumeLast3StatsListener.Update;
 
-            EPStatement priceAllStats = epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).stat:uni(Price)");
+            EPStatement priceAllStats = epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).stat:uni(Price) order by Symbol asc");
             priceAllStats.Events += _priceAllStatsListener.Update;
 
-            EPStatement volumeAllStats = epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).stat:uni(Volume)");
+            EPStatement volumeAllStats = epAdmin.CreateEPL(filter + ".std:groupwin(Symbol).stat:uni(Volume) order by Symbol asc");
             volumeAllStats.Events += _volumeAllStatsListener.Update;
 
             var expectedList = new List<IDictionary<String, Object>>();
@@ -453,18 +453,18 @@ namespace com.espertech.esper.regression.view
             // Check iterator results
             expectedList[0]["Symbol"] = SYMBOL_CISCO;
             expectedList[0]["average"] = 26.5d;
-            expectedList[1]["Symbol"] = SYMBOL_IBM;
-            expectedList[1]["average"] = 10.875d;
-            expectedList[2]["Symbol"] = SYMBOL_GE;
-            expectedList[2]["average"] = averageGE;
+            expectedList[1]["Symbol"] = SYMBOL_GE;
+            expectedList[1]["average"] = averageGE;
+            expectedList[2]["Symbol"] = SYMBOL_IBM;
+            expectedList[2]["average"] = 10.875d;
             EPAssertionUtil.AssertPropsPerRow(priceAllStats.GetEnumerator(), expectedList);
 
             expectedList[0]["Symbol"] = SYMBOL_CISCO;
             expectedList[0]["average"] = 27d;
-            expectedList[1]["Symbol"] = SYMBOL_IBM;
-            expectedList[1]["average"] = 11d + 1/6d;
-            expectedList[2]["Symbol"] = SYMBOL_GE;
-            expectedList[2]["average"] = 86d + 2d/3d;
+            expectedList[1]["Symbol"] = SYMBOL_GE;
+            expectedList[1]["average"] = 86d + 2d / 3d;
+            expectedList[2]["Symbol"] = SYMBOL_IBM;
+            expectedList[2]["average"] = 11d + 1 / 6d; 
             EPAssertionUtil.AssertPropsPerRow(priceLast3Stats.GetEnumerator(), expectedList);
         }
     }

@@ -64,7 +64,7 @@ namespace com.espertech.esper.epl.declexpr
             _expressionBodyCopy.Accept(visitorWParent);
             foreach (var pair in visitorWParent.IdentNodes) {
                 var streamOrProp = pair.Second.StreamOrPropertyName;
-                if (contextDescriptor.ContextPropertyRegistry.IsContextPropertyPrefix(streamOrProp)) {
+                if (streamOrProp != null && contextDescriptor.ContextPropertyRegistry.IsContextPropertyPrefix(streamOrProp)) {
                     var context = new ExprContextPropertyNode(pair.Second.UnresolvedPropertyName);
                     if (pair.First == null) {
                         _expressionBodyCopy = context;
@@ -255,9 +255,9 @@ namespace com.espertech.esper.epl.declexpr
             get
             {
                 return new FilterSpecLookupable(
-                    ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this),
+                    this.ToExpressionStringMinPrecedenceSafe(),
                     new DeclaredNodeEventPropertyGetter(_exprEvaluator), 
-                    _exprEvaluator.ReturnType);
+                    _exprEvaluator.ReturnType, true);
             }
         }
 
@@ -272,7 +272,7 @@ namespace com.espertech.esper.epl.declexpr
             if (otherExprCaseNode == null)
                 return false;
 
-            return _expressionBodyCopy.EqualsNode(otherExprCaseNode.ExpressionBodyCopy);
+            return ExprNodeUtility.DeepEquals(_expressionBodyCopy, otherExprCaseNode._expressionBodyCopy);
         }
     
         public override void Accept(ExprNodeVisitor visitor)

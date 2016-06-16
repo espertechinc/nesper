@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -106,7 +107,7 @@ namespace com.espertech.esper.view.std
                 iterables.AddLast(dataView);
             }
 
-            return new IterablesListIterator(iterables);
+            return iterables.SelectMany(parentEnum => parentEnum).GetEnumerator();
         }
 
         public override String ToString()

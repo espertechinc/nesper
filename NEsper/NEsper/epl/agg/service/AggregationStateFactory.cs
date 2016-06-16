@@ -23,14 +23,15 @@ namespace com.espertech.esper.epl.agg.service
             int groupId,
             int aggregationId,
             bool join,
-            Object groupKey);
+            Object groupKey,
+            AggregationServicePassThru passThru);
 
         ExprNode AggregationExpression { get; }
     }
 
     public class ProxyAggregationStateFactory : AggregationStateFactory
     {
-        public Func<MethodResolutionService, int, int, int, bool, object, AggregationState> ProcCreateAccess { get; set; }
+        public Func<MethodResolutionService, int, int, int, bool, object, AggregationServicePassThru, AggregationState> ProcCreateAccess { get; set; }
         public Func<ExprNode> ProcAggregationExpression { get; set; } 
 
         public AggregationState CreateAccess(
@@ -39,7 +40,8 @@ namespace com.espertech.esper.epl.agg.service
             int groupId,
             int aggregationId,
             bool join,
-            object groupKey)
+            object groupKey,
+            AggregationServicePassThru passThru)
         {
             return ProcCreateAccess(
                 methodResolutionService,
@@ -47,7 +49,8 @@ namespace com.espertech.esper.epl.agg.service
                 groupId,
                 aggregationId,
                 join,
-                groupKey);
+                groupKey,
+                passThru);
         }
 
         public ExprNode AggregationExpression

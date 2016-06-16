@@ -140,7 +140,7 @@ namespace com.espertech.esper.epl.expression.core
 
 	    public FilterSpecLookupable FilterLookupable
 	    {
-	        get { return new FilterSpecLookupable(_resolvedPropertyName, _evaluator.Getter, _evaluator.ReturnType); }
+	        get { return new FilterSpecLookupable(_resolvedPropertyName, _evaluator.Getter, _evaluator.ReturnType, false); }
 	    }
 
 	    public override ExprNode Validate(ExprValidationContext validationContext)

@@ -54,7 +54,7 @@ namespace com.espertech.esper.multithread
     
             var numDeliveries = listener.NewDataList.Count;
             Console.WriteLine("Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
-            Assert.IsTrue(numDeliveries > 3);
+            Assert.IsTrue(numDeliveries >= 3);
     
             Thread.Sleep(250);
     

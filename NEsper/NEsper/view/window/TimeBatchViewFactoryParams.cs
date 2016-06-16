@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.view.window
@@ -19,22 +19,22 @@ namespace com.espertech.esper.view.window
     public class TimeBatchViewFactoryParams
     {
         /// <summary>Keyword for force Update, i.e. Update if no data. </summary>
-        protected const String FORCE_UPDATE_KEYWORD = "force_update";
+        public const String FORCE_UPDATE_KEYWORD = "force_update";
     
         /// <summary>Keyword for starting eager, i.e. start early. </summary>
-        protected const String START_EAGER_KEYWORD = "start_eager";
+        public const String START_EAGER_KEYWORD = "start_eager";
     
         /// <summary>Event type </summary>
-        protected EventType eventType;
+        private EventType _eventType;
     
         /// <summary>Number of msec before batch fires (either interval or number of events). </summary>
-        protected ExprTimePeriodEvalDeltaConst timeDeltaComputation;
+        private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
     
         /// <summary>Indicate whether to output only if there is data, or to keep outputting empty batches. </summary>
-        protected bool isForceUpdate;
+        private bool _isForceUpdate;
     
         /// <summary>Indicate whether to output only if there is data, or to keep outputting empty batches. </summary>
-        protected bool isStartEager;
+        private bool _isStartEager;
     
         /// <summary>Convert keywords into isForceUpdate and isStartEager members </summary>
     	/// <param name="keywords">flow control keyword string</param>
@@ -57,12 +57,12 @@ namespace com.espertech.esper.view.window
     		    }
     		    if (keywordText.Equals(FORCE_UPDATE_KEYWORD))
     		    {
-    		        isForceUpdate = true;
+    		        _isForceUpdate = true;
     		    }
     		    else if (keywordText.Equals(START_EAGER_KEYWORD))
     		    {
-    		        isForceUpdate = true;
-    		        isStartEager = true;
+    		        _isForceUpdate = true;
+    		        _isStartEager = true;
     		    }
     		    else {
     		        const string keywordRange = FORCE_UPDATE_KEYWORD + "," + START_EAGER_KEYWORD;
@@ -70,5 +70,29 @@ namespace com.espertech.esper.view.window
     		    }
     		}
     	}
+
+        public virtual EventType EventType
+        {
+            get { return _eventType; }
+            set { _eventType = value; }
+        }
+
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
+        {
+            get { return _timeDeltaComputation; }
+            set { _timeDeltaComputation = value; }
+        }
+
+        public bool IsForceUpdate
+        {
+            get { return _isForceUpdate; }
+            set { _isForceUpdate = value; }
+        }
+
+        public bool IsStartEager
+        {
+            get { return _isStartEager; }
+            set { _isStartEager = value; }
+        }
     }
 }

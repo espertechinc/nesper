@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.join.table
         public override ISet<EventBean> Lookup(Object key)
         {
             key = EventBeanUtility.Coerce(key, _coercionType);
-            return PropertyIndex.Get(key);
+            return propertyIndex.Get(key);
         }
     }
 }

@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.support.view;

@@ -31,18 +31,18 @@ namespace com.espertech.esper.epl.parse
         public static void AddTableExpressionReference(StatementSpecRaw statementSpec, ExprTableAccessNode tableNode)
         {
             if (statementSpec.TableExpressions == null) {
-                statementSpec.TableExpressions = new List<ExprTableAccessNode>(2);
+                statementSpec.TableExpressions = new HashSet<ExprTableAccessNode>();
             }
             statementSpec.TableExpressions.Add(tableNode);
         }
     
-        public static void AddTableExpressionReference(StatementSpecRaw statementSpec, IList<ExprTableAccessNode> tableNodes)
+        public static void AddTableExpressionReference(StatementSpecRaw statementSpec, ICollection<ExprTableAccessNode> tableNodes)
         {
             if (tableNodes == null || tableNodes.IsEmpty()) {
                 return;
             }
             if (statementSpec.TableExpressions == null) {
-                statementSpec.TableExpressions = new List<ExprTableAccessNode>(tableNodes.Count);
+                statementSpec.TableExpressions = new HashSet<ExprTableAccessNode>();
             }
             statementSpec.TableExpressions.AddAll(tableNodes);
         }

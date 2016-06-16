@@ -180,33 +180,41 @@ namespace com.espertech.esper.epl.expression.core
 	        return null;
 	    }
 
-	    public static void ApplyFilterExpressionsIterable(IEnumerable<EventBean> enumerable, IList<ExprNode> filterExpressions, ExprEvaluatorContext exprEvaluatorContext, ICollection<EventBean> eventsInWindow)
+	    public static void ApplyFilterExpressionsIterable(
+	        IEnumerable<EventBean> enumerable,
+	        IList<ExprNode> filterExpressions,
+	        ExprEvaluatorContext exprEvaluatorContext,
+	        ICollection<EventBean> eventsInWindow)
         {
 	        var evaluators = ExprNodeUtility.GetEvaluators(filterExpressions);
 	        var events = new EventBean[1];
             var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
-            
-            foreach (var theEvent in enumerable)
-            {
-	            events[0] = theEvent;
-	            var add = true;
+	        var length = evaluators.Length;
 
-                for (int ii = 0; ii < evaluators.Length; ii++)
-                {
-                    var filter = evaluators[ii];
-                    var result = filter.Evaluate(evaluateParams);
-                    if (result == null || false.Equals(result))
-                    {
-                        add = false;
-                        break;
-                    }
-                }
+	        unchecked
+	        {
+	            foreach (var theEvent in enumerable)
+	            {
+	                events[0] = theEvent;
+	                var add = true;
 
-                if (add) {
-	                eventsInWindow.Add(events[0]);
+	                for (int ii = 0; ii < length; ii++)
+	                {
+	                    var result = evaluators[ii].Evaluate(evaluateParams);
+	                    if (result == null || false.Equals(result))
+	                    {
+	                        add = false;
+	                        break;
+	                    }
+	                }
+
+	                if (add)
+	                {
+	                    eventsInWindow.Add(events[0]);
+	                }
 	            }
 	        }
-	    }
+        }
 
 	    public static void ApplyFilterExpressionIterable(IEnumerator<EventBean> enumerable, ExprEvaluator filterExpression, ExprEvaluatorContext exprEvaluatorContext, ICollection<EventBean> eventsInWindow)
         {
@@ -558,9 +566,8 @@ namespace com.espertech.esper.epl.expression.core
 	    }
 
 	    private static ExprConstantNode ResolveIdentAsEnumConst(string constant, MethodResolutionService methodResolutionService)
-
 	    {
-	        var enumValue = TypeHelper.ResolveIdentAsEnumConst(constant, methodResolutionService, null);
+	        var enumValue = TypeHelper.ResolveIdentAsEnumConst(constant, methodResolutionService, null, false);
 	        if (enumValue != null)
 	        {
 	            return new ExprConstantNodeImpl(enumValue);
@@ -724,7 +731,7 @@ namespace com.espertech.esper.epl.expression.core
 	        IList<ExprNode> parameters,
 	        MethodResolutionService methodResolutionService,
 	        EventAdapterService eventAdapterService,
-	        string statementId,
+	        int statementId,
 	        bool allowWildcard,
 	        EventType wildcardType,
 	        ExprNodeUtilResolveExceptionHandler exceptionHandler,

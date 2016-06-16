@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -21,7 +19,8 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.nwtable
 {
     [TestFixture]
-    public class TestTableLifecycle  {
+    public class TestTableLifecycle
+    {
         private EPServiceProvider epService;
     
         [SetUp]
@@ -40,7 +39,37 @@ namespace com.espertech.esper.regression.nwtable
         }
     
         [Test]
-        public void TestLifecycle() {
+        public void TestLifecycleIntoTable()
+        {
+            RunAssertionIntoTable();
+        }
+
+        [Test]
+        public void TestLifecycleCreateIndex()
+        {
+            RunAssertionDependent("create index IDX on abc (p)");
+        }
+
+        [Test]
+        public void TestLifecycleJoin()
+        {
+            RunAssertionDependent("select * from SupportBean, abc");
+        }
+
+        [Test]
+        public void TestLifecycleSubquery()
+        {
+            RunAssertionDependent("select * from SupportBean where exists (select * from abc)");
+        }
+
+        [Test]
+        public void TestLifecycleInsertInto() 
+        {
+            RunAssertionDependent("insert into abc select 'a' as id, 'a' as p from SupportBean");
+        }
+
+        private void RunAssertionIntoTable() 
+        {
             string eplCreate = "create table abc (total count(*))";
             string eplUse = "select abc from SupportBean";
             string eplInto = "into table abc select count(*) as total from SupportBean";
@@ -86,6 +115,21 @@ namespace com.espertech.esper.regression.nwtable
     
             epService.EPAdministrator.DestroyAllStatements();
             epService.EPAdministrator.CreateEPL(eplCreate);
+        }
+
+        private void RunAssertionDependent(String eplDependent)
+        {
+            String eplCreate = "create table abc (id string primary key, p string)";
+
+            // typical select-use-destroy
+            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(eplCreate);
+            EPStatement stmtDependent = epService.EPAdministrator.CreateEPL(eplDependent);
+
+            stmtCreate.Dispose();
+            AssertFailCreate(eplCreate);
+            stmtDependent.Dispose();
+            epService.EPAdministrator.CreateEPL(eplCreate);
+            epService.EPAdministrator.DestroyAllStatements();
         }
     
         private void AssertFailCreate(string create) {

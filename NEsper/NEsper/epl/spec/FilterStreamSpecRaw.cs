@@ -59,7 +59,7 @@ namespace com.espertech.esper.epl.spec
             get { return _rawFilterSpec; }
         }
 
-        public StreamSpecCompiled Compile(StatementContext context, ICollection<String> eventTypeReferences, bool isInsertInto, ICollection<int> assignedTypeNumberStack, bool isJoin, bool isContextDeclaration, bool isOnTrigger)
+        public StreamSpecCompiled Compile(StatementContext context, ICollection<String> eventTypeReferences, bool isInsertInto, ICollection<int> assignedTypeNumberStack, bool isJoin, bool isContextDeclaration, bool isOnTrigger, String optionalStreamName)
         {
             StreamTypeService streamTypeService;
             // Determine the event type
@@ -76,16 +76,16 @@ namespace com.espertech.esper.epl.spec
                     throw new ExprValidationException("Contained-event expressions are not supported with tables");
                 }
                 var tableMetadata = context.TableService.GetTableMetadata(eventName);
-                var streamTypeServiceX = new StreamTypeServiceImpl(new EventType[] { tableMetadata.InternalEventType }, new String[] { "s0" }, new bool[] { true }, context.EngineURI, false);
+                var streamTypeServiceX = new StreamTypeServiceImpl(new EventType[] { tableMetadata.InternalEventType }, new String[] { optionalStreamName }, new bool[] { true }, context.EngineURI, false);
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(ExprNodeOrigin.FILTER, _rawFilterSpec.FilterExpressions, streamTypeServiceX, context, null, null);
                 return new TableQueryStreamSpec(this.OptionalStreamName, this.ViewSpecs, this.Options, eventName, validatedNodes);
             }
     
             // Could be a named window
-            if (context.NamedWindowService.IsNamedWindow(eventName))
+            if (context.NamedWindowMgmtService.IsNamedWindow(eventName))
             {
-                var namedWindowType = context.NamedWindowService.GetProcessor(eventName).TailView.EventType;
-                streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, new bool[] {true}, context.EngineURI, false);
+                var namedWindowType = context.NamedWindowMgmtService.GetProcessor(eventName).TailView.EventType;
+                streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] { optionalStreamName }, new bool[] { true }, context.EngineURI, false);
     
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER, _rawFilterSpec.FilterExpressions, streamTypeService, context, null, null);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.epl.spec
                             context.StatementName, 
                             context.Annotations, assignedTypeNumberStack, 
                             context.ConfigSnapshot,
-                            context.NamedWindowService);
+                            context.NamedWindowMgmtService);
                 }
                 eventTypeReferences.Add(((EventTypeSPI) namedWindowType).Metadata.PrimaryName);
                 return new NamedWindowConsumerStreamSpec(eventName, OptionalStreamName, ViewSpecs, validatedNodes, Options, optionalPropertyEvaluator);

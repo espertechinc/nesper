@@ -22,10 +22,10 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupByRefcountedWAccessRollupFactory : AggregationServiceFactoryBase
     {
-        protected readonly AggregationAccessorSlotPair[] accessors;
-        protected readonly AggregationStateFactory[] accessAggregations;
-        protected readonly bool isJoin;
-        protected readonly AggregationGroupByRollupDesc groupByRollupDesc;
+        protected internal readonly AggregationAccessorSlotPair[] Accessors;
+        protected internal readonly AggregationStateFactory[] AccessAggregations;
+        protected internal readonly bool IsJoin;
+        protected internal readonly AggregationGroupByRollupDesc GroupByRollupDesc;
 
         /// <summary>
         /// Ctor.
@@ -37,27 +37,35 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="accessAggregations">access aggs</param>
         /// <param name="isJoin">true for join, false for single-stream</param>
         /// <param name="groupByRollupDesc">The group by rollup desc.</param>
-        public AggSvcGroupByRefcountedWAccessRollupFactory(ExprEvaluator[] evaluators,
-                                                           AggregationMethodFactory[] prototypes,
-                                                           Object groupKeyBinding,
-                                                           AggregationAccessorSlotPair[] accessors,
-                                                           AggregationStateFactory[] accessAggregations,
-                                                           bool isJoin,
-                                                           AggregationGroupByRollupDesc groupByRollupDesc)
+        public AggSvcGroupByRefcountedWAccessRollupFactory(
+            ExprEvaluator[] evaluators,
+            AggregationMethodFactory[] prototypes,
+            Object groupKeyBinding,
+            AggregationAccessorSlotPair[] accessors,
+            AggregationStateFactory[] accessAggregations,
+            bool isJoin,
+            AggregationGroupByRollupDesc groupByRollupDesc)
             : base(evaluators, prototypes, groupKeyBinding)
         {
-            this.accessors = accessors;
-            this.accessAggregations = accessAggregations;
-            this.isJoin = isJoin;
-            this.groupByRollupDesc = groupByRollupDesc;
+            Accessors = accessors;
+            AccessAggregations = accessAggregations;
+            IsJoin = isJoin;
+            GroupByRollupDesc = groupByRollupDesc;
         }
-    
-        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService)
+
+        public override AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
-            AggregationState[] topStates = methodResolutionService.NewAccesses(agentInstanceContext.AgentInstanceId, isJoin, accessAggregations);
-            AggregationMethod[] topMethods = methodResolutionService.NewAggregators(base.Aggregators, agentInstanceContext.AgentInstanceId);
+            AggregationState[] topStates = methodResolutionService.NewAccesses(
+                agentInstanceContext.AgentInstanceId, IsJoin, AccessAggregations, null);
+            AggregationMethod[] topMethods = methodResolutionService.NewAggregators(
+                base.Aggregators, agentInstanceContext.AgentInstanceId);
             return new AggSvcGroupByRefcountedWAccessRollupImpl(
-                Evaluators, Aggregators, GroupKeyBinding, methodResolutionService, accessors, accessAggregations, isJoin, groupByRollupDesc, topMethods, topStates);
+                Evaluators, Aggregators, GroupKeyBinding, methodResolutionService, Accessors, AccessAggregations, IsJoin,
+                GroupByRollupDesc, topMethods, topStates);
         }
     }
 }

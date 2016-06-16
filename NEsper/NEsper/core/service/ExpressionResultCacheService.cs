@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.service
     /// <para /> 
     /// (C) On the level of expression declaration: 
     ///     a) for non-enum evaluation and for enum-evaluation a separate cache 
-    ///     b) The cache is keyed by the Prototype-node as an IdentityHashMap and verified by a events-per-stream 
+    ///     b) The cache is keyed by the _prototype-node as an IdentityHashMap and verified by a events-per-stream 
     ///        (EventBean[]) that is maintained or rewritten.
     /// </summary>
     public interface ExpressionResultCacheService

@@ -14,7 +14,7 @@ namespace com.espertech.esper.epl.join.table
 {
     public class PropertySortedEventTableCoercedFactory : PropertySortedEventTableFactory
     {
-        private readonly Type _coercionType;
+        protected readonly Type coercionType;
     
        /// <summary>Ctor. </summary>
        /// <param name="streamNum">the stream number that is indexed</param>
@@ -22,18 +22,17 @@ namespace com.espertech.esper.epl.join.table
        /// <param name="propertyName">property names to use for indexing</param>
        /// <param name="coercionType">property types</param>
         public PropertySortedEventTableCoercedFactory(int streamNum, EventType eventType, String propertyName, Type coercionType)
-
-                    : base(streamNum, eventType, propertyName)
+            : base(streamNum, eventType, propertyName)
         {
-            _coercionType = coercionType;
+            this.coercionType = coercionType;
         }
     
-        public override EventTable[] MakeEventTables()
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(null, false, true, StreamNum, new String[] {PropertyName}, EventTableOrganization.EventTableOrganizationType.BTREE);
+            var organization = Organization;
             return new EventTable[]
             {
-                new PropertySortedEventTableCoerced(PropertyGetter, organization, _coercionType)
+                new PropertySortedEventTableCoerced(PropertyGetter, organization, coercionType)
             };
         }
     
@@ -42,7 +41,20 @@ namespace com.espertech.esper.epl.join.table
             return "PropertySortedEventTableCoerced" +
                     " streamNum=" + StreamNum +
                     " propertyName=" + PropertyName +
-                    " coercionType=" + _coercionType;
+                    " coercionType=" + coercionType;
+        }
+
+        protected override EventTableOrganization Organization
+        {
+            get
+            {
+                return new EventTableOrganization(null, false, true, StreamNum, new String[] { PropertyName }, EventTableOrganizationType.BTREE);
+            }
+        }
+
+        public Type ProviderClass
+        {
+            get { return typeof (PropertySortedEventTableCoerced); }
         }
     }
 }

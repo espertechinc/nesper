@@ -30,11 +30,10 @@ namespace com.espertech.esper.regression.context
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            var configuration = SupportConfigFactory.GetConfiguration();
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
             configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
-            configuration.AddPlugInAggregationFunctionFactory("concat", typeof(MyConcatAggregationFunctionFactory).FullName);
             configuration.AddPlugInSingleRowFunction("toArray", GetType().FullName, "ToArray");
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -53,13 +52,13 @@ namespace com.espertech.esper.regression.context
         [Test]
         public void TestAccessOnly()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
-            String eplContext = "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
+            var eplContext = "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
             _epService.EPAdministrator.CreateEPL(eplContext);
     
-            String[] fieldsGrouped = "TheString,IntPrimitive,col1".Split(',');
-            String eplGroupedAccess = "@Name('S2') context SegmentedByString select TheString,IntPrimitive,window(LongPrimitive) as col1 from SupportBean.win:keepall() sb group by IntPrimitive";
+            var fieldsGrouped = "TheString,IntPrimitive,col1".Split(',');
+            var eplGroupedAccess = "@Name('S2') context SegmentedByString select TheString,IntPrimitive,window(LongPrimitive) as col1 from SupportBean.win:keepall() sb group by IntPrimitive";
             _epService.EPAdministrator.CreateEPL(eplGroupedAccess);
             _epService.EPAdministrator.GetStatement("S2").Events += _listener.Update;
 
@@ -81,15 +80,15 @@ namespace com.espertech.esper.regression.context
         {
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            String[] fields = new String[] {"TheString", "IntPrimitive", "val0"};
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select Concat(p00) from SupportBean_S0.win:keepall() as s0 where sb.IntPrimitive = s0.id) as val0 " +
+            var fields = new String[] {"TheString", "IntPrimitive", "val0"};
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+                    "select TheString, IntPrimitive, (select count(*) from SupportBean_S0.win:keepall() as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb");
-            stmtOne.Events += _listener.Update;
-    
+            stmtOne.AddListener(_listener);
+
             _epService.EPRuntime.SendEvent(new SupportBean_S0(10, "s1"));
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
-            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[]{"G1", 10, ""});
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] { "G1", 10, 0L });
         }
     
         [Test]
@@ -97,8 +96,8 @@ namespace com.espertech.esper.regression.context
         {
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            String[] fieldsOne = "IntPrimitive,count(*)".Split(',');
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString select IntPrimitive, Count(*) from SupportBean group by IntPrimitive");
+            var fieldsOne = "IntPrimitive,count(*)".Split(',');
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString select IntPrimitive, Count(*) from SupportBean group by IntPrimitive");
             stmtOne.Events += _listener.Update;
     
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -122,8 +121,8 @@ namespace com.espertech.esper.regression.context
             stmtOne.Dispose();
     
             // add "string" : a context property
-            String[] fieldsTwo = "TheString,IntPrimitive,count(*)".Split(',');
-            EPStatement stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString select TheString, IntPrimitive, Count(*) from SupportBean group by IntPrimitive");
+            var fieldsTwo = "TheString,IntPrimitive,count(*)".Split(',');
+            var stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString select TheString, IntPrimitive, Count(*) from SupportBean group by IntPrimitive");
             stmtTwo.Events += _listener.Update;
     
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -150,8 +149,8 @@ namespace com.espertech.esper.regression.context
         {
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            String[] fieldsOne = "IntPrimitive,count(*)".Split(',');
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString select IntPrimitive, Count(*) from SupportBean.win:length_batch(2) group by IntPrimitive order by IntPrimitive asc");
+            var fieldsOne = "IntPrimitive,count(*)".Split(',');
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString select IntPrimitive, Count(*) from SupportBean.win:length_batch(2) group by IntPrimitive order by IntPrimitive asc");
             stmtOne.Events += _listener.Update;
     
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -180,8 +179,8 @@ namespace com.espertech.esper.regression.context
             stmtOne.Dispose();
     
             // add "string" : add context property
-            String[] fieldsTwo = "TheString,IntPrimitive,count(*)".Split(',');
-            EPStatement stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString select TheString, IntPrimitive, Count(*) from SupportBean.win:length_batch(2) group by IntPrimitive order by TheString, IntPrimitive asc");
+            var fieldsTwo = "TheString,IntPrimitive,count(*)".Split(',');
+            var stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('B') context SegmentedByString select TheString, IntPrimitive, Count(*) from SupportBean.win:length_batch(2) group by IntPrimitive order by TheString, IntPrimitive asc");
             stmtTwo.Events += _listener.Update;
     
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
@@ -213,8 +212,8 @@ namespace com.espertech.esper.regression.context
         {
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            String[] fieldsOne = "IntPrimitive,col1,col2,col3".Split(',');
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var fieldsOne = "IntPrimitive,col1,col2,col3".Split(',');
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select IntPrimitive, Count(*) as col1, ToArray(window(*).SelectFrom(v=>v.LongPrimitive)) as col2, First().LongPrimitive as col3 " +
                     "from SupportBean.win:keepall() as sb " +
                     "group by IntPrimitive order by IntPrimitive asc");
@@ -241,8 +240,8 @@ namespace com.espertech.esper.regression.context
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
             // test aggregation-only (no access)
-            String[] fieldsOne = "col1".Split(',');
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var fieldsOne = "col1".Split(',');
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select Sum(IntPrimitive) as col1 " +
                     "from SupportBean");
             stmtOne.Events += _listener.Update;
@@ -265,8 +264,8 @@ namespace com.espertech.esper.regression.context
             stmtOne.Dispose();
     
             // test mixed with access
-            String[] fieldsTwo = "col1,col2".Split(',');
-            EPStatement stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var fieldsTwo = "col1,col2".Split(',');
+            var stmtTwo = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select Sum(IntPrimitive) as col1, ToArray(window(*).SelectFrom(v=>v.IntPrimitive)) as col2 " +
                     "from SupportBean.win:keepall()");
             stmtTwo.Events += _listener.Update;
@@ -286,8 +285,8 @@ namespace com.espertech.esper.regression.context
             stmtTwo.Dispose();
     
             // test only access
-            String[] fieldsThree = "col1".Split(',');
-            EPStatement stmtThree = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var fieldsThree = "col1".Split(',');
+            var stmtThree = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select ToArray(window(*).SelectFrom(v=>v.IntPrimitive)) as col1 " +
                     "from SupportBean.win:keepall()");
             stmtThree.Events += _listener.Update;
@@ -307,10 +306,10 @@ namespace com.espertech.esper.regression.context
             stmtThree.Dispose();
     
             // test subscriber
-            EPStatement stmtFour = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var stmtFour = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select Count(*) as col1 " +
                     "from SupportBean");
-            SupportSubscriber subs = new SupportSubscriber();
+            var subs = new SupportSubscriber();
             stmtFour.Subscriber = subs;
             
             _epService.EPRuntime.SendEvent(new SupportBean("G1", 1));
@@ -328,8 +327,8 @@ namespace com.espertech.esper.regression.context
         {
             _epService.EPAdministrator.CreateEPL("@Name('context') create context SegmentedByString partition by TheString from SupportBean");
     
-            String[] fieldsOne = "IntPrimitive,col1".Split(',');
-            EPStatement stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
+            var fieldsOne = "IntPrimitive,col1".Split(',');
+            var stmtOne = _epService.EPAdministrator.CreateEPL("@Name('A') context SegmentedByString " +
                     "select IntPrimitive, Count(*) as col1 " +
                     "from SupportBean unidirectional, SupportBean_S0.win:keepall() " +
                     "group by IntPrimitive order by IntPrimitive asc");
@@ -368,7 +367,7 @@ namespace com.espertech.esper.regression.context
     
         private SupportBean MakeEvent(String theString, int intPrimitive, long longPrimitive)
         {
-            SupportBean bean = new SupportBean(theString, intPrimitive);
+            var bean = new SupportBean(theString, intPrimitive);
             bean.LongPrimitive = longPrimitive;
             return bean;
         }

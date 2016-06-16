@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.script
             _epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _listener = new SupportUpdateListener();
         }
     
@@ -255,9 +255,9 @@ namespace com.espertech.esper.regression.script
         [Test]
         public void TestParserSelectNoArgConstant()
         {
-            TryParseJS("\n\t  10    \n\n\t\t", typeof(Object), 10.0);
-            TryParseJS("10", typeof(Object), 10.0);
-            TryParseJS("5*5", typeof(Object), 25.0);
+            TryParseJS("\n\t  10.0    \n\n\t\t", typeof(Object), 10.0);
+            TryParseJS("10.0", typeof(Object), 10.0);
+            TryParseJS("5*5.0", typeof(Object), 25.0);
             TryParseJS("\"abc\"", typeof(Object), "abc");
             TryParseJS(" \"abc\"     ", typeof(Object), "abc");
             TryParseJS("'def'", typeof(Object), "def");

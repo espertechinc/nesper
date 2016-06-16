@@ -20,5 +20,10 @@ namespace com.espertech.esper.core.context.mgr
 	        }
 	        return new ContextManagerImpl(factoryServiceContext);
 	    }
+
+	    public bool IsSupportsExtract
+	    {
+	        get { return true; }
+	    }
 	}
 } // end of namespace

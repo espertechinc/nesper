@@ -64,7 +64,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestWidening()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_A));
             RunAssertionWidening(true);
             RunAssertionWidening(false);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestCompositeIndex()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_A));
             RunAssertionCompositeIndex(true);
             RunAssertionCompositeIndex(false);
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestIndexReferences()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S1));
             RunAssertionIndexReferences(true);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestIndexStaleness()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             RunAssertionIndexStaleness(true);
             RunAssertionIndexStaleness(false);
@@ -108,8 +108,8 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestMultipleColumnMultipleIndex()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
             RunAssertionMultipleColumnMultipleIndex(true);
             RunAssertionMultipleColumnMultipleIndex(false);
         }
@@ -124,9 +124,9 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestOnSelectReUse()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
     
             RunAssertionOnSelectReUse(true);
             RunAssertionOnSelectReUse(false);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestInvalid()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             RunAssertionInvalid(true);
             RunAssertionInvalid(false);
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regression.nwtable
                     "Error starting statement: " + (namedWindow ? "Named window" : "Table") + " by name 'MyInfraCtx' has been declared for context 'ContextOne' and can only be used within the same context");
     
             // invalid insert-into unique index
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var eplCreateTwo = namedWindow ?
                     "@Name('create') create window MyInfraTwo.win:keepall() as SupportBean" :
                     "@Name('create') create table MyInfraTwo(TheString string primary key, IntPrimitive int primary key)";
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regression.nwtable
             _epService.EPAdministrator.CreateEPL("create index idx1 on MyInfraTwo (TheString, IntPrimitive)");
             _epService.EPAdministrator.CreateEPL("on SupportBean sb select * from MyInfraTwo w where w.TheString = sb.TheString and w.IntPrimitive = sb.IntPrimitive");
             _epService.EPAdministrator.CreateEPL("on SupportBean sb select * from MyInfraTwo w where w.IntPrimitive = sb.IntPrimitive and w.TheString = sb.TheString");
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("MyInfraTwo").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyInfraTwo").Length);
     
             _epService.EPAdministrator.DestroyAllStatements();
             _epService.EPAdministrator.Configuration.RemoveEventType("MyInfra", false);
@@ -262,8 +262,8 @@ namespace com.espertech.esper.regression.nwtable
     
         private void RunAssertionDropCreate(bool namedWindow)
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             var stmtTextCreateOne = namedWindow ?
                     "create window MyInfra.win:keepall() as (f1 string, f2 int, f3 string, f4 string)" :
@@ -310,7 +310,7 @@ namespace com.espertech.esper.regression.nwtable
         private int GetIndexCount(bool namedWindow)
         {
             var repo = GetIndexInstanceRepo(namedWindow);
-            return repo.IndexDescriptors.Length;
+            return repo.GetIndexDescriptors().Length;
         }
     
         private void RunAssertionMultipleColumnMultipleIndex(bool namedWindow)
@@ -353,8 +353,8 @@ namespace com.espertech.esper.regression.nwtable
     
         private void RunAssertionLateCreate(bool namedWindow)
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             var stmtTextCreateOne = namedWindow ?
                     "create window MyInfra.win:keepall() as (f1 string, f2 int, f3 string, f4 string)" :
@@ -439,12 +439,12 @@ namespace com.espertech.esper.regression.nwtable
     
         private void AssertIndexCountInstance(bool namedWindow, int count) {
             var repo = GetIndexInstanceRepo(namedWindow);
-            Assert.AreEqual(count, repo.Tables.Count);
+            Assert.AreEqual(count, repo.GetTables().Count);
         }
     
         private EventTableIndexRepository GetIndexInstanceRepo(bool namedWindow) {
             if (namedWindow) {
-                var instance = NamedWindowService.GetProcessor("MyInfra").ProcessorInstanceNoContext;
+                var instance = NamedWindowMgmtService.GetProcessor("MyInfra").ProcessorInstanceNoContext;
                 return instance.RootViewInstance.IndexRepository;
             }
             var metadata = TableService.GetTableMetadata("MyInfra");
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regression.nwtable
     
         private EventTableIndexMetadata GetIndexMetaRepo(bool namedWindow) {
             if (namedWindow) {
-                var processor = NamedWindowService.GetProcessor("MyInfra");
+                var processor = NamedWindowMgmtService.GetProcessor("MyInfra");
                 return processor.EventTableIndexMetadataRepo;
             }
             else {
@@ -484,9 +484,9 @@ namespace com.espertech.esper.regression.nwtable
             get { return _epService.ServicesContext.TableService; }
         }
 
-        private NamedWindowService NamedWindowService
+        private NamedWindowMgmtService NamedWindowMgmtService
         {
-            get { return _epService.ServicesContext.NamedWindowService; }
+            get { return _epService.ServicesContext.NamedWindowMgmtService; }
         }
 
         private void RunAssertionCompositeIndex(bool isNamedWindow)
@@ -560,8 +560,8 @@ namespace com.espertech.esper.regression.nwtable
     
         public void RunAssertionHashBTreeWidening(bool isNamedWindow) {
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             // widen to long
             var eplCreate = isNamedWindow ?

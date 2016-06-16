@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.view.window
 {
@@ -46,7 +45,7 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRandomAccess randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
             return new KeepAllView(agentInstanceViewFactoryContext, this, randomAccess);
         }
 

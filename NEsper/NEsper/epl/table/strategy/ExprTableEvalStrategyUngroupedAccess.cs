@@ -25,15 +25,14 @@ namespace com.espertech.esper.epl.table.strategy
         : ExprTableEvalStrategyUngroupedBase
         , ExprTableAccessEvalStrategy
     {
-    
-        private readonly int slot;
-        private readonly AggregationAccessor accessor;
-    
-        public ExprTableEvalStrategyUngroupedAccess(ILockable @lock, Atomic<ObjectArrayBackedEventBean> aggregationState, int slot, AggregationAccessor accessor)
-            : base(@lock, aggregationState)
+        private readonly int _slot;
+        private readonly AggregationAccessor _accessor;
+
+        public ExprTableEvalStrategyUngroupedAccess(TableAndLockProviderUngrouped provider, int slot, AggregationAccessor accessor)
+            : base(provider)
         {
-            this.slot = slot;
-            this.accessor = accessor;
+            _slot = slot;
+            _accessor = accessor;
         }
     
         public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -44,7 +43,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return accessor.GetValue(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetValue(aggregationState, eventsPerStream, isNewData, context);
         }
     
         public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -60,7 +59,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return accessor.GetEnumerableEvents(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvents(aggregationState, eventsPerStream, isNewData, context);
         }
     
         public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -71,7 +70,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return accessor.GetEnumerableEvent(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvent(aggregationState, eventsPerStream, isNewData, context);
         }
     
         public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -82,13 +81,13 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return accessor.GetEnumerableScalar(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableScalar(aggregationState, eventsPerStream, isNewData, context);
         }
     
         private AggregationState GetAndLock(ObjectArrayBackedEventBean @event, ExprEvaluatorContext exprEvaluatorContext)
         {
             AggregationRowPair row = ExprTableEvalStrategyUtil.GetRow(@event);
-            return row.States[slot];
+            return row.States[_slot];
         }
     }
 }

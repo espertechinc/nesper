@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.join.table
         [Test]
         public void TestFlow()
         {
-            UnindexedEventTable rep = new UnindexedEventTable(1);
+            UnindexedEventTable rep = new UnindexedEventTableImpl(1);
     
             EventBean[] addOne = SupportEventBeanFactory.MakeEvents(new String[] {"a", "b"});
             rep.Add(addOne);

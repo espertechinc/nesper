@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.service
         /// statement context
         /// </returns>
         StatementContext MakeContext(
-            string statementId,
+            int statementId,
             string statementName,
             string expression,
             StatementType statementType,

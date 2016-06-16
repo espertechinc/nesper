@@ -7,9 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.schedule;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;
@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.db
         {
             for (var i = 0; i < _lists.Length; i++)
             {
-                _lists[i] = new UnindexedEventTable(0);
+                _lists[i] = new UnindexedEventTableImpl(0);
             }
         }
     

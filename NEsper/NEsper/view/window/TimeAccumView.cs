@@ -18,6 +18,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
 {
@@ -34,6 +35,7 @@ namespace com.espertech.esper.view.window
         , CloneableView
         , DataWindowView
         , StoppableView
+        , StopCallback
     {
         // View parameters
         private readonly TimeAccumViewFactory _factory;

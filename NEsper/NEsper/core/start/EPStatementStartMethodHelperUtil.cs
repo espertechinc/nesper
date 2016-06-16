@@ -24,10 +24,11 @@ namespace com.espertech.esper.core.start
 {
     public class EPStatementStartMethodHelperUtil
     {
-        public static Pair<ResultSetProcessor, AggregationService> StartResultSetAndAggregation(ResultSetProcessorFactoryDesc resultSetProcessorPrototype, AgentInstanceContext agentInstanceContext) {
+        public static Pair<ResultSetProcessor, AggregationService> StartResultSetAndAggregation(ResultSetProcessorFactoryDesc resultSetProcessorPrototype, AgentInstanceContext agentInstanceContext, bool isSubquery, int? subqueryNumber)
+        {
             AggregationService aggregationService = null;
             if (resultSetProcessorPrototype.AggregationServiceFactoryDesc != null) {
-                aggregationService = resultSetProcessorPrototype.AggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(agentInstanceContext, agentInstanceContext.StatementContext.MethodResolutionService);
+                aggregationService = resultSetProcessorPrototype.AggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(agentInstanceContext, agentInstanceContext.StatementContext.MethodResolutionService, isSubquery, subqueryNumber);
             }
     
             OrderByProcessor orderByProcessor = null;

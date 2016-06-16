@@ -48,14 +48,20 @@ namespace com.espertech.esper.epl.join.table
                 }
             }
         }
-    
-        public override EventTable[] MakeEventTables()
+
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(OptionalIndexName, Unique, true, StreamNum, PropertyNames, EventTableOrganization.EventTableOrganizationType.HASH);
-            return new EventTable[]
+            EventTableOrganization organization = Organization;
+            return new EventTable[] { new PropertyIndexedEventTableCoerceAdd(propertyGetters, organization, Coercers, CoercionType) };
+        }
+
+        protected override EventTableOrganization Organization
+        {
+            get
             {
-                new PropertyIndexedEventTableCoerceAdd(PropertyGetters, organization, Coercers, CoercionType)
-            };
+                return new EventTableOrganization(
+                    optionalIndexName, unique, true, streamNum, propertyNames, EventTableOrganizationType.HASH);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.join.table;
 
 namespace com.espertech.esper.epl.join.pollindex
@@ -28,20 +29,21 @@ namespace com.espertech.esper.epl.join.pollindex
         /// </summary>
         /// <param name="pollResult">result of a poll operation</param>
         /// <param name="isActiveCache">true to indicate that caching is active and therefore index building makes sense asthe index structure is not a throw-away.</param>
+        /// <param name="statementContext"></param>
         /// <returns>indexed collection of poll results</returns>
-        EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache);
+        EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext);
     
         String ToQueryPlan();
     }
 
     public class ProxyPollResultIndexingStrategy : PollResultIndexingStrategy
     {
-        public Func<IList<EventBean>, bool, EventTable[]> ProcIndex { get; set; }
+        public Func<IList<EventBean>, bool, StatementContext, EventTable[]> ProcIndex { get; set; }
         public Func<string> ProcToQueryPlan { get; set; }
 
-        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache)
+        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
         {
-            return ProcIndex(pollResult, isActiveCache);
+            return ProcIndex(pollResult, isActiveCache, statementContext);
         }
 
         public string ToQueryPlan()

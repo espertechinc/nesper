@@ -19,9 +19,9 @@ namespace com.espertech.esper.events.bean
     /// and properties as the exposed event properties, plus any explicitly 
     /// configured props.
     /// </summary>
-    public class PropertyListBuilderNative : IPropertyListBuilder
+    public class PropertyListBuilderNative : PropertyListBuilder
     {
-        private readonly ConfigurationEventTypeLegacy optionalLegacyConfig;
+        private readonly ConfigurationEventTypeLegacy _optionalLegacyConfig;
 
         /// <summary>
         /// Ctor.
@@ -29,14 +29,14 @@ namespace com.espertech.esper.events.bean
         /// <param name="optionalLegacyConfig">configures legacy type, or null informationhas been supplied. </param>
         public PropertyListBuilderNative(ConfigurationEventTypeLegacy optionalLegacyConfig)
         {
-            this.optionalLegacyConfig = optionalLegacyConfig;
+            this._optionalLegacyConfig = optionalLegacyConfig;
         }
 
         public IList<InternalEventPropDescriptor> AssessProperties(Type type)
         {
             IList<InternalEventPropDescriptor> result = PropertyHelper.GetProperties(type);
-            if (optionalLegacyConfig != null) {
-                PropertyListBuilderExplicit.GetExplicitProperties(result, type, optionalLegacyConfig);
+            if (_optionalLegacyConfig != null) {
+                PropertyListBuilderExplicit.GetExplicitProperties(result, type, _optionalLegacyConfig);
             }
 
             return result;

@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
             configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).FullName, SupportVirtualDW.ITERATE);    // configure with iteration
     
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);

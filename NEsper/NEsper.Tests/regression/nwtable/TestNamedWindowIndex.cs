@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestUniqueIndexUniqueView() {
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmtWindow = epService.EPAdministrator.CreateEPL("create window MyWindowOne.std:unique(TheString) as SupportBean");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean");
             epService.EPAdministrator.CreateEPL("create unique index I1 on MyWindowOne(TheString)");

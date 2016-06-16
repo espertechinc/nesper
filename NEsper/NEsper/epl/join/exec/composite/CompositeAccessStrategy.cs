@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.join.exec.composite
 {
@@ -18,7 +17,22 @@ namespace com.espertech.esper.epl.join.exec.composite
 
     public interface CompositeAccessStrategy
     {
-        ISet<EventBean> Lookup(EventBean theEvent, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector);
-        ISet<EventBean> Lookup(EventBean[] eventPerStream, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector);
+        ICollection<EventBean> Lookup(
+            EventBean theEvent,
+            Map parent,
+            ICollection<EventBean> result,
+            CompositeIndexQuery next,
+            ExprEvaluatorContext context,
+            IList<object> optionalKeyCollector,
+            CompositeIndexQueryResultPostProcessor postProcessor);
+
+        ICollection<EventBean> Lookup(
+            EventBean[] eventPerStream,
+            Map parent,
+            ICollection<EventBean> result,
+            CompositeIndexQuery next,
+            ExprEvaluatorContext context,
+            IList<object> optionalKeyCollector,
+            CompositeIndexQueryResultPostProcessor postProcessor);
     }
 }

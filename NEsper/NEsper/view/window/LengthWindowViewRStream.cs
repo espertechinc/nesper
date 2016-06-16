@@ -88,15 +88,8 @@ namespace com.espertech.esper.view.window
                     _indexedEvents.Remove(anOldData);
                     InternalHandleRemoved(anOldData);
                 }
-    
-                if (expiredArr == null)
-                {
-                    expiredArr = oldData;
-                }
-                else
-                {
-                    expiredArr = CollectionUtil.AddArrayWithSetSemantics(expiredArr, oldData);
-                }
+
+                expiredArr = oldData;
             }
     
             // add data points to the window

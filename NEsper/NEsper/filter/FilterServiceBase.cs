@@ -44,6 +44,11 @@ namespace com.espertech.esper.filter
             _filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
         }
 
+        public bool IsSupportsTakeApply
+        {
+            get { return _indexBuilder.IsSupportsTakeApply; }
+        }
+
         public long FiltersVersion
         {
             get { return _filtersVersion; }
@@ -91,7 +96,7 @@ namespace com.espertech.esper.filter
             return version;
         }
     
-        protected long EvaluateInternal(EventBean theEvent, ICollection<FilterHandle> matches, String statementId)
+        protected long EvaluateInternal(EventBean theEvent, ICollection<FilterHandle> matches, int statementId)
         {
             long version = _filtersVersion;
             Interlocked.Increment(ref _numEventsEvaluated);
@@ -104,7 +109,7 @@ namespace com.espertech.esper.filter
     
             // Add statement matches to collection passed
             foreach (FilterHandle match in allMatches) {
-                if (match.StatementId.Equals(statementId)) {
+                if (match.StatementId == statementId) {
                     matches.Add(match);
                 }
             }
@@ -138,7 +143,7 @@ namespace com.espertech.esper.filter
             _filterServiceListeners.Remove(filterServiceListener);
         }
     
-        protected FilterSet TakeInternal(ICollection<String> statementIds)
+        protected FilterSet TakeInternal(ICollection<int> statementIds)
         {
             _filtersVersion++;
             return _indexBuilder.Take(statementIds);
@@ -211,12 +216,12 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public abstract long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, string statementId);
+        public abstract long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, int statementId);
         public abstract long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches);
         public abstract FilterServiceEntry Add(FilterValueSet filterValueSet, FilterHandle callback);
         public abstract void Remove(FilterHandle callback, FilterServiceEntry filterServiceEntry);
         public abstract void RemoveType(EventType type);
-        public abstract FilterSet Take(ICollection<string> statementId);
+        public abstract FilterSet Take(ICollection<int> statementId);
         public abstract void Apply(FilterSet filterSet);
         public abstract ILockable WriteLock { get; }
     }

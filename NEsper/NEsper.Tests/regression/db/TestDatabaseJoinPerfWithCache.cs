@@ -56,7 +56,7 @@ namespace com.espertech.esper.regression.db
         [Test]
         public void TestConstants()
         {
-            _epServiceRetained.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epServiceRetained.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String epl;
 

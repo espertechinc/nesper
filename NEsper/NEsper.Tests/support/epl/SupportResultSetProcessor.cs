@@ -101,5 +101,9 @@ namespace com.espertech.esper.support.epl
         {
             return null;
         }
+
+        public void Stop()
+        {
+        }
     }
 }

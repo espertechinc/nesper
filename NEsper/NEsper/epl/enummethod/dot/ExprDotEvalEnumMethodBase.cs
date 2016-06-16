@@ -46,17 +46,7 @@ namespace com.espertech.esper.epl.enummethod.dot
 
         public abstract EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, EventAdapterService eventAdapterService);
 
-        public abstract EnumEval GetEnumEval(
-            MethodResolutionService methodResolutionService,
-            EventAdapterService eventAdapterService,
-            StreamTypeService streamTypeService,
-            String statementId,
-            String enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache);
+        public abstract EnumEval GetEnumEval(MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache);
 
         public EnumMethodEnum EnumMethodEnum
         {

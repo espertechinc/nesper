@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -17,10 +16,8 @@ using com.espertech.esper.client.soda;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.deploy;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
@@ -29,7 +26,7 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class EPAdministratorImpl : EPAdministratorSPI
     {
-        private const String SUBS_PARAM_INVALID_USE = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
+        private const string SUBS_PARAM_INVALID_USE = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
 
         private EPServicesContext _services;
         private ConfigurationOperations _configurationOperations;
@@ -43,23 +40,16 @@ namespace com.espertech.esper.core.service
             _services = adminContext.Services;
             _configurationOperations = adminContext.ConfigurationOperations;
             _defaultStreamSelector = adminContext.DefaultStreamSelector;
-    
-            ConfigurationEngineDefaults.AlternativeContext alternativeContext = adminContext.Services.ConfigSnapshot.EngineDefaults.AlternativeContextConfig;
-            StatementIdGenerator statementIdGenerator = null;
-            if (alternativeContext != null && alternativeContext.StatementIdGeneratorFactory != null) {
-                var statementIdGeneratorFactory = TypeHelper.Instantiate<StatementIdGeneratorFactory>(alternativeContext.StatementIdGeneratorFactory);
-                statementIdGenerator = statementIdGeneratorFactory.Invoke(new StatementIdGeneratorFactoryContext(_services.EngineURI));
-            }
 
             _deploymentAdminService = new EPDeploymentAdminImpl(
-                this,
+                this, 
                 adminContext.Services.DeploymentStateService,
                 adminContext.Services.StatementEventTypeRefService,
-                adminContext.Services.EventAdapterService, 
+                adminContext.Services.EventAdapterService,
                 adminContext.Services.StatementIsolationService,
-                statementIdGenerator, 
                 adminContext.Services.FilterService,
-                _services.ConfigSnapshot.EngineDefaults.ExpressionConfig.TimeZone);
+                _services.ConfigSnapshot.EngineDefaults.ExpressionConfig.TimeZone,
+                _services.ConfigSnapshot.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy);
         }
 
         public EPDeploymentAdmin DeploymentAdmin
@@ -67,65 +57,66 @@ namespace com.espertech.esper.core.service
             get { return _deploymentAdminService; }
         }
 
-        public EPStatement CreatePattern(String onExpression)
+        public EPStatement CreatePattern(string onExpression)
         {
             return CreatePatternStmt(onExpression, null, null, null);
         }
     
-        public EPStatement CreateEPL(String eplStatement)
+        public EPStatement CreateEPL(string eplStatement)
         {
             return CreateEPLStmt(eplStatement, null, null, null);
         }
     
-        public EPStatement CreatePattern(String expression, String statementName)
+        public EPStatement CreatePattern(string expression, string statementName)
         {
             return CreatePatternStmt(expression, statementName, null, null);
         }
     
-        public EPStatement CreatePattern(String expression, String statementName, Object userObject)
+        public EPStatement CreatePattern(string expression, string statementName, object userobject)
         {
-            return CreatePatternStmt(expression, statementName, userObject, null);
+            return CreatePatternStmt(expression, statementName, userobject, null);
         }
     
-        public EPStatement CreateEPL(String eplStatement, String statementName)
+        public EPStatement CreateEPL(string eplStatement, string statementName)
         {
             return CreateEPLStmt(eplStatement, statementName, null, null);
         }
     
-        public EPStatement CreateEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId)
+        public EPStatement CreateEPLStatementId(string eplStatement, string statementName, object userobject, int statementId)
         {
-            return CreateEPLStmt(eplStatement, statementName, userObject, statementId);
+            return CreateEPLStmt(eplStatement, statementName, userobject, statementId);
         }
     
-        public EPStatement CreateEPL(String eplStatement, String statementName, Object userObject)
+        public EPStatement CreateEPL(string eplStatement, string statementName, object userobject)
         {
-            return CreateEPLStmt(eplStatement, statementName, userObject, null);
+            return CreateEPLStmt(eplStatement, statementName, userobject, null);
         }
     
-        public EPStatement CreatePattern(String expression, Object userObject)
+        public EPStatement CreatePattern(string expression, object userobject)
         {
-            return CreatePatternStmt(expression, null, userObject, null);
+            return CreatePatternStmt(expression, null, userobject, null);
         }
     
-        public EPStatement CreatePatternStatementId(String pattern, String statementName, Object userObject, String statementId) {
-            return CreatePatternStmt(pattern, statementName, userObject, statementId);
+        public EPStatement CreatePatternStatementId(string pattern, string statementName, object userobject, int statementId)
+        {
+            return CreatePatternStmt(pattern, statementName, userobject, statementId);
         }
     
-        public EPStatement CreateEPL(String eplStatement, Object userObject)
+        public EPStatement CreateEPL(string eplStatement, object userobject)
         {
-            return CreateEPLStmt(eplStatement, null, userObject, null);
+            return CreateEPLStmt(eplStatement, null, userobject, null);
+        }
+
+        private EPStatement CreatePatternStmt(string expression, string statementName, object userobject, int? optionalStatementId)
+        {
+            var rawPattern = EPAdministratorHelper.CompilePattern(expression, expression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            return _services.StatementLifecycleSvc.CreateAndStart(rawPattern, expression, true, statementName, userobject, null, optionalStatementId, null);
         }
     
-        private EPStatement CreatePatternStmt(String expression, String statementName, Object userObject, String statementId)
+        private EPStatement CreateEPLStmt(string eplStatement, string statementName, object userobject, int? optionalStatementId)
         {
-            StatementSpecRaw rawPattern = EPAdministratorHelper.CompilePattern(expression, expression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-            return _services.StatementLifecycleSvc.CreateAndStart(rawPattern, expression, true, statementName, userObject, null, statementId, null);
-        }
-    
-        private EPStatement CreateEPLStmt(String eplStatement, String statementName, Object userObject, String statementId)
-        {
-            StatementSpecRaw statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, statementName, _services, _defaultStreamSelector);
-            EPStatement statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, null, statementId, null);
+            var statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, statementName, _services, _defaultStreamSelector);
+            var statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userobject, null, optionalStatementId, null);
     
             Log.Debug(".createEPLStmt Statement created and started");
             return statement;
@@ -135,85 +126,88 @@ namespace com.espertech.esper.core.service
         {
             return Create(sodaStatement, null);
         }
-    
-        public EPStatement CreateModelStatementId(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId) {
-            return Create(sodaStatement, statementName, userObject, statementId);
+
+        public EPStatement CreateModelStatementId(EPStatementObjectModel sodaStatement, string statementName, object userobject, int statementId)
+        {
+            return Create(sodaStatement, statementName, userobject, statementId);
         }
     
-        public EPStatement Create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) {
-            return Create(sodaStatement, statementName, userObject, null);
+        public EPStatement Create(EPStatementObjectModel sodaStatement, string statementName, object userobject)
+        {
+            return Create(sodaStatement, statementName, userobject, null);
         }
-    
-        public EPStatement Create(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId)
+
+        public EPStatement Create(EPStatementObjectModel sodaStatement, string statementName, object userobject, int? optionalStatementId)
         {
             // Specifies the statement
-            StatementSpecRaw statementSpec = MapSODAToRaw(sodaStatement);
-            String eplStatement = sodaStatement.ToEPL();
+            var statementSpec = MapSODAToRaw(sodaStatement);
+            var eplStatement = sodaStatement.ToEPL();
     
-            EPStatement statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, null, statementId, sodaStatement);
+            var statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userobject, null, optionalStatementId, sodaStatement);
     
             Log.Debug(".createEPLStmt Statement created and started");
             return statement;
         }
     
-        public EPStatement Create(EPStatementObjectModel sodaStatement, String statementName)
+        public EPStatement Create(EPStatementObjectModel sodaStatement, string statementName)
         {
             // Specifies the statement
-            StatementSpecRaw statementSpec = MapSODAToRaw(sodaStatement);
-            String eplStatement = sodaStatement.ToEPL();
+            var statementSpec = MapSODAToRaw(sodaStatement);
+            var eplStatement = sodaStatement.ToEPL();
     
-            EPStatement statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, null, null, null, sodaStatement);
+            var statement = _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, null, null, null, sodaStatement);
     
             Log.Debug(".createEPLStmt Statement created and started");
             return statement;
         }
     
-        public EPPreparedStatement PrepareEPL(String eplExpression)
+        public EPPreparedStatement PrepareEPL(string eplExpression)
         {
             // compile to specification
-            StatementSpecRaw statementSpec = EPAdministratorHelper.CompileEPL(eplExpression, eplExpression, true, null, _services, _defaultStreamSelector);
+            var statementSpec = EPAdministratorHelper.CompileEPL(eplExpression, eplExpression, true, null, _services, _defaultStreamSelector);
     
             // map to object model thus finding all substitution parameters and their indexes
-            StatementSpecUnMapResult unmapped = StatementSpecMapper.Unmap(statementSpec);
+            var unmapped = StatementSpecMapper.Unmap(statementSpec);
     
             // the prepared statement is the object model plus a list of substitution parameters
             // map to specification will refuse any substitution parameters that are unfilled
             return new EPPreparedStatementImpl(unmapped.ObjectModel, unmapped.SubstitutionParams, eplExpression);
         }
     
-        public EPPreparedStatement PreparePattern(String patternExpression)
+        public EPPreparedStatement PreparePattern(string patternExpression)
         {
-            StatementSpecRaw rawPattern = EPAdministratorHelper.CompilePattern(patternExpression, patternExpression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            var rawPattern = EPAdministratorHelper.CompilePattern(patternExpression, patternExpression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
     
             // map to object model thus finding all substitution parameters and their indexes
-            StatementSpecUnMapResult unmapped = StatementSpecMapper.Unmap(rawPattern);
+            var unmapped = StatementSpecMapper.Unmap(rawPattern);
     
             // the prepared statement is the object model plus a list of substitution parameters
             // map to specification will refuse any substitution parameters that are unfilled
             return new EPPreparedStatementImpl(unmapped.ObjectModel, unmapped.SubstitutionParams, null);
         }
-    
-        public EPStatement Create(EPPreparedStatement prepared, String statementName, Object userObject, String statementId)
+
+        public EPStatement Create(EPPreparedStatement prepared, string statementName, object userobject, int? optionalStatementId)
         {
-            EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
+            var impl = (EPPreparedStatementImpl) prepared;
     
-            StatementSpecRaw statementSpec = MapSODAToRaw(impl.Model);
-            String eplStatement = impl.Model.ToEPL();
+            var statementSpec = MapSODAToRaw(impl.Model);
+            var eplStatement = impl.Model.ToEPL();
     
-            return _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, null, statementId, impl.Model);
+            return _services.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userobject, null, optionalStatementId, impl.Model);
         }
     
-        public EPStatement Create(EPPreparedStatement prepared, String statementName)
+        public EPStatement Create(EPPreparedStatement prepared, string statementName)
         {
             return Create(prepared, statementName, null, null);
         }
     
-        public EPStatement Create(EPPreparedStatement prepared, String statementName, Object userObject) {
-            return Create(prepared, statementName, userObject, null);
+        public EPStatement Create(EPPreparedStatement prepared, string statementName, object userobject) {
+            return Create(prepared, statementName, userobject, null);
         }
     
-        public EPStatement CreatePreparedEPLStatementId(EPPreparedStatementImpl prepared, String statementName, Object userObject, String statementId) {
-            return Create(prepared, statementName, userObject, statementId);
+        public EPStatement CreatePreparedEPLStatementId(EPPreparedStatementImpl prepared, string statementName, object userobject, int statementId)
+        {
+            return Create(prepared, statementName, userobject, statementId);
         }
     
         public EPStatement Create(EPPreparedStatement prepared)
@@ -221,10 +215,10 @@ namespace com.espertech.esper.core.service
             return Create(prepared, null);
         }
     
-        public EPStatementObjectModel CompileEPL(String eplStatement)
+        public EPStatementObjectModel CompileEPL(string eplStatement)
         {
-            StatementSpecRaw statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, null, _services, _defaultStreamSelector);
-            StatementSpecUnMapResult unmapped = StatementSpecMapper.Unmap(statementSpec);
+            var statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, null, _services, _defaultStreamSelector);
+            var unmapped = StatementSpecMapper.Unmap(statementSpec);
             if (unmapped.SubstitutionParams.Count != 0)
             {
                 throw new EPException(SUBS_PARAM_INVALID_USE);
@@ -232,12 +226,13 @@ namespace com.espertech.esper.core.service
             return unmapped.ObjectModel;
         }
     
-        public EPStatement GetStatement(String name)
+        public EPStatement GetStatement(string name)
         {
             return _services.StatementLifecycleSvc.GetStatementByName(name);
         }
     
-        public String GetStatementNameForId(String statementId) {
+        public string GetStatementNameForId(int statementId)
+        {
             return _services.StatementLifecycleSvc.GetStatementNameById(statementId);
         }
 
@@ -273,12 +268,14 @@ namespace com.espertech.esper.core.service
             _configurationOperations = null;
         }
     
-        public StatementSpecRaw CompileEPLToRaw(String epl) {
+        public StatementSpecRaw CompileEPLToRaw(string epl)
+        {
             return EPAdministratorHelper.CompileEPL(epl, epl, true, null, _services, _defaultStreamSelector);
         }
     
-        public EPStatementObjectModel MapRawToSODA(StatementSpecRaw raw) {
-            StatementSpecUnMapResult unmapped = StatementSpecMapper.Unmap(raw);
+        public EPStatementObjectModel MapRawToSODA(StatementSpecRaw raw)
+        {
+            var unmapped = StatementSpecMapper.Unmap(raw);
             if (unmapped.SubstitutionParams.Count != 0)
             {
                 throw new EPException(SUBS_PARAM_INVALID_USE);
@@ -296,53 +293,53 @@ namespace com.espertech.esper.core.service
                 _services.SchedulingService, 
                 _services.EngineURI,
                 _services.PatternNodeFactory,
-                _services.NamedWindowService,
+                _services.NamedWindowMgmtService,
                 _services.ContextManagementService,
                 _services.ExprDeclaredService,
                 _services.TableService);
         }
     
-        public EvalFactoryNode CompilePatternToNode(String pattern)
+        public EvalFactoryNode CompilePatternToNode(string pattern)
         {
-            StatementSpecRaw raw = EPAdministratorHelper.CompilePattern(pattern, pattern, false, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            var raw = EPAdministratorHelper.CompilePattern(pattern, pattern, false, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             return ((PatternStreamSpecRaw) raw.StreamSpecs[0]).EvalFactoryNode;
         }
     
-        public EPStatementObjectModel CompilePatternToSODAModel(String expression) {
-            StatementSpecRaw rawPattern = EPAdministratorHelper.CompilePattern(expression, expression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+        public EPStatementObjectModel CompilePatternToSODAModel(string expression) {
+            var rawPattern = EPAdministratorHelper.CompilePattern(expression, expression, true, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             return MapRawToSODA(rawPattern);
         }
     
-        public ExprNode CompileExpression(String expression)
+        public ExprNode CompileExpression(string expression)
         {
-            String toCompile = "select * from System.Object.win:time(" + expression + ")";
-            StatementSpecRaw raw = EPAdministratorHelper.CompileEPL(toCompile, expression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            var toCompile = "select * from System.object.win:time(" + expression + ")";
+            var raw = EPAdministratorHelper.CompileEPL(toCompile, expression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             return raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
         }
     
-        public Expression CompileExpressionToSODA(String expression)
+        public Expression CompileExpressionToSODA(string expression)
         {
-            ExprNode node = CompileExpression(expression);
+            var node = CompileExpression(expression);
             return StatementSpecMapper.Unmap(node);
         }
     
-        public PatternExpr CompilePatternToSODA(String expression)
+        public PatternExpr CompilePatternToSODA(string expression)
         {
-            EvalFactoryNode node = CompilePatternToNode(expression);
+            var node = CompilePatternToNode(expression);
             return StatementSpecMapper.Unmap(node);
         }
     
-        public AnnotationPart CompileAnnotationToSODA(String annotationExpression)
+        public AnnotationPart CompileAnnotationToSODA(string annotationExpression)
         {
-            String toCompile = annotationExpression + " select * from System.Object";
-            StatementSpecRaw raw = EPAdministratorHelper.CompileEPL(toCompile, annotationExpression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            var toCompile = annotationExpression + " select * from System.object";
+            var raw = EPAdministratorHelper.CompileEPL(toCompile, annotationExpression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             return StatementSpecMapper.Unmap(raw.Annotations[0]);
         }
     
-        public MatchRecognizeRegEx CompileMatchRecognizePatternToSODA(String matchRecogPatternExpression)
+        public MatchRecognizeRegEx CompileMatchRecognizePatternToSODA(string matchRecogPatternExpression)
         {
-            String toCompile = "select * from System.Object Match_recognize(measures a.b as c pattern (" + matchRecogPatternExpression + ") define A as true)";
-            StatementSpecRaw raw = EPAdministratorHelper.CompileEPL(toCompile, matchRecogPatternExpression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            var toCompile = "select * from System.object Match_recognize(measures a.b as c pattern (" + matchRecogPatternExpression + ") define A as true)";
+            var raw = EPAdministratorHelper.CompileEPL(toCompile, matchRecogPatternExpression, false, null, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             return StatementSpecMapper.Unmap(raw.MatchRecognizeSpec.Pattern);
         }
 

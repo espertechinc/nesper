@@ -31,24 +31,24 @@ namespace com.espertech.esper.epl.virtualdw
             IList<IndexedPropDesc> btreeProps);
 
         SubordTableLookupStrategy GetSubordinateLookupStrategy(
-            String accessedByStatementName,
-            String accessedByStatementId,
+            string accessedByStatementName,
+            int accessedByStatementId,
             Attribute[] accessedByStmtAnnotations,
             EventType[] outerStreamTypes,
             IList<SubordPropHashKey> hashKeys,
             CoercionDesc hashKeyCoercionTypes,
             IList<SubordPropRangeKey> rangeKeys,
             CoercionDesc rangeKeyCoercionTypes,
-            Boolean nwOnTrigger,
+            bool nwOnTrigger,
             EventTable eventTable,
             SubordPropPlan joinDesc,
-            Boolean forceTableScan);
+            bool forceTableScan);
 
         EventTable GetJoinIndexTable(QueryPlanIndexItem queryPlanIndexItem);
 
         JoinExecTableLookupStrategy GetJoinLookupStrategy(
-            String accessedByStatementName,
-            String accessedByStatementId,
+            string accessedByStatementName,
+            int accessedByStatementId,
             Attribute[] accessedByStmtAnnotations,
             EventTable[] eventTable,
             TableLookupKeyDesc keyDescriptor,

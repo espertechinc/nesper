@@ -12,9 +12,9 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.db;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.join.pollindex;
 using com.espertech.esper.epl.join.table;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.view
 {
@@ -24,6 +24,7 @@ namespace com.espertech.esper.view
     public interface HistoricalEventViewable 
         : Viewable
         , ValidatedView
+        , StopCallback
     {
         /// <summary>
         /// Returns true if the parameters expressions to the historical require other stream's data, or 
@@ -64,8 +65,11 @@ namespace com.espertech.esper.view
         EventTable[][] Poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy, ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
-        /// Stops this instance.
+        /// Gets the optional data cache.
         /// </summary>
-        void Stop();
+        /// <value>
+        /// The optional data cache.
+        /// </value>
+        DataCache OptionalDataCache { get; }
     }
 }

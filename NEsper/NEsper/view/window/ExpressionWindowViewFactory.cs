@@ -33,7 +33,7 @@ namespace com.espertech.esper.view.window
         public override View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var builtinBean = new ObjectArrayEventBean(ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(), BuiltinMapType);
-            var randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
             return new ExpressionWindowView(this, randomAccess, ExpiryExpression.ExprEvaluator, AggregationServiceFactoryDesc, builtinBean, VariableNames, agentInstanceViewFactoryContext);
         }
     

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.client
         [Test]
 	    public void TestSubscriberNamedUpdateMethod()
 	    {
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        var stmt = _epService.EPAdministrator.CreateEPL("select theString from SupportBean");
 	        var subscriber = new MyNamedUpdateSubscriber();
             stmt.Subscriber = new EPSubscriber(subscriber, "SomeNewDataMayHaveArrived");

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
@@ -36,14 +37,14 @@ namespace com.espertech.esper.filter
             _numberCoercer = numberCoercer;
         }
 
-        public override Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
-            if (evaluatorContext.ContextProperties == null)
+            if (agentInstanceContext.ContextProperties == null)
             {
                 return null;
             }
-            Object result = _getter.Get(evaluatorContext.ContextProperties);
 
+            var result = _getter.Get(agentInstanceContext.ContextProperties);
             if (_numberCoercer == null)
             {
                 return result;

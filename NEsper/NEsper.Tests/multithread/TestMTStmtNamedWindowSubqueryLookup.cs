@@ -43,7 +43,7 @@ namespace com.espertech.esper.multithread
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = EventRepresentation.MAP; // use Map-type events for testing
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             _engine = EPServiceProviderManager.GetDefaultProvider(config);
             _engine.Initialize();
     

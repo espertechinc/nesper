@@ -268,7 +268,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual("5 seconds", buf.ToString());
 
             EvalFactoryNode pattern = spi.CompilePatternToNode("every A -> B");
-            Assert.AreEqual(typeof(EvalFollowedByFactoryNode), pattern.GetType());
+            Assert.That(pattern, Is.InstanceOf<EvalFollowedByFactoryNode>());
 
             PatternExpr patternExpr = spi.CompilePatternToSODA("every A -> B");
             Assert.AreEqual(typeof(PatternFollowedByExpr), patternExpr.GetType());

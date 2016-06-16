@@ -57,7 +57,6 @@ namespace com.espertech.esper.core.service
         /// <param name="isFailed">indicator to start in failed state</param>
         /// <param name="nameProvided">true to indicate a statement name has been provided and is not a system-generated name</param>
         public EPStatementImpl(
-            EPServiceProvider serviceProvider,
             String expressionNoAnnotations,
             bool isPattern,
             DispatchService dispatchService,
@@ -76,7 +75,6 @@ namespace com.espertech.esper.core.service
             _statementLifecycleSvc = statementLifecycleSvc;
             _statementListenerSet = new EPStatementListenerSet();
 
-            ServiceProvider = serviceProvider;
             IsPattern = isPattern;
             ExpressionNoAnnotations = expressionNoAnnotations;
             StatementContext = statementContext;
@@ -187,7 +185,7 @@ namespace com.espertech.esper.core.service
         /// Returns the statement id.
         /// </summary>
         /// <listenerSet>statement id</listenerSet>
-        public string StatementId
+        public int StatementId
         {
             get { return StatementContext.StatementId; }
         }
@@ -569,7 +567,7 @@ namespace com.espertech.esper.core.service
             {
                 throw new IllegalStateException("Statement already destroyed");
             }
-            _statementLifecycleSvc.Destroy(StatementContext.StatementId);
+            _statementLifecycleSvc.Dispose(StatementContext.StatementId);
             _parentView = null;
             EventType = null;
             _dispatchChildView = null;

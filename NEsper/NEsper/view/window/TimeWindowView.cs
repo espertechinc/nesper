@@ -19,6 +19,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
 {
@@ -38,6 +39,7 @@ namespace com.espertech.esper.view.window
         , DataWindowView
         , ScheduleAdjustmentCallback
         , StoppableView
+        , StopCallback
     {
         private readonly TimeWindowViewFactory _timeWindowViewFactory;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;

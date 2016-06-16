@@ -17,7 +17,7 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupAllLocalGroupByFactory : AggregationServiceFactory
     {
-        protected readonly bool IsJoin;
+        protected internal readonly bool IsJoin;
         private readonly object _groupKeyBinding;
         private readonly AggregationLocalGroupByPlan _localGroupByPlan;
 
@@ -33,7 +33,9 @@ namespace com.espertech.esper.epl.agg.service
 
         public AggregationService MakeService(
             AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService)
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             return new AggSvcGroupAllLocalGroupBy(methodResolutionService, IsJoin, _localGroupByPlan, _groupKeyBinding);
         }

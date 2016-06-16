@@ -31,6 +31,7 @@ namespace com.espertech.esper.view.internals
         , DataWindowView
         , IntersectViewMarker
         , ViewDataVisitableContainer
+        , ViewContainer
     {
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
         private readonly IntersectViewFactory _intersectViewFactory;
@@ -72,6 +73,11 @@ namespace com.espertech.esper.view.internals
                 _views[i].AddView(view);
                 view.Observer = this;
             }
+        }
+
+        public View[] ViewContained
+        {
+            get { return Views; }
         }
 
         public View CloneView()
@@ -288,14 +294,11 @@ namespace com.espertech.esper.view.internals
             UpdateChildren(null, oldEvents);
         }
 
-        public void StopView()
+        public void Stop()
         {
-            foreach (View view in _views)
+            foreach (var view in _views.OfType<StoppableView>())
             {
-                if (view is StoppableView)
-                {
-                    ((StoppableView) view).StopView();
-                }
+                view.Stop();
             }
         }
 

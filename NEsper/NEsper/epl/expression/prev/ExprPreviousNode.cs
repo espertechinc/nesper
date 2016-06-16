@@ -187,14 +187,14 @@ namespace com.espertech.esper.epl.expression.prev
 	        return _evaluator.EvaluateGetCollScalar(eventsPerStream, context);
 	    }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId) {
+	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
 	        if (_previousType == ExprPreviousNodePreviousType.PREV || _previousType == ExprPreviousNodePreviousType.PREVTAIL) {
 	            return null;
 	        }
 	        return _enumerationMethodType;
 	    }
 
-	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
 	        if (_previousType == ExprPreviousNodePreviousType.PREV || _previousType == ExprPreviousNodePreviousType.PREVTAIL) {
 	            return _enumerationMethodType;
 	        }

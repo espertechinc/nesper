@@ -17,43 +17,40 @@ using com.espertech.esper.support.events;
 
 using NUnit.Framework;
 
-
-
-
 namespace com.espertech.esper.epl.join.exec
 {
     [TestFixture]
     public class TestTableOuterLookupExecNode 
     {
-        private TableOuterLookupExecNode exec;
-        private UnindexedEventTable index;
+        private TableOuterLookupExecNode _exec;
+        private UnindexedEventTable _index;
     
         [SetUp]
         public void SetUp()
         {
-            index = new UnindexedEventTable(0);
-            exec = new TableOuterLookupExecNode(1, new FullTableScanLookupStrategy(index));
+            _index = new UnindexedEventTableImpl(0);
+            _exec = new TableOuterLookupExecNode(1, new FullTableScanLookupStrategy(_index));
         }
     
         [Test]
         public void TestFlow()
         {
-            EventBean[] lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents(new String[] {"a2"});
-            List<EventBean[]> result = new List<EventBean[]>();
-            EventBean[] prefill = new EventBean[] {lookupEvents[0], null};
+            var lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents(new String[] {"a2"});
+            var result = new List<EventBean[]>();
+            var prefill = new EventBean[] {lookupEvents[0], null};
     
             // Test lookup on empty index, expect 1 row
-            exec.Process(lookupEvents[0], prefill, result, null);
+            _exec.Process(lookupEvents[0], prefill, result, null);
             Assert.AreEqual(1, result.Count);
-            EventBean[] events = result.FirstOrDefault();
+            var events = result.FirstOrDefault();
             Assert.IsNull(events[1]);
             Assert.AreSame(lookupEvents[0], events[0]);
             result.Clear();
     
             // Test lookup on filled index, expect row2
-            EventBean[] indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
-            index.Add(indexEvents);
-            exec.Process(lookupEvents[0], prefill, result, null);
+            var indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
+            _index.Add(indexEvents);
+            _exec.Process(lookupEvents[0], prefill, result, null);
             Assert.AreEqual(2, result.Count);
     
             IEnumerator<EventBean[]> it = result.GetEnumerator();

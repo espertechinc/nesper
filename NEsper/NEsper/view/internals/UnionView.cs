@@ -32,6 +32,7 @@ namespace com.espertech.esper.view.internals
         , StoppableView
         , DataWindowView
         , ViewDataVisitableContainer
+        , ViewContainer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -85,7 +86,12 @@ namespace com.espertech.esper.view.internals
                 }
             }
         }
-    
+
+        public View[] ViewContained
+        {
+            get { return _views; }
+        }
+
         public View CloneView()
         {
             return _unionViewFactory.MakeView(_agentInstanceViewFactoryContext);
@@ -259,14 +265,11 @@ namespace com.espertech.esper.view.internals
             }
         }
 
-        public void StopView()
+        public void Stop()
         {
-            foreach (View view in _views)
+            foreach (var view in _views.OfType<StoppableView>())
             {
-                if (view is StoppableView)
-                {
-                    ((StoppableView) view).StopView();
-                }
+                view.Stop();
             }
         }
 

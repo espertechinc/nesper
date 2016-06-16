@@ -39,7 +39,7 @@ namespace com.espertech.esper.filter
         /// <param name="matches">is a collection that is populated via add method with any handles for matching filters</param>
         /// <param name="statementId">statement for which to return results for</param>
         /// <returns>filter current version</returns>
-        long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, String statementId);
+        long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, int statementId);
 
         /// <summary>
         /// Add a filter for events as defined by the filter specification, and register a callback to be invoked upon evaluation of an event that matches the filter spec.

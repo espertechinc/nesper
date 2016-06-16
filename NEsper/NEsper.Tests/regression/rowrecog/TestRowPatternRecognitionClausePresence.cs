@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.rowrecog
         [Test]
         public void TestMultimatchSelect() {    //When not measuring "B as b", B.size() is inaccessible.
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
     

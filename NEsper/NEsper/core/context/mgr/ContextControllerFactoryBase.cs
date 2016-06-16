@@ -17,7 +17,7 @@ namespace com.espertech.esper.core.context.mgr
 {
     public abstract class ContextControllerFactoryBase : ContextControllerFactory
     {
-        private readonly ContextControllerFactoryContext _factoryContext;
+        protected readonly ContextControllerFactoryContext _factoryContext;
 
         protected ContextControllerFactoryBase(ContextControllerFactoryContext factoryContext)
         {
@@ -27,6 +27,11 @@ namespace com.espertech.esper.core.context.mgr
         public virtual ContextControllerFactoryContext FactoryContext
         {
             get { return _factoryContext; }
+        }
+
+        public virtual ContextStateCache StateCache
+        {
+            get { return _factoryContext.StateCache; }
         }
 
         public abstract IDictionary<string, object> ContextBuiltinProps { get; }
@@ -39,7 +44,6 @@ namespace com.espertech.esper.core.context.mgr
         public abstract ContextController CreateNoCallback(int pathId, ContextControllerLifecycleCallback callback);
         public abstract void PopulateFilterAddendums(IDictionary<FilterSpecCompiled, FilterValueSetParam[][]> filterAddendum, ContextControllerStatementDesc statement, object key, int contextId);
         public abstract FilterSpecLookupable GetFilterLookupable(EventType eventType);
-        public abstract ContextStateCache StateCache { get; }
         public abstract ContextPartitionIdentifier KeyPayloadToIdentifier(object payload);
     }
 }

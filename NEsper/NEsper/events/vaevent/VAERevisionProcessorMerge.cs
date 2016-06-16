@@ -180,7 +180,7 @@ namespace com.espertech.esper.events.vaevent
                 _statePerKey.Remove(key);
     
                 // Insert into indexes for fast deletion, if there are any
-                foreach (EventTable table in indexRepository.Tables)
+                foreach (EventTable table in indexRepository.GetTables())
                 {
                     table.Remove(oldData);
                 }
@@ -263,7 +263,7 @@ namespace com.espertech.esper.events.vaevent
                 revisionEvent.IsLatest = true;
     
                 // Insert into indexes for fast deletion, if there are any
-                foreach (EventTable table in indexRepository.Tables)
+                foreach (EventTable table in indexRepository.GetTables())
                 {
                     table.Add(newData);
                 }
@@ -292,7 +292,7 @@ namespace com.espertech.esper.events.vaevent
             var oldDataPost = new EventBean[]{lastEvent};
     
             // Update indexes
-            foreach (EventTable table in indexRepository.Tables)
+            foreach (EventTable table in indexRepository.GetTables())
             {
                 table.Remove(oldDataPost);
                 table.Add(newDataPost);
@@ -337,8 +337,8 @@ namespace com.espertech.esper.events.vaevent
                 {
                     var key = theEvent.Key;
                     _statePerKey.Remove(key);
-    
-                    foreach (EventTable table in indexRepository.Tables)
+
+                    foreach (EventTable table in indexRepository.GetTables())
                     {
                         table.Remove(oldData);
                     }

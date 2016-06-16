@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
 	    public void TestInvokeMethod()
         {
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        _epService.EPAdministrator.Configuration.AddImport(typeof(MySimpleVariableServiceFactory));
 	        _epService.EPAdministrator.Configuration.AddImport(typeof(MySimpleVariableService));
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
 	    public void TestConstantVariable()
         {
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        _epService.EPAdministrator.CreateEPL("create const variable int MYCONST = 10");
 
             TryOperator("MYCONST = IntBoxed", new object[][] { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
@@ -1091,12 +1091,15 @@ namespace com.espertech.esper.regression.epl
 	        }
 
 	        // assert type of expression
-	        var set = filterSpi.Take(Collections.SingletonList(stmt.StatementId));
-	        Assert.AreEqual(1, set.Filters.Count);
-	        var valueSet = set.Filters[0].FilterValueSet;
-	        Assert.AreEqual(1, valueSet.Parameters.Length);
-	        var para = valueSet.Parameters[0][0];
-	        Assert.IsTrue(para.FilterOperator != FilterOperator.BOOLEAN_EXPRESSION);
+	        if (filterSpi.IsSupportsTakeApply)
+	        {
+	            var set = filterSpi.Take(Collections.SingletonList(stmt.StatementId));
+	            Assert.AreEqual(1, set.Filters.Count);
+	            var valueSet = set.Filters[0].FilterValueSet;
+	            Assert.AreEqual(1, valueSet.Parameters.Length);
+	            var para = valueSet.Parameters[0][0];
+	            Assert.IsTrue(para.FilterOperator != FilterOperator.BOOLEAN_EXPRESSION);
+	        }
 
 	        stmt.Dispose();
 	    }

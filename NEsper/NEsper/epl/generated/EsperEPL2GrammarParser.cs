@@ -12,8 +12,6 @@
 
 // Unreachable code detected
 
-using System.Linq;
-
 #pragma warning disable 0162
 // The variable '...' is assigned but its value is never used
 #pragma warning disable 0219
@@ -24,7 +22,8 @@ namespace com.espertech.esper.epl.generated {
 
   using System;
   using System.Collections.Generic;
-  
+  using System.Linq;
+
   using com.espertech.esper.compat;
   using com.espertech.esper.compat.collections;
   using com.espertech.esper.compat.logging;
@@ -14762,15 +14761,15 @@ public partial class EsperEPL2GrammarParser : Parser {
 		}
 	}
 	public partial class Builtin_priorContext : BuiltinFuncContext {
-		public NumberContext number() {
-			return GetRuleContext<NumberContext>(0);
-		}
 		public ITerminalNode LPAREN() { return GetToken(EsperEPL2GrammarParser.LPAREN, 0); }
 		public ITerminalNode COMMA() { return GetToken(EsperEPL2GrammarParser.COMMA, 0); }
 		public EventPropertyContext eventProperty() {
 			return GetRuleContext<EventPropertyContext>(0);
 		}
 		public ITerminalNode RPAREN() { return GetToken(EsperEPL2GrammarParser.RPAREN, 0); }
+		public ExpressionContext expression() {
+			return GetRuleContext<ExpressionContext>(0);
+		}
 		public ITerminalNode PRIOR() { return GetToken(EsperEPL2GrammarParser.PRIOR, 0); }
 		public Builtin_priorContext(BuiltinFuncContext context) { CopyFrom(context); }
 		public override void EnterRule(IParseTreeListener listener) {
@@ -15569,7 +15568,7 @@ public partial class EsperEPL2GrammarParser : Parser {
 				{
 				State = 2353; Match(PRIOR);
 				State = 2354; Match(LPAREN);
-				State = 2355; number();
+				State = 2355; expression();
 				State = 2356; Match(COMMA);
 				State = 2357; eventProperty();
 				State = 2358; Match(RPAREN);
@@ -23815,7 +23814,7 @@ public partial class EsperEPL2GrammarParser : Parser {
 		"\a\x90\x2\x2\x92B\x975\x3\x2\x2\x2\x92C\x92D\aG\x2\x2\x92D\x92E\a\x8F"+
 		"\x2\x2\x92E\x92F\x5\x118\x8D\x2\x92F\x931\a\x90\x2\x2\x930\x932\x5\x134"+
 		"\x9B\x2\x931\x930\x3\x2\x2\x2\x931\x932\x3\x2\x2\x2\x932\x975\x3\x2\x2"+
-		"\x2\x933\x934\aH\x2\x2\x934\x935\a\x8F\x2\x2\x935\x936\x5\x1D6\xEC\x2"+
+		"\x2\x933\x934\aH\x2\x2\x934\x935\a\x8F\x2\x2\x935\x936\x5\x118\x8D\x2"+
 		"\x936\x937\a\x96\x2\x2\x937\x938\x5\x1B8\xDD\x2\x938\x939\a\x90\x2\x2"+
 		"\x939\x975\x3\x2\x2\x2\x93A\x93B\a\x85\x2\x2\x93B\x93C\a\x8F\x2\x2\x93C"+
 		"\x93D\x5\x118\x8D\x2\x93D\x93E\a\x90\x2\x2\x93E\x975\x3\x2\x2\x2\x93F"+

@@ -75,14 +75,14 @@ namespace com.espertech.esper.core.start
             }
 
             RandomAccessByIndexGetter randomAccessGetter = null;
-            RelativeAccessByEventNIndexMap relativeAccessGetter = null;
+            RelativeAccessByEventNIndexGetter relativeAccessGetter = null;
             if (previousNodeGetter is RandomAccessByIndexGetter)
             {
                 randomAccessGetter = (RandomAccessByIndexGetter)previousNodeGetter;
             }
-            else if (previousNodeGetter is RelativeAccessByEventNIndexMap)
+            else if (previousNodeGetter is RelativeAccessByEventNIndexGetter)
             {
-                relativeAccessGetter = (RelativeAccessByEventNIndexMap)previousNodeGetter;
+                relativeAccessGetter = (RelativeAccessByEventNIndexGetter)previousNodeGetter;
             }
             else
             {

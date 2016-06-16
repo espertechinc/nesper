@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.epl.db
 {
@@ -48,9 +49,14 @@ namespace com.espertech.esper.epl.db
         /// Returns a new cache implementation for this database.
         /// </summary>
         /// <param name="databaseName">is the name of the database to return a new cache implementation for for</param>
+        /// <param name="statementContext">The statement context.</param>
         /// <param name="epStatementAgentInstanceHandle">is the statements-own handle for use in registering callbacks with services</param>
-        /// <returns>cache implementation</returns>
+        /// <param name="dataCacheFactory">The data cache factory.</param>
+        /// <param name="streamNumber">The stream number.</param>
+        /// <returns>
+        /// cache implementation
+        /// </returns>
         /// <throws>DatabaseConfigException is thrown to indicate database configuration errors</throws>
-	    DataCache GetDataCache(String databaseName, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle);
+        DataCache GetDataCache(String databaseName, StatementContext statementContext, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle, DataCacheFactory dataCacheFactory, int streamNumber);
 	}
 }

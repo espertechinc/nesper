@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.epl.variable
 {
+    [Obsolete]
     public static class VariableServiceConstants
     {
-        public const int NOCONTEXT_AGENTINSTANCEID = 0;
     }
 } // End of namespace

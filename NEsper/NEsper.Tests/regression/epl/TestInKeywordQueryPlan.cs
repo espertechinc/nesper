@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.epl
 	        _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
 	        _epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));
 	        _epService.EPAdministrator.Configuration.AddEventType("S2", typeof(SupportBean_S2));
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	    }
 
         [TearDown]

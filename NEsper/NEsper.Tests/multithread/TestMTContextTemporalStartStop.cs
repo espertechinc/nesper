@@ -35,7 +35,7 @@ namespace com.espertech.esper.multithread
 	    public void SetUp()
 	    {
 	        var config = SupportConfigFactory.GetConfiguration();
-	        config.AddEventType("SupportBean", typeof(SupportBean));
+	        config.AddEventType<SupportBean>();
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();
 	    }

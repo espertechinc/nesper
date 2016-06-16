@@ -21,7 +21,7 @@ namespace com.espertech.esper.regression.script
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ScriptsConfig.DefaultDialect = "dummy";
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
 

@@ -20,16 +20,19 @@ namespace com.espertech.esper.filter
         [NonSerialized]
         private EventPropertyGetter _getter;
 
-        public FilterSpecLookupable(String expression, EventPropertyGetter getter, Type returnType)
+        public FilterSpecLookupable(String expression, EventPropertyGetter getter, Type returnType, bool isNonPropertyGetter)
         {
             Expression = expression;
             Getter = getter;
             ReturnType = returnType;
+            IsNonPropertyGetter = isNonPropertyGetter;
         }
 
         public string Expression { get; private set; }
 
         public Type ReturnType { get; private set; }
+
+        public bool IsNonPropertyGetter { get; private set; }
 
         public EventPropertyGetter Getter
         {

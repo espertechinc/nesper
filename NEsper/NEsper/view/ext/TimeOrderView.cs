@@ -41,6 +41,7 @@ namespace com.espertech.esper.view.ext
         , DataWindowView
         , CloneableView
         , StoppableView
+        , StopCallback
     {
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly TimeOrderViewFactory _timeOrderViewFactory;

@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.agg.service
         /// <summary>Evaluation nodes under. </summary>
         protected ExprEvaluator[] Evaluators;
 
-        /// <summary>Prototype aggregation states and factories. </summary>
+        /// <summary>_prototype aggregation states and factories. </summary>
         protected AggregationMethodFactory[] Aggregators;
 
         protected Object GroupKeyBinding;
@@ -53,6 +53,8 @@ namespace com.espertech.esper.epl.agg.service
 
         public abstract AggregationService MakeService(
             AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService);
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber);
     }
 }

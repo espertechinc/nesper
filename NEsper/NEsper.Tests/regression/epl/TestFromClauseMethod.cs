@@ -323,7 +323,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
 	    public void TestNoJoinIterateVariables()
 	    {
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        _epService.EPAdministrator.CreateEPL("create variable int lower");
 	        _epService.EPAdministrator.CreateEPL("create variable int upper");
 	        _epService.EPAdministrator.CreateEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
@@ -708,10 +708,10 @@ namespace com.espertech.esper.regression.epl
 
 	        _epService.EPAdministrator.Configuration.AddImport(typeof(SupportMethodInvocationJoinInvalid));
 	        TryInvalid("select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()",
-	                "Unexpected exception starting statement: Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
+                    "Error starting statement: Could not find getter method for method invocation, expected a method by name 'ReadRowNoMetadataMetadata' accepting no parameters [select * from method:SupportMethodInvocationJoinInvalid.ReadRowNoMetadata()]");
 
 	        TryInvalid("select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()",
-	                "Unexpected exception starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + Name.Of<IDictionary<string, object>>() + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
+                    "Error starting statement: Getter method 'ReadRowWrongMetadataMetadata' does not return " + Name.Of<IDictionary<string, object>>() + " [select * from method:SupportMethodInvocationJoinInvalid.ReadRowWrongMetadata()]");
 	    }
 
 	    private void TryInvalid(string stmt, string message)

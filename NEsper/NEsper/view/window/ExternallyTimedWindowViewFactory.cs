@@ -33,13 +33,13 @@ namespace com.espertech.esper.view.window
         /// <summary>
         /// The timestamp property name.
         /// </summary>
-        internal ExprNode TimestampExpression;
-        internal ExprEvaluator TimestampExpressionEval;
+        private ExprNode _timestampExpression;
+        private ExprEvaluator _timestampExpressionEval;
     
         /// <summary>
         /// The number of msec to expire.
         /// </summary>
-        internal ExprTimePeriodEvalDeltaConst TimeDeltaComputation;
+        private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
     
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters) 
         {
@@ -56,11 +56,11 @@ namespace com.espertech.esper.view.window
             if (!validated[0].ExprEvaluator.ReturnType.IsNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
-            TimestampExpression = validated[0];
-            TimestampExpressionEval = TimestampExpression.ExprEvaluator;
+            _timestampExpression = validated[0];
+            _timestampExpressionEval = _timestampExpression.ExprEvaluator;
             ViewFactorySupport.AssertReturnsNonConstant(ViewName, validated[0], 0);
     
-            TimeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(ViewName, statementContext, _viewParameters[1], ViewParamMessage, 1);
+            _timeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(ViewName, statementContext, _viewParameters[1], ViewParamMessage, 1);
             _eventType = parentEventType;
         }
     
@@ -70,8 +70,8 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRandomAccess randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
-            return new ExternallyTimedWindowView(this, TimestampExpression, TimestampExpressionEval, TimeDeltaComputation, randomAccess, agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
+            return new ExternallyTimedWindowView(this, _timestampExpression, _timestampExpressionEval, _timeDeltaComputation, randomAccess, agentInstanceViewFactoryContext);
         }
 
         public EventType EventType
@@ -87,8 +87,8 @@ namespace com.espertech.esper.view.window
             }
     
             var myView = (ExternallyTimedWindowView) view;
-            if ((!TimeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation)) ||
-                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, TimestampExpression)))
+            if ((!_timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation)) ||
+                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression)))
             {
                 return false;
             }
@@ -98,6 +98,21 @@ namespace com.espertech.esper.view.window
         public string ViewName
         {
             get { return "Externally-timed"; }
+        }
+
+        public ExprEvaluator TimestampExpressionEval
+        {
+            get { return _timestampExpressionEval; }
+        }
+
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
+        {
+            get { return _timeDeltaComputation; }
+        }
+
+        public ExprNode TimestampExpression
+        {
+            get { return _timestampExpression; }
         }
 
         private string ViewParamMessage

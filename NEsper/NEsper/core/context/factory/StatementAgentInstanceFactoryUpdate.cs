@@ -55,12 +55,12 @@ namespace com.espertech.esper.core.context.factory
             IDictionary<ExprSubselectNode, SubSelectStrategyHolder> subselectStrategies;
 
             try {
-                stopCallbacks.Add(() => _services.InternalEventRouter.RemovePreprocessing(_streamEventType, _desc));
+                stopCallbacks.Add(new ProxyStopCallback(() => _services.InternalEventRouter.RemovePreprocessing(_streamEventType, _desc)));
     
                 _services.InternalEventRouter.AddPreprocessing(_routerDesc, _onExprView, agentInstanceContext.AgentInstanceLock, !_subSelectStrategyCollection.Subqueries.IsEmpty());
     
                 // start subselects
-                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(_services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks);
+                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(_services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
             }
             catch (Exception ex)
             {
@@ -68,10 +68,16 @@ namespace com.espertech.esper.core.context.factory
                 StatementAgentInstanceUtil.StopSafe(stopCallback, _statementContext);
                 throw;
             }
-    
-            Log.Debug(".start Statement start completed");
+
+            StatementAgentInstanceFactoryUpdateResult result = new StatementAgentInstanceFactoryUpdateResult(_onExprView, null, agentInstanceContext, subselectStrategies);
+            if (_statementContext.StatementExtensionServicesContext != null)
+            {
+                _statementContext.StatementExtensionServicesContext.ContributeStopCallback(result, stopCallbacks);
+            }
+            
             stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
-            return new StatementAgentInstanceFactoryUpdateResult(_onExprView, stopCallback, agentInstanceContext, subselectStrategies);
+            result.StopCallback = stopCallback;
+            return result;
         }
 
         public override void AssignExpressions(StatementAgentInstanceFactoryResult result)

@@ -75,6 +75,9 @@ namespace com.espertech.esper.client
             Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecCapacity);
             Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsEngineFairlock);
             //Assert.IsFalse(_config.EngineDefaults.MetricsReportingConfig.IsJmxEngineMetrics);
+            Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
+            Assert.AreEqual(long.MaxValue, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
     
             Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, _config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle);
             Assert.AreEqual(AccessorStyleEnum.NATIVE, _config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle);
@@ -113,6 +116,7 @@ namespace com.espertech.esper.client
             Assert.IsNull(_config.EngineDefaults.ExpressionConfig.MathContext);
             Assert.AreEqual(TimeZoneInfo.Local, _config.EngineDefaults.ExpressionConfig.TimeZone);
             Assert.IsNull(_config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories);
+            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.WARN, _config.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy);
             Assert.IsNull(_config.EngineDefaults.ConditionHandlingConfig.HandlerFactories);
             Assert.AreEqual("js", _config.EngineDefaults.ScriptsConfig.DefaultDialect);
     
@@ -146,6 +150,10 @@ namespace com.espertech.esper.client
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp", "AssemblyA")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp", "AssemblyB.dll")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp.ClassTwo", "AssemblyB.dll")));
+
+            Assert.That(config.AnnotationImports.Count, Is.EqualTo(2));
+            Assert.That(config.AnnotationImports, Contains.Item(new AutoImportDesc("com.mycompany.myapp.annotations")));
+            Assert.That(config.AnnotationImports, Contains.Item(new AutoImportDesc("com.mycompany.myapp.annotations.ClassOne")));
 
             // assert XML DOM - no schema
             Assert.AreEqual(2, config.EventTypesXMLDOM.Count);
@@ -239,7 +247,7 @@ namespace com.espertech.esper.client
             DbDriverFactoryConnection dsDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
 
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverMySQL", dsDef.Driver.GetType().FullName);
-            Assert.AreEqual("Server=localhost;Database=tempdb;Trusted_Connection=True;", dsDef.Driver.ConnectionString);
+            Assert.AreEqual("Server=localhost;Database=tempdb;Uid=esper;Pwd=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
             Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycle);
 
             Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
@@ -260,7 +268,7 @@ namespace com.espertech.esper.client
             DbDriverFactoryConnection dmDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverODBC", dmDef.Driver.GetType().FullName);
             Assert.AreEqual(
-               "Driver={MySQL ODBC 5.1 Driver};Server=localhost;Database=test;User=esper;Password=Esp3rP@ssw0rd;Option=3",
+               "Driver={MySQL ODBC 5.3 Unicode Driver};Server=localhost;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3",
                dmDef.Driver.ConnectionString);
 
             Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycle);
@@ -379,7 +387,11 @@ namespace com.espertech.esper.client
             Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder);
             Assert.AreEqual(3000, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchTimeout);
             Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
-    
+
+            Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
+            Assert.AreEqual(4000, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
+
             Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder);
             Assert.AreEqual(2000, config.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout);
             Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
@@ -467,7 +479,9 @@ namespace com.espertech.esper.client
             Assert.AreEqual("my.company.cep.LoggingConditionHandlerFactory", config.EngineDefaults.ConditionHandlingConfig.HandlerFactories[0]);
             Assert.AreEqual("my.company.cep.AlertConditionHandlerFactory", config.EngineDefaults.ConditionHandlingConfig.HandlerFactories[1]);
             Assert.AreEqual("abc", config.EngineDefaults.ScriptsConfig.DefaultDialect);
-    
+
+            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST, config.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy);
+
             // variables
             Assert.AreEqual(3, config.Variables.Count);
             var variable = config.Variables.Get("var1");

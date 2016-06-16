@@ -26,62 +26,62 @@ namespace com.espertech.esper.regression.nwtable
     [TestFixture]
     public class TestNamedWindowOnUpdate 
     {
-        private EPServiceProvider epService;
-        private SupportUpdateListener listenerWindow;
+        private EPServiceProvider _epService;
+        private SupportUpdateListener _listenerWindow;
     
         [SetUp]
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            epService = EPServiceProviderManager.GetDefaultProvider(config);
-            epService.Initialize();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
-            listenerWindow = new SupportUpdateListener();
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
+            _epService.Initialize();
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
+            _listenerWindow = new SupportUpdateListener();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
         }
     
         [TearDown]
         public void TearDown() {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();}
-            listenerWindow = null;
+            _listenerWindow = null;
         }
     
         [Test]
         public void TestUpdateNonPropertySet() {
-            epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("setBeanLongPrimitive999", this.GetType().FullName, "SetBeanLongPrimitive999");
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
-            epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() as SupportBean");
-            epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
+            _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("setBeanLongPrimitive999", this.GetType().FullName, "SetBeanLongPrimitive999");
+            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
+            _epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() as SupportBean");
+            _epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL("on SupportBean_S0 as sb " +
                     "update MyWindow as mywin" +
                     " set mywin.set_IntPrimitive(10)," +
                     "     setBeanLongPrimitive999(mywin)");
-            stmt.AddListener(listenerWindow);
+            stmt.AddListener(_listenerWindow);
     
             string[] fields = "IntPrimitive,LongPrimitive".Split(',');
-            epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            epService.EPRuntime.SendEvent(new SupportBean_S0(1));
-            EPAssertionUtil.AssertProps(listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{10, 999L});
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            _epService.EPRuntime.SendEvent(new SupportBean_S0(1));
+            EPAssertionUtil.AssertProps(_listenerWindow.GetAndResetLastNewData()[0], fields, new object[]{10, 999L});
         }
     
         [Test]
         public void TestMultipleDataWindowIntersect() {
             string stmtTextCreate = "create window MyWindow.std:unique(TheString).win:length(2) as select * from SupportBean";
-            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
-            stmtCreate.AddListener(listenerWindow);
+            EPStatement stmtCreate = _epService.EPAdministrator.CreateEPL(stmtTextCreate);
+            stmtCreate.AddListener(_listenerWindow);
     
             string stmtTextInsertOne = "insert into MyWindow select * from SupportBean";
-            epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
+            _epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             string stmtTextUpdate = "on SupportBean_A update MyWindow set IntPrimitive=IntPrimitive*100 where TheString=id";
-            epService.EPAdministrator.CreateEPL(stmtTextUpdate);
+            _epService.EPAdministrator.CreateEPL(stmtTextUpdate);
             
-            epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
-            epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
-            EventBean[] newevents = listenerWindow.LastNewData;
-            EventBean[] oldevents = listenerWindow.LastOldData;
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
+            _epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
+            EventBean[] newevents = _listenerWindow.LastNewData;
+            EventBean[] oldevents = _listenerWindow.LastOldData;
     
             Assert.AreEqual(1, newevents.Length);
             EPAssertionUtil.AssertProps(newevents[0], "IntPrimitive".Split(','), new object[]{300});
@@ -92,43 +92,13 @@ namespace com.espertech.esper.regression.nwtable
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][] { new object[] { "E1", 2 }, new object[] { "E2", 300 } });
         }
         
-        [Test]
-        public void TestMultipleDataWindowIntersectOnUpdate() {
-            SupportUpdateListener listener = new SupportUpdateListener();
-            string[] fields = "company,value,total".Split(',');
-    
-            // ESPER-568
-            epService.EPAdministrator.CreateEPL("create schema S2 ( company string, value double, total double)");
-    	    EPStatement stmtWin = epService.EPAdministrator.CreateEPL("create window S2Win.win:time(25 hour).std:firstunique(company) as S2");
-            epService.EPAdministrator.CreateEPL("insert into S2Win select * from S2.std:firstunique(company)");
-            epService.EPAdministrator.CreateEPL("on S2 as a update S2Win as b set total = b.value + a.value");
-            EPStatement stmt = epService.EPAdministrator.CreateEPL("select count(*) as cnt from S2Win");
-            stmt.AddListener(listener);
-    
-            CreateSendEvent(epService, "S2", "AComp", 3.0, 0.0);
-            Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("cnt"));
-            EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fields, new object[][] { new object[] { "AComp", 3.0, 0.0 } });
-    
-            CreateSendEvent(epService, "S2", "AComp", 6.0, 0.0);
-            Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("cnt"));
-            EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fields, new object[][] { new object[] { "AComp", 3.0, 9.0 } });
-    
-            CreateSendEvent(epService, "S2", "AComp", 5.0, 0.0);
-            Assert.AreEqual(1L, listener.AssertOneGetNewAndReset().Get("cnt"));
-            EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fields, new object[][] { new object[] { "AComp", 3.0, 8.0 } });
-    
-            CreateSendEvent(epService, "S2", "BComp", 4.0, 0.0);
-            Assert.AreEqual(2L, listener.AssertOneGetNewAndReset().Get("cnt"));
-            EPAssertionUtil.AssertPropsPerRow(stmtWin.GetEnumerator(), fields, new object[][] { new object[] { "AComp", 3.0, 7.0 }, new object[] { "BComp", 4.0, 0.0 } });
-        }
-    
         private void CreateSendEvent(EPServiceProvider engine, string typeName, string company, double value, double total)
         {
             var map = new LinkedHashMap<string, object>();
             map.Put("company", company);
             map.Put("value", value);
             map.Put("total", total);
-            if (EventRepresentationEnumExtensions.GetEngineDefault(epService).IsObjectArrayEvent()) {
+            if (EventRepresentationEnumExtensions.GetEngineDefault(_epService).IsObjectArrayEvent()) {
                 engine.EPRuntime.SendEvent(map.Values.ToArray(), typeName);
             }
             else {
@@ -139,20 +109,20 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestMultipleDataWindowUnion() {
             string stmtTextCreate = "create window MyWindow.std:unique(TheString).win:length(2) retain-union as select * from SupportBean";
-            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
-            stmtCreate.AddListener(listenerWindow);
+            EPStatement stmtCreate = _epService.EPAdministrator.CreateEPL(stmtTextCreate);
+            stmtCreate.AddListener(_listenerWindow);
     
             string stmtTextInsertOne = "insert into MyWindow select * from SupportBean";
-            epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
+            _epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             string stmtTextUpdate = "on SupportBean_A update MyWindow mw set mw.IntPrimitive=IntPrimitive*100 where TheString=id";
-            epService.EPAdministrator.CreateEPL(stmtTextUpdate);
+            _epService.EPAdministrator.CreateEPL(stmtTextUpdate);
     
-            epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
-            epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
-            epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
-            EventBean[] newevents = listenerWindow.LastNewData;
-            EventBean[] oldevents = listenerWindow.LastOldData;
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 3));
+            _epService.EPRuntime.SendEvent(new SupportBean_A("E2"));
+            EventBean[] newevents = _listenerWindow.LastNewData;
+            EventBean[] oldevents = _listenerWindow.LastOldData;
     
             Assert.AreEqual(1, newevents.Length);
             EPAssertionUtil.AssertProps(newevents[0], "IntPrimitive".Split(','), new object[]{300});
@@ -168,22 +138,22 @@ namespace com.espertech.esper.regression.nwtable
         {
             // create window
             string stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + typeof(SupportBeanAbstractSub).FullName;
-            EPStatement stmtCreate = epService.EPAdministrator.CreateEPL(stmtTextCreate);
-            stmtCreate.AddListener(listenerWindow);
+            EPStatement stmtCreate = _epService.EPAdministrator.CreateEPL(stmtTextCreate);
+            stmtCreate.AddListener(_listenerWindow);
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindow select * from " + typeof(SupportBeanAbstractSub).FullName;
-            epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
+            _epService.EPAdministrator.CreateEPL(stmtTextInsertOne);
     
             // create update
             string stmtTextUpdate = "on " + typeof(SupportBean).FullName + " update MyWindow set V1=TheString, V2=TheString";
-            epService.EPAdministrator.CreateEPL(stmtTextUpdate);
+            _epService.EPAdministrator.CreateEPL(stmtTextUpdate);
             
-            epService.EPRuntime.SendEvent(new SupportBeanAbstractSub("value2"));
-            listenerWindow.Reset();
+            _epService.EPRuntime.SendEvent(new SupportBeanAbstractSub("value2"));
+            _listenerWindow.Reset();
     
-            epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
-            EPAssertionUtil.AssertProps(listenerWindow.LastNewData[0], new string[]{"V1", "V2"}, new object[]{"E1", "E1"});
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            EPAssertionUtil.AssertProps(_listenerWindow.LastNewData[0], new string[]{"V1", "V2"}, new object[]{"E1", "E1"});
         }
     
         public static void SetBeanLongPrimitive999(SupportBean @event) {

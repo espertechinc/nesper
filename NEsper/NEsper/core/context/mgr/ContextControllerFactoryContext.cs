@@ -14,19 +14,24 @@ namespace com.espertech.esper.core.context.mgr
 {
     public class ContextControllerFactoryContext
     {
-        public ContextControllerFactoryContext(String outermostContextName,
-                                               String contextName,
-                                               EPServicesContext servicesContext,
-                                               AgentInstanceContext agentInstanceContextCreate,
-                                               int nestingLevel,
-                                               bool isRecoveringResilient)
+        public ContextControllerFactoryContext(
+            String outermostContextName,
+            String contextName,
+            EPServicesContext servicesContext,
+            AgentInstanceContext agentInstanceContextCreate,
+            int nestingLevel,
+            int numNestingLevels,
+            bool isRecoveringResilient,
+            ContextStateCache stateCache)
         {
             OutermostContextName = outermostContextName;
             ContextName = contextName;
             ServicesContext = servicesContext;
             AgentInstanceContextCreate = agentInstanceContextCreate;
             NestingLevel = nestingLevel;
+            NumNestingLevels = numNestingLevels;
             IsRecoveringResilient = isRecoveringResilient;
+            StateCache = stateCache;
         }
 
         public string OutermostContextName { get; private set; }
@@ -39,6 +44,10 @@ namespace com.espertech.esper.core.context.mgr
 
         public int NestingLevel { get; private set; }
 
+        public int NumNestingLevels { get; private set; }
+
         public bool IsRecoveringResilient { get; private set; }
+
+        public ContextStateCache StateCache { get; private set; }
     }
 }

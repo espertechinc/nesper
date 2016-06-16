@@ -19,13 +19,13 @@ namespace com.espertech.esper.epl.expression.core
     /// </summary>
     public interface ExprEvaluatorEnumeration
     {
-        EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId);
+        EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId);
         ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
 
         Type ComponentTypeCollection { get; }
         ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
 
-        EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId);
+        EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId);
         EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
     }
 }

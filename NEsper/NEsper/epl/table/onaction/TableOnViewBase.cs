@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.table.onaction
 {
     public abstract class TableOnViewBase : ViewSupport
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         protected readonly SubordWMatchExprLookupStrategy LookupStrategy;
         protected readonly TableStateInstance TableStateInstance;
@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.table.onaction
     
         public void Stop()
         {
-            log.Debug(".stop");
+            Log.Debug(".stop");
         }
     
         public override void Update(EventBean[] newData, EventBean[] oldData)

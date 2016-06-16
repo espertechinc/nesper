@@ -21,7 +21,6 @@ namespace com.espertech.esper.collection
     [Serializable]
     public class MultiKeyUntyped : MetaDefItem
     {
-        [NonSerialized]
         private readonly Object[] _keys;
         private readonly int _hashCode;
 

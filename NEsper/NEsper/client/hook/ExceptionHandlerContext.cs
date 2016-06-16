@@ -23,12 +23,13 @@ namespace com.espertech.esper.client.hook
         /// <param name="exception">exception</param>
         /// <param name="statementName">statement name</param>
         /// <param name="epl">statement EPL expression text</param>
-        public ExceptionHandlerContext(String engineURI, Exception exception, String statementName, String epl)
+        public ExceptionHandlerContext(String engineURI, Exception exception, String statementName, String epl, ExceptionHandlerExceptionType exceptionType)
         {
             EngineURI = engineURI;
             Exception = exception;
             StatementName = statementName;
             Epl = epl;
+            ExceptionType = exceptionType;
         }
 
         /// <summary>Returns the engine URI. </summary>
@@ -46,5 +47,13 @@ namespace com.espertech.esper.client.hook
         /// <summary>Returns the expression text of the statement. </summary>
         /// <value>statement.</value>
         public string Epl { get; private set; }
+
+        /// <summary>
+        /// Gets the type of the exception.
+        /// </summary>
+        /// <value>
+        /// The type of the exception.
+        /// </value>
+        public ExceptionHandlerExceptionType ExceptionType { get; private set; }
     }
 }

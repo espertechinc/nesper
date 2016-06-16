@@ -24,7 +24,12 @@ namespace com.espertech.esper.core.service
         {
             _services = services;
         }
-    
+
+        public bool IsSupportsExtract
+        {
+            get { return _services.ContextManagerFactoryService.IsSupportsExtract; }
+        }
+
         public String[] GetContextStatementNames(String contextName)
         {
             var contextManager = _services.ContextManagementService.GetContextManager(contextName);
@@ -44,103 +49,110 @@ namespace com.espertech.esper.core.service
     
         public int GetContextNestingLevel(String contextName)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
+            var contextManager = CheckedGetContextManager(contextName);
             return contextManager.NumNestingLevels;
         }
     
         public ContextPartitionCollection DestroyContextPartitions(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractDestroyPaths(selector);
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractDestroyPaths(selector);
             return new ContextPartitionCollection(descriptor.ContextPartitionInformation);
         }
     
         public ContextPartitionDescriptor DestroyContextPartition(String contextName, int agentInstanceId)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractDestroyPaths(new CPSelectorById(agentInstanceId));
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractDestroyPaths(new CPSelectorById(agentInstanceId));
             return descriptor.ContextPartitionInformation.Get(agentInstanceId);
         }
     
         public EPContextPartitionExtract ExtractDestroyPaths(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractDestroyPaths(selector);
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractDestroyPaths(selector);
             return DescriptorToExtract(contextManager.NumNestingLevels, descriptor);
         }
     
         public ContextPartitionCollection StopContextPartitions(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractStopPaths(selector);
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractStopPaths(selector);
             return new ContextPartitionCollection(descriptor.ContextPartitionInformation);
         }
     
         public ContextPartitionCollection StartContextPartitions(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
+            var contextManager = CheckedGetContextManager(contextName);
             return new ContextPartitionCollection(contextManager.StartPaths(selector));
         }
     
         public ContextPartitionCollection GetContextPartitions(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
+            var contextManager = CheckedGetContextManager(contextName);
             return new ContextPartitionCollection(contextManager.ExtractPaths(selector).ContextPartitionInformation);
         }
     
         public ContextPartitionDescriptor StopContextPartition(String contextName, int agentInstanceId)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractStopPaths(new CPSelectorById(agentInstanceId));
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractStopPaths(new CPSelectorById(agentInstanceId));
             return descriptor.ContextPartitionInformation.Get(agentInstanceId);
         }
     
         public ContextPartitionDescriptor StartContextPartition(String contextName, int agentInstanceId)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            IDictionary<int, ContextPartitionDescriptor> descriptorMap = contextManager.StartPaths(new CPSelectorById(agentInstanceId));
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptorMap = contextManager.StartPaths(new CPSelectorById(agentInstanceId));
             return descriptorMap.Get(agentInstanceId);
         }
     
         public ContextPartitionDescriptor GetDescriptor(String contextName, int agentInstanceId)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractPaths(new CPSelectorById(agentInstanceId));
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractPaths(new CPSelectorById(agentInstanceId));
             return descriptor.ContextPartitionInformation.Get(agentInstanceId);
         }
     
         public EPContextPartitionExtract ExtractStopPaths(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor descriptor = contextManager.ExtractStopPaths(selector);
+            var contextManager = CheckedGetContextManager(contextName);
+            var descriptor = contextManager.ExtractStopPaths(selector);
             return DescriptorToExtract(contextManager.NumNestingLevels, descriptor);
         }
     
         public EPContextPartitionExtract ExtractPaths(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            ContextStatePathDescriptor contextPaths = contextManager.ExtractPaths(selector);
+            var contextManager = CheckedGetContextManager(contextName);
+            var contextPaths = contextManager.ExtractPaths(selector);
             return DescriptorToExtract(contextManager.NumNestingLevels, contextPaths);
         }
 
         public ISet<int> GetContextPartitionIds(String contextName, ContextPartitionSelector selector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
+            var contextManager = CheckedGetContextManager(contextName);
             return new HashSet<int>(contextManager.GetAgentInstanceIds(selector));
         }
     
         public EPContextPartitionImportResult ImportStartPaths(String contextName, EPContextPartitionImportable importable, AgentInstanceSelector agentInstanceSelector)
         {
-            ContextManager contextManager = CheckedGetContextManager(contextName);
-            CPImportCallback importCallback = new CPImportCallback();
-            ContextControllerState state = new ContextControllerState(importable.Paths, true, importCallback);
+            var contextManager = CheckedGetContextManager(contextName);
+            var importCallback = new CPImportCallback();
+            var state = new ContextControllerState(importable.Paths, true, importCallback);
             contextManager.ImportStartPaths(state, agentInstanceSelector);
+
+            ContextStateCache contextStateCache = contextManager.ContextStateCache;
+            foreach (var entry in importable.Paths) {
+                entry.Value.State = ContextPartitionState.STARTED;
+                contextStateCache.UpdateContextPath(contextName, entry.Key, entry.Value);
+            }
+
             return new EPContextPartitionImportResult(importCallback.ExistingToImported, importCallback.AllocatedToImported);
         }
     
         private ContextManager CheckedGetContextManager(String contextName)
         {
-            ContextManager contextManager = _services.ContextManagementService.GetContextManager(contextName);
+            var contextManager = _services.ContextManagementService.GetContextManager(contextName);
             if (contextManager == null)
             {
                 throw new ArgumentException("Context by name '" + contextName + "' could not be found");
@@ -150,7 +162,7 @@ namespace com.espertech.esper.core.service
     
         private EPContextPartitionExtract DescriptorToExtract(int numNestingLevels, ContextStatePathDescriptor contextPaths)
         {
-            EPContextPartitionImportable importable = new EPContextPartitionImportable(contextPaths.Paths);
+            var importable = new EPContextPartitionImportable(contextPaths.Paths);
             return new EPContextPartitionExtract(new ContextPartitionCollection(contextPaths.ContextPartitionInformation), importable, numNestingLevels);
         }
     

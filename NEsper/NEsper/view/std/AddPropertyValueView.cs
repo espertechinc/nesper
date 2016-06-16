@@ -22,7 +22,10 @@ namespace com.espertech.esper.view.std
     /// <summary>
     /// This view simply adds a property to the events posted to it. This is useful for the group-merge views.
     /// </summary>
-    public sealed class AddPropertyValueView : ViewSupport, CloneableView, StoppableView
+    public sealed class AddPropertyValueView
+        : ViewSupport
+        , CloneableView
+        , StoppableView
     {
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly String[] _propertyNames;
@@ -153,7 +156,7 @@ namespace com.espertech.esper.view.std
             }
         }
 
-        public void StopView()
+        public void Stop()
         {
             if (_newToOldEventMap.IsNotEmpty())
             {

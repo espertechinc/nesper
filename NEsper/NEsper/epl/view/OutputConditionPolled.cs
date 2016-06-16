@@ -10,7 +10,9 @@ namespace com.espertech.esper.epl.view
 {
     public interface OutputConditionPolled
     {
-    	/// <summary>Update the output condition. </summary>
+        OutputConditionPolledState State { get; }
+        
+        /// <summary>Update the output condition. </summary>
     	/// <param name="newEventsCount">number of new events incoming</param>
     	/// <param name="oldEventsCount">number of old events incoming</param>
     	bool UpdateOutputCondition(int newEventsCount, int oldEventsCount);

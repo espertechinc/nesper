@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.nwtable
             epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("ABean", typeof(SupportBean_S0));
         }
     
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regression.nwtable
         private void RunAssertion(bool namedWindow, bool enableIndexShareCreate, bool disableIndexShareConsumer, bool createExplicitIndex) {
     
             SupportUpdateListener listener = new SupportUpdateListener();
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
     
             string createEpl = namedWindow ?

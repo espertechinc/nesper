@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.nwtable
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
     
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();

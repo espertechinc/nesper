@@ -30,7 +30,7 @@ namespace com.espertech.esper.regression.enummethod
         [SetUp]
         public void SetUp() {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
@@ -43,6 +43,24 @@ namespace com.espertech.esper.regression.enummethod
             listener = null;
         }
     
+        [Test]
+        public void TestContextPartition() 
+        {
+            String epl =
+                    "create expression the_expr alias for {theString='a' and intPrimitive=1};\n" +
+                    "create context the_context start @now end after 10 minutes;\n" +
+                    "@name('s0') context the_context select * from SupportBean(the_expr)\n";
+            epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+
+            epService.EPAdministrator.GetStatement("s0").AddListener(listener);
+
+            epService.EPRuntime.SendEvent(new SupportBean("a", 1));
+            Assert.IsTrue(listener.IsInvokedAndReset());
+
+            epService.EPRuntime.SendEvent(new SupportBean("b", 1));
+            Assert.False(listener.IsInvokedAndReset());
+        }
+
         [Test]
         public void TestDocSamples() {
             epService.EPAdministrator.CreateEPL("create schema SampleEvent()");

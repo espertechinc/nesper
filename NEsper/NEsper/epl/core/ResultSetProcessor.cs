@@ -12,6 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.core
@@ -22,7 +23,7 @@ namespace com.espertech.esper.epl.core
     /// group-by-clause and having-clauses as supplied. It must state what the event type of 
     /// the result rows is.
     /// </summary>
-    public interface ResultSetProcessor
+    public interface ResultSetProcessor : StopCallback
     {
         /// <summary>
         /// Returns the event type of processed results.

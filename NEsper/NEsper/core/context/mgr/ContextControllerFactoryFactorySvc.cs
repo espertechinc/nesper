@@ -15,6 +15,6 @@ namespace com.espertech.esper.core.context.mgr
 {
     public interface ContextControllerFactoryFactorySvc
     {
-	    ContextControllerFactory Make(ContextControllerFactoryContext factoryContext, ContextDetail detail, IList<FilterSpecCompiled> optFiltersNested, ContextStateCache contextStateCache);
+	    ContextControllerFactory Make(ContextControllerFactoryContext factoryContext, ContextDetail detail, IList<FilterSpecCompiled> optFiltersNested);
 	}
 } // end of namespace

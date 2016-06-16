@@ -36,7 +36,7 @@ namespace com.espertech.esper.core.context.factory
             _insertIntoTableNames = insertIntoTableNames;
         }
     
-        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks)
+        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient)
         {
             var processors = new ResultSetProcessor[_splitDesc.ProcessorFactories.Length];
             for (var i = 0; i < processors.Length; i++) {

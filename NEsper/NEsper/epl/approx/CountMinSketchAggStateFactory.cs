@@ -19,10 +19,10 @@ namespace com.espertech.esper.epl.approx
         public CountMinSketchAggStateFactory(ExprAggCountMinSketchNode parent, CountMinSketchSpec specification)
         {
             Parent = parent;
-            this.Specification = specification;
+            Specification = specification;
         }
-    
-        public AggregationState CreateAccess(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId, bool join, object groupKey)
+
+        public AggregationState CreateAccess(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId, bool join, object groupKey, AggregationServicePassThru passThru)
         {
             return methodResolutionService.MakeCountMinSketch(agentInstanceId, groupId, aggregationId, Specification);
         }

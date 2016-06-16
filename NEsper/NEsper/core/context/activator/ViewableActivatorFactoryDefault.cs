@@ -16,9 +16,11 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.property;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.filter;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.pattern;
+using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.context.activator
 {
@@ -29,7 +31,7 @@ namespace com.espertech.esper.core.context.activator
 	        throw new UnsupportedOperationException();
 	    }
 
-	    public ViewableActivator CreateFilterProxy(EPServicesContext services, FilterSpecCompiled filterSpec, Attribute[] annotations, bool subselect, InstrumentationAgent instrumentationAgentSubquery, bool isCanIterate)
+	    public ViewableActivator CreateFilterProxy(EPServicesContext services, FilterSpecCompiled filterSpec, Attribute[] annotations, bool subselect, InstrumentationAgent instrumentationAgentSubquery, bool isCanIterate, int? streamNumFromClause)
         {
 	        return new ViewableActivatorFilterProxy(services, filterSpec, annotations, subselect, instrumentationAgentSubquery, isCanIterate);
 	    }
@@ -44,9 +46,24 @@ namespace com.espertech.esper.core.context.activator
 	        return new ViewableActivatorPattern(patternContext, rootFactoryNode, eventType, consumingFilters, suppressSameEventMatches, discardPartialsOnMatch, isCanIterateUnbound);
 	    }
 
-	    public ViewableActivator CreateNamedWindow(NamedWindowProcessor processor, IList<ExprNode> filterExpressions, PropertyEvaluator optPropertyEvaluator)
+        public ViewableActivator CreateNamedWindow(NamedWindowProcessor processor, NamedWindowConsumerStreamSpec streamSpec, StatementContext statementContext)
         {
-	        return new ViewableActivatorNamedWindow(processor, filterExpressions, optPropertyEvaluator);
+	        return new ViewableActivatorNamedWindow(processor, streamSpec.FilterExpressions, streamSpec.OptPropertyEvaluator);
 	    }
-	}
+
+	    public ViewableActivator CreateTable(TableMetadata metadata, ExprEvaluator[] optionalTableFilters)
+	    {
+            return new ViewableActivatorTable(metadata, optionalTableFilters);
+	    }
+
+	    public ViewableActivator MakeHistorical(HistoricalEventViewable historicalEventViewable)
+	    {
+            return new ViewableActivatorHistorical(historicalEventViewable);
+	    }
+
+	    public ViewableActivator MakeSubqueryNWIndexShare()
+	    {
+            return new ViewableActivatorSubselectNone();
+	    }
+    }
 } // end of namespace

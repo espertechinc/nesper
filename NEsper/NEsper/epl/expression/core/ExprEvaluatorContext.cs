@@ -15,6 +15,8 @@ using com.espertech.esper.epl.script;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.schedule;
 
+using Microsoft.JScript;
+
 namespace com.espertech.esper.epl.expression.core
 {
     /// <summary>
@@ -28,7 +30,7 @@ namespace com.espertech.esper.epl.expression.core
 
         string EngineURI { get; }
 
-        string StatementId { get; }
+        int StatementId { get; }
 
         StatementType? StatementType { get; }
 
@@ -56,7 +58,7 @@ namespace com.espertech.esper.epl.expression.core
         public Func<EventBean> ProcContextProperties { get; set; }
         public Func<string> ProcStatementName { get; set; }
         public Func<string> ProcEngineURI { get; set; }
-        public Func<string> ProcStatementId { get; set; }
+        public Func<int> ProcStatementId { get; set; }
         public Func<StatementType?> ProcStatementType { get; set; }
         public Func<AgentInstanceScriptContext> ProcAgentInstanceScriptContext { get; set; }
         public Func<IReaderWriterLock> ProcAgentInstanceLock { get; set; }
@@ -70,7 +72,7 @@ namespace com.espertech.esper.epl.expression.core
             ProcContextProperties = () => null;
             ProcStatementName = () => null;
             ProcEngineURI = () => null;
-            ProcStatementId = () => null;
+            ProcStatementId = () => -1;
             ProcStatementType = () => null;
             ProcAgentInstanceScriptContext = () => null;
             ProcAgentInstanceLock = () => null;
@@ -112,7 +114,7 @@ namespace com.espertech.esper.epl.expression.core
             get { return ProcEngineURI(); }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return ProcStatementId(); }
         }

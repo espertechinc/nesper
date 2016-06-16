@@ -100,7 +100,7 @@ namespace com.espertech.esper.multithread
             _noActionUpdateEventHandler = (sender, arg) => { };
 
             var epConfig = new Configuration();
-            epConfig.AddEventType(typeof(SupportBean));
+            epConfig.AddEventType<SupportBean>();
             epConfig.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking = ConfigurationEngineDefaults.Threading.Locking.SUSPEND;
 
             EPServiceProvider epServiceProvider = EPServiceProviderManager.GetDefaultProvider(epConfig);

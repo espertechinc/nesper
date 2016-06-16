@@ -40,7 +40,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestConstantPerformance() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             _epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() as SupportBean");
             _epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");

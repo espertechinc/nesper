@@ -37,7 +37,7 @@ namespace com.espertech.esper.util
         static CollectionUtil()
         {
             SINGLE_NULL_ROW_EVENT_SET.Add(null);
-            STOP_CALLBACK_NONE = () => { };
+            STOP_CALLBACK_NONE = new ProxyStopCallback(() => { });
         }
 
         public static IComparer<object> GetComparator(

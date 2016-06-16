@@ -14,6 +14,6 @@ namespace com.espertech.esper.epl.spec
 {
     public interface ContextDetail 
     {
-        IList<FilterSpecCompiled> FilterSpecsIfAny { get; }
+        IList<FilterSpecCompiled> ContextDetailFilterSpecs { get; }
     }
 }

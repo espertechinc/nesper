@@ -80,7 +80,7 @@ namespace com.espertech.esper.events.map
             _testTypesMap.Clear();
             _testTypesMap["a"] = typeof(SupportBean);
             _testTypesMap["b"] = typeof(SupportBean_A);
-            EventType eventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", _testTypesMap);
+            EventType eventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", _testTypesMap, true);
     
             IDictionary<String, Object> events = new Dictionary<String, Object>();
             events["a"] = beanOne;

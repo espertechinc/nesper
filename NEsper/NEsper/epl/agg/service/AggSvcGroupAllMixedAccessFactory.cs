@@ -42,10 +42,12 @@ namespace com.espertech.esper.epl.agg.service
 
         public override AggregationService MakeService(
             AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService)
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             AggregationState[] states = methodResolutionService.NewAccesses(
-                agentInstanceContext.AgentInstanceId, IsJoin, AccessAggregations);
+                agentInstanceContext.AgentInstanceId, IsJoin, AccessAggregations, null);
             AggregationMethod[] aggregatorsAgentInstance = methodResolutionService.NewAggregators(
                 base.Aggregators, agentInstanceContext.AgentInstanceId);
             return new AggSvcGroupAllMixedAccessImpl(

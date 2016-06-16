@@ -209,7 +209,7 @@ namespace com.espertech.esper.compat.collections
                 throw new ArgumentException("Value '" + key + "' is not supported by schema");
             }
 
-            // Entry was found in the schema, check our local table
+            // Record was found in the schema, check our local table
             if (_dataList[index].HasValue) {
                 throw new ArgumentException("An element with the same key already exists");
             }

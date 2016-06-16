@@ -21,17 +21,17 @@ namespace com.espertech.esper.view.internals
     [TestFixture]
     public class TestPriorEventView 
     {
-        private PriorEventBufferSingle buffer;
-        private PriorEventView view;
-        private SupportBeanClassView childView;
+        private PriorEventBufferSingle _buffer;
+        private PriorEventView _view;
+        private SupportBeanClassView _childView;
     
         [SetUp]
         public void SetUp()
         {
-            buffer = new PriorEventBufferSingle(1);
-            view = new PriorEventView(buffer);
-            childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
-            view.AddView(childView);
+            _buffer = new PriorEventBufferSingle(1);
+            _view = new PriorEventView(_buffer);
+            _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
+            _view.AddView(_childView);
         }
     
         [Test]
@@ -39,22 +39,22 @@ namespace com.espertech.esper.view.internals
         {
             // Send some data
             EventBean[] newEventsOne = MakeBeans("a", 2);
-            view.Update(newEventsOne, null);
+            _view.Update(newEventsOne, null);
     
             // make sure received
-            Assert.AreSame(newEventsOne, childView.LastNewData);
-            Assert.IsNull(childView.LastOldData);
-            childView.Reset();
+            Assert.AreSame(newEventsOne, _childView.LastNewData);
+            Assert.IsNull(_childView.LastOldData);
+            _childView.Reset();
     
             // Assert random access
-            Assert.AreSame(newEventsOne[0], buffer.GetRelativeToEvent(newEventsOne[1], 0));
+            Assert.AreSame(newEventsOne[0], _buffer.GetRelativeToEvent(newEventsOne[1], 0));
     
             EventBean[] newEventsTwo = MakeBeans("b", 3);
-            view.Update(newEventsTwo, null);
-    
-            Assert.AreSame(newEventsTwo[1], buffer.GetRelativeToEvent(newEventsTwo[2], 0));
-            Assert.AreSame(newEventsTwo[0], buffer.GetRelativeToEvent(newEventsTwo[1], 0));
-            Assert.AreSame(newEventsOne[1], buffer.GetRelativeToEvent(newEventsTwo[0], 0));
+            _view.Update(newEventsTwo, null);
+
+            Assert.AreSame(newEventsTwo[1], _buffer.GetRelativeToEvent(newEventsTwo[2], 0));
+            Assert.AreSame(newEventsTwo[0], _buffer.GetRelativeToEvent(newEventsTwo[1], 0));
+            Assert.AreSame(newEventsOne[1], _buffer.GetRelativeToEvent(newEventsTwo[0], 0));
         }
     
         private EventBean[] MakeBeans(String id, int numTrades)

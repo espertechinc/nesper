@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.view
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
     
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
         }
     
         [TearDown]
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestNamedWindowDelete()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
             
             String[] fields = {"TheString"};
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("create window NW.win:expr(true) as SupportBean");
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regression.view
             stmtGrouped.Dispose();
             
             // Test on-delete
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("create window NW.win:expr(sum(IntPrimitive) < 10) as SupportBean");
             stmt.Events += _listener.Update;
             _epService.EPAdministrator.CreateEPL("insert into NW select * from SupportBean");

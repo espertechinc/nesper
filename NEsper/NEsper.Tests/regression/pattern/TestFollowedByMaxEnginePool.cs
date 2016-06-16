@@ -221,9 +221,9 @@ namespace com.espertech.esper.regression.pattern
         private void InitService(long max, bool preventStart)
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
-            config.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            config.AddEventType("SupportBean_B", typeof(SupportBean_B));
+            config.AddEventType<SupportBean>();
+            config.AddEventType<SupportBean_A>();
+            config.AddEventType<SupportBean_B>();
             config.EngineDefaults.ConditionHandlingConfig.AddClass(typeof(SupportConditionHandlerFactory));
             config.EngineDefaults.PatternsConfig.MaxSubexpressions = max;
             config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart = preventStart;

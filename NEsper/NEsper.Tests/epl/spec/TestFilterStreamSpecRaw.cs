@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
@@ -111,7 +112,7 @@ namespace com.espertech.esper.epl.spec
         }
     
         [Test]
-        public void TestCommaAndCompar()
+        public void TestCommaAndCompare()
         {
             var raw = MakeSpec("select * from " + typeof(SupportBean).FullName +
                     "(DoubleBoxed>1.11, DoublePrimitive>=9.11 and IntPrimitive<=9, TheString || 'a' = 'sa')");
@@ -266,7 +267,7 @@ namespace com.espertech.esper.epl.spec
     
         private FilterSpecCompiled Compile(FilterStreamSpecRaw raw)
         {
-            var compiled = (FilterStreamSpecCompiled) raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false);
+            var compiled = (FilterStreamSpecCompiled) raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null);
             return compiled.FilterSpec;
         }
     

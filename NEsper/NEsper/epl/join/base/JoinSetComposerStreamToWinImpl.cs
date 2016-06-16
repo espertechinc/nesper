@@ -28,6 +28,7 @@ namespace com.espertech.esper.epl.join.@base
     /// </summary>
     public class JoinSetComposerStreamToWinImpl : JoinSetComposer
     {
+        private readonly bool _allowInitIndex;
         private readonly EventTable[][] _repositories;
         private readonly int _streamNumber;
         private readonly QueryStrategy _queryStrategy;
@@ -37,15 +38,25 @@ namespace com.espertech.esper.epl.join.@base
 
         private readonly ISet<MultiKey<EventBean>> _emptyResults = new LinkedHashSet<MultiKey<EventBean>>();
         private readonly ISet<MultiKey<EventBean>> _newResults = new LinkedHashSet<MultiKey<EventBean>>();
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="allowInitIndex">if set to <c>true</c> [allow initialize index].</param>
         /// <param name="repositories">for each stream an array of (indexed/unindexed) tables for lookup.</param>
         /// <param name="isPureSelfJoin">for self-joins</param>
         /// <param name="streamNumber">is the undirectional stream</param>
         /// <param name="queryStrategy">is the lookup query strategy for the stream</param>
         /// <param name="selfJoinRepositoryResets">indicators for any stream's table that reset after strategy executon</param>
-        public JoinSetComposerStreamToWinImpl(IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, bool isPureSelfJoin, int streamNumber, QueryStrategy queryStrategy, bool[] selfJoinRepositoryResets)
+        public JoinSetComposerStreamToWinImpl(
+            bool allowInitIndex,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
+            bool isPureSelfJoin,
+            int streamNumber,
+            QueryStrategy queryStrategy,
+            bool[] selfJoinRepositoryResets)
         {
+            _allowInitIndex = allowInitIndex;
             _repositories = JoinSetComposerUtil.ToArray(repositories);
             _streamNumber = streamNumber;
             _queryStrategy = queryStrategy;
@@ -66,9 +77,18 @@ namespace com.espertech.esper.epl.join.@base
                 _isResetSelfJoinRepositories = flag;
             }
         }
-    
-        public void Init(EventBean[][] eventsPerStream)
+
+        public bool AllowsInit
         {
+            get { return _allowInitIndex; }
+        }
+
+        public virtual void Init(EventBean[][] eventsPerStream)
+        {
+            if (!_allowInitIndex)
+            {
+                throw new IllegalStateException("Initialization by events not supported");
+            }
             for (int i = 0; i < eventsPerStream.Length; i++)
             {
                 if ((eventsPerStream[i] != null) && (i != _streamNumber))
@@ -85,10 +105,11 @@ namespace com.espertech.esper.epl.join.@base
         {
             foreach (EventTable[] repository in _repositories)
             {
-                if (repository != null) {
+                if (repository != null)
+                {
                 	foreach (EventTable table in repository)
                 	{
-                		table.Clear();
+                		table.Destroy();
                 	}
                 }
             }

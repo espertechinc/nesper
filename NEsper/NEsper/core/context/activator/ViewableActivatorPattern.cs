@@ -65,7 +65,7 @@ namespace com.espertech.esper.core.context.activator
 
             var rootState = (EvalRootState) rootNode.Start(callback, _patternContext, isRecoveringResilient);
             return new ViewableActivationResult(
-                sourceEventStream, rootState.Stop, null, rootState, rootState, _suppressSameEventMatches, _discardPartialsOnMatch, null);
+                sourceEventStream, rootState, null, rootState, rootState, _suppressSameEventMatches, _discardPartialsOnMatch, null);
         }
 
         public EvalRootFactoryNode RootFactoryNode

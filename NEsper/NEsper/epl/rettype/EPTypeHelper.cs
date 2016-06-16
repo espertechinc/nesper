@@ -231,7 +231,7 @@ namespace com.espertech.esper.epl.rettype
             throw new ArgumentException("Unrecognized type " + theType);
         }
 
-        public static EPType OptionalFromEnumerationExpr(String statementId, EventAdapterService eventAdapterService, ExprNode exprNode)
+        public static EPType OptionalFromEnumerationExpr(int statementId, EventAdapterService eventAdapterService, ExprNode exprNode)
         {
             if (!(exprNode is ExprEvaluatorEnumeration)) {
                 return null;

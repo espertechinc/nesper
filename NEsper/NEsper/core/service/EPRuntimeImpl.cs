@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
 using com.espertech.esper.client.dataflow;
+using com.espertech.esper.client.hook;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
 using com.espertech.esper.client.util;
@@ -138,7 +139,7 @@ namespace com.espertech.esper.core.service
                 ProcAgentInstanceScriptContext = () => null,
                 ProcStatementName = () => null,
                 ProcEngineURI = () => null,
-                ProcStatementId = () => null,
+                ProcStatementId = () => -1,
                 ProcAgentInstanceLock = () => null,
                 ProcStatementType = () => null,
                 ProcTableExprEvaluatorContext = () =>
@@ -594,7 +595,7 @@ namespace com.espertech.esper.core.service
 
                 try
                 {
-                    using (_services.EventProcessingRwLock.AcquireReadLock())
+                    using (_services.EventProcessingRWLock.AcquireReadLock())
                     {
                         try
                         {
@@ -778,12 +779,12 @@ namespace com.espertech.esper.core.service
                 // Evaluation of schedules is protected by an optional scheduling service lock and then the engine lock
                 // We want to stay in this order for allowing the engine lock as a second-order lock to the
                 // services own lock, if it has one.
-                using (_services.EventProcessingRwLock.AcquireReadLock())
+                using (_services.EventProcessingRWLock.AcquireReadLock())
                 {
                     _services.SchedulingService.Evaluate(handles);
                 }
 
-                using (_services.EventProcessingRwLock.AcquireReadLock())
+                using (_services.EventProcessingRWLock.AcquireReadLock())
                 {
                     try
                     {
@@ -925,7 +926,7 @@ namespace com.espertech.esper.core.service
 
             if (queues.FrontQueue.First == null)
             {
-                var haveDispatched = _services.NamedWindowService.Dispatch();
+                var haveDispatched = _services.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     // Dispatch results to listeners
@@ -957,8 +958,8 @@ namespace com.espertech.esper.core.service
                 {
                     ProcessThreadWorkQueueUnlatched(item);
                 }
-    
-                var haveDispatched = _services.NamedWindowService.Dispatch();
+
+                var haveDispatched = _services.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     Dispatch();
@@ -966,7 +967,7 @@ namespace com.espertech.esper.core.service
     
                 if (queues.FrontQueue.First != null)
                 {
-                    ProcessThreadWorkQueue();
+                    ProcessThreadWorkQueueFront(queues);
                 }
             }
         }
@@ -988,8 +989,8 @@ namespace com.espertech.esper.core.service
                 {
                     ProcessThreadWorkQueueUnlatched(item);
                 }
-    
-                var haveDispatched = _services.NamedWindowService.Dispatch();
+
+                var haveDispatched = _services.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
                 {
                     Dispatch();
@@ -1007,7 +1008,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.AcquireReadLock())
+                using (_services.EventProcessingRWLock.AcquireReadLock())
                 {
                     try
                     {
@@ -1043,7 +1044,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.AcquireReadLock())
+                using (_services.EventProcessingRWLock.AcquireReadLock())
                 {
                     try
                     {
@@ -1086,7 +1087,7 @@ namespace com.espertech.esper.core.service
 
             try
             {
-                using (_services.EventProcessingRwLock.AcquireReadLock())
+                using (_services.EventProcessingRWLock.AcquireReadLock())
                 {
                     try
                     {
@@ -1125,7 +1126,7 @@ namespace com.espertech.esper.core.service
             {
                 if (UnmatchedEvent != null)
                 {
-                    using (_services.EventProcessingRwLock.ReadLock.ReleaseAcquire()) // Allow listener to create new statements
+                    using (_services.EventProcessingRWLock.ReadLock.ReleaseAcquire()) // Allow listener to create new statements
                     {
                         try
                         {
@@ -1281,7 +1282,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception ex)
                     {
-                        services.ExceptionHandlingService.HandleException(ex, handle);
+                        services.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
                     }
                     finally
                     {
@@ -1328,7 +1329,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception ex)
                     {
-                        services.ExceptionHandlingService.HandleException(ex, handle.AgentInstanceHandle);
+                        services.ExceptionHandlingService.HandleException(ex, handle.AgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS);
                     }
                     finally
                     {
@@ -1399,7 +1400,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception ex)
                     {
-                        _services.ExceptionHandlingService.HandleException(ex, handle);
+                        _services.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
                     }
                     finally
                     {
@@ -1459,7 +1460,7 @@ namespace com.espertech.esper.core.service
                     }
                     catch (Exception ex)
                     {
-                        _services.ExceptionHandlingService.HandleException(ex, handle);
+                        _services.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
                     }
                     finally
                     {
@@ -1590,14 +1591,14 @@ namespace com.espertech.esper.core.service
 
             using(_services.VariableService.ReadWriteLock.AcquireWriteLock())
             {
-                _services.VariableService.CheckAndWrite(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID, variableValue);
+                _services.VariableService.CheckAndWrite(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, variableValue);
                 _services.VariableService.Commit();
             }
         }
     
         public void SetVariableValue(IDictionary<String, Object> variableValues)
         {
-            SetVariableValueInternal(variableValues, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID, false);
+            SetVariableValueInternal(variableValues, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, false);
         }
 
         public void SetVariableValue(IDictionary<String, Object> variableValues, int agentInstanceId)
@@ -1615,7 +1616,7 @@ namespace com.espertech.esper.core.service
             if (metaData.ContextPartitionName != null) {
                 throw new VariableNotFoundException("Variable by name '" + variableName + "' has been declared for context '" + metaData.ContextPartitionName + "' and cannot be read without context partition selector");
             }
-            VariableReader reader = _services.VariableService.GetReader(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+            VariableReader reader = _services.VariableService.GetReader(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             Object value = reader.Value;
             if (value == null || reader.VariableMetaData.EventType == null) {
                 return value;
@@ -1676,7 +1677,7 @@ namespace com.espertech.esper.core.service
             {
                 VariableMetaData metaData = _services.VariableService.GetVariableMetaData(variableName);
                 CheckVariable(variableName, metaData, false, false);
-                VariableReader reader = _services.VariableService.GetReader(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+                VariableReader reader = _services.VariableService.GetReader(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
                 if (reader == null)
                 {
                     throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
@@ -1837,7 +1838,7 @@ namespace com.espertech.esper.core.service
         private EPPreparedExecuteMethod GetExecuteMethod(String epl, EPStatementObjectModel model, EPOnDemandPreparedQueryParameterized parameterizedQuery)
         {
             var stmtName = UuidGenerator.Generate();
-            var stmtId = UuidGenerator.Generate();
+            var stmtId = -1;
     
             try
             {
@@ -1848,13 +1849,35 @@ namespace com.espertech.esper.core.service
                 }
                 else if (model != null)
                 {
-                    spec = StatementSpecMapper.Map(model, _services.EngineImportService, _services.VariableService, _services.ConfigSnapshot, _services.SchedulingService, _services.EngineURI, _services.PatternNodeFactory, _services.NamedWindowService, _services.ContextManagementService, _services.ExprDeclaredService, _services.TableService);
+                    spec = StatementSpecMapper.Map(
+                        model, 
+                        _services.EngineImportService, 
+                        _services.VariableService,
+                        _services.ConfigSnapshot,
+                        _services.SchedulingService, 
+                        _services.EngineURI, 
+                        _services.PatternNodeFactory,
+                        _services.NamedWindowMgmtService, 
+                        _services.ContextManagementService,
+                        _services.ExprDeclaredService, 
+                        _services.TableService);
                     epl = model.ToEPL();
                 }
                 else
                 {
                     var prepared = (EPPreparedStatementImpl) parameterizedQuery;
-                    spec = StatementSpecMapper.Map(prepared.Model, _services.EngineImportService, _services.VariableService, _services.ConfigSnapshot, _services.SchedulingService, _services.EngineURI, _services.PatternNodeFactory, _services.NamedWindowService, _services.ContextManagementService, _services.ExprDeclaredService, _services.TableService);
+                    spec = StatementSpecMapper.Map(
+                        prepared.Model,
+                        _services.EngineImportService, 
+                        _services.VariableService,
+                        _services.ConfigSnapshot, 
+                        _services.SchedulingService, 
+                        _services.EngineURI,
+                        _services.PatternNodeFactory, 
+                        _services.NamedWindowMgmtService,
+                        _services.ContextManagementService, 
+                        _services.ExprDeclaredService, 
+                        _services.TableService);
                     epl = prepared.OptionalEPL ?? prepared.Model.ToEPL();
                 }
 
@@ -1875,6 +1898,7 @@ namespace com.espertech.esper.core.service
                 var compiledSpec = StatementLifecycleSvcImpl.Compile(
                     spec, epl, statementContext, false, true, annotations, visitor.Subselects,
                     Collections.GetEmptyList<ExprDeclaredNode>(),
+                    spec.TableExpressions,
                     _services);
 
                 if (compiledSpec.InsertIntoDesc != null) {
@@ -1937,7 +1961,7 @@ namespace com.espertech.esper.core.service
 
         internal static IDictionary<string, long> GetStatementNearestSchedulesInternal(SchedulingServiceSPI schedulingService, StatementLifecycleSvc statementLifecycleSvc)
         {
-            var schedulePerStatementId = new Dictionary<string, long>();
+            var schedulePerStatementId = new Dictionary<int, long>();
             schedulingService.VisitSchedules(visit =>
             {
                 if (schedulePerStatementId.ContainsKey(visit.StatementId)) {

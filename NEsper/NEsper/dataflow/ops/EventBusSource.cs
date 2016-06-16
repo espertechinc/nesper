@@ -31,19 +31,18 @@ namespace com.espertech.esper.dataflow.ops
         , FilterHandleCallback
     {
 #pragma warning disable 649
-        [DataFlowOpParameter] private ExprNode filter;
-        [DataFlowOpParameter] private EPDataFlowEventBeanCollector collector;
+        [DataFlowOpParameter] protected ExprNode filter;
+        [DataFlowOpParameter] protected EPDataFlowEventBeanCollector collector;
 
-        [DataFlowContext]
-        private EPDataFlowEmitter _graphContext;
+        [DataFlowContext] protected EPDataFlowEmitter graphContext;
 #pragma warning restore 649
 
-        private EventType _eventType;
-        private AgentInstanceContext _agentInstanceContext;
-        private EPStatementHandleCallback _callbackHandle;
-        private FilterServiceEntry _filterServiceEntry;
-        private readonly IBlockingQueue<Object> _emittables = new LinkedBlockingQueue<Object>();
-        private bool _submitEventBean;
+        protected EventType eventType;
+        protected AgentInstanceContext agentInstanceContext;
+        protected EPStatementHandleCallback callbackHandle;
+        protected FilterServiceEntry filterServiceEntry;
+        protected readonly IBlockingQueue<Object> emittables = new LinkedBlockingQueue<Object>();
+        protected bool submitEventBean;
 
         private readonly ILockable _iLock =
             LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -66,18 +65,18 @@ namespace com.espertech.esper.dataflow.ops
 
             if (!portZero.OptionalDeclaredType.IsUnderlying)
             {
-                _submitEventBean = true;
+                submitEventBean = true;
             }
-            _eventType = portZero.OptionalDeclaredType.EventType;
-            _agentInstanceContext = context.AgentInstanceContext;
+            eventType = portZero.OptionalDeclaredType.EventType;
+            agentInstanceContext = context.AgentInstanceContext;
 
             return new DataFlowOpInitializeResult();
         }
 
         public void Next()
         {
-            Object next = _emittables.Pop();
-            _graphContext.Submit(next);
+            Object next = emittables.Pop();
+            graphContext.Submit(next);
         }
 
         public void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
@@ -87,7 +86,7 @@ namespace com.espertech.esper.dataflow.ops
                 var holder = _collectorDataTL.GetOrCreate();
                 if (holder == null)
                 {
-                    holder = new EPDataFlowEventBeanCollectorContext(_graphContext, _submitEventBean, theEvent);
+                    holder = new EPDataFlowEventBeanCollectorContext(graphContext, submitEventBean, theEvent);
                     _collectorDataTL.Value = holder;
                 }
                 else
@@ -96,13 +95,13 @@ namespace com.espertech.esper.dataflow.ops
                 }
                 collector.Collect(holder);
             }
-            else if (_submitEventBean)
+            else if (submitEventBean)
             {
-                _emittables.Push(theEvent);
+                emittables.Push(theEvent);
             }
             else
             {
-                _emittables.Push(theEvent.Underlying);
+                emittables.Push(theEvent.Underlying);
             }
         }
 
@@ -111,9 +110,9 @@ namespace com.espertech.esper.dataflow.ops
             get { return false; }
         }
 
-        public string StatementId
+        public int StatementId
         {
-            get { return _agentInstanceContext.StatementId; }
+            get { return agentInstanceContext.StatementId; }
         }
 
         public void Open(DataFlowOpOpenContext openContext)
@@ -128,36 +127,39 @@ namespace com.espertech.esper.dataflow.ops
                 }
 
                 var spec = FilterSpecCompiler.MakeFilterSpec(
-                    _eventType, _eventType.Name, filters, null,
+                    eventType, eventType.Name, filters, null,
                     null, null, 
                     new StreamTypeServiceImpl(
-                        _eventType, 
-                        _eventType.Name, true, 
-                        _agentInstanceContext.EngineURI), 
+                        eventType, 
+                        eventType.Name, true, 
+                        agentInstanceContext.EngineURI), 
                     null, 
-                    _agentInstanceContext.StatementContext, 
+                    agentInstanceContext.StatementContext, 
                     new List<int>());
-                valueSet = spec.GetValueSet(null, _agentInstanceContext, null);
+                valueSet = spec.GetValueSet(null, agentInstanceContext, null);
             }
             catch (ExprValidationException ex)
             {
                 throw new EPException("Failed to open filter: " + ex.Message, ex);
             }
 
-            var handle = new EPStatementAgentInstanceHandle(_agentInstanceContext.StatementContext.EpStatementHandle, _agentInstanceContext.AgentInstanceLock, 0, new StatementAgentInstanceFilterVersion());
-            _callbackHandle = new EPStatementHandleCallback(handle, this);
-            _filterServiceEntry = _agentInstanceContext.StatementContext.FilterService.Add(valueSet, _callbackHandle);
+            var handle = new EPStatementAgentInstanceHandle(
+                agentInstanceContext.StatementContext.EpStatementHandle, agentInstanceContext.AgentInstanceLock, 0,
+                new StatementAgentInstanceFilterVersion(),
+                agentInstanceContext.StatementContext.FilterFaultHandlerFactory);
+            callbackHandle = new EPStatementHandleCallback(handle, this);
+            filterServiceEntry = agentInstanceContext.StatementContext.FilterService.Add(valueSet, callbackHandle);
         }
 
         public void Close(DataFlowOpCloseContext openContext)
         {
             using (_iLock.Acquire())
             {
-                if (_callbackHandle != null)
+                if (callbackHandle != null)
                 {
-                    _agentInstanceContext.StatementContext.FilterService.Remove(_callbackHandle, _filterServiceEntry);
-                    _callbackHandle = null;
-                    _filterServiceEntry = null;
+                    agentInstanceContext.StatementContext.FilterService.Remove(callbackHandle, filterServiceEntry);
+                    callbackHandle = null;
+                    filterServiceEntry = null;
                 }
             }
         }

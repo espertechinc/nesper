@@ -37,8 +37,8 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             var configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
             configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();

@@ -16,7 +16,7 @@ using com.espertech.esper.epl.spec;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor prototype for the simplest case: no aggregation functions used in the select clause, and no group-by.
+    /// Result set processor _prototype for the simplest case: no aggregation functions used in the select clause, and no group-by.
     /// </summary>
     public class ResultSetProcessorSimpleFactory : ResultSetProcessorFactory
     {
@@ -33,12 +33,18 @@ namespace com.espertech.esper.epl.core
             SelectExprProcessor selectExprProcessor,
             ExprEvaluator optionalHavingNode,
             bool isSelectRStream,
-            OutputLimitSpec outputLimitSpec)
+            OutputLimitSpec outputLimitSpec,
+            bool enableOutputLimitOpt,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            int numStreams)
         {
             _selectExprProcessor = selectExprProcessor;
             _optionalHavingExpr = optionalHavingNode;
             _isSelectRStream = isSelectRStream;
             _outputLimitSpec = outputLimitSpec;
+            this.IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            this.ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            this.NumStreams = numStreams;
         }
 
         public ResultSetProcessorType ResultSetProcessorType
@@ -80,5 +86,11 @@ namespace com.espertech.esper.epl.core
         {
             get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
+
+        public bool IsEnableOutputLimitOpt { get; private set; }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
+
+        public int NumStreams { get; private set; }
     }
 }

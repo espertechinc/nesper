@@ -374,8 +374,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsNull(_listener.LastNewData);
             Assert.AreEqual(1, _listener.OldDataList.Count);
             Assert.AreEqual(2, _listener.LastOldData.Length);
-            Assert.AreEqual("E4", _listener.LastOldData[0].Get("id"));
-            Assert.AreEqual("E3", _listener.LastOldData[1].Get("id"));
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.LastOldData, "id".SplitCsv(), new Object[][] { new Object[] { "E4" }, new Object[] { "E3" } });
             _listener.Reset();
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), new String[]{"id"}, null);
     

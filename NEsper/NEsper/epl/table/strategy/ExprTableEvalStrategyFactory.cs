@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
@@ -20,109 +17,151 @@ namespace com.espertech.esper.epl.table.strategy
 {
     public class ExprTableEvalStrategyFactory
     {
-        public static ExprEvaluator GetTableAccessEvalStrategy(ExprNode exprNode, string tableName, int streamNum, TableMetadataColumnAggregation agg)
+        public static ExprEvaluator GetTableAccessEvalStrategy(
+            ExprNode exprNode,
+            string tableName,
+            int streamNum,
+            TableMetadataColumnAggregation agg)
         {
-            if (!agg.Factory.IsAccessAggregation) {
-                return new ExprTableExprEvaluatorMethod(exprNode, tableName, agg.ColumnName, streamNum, agg.Factory.ResultType, agg.MethodOffset);
+            if (!agg.Factory.IsAccessAggregation)
+            {
+                return new ExprTableExprEvaluatorMethod(
+                    exprNode, tableName, agg.ColumnName, streamNum, agg.Factory.ResultType, agg.MethodOffset);
             }
-            else {
-                return new ExprTableExprEvaluatorAccess(exprNode, tableName, agg.ColumnName, streamNum, agg.Factory.ResultType, agg.AccessAccessorSlotPair, agg.OptionalEventType);
+            else
+            {
+                return new ExprTableExprEvaluatorAccess(
+                    exprNode, tableName, agg.ColumnName, streamNum, agg.Factory.ResultType, agg.AccessAccessorSlotPair,
+                    agg.OptionalEventType);
             }
         }
-    
-        public static ExprTableAccessEvalStrategy GetTableAccessEvalStrategy(bool writesToTables, ExprTableAccessNode tableNode, TableStateInstance state, TableMetadata tableMetadata)
+
+        public static ExprTableAccessEvalStrategy GetTableAccessEvalStrategy(
+            ExprTableAccessNode tableNode,
+            TableAndLockProvider provider,
+            TableMetadata tableMetadata)
         {
             var groupKeyEvals = tableNode.GroupKeyEvaluators;
-    
-            TableStateInstanceUngrouped ungrouped;
-            TableStateInstanceGroupBy grouped;
-            ILockable @lock;
-            if (state is TableStateInstanceUngrouped) {
-                ungrouped = (TableStateInstanceUngrouped) state;
+
+            TableAndLockProviderUngrouped ungrouped;
+            TableAndLockProviderGrouped grouped;
+            if (provider is TableAndLockProviderUngrouped)
+            {
+                ungrouped = (TableAndLockProviderUngrouped) provider;
                 grouped = null;
-                @lock = writesToTables ? ungrouped.TableLevelRWLock.WriteLock : ungrouped.TableLevelRWLock.ReadLock;
             }
-            else {
-                grouped = (TableStateInstanceGroupBy) state;
+            else
+            {
+                grouped = (TableAndLockProviderGrouped) provider;
                 ungrouped = null;
-                @lock = writesToTables ? grouped.TableLevelRWLock.WriteLock : grouped.TableLevelRWLock.ReadLock;
             }
-    
+
             // handle sub-property access
-            if (tableNode is ExprTableAccessNodeSubprop) {
+            if (tableNode is ExprTableAccessNodeSubprop)
+            {
                 var subprop = (ExprTableAccessNodeSubprop) tableNode;
                 var column = tableMetadata.TableColumns.Get(subprop.SubpropName);
-                return GetTableAccessSubprop(@lock, subprop, column, grouped, ungrouped);
+                return GetTableAccessSubprop(subprop, column, ungrouped, grouped);
             }
-    
+
             // handle top-level access
-            if (tableNode is ExprTableAccessNodeTopLevel) {
-                if (ungrouped != null) {
-                    return new ExprTableEvalStrategyUngroupedTopLevel(@lock, ungrouped.EventReference, tableMetadata.TableColumns);
+            if (tableNode is ExprTableAccessNodeTopLevel)
+            {
+                if (ungrouped != null)
+                {
+                    return new ExprTableEvalStrategyUngroupedTopLevel(ungrouped, tableMetadata.TableColumns);
                 }
-                if (tableNode.GroupKeyEvaluators.Length > 1) {
-                    return new ExprTableEvalStrategyGroupByTopLevelMulti(@lock, grouped.Rows, tableMetadata.TableColumns, groupKeyEvals);
+                if (tableNode.GroupKeyEvaluators.Length > 1)
+                {
+                    return new ExprTableEvalStrategyGroupByTopLevelMulti(
+                        grouped, tableMetadata.TableColumns, groupKeyEvals);
                 }
-                return new ExprTableEvalStrategyGroupByTopLevelSingle(@lock, grouped.Rows, tableMetadata.TableColumns, groupKeyEvals[0]);
+                return new ExprTableEvalStrategyGroupByTopLevelSingle(
+                    grouped, tableMetadata.TableColumns, groupKeyEvals[0]);
             }
-    
+
             // handle "keys" function access
-            if (tableNode is ExprTableAccessNodeKeys) {
-                return new ExprTableEvalStrategyGroupByKeys(@lock, grouped.Rows);
+            if (tableNode is ExprTableAccessNodeKeys)
+            {
+                return new ExprTableEvalStrategyGroupByKeys(grouped);
             }
-    
+
             // handle access-aggregator accessors
-            if (tableNode is ExprTableAccessNodeSubpropAccessor) {
+            if (tableNode is ExprTableAccessNodeSubpropAccessor)
+            {
                 var accessorProvider = (ExprTableAccessNodeSubpropAccessor) tableNode;
-                var column = (TableMetadataColumnAggregation) tableMetadata.TableColumns.Get(accessorProvider.SubpropName);
-                if (ungrouped != null) {
+                var column =
+                    (TableMetadataColumnAggregation) tableMetadata.TableColumns.Get(accessorProvider.SubpropName);
+                if (ungrouped != null)
+                {
                     var pairX = column.AccessAccessorSlotPair;
-                    return new ExprTableEvalStrategyUngroupedAccess(@lock, ungrouped.EventReference, pairX.Slot, accessorProvider.Accessor);
+                    return new ExprTableEvalStrategyUngroupedAccess(ungrouped, pairX.Slot, accessorProvider.Accessor);
                 }
-    
-                var pair = new AggregationAccessorSlotPair(column.AccessAccessorSlotPair.Slot, accessorProvider.Accessor);
-                if (tableNode.GroupKeyEvaluators.Length > 1) {
-                    return new ExprTableEvalStrategyGroupByAccessMulti(@lock, grouped.Rows, pair, groupKeyEvals);
+
+                var pair = new AggregationAccessorSlotPair(
+                    column.AccessAccessorSlotPair.Slot, accessorProvider.Accessor);
+                if (tableNode.GroupKeyEvaluators.Length > 1)
+                {
+                    return new ExprTableEvalStrategyGroupByAccessMulti(grouped, pair, groupKeyEvals);
                 }
-                return new ExprTableEvalStrategyGroupByAccessSingle(@lock, grouped.Rows, pair, groupKeyEvals[0]);
+                return new ExprTableEvalStrategyGroupByAccessSingle(grouped, pair, groupKeyEvals[0]);
             }
-    
+
             throw new IllegalStateException("Unrecognized table access node " + tableNode);
         }
-    
-        private static ExprTableAccessEvalStrategy GetTableAccessSubprop(ILockable @lock, ExprTableAccessNodeSubprop subprop, TableMetadataColumn column, TableStateInstanceGroupBy grouped, TableStateInstanceUngrouped ungrouped) {
-    
-            if (column is TableMetadataColumnPlain) {
+
+        private static ExprTableAccessEvalStrategy GetTableAccessSubprop(
+            ExprTableAccessNodeSubprop subprop,
+            TableMetadataColumn column,
+            TableAndLockProviderUngrouped ungrouped,
+            TableAndLockProviderGrouped grouped)
+        {
+            if (column is TableMetadataColumnPlain)
+            {
                 var plain = (TableMetadataColumnPlain) column;
-                if (ungrouped != null) {
-                    return new ExprTableEvalStrategyUngroupedProp(@lock, ungrouped.EventReference, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator);
+                if (ungrouped != null)
+                {
+                    return new ExprTableEvalStrategyUngroupedProp(
+                        ungrouped, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator);
                 }
-                if (subprop.GroupKeyEvaluators.Length > 1) {
-                    return new ExprTableEvalStrategyGroupByPropMulti(@lock, grouped.Rows, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator, subprop.GroupKeyEvaluators);
+                if (subprop.GroupKeyEvaluators.Length > 1)
+                {
+                    return new ExprTableEvalStrategyGroupByPropMulti(
+                        grouped, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator, subprop.GroupKeyEvaluators);
                 }
-                return new ExprTableEvalStrategyGroupByPropSingle(@lock, grouped.Rows, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator, subprop.GroupKeyEvaluators[0]);
+                return new ExprTableEvalStrategyGroupByPropSingle(
+                    grouped, plain.IndexPlain, subprop.OptionalPropertyEnumEvaluator, subprop.GroupKeyEvaluators[0]);
             }
-    
+
             var aggcol = (TableMetadataColumnAggregation) column;
-            if (ungrouped != null) {
-                if (!aggcol.Factory.IsAccessAggregation) {
-                    return new ExprTableEvalStrategyUngroupedMethod(@lock, ungrouped.EventReference, aggcol.MethodOffset);
+            if (ungrouped != null)
+            {
+                if (!aggcol.Factory.IsAccessAggregation)
+                {
+                    return new ExprTableEvalStrategyUngroupedMethod(ungrouped, aggcol.MethodOffset);
                 }
                 var pair = aggcol.AccessAccessorSlotPair;
-                return new ExprTableEvalStrategyUngroupedAccess(@lock, ungrouped.EventReference, pair.Slot, pair.Accessor);
+                return new ExprTableEvalStrategyUngroupedAccess(ungrouped, pair.Slot, pair.Accessor);
             }
-    
+
             var columnAggregation = (TableMetadataColumnAggregation) column;
-            if (!columnAggregation.Factory.IsAccessAggregation) {
-                if (subprop.GroupKeyEvaluators.Length > 1) {
-                    return new ExprTableEvalStrategyGroupByMethodMulti(@lock, grouped.Rows, columnAggregation.MethodOffset, subprop.GroupKeyEvaluators);
+            if (!columnAggregation.Factory.IsAccessAggregation)
+            {
+                if (subprop.GroupKeyEvaluators.Length > 1)
+                {
+                    return new ExprTableEvalStrategyGroupByMethodMulti(
+                        grouped, columnAggregation.MethodOffset, subprop.GroupKeyEvaluators);
                 }
-                return new ExprTableEvalStrategyGroupByMethodSingle(@lock, grouped.Rows, columnAggregation.MethodOffset, subprop.GroupKeyEvaluators[0]);
+                return new ExprTableEvalStrategyGroupByMethodSingle(
+                    grouped, columnAggregation.MethodOffset, subprop.GroupKeyEvaluators[0]);
             }
-            if (subprop.GroupKeyEvaluators.Length > 1) {
-                return new ExprTableEvalStrategyGroupByAccessMulti(@lock, grouped.Rows, columnAggregation.AccessAccessorSlotPair, subprop.GroupKeyEvaluators);
+            if (subprop.GroupKeyEvaluators.Length > 1)
+            {
+                return new ExprTableEvalStrategyGroupByAccessMulti(
+                    grouped, columnAggregation.AccessAccessorSlotPair, subprop.GroupKeyEvaluators);
             }
-            return new ExprTableEvalStrategyGroupByAccessSingle(@lock, grouped.Rows, columnAggregation.AccessAccessorSlotPair, subprop.GroupKeyEvaluators[0]);
+            return new ExprTableEvalStrategyGroupByAccessSingle(
+                grouped, columnAggregation.AccessAccessorSlotPair, subprop.GroupKeyEvaluators[0]);
         }
     }
-}
+} // end of namespace

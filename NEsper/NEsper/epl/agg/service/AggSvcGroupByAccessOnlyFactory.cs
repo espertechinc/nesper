@@ -42,10 +42,15 @@ namespace com.espertech.esper.epl.agg.service
             _groupKeyBinding = groupKeyBinding;
             _isJoin = isJoin;
         }
-    
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService)
+
+        public AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
-            return new AggSvcGroupByAccessOnlyImpl(methodResolutionService, _groupKeyBinding, _accessors, _accessAggSpecs, _isJoin);
+            return new AggSvcGroupByAccessOnlyImpl(
+                methodResolutionService, _groupKeyBinding, _accessors, _accessAggSpecs, _isJoin);
         }
     }
 }

@@ -16,7 +16,7 @@ using com.espertech.esper.epl.spec;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor prototype for the case: aggregation functions used in the select 
+    /// Result set processor _prototype for the case: aggregation functions used in the select 
     /// clause, and no group-by, and not all of the properties in the select clause are under 
     /// an aggregation function.
     /// </summary>
@@ -32,13 +32,18 @@ namespace com.espertech.esper.epl.core
         /// <param name="isSelectRStream">true if remove stream events should be generated</param>
         /// <param name="isUnidirectional">true if unidirectional join</param>
         /// <param name="isHistoricalOnly">if set to <c>true</c> [is historical only].</param>
+        /// <param name="outputLimitSpec">The output limit spec.</param>
+        /// <param name="enableOutputLimitOpt">if set to <c>true</c> [enable output limit opt].</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
         public ResultSetProcessorAggregateAllFactory(
             SelectExprProcessor selectExprProcessor,
             ExprEvaluator optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
             bool isHistoricalOnly,
-            OutputLimitSpec outputLimitSpec)
+            OutputLimitSpec outputLimitSpec,
+            bool enableOutputLimitOpt,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory)
         {
             _selectExprProcessor = selectExprProcessor;
             OutputLimitSpec = outputLimitSpec;
@@ -46,6 +51,8 @@ namespace com.espertech.esper.epl.core
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
             IsHistoricalOnly = isHistoricalOnly;
+            IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
         }
 
         public ExprEvaluator OptionalHavingNode { get; private set; }
@@ -66,12 +73,16 @@ namespace com.espertech.esper.epl.core
             get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
 
+        public bool IsEnableOutputLimitOpt { get; private set; }
+
         public ResultSetProcessorType ResultSetProcessorType
         {
             get { return ResultSetProcessorType.AGGREGATED_UNGROUPED; }
         }
 
         public OutputLimitSpec OutputLimitSpec { get; private set; }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
 
         #region ResultSetProcessorFactory Members
 

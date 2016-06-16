@@ -11,13 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.script;
+using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.view;
 using com.espertech.esper.events;
 using com.espertech.esper.filter;
@@ -51,18 +54,18 @@ namespace com.espertech.esper.core.context.util
 	        }
 	        foreach (var instance in agentInstances)
 	        {
-	            StopAgentInstance(instance, terminationProperties, servicesContext, isStatementStop, leaveLocksAcquired);
+                StopAgentInstanceRemoveResources(instance, terminationProperties, servicesContext, isStatementStop, leaveLocksAcquired);
 	        }
 	    }
 
-	    public static void StopAgentInstance(AgentInstance agentInstance, IDictionary<string, object> terminationProperties, EPServicesContext servicesContext, bool isStatementStop, bool leaveLocksAcquired)
+        public static void StopAgentInstanceRemoveResources(AgentInstance agentInstance, IDictionary<string, object> terminationProperties, EPServicesContext servicesContext, bool isStatementStop, bool leaveLocksAcquired)
         {
 	        if (terminationProperties != null)
             {
                 var contextProperties = (MappedEventBean) agentInstance.AgentInstanceContext.ContextProperties;
 	            contextProperties.Properties.PutAll(terminationProperties);
 	        }
-	        StatementAgentInstanceUtil.Stop(agentInstance.StopCallback, agentInstance.AgentInstanceContext, agentInstance.FinalView, servicesContext, isStatementStop, leaveLocksAcquired);
+	        StatementAgentInstanceUtil.Stop(agentInstance.StopCallback, agentInstance.AgentInstanceContext, agentInstance.FinalView, servicesContext, isStatementStop, leaveLocksAcquired, true);
 	    }
 
 	    public static void StopSafe(ICollection<StopCallback> terminationCallbacks, StopCallback[] stopCallbacks, StatementContext statementContext)
@@ -80,17 +83,19 @@ namespace com.espertech.esper.core.context.util
 	        }
 	    }
 
-	    public static void StopSafe(StopCallback stopMethod, StatementContext statementContext) {
-	        try {
-	            stopMethod.Invoke();
+	    public static void StopSafe(StopCallback stopMethod, StatementContext statementContext)
+        {
+	        try
+            {
+	            stopMethod.Stop();
 	        }
-	        catch (Exception e) {
-	            Log.Warn("Failed to perform statement stop for statement '" + statementContext.StatementName +
-	                    "' expression '" + statementContext.Expression + "' : " + e.Message, e);
-	        }
+	        catch (Exception e)
+            {
+                statementContext.ExceptionHandlingService.HandleException(e, statementContext.StatementName, statementContext.Expression, ExceptionHandlerExceptionType.STOP);
+            }
 	    }
 
-	    public static void Stop(StopCallback stopCallback, AgentInstanceContext agentInstanceContext, Viewable finalView, EPServicesContext servicesContext, bool isStatementStop, bool leaveLocksAcquired)
+        public static void Stop(StopCallback stopCallback, AgentInstanceContext agentInstanceContext, Viewable finalView, EPServicesContext servicesContext, bool isStatementStop, bool leaveLocksAcquired, bool removedStatementResources)
         {
 	        using (Instrument.With(
 	            i => i.QContextPartitionDestroy(agentInstanceContext),
@@ -110,12 +115,6 @@ namespace com.espertech.esper.core.context.util
 
 	                    StopSafe(stopCallback, agentInstanceContext.StatementContext);
 
-	                    if (servicesContext.SchedulableAgentInstanceDirectory != null)
-	                    {
-	                        servicesContext.SchedulableAgentInstanceDirectory.Remove(
-	                            agentInstanceContext.StatementContext.StatementId, agentInstanceContext.AgentInstanceId);
-	                    }
-
 	                    // indicate method resolution
 	                    agentInstanceContext.StatementContext.MethodResolutionService.DestroyedAgentInstance(
 	                        agentInstanceContext.AgentInstanceId);
@@ -130,8 +129,9 @@ namespace com.espertech.esper.core.context.util
 	                    // cause any filters, that may concide with the caller's filters, to be ignored
 	                    agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = Int64.MaxValue;
 
-	                    if (agentInstanceContext.StatementContext.StatementExtensionServicesContext != null &&
-	                        agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources != null)
+                        if (removedStatementResources &&
+                            agentInstanceContext.StatementContext.StatementExtensionServicesContext != null &&
+                            agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources != null)
 	                    {
 	                        agentInstanceContext.StatementContext.StatementExtensionServicesContext.StmtResources
 	                            .DeallocatePartitioned(agentInstanceContext.AgentInstanceId);
@@ -155,24 +155,44 @@ namespace com.espertech.esper.core.context.util
 	    {
 	        var statementContext = statement.StatementContext;
 
-	        // make a new lock for the agent instance or use the already-allocated default lock
-	        IReaderWriterLock agentInstanceLock;
-	        if (isSingleInstanceContext) {
-	            agentInstanceLock = statementContext.DefaultAgentInstanceLock;
-	        }
-	        else
-	        {
-	            agentInstanceLock = servicesContext.StatementLockFactory.GetStatementLock(
-	                statementContext.StatementName, 
-                    statementContext.Annotations, 
-                    statementContext.IsStatelessSelect);
-	        }
+            // for on-trigger statements against named windows we must use the named window lock
+            OnTriggerDesc optOnTriggerDesc = statement.StatementSpec.OnTriggerDesc;
+            String namedWindowName = null;
+            if ((optOnTriggerDesc != null) && (optOnTriggerDesc is OnTriggerWindowDesc))
+            {
+                String windowName = ((OnTriggerWindowDesc) optOnTriggerDesc).WindowName;
+                if (servicesContext.TableService.GetTableMetadata(windowName) == null)
+                {
+                    namedWindowName = windowName;
+                }
+            }
+
+            // determine lock to use
+            IReaderWriterLock agentInstanceLock;
+            if (namedWindowName != null)
+            {
+                NamedWindowProcessor processor = servicesContext.NamedWindowMgmtService.GetProcessor(namedWindowName);
+                NamedWindowProcessorInstance instance = processor.GetProcessorInstance(agentInstanceId);
+                agentInstanceLock = instance.RootViewInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
+            }
+            else
+            {
+                if (isSingleInstanceContext)
+                {
+                    agentInstanceLock = statementContext.DefaultAgentInstanceLock;
+                }
+                else
+                {
+                    agentInstanceLock = servicesContext.StatementLockFactory.GetStatementLock(
+                        statementContext.StatementName, statementContext.Annotations, statementContext.IsStatelessSelect);
+                }
+            }
 
 	        // share the filter version between agent instance handle (callbacks) and agent instance context
 	        var filterVersion = new StatementAgentInstanceFilterVersion();
 
 	        // create handle that comtains lock for use in scheduling and filter callbacks
-	        var agentInstanceHandle = new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceLock, agentInstanceId, filterVersion);
+            var agentInstanceHandle = new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceLock, agentInstanceId, filterVersion, statementContext.FilterFaultHandlerFactory);
 
 	        // create agent instance context
 	        AgentInstanceScriptContext agentInstanceScriptContext = null;
@@ -319,7 +339,7 @@ namespace com.espertech.esper.core.context.util
 	        // there is a single callback and a single context, if they match we are done
 	        if (agentInstances.Count == 1 && callbacks.Count == 1) {
 	            var agentInstance = agentInstances[0];
-	            if (agentInstance.AgentInstanceContext.StatementId.Equals(callbacks.First.StatementId)) {
+	            if (agentInstance.AgentInstanceContext.StatementId == callbacks.First.StatementId) {
 	                Process(agentInstance, servicesContext, callbacks, theEvent);
 	            }
 	            return;
@@ -343,7 +363,7 @@ namespace com.espertech.esper.core.context.util
 	            AgentInstance agentInstanceFound = null;
 	            foreach (var agentInstance in agentInstances)
                 {
-	                if (agentInstance.AgentInstanceContext.StatementId.Equals(statementId))
+	                if (agentInstance.AgentInstanceContext.StatementId == statementId)
                     {
 	                    agentInstanceFound = agentInstance;
 	                    break;
@@ -424,7 +444,7 @@ namespace com.espertech.esper.core.context.util
 
 	        }
 	        catch (Exception ex) {
-	            servicesContext.ExceptionHandlingService.HandleException(ex, agentInstanceContext.EpStatementAgentInstanceHandle);
+	            servicesContext.ExceptionHandlingService.HandleException(ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS);
 	        }
 
 	        return false;
@@ -433,9 +453,9 @@ namespace com.espertech.esper.core.context.util
 	    public static StopCallback GetStopCallback(IList<StopCallback> stopCallbacks, AgentInstanceContext agentInstanceContext)
         {
 	        var stopCallbackArr = stopCallbacks.ToArray();
-	        return () => StopSafe(
+	        return new ProxyStopCallback(() => StopSafe(
 	            agentInstanceContext.TerminationCallbackRO, stopCallbackArr,
-	            agentInstanceContext.StatementContext);
+	            agentInstanceContext.StatementContext));
 	    }
 
 	    private static void Process(
@@ -467,7 +487,7 @@ namespace com.espertech.esper.core.context.util
 	            catch (Exception ex)
 	            {
 	                servicesContext.ExceptionHandlingService.HandleException(
-	                    ex, agentInstanceContext.EpStatementAgentInstanceHandle);
+	                    ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS);
 	            }
 	            finally
 	            {

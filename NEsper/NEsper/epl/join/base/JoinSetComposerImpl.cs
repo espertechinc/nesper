@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.epl.expression.core;
@@ -27,6 +28,7 @@ namespace com.espertech.esper.epl.join.@base
     /// </summary>
     public class JoinSetComposerImpl : JoinSetComposer
     {
+        private readonly bool _allowInitIndex;
         private readonly EventTable[][] _repositories;
         private readonly QueryStrategy[] _queryStrategies;
         private readonly bool _isPureSelfJoin;
@@ -40,18 +42,21 @@ namespace com.espertech.esper.epl.join.@base
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="allowInitIndex">if set to <c>true</c> [allow initialize index].</param>
         /// <param name="repositories">for each stream an array of (indexed/unindexed) tables for lookup.</param>
         /// <param name="queryStrategies">for each stream a strategy to execute the join</param>
         /// <param name="isPureSelfJoin">for self-join only</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <param name="joinRemoveStream">if set to <c>true</c> [join remove stream].</param>
         public JoinSetComposerImpl(
+            bool allowInitIndex,
             IDictionary<TableLookupIndexReqKey, EventTable>[] repositories,
             QueryStrategy[] queryStrategies,
             bool isPureSelfJoin,
             ExprEvaluatorContext exprEvaluatorContext,
             bool joinRemoveStream)
         {
+            _allowInitIndex = allowInitIndex;
             _repositories = JoinSetComposerUtil.ToArray(repositories);
             _queryStrategies = queryStrategies;
             _isPureSelfJoin = isPureSelfJoin;
@@ -59,8 +64,18 @@ namespace com.espertech.esper.epl.join.@base
             _joinRemoveStream = joinRemoveStream;
         }
 
+        public bool AllowsInit
+        {
+            get { return _allowInitIndex; }
+        }
+
         public virtual void Init(EventBean[][] eventsPerStream)
         {
+            if (!_allowInitIndex)
+            {
+                throw new IllegalStateException("Initialization by events not supported");
+            }
+
             for (var i = 0; i < eventsPerStream.Length; i++)
             {
                 if (eventsPerStream[i] != null)
@@ -83,7 +98,7 @@ namespace com.espertech.esper.epl.join.@base
                     {
                         foreach (var table in _repositories[i])
                         {
-                            table.Clear();
+                            table.Destroy();
                         }
                     }
                 }

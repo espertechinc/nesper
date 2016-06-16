@@ -17,48 +17,79 @@ namespace com.espertech.esper.epl.variable
 {
     public class VariableServiceUtil
     {
-        public static String GetAssigmentExMessage(String variableName, Type variableType, Type initValueClass) {
-            return "Variable '" + variableName
-                    + "' of declared type " + variableType.GetTypeNameFullyQualPretty() +
-                    " cannot be assigned a value of type " + initValueClass.GetTypeNameFullyQualPretty();
+        public static string GetAssigmentExMessage(string variableName, Type variableType, Type initValueClass)
+        {
+            return string.Format(
+                "Variable '{0}' of declared type {1} cannot be assigned a value of type {2}",
+                variableName,
+                TypeHelper.GetTypeNameFullyQualPretty(variableType),
+                TypeHelper.GetTypeNameFullyQualPretty(initValueClass));
         }
-    
-        public static String CheckVariableContextName(String optionalStatementContextName, VariableMetaData variableMetaData) {
-            if (optionalStatementContextName == null) {
-                if (variableMetaData.ContextPartitionName != null) {
-                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" + variableMetaData.ContextPartitionName + "' can only be accessed within that context";
+
+        public static string CheckVariableContextName(
+            string optionalStatementContextName,
+            VariableMetaData variableMetaData)
+        {
+            if (optionalStatementContextName == null)
+            {
+                if (variableMetaData.ContextPartitionName != null)
+                {
+                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" +
+                           variableMetaData.ContextPartitionName + "' can only be accessed within that context";
                 }
             }
-            else {
+            else
+            {
                 if (variableMetaData.ContextPartitionName != null &&
-                    !variableMetaData.ContextPartitionName.Equals(optionalStatementContextName)) {
-                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" + variableMetaData.ContextPartitionName + "' is not available for use with context '" + optionalStatementContextName + "'";
+                    !variableMetaData.ContextPartitionName.Equals(optionalStatementContextName))
+                {
+                    return "Variable '" + variableMetaData.VariableName + "' defined for use with context '" +
+                           variableMetaData.ContextPartitionName + "' is not available for use with context '" +
+                           optionalStatementContextName + "'";
                 }
             }
             return null;
         }
-    
-        public static String CheckVariableContextName(ContextDescriptor contextDescriptor, VariableMetaData variableMetaData) {
-            if (contextDescriptor == null) {
-                return CheckVariableContextName((String) null, variableMetaData);
+
+        public static string CheckVariableContextName(
+            ContextDescriptor contextDescriptor,
+            VariableMetaData variableMetaData)
+        {
+            if (contextDescriptor == null)
+            {
+                return CheckVariableContextName((string) null, variableMetaData);
             }
             return CheckVariableContextName(contextDescriptor.ContextName, variableMetaData);
         }
 
-        public static void CheckAlreadyDeclaredVariable(String variableName, VariableService variableService) {
-            if (variableService.GetVariableMetaData(variableName) != null) {
-                throw new ExprValidationException(GetAlreadyDeclaredEx(variableName));
+        public static void CheckAlreadyDeclaredVariable(string variableName, VariableService variableService)
+
+        {
+            if (variableService.GetVariableMetaData(variableName) != null)
+            {
+                throw new ExprValidationException(GetAlreadyDeclaredEx(variableName, false));
             }
         }
 
-        public static void CheckAlreadyDeclaredTable(String variableName, TableService tableService) {
-            if (tableService.GetTableMetadata(variableName) != null) {
-                throw new ExprValidationException(GetAlreadyDeclaredEx(variableName));
+        public static void CheckAlreadyDeclaredTable(string tableName, TableService tableService)
+
+        {
+            if (tableService.GetTableMetadata(tableName) != null)
+            {
+                throw new ExprValidationException(GetAlreadyDeclaredEx(tableName, true));
             }
         }
 
-        public static String GetAlreadyDeclaredEx(String variableName) {
-            return "Variable by name '" + variableName + "' has already been created";
+        public static string GetAlreadyDeclaredEx(string variableOrTableName, bool isTable)
+        {
+            if (isTable)
+            {
+                return "Table by name '" + variableOrTableName + "' has already been created";
+            }
+            else
+            {
+                return "Variable by name '" + variableOrTableName + "' has already been created";
+            }
         }
     }
-}
+} // end of namespace

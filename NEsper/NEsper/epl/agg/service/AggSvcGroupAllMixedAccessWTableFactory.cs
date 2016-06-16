@@ -23,29 +23,44 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupAllMixedAccessWTableFactory : AggregationServiceFactory
     {
-        protected readonly AggregationAccessorSlotPair[] accessors;
-        protected readonly bool isJoin;
-        private readonly TableColumnMethodPair[] methodPairs;
-        private readonly string tableName;
-        private readonly int[] targetStates;
-        private readonly ExprNode[] accessStateExpr;
-        private readonly AggregationAgent[] agents;
-    
-        public AggSvcGroupAllMixedAccessWTableFactory(AggregationAccessorSlotPair[] accessors, bool join, TableColumnMethodPair[] methodPairs, string tableName, int[] targetStates, ExprNode[] accessStateExpr, AggregationAgent[] agents)
+        protected internal readonly AggregationAccessorSlotPair[] Accessors;
+        protected internal readonly bool IsJoin;
+
+        private readonly TableColumnMethodPair[] _methodPairs;
+        private readonly string _tableName;
+        private readonly int[] _targetStates;
+        private readonly ExprNode[] _accessStateExpr;
+        private readonly AggregationAgent[] _agents;
+
+        public AggSvcGroupAllMixedAccessWTableFactory(
+            AggregationAccessorSlotPair[] accessors,
+            bool join,
+            TableColumnMethodPair[] methodPairs,
+            string tableName,
+            int[] targetStates,
+            ExprNode[] accessStateExpr,
+            AggregationAgent[] agents)
         {
-            this.accessors = accessors;
-            isJoin = join;
-            this.methodPairs = methodPairs;
-            this.tableName = tableName;
-            this.targetStates = targetStates;
-            this.accessStateExpr = accessStateExpr;
-            this.agents = agents;
+            Accessors = accessors;
+            IsJoin = join;
+            _methodPairs = methodPairs;
+            _tableName = tableName;
+            _targetStates = targetStates;
+            _accessStateExpr = accessStateExpr;
+            _agents = agents;
         }
-    
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService) {
-            TableStateInstanceUngrouped tableState = (TableStateInstanceUngrouped) agentInstanceContext.StatementContext.TableService.GetState(tableName, agentInstanceContext.AgentInstanceId);
-            return new AggSvcGroupAllMixedAccessWTableImpl(tableState, methodPairs,
-                    accessors, targetStates, accessStateExpr, agents);
+
+        public AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
+        {
+            var tableState = (TableStateInstanceUngrouped) agentInstanceContext.StatementContext.TableService.GetState(
+                _tableName, agentInstanceContext.AgentInstanceId);
+            return new AggSvcGroupAllMixedAccessWTableImpl(
+                tableState, _methodPairs,
+                Accessors, _targetStates, _accessStateExpr, _agents);
         }
     }
 }

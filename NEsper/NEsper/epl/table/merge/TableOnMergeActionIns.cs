@@ -64,7 +64,7 @@ namespace com.espertech.esper.epl.table.merge
             var theEvent = _insertHelper.Process(eventsPerStream, true, true, exprEvaluatorContext);
             if (_internalEventRouter == null)
             {
-                var aggs = _tableStateRowFactory.MakeAggs(exprEvaluatorContext.AgentInstanceId, null, null);
+                var aggs = _tableStateRowFactory.MakeAggs(exprEvaluatorContext.AgentInstanceId, null, null, tableStateInstance.AggregationServicePassThru);
                 ((object[]) theEvent.Underlying)[0] = aggs;
                 tableStateInstance.AddEvent(theEvent);
                 if (changeHandlerAdded != null)

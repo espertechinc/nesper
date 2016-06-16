@@ -10,7 +10,6 @@ using System;
 
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.plugin;
@@ -27,8 +26,9 @@ namespace com.espertech.esper.epl.agg.service
             _parent = parent;
             _stateFactory = parent.HandlerPlugin.StateFactory;
         }
-    
-        public AggregationState CreateAccess(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId, bool join, Object groupBy) {
+
+        public AggregationState CreateAccess(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId, bool join, Object groupBy, AggregationServicePassThru passThru)
+        {
             return methodResolutionService.MakeAccessAggPlugin(agentInstanceId, groupId, aggregationId, join, _stateFactory, groupBy);
         }
 

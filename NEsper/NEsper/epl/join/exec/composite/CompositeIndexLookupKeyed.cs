@@ -27,19 +27,19 @@ namespace com.espertech.esper.epl.join.exec.composite
             _keys = keys;
         }
 
-        public CompositeIndexLookup Next
+        public void SetNext(CompositeIndexLookup value)
         {
-            set { _next = value; }
+            _next = value;
         }
 
-        public void Lookup(IDictionary<object,object> parent, ICollection<EventBean> result)
+        public void Lookup(IDictionary<object, object> parent, ICollection<EventBean> result, CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var mk = new MultiKeyUntyped(_keys);
             var innerIndex = (IDictionary<object, object>)parent.Get(mk);
             if (innerIndex == null) {
                 return;
             }
-            _next.Lookup(innerIndex, result);        
+            _next.Lookup(innerIndex, result, postProcessor);        
         }
     }
 }

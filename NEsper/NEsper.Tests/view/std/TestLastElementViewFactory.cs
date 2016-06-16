@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.core.support;
 using com.espertech.esper.support.view;
 
 using NUnit.Framework;

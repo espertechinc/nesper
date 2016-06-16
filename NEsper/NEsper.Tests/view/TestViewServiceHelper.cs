@@ -14,6 +14,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.epl;

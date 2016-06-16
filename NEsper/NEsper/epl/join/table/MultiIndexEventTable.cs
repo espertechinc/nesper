@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.join.table
         /// Ctor.
         /// </summary>
         /// <param name="tables">tables to hold</param>
-        /// <param name="organization">The organization.</param>
+        /// <param name="organization">The _organization.</param>
         public MultiIndexEventTable(EventTable[] tables, EventTableOrganization organization)
         {
             _tables = tables;
@@ -47,7 +47,8 @@ namespace com.espertech.esper.epl.join.table
             get { return _tables; }
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData) {
+        public void AddRemove(EventBean[] newData, EventBean[] oldData)
+        {
             throw new UnsupportedOperationException();
         }
     
@@ -88,16 +89,22 @@ namespace com.espertech.esper.epl.join.table
 
         public void Clear()
         {
-            for (int i = 0; i < _tables.Length; i++)
+            for (var i = 0; i < _tables.Length; i++)
             {
                 _tables[i].Clear();
             }
         }
+
+        public void Destroy()
+        {
+            Clear();
+        }
     
-        public String ToQueryPlan() {
-            StringWriter buf = new StringWriter();
-            String delimiter = "";
-            foreach (EventTable table in _tables) {
+        public String ToQueryPlan()
+        {
+            var buf = new StringWriter();
+            var delimiter = "";
+            foreach (var table in _tables) {
                 buf.Write(delimiter);
                 buf.Write(table.ToQueryPlan());
                 delimiter = ", ";
@@ -109,7 +116,7 @@ namespace com.espertech.esper.epl.join.table
         {
             get
             {
-                foreach (EventTable table in _tables)
+                foreach (var table in _tables)
                 {
                     var num = table.NumberOfEvents;
                     if (num != null)
@@ -130,8 +137,8 @@ namespace com.espertech.esper.epl.join.table
         {
             get
             {
-                Object[] indexes = new Object[_tables.Length];
-                for (int i = 0; i < indexes.Length; i++)
+                var indexes = new Object[_tables.Length];
+                for (var i = 0; i < indexes.Length; i++)
                 {
                     indexes[i] = _tables[i].Index;
                 }
@@ -142,6 +149,11 @@ namespace com.espertech.esper.epl.join.table
         public EventTableOrganization Organization
         {
             get { return _organization; }
+        }
+
+        public Type ProviderClass
+        {
+            get { return typeof (MultiIndexEventTable); }
         }
     }
 }

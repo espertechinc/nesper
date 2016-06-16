@@ -32,8 +32,8 @@ namespace com.espertech.esper.regression.epl
             _epService.Initialize();
             _listener = new SupportUpdateListener();
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
         }
     
         [TearDown]

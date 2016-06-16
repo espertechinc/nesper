@@ -12,8 +12,8 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.join.exec.composite;
-using com.espertech.esper.epl.join.table;
+using com.espertech.esper.epl.@join.exec.composite;
+using com.espertech.esper.epl.@join.table;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.lookup
@@ -27,27 +27,28 @@ namespace com.espertech.esper.epl.lookup
         private readonly PropertyCompositeEventTable _index;
         private readonly LookupStrategyDesc _strategyDesc;
     
-        public SubordCompositeTableLookupStrategy(CompositeIndexQuery innerIndexQuery, PropertyCompositeEventTable index, LookupStrategyDesc strategyDesc) {
-            this._innerIndexQuery = innerIndexQuery;
-            this._index = index;
-            this._strategyDesc = strategyDesc;
+        public SubordCompositeTableLookupStrategy(CompositeIndexQuery innerIndexQuery, PropertyCompositeEventTable index, LookupStrategyDesc strategyDesc)
+        {
+            _innerIndexQuery = innerIndexQuery;
+            _index = index;
+            _strategyDesc = strategyDesc;
         }
     
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QIndexSubordLookup(this, _index, null);
-                IList<Object> keys = new List<Object>(2); // can collect nulls
-                ISet<EventBean> result = _innerIndexQuery.GetCollectKeys(eventsPerStream, _index.MapIndex, context, keys);
+                var keys = new List<Object>(); // can collect nulls
+                var result = _innerIndexQuery.GetCollectKeys(eventsPerStream, _index.IndexTable, context, keys, _index.PostProcessor);
                 InstrumentationHelper.Get().AIndexSubordLookup(result, keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return result;
             }
     
-            return _innerIndexQuery.Get(eventsPerStream, _index.MapIndex, context);
+            return _innerIndexQuery.Get(eventsPerStream, _index.IndexTable, context, _index.PostProcessor);
         }
     
         public String ToQueryPlan() {
-            return this.GetType().FullName;
+            return GetType().FullName;
         }
 
         public LookupStrategyDesc StrategyDesc

@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.spec
 
         public int Granularity { get; private set; }
 
-        public IList<FilterSpecCompiled> FilterSpecsIfAny
+        public IList<FilterSpecCompiled> ContextDetailFilterSpecs
         {
             get { return Items.Select(item => item.FilterSpecCompiled).ToList(); }
         }

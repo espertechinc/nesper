@@ -31,6 +31,7 @@ namespace com.espertech.esper.view.internals
         , StoppableView
         , DataWindowView
         , ViewDataVisitableContainer
+        , ViewContainer
     {
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
         private readonly UnionViewFactory _unionViewFactory;
@@ -81,7 +82,12 @@ namespace com.espertech.esper.view.internals
                 }
             }
         }
-    
+
+        public View[] ViewContained
+        {
+            get { return _views; }
+        }
+
         public View CloneView()
         {
             return _unionViewFactory.MakeView(_agentInstanceViewFactoryContext);
@@ -329,14 +335,11 @@ namespace com.espertech.esper.view.internals
             }
         }
 
-        public void StopView()
+        public void Stop()
         {
-            foreach (var view in _views)
+            foreach (var view in _views.OfType<StoppableView>())
             {
-                if (view is StoppableView)
-                {
-                    ((StoppableView) view).StopView();
-                }
+                view.Stop();
             }
         }
 

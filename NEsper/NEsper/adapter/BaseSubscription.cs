@@ -32,7 +32,7 @@ namespace com.espertech.esper.adapter
 
         public OutputAdapter Adapter { get; private set; }
 
-        public abstract string StatementId { get; }
+        public abstract int StatementId { get; }
 
         public abstract bool IsSubSelect { get; }
 
@@ -59,9 +59,9 @@ namespace com.espertech.esper.adapter
             var fvs = new FilterSpecCompiled(eventType, null, new IList<FilterSpecParam>[0], null).GetValueSet(null, null, null);
     
             var name = "subscription:" + SubscriptionName;
-            var metricsHandle = spi.MetricReportingService.GetStatementHandle(name, name);
-            var statementHandle = new EPStatementHandle(name, name, name, StatementType.ESPERIO, name, false, metricsHandle, 0, false, false, MultiMatchHandlerFactory.DefaultHandler);
-            var agentHandle = new EPStatementAgentInstanceHandle(statementHandle, ReaderWriterLockManager.CreateDefaultLock(), -1, new StatementAgentInstanceFilterVersion());
+            var metricsHandle = spi.MetricReportingService.GetStatementHandle(-1, name);
+            var statementHandle = new EPStatementHandle(-1, name, name, StatementType.ESPERIO, name, false, metricsHandle, 0, false, false, spi.ServicesContext.MultiMatchHandlerFactory.GetDefaultHandler());
+            var agentHandle = new EPStatementAgentInstanceHandle(statementHandle, ReaderWriterLockManager.CreateDefaultLock(), -1, new StatementAgentInstanceFilterVersion(), null);
             var registerHandle = new EPStatementHandleCallback(agentHandle, this);
             spi.FilterService.Add(fvs, registerHandle);
         }

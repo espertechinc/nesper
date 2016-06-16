@@ -13,5 +13,6 @@ namespace com.espertech.esper.core.context.mgr
 	public interface ContextManagerFactoryService
 	{
 	    ContextManager Make(ContextDetail contextDetail, ContextControllerFactoryServiceContext factoryServiceContext);
+        bool IsSupportsExtract { get; }
 	}
 } // end of namespace

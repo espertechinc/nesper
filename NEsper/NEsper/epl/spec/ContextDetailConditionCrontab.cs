@@ -16,12 +16,11 @@ namespace com.espertech.esper.epl.spec
 {
     public class ContextDetailConditionCrontab : ContextDetailCondition
     {
-        private readonly bool _immediate;
-
         public ContextDetailConditionCrontab(IList<ExprNode> crontab, bool immediate)
         {
+            ScheduleCallbackId = -1;
             Crontab = crontab;
-            _immediate = immediate;
+            IsImmediate = immediate;
         }
 
         public IList<ExprNode> Crontab { get; private set; }
@@ -33,9 +32,8 @@ namespace com.espertech.esper.epl.spec
             get { return null; }
         }
 
-        public bool IsImmediate
-        {
-            get { return _immediate; }
-        }
+        public bool IsImmediate { get; private set; }
+
+        public int ScheduleCallbackId { get; set; }
     }
 }

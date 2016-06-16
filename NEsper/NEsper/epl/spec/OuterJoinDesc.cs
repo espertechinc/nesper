@@ -120,7 +120,7 @@ namespace com.espertech.esper.epl.spec
         {
             try
             {
-                var validationContext = new ExprValidationContext(null, null, null, null, null, null, exprEvaluatorContext, null, null, null, null, null, null, false, false, false, false, null, false);
+                var validationContext = new ExprValidationContext(null, null, null, null, null, null, exprEvaluatorContext, null, null, -1, null, null, null, false, false, false, false, null, false);
                 exprNode.Validate(validationContext);
             }
             catch (ExprValidationException e)

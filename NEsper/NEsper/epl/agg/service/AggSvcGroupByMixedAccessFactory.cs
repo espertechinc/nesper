@@ -50,7 +50,9 @@ namespace com.espertech.esper.epl.agg.service
 
         public override AggregationService MakeService(
             AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService)
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             return new AggSvcGroupByMixedAccessImpl(
                 Evaluators, Aggregators, GroupKeyBinding, methodResolutionService, Accessors, AccessAggregations, IsJoin);

@@ -10,28 +10,31 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.events.vaevent;
+using com.espertech.esper.filter;
+using com.espertech.esper.pattern;
 using com.espertech.esper.rowregex;
+using com.espertech.esper.timer;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.service
 {
     public sealed class StatementContextEngineServices
     {
-        private readonly EngineSettingsService _engineSettingsService;
-
         public StatementContextEngineServices(
             String engineURI,
             EventAdapterService eventAdapterService,
-            NamedWindowService namedWindowService,
+            NamedWindowMgmtService namedWindowMgmtService,
             VariableService variableService,
-            TableService tableService, 
+            TableService tableService,
             EngineSettingsService engineSettingsService,
             ValueAddEventService valueAddEventService,
             ConfigurationInformation configSnapshot,
@@ -41,16 +44,22 @@ namespace com.espertech.esper.core.service
             ExpressionResultCacheService expressionResultCacheService,
             StatementEventTypeRef statementEventTypeRef,
             TableExprEvaluatorContext tableExprEvaluatorContext,
-            EngineLevelExtensionServicesContext engineLevelExtensionServicesContext, 
-            RegexHandlerFactory regexHandlerFactory, 
-            StatementLockFactory statementLockFactory)
+            EngineLevelExtensionServicesContext engineLevelExtensionServicesContext,
+            RegexHandlerFactory regexHandlerFactory,
+            StatementLockFactory statementLockFactory,
+            ContextManagementService contextManagementService,
+            ViewServicePreviousFactory viewServicePreviousFactory,
+            EventTableIndexService eventTableIndexService,
+            PatternNodeFactory patternNodeFactory,
+            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
+            TimeSourceService timeSourceService)
         {
             EngineURI = engineURI;
             EventAdapterService = eventAdapterService;
-            NamedWindowService = namedWindowService;
+            NamedWindowMgmtService = namedWindowMgmtService;
             VariableService = variableService;
             TableService = tableService;
-            _engineSettingsService = engineSettingsService;
+            EngineSettingsService = engineSettingsService;
             ValueAddEventService = valueAddEventService;
             ConfigSnapshot = configSnapshot;
             MetricReportingService = metricReportingService;
@@ -62,19 +71,25 @@ namespace com.espertech.esper.core.service
             EngineLevelExtensionServicesContext = engineLevelExtensionServicesContext;
             RegexHandlerFactory = regexHandlerFactory;
             StatementLockFactory = statementLockFactory;
+            ContextManagementService = contextManagementService;
+            ViewServicePreviousFactory = viewServicePreviousFactory;
+            EventTableIndexService = eventTableIndexService;
+            PatternNodeFactory = patternNodeFactory;
+            FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
+            TimeSourceService = timeSourceService;
         }
 
         public string EngineURI { get; private set; }
 
         public EventAdapterService EventAdapterService { get; private set; }
 
-        public NamedWindowService NamedWindowService { get; private set; }
+        public NamedWindowMgmtService NamedWindowMgmtService { get; private set; }
 
         public VariableService VariableService { get; private set; }
 
         public IList<Uri> PlugInTypeResolutionURIs
         {
-            get { return _engineSettingsService.PlugInEventTypeResolutionURIs; }
+            get { return EngineSettingsService.PlugInEventTypeResolutionURIs; }
         }
 
         public ValueAddEventService ValueAddEventService { get; private set; }
@@ -93,6 +108,8 @@ namespace com.espertech.esper.core.service
 
         public TableService TableService { get; private set; }
 
+        public EngineSettingsService EngineSettingsService { get; private set; }
+
         public TableExprEvaluatorContext TableExprEvaluatorContext { get; private set; }
 
         public EngineLevelExtensionServicesContext EngineLevelExtensionServicesContext { get; private set; }
@@ -100,5 +117,17 @@ namespace com.espertech.esper.core.service
         public RegexHandlerFactory RegexHandlerFactory { get; private set; }
 
         public StatementLockFactory StatementLockFactory { get; private set; }
+
+        public ContextManagementService ContextManagementService { get; private set; }
+
+        public ViewServicePreviousFactory ViewServicePreviousFactory { get; private set; }
+
+        public EventTableIndexService EventTableIndexService { get; private set; }
+
+        public PatternNodeFactory PatternNodeFactory { get; private set; }
+
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; private set; }
+
+        public TimeSourceService TimeSourceService { get; private set; }
     }
 }

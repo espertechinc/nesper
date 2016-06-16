@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.support.core;
 using com.espertech.esper.support.epl;
 
@@ -91,15 +92,15 @@ namespace com.espertech.esper.epl.core
         {
             String className = "System.Math";
             Type expected = typeof(Math);
-            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false));
+            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false, false));
 
             _engineImportService.AddImport("System.Math");
-            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false));
+            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false, false));
     
             _engineImportService.AddImport("System");
             className = "String";
             expected = typeof(String);
-            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false));
+            Assert.AreEqual(expected, _engineImportService.ResolveTypeInternal(className, false, false));
         }
     
         [Test]
@@ -108,7 +109,7 @@ namespace com.espertech.esper.epl.core
             String className = "Math";
             try
             {
-                _engineImportService.ResolveTypeInternal(className, false);
+                _engineImportService.ResolveTypeInternal(className, false, false);
                 Assert.Fail();
             }
             catch (TypeLoadException)

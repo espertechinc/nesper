@@ -25,15 +25,16 @@ namespace com.espertech.esper.epl.join.table
             : base(streamNum, eventType, propertyName, coercionType)
         {
         }
-    
-        public override EventTable[] MakeEventTables()
+
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(OptionalIndexName, Unique, true, StreamNum, new String[] {PropertyName}, EventTableOrganization.EventTableOrganizationType.HASH);
-            var eventTable = new PropertyIndexedEventTableSingleCoerceAll(PropertyGetter, organization, Coercer, CoercionType);
-            return new EventTable[]
-            {
-                eventTable
-            };
+            EventTableOrganization organization = GetOrganization();
+            return new EventTable[] { new PropertyIndexedEventTableSingleCoerceAll(PropertyGetter, organization, Coercer, CoercionType) };
+        }
+
+        protected override EventTableOrganization GetOrganization()
+        {
+            return new EventTableOrganization(OptionalIndexName, Unique, true, StreamNum, new String[] { PropertyName }, EventTableOrganizationType.HASH);
         }
     }
 }

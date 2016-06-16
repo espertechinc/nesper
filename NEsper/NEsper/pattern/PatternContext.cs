@@ -77,7 +77,7 @@ namespace com.espertech.esper.pattern
 
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        public string StatementId
+        public int StatementId
         {
             get { return _statementContext.StatementId; }
         }

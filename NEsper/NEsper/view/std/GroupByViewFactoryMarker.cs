@@ -15,6 +15,6 @@ namespace com.espertech.esper.view.std
     {
         ExprNode[] CriteriaExpressions { get; }
 
-        bool IsRetainAged { get; }
+        bool IsReclaimAged { get; }
     }
 }

@@ -97,7 +97,7 @@ namespace com.espertech.esper.epl.expression.table
             get { return _subpropName; }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return EPTypeHelper.OptionalIsEventTypeColl(_optionalEnumerationType);
         }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.epl.expression.table
             return Strategy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
     
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return EPTypeHelper.OptionalIsEventTypeSingle(_optionalEnumerationType);
         }

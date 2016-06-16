@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.join.plan
             writer.WriteLine(string.Format("TableLookupNode  tableLookupPlan={0}", _tableLookupPlan));
         }
     
-        public override ExecNode MakeExec(string statementName, string statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
+        public override ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
         {
             JoinExecTableLookupStrategy lookupStrategy = _tableLookupPlan.MakeStrategy(statementName, statementId, annotations, indexesPerStream, streamTypes, viewExternal);
             int indexedStream = _tableLookupPlan.IndexedStream;

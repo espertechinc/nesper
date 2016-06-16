@@ -11,7 +11,6 @@ using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 
-
 namespace com.espertech.esper.epl.view
 {
     /// <summary>
@@ -27,8 +26,8 @@ namespace com.espertech.esper.epl.view
     {
         private readonly OutputStrategyPostProcess _postProcessor;
     
-        public OutputProcessViewConditionFirstPostProcess(ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
-                    : base(resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
+        public OutputProcessViewConditionFirstPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
+            : base(resultSetProcessorHelperFactory, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
         {
             _postProcessor = postProcessor;
         }

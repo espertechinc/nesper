@@ -21,7 +21,7 @@ namespace com.espertech.esper.support.util
         public static readonly String BACKING_SINGLE_DUPS = typeof (PropertyIndexedEventTableSingle).Name;
 
         public static readonly String BACKING_MULTI_UNIQUE = typeof (PropertyIndexedEventTableUnique).Name;
-        public static readonly String BACKING_MULTI_DUPS = typeof (PropertyIndexedEventTable).Name;
+        public static readonly String BACKING_MULTI_DUPS = typeof (PropertyIndexedEventTableUnadorned).Name;
         public static readonly String BACKING_SORTED_COERCED = typeof (PropertySortedEventTableCoerced).Name;
         public static readonly String BACKING_SORTED = typeof (PropertySortedEventTable).Name;
         public static readonly String BACKING_UNINDEXED = typeof (UnindexedEventTable).Name;

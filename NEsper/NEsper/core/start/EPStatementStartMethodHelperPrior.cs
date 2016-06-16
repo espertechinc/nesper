@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.start
     /// </summary>
     public class EPStatementStartMethodHelperPrior
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         public static PriorEventViewFactory FindPriorViewFactory(IList<ViewFactory> factories) {
             ViewFactory factoryFound = null;
@@ -45,15 +45,21 @@ namespace com.espertech.esper.core.start
             }
             return (PriorEventViewFactory) factoryFound;
         }
-    
-        public static PriorEventViewFactory GetPriorEventViewFactory(StatementContext statementContext, int streamNum, int viewFactoryNum, bool unboundStream) {
+
+        public static PriorEventViewFactory GetPriorEventViewFactory(
+            StatementContext statementContext,
+            int streamNum,
+            bool unboundStream,
+            bool isSubquery,
+            int subqueryNumber)
+        {
             try
             {
                 var @namespace = ViewEnum.PRIOR_EVENT_VIEW.GetNamespace();
                 var name = ViewEnum.PRIOR_EVENT_VIEW.GetName();
                 var factory = statementContext.ViewResolutionService.Create(@namespace, name);
     
-                var context = new ViewFactoryContext(statementContext, streamNum, viewFactoryNum, @namespace, name);
+                var context = new ViewFactoryContext(statementContext, streamNum, @namespace, name, isSubquery, subqueryNumber, false);
                 factory.SetViewParameters(context, ((ExprNode) new ExprConstantNodeImpl(unboundStream)).AsSingleton());
     
                 return (PriorEventViewFactory) factory;

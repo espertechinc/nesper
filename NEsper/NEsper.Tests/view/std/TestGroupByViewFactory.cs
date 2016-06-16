@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.bean;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.view.std
         private GroupByViewFactory _factory;
 
         private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(
-            SupportStatementContextFactory.MakeContext(), 1, 0, null, null);
+            SupportStatementContextFactory.MakeContext(), 1, null, null, false, -1, false);
 
         private void TryInvalidParameter(Object[] parameters)
         {

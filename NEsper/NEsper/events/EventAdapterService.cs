@@ -135,24 +135,25 @@ namespace com.espertech.esper.events
                                  DataMap propertyTypes,
                                  bool isNamedWindow,
                                  bool isInsertInto);
-    
+
         /// <summary>
         /// Creates a new anonymous EventType instance for an event type that contains a map
         /// of name value pairs. The method accepts a Map that contains the property names
         /// as keys and Class objects as the values. The Class instances represent the
         /// property types.
-        /// <para/>
-        /// New instances are created Statement by this method on every invocation. Clients 
+        /// <para />
+        /// New instances are created Statement by this method on every invocation. Clients
         /// to this method need to cache the returned EventType instance to reuse EventType's
         /// for same-typed events.
-        /// <para/>
+        /// <para />
         /// </summary>
         /// <param name="typeName">Name of the type.</param>
         /// <param name="propertyTypes">is a map of String to Class objects</param>
+        /// <param name="isTransient">isTransient transient types are not available by event type id lookup and recovery, they are always re-created on-the-fly</param>
         /// <returns>
         /// EventType implementation for map field names and value types
         /// </returns>
-        EventType CreateAnonymousMapType(String typeName, IDictionary<String, Object> propertyTypes);
+        EventType CreateAnonymousMapType(string typeName, DataMap propertyTypes, bool isTransient);
 
         /// <summary>
         /// Creata a wrapper around an event and some additional properties

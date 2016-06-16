@@ -27,12 +27,12 @@ namespace com.espertech.esper.epl.join.table
     /// </summary>
     public class PropertyCompositeEventTableFactory : EventTableFactory
     {
-        private readonly int _streamNum;
-        private readonly IList<String> _optionalKeyedProps;
-        private readonly IList<String> _rangeProps;
-        private readonly CompositeIndexEnterRemove _chain;
-        private readonly IList<Type> _optKeyCoercedTypes;
-        private readonly IList<Type> _optRangeCoercedTypes;
+        protected readonly int StreamNum;
+        protected readonly IList<String> OptionalKeyedProps;
+        protected readonly IList<String> RangeProps;
+        protected readonly CompositeIndexEnterRemove Chain;
+        protected readonly IList<Type> OptKeyCoercedTypes;
+        protected readonly IList<Type> OptRangeCoercedTypes;
 
         /// <summary>
         /// Ctor.
@@ -45,11 +45,11 @@ namespace com.espertech.esper.epl.join.table
         /// <param name="optRangeCoercedTypes">property types</param>
         public PropertyCompositeEventTableFactory(int streamNum, EventType eventType, IList<String> optionalKeyedProps, IList<Type> optKeyCoercedTypes, IList<String> rangeProps, IList<Type> optRangeCoercedTypes)
         {
-            _streamNum = streamNum;
-            _rangeProps = rangeProps;
-            _optionalKeyedProps = optionalKeyedProps;
-            _optKeyCoercedTypes = optKeyCoercedTypes;
-            _optRangeCoercedTypes = optRangeCoercedTypes;
+            StreamNum = streamNum;
+            RangeProps = rangeProps;
+            OptionalKeyedProps = optionalKeyedProps;
+            OptKeyCoercedTypes = optKeyCoercedTypes;
+            OptRangeCoercedTypes = optRangeCoercedTypes;
     
             // construct chain
             var enterRemoves = new List<CompositeIndexEnterRemove>();
@@ -72,18 +72,24 @@ namespace com.espertech.esper.epl.join.table
                 }
                 last = action;
             }
-            _chain = enterRemoves[0];
+            Chain = enterRemoves[0];
         }
-    
-        public EventTable[] MakeEventTables()
+
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            var organization = new EventTableOrganization(null, false, _optKeyCoercedTypes != null || _optRangeCoercedTypes != null, _streamNum, CombinedPropertyLists(_optionalKeyedProps, _rangeProps), EventTableOrganization.EventTableOrganizationType.COMPOSITE);
-            return new EventTable[]
+            EventTableOrganization organization = Organization;
+            return new EventTable[] { new PropertyCompositeEventTableImpl(
+                OptKeyCoercedTypes, OptRangeCoercedTypes, organization, (OptionalKeyedProps != null && OptionalKeyedProps.Count > 0), Chain) };
+        }
+
+        protected EventTableOrganization Organization
+        {
+            get
             {
-                new PropertyCompositeEventTable(
-                    (_optionalKeyedProps != null && _optionalKeyedProps.Count > 0), _chain, _optKeyCoercedTypes,
-                    _optRangeCoercedTypes, organization)
-            };
+                return new EventTableOrganization(
+                    null, false, OptKeyCoercedTypes != null || OptRangeCoercedTypes != null, StreamNum,
+                    CombinedPropertyLists(OptionalKeyedProps, RangeProps), EventTableOrganizationType.COMPOSITE);
+            }
         }
 
         public Type EventTableType
@@ -94,9 +100,9 @@ namespace com.espertech.esper.epl.join.table
         public String ToQueryPlan()
         {
             return GetType().FullName +
-                    " streamNum=" + _streamNum +
-                    " keys=" + _optionalKeyedProps.Render() +
-                    " ranges=" + _rangeProps.Render();
+                    " streamNum=" + StreamNum +
+                    " keys=" + OptionalKeyedProps.Render() +
+                    " ranges=" + RangeProps.Render();
         }
     
         private IList<String> CombinedPropertyLists(IList<string> optionalKeyedProps, IList<string> rangeProps)

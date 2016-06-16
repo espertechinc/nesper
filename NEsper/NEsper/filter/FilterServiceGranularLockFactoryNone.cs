@@ -12,6 +12,8 @@ namespace com.espertech.esper.filter
 {
     public class FilterServiceGranularLockFactoryNone : FilterServiceGranularLockFactory
     {
+        public static readonly FilterServiceGranularLockFactoryNone Instance =
+            new FilterServiceGranularLockFactoryNone();
         private static readonly IReaderWriterLock InstanceLock =
             new VoidReaderWriterLock();
         

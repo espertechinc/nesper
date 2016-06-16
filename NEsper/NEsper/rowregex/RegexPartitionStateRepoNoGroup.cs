@@ -121,5 +121,9 @@ namespace com.espertech.esper.rowregex
         {
             get { return _singletonState.NumStates; }
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

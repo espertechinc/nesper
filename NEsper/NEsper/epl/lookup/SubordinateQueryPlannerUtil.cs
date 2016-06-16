@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
@@ -83,8 +84,13 @@ namespace com.espertech.esper.epl.lookup
             }
             return pairs;
         }
-    
-        public static SubordinateQueryPlannerIndexPropListPair ToListOfHashedAndBtreeProps(string[] hashIndexPropsProvided, Type[] hashIndexCoercionType, string[] rangeIndexPropsProvided, Type[] rangeIndexCoercionType) {
+
+        public static SubordinateQueryPlannerIndexPropListPair ToListOfHashedAndBtreeProps(
+            string[] hashIndexPropsProvided,
+            Type[] hashIndexCoercionType,
+            string[] rangeIndexPropsProvided,
+            Type[] rangeIndexCoercionType)
+        {
             IList<IndexedPropDesc> hashedProps = new List<IndexedPropDesc>();
             IList<IndexedPropDesc> btreeProps = new List<IndexedPropDesc>();
             for (var i = 0; i < hashIndexPropsProvided.Length; i++) {
@@ -95,7 +101,7 @@ namespace com.espertech.esper.epl.lookup
             }
             return new SubordinateQueryPlannerIndexPropListPair(hashedProps, btreeProps);
         }
-    
+
         /// <summary>
         /// Given an index with a defined set of hash(equals) and range(btree) props and uniqueness flag,
         /// and given a list of indexable properties and accessors for both hash and range,
@@ -107,12 +113,13 @@ namespace com.espertech.esper.epl.lookup
         /// <param name="rangeIndexPropsProvided">btree indexable properties</param>
         /// <param name="rangeJoinedProps">keys for btree indexable properties</param>
         /// <returns>ordered set of key information</returns>
-        public static IndexKeyInfo CompileIndexKeyInfo(IndexMultiKey indexMultiKey,
-                                                        string[] hashIndexPropsProvided,
-                                                        SubordPropHashKey[] hashJoinedProps,
-                                                        string[] rangeIndexPropsProvided,
-                                                        SubordPropRangeKey[] rangeJoinedProps) {
-    
+        public static IndexKeyInfo CompileIndexKeyInfo(
+            IndexMultiKey indexMultiKey,
+            string[] hashIndexPropsProvided,
+            SubordPropHashKey[] hashJoinedProps,
+            string[] rangeIndexPropsProvided,
+            SubordPropRangeKey[] rangeJoinedProps)
+        {
             // map the order of indexed columns (key) to the key information available
             var indexedKeyProps = indexMultiKey.HashIndexedProps;
             var isCoerceHash = false;
@@ -161,27 +168,34 @@ namespace com.espertech.esper.epl.lookup
             }
             var names = new IndexNameAndDescPair[pairs.Length];
             for (var i = 0; i < pairs.Length; i++) {
-                names[i] = new IndexNameAndDescPair(pairs[i].IndexName, pairs[i].EventTable.GetType().Name);
+                names[i] = new IndexNameAndDescPair(pairs[i].IndexName, pairs[i].EventTable.ProviderClass.Name);
             }
             return names;
         }
-    
-        public static EventTable[] RealizeTables(SubordinateQueryIndexDesc[] indexDescriptors,
-                                                 EventType eventType,
-                                                 EventTableIndexRepository indexRepository,
-                                                 IEnumerable<EventBean> contents) {
+
+        public static EventTable[] RealizeTables(
+            SubordinateQueryIndexDesc[] indexDescriptors,
+            EventType eventType,
+            EventTableIndexRepository indexRepository,
+            IEnumerable<EventBean> contents,
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
+        {
             var tables = new EventTable[indexDescriptors.Length];
             for (var i = 0; i < tables.Length; i++) {
                 var desc = indexDescriptors[i];
                 var table = indexRepository.GetIndexByDesc(desc.IndexMultiKey);
-                if (table == null) {
-                    table = EventTableUtil.BuildIndex(0, desc.QueryPlanIndexItem, eventType, true, desc.IndexMultiKey.IsUnique, null);
+                if (table == null)
+                {
+                    table = EventTableUtil.BuildIndex(agentInstanceContext, 0, desc.QueryPlanIndexItem, eventType, true, desc.IndexMultiKey.IsUnique, null, null, false);
     
                     // fill table since its new
+                    if (!isRecoveringResilient) {
                     var events = new EventBean[1];
-                    foreach (var prefilledEvent in contents) {
-                        events[0] = prefilledEvent;
-                        table.Add(events);
+                        foreach (var prefilledEvent in contents) {
+                            events[0] = prefilledEvent;
+                            table.Add(events);
+                        }
                     }
     
                     indexRepository.AddIndex(desc.IndexMultiKey, new EventTableIndexRepositoryEntry(null, table));
@@ -197,7 +211,7 @@ namespace com.espertech.esper.epl.lookup
                     repo.AddIndexReference(desc.IndexName, statementName);
                 }
                 else {
-                    repo.AddIndex(false, desc.IndexMultiKey, null, statementName, false);
+                    repo.AddIndex(false, desc.IndexMultiKey, null, statementName, false, desc.QueryPlanIndexItem);
                     repo.AddIndexReference(desc.IndexMultiKey, statementName);
                 }
             }

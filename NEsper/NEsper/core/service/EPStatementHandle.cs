@@ -43,7 +43,7 @@ namespace com.espertech.esper.core.service
         /// <param name="preemptive">true for drop after done</param>
         /// <param name="hasTableAccess">if set to <c>true</c> [has table access].</param>
         /// <param name="multiMatchHandler">The multi match handler.</param>
-        public EPStatementHandle(string statementId, string statementName, string statementText, StatementType statementType, string expressionText, bool hasVariables, StatementMetricHandle metricsHandle, int priority, bool preemptive, bool hasTableAccess, MultiMatchHandler multiMatchHandler)
+        public EPStatementHandle(int statementId, string statementName, string statementText, StatementType statementType, string expressionText, bool hasVariables, StatementMetricHandle metricsHandle, int priority, bool preemptive, bool hasTableAccess, MultiMatchHandler multiMatchHandler)
         {
             StatementId = statementId;
             StatementName = statementName;
@@ -59,14 +59,14 @@ namespace com.espertech.esper.core.service
             unchecked
             {
                 _hashCode = (statementName != null ? statementName.GetHashCode() : 0);
-                _hashCode = (_hashCode*397) ^ (statementId != null ? statementId.GetHashCode() : 0);
+                _hashCode = (_hashCode*397) ^ (statementId.GetHashCode());
                 _hashCode = (_hashCode*397) ^ (expressionText != null ? expressionText.GetHashCode() : 0);
             }
         }
 
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        public string StatementId { get; private set; }
+        public int StatementId { get; private set; }
 
         /// <summary>Returns the factory for latches in insert-into guaranteed order of delivery. </summary>
         /// <value>latch factory for the statement if it performs insert-into (route) of events</value>
@@ -98,7 +98,7 @@ namespace com.espertech.esper.core.service
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.StatementId, StatementId);
+            return (other.StatementId == StatementId);
         }
 
         /// <summary>

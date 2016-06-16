@@ -55,8 +55,8 @@ namespace com.espertech.esper.regression.nwtable
         
         [Test]
         public void TestFirstUnique() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             string[] fields = new string[] {"TheString","IntPrimitive"};
             string stmtTextCreateOne = "create window MyWindowOne.std:firstunique(TheString) as select * from SupportBean";
@@ -166,31 +166,31 @@ namespace com.espertech.esper.regression.nwtable
             IList<EPStatement> deleteStatements = new List<EPStatement>();
             string stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='DB') as s0 delete from MyWindow as win where win.IntPrimitive = s0.DoubleBoxed";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='DP') as s0 delete from MyWindow as win where win.IntPrimitive = s0.DoublePrimitive";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='IB') as s0 delete from MyWindow where MyWindow.IntPrimitive = s0.IntBoxed";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='IPDP') as s0 delete from MyWindow as win where win.IntPrimitive = s0.IntPrimitive and win.DoublePrimitive = s0.DoublePrimitive";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='IPDP2') as s0 delete from MyWindow as win where win.DoublePrimitive = s0.DoublePrimitive and win.IntPrimitive = s0.IntPrimitive";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='IPDPIB') as s0 delete from MyWindow as win where win.DoublePrimitive = s0.DoublePrimitive and win.IntPrimitive = s0.IntPrimitive and win.IntBoxed = s0.IntBoxed";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             stmtTextDelete = "on " + typeof(SupportBean).FullName + "(TheString='CAST') as s0 delete from MyWindow as win where win.IntBoxed = s0.IntPrimitive and win.DoublePrimitive = s0.DoubleBoxed and win.IntPrimitive = s0.IntBoxed";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             // create insert into
             string stmtTextInsertOne = "insert into MyWindow select TheString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed "
@@ -271,19 +271,19 @@ namespace com.espertech.esper.regression.nwtable
     
             // test single-two-field index reuse
             _epService.EPAdministrator.Configuration.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.CreateEPL("create window WinOne.win:keepall() as SupportBean");
             _epService.EPAdministrator.CreateEPL("on SupportBean_ST0 select * from WinOne where TheString = key0");
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("WinOne").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("WinOne").Length);
     
             _epService.EPAdministrator.CreateEPL("on SupportBean_ST0 select * from WinOne where TheString = key0 and IntPrimitive = p00");
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("WinOne").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("WinOne").Length);
         }
     
         [Test]
         public void TestCoercionRangeMultiPropIndexes()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanTwo", typeof(SupportBeanTwo));
     
             // create window
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.nwtable
             IList<EPStatement> deleteStatements = new List<EPStatement>();
             string stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.IntPrimitive between s2.DoublePrimitiveTwo and s2.DoubleBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", 0, 0, 0d, null);
             Assert.IsFalse(_listenerWindow.IsInvoked);
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.nwtable
     
             stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.IntPrimitive between s2.IntPrimitiveTwo and s2.IntBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", -2, 2, 0d, 0d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E2"});
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regression.nwtable
             stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win " +
                     "where win.IntPrimitive between s2.IntPrimitiveTwo and s2.IntBoxedTwo and win.DoublePrimitive between s2.IntPrimitiveTwo and s2.IntBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", -3, 3, -3d, 3d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E3"});
@@ -331,21 +331,21 @@ namespace com.espertech.esper.regression.nwtable
             stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win " +
                     "where win.DoublePrimitive between s2.IntPrimitiveTwo and s2.IntPrimitiveTwo and win.IntPrimitive between s2.IntPrimitiveTwo and s2.IntPrimitiveTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", -4, 4, -4, 4d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E4"});
     
             stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.IntPrimitive <= DoublePrimitiveTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", 0, 0, 5, 1d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E5"});
     
             stmtTextDelete = "on SupportBeanTwo as s2 delete from MyWindow as win where win.IntPrimitive not between s2.IntPrimitiveTwo and s2.IntBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", 100, 200, 0, 0d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E6"});
@@ -355,13 +355,13 @@ namespace com.espertech.esper.regression.nwtable
                 stmt.Dispose();
             }
             deleteStatements.Clear();
-            Assert.AreEqual(0, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(0, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
         }
     
         [Test]
         public void TestCoercionKeyAndRangeMultiPropIndexes()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanTwo", typeof(SupportBeanTwo));
     
             // create window
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regression.nwtable
             IList<EPStatement> deleteStatements = new List<EPStatement>();
             string stmtTextDelete = "on SupportBeanTwo delete from MyWindow where TheString = stringTwo and IntPrimitive between DoublePrimitiveTwo and DoubleBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(1, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(1, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("T", 0, 0, 1d, 200d);
             Assert.IsFalse(_listenerWindow.IsInvoked);
@@ -391,21 +391,21 @@ namespace com.espertech.esper.regression.nwtable
     
             stmtTextDelete = "on SupportBeanTwo delete from MyWindow where TheString = stringTwo and IntPrimitive = IntPrimitiveTwo and IntBoxed between DoublePrimitiveTwo and DoubleBoxedTwo";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("E2", 2, 0, 19d, 21d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E2"});
     
             stmtTextDelete = "on SupportBeanTwo delete from MyWindow where IntBoxed between DoubleBoxedTwo and DoublePrimitiveTwo and IntPrimitive = IntPrimitiveTwo and TheString = stringTwo ";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(2, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(2, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("E3", 3, 0, 29d, 34d);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E3"});
     
             stmtTextDelete = "on SupportBeanTwo delete from MyWindow where IntBoxed between IntBoxedTwo and IntBoxedTwo and IntPrimitive = IntPrimitiveTwo and TheString = stringTwo ";
             deleteStatements.Add(_epService.EPAdministrator.CreateEPL(stmtTextDelete));
-            Assert.AreEqual(3, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(3, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             SendSupportBeanTwo("E4", 4, 40, 0d, null);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetOldAndReset(), fields, new object[]{"E4"});
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regression.nwtable
                 stmt.Dispose();
             }
             deleteStatements.Clear();
-            Assert.AreEqual(0, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(0, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
         }
     
         private SupportBean SendSupportBean(string theString, int intPrimitive, int? intBoxed,
@@ -455,7 +455,7 @@ namespace com.espertech.esper.regression.nwtable
     
         private long GetCount(string windowName) 
         {
-            NamedWindowProcessor processor = _epService.NamedWindowService.GetProcessor(windowName);
+            NamedWindowProcessor processor = _epService.NamedWindowMgmtService.GetProcessor(windowName);
             return processor.GetProcessorInstance(null).CountDataWindow;
         }
     }

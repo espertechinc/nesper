@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.epl
             _subscriber = new SupportSubscriber();
     
             _epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportTemperatureBean", typeof(SupportTemperatureBean));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanComplexProps", typeof(SupportBeanComplexProps));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanInterfaceProps", typeof(SupportBeanInterfaceProps));
@@ -61,8 +61,8 @@ namespace com.espertech.esper.regression.epl
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanErrorTestingTwo", typeof(SupportBeanErrorTestingTwo));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanReadOnly", typeof(SupportBeanReadOnly));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanArrayCollMap", typeof(SupportBeanArrayCollMap));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_N", typeof(SupportBean_N));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_N>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanObject", typeof(SupportBeanObject));       
             _epService.EPAdministrator.Configuration.AddImport(typeof(SupportEnum));
     

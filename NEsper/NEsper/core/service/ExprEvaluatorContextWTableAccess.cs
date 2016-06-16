@@ -36,7 +36,7 @@ namespace com.espertech.esper.core.service
             get { return _context.EngineURI; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _context.StatementId; }
         }

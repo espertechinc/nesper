@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.client
         [Test]
         public void TestUnmatchedCreateStatement()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             UnmatchListenerCreateStmt listener = new UnmatchListenerCreateStmt(_epService);
             _epService.EPRuntime.UnmatchedEvent += listener.Update;
 
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.client
         [Test]
         public void TestUnmatchedInsertInto()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             MyUnmatchedListener listener = new MyUnmatchedListener();
             _epService.EPRuntime.UnmatchedEvent += listener.Update;
 

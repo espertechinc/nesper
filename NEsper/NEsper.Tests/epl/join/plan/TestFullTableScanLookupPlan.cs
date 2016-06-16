@@ -26,22 +26,22 @@ namespace com.espertech.esper.epl.join.plan
         [SetUp]
         public void SetUp()
         {
-            _unindexedEventIndex = new UnindexedEventTable(0);
+            _unindexedEventIndex = new UnindexedEventTableImpl(0);
         }
     
         [Test]
         public void TestLookup()
         {
-            FullTableScanLookupPlan spec = new FullTableScanLookupPlan(0, 1, new TableLookupIndexReqKey("idx2"));
+            var spec = new FullTableScanLookupPlan(0, 1, new TableLookupIndexReqKey("idx2"));
 
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexes = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
+            var indexes = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
             indexes[0] = new Dictionary<TableLookupIndexReqKey, EventTable>();
             indexes[1] = new Dictionary<TableLookupIndexReqKey, EventTable>();
             indexes[1].Put(new TableLookupIndexReqKey("idx2"), _unindexedEventIndex);
     
-            JoinExecTableLookupStrategy lookupStrategy = spec.MakeStrategy("ABC", "001", null, indexes, null, new VirtualDWView[2]);
+            var lookupStrategy = spec.MakeStrategy("ABC", 1, null, indexes, null, new VirtualDWView[2]);
     
-            FullTableScanLookupStrategy strategy = (FullTableScanLookupStrategy) lookupStrategy;
+            var strategy = (FullTableScanLookupStrategy) lookupStrategy;
             Assert.AreEqual(_unindexedEventIndex, strategy.EventIndex);
         }
     }

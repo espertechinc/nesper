@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.epl
             _epService.Initialize();
             _listener = new SupportUpdateListener();
 
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
         }
 
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestPerfKeyAndRangeOuterJoin()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
 
             _epService.EPAdministrator.CreateEPL("create window SBR.win:keepall() as SupportBeanRange");
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regression.epl
             _epService.EPRuntime.SendEvent(new SupportBeanRange("R", "X", 2000, 3000));
             Assert.IsFalse(_listener.IsInvoked);
 
-            Assert.IsTrue((endTime - startTime) < 500);
+            Assert.That((endTime - startTime), Is.LessThan(500));
             stmt.Dispose();
 
             // delete all events

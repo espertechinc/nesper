@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.epl
             _epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             _epService.Initialize();
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("ArrayBean", typeof(SupportBeanArrayCollMap));
         }
     

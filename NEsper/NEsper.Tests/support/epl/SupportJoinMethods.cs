@@ -26,7 +26,7 @@ namespace com.espertech.esper.support.epl
             for (int i = 0; i < number; i++)
             {
                 result[i] = new Dictionary<string, object>();
-                result[i]["val"] = prefix + Convert.ToString(i + 1);
+                result[i]["val"] = String.Format("{0}{1}", prefix, (i + 1));
                 result[i]["index"] = i + 1;
             }
     

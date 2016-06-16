@@ -6,36 +6,23 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    public class EPStatementDestroyCallbackContext
+    public class EPStatementDestroyCallbackContext : DestroyCallback
     {
         private readonly ContextManagementService _contextManagementService;
         private readonly string _contextName;
         private readonly string _statementName;
-        private readonly string _statementId;
+        private readonly int _statementId;
 
-        public static Action New(
+        public EPStatementDestroyCallbackContext(
             ContextManagementService contextManagementService,
             string optionalContextName,
             string statementName,
-            string statementId)
-        {
-            return new EPStatementDestroyCallbackContext(
-                contextManagementService,
-                optionalContextName,
-                statementName,
-                statementId).Destroy;
-        }
-    
-        public EPStatementDestroyCallbackContext(ContextManagementService contextManagementService, string optionalContextName, string statementName, string statementId)
+            int statementId)
         {
             _contextManagementService = contextManagementService;
             _contextName = optionalContextName;

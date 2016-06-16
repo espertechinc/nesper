@@ -23,12 +23,12 @@ namespace com.espertech.esper.epl.agg.service
     public abstract class AggregationServiceBaseGrouped : AggregationService
     {
         /// <summary>Evaluation nodes under. </summary>
-        protected ExprEvaluator[] Evaluators;
+        protected internal ExprEvaluator[] Evaluators;
     
         /// <summary>Aggregation states and factories. </summary>
-        protected AggregationMethodFactory[] Aggregators;
-    
-        protected Object GroupKeyBinding;
+        protected internal AggregationMethodFactory[] Aggregators;
+
+        protected internal Object GroupKeyBinding;
 
         /// <summary>
         /// Ctor.
@@ -46,6 +46,10 @@ namespace com.espertech.esper.epl.agg.service
             {
                 throw new ArgumentException("Expected the same number of evaluates as computer prototypes");
             }
+        }
+
+        public void Stop()
+        {
         }
 
         public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);

@@ -77,6 +77,10 @@ namespace com.espertech.esper.epl.virtualdw
         {
         }
 
+        public void Destroy()
+        {
+        }
+
         public String ToQueryPlan()
         {
             return "(external event table)";
@@ -115,6 +119,11 @@ namespace com.espertech.esper.epl.virtualdw
         public EventTableOrganization Organization
         {
             get { return _organization; }
+        }
+
+        public Type ProviderClass
+        {
+            get { return typeof (VirtualDWEventTable); }
         }
     }
 }

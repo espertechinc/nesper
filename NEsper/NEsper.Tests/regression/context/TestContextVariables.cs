@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.context;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
@@ -31,10 +32,10 @@ namespace com.espertech.esper.regression.context
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            var configuration = SupportConfigFactory.GetConfiguration();
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
+            configuration.AddEventType<SupportBean_S1>();
             configuration.AddEventType("SupportBean_S2", typeof(SupportBean_S2));
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -44,14 +45,16 @@ namespace com.espertech.esper.regression.context
         }
     
         [TearDown]
-        public void TearDown() {
+        public void TearDown()
+        {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();}
             _listener = null;
         }
     
         [Test]
-        public void TestSegmentedByKey() {
-            string[] fields = "mycontextvar".Split(',');
+        public void TestSegmentedByKey()
+        {
+            var fields = "mycontextvar".Split(',');
             _epService.EPAdministrator.CreateEPL("create context MyCtx as " +
                     "partition by TheString from SupportBean, p00 from SupportBean_S0");
             _epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 0");
@@ -78,14 +81,16 @@ namespace com.espertech.esper.regression.context
             _epService.EPRuntime.SendEvent(new SupportBean_S0(6, "P3"));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[]{12});
     
-            foreach (string statement in _epService.EPAdministrator.StatementNames) {
+            foreach (var statement in _epService.EPAdministrator.StatementNames)
+            {
                 _epService.EPAdministrator.GetStatement(statement).Stop();
             }
         }
     
         [Test]
-        public void TestOverlapping() {
-            string[] fields = "mycontextvar".Split(',');
+        public void TestOverlapping()
+        {
+            var fields = "mycontextvar".Split(',');
             _epService.EPAdministrator.CreateEPL("create context MyCtx as " +
                     "initiated by SupportBean_S0 s0 terminated by SupportBean_S1(p10 = s0.p00)");
             _epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 5");
@@ -126,31 +131,31 @@ namespace com.espertech.esper.regression.context
     
             _epService.EPAdministrator.DestroyAllStatements();
 
-
             // test module deployment and undeployment
-            String epl = "@Name(\"context\")\n" +
+            var epl = "@Name(\"context\")\n" +
                     "create context MyContext\n" +
                     "initiated by distinct(theString) SupportBean as input\n" +
                     "terminated by SupportBean(theString = input.theString);\n" +
                     "\n" +
                     "@Name(\"ctx variable counter\")\n" +
                     "context MyContext create variable integer counter = 0;\n";
-            DeploymentResult result = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            var result = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
             _epService.EPAdministrator.DeploymentAdmin.Undeploy(result.DeploymentId);
             _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
         }
     
         [Test]
-        public void TestIterateAndListen() {
+        public void TestIterateAndListen()
+        {
             _epService.EPAdministrator.CreateEPL("@Name('ctx') create context MyCtx as initiated by SupportBean_S0 s0 terminated after 24 hours");
     
-            string[] fields = "mycontextvar".Split(',');
-            SupportUpdateListener listenerCreateVariable = new SupportUpdateListener();
-            EPStatement stmtVar = _epService.EPAdministrator.CreateEPL("@Name('var') context MyCtx create variable int mycontextvar = 5");
+            var fields = "mycontextvar".Split(',');
+            var listenerCreateVariable = new SupportUpdateListener();
+            var stmtVar = _epService.EPAdministrator.CreateEPL("@Name('var') context MyCtx create variable int mycontextvar = 5");
             stmtVar.Events += listenerCreateVariable.Update;
     
-            SupportUpdateListener listenerUpdate = new SupportUpdateListener();
-            EPStatement stmtUpd = _epService.EPAdministrator.CreateEPL("@Name('upd') context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
+            var listenerUpdate = new SupportUpdateListener();
+            var stmtUpd = _epService.EPAdministrator.CreateEPL("@Name('upd') context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
             stmtUpd.Events += listenerUpdate.Update;
     
             _epService.EPRuntime.SendEvent(new SupportBean_S0(0, "P1"));    // allocate partition P1
@@ -163,12 +168,14 @@ namespace com.espertech.esper.regression.context
             EPAssertionUtil.AssertProps(listenerUpdate.AssertOneGetNewAndReset(), "mycontextvar".Split(','), new object[]{101});
             EPAssertionUtil.AssertPropsPerRow(EPAssertionUtil.EnumeratorToArray(stmtUpd.GetEnumerator()), fields, new object[][] { new object[] { 100 }, new object[] { 101 } });
 
-            Assert.IsFalse(stmtVar.HasFirst());
-            Assert.IsFalse(listenerCreateVariable.GetAndClearIsInvoked());
+            var events = EPAssertionUtil.EnumeratorToArray(stmtVar.GetEnumerator());
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "mycontextvar".SplitCsv(), new Object[][] { new Object[] { 100 }, new Object[] { 101 } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listenerCreateVariable.GetNewDataListFlattened(), "mycontextvar".SplitCsv(), new Object[][] { new Object[] { 100 }, new Object[] { 101 } });
         }
     
         [Test]
-        public void TestGetSetAPI() {
+        public void TestGetSetAPI()
+        {
             _epService.EPAdministrator.CreateEPL("create context MyCtx as initiated by SupportBean_S0 s0 terminated after 24 hours");
             _epService.EPAdministrator.CreateEPL("context MyCtx create variable int mycontextvar = 5");
             _epService.EPAdministrator.CreateEPL("context MyCtx on SupportBean(TheString = context.s0.p00) set mycontextvar = IntPrimitive");
@@ -206,7 +213,8 @@ namespace com.espertech.esper.regression.context
         }
     
         [Test]
-        public void TestInvalid() {
+        public void TestInvalid()
+        {
             _epService.EPAdministrator.CreateEPL("create context MyCtxOne as partition by TheString from SupportBean");
             _epService.EPAdministrator.CreateEPL("create context MyCtxTwo as partition by p00 from SupportBean_S0");
             _epService.EPAdministrator.CreateEPL("context MyCtxOne create variable int myctxone_int = 0");
@@ -234,20 +242,24 @@ namespace com.espertech.esper.regression.context
                     "Error starting statement: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context [@Hint('reclaim_group_aged=myctxone_int') select LongPrimitive, count(*) from SupportBean group by LongPrimitive]");
         }
     
-        public void TryInvalid(string epl, string message) {
-            try {
+        public void TryInvalid(string epl, string message)
+        {
+            try
+            {
                 _epService.EPAdministrator.CreateEPL(epl);
                 Assert.Fail();
             }
-            catch (EPStatementException ex) {
+            catch (EPStatementException ex)
+            {
                 Assert.AreEqual(message, ex.Message);
             }
         }
     
-        private void AssertVariableValues(int agentInstanceId, int expected) {
-            IDictionary<String, IList<ContextPartitionVariableState>> states = _epService.EPRuntime.GetVariableValue(Collections.SingletonSet("mycontextvar"), new SupportSelectorById(agentInstanceId));
+        private void AssertVariableValues(int agentInstanceId, int expected)
+        {
+            var states = _epService.EPRuntime.GetVariableValue(Collections.SingletonSet("mycontextvar"), new SupportSelectorById(agentInstanceId));
             Assert.AreEqual(1, states.Count);
-            IList<ContextPartitionVariableState> list = states.Get("mycontextvar");
+            var list = states.Get("mycontextvar");
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual(expected, list[0].State);
         }

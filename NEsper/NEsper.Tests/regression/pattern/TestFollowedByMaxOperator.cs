@@ -32,10 +32,10 @@ namespace com.espertech.esper.regression.pattern
         [SetUp]
         public void SetUp() {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
-            config.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            config.AddEventType("SupportBean_B", typeof(SupportBean_B));
-            config.AddEventType("SupportBean_C", typeof(SupportBean_C));
+            config.AddEventType<SupportBean>();
+            config.AddEventType<SupportBean_A>();
+            config.AddEventType<SupportBean_B>();
+            config.AddEventType<SupportBean_C>();
             config.EngineDefaults.ConditionHandlingConfig.AddClass(typeof(SupportConditionHandlerFactory));
     
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
@@ -209,8 +209,8 @@ namespace com.espertech.esper.regression.pattern
         public void TestSingleMaxSimple()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            config.AddEventType("SupportBean_B", typeof(SupportBean_B));
+            config.AddEventType<SupportBean_A>();
+            config.AddEventType<SupportBean_B>();
             config.EngineDefaults.ConditionHandlingConfig.AddClass(typeof(SupportConditionHandlerFactory));
             
             _epService = EPServiceProviderManager.GetDefaultProvider(config);

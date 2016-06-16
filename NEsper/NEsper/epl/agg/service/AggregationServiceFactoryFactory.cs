@@ -145,9 +145,20 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="optionalContextName">Name of the optional context.</param>
         /// <param name="intoTableSpec">The into table spec.</param>
         /// <param name="tableService">The table service.</param>
+        /// <param name="isUnidirectional">if set to <c>true</c> [is unidirectional].</param>
+        /// <param name="isFireAndForget">if set to <c>true</c> [is fire and forget].</param>
+        /// <param name="isOnSelect">if set to <c>true</c> [is on select].</param>
         /// <returns>
         /// instance for aggregation handling
         /// </returns>
+        /// <exception cref="ExprValidationException">
+        /// Into-table requires at least one aggregation function
+        /// or
+        /// The ' + funcname + ' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead
+        /// or
+        /// Invalid into-table clause: Failed to find table by name ' + intoTableSpec.Name + '
+        /// </exception>
+        /// <exception cref="EPException">Failed to obtain hook for  + HookType.INTERNAL_AGGLOCALLEVEL</exception>
         /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if validation fails</throws>
 	    public static AggregationServiceFactoryDesc GetService(
 	        IList<ExprAggregateNode> selectAggregateExprNodes,
@@ -170,7 +181,10 @@ namespace com.espertech.esper.epl.agg.service
 	        AggregationGroupByRollupDesc groupByRollupDesc,
 	        string optionalContextName,
 	        IntoTableSpec intoTableSpec,
-	        TableService tableService)
+	        TableService tableService,
+	        bool isUnidirectional,
+	        bool isFireAndForget,
+	        bool isOnSelect)
 	    {
 	        // No aggregates used, we do not need this service
 	        if ((selectAggregateExprNodes.IsEmpty()) && (havingAggregateExprNodes.IsEmpty()))
@@ -315,16 +329,16 @@ namespace com.espertech.esper.epl.agg.service
 	        if (!hasGroupByClause) {
                 if (localGroupByPlan != null) {
                     var groupKeyBinding = methodResolutionService.GetGroupKeyBinding(localGroupByPlan);
-                    serviceFactory = factoryService.GetNoGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding);
+                    serviceFactory = factoryService.GetNoGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                 }
 	            else if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0)) {
-	                serviceFactory = factoryService.GetNoGroupNoAccess(methodAggEvaluators, methodAggFactories);
+                    serviceFactory = factoryService.GetNoGroupNoAccess(methodAggEvaluators, methodAggFactories, isUnidirectional, isFireAndForget, isOnSelect);
 	            }
 	            else if ((methodAggEvaluators.Length == 0) && (accessorPairs.Length > 0)) {
-	                serviceFactory = factoryService.GetNoGroupAccessOnly(accessorPairs, accessAggregations, isJoin);
+                    serviceFactory = factoryService.GetNoGroupAccessOnly(accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
 	            }
 	            else {
-	                serviceFactory = factoryService.GetNoGroupAccessMixed(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin);
+                    serviceFactory = factoryService.GetNoGroupAccessMixed(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
 	            }
 	        }
 	        else {
@@ -333,7 +347,7 @@ namespace com.espertech.esper.epl.agg.service
 	            var reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
                 if (localGroupByPlan != null) {
                     var groupKeyBinding = methodResolutionService.GetGroupKeyBinding(localGroupByPlan);
-                    serviceFactory = factoryService.GetGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding);
+                    serviceFactory = factoryService.GetGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                 }
                 else
                 {
@@ -346,15 +360,15 @@ namespace com.espertech.esper.epl.agg.service
                         }
                         if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0))
                         {
-                            serviceFactory = factoryService.GetGroupedNoReclaimNoAccess(methodAggEvaluators, methodAggFactories, groupKeyBinding);
+                            serviceFactory = factoryService.GetGroupedNoReclaimNoAccess(methodAggEvaluators, methodAggFactories, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else if ((methodAggEvaluators.Length == 0) && (accessorPairs.Length > 0))
                         {
-                            serviceFactory = factoryService.GetGroupNoReclaimAccessOnly(accessorPairs, accessAggregations, groupKeyBinding, isJoin);
+                            serviceFactory = factoryService.GetGroupNoReclaimAccessOnly(accessorPairs, accessAggregations, groupKeyBinding, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else
                         {
-                            serviceFactory = factoryService.GetGroupNoReclaimMixed(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding);
+                            serviceFactory = factoryService.GetGroupNoReclaimMixed(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                     }
                     else if (!isDisallowNoReclaim && reclaimGroupAged != null)
@@ -363,21 +377,21 @@ namespace com.espertech.esper.epl.agg.service
                         {
                             throw GetRollupReclaimEx();
                         }
-                        serviceFactory = factoryService.GetGroupReclaimAged(methodAggEvaluators, methodAggFactories, reclaimGroupAged, reclaimGroupFrequency, variableService, accessorPairs, accessAggregations, isJoin, groupKeyBinding, optionalContextName);
+                        serviceFactory = factoryService.GetGroupReclaimAged(methodAggEvaluators, methodAggFactories, reclaimGroupAged, reclaimGroupFrequency, variableService, accessorPairs, accessAggregations, isJoin, groupKeyBinding, optionalContextName, isUnidirectional, isFireAndForget, isOnSelect);
                     }
                     else if (groupByRollupDesc != null)
                     {
-                        serviceFactory = factoryService.GetGroupReclaimMixableRollup(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, groupByRollupDesc);
+                        serviceFactory = factoryService.GetGroupReclaimMixableRollup(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, groupByRollupDesc, isUnidirectional, isFireAndForget, isOnSelect);
                     }
                     else
                     {
                         if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0))
                         {
-                            serviceFactory = factoryService.GetGroupReclaimNoAccess(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding);
+                            serviceFactory = factoryService.GetGroupReclaimNoAccess(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else
                         {
-                            serviceFactory = factoryService.GetGroupReclaimMixable(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding);
+                            serviceFactory = factoryService.GetGroupReclaimMixable(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                     }
                 }

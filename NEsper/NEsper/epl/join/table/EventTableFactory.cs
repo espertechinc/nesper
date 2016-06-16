@@ -18,7 +18,7 @@ namespace com.espertech.esper.epl.join.table
     {
         Type EventTableType { get; }
 
-        EventTable[] MakeEventTables();
+        EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent);
     
         String ToQueryPlan();
     }

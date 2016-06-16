@@ -106,14 +106,14 @@ namespace com.espertech.esper.epl.spec
         /// <param name="schedulingService">The scheduling service.</param>
         /// <param name="engineURI">The engine URI.</param>
         /// <param name="patternNodeFactory">The pattern node factory.</param>
-        /// <param name="namedWindowService">The named window service.</param>
+        /// <param name="namedWindowMgmtService">The named window service.</param>
         /// <param name="contextManagementService">The context management service.</param>
         /// <param name="exprDeclaredService">The expr declared service.</param>
         /// <param name="tableService">The table service.</param>
         /// <returns>
         /// statement specification, and internal representation of a statement
         /// </returns>
-        public static StatementSpecRaw Map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, string engineURI, PatternNodeFactory patternNodeFactory, NamedWindowService namedWindowService, ContextManagementService contextManagementService, ExprDeclaredService exprDeclaredService, TableService tableService)
+        public static StatementSpecRaw Map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, string engineURI, PatternNodeFactory patternNodeFactory, NamedWindowMgmtService namedWindowMgmtService, ContextManagementService contextManagementService, ExprDeclaredService exprDeclaredService, TableService tableService)
         {
             com.espertech.esper.core.context.util.ContextDescriptor contextDescriptor = null;
             if (sodaStatement.ContextName != null)
@@ -121,7 +121,7 @@ namespace com.espertech.esper.epl.spec
                 contextDescriptor = contextManagementService.GetContextDescriptor(sodaStatement.ContextName);
             }
 
-            var mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration, schedulingService, engineURI, patternNodeFactory, namedWindowService, contextManagementService, exprDeclaredService, contextDescriptor, tableService);
+            var mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration, schedulingService, engineURI, patternNodeFactory, namedWindowMgmtService, contextManagementService, exprDeclaredService, contextDescriptor, tableService);
 
             var raw = Map(sodaStatement, mapContext);
             if (mapContext.HasVariables)
@@ -1195,7 +1195,7 @@ namespace com.espertech.esper.epl.spec
                 var timePeriod = (ExprTimePeriod)MapExpressionDeep(clause.IntervalClause.Expression, mapContext);
                 try
                 {
-                    timePeriod.Validate(new ExprValidationContext(null, null, null, null, null, null, null, null, null, null, null, null, null, false, false, false, false, null, false));
+                    timePeriod.Validate(new ExprValidationContext(null, null, null, null, null, null, null, null, null, -1, null, null, null, false, false, false, false, null, false));
                 }
                 catch (ExprValidationException e)
                 {

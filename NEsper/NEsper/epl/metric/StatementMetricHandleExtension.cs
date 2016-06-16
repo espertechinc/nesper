@@ -6,9 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Runtime.InteropServices;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.metric
@@ -85,7 +85,7 @@ namespace com.espertech.esper.epl.metric
                 long lTimeB = 0; // lKernelTimeB + lUserTimeB
 
                 perfCollector.Invoke(
-                    statementMetricHandle,
+                    metricValue,
                     100 * (lTimeB - lTimeA),
                     lWallTimeB - lWallTimeA);
 #else
@@ -116,6 +116,7 @@ namespace com.espertech.esper.epl.metric
                 observableCall.Invoke();
             }
         }
-
     }
+
+    public delegate void PerformanceCollector(StatementMetricHandle statementMetricHandle, long cpuTime, long wallTime, int numInput);
 }

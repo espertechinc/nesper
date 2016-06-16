@@ -11,6 +11,6 @@ namespace com.espertech.esper.core.context.mgr
     public interface ContextControllerFactoryService
     {
 	    ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext context) ;
-	    ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, string contextStmtId);
+	    ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, int contextStmtId);
 	}
 } // end of namespace

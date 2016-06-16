@@ -22,20 +22,20 @@ namespace com.espertech.esper.epl.lookup
     public class SubordinateQueryPlanner
     {
         public static SubordinateWMatchExprQueryPlanResult PlanOnExpression(
-                ExprNode joinExpr,
-                EventType filterEventType,
-                IndexHint optionalIndexHint,
-                bool isIndexShare,
-                int subqueryNumber,
-                ExcludePlanHint excludePlanHint,
-                bool isVirtualDataWindow,
-                EventTableIndexMetadata indexMetadata,
-                EventType eventTypeIndexed,
-                ICollection<string> optionalUniqueKeyProps,
-                bool onlyUseExistingIndexes,
-                string statementName,
-                string statementId,
-                Attribute[] annotations)
+            ExprNode joinExpr,
+            EventType filterEventType,
+            IndexHint optionalIndexHint,
+            bool isIndexShare,
+            int subqueryNumber,
+            ExcludePlanHint excludePlanHint,
+            bool isVirtualDataWindow,
+            EventTableIndexMetadata indexMetadata,
+            EventType eventTypeIndexed,
+            ICollection<string> optionalUniqueKeyProps,
+            bool onlyUseExistingIndexes,
+            string statementName,
+            int statementId,
+            Attribute[] annotations)
         {
             var allStreamsZeroIndexed = new EventType[] {eventTypeIndexed, filterEventType};
             var outerStreams = new EventType[] {filterEventType};
@@ -62,21 +62,22 @@ namespace com.espertech.esper.epl.lookup
                         new SubordWMatchExprLookupStrategyFactoryIndexedFiltered(joinExpr.ExprEvaluator, queryPlanDesc.LookupStrategyFactory), queryPlanDesc.IndexDescs);
             }
         }
-    
-        public static SubordinateQueryPlanDesc PlanSubquery(EventType[] outerStreams,
-                                                            SubordPropPlan joinDesc,
-                                                            bool isNWOnTrigger,
-                                                            bool forceTableScan,
-                                                            IndexHint optionalIndexHint,
-                                                            bool indexShare,
-                                                            int subqueryNumber,
-                                                            bool isVirtualDataWindow,
-                                                            EventTableIndexMetadata indexMetadata,
-                                                            ICollection<string> optionalUniqueKeyProps,
-                                                            bool onlyUseExistingIndexes,
-                                                            string statementName,
-                                                            string statementId,
-                                                            Attribute[] annotations)
+
+        public static SubordinateQueryPlanDesc PlanSubquery(
+            EventType[] outerStreams,
+            SubordPropPlan joinDesc,
+            bool isNWOnTrigger,
+            bool forceTableScan,
+            IndexHint optionalIndexHint,
+            bool indexShare,
+            int subqueryNumber,
+            bool isVirtualDataWindow,
+            EventTableIndexMetadata indexMetadata,
+            ICollection<string> optionalUniqueKeyProps,
+            bool onlyUseExistingIndexes,
+            string statementName,
+            int statementId,
+            Attribute[] annotations)
         {
             if (isVirtualDataWindow) {
                 var indexProps = GetIndexPropDesc(joinDesc.HashProps, joinDesc.RangeProps);
@@ -154,17 +155,17 @@ namespace com.espertech.esper.epl.lookup
                     hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, inKeywordSingleIdxKeys, inKeywordMultiIdxKey, isNWOnTrigger);
             return new SubordinateQueryPlanDesc(lookupStrategyFactory, indexDescs);
         }
-    
+
         private static SubordinateQueryIndexDesc FindOrSuggestIndex(
-                IDictionary<String, SubordPropHashKey> hashProps,
-                IDictionary<String, SubordPropRangeKey> rangeProps,
-                IndexHint optionalIndexHint,
-                bool isIndexShare,
-                int subqueryNumber,
-                EventTableIndexMetadata indexMetadata,
-                ICollection<string> optionalUniqueKeyProps,
-                bool onlyUseExistingIndexes) {
-    
+            IDictionary<String, SubordPropHashKey> hashProps,
+            IDictionary<String, SubordPropRangeKey> rangeProps,
+            IndexHint optionalIndexHint,
+            bool isIndexShare,
+            int subqueryNumber,
+            EventTableIndexMetadata indexMetadata,
+            ICollection<string> optionalUniqueKeyProps,
+            bool onlyUseExistingIndexes)
+        {
             var indexProps = GetIndexPropDesc(hashProps, rangeProps);
             var hashedAndBtreeProps = indexProps.ListPair;
     
@@ -253,8 +254,8 @@ namespace com.espertech.esper.epl.lookup
             return new SubordinateQueryIndexDesc(indexKeyInfo, indexName, indexMultiKey, planIndexItem);
         }
     
-        private static SubordinateQueryPlannerIndexPropDesc GetIndexPropDesc(IDictionary<String, SubordPropHashKey> hashProps, IDictionary<String, SubordPropRangeKey> rangeProps) {
-    
+        private static SubordinateQueryPlannerIndexPropDesc GetIndexPropDesc(IDictionary<String, SubordPropHashKey> hashProps, IDictionary<String, SubordPropRangeKey> rangeProps)
+        {
             // hash property names and types
             var hashIndexPropsProvided = new string[hashProps.Count];
             var hashIndexCoercionType = new Type[hashProps.Count];
@@ -284,26 +285,28 @@ namespace com.espertech.esper.epl.lookup
                     rangeIndexPropsProvided, rangeIndexCoercionType, listPair,
                     hashJoinedProps, rangeJoinedProps);
         }
-    
-        private static Pair<QueryPlanIndexItem, IndexMultiKey> PlanIndex(bool unique,
-                                                    IList<IndexedPropDesc> hashProps,
-                                                    IList<IndexedPropDesc> btreeProps,
-                                                    bool mustCoerce) {
-    
+
+        private static Pair<QueryPlanIndexItem, IndexMultiKey> PlanIndex(
+            bool unique,
+            IList<IndexedPropDesc> hashProps,
+            IList<IndexedPropDesc> btreeProps,
+            bool mustCoerce)
+        {
             // not resolved as full match and not resolved as unique index match, allocate
             var indexPropKey = new IndexMultiKey(unique, hashProps, btreeProps);
-    
+
             var indexedPropDescs = hashProps.ToArray();
             var indexProps = IndexedPropDesc.GetIndexProperties(indexedPropDescs);
             var indexCoercionTypes = IndexedPropDesc.GetCoercionTypes(indexedPropDescs);
-            if (!mustCoerce) {
+            if (!mustCoerce)
+            {
                 indexCoercionTypes = null;
             }
-    
+
             var rangePropDescs = btreeProps.ToArray();
             var rangeProps = IndexedPropDesc.GetIndexProperties(rangePropDescs);
             var rangeCoercionTypes = IndexedPropDesc.GetCoercionTypes(rangePropDescs);
-    
+
             var indexItem = new QueryPlanIndexItem(indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes, unique);
             return new Pair<QueryPlanIndexItem, IndexMultiKey>(indexItem, indexPropKey);
         }

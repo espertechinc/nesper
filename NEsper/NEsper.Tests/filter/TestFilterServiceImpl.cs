@@ -142,7 +142,7 @@ namespace com.espertech.esper.filter
             Atomic<FilterServiceEntry> filterServiceEntryOne = new Atomic<FilterServiceEntry>();
             FilterHandleCallback callbackOne = new ProxyFilterHandleCallback
             {
-                ProcStatementId = () => "",
+                ProcStatementId = () => 1,
                 ProcIsSubselect = () => false,
                 ProcMatchFound = (e, allStmtMatches) =>
                 {

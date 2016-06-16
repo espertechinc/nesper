@@ -20,6 +20,7 @@ namespace com.espertech.esper.epl.join.@base
 {
     public class JoinSetComposerPrototypeHistorical2StreamImpl : JoinSetComposerPrototype
     {
+        private readonly bool _allowInitIndex;
         private readonly ExprNode _optionalFilterNode;
         private readonly EventType[] _streamTypes;
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
@@ -41,7 +42,8 @@ namespace com.espertech.esper.epl.join.@base
             ExprNode outerJoinEqualsNode,
             Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> indexStrategies,
             bool allHistoricalNoSubordinate,
-            OuterJoinDesc[] outerJoinDescList)
+            OuterJoinDesc[] outerJoinDescList,
+            bool allowInitIndex)
         {
             _optionalFilterNode = optionalFilterNode;
             _streamTypes = streamTypes;
@@ -53,12 +55,10 @@ namespace com.espertech.esper.epl.join.@base
             _indexStrategies = indexStrategies;
             _isAllHistoricalNoSubordinate = allHistoricalNoSubordinate;
             _outerJoinDescList = outerJoinDescList;
+            _allowInitIndex = allowInitIndex;
         }
 
-        public JoinSetComposerDesc Create(
-            Viewable[] streamViews,
-            bool isFireAndForget,
-            AgentInstanceContext agentInstanceContext)
+        public JoinSetComposerDesc Create(Viewable[] streamViews, bool isFireAndForget, AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             var queryStrategies = new QueryStrategy[_streamTypes.Length];
 
@@ -99,7 +99,7 @@ namespace com.espertech.esper.epl.join.@base
             }
 
             JoinSetComposer composer = new JoinSetComposerHistoricalImpl(
-                null, queryStrategies, streamViews, _exprEvaluatorContext);
+                _allowInitIndex, null, queryStrategies, streamViews, _exprEvaluatorContext);
             var postJoinEval = _optionalFilterNode == null ? null : _optionalFilterNode.ExprEvaluator;
             return new JoinSetComposerDesc(composer, postJoinEval);
         }

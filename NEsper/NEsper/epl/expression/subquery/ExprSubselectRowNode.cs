@@ -164,7 +164,7 @@ namespace com.espertech.esper.epl.expression.subquery
 	        }
 	    }
 
-	    public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+	    public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
 	        if (SelectClause == null) {
 	            return null;
 	        }
@@ -174,7 +174,7 @@ namespace com.espertech.esper.epl.expression.subquery
 	        return GetAssignAnonymousType(eventAdapterService, statementId);
 	    }
 
-	    public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+	    public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
 	    {
 	        var selectClause = SelectClause;
 	        var rawEventType = RawEventType;
@@ -205,9 +205,10 @@ namespace com.espertech.esper.epl.expression.subquery
 	        return GetAssignAnonymousType(eventAdapterService, statementId);
 	    }
 
-	    private EventType GetAssignAnonymousType(EventAdapterService eventAdapterService, string statementId) {
+	    private EventType GetAssignAnonymousType(EventAdapterService eventAdapterService, int statementId)
+        {
 	        IDictionary<string, object> rowType = RowType;
-	        EventType resultEventType = eventAdapterService.CreateAnonymousMapType(statementId + "_subquery_" + SubselectNumber, rowType);
+	        EventType resultEventType = eventAdapterService.CreateAnonymousMapType(statementId + "_subquery_" + SubselectNumber, rowType, true);
 	        subselectMultirowType = new SubselectMultirowType(resultEventType, eventAdapterService);
 	        return resultEventType;
 	    }

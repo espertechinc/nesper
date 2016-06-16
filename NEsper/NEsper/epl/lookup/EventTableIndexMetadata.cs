@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.@join.plan;
 
 namespace com.espertech.esper.epl.lookup
 {
@@ -21,8 +22,8 @@ namespace com.espertech.esper.epl.lookup
         public EventTableIndexMetadata()
         {
         }
-    
-        public void AddIndex(bool isPrimary, IndexMultiKey indexMultiKey, string explicitIndexName, string statementName, bool failIfExists)
+
+        public void AddIndex(bool isPrimary, IndexMultiKey indexMultiKey, string explicitIndexName, string statementName, bool failIfExists, QueryPlanIndexItem optionalQueryPlanIndexItem)
         {
             if (GetIndexByName(explicitIndexName) != null) {
                 throw new ExprValidationException("An index by name '" + explicitIndexName + "' already exists");
@@ -33,7 +34,7 @@ namespace com.espertech.esper.epl.lookup
                 }
                 return;
             }
-            EventTableIndexMetadataEntry entry = new EventTableIndexMetadataEntry(explicitIndexName, isPrimary);
+            EventTableIndexMetadataEntry entry = new EventTableIndexMetadataEntry(explicitIndexName, isPrimary, optionalQueryPlanIndexItem);
             entry.AddReferringStatement(statementName);
             indexes.Put(indexMultiKey, entry);
         }

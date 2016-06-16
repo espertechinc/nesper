@@ -38,11 +38,11 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGet()
         {
-            SupportBean testEvent = new SupportBean();
+            var testEvent = new SupportBean();
             testEvent.IntPrimitive = 10;
 
-            EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-            BeanEventBean eventBean = new BeanEventBean(testEvent, eventType);
+            var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
+            var eventBean = new BeanEventBean(testEvent, eventType);
     
             Assert.AreEqual(eventType, eventBean.EventType);
             Assert.AreEqual(testEvent, eventBean.Underlying);
@@ -88,51 +88,10 @@ namespace com.espertech.esper.events.bean
         }
 
         [Test]
-        public void TestGetMethods()
-        {
-            SupportBeanM testEvent = new SupportBeanM();
-            testEvent.SetIntPrimitive(10);
-
-            EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanM));
-            BeanEventBean eventBean = new BeanEventBean(testEvent, eventType);
-
-            Assert.AreEqual(eventType, eventBean.EventType);
-            Assert.AreEqual(testEvent, eventBean.Underlying);
-
-            Assert.AreEqual(10, eventBean.Get("IntPrimitive"));
-
-            // Test wrong property name
-            try
-            {
-                eventBean.Get("dummy");
-                Assert.Fail();
-            }
-            catch (PropertyAccessException ex)
-            {
-                // Expected
-                Log.Debug(".TestGetMethods Expected exception, msg=" + ex.Message);
-            }
-
-            // Test wrong event type - not possible to happen under normal use
-            try
-            {
-                eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
-                eventBean = new BeanEventBean(testEvent, eventType);
-                eventBean.Get("MyString");
-                Assert.Fail();
-            }
-            catch (PropertyAccessException ex)
-            {
-                // Expected
-                Log.Debug(".TestGetMethods Expected exception, msg=" + ex.Message);
-            }
-        }
-    
-        [Test]
         public void TestGetComplexProperty()
         {
-            SupportBeanCombinedProps eventCombined = SupportBeanCombinedProps.MakeDefaultBean();
-            EventBean eventBean = SupportEventBeanFactory.CreateObject(eventCombined);
+            var eventCombined = SupportBeanCombinedProps.MakeDefaultBean();
+            var eventBean = SupportEventBeanFactory.CreateObject(eventCombined);
     
             Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
             Assert.AreEqual(typeof(string), eventBean.EventType.GetPropertyType("Indexed[0].Mapped('0ma').Value"));
@@ -160,10 +119,10 @@ namespace com.espertech.esper.events.bean
             Assert.IsNull(eventBean.GetFragment("Array[4]?"));
             Assert.IsNull(eventBean.GetFragment("Array[5]?"));
     
-            String eventText = EventTypeAssertionUtil.Print(eventBean);
+            var eventText = EventTypeAssertionUtil.Print(eventBean);
             //Console.Out.WriteLine(eventText);
     
-            SupportBeanComplexProps eventComplex = SupportBeanComplexProps.MakeDefaultBean();
+            var eventComplex = SupportBeanComplexProps.MakeDefaultBean();
             eventBean = SupportEventBeanFactory.CreateObject(eventComplex);
             Assert.AreEqual("NestedValue", ((EventBean)eventBean.GetFragment("Nested")).Get("NestedValue"));
         }
@@ -171,8 +130,8 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGetIterableListMap()
         {
-            SupportBeanIterableProps eventComplex = SupportBeanIterableProps.MakeDefaultBean();
-            EventBean eventBean = SupportEventBeanFactory.CreateObject(eventComplex);
+            var eventComplex = SupportBeanIterableProps.MakeDefaultBean();
+            var eventBean = SupportEventBeanFactory.CreateObject(eventComplex);
             EventTypeAssertionUtil.AssertConsistency(eventBean);
     
             // generic interogation : iterable, List and Map
@@ -230,8 +189,8 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGetIterableListMapContained()
         {
-            SupportBeanIterablePropsContainer eventIterableContained = SupportBeanIterablePropsContainer.MakeDefaultBean();
-            EventBean eventBean = SupportEventBeanFactory.CreateObject(eventIterableContained);
+            var eventIterableContained = SupportBeanIterablePropsContainer.MakeDefaultBean();
+            var eventBean = SupportEventBeanFactory.CreateObject(eventIterableContained);
 
             Assert.AreEqual(typeof(IEnumerable<SupportBeanIterableProps.SupportBeanSpecialGetterNested>), eventBean.EventType.GetPropertyType("Contained.IterableNested"));
             Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), eventBean.EventType.GetPropertyType("Contained.IterableNested[0]"));
@@ -265,23 +224,23 @@ namespace com.espertech.esper.events.bean
     
         private void AssertNestedElement(EventBean eventBean, String propertyName, String value)
         {
-            FragmentEventType fragmentTypeOne = eventBean.EventType.GetFragmentType(propertyName);
+            var fragmentTypeOne = eventBean.EventType.GetFragmentType(propertyName);
             Assert.AreEqual(true, fragmentTypeOne.IsNative);
             Assert.AreEqual(false, fragmentTypeOne.IsIndexed);
             Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), fragmentTypeOne.FragmentType.UnderlyingType);
     
-            EventBean theEvent = (EventBean) eventBean.GetFragment(propertyName);
+            var theEvent = (EventBean) eventBean.GetFragment(propertyName);
             Assert.AreEqual(value, theEvent.Get("NestedValue"));
         }
     
         private void AssertNestedCollection(EventBean eventBean, String propertyName, String prefix)
         {
-            FragmentEventType fragmentTypeTwo = eventBean.EventType.GetFragmentType(propertyName);
+            var fragmentTypeTwo = eventBean.EventType.GetFragmentType(propertyName);
             Assert.AreEqual(true, fragmentTypeTwo.IsNative);
             Assert.AreEqual(true, fragmentTypeTwo.IsIndexed);
             Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), fragmentTypeTwo.FragmentType.UnderlyingType);
     
-            EventBean[] events = (EventBean[]) eventBean.GetFragment(propertyName);
+            var events = (EventBean[]) eventBean.GetFragment(propertyName);
             Assert.AreEqual(2, events.Length);
             Assert.AreEqual(prefix + "N1", events[0].Get("NestedValue"));
             Assert.AreEqual(prefix + "N2", events[1].Get("NestedValue"));

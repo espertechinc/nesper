@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
@@ -167,7 +168,7 @@ namespace com.espertech.esper.support.view
         private static IList<ViewFactory> MakeFactories(EventType parentEventType, IList<ViewSpec> viewSpecs)
         {
             ViewServiceImpl svc = new ViewServiceImpl();
-            ViewFactoryChain viewFactories = svc.CreateFactories(1, parentEventType, ViewSpec.ToArray(viewSpecs), new StreamSpecOptions(), SupportStatementContextFactory.MakeContext());
+            ViewFactoryChain viewFactories = svc.CreateFactories(1, parentEventType, ViewSpec.ToArray(viewSpecs), new StreamSpecOptions(), SupportStatementContextFactory.MakeContext(), false, -1);
             return viewFactories.FactoryChain;
         }
     }

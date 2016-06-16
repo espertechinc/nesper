@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.regression.enummethod
         [SetUp]
 	    public void SetUp() {
 	        var config = SupportConfigFactory.GetConfiguration();
-	        config.AddEventType("SupportBean", typeof(SupportBean));
+	        config.AddEventType<SupportBean>();
 	        config.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
 	        config.AddEventType("SupportBean_ST1", typeof(SupportBean_ST1));
 	        config.AddEventType("SupportBean_ST0_Container", typeof(SupportBean_ST0_Container));
@@ -90,11 +91,11 @@ namespace com.espertech.esper.regression.enummethod
 
         [Test]
 	    public void TestSequenceAndNested() {
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
 	        _epService.EPAdministrator.CreateEPL("create window WindowOne.win:keepall() as (col1 string, col2 string)");
 	        _epService.EPAdministrator.CreateEPL("insert into WindowOne select P00 as col1, P01 as col2 from SupportBean_S0");
 
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S1>();
 	        _epService.EPAdministrator.CreateEPL("create window WindowTwo.win:keepall() as (col1 string, col2 string)");
 	        _epService.EPAdministrator.CreateEPL("insert into WindowTwo select P10 as col1, P11 as col2 from SupportBean_S1");
 
@@ -530,6 +531,23 @@ namespace com.espertech.esper.regression.enummethod
 	        RunAssertionAggregationAccess(eplAlias);
 	    }
 
+        [Test]
+        public void TestAggregatedResult()
+        {
+            var fields = "c0,c1".SplitCsv();
+            var epl =
+                    "expression lambda1 { o => 1 * o.intPrimitive }\n" +
+                    "expression lambda2 { o => 3 * o.intPrimitive }\n" +
+                    "select sum(lambda1(e)) as c0, sum(lambda2(e)) as c1 from SupportBean as e";
+            _epService.EPAdministrator.CreateEPL(epl).AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] { 10, 30 });
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 5));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] { 15, 45 });
+        }
+
 	    private void RunAssertionAggregationAccess(string epl) {
 
 	        var stmt = _epService.EPAdministrator.CreateEPL(epl);
@@ -551,7 +569,7 @@ namespace com.espertech.esper.regression.enummethod
         [Test]
 	    public void TestScalarReturn() {
 	        _epService.EPAdministrator.Configuration.AddEventType(typeof(MyEvent));
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        var eplScalarDeclare = "expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
 	                     "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
@@ -849,7 +867,7 @@ namespace com.espertech.esper.regression.enummethod
 
 	    private SupportBean[] ToArray(ICollection<object> it) {
 	        IList<SupportBean> result = new List<SupportBean>();
-	        foreach (object item in it) {
+	        foreach (var item in it) {
 	            result.Add((SupportBean) item);
 	        }
 	        return result.ToArray();

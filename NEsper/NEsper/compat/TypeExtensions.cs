@@ -59,6 +59,18 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
+        /// Returns the value as a boxed short.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        public static short? AsBoxedShort(this object value)
+        {
+            if (value == null) return null;
+            if (value is short) return (short) value;
+            return AsShort(value);
+        }
+
+        /// <summary>
         /// Returns the value as a short.
         /// </summary>
         /// <param name="value">The value.</param>

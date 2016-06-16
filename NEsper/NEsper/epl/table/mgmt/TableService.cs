@@ -16,6 +16,7 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.lookup;
+using com.espertech.esper.epl.table.strategy;
 using com.espertech.esper.epl.table.upd;
 using com.espertech.esper.epl.updatehelper;
 using com.espertech.esper.events.arr;
@@ -39,6 +40,7 @@ namespace com.espertech.esper.epl.table.mgmt
         void ValidateAddIndex(string createIndexStatementName, TableMetadata tableMetadata, string indexName, IndexMultiKey imk) ;
         void RemoveIndexReferencesStmtMayRemoveIndex(string statementName, TableMetadata tableMetadata);
         TableMetadata AddTable(string tableName, string eplExpression, string statementName, Type[] keyTypes, IDictionary<String, TableMetadataColumn> tableColumns, TableStateRowFactory tableStateRowFactory, int numberMethodAggregations, StatementContext statementContext, ObjectArrayEventType internalEventType, ObjectArrayEventType publicEventType, TableMetadataInternalEventToPublic eventToPublic, bool queryPlanLogging) ;
+        TableAndLockProvider GetStateProvider(String tableName, int agentInstanceId, bool writesToTables);
     }
 
     public class TableServiceConstants

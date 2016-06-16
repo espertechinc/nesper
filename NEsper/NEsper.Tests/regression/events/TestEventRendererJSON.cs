@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.events
             bean.CharPrimitive = 'x';
             bean.EnumValue = SupportEnum.ENUM_VALUE_1;
             
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement statement = _epService.EPAdministrator.CreateEPL("select * from SupportBean");
             _epService.EPRuntime.SendEvent(bean);
             

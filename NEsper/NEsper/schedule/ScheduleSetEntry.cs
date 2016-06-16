@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.schedule
 {
-    /// <summary>Entry for a schedule item. </summary>
+    /// <summary>Record for a schedule item. </summary>
     public class ScheduleSetEntry
     {
         /// <summary>Ctor. </summary>

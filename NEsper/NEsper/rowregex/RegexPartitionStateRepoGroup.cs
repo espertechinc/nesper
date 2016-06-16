@@ -246,5 +246,9 @@ namespace com.espertech.esper.rowregex
             }
             return new MultiKeyUntyped(keys);
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

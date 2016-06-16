@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.pattern
             String exceptionText = GetSyntaxExceptionPattern(EVENT_NUM + "(DoublePrimitive='ss'");
             Assert.AreEqual("Incorrect syntax near end-of-input expecting a closing parenthesis ')' but found end-of-input at line 1 column 67, please check the filter specification within the pattern expression [com.espertech.esper.support.bean.SupportBean_N(DoublePrimitive='ss']", exceptionText);
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.CreateEPL("select * from pattern[(not a=SupportBean) -> SupportBean(TheString=a.TheString)]");
     
             // test invalid subselect

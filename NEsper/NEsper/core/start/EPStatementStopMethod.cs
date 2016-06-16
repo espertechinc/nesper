@@ -6,10 +6,28 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.core.start
 {
-    /// <summary>
-    /// Method to call to stop an EPStatement.
-    /// </summary>
-    public delegate void EPStatementStopMethod();
+    public interface EPStatementStopMethod
+    {
+        void Stop();
+    }
+
+    public class ProxyEPStatementStopMethod : EPStatementStopMethod
+    {
+        public Action ProcStop;
+
+        public ProxyEPStatementStopMethod() { }
+        public ProxyEPStatementStopMethod(Action procStop)
+        {
+            ProcStop = procStop;
+        }
+
+        public void Stop()
+        {
+            ProcStop.Invoke();
+        }
+    }
 }

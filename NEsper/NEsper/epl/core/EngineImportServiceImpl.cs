@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -24,7 +23,6 @@ using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.approx;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
@@ -39,6 +37,7 @@ namespace com.espertech.esper.epl.core
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IList<AutoImportDesc> _imports;
+        private readonly IList<AutoImportDesc> _annotationImports;
         private readonly IDictionary<String, ConfigurationPlugInAggregationFunction> _aggregationFunctions;
         private readonly IList<Pair<ISet<String>, ConfigurationPlugInAggregationMultiFunction>> _aggregationAccess;
         private readonly IDictionary<String, EngineImportSingleRowDesc> _singleRowFunctions;
@@ -62,11 +61,12 @@ namespace com.espertech.esper.epl.core
             bool isUdfCache,
             bool isDuckType,
             bool sortUsingCollator,
-            MathContext optionalDefaultMathContext, 
+            MathContext optionalDefaultMathContext,
             TimeZoneInfo timeZone,
             ConfigurationEngineDefaults.ThreadingProfile threadingProfile)
         {
             _imports = new List<AutoImportDesc>();
+            _annotationImports = new List<AutoImportDesc>();
             _aggregationFunctions = new Dictionary<String, ConfigurationPlugInAggregationFunction>();
             _aggregationAccess = new List<Pair<ISet<String>, ConfigurationPlugInAggregationMultiFunction>>();
             _singleRowFunctions = new Dictionary<String, EngineImportSingleRowDesc>();
@@ -105,14 +105,17 @@ namespace com.espertech.esper.epl.core
 
         public void AddImport(AutoImportDesc autoImportDesc)
         {
-            if (!IsTypeNameOrNamespace(autoImportDesc.TypeOrNamespace))
-            {
-                throw new EngineImportException("Invalid import name '" + autoImportDesc + "'");
-            }
+            ValidateImportAndAdd(autoImportDesc, _imports);
+        }
 
-            Log.Debug("Adding import {0}", autoImportDesc);
+        public void AddAnnotationImport(String importName)
+        {
+            ValidateImportAndAdd(new AutoImportDesc(importName, null), _annotationImports);
+        }
 
-            _imports.Add(autoImportDesc);
+        public void AddAnnotationImport(AutoImportDesc autoImportDesc)
+        {
+            ValidateImportAndAdd(autoImportDesc, _annotationImports);
         }
 
         public void AddAggregation(String functionName, ConfigurationPlugInAggregationFunction aggregationDesc)
@@ -190,14 +193,15 @@ namespace com.espertech.esper.epl.core
             catch (ArgumentException e)
             {
                 throw new EngineImportException("Error instantiating aggregation class - Type is not a RuntimeType", e);
-            }
+            }
+
 
             if (!(@object is AggregationFunctionFactory))
             {
                 throw new EngineImportException(
                     "Aggregation class by name '" + className + "' does not implement AggregationFunctionFactory");
             }
-            return (AggregationFunctionFactory) @object;
+            return (AggregationFunctionFactory)@object;
         }
 
         public void AddAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction desc)
@@ -220,14 +224,12 @@ namespace com.espertech.esper.epl.core
 
         public ConfigurationPlugInAggregationMultiFunction ResolveAggregationMultiFunction(String name)
         {
-            foreach (var config in _aggregationAccess)
-            {
-                if (config.First.Contains(name.ToLower()))
-                {
-                    return config.Second;
-                }
-            }
-            return null;
+            name = name.ToLower();
+
+            return _aggregationAccess
+                .Where(e => e.First.Contains(name))
+                .Select(config => config.Second)
+                .FirstOrDefault();
         }
 
         public Pair<Type, EngineImportSingleRowDesc> ResolveSingleRow(String name)
@@ -261,12 +263,11 @@ namespace com.espertech.esper.epl.core
             Type[] paramTypes,
             bool[] allowEventBeanType,
             bool[] allowEventBeanCollType)
-
         {
             Type clazz;
             try
             {
-                clazz = ResolveTypeInternal(typeName, false);
+                clazz = ResolveTypeInternal(typeName, false, false);
             }
             catch (TypeLoadException e)
             {
@@ -302,7 +303,7 @@ namespace com.espertech.esper.epl.core
             Type clazz;
             try
             {
-                clazz = ResolveTypeInternal(typeName, false);
+                clazz = ResolveTypeInternal(typeName, false, false);
             }
             catch (TypeLoadException e)
             {
@@ -318,12 +319,12 @@ namespace com.espertech.esper.epl.core
             return ResolveMethodInternal(clazz, methodName, MethodModifiers.REQUIRE_NONSTATIC_AND_PUBLIC);
         }
 
-        public Type ResolveType(String typeName)
+        public Type ResolveType(String typeName, bool forAnnotation)
         {
             Type clazz;
             try
             {
-                clazz = ResolveTypeInternal(typeName, false);
+                clazz = ResolveTypeInternal(typeName, false, forAnnotation);
             }
             catch (TypeLoadException e)
             {
@@ -339,7 +340,7 @@ namespace com.espertech.esper.epl.core
             Type clazz;
             try
             {
-                clazz = ResolveTypeInternal(typeName, true);
+                clazz = ResolveTypeInternal(typeName, true, true);
             }
             catch (TypeLoadException e)
             {
@@ -357,7 +358,7 @@ namespace com.espertech.esper.epl.core
         /// <param name="requireAnnotation">if set to <c>true</c> [require annotation].</param>
         /// <returns>class</returns>
         /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
-        internal Type ResolveTypeInternal(String typeName, bool requireAnnotation)
+        internal Type ResolveTypeInternal(String typeName, bool requireAnnotation, bool forAnnotationUse)
         {
             // Attempt to retrieve the class with the name as-is
             try
@@ -372,85 +373,44 @@ namespace com.espertech.esper.epl.core
                 }
             }
 
-            foreach (var importDesc in _imports)
+            Type clazz;
+
+            // check annotation-specific imports first
+            if (forAnnotationUse)
             {
-                var importName = importDesc.TypeOrNamespace;
-
-                // Test as a class name
-                if (IsStrictTypeMatch(importDesc, typeName))
+                clazz = CheckImports(_annotationImports, requireAnnotation, typeName);
+                if (clazz != null)
                 {
-                    var type = TypeHelper.ResolveType(importName, importDesc.AssemblyNameOrFile);
-                    if (type != null)
-                    {
-                        return type;
-                    }
-
-                    Log.Warn("Type not found for resolving from name as-is: '{0}'", typeName);
-                }
-                else
-                {
-                    if (requireAnnotation && (importName == Configuration.ANNOTATION_IMPORT))
-                    {
-                        var clazz = BuiltinAnnotation.BUILTIN.Get(typeName.ToLower());
-                        if (clazz != null)
-                        {
-                            return clazz;
-                        }
-                    }
-
-                    // Import is a namespace
-                    var prefixedClassName = importDesc.TypeOrNamespace + '.' + typeName;
-
-                    try
-                    {
-                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
-                        if (type != null)
-                        {
-                            return type;
-                        }
-
-                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
-                    }
-                    catch (TypeLoadException)
-                    {
-                    }
-
-                    prefixedClassName = importDesc.TypeOrNamespace + '+' + typeName;
-
-                    try
-                    {
-                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
-                        if (type != null)
-                        {
-                            return type;
-                        }
-
-                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
-                    }
-                    catch (TypeLoadException)
-                    {
-                    }
+                    return clazz;
                 }
             }
 
-            // try to resolve from method references
-            foreach (var name in _methodInvocationRef.Keys)
+            // check all imports
+            clazz = CheckImports(_imports, requireAnnotation, typeName);
+            if (clazz != null)
             {
-                if (TypeHelper.IsSimpleNameFullyQualfied(typeName, name))
+                return clazz;
+            }
+
+            if (!forAnnotationUse) {
+                // try to resolve from method references
+                foreach (String name in _methodInvocationRef.Keys)
                 {
-                    try
+                    if (TypeHelper.IsSimpleNameFullyQualfied(typeName, name))
                     {
-                        var clazz = TypeHelper.ResolveType(name);
-                        if (!requireAnnotation || clazz.IsAttribute())
+                        try
                         {
-                            return clazz;
+                            var found = TypeHelper.ResolveType(name);
+                            if (!requireAnnotation || found.IsAttribute()) {
+                                return found;
+                            }
                         }
-                    }
-                    catch (TypeLoadException)
-                    {
-                        if (Log.IsDebugEnabled)
+                        catch (TypeLoadException e1)
                         {
-                            Log.Debug("Class not found for resolving from method invocation ref:" + name);
+                            if (Log.IsDebugEnabled)
+                            {
+                                Log.Debug("Class not found for resolving from method invocation ref:{0}", name);
+                            }
                         }
                     }
                 }
@@ -732,22 +692,104 @@ namespace com.espertech.esper.epl.core
             MethodInfo methodByName = null;
 
             // check each method by name
-            foreach (MethodInfo method in methods.Where(m => m.Name == methodName)) {
-                if (methodByName != null) {
+            foreach (MethodInfo method in methods.Where(m => m.Name == methodName))
+            {
+                if (methodByName != null)
+                {
                     throw new EngineImportException(string.Format("Ambiguous method name: method by name '{0}' is overloaded in class '{1}'", methodName, clazz.FullName));
                 }
 
                 var isPublic = method.IsPublic;
                 var isStatic = method.IsStatic;
-                if (methodModifiers.AcceptsPublicFlag(isPublic) && methodModifiers.AcceptsStaticFlag(isStatic)) {
+                if (methodModifiers.AcceptsPublicFlag(isPublic) && methodModifiers.AcceptsStaticFlag(isStatic))
+                {
                     methodByName = method;
                 }
             }
 
-            if (methodByName == null) {
+            if (methodByName == null)
+            {
                 throw new EngineImportException("Could not find " + methodModifiers.Text + " method named '" + methodName + "' in class '" + clazz.FullName + "'");
             }
             return methodByName;
+        }
+
+        private Type CheckImports(IList<AutoImportDesc> imports, bool requireAnnotation, String typeName)
+        {
+            foreach (var importDesc in imports)
+            {
+                var importName = importDesc.TypeOrNamespace;
+
+                // Test as a class name
+                if (IsStrictTypeMatch(importDesc, typeName))
+                {
+                    var type = TypeHelper.ResolveType(importName, importDesc.AssemblyNameOrFile);
+                    if (type != null)
+                    {
+                        return type;
+                    }
+
+                    Log.Warn("Type not found for resolving from name as-is: '{0}'", typeName);
+                }
+                else
+                {
+                    if (requireAnnotation && (importName == Configuration.ANNOTATION_IMPORT))
+                    {
+                        var clazz = BuiltinAnnotation.BUILTIN.Get(typeName.ToLower());
+                        if (clazz != null)
+                        {
+                            return clazz;
+                        }
+                    }
+
+                    // Import is a namespace
+                    var prefixedClassName = importDesc.TypeOrNamespace + '.' + typeName;
+
+                    try
+                    {
+                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
+                        if (type != null)
+                        {
+                            return type;
+                        }
+
+                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                    }
+                    catch (TypeLoadException)
+                    {
+                    }
+
+                    prefixedClassName = importDesc.TypeOrNamespace + '+' + typeName;
+
+                    try
+                    {
+                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
+                        if (type != null)
+                        {
+                            return type;
+                        }
+
+                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                    }
+                    catch (TypeLoadException)
+                    {
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void ValidateImportAndAdd(AutoImportDesc autoImportDesc, ICollection<AutoImportDesc> imports)
+        {
+            if (!IsTypeNameOrNamespace(autoImportDesc.TypeOrNamespace))
+            {
+                throw new EngineImportException("Invalid import name '" + autoImportDesc + "'");
+            }
+
+            Log.Debug("Adding import {0}", autoImportDesc);
+
+            imports.Add(autoImportDesc);
         }
 
         internal class MethodModifiers
@@ -766,7 +808,7 @@ namespace com.espertech.esper.epl.core
                 _text = text;
                 _requiredStaticFlag = requiredStaticFlag;
             }
-            
+
             public bool AcceptsPublicFlag(bool isPublic)
             {
                 return isPublic;

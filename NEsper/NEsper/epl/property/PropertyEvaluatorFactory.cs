@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.property
 	    /// <param name="annotations">The annotations.</param>
 	    /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
 	    /// <param name="configuration">The configuration.</param>
-	    /// <param name="namedWindowService">The named window service.</param>
+	    /// <param name="namedWindowMgmtService">The named window service.</param>
 	    /// <returns>
 	    /// propert evaluator
 	    /// </returns>
@@ -81,12 +81,12 @@ namespace com.espertech.esper.epl.property
             ScriptingService scriptingService,
             TableService tableService,
 	        string engineURI,
-	        string statementId,
+	        int statementId,
 	        string statementName,
 	        Attribute[] annotations,
 	        ICollection<int> assignedTypeNumberStack,
 	        ConfigurationInformation configuration,
-	        NamedWindowService namedWindowService)
+	        NamedWindowMgmtService namedWindowMgmtService)
 	    {
 	        var length = spec.Atoms.Count;
 	        var containedEventEvals = new ContainedEventEval[length];
@@ -337,7 +337,7 @@ namespace com.espertech.esper.epl.property
 	                assignedTypeNumberStack, cumulativeSelectArr, false, null, null, null, streamTypeService,
 	                eventAdapterService, null, null, null, methodResolutionService, validateContext, variableService, scriptingService,
 	                tableService, timeProvider, engineURI, statementId, statementName, annotations, null, configuration, null,
-	                namedWindowService, null);
+	                namedWindowMgmtService, null, null);
 	            return new PropertyEvaluatorSelect(selectExpr, accumulative);
 	        }
 	    }

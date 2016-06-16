@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.join.plan
 	        _outerJoinExprNode = exprNode;
 	    }
 
-	    public override ExecNode MakeExec(string statementName, string statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
+	    public override ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
 	    {
 	        var pair = historicalStreamIndexLists[_streamNum].GetStrategy(_lookupStreamNum);
 	        var viewable = (HistoricalEventViewable) streamViews[_streamNum];

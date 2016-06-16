@@ -59,13 +59,13 @@ namespace com.espertech.esper.core.context.factory
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(tableMetadata.IsQueryPlanLogging, TableServiceImpl.QueryPlanLog,
                     _queryPlanResult, statementContext.Annotations);
         }
-    
-        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks)
+
+        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringReslient)
         {
             var onTriggerWindowDesc = (OnTriggerWindowDesc) StatementSpec.OnTriggerDesc;
     
             // get result set processor and aggregation services
-            var pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext);
+            var pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext, false, null);
     
             var state = Services.TableService.GetState(onTriggerWindowDesc.WindowName, agentInstanceContext.AgentInstanceId);
             EventTable[] indexes;

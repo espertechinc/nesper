@@ -14,13 +14,13 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.join.table
 {
-    public class PropertyIndexedEventTableSingleCoerceAdd : PropertyIndexedEventTableSingle
+    public class PropertyIndexedEventTableSingleCoerceAdd : PropertyIndexedEventTableSingleUnadorned
     {
         private readonly Coercer _coercer;
         private readonly Type _coercionType;
     
         public PropertyIndexedEventTableSingleCoerceAdd(EventPropertyGetter propertyGetter, EventTableOrganization organization, Coercer coercer, Type coercionType)
-                    : base(propertyGetter, organization, true)
+            : base(propertyGetter, organization)
         {
             _coercer = coercer;
             _coercionType = coercionType;
@@ -31,14 +31,9 @@ namespace com.espertech.esper.epl.join.table
             var keyValue = base.GetKey(theEvent);
             if ((keyValue != null) && (keyValue.GetType() != _coercionType))
             {
-                if (keyValue.IsNumber())
-                {
-                    keyValue = _coercer.Invoke(keyValue);
-                }
-                else
-                {
-                    keyValue = EventBeanUtility.Coerce(keyValue, _coercionType);
-                }
+                keyValue = keyValue.IsNumber() 
+                    ? _coercer.Invoke(keyValue) 
+                    : EventBeanUtility.Coerce(keyValue, _coercionType);
             }
             return keyValue;
         }

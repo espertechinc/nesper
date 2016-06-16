@@ -13,27 +13,20 @@ using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.epl.view
 {
-    /// <summary>A view that handles the "output snapshot" keyword in output rate stabilizing. </summary>
+    /// <summary>
+    /// A view that handles the "output snapshot" keyword in output rate stabilizing.
+    /// </summary>
     public class OutputProcessViewConditionSnapshotPostProcess : OutputProcessViewConditionSnapshot
     {
         private readonly OutputStrategyPostProcess _postProcessor;
 
-        public OutputProcessViewConditionSnapshotPostProcess(ResultSetProcessor resultSetProcessor,
-                                                             long? afterConditionTime,
-                                                             int? afterConditionNumberOfEvents,
-                                                             bool afterConditionSatisfied,
-                                                             OutputProcessViewConditionFactory parent,
-                                                             AgentInstanceContext agentInstanceContext,
-                                                             OutputStrategyPostProcess postProcessor)
-            : base(
-                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
-                agentInstanceContext)
+        public OutputProcessViewConditionSnapshotPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
+            : base(resultSetProcessorHelperFactory, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
         {
             _postProcessor = postProcessor;
         }
 
-        public override void Output(bool forceUpdate,
-                                    UniformPair<EventBean[]> results)
+        public override void Output(bool forceUpdate, UniformPair<EventBean[]> results)
         {
             // Child view can be null in replay from named window
             if (ChildView != null)

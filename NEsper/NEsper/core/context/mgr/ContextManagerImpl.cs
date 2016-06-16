@@ -31,7 +31,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly String _contextName;
         private readonly EPServicesContext _servicesContext;
         private readonly ContextControllerFactory _factory;
-        private readonly IDictionary<String, ContextControllerStatementDesc> _statements = new LinkedHashMap<String, ContextControllerStatementDesc>(); // retain order of statement creation
+        private readonly IDictionary<int, ContextControllerStatementDesc> _statements = new LinkedHashMap<int, ContextControllerStatementDesc>(); // retain order of statement creation
         private readonly ContextDescriptor _contextDescriptor;
         private readonly IDictionary<int, ContextControllerTreeAgentInstanceList> _agentInstances = new LinkedHashMap<int, ContextControllerTreeAgentInstanceList>();
     
@@ -51,7 +51,7 @@ namespace com.espertech.esper.core.context.mgr
             var resourceRegistryFactory = _factory.StatementAIResourceRegistryFactory;
     
             var contextProps = _factory.ContextBuiltinProps;
-            var contextPropsType = _servicesContext.EventAdapterService.CreateAnonymousMapType(_contextName, contextProps);
+            var contextPropsType = _servicesContext.EventAdapterService.CreateAnonymousMapType(_contextName, contextProps, true);
             var registry = new ContextPropertyRegistryImpl(_factory.ContextDetailPartitionItems, contextPropsType);
             _contextDescriptor = new ContextDescriptor(_contextName, _factory.IsSingleInstanceContext, registry, resourceRegistryFactory, this, _factory.ContextDetail);
         }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.core.context.mgr
             get { return 1; }
         }
 
-        public IDictionary<string, ContextControllerStatementDesc> Statements
+        public IDictionary<int, ContextControllerStatementDesc> Statements
         {
             get { return _statements; }
         }
@@ -69,6 +69,11 @@ namespace com.espertech.esper.core.context.mgr
         public ContextDescriptor ContextDescriptor
         {
             get { return _contextDescriptor; }
+        }
+
+        public ContextStateCache ContextStateCache
+        {
+            get { return _factory.StateCache; }
         }
 
         public void AddStatement(ContextControllerStatementBase statement, bool isRecoveringResilient)
@@ -94,8 +99,8 @@ namespace com.espertech.esper.core.context.mgr
                 }
             }
         }
-    
-        public void StopStatement(String statementName, String statementId)
+
+        public void StopStatement(String statementName, int statementId)
         {
             using(_uLock.Acquire())
             {
@@ -103,7 +108,8 @@ namespace com.espertech.esper.core.context.mgr
             }
         }
     
-        public void DestroyStatement(String statementName, String statementId) {
+        public void DestroyStatement(String statementName, int statementId)
+        {
             using(_uLock.Acquire())
             {
                 if (!_statements.ContainsKey(statementId))
@@ -126,7 +132,7 @@ namespace com.espertech.esper.core.context.mgr
             if (_rootContext != null) {
                 // deactivate
                 _rootContext.Deactivate();
-                _factory.StateCache.RemoveContext(_contextName);
+                _factory.FactoryContext.StateCache.RemoveContext(_contextName);
     
                 foreach (var entryCP in _agentInstances) {
                     StatementAgentInstanceUtil.StopAgentInstances(entryCP.Value.AgentInstances, null, _servicesContext, true, false);
@@ -208,7 +214,7 @@ namespace com.espertech.esper.core.context.mgr
             }
         }
     
-        public void ContextPartitionNavigate(ContextControllerInstanceHandle existingHandle, ContextController originator, ContextControllerState controllerState, int exportedCPOrPathId, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector, byte[] payload)
+        public void ContextPartitionNavigate(ContextControllerInstanceHandle existingHandle, ContextController originator, ContextControllerState controllerState, int exportedCPOrPathId, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector, byte[] payload, bool isRecoveringResilient)
         {
             var entry = _agentInstances.Get(existingHandle.ContextPartitionOrPathId);
             if (entry == null) {
@@ -224,7 +230,7 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 var key = new ContextStatePathKey(1, 0, existingHandle.SubPathId);
                 var value = new ContextStatePathValue(existingHandle.ContextPartitionOrPathId, payload, ContextPartitionState.STARTED);
-                _rootContext.Factory.StateCache.UpdateContextPath(_contextName, key, value);
+                _rootContext.Factory.FactoryContext.StateCache.UpdateContextPath(_contextName, key, value);
             }
             else {
                 IList<AgentInstance> removed = new List<AgentInstance>(2);
@@ -235,12 +241,12 @@ namespace com.espertech.esper.core.context.mgr
                     }
     
                     // remove
-                    StatementAgentInstanceUtil.StopAgentInstance(agentInstance, null, _servicesContext, false, false);
+                    StatementAgentInstanceUtil.StopAgentInstanceRemoveResources(agentInstance, null, _servicesContext, false, false);
                     removed.Add(agentInstance);
     
                     // start
                     var statementDesc = _statements.Get(agentInstance.AgentInstanceContext.StatementId);
-                    var instance = StartStatement(existingHandle.ContextPartitionOrPathId, statementDesc, originator, entry.InitPartitionKey, entry.InitContextProperties, false);
+                    var instance = StartStatement(existingHandle.ContextPartitionOrPathId, statementDesc, originator, entry.InitPartitionKey, entry.InitContextProperties, isRecoveringResilient);
                     added.Add(instance);
     
                     if (controllerState.PartitionImportCallback != null) {
@@ -257,7 +263,7 @@ namespace com.espertech.esper.core.context.mgr
             return _factory.GetFilterLookupable(eventType);
         }
     
-        public IEnumerator<EventBean> GetEnumerator(String statementId)
+        public IEnumerator<EventBean> GetEnumerator(int statementId)
         {
             using(_uLock.Acquire())
             {
@@ -265,8 +271,8 @@ namespace com.espertech.esper.core.context.mgr
                 return instances.SelectMany(instance => instance.FinalView).GetEnumerator();
             }
         }
-    
-        public IEnumerator<EventBean> GetSafeEnumerator(String statementId)
+
+        public IEnumerator<EventBean> GetSafeEnumerator(int statementId)
         {
             using(_uLock.Acquire())
             {
@@ -290,7 +296,7 @@ namespace com.espertech.esper.core.context.mgr
             }
         }
 
-        public IEnumerator<EventBean> GetEnumerator(String statementId, ContextPartitionSelector selector)
+        public IEnumerator<EventBean> GetEnumerator(int statementId, ContextPartitionSelector selector)
         {
             using(_uLock.Acquire())
             {
@@ -298,8 +304,8 @@ namespace com.espertech.esper.core.context.mgr
                 return instances.SelectMany(instance => instance.FinalView).GetEnumerator();
             }
         }
-    
-        public IEnumerator<EventBean> GetSafeEnumerator(String statementId, ContextPartitionSelector selector)
+
+        public IEnumerator<EventBean> GetSafeEnumerator(int statementId, ContextPartitionSelector selector)
         {
             using(_uLock.Acquire())
             {
@@ -348,7 +354,7 @@ namespace com.espertech.esper.core.context.mgr
                 StatementAgentInstanceUtil.StopAgentInstances(list.AgentInstances, null, _servicesContext, false, false);
                 list.ClearAgentInstances();
                 entry.Value.State = ContextPartitionState.STOPPED;
-                _rootContext.Factory.StateCache.UpdateContextPath(_contextName, entry.Key, entry.Value);
+                _rootContext.Factory.FactoryContext.StateCache.UpdateContextPath(_contextName, entry.Key, entry.Value);
             }
             return states;
         }
@@ -364,7 +370,7 @@ namespace com.espertech.esper.core.context.mgr
                 var list = _agentInstances.Pluck(agentInstanceId);
                 StatementAgentInstanceUtil.StopAgentInstances(list.AgentInstances, null, _servicesContext, false, false);
                 list.ClearAgentInstances();
-                _rootContext.Factory.StateCache.RemoveContextPath(_contextName, entry.Key.Level, entry.Key.ParentPath, entry.Key.SubPath);
+                _rootContext.Factory.FactoryContext.StateCache.RemoveContextPath(_contextName, entry.Key.Level, entry.Key.ParentPath, entry.Key.SubPath);
             }
             return states;
         }
@@ -384,7 +390,7 @@ namespace com.espertech.esper.core.context.mgr
                     var instance = StartStatement(agentInstanceId, statement.Value, _rootContext, list.InitPartitionKey, list.InitContextProperties, false);
                     list.AgentInstances.Add(instance);
                 }
-                _rootContext.Factory.StateCache.UpdateContextPath(_contextName, entry.Key, entry.Value);
+                _rootContext.Factory.FactoryContext.StateCache.UpdateContextPath(_contextName, entry.Key, entry.Value);
             }
             SetState(states.ContextPartitionInformation, ContextPartitionState.STARTED);
             return states.ContextPartitionInformation;
@@ -409,7 +415,7 @@ namespace com.espertech.esper.core.context.mgr
             _rootContext.Activate(null, null, null, null, null);
         }
     
-        private AgentInstance[] GetAgentInstancesForStmt(String statementId, ContextPartitionSelector selector)
+        private AgentInstance[] GetAgentInstancesForStmt(int statementId, ContextPartitionSelector selector)
         {
             var agentInstanceIds = GetAgentInstanceIds(selector);
             if (agentInstanceIds == null || agentInstanceIds.IsEmpty()) {
@@ -421,7 +427,7 @@ namespace com.espertech.esper.core.context.mgr
                 var instancesList = _agentInstances.Get(agentInstanceId);
                 if (instancesList != null) {
                     foreach( var instance in instancesList.AgentInstances ) {
-                        if (instance.AgentInstanceContext.StatementContext.StatementId.Equals(statementId)) {
+                        if (instance.AgentInstanceContext.StatementContext.StatementId == statementId) {
                             instances.Add(instance);
                         }
                     }
@@ -429,22 +435,22 @@ namespace com.espertech.esper.core.context.mgr
             }
             return instances.ToArray();
         }
-    
-        private AgentInstance[] GetAgentInstancesForStmt(String statementId)
+
+        private AgentInstance[] GetAgentInstancesForStmt(int statementId)
         {
             IList<AgentInstance> instances = new List<AgentInstance>();
             foreach (var contextPartitionEntry in _agentInstances) {
                 foreach( var instance in contextPartitionEntry.Value.AgentInstances )
                 {
-                    if (instance.AgentInstanceContext.StatementContext.StatementId.Equals(statementId)) {
+                    if (instance.AgentInstanceContext.StatementContext.StatementId == statementId) {
                         instances.Add(instance);
                     }
                 }
             }
             return instances.ToArray();
         }
-    
-        private void RemoveStatement(String statementId)
+
+        private void RemoveStatement(int statementId)
         {
             var statementDesc = _statements.Get(statementId);
             if (statementDesc == null) {
@@ -454,7 +460,7 @@ namespace com.espertech.esper.core.context.mgr
             foreach (var contextPartitionEntry in _agentInstances)
             {
                 var instanceList = contextPartitionEntry.Value.AgentInstances
-                    .Where(instance => instance.AgentInstanceContext.StatementContext.StatementId.Equals(statementId))
+                    .Where(instance => instance.AgentInstanceContext.StatementContext.StatementId == statementId)
                     .ToList();
 
                 instanceList.ForEach(
@@ -462,7 +468,7 @@ namespace com.espertech.esper.core.context.mgr
                     {
                         StatementAgentInstanceUtil.Stop(
                             instance.StopCallback, instance.AgentInstanceContext, instance.FinalView, _servicesContext,
-                            true, false);
+                            true, false, true);
                         contextPartitionEntry.Value.AgentInstances.Remove(instance);
                     });
             }

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.client;
@@ -85,7 +86,8 @@ namespace com.espertech.esper.epl.spec
             ICollection<int> assignedTypeNumberStack,
             bool isJoin,
             bool isContextDeclaration,
-            bool isOnTrigger)
+            bool isOnTrigger,
+            string optionalStreamName)
         {
             return CompileInternal(
                 context, eventTypeReferences, isInsertInto, assignedTypeNumberStack, null, null, isJoin,
@@ -114,7 +116,7 @@ namespace com.espertech.esper.epl.spec
             bool isInsertInto,
             ICollection<int> assignedTypeNumberStack,
             MatchEventSpec tags,
-            ICollection<string> priorAllTags,
+            IEnumerable<string> priorAllTags,
             bool isJoin,
             bool isContextDeclaration,
             bool isOnTrigger)
@@ -169,11 +171,12 @@ namespace com.espertech.esper.epl.spec
             var auditPattern = AuditEnum.PATTERN.GetAudit(context.Annotations);
             var auditPatternInstance = AuditEnum.PATTERNINSTANCES.GetAudit(context.Annotations);
             var compiledEvalFactoryNode = _evalFactoryNode;
-            if (auditPattern != null || auditPatternInstance != null)
+            if (context.PatternNodeFactory.IsAuditSupported && (auditPattern != null || auditPatternInstance != null))
             {
                 var instanceCount = new EvalAuditInstanceCount();
                 compiledEvalFactoryNode = RecursiveAddAuditNode(
-                    null, auditPattern != null, auditPatternInstance != null, _evalFactoryNode, instanceCount);
+                    context.PatternNodeFactory, null, auditPattern != null, auditPatternInstance != null,
+                    _evalFactoryNode, instanceCount);
             }
 
             return new PatternStreamSpecCompiled(
@@ -243,7 +246,7 @@ namespace com.espertech.esper.epl.spec
                             context.Annotations,
                             subexpressionIdStack,
                             context.ConfigSnapshot,
-                            context.NamedWindowService);
+                            context.NamedWindowMgmtService);
                     finalEventType = optionalPropertyEvaluator.FragmentEventType;
                     isPropertyEvaluation = true;
                 }
@@ -276,7 +279,7 @@ namespace com.espertech.esper.epl.spec
                     {
                         throw new ExprValidationException(
                             "Tag '" + optionalTag + "' for event '" + eventName +
-                            "' has already been declared for events of type " + existingType.UnderlyingType.GetTypeNameFullyQualPretty());
+                            "' has already been declared for events of type " + existingType.UnderlyingType.FullName);
                     }
                     pair = new Pair<EventType, string>(finalEventType, eventName);
 
@@ -297,7 +300,7 @@ namespace com.espertech.esper.epl.spec
                 // and additionally stream 0 (self) is our event type.
                 // Stream type service allows resolution by property name event if that name appears in other tags.
                 // by defaulting to stream zero.
-                // Stream zero is always the current event type, all others follow the order of the map (stream 1 to Count).
+                // Stream zero is always the current event type, all others follow the order of the map (stream 1 to N).
                 var selfStreamName = optionalTag;
                 if (selfStreamName == null)
                 {
@@ -328,6 +331,7 @@ namespace com.espertech.esper.epl.spec
                             context.EventAdapterService.CreateSemiAnonymousMapType(
                                 patternSubexEventType, Collections.GetEmptyMap<string, Pair<EventType, string>>(),
                                 specificArrayType, isInsertInto);
+                        context.StatementSemiAnonymousTypeRegistry.Register(arrayTagCompositeEventType);
 
                         var tag = entry.Key;
                         if (!filterTypes.ContainsKey(tag))
@@ -344,16 +348,12 @@ namespace com.espertech.esper.epl.spec
                 var exprNodes = filterNode.RawFilterSpec.FilterExpressions;
 
                 var spec = FilterSpecCompiler.MakeFilterSpec(
-                    resolvedEventType,
-                    eventName,
-                    exprNodes,
+                    resolvedEventType, eventName, exprNodes,
                     filterNode.RawFilterSpec.OptionalPropertyEvalSpec,
                     filterTaggedEventTypes,
                     arrayCompositeEventTypes,
                     streamTypeService,
-                    null,
-                    context,
-                    subexpressionIdStack);
+                    null, context, subexpressionIdStack);
                 filterNode.FilterSpec = spec;
             }
             else if (evalNode is EvalObserverFactoryNode)
@@ -365,11 +365,18 @@ namespace com.espertech.esper.epl.spec
 
                     var streamTypeService = GetStreamTypeService(
                         context.EngineURI, context.StatementId, context.EventAdapterService, tags.TaggedEventTypes,
-                        tags.ArrayEventTypes, subexpressionIdStack, "observer");
+                        tags.ArrayEventTypes, subexpressionIdStack, "observer", context);
                     var validationContext = new ExprValidationContext(
-                        streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
-                        context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
-                        context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
+                        streamTypeService,
+                        context.MethodResolutionService, null,
+                        context.SchedulingService,
+                        context.VariableService,
+                        context.TableService, evaluatorContext,
+                        context.EventAdapterService,
+                        context.StatementName,
+                        context.StatementId,
+                        context.Annotations,
+                        context.ContextDescriptor,
                         context.ScriptingService,
                         false, false, false, false, null, false);
                     var validated = ValidateExpressions(
@@ -384,11 +391,15 @@ namespace com.espertech.esper.epl.spec
                 }
                 catch (ObserverParameterException e)
                 {
-                    throw new ExprValidationException("Invalid parameter for pattern observer '" + observerNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
+                    throw new ExprValidationException(
+                        "Invalid parameter for pattern observer '" + observerNode.ToPrecedenceFreeEPL() + "': " +
+                        e.Message, e);
                 }
                 catch (PatternObjectException e)
                 {
-                    throw new ExprValidationException("Failed to resolve pattern observer '" + observerNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
+                    throw new ExprValidationException(
+                        "Failed to resolve pattern observer '" + observerNode.ToPrecedenceFreeEPL() + "': " + e.Message,
+                        e);
                 }
             }
             else if (evalNode is EvalGuardFactoryNode)
@@ -400,11 +411,18 @@ namespace com.espertech.esper.epl.spec
 
                     var streamTypeService = GetStreamTypeService(
                         context.EngineURI, context.StatementId, context.EventAdapterService, tags.TaggedEventTypes,
-                        tags.ArrayEventTypes, subexpressionIdStack, "guard");
+                        tags.ArrayEventTypes, subexpressionIdStack, "guard", context);
                     var validationContext = new ExprValidationContext(
-                        streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
-                        context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
-                        context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
+                        streamTypeService,
+                        context.MethodResolutionService, null,
+                        context.SchedulingService,
+                        context.VariableService,
+                        context.TableService, evaluatorContext,
+                        context.EventAdapterService,
+                        context.StatementName,
+                        context.StatementId,
+                        context.Annotations,
+                        context.ContextDescriptor,
                         context.ScriptingService,
                         false, false, false, false, null, false);
                     var validated = ValidateExpressions(
@@ -418,11 +436,13 @@ namespace com.espertech.esper.epl.spec
                 }
                 catch (GuardParameterException e)
                 {
-                    throw new ExprValidationException("Invalid parameter for pattern guard '" + guardNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
+                    throw new ExprValidationException(
+                        "Invalid parameter for pattern guard '" + guardNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
                 }
                 catch (PatternObjectException e)
                 {
-                    throw new ExprValidationException("Failed to resolve pattern guard '" + guardNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
+                    throw new ExprValidationException(
+                        "Failed to resolve pattern guard '" + guardNode.ToPrecedenceFreeEPL() + "': " + e.Message, e);
                 }
             }
             else if (evalNode is EvalEveryDistinctFactoryNode)
@@ -432,11 +452,18 @@ namespace com.espertech.esper.epl.spec
                 var streamTypeService = GetStreamTypeService(
                     context.EngineURI, context.StatementId, context.EventAdapterService,
                     matchEventFromChildNodes.TaggedEventTypes, matchEventFromChildNodes.ArrayEventTypes,
-                    subexpressionIdStack, "every-distinct");
+                    subexpressionIdStack, "every-distinct", context);
                 var validationContext = new ExprValidationContext(
-                    streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
-                    context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
-                    context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
+                    streamTypeService,
+                    context.MethodResolutionService, null,
+                    context.SchedulingService,
+                    context.VariableService,
+                    context.TableService, evaluatorContext,
+                    context.EventAdapterService,
+                    context.StatementName,
+                    context.StatementId,
+                    context.Annotations,
+                    context.ContextDescriptor,
                     context.ScriptingService,
                     false, false, false, false, null, false);
                 IList<ExprNode> validated;
@@ -480,14 +507,14 @@ namespace com.espertech.esper.epl.spec
                     {
                         if (count == last)
                         {
-                            var value = expr.ExprEvaluator.Evaluate(new EvaluateParams(null, true, evaluatorContext));
+                            var evaluateParams = new EvaluateParams(null, true, evaluatorContext);
+                            var value = expr.ExprEvaluator.Evaluate(evaluateParams);
                             if (!(value.IsNumber()))
                             {
                                 throw new ExprValidationException(
                                     "Invalid parameter for every-distinct, expected number of seconds constant (constant not considered for distinct)");
                             }
-                            var secondsTemp = expr.ExprEvaluator.Evaluate(new EvaluateParams(null, true, evaluatorContext));
-                            var secondsExpire = secondsTemp.AsBoxedDouble();
+                            var secondsExpire = expr.ExprEvaluator.Evaluate(evaluateParams).AsBoxedDouble();
                             if ((secondsExpire != null) && (secondsExpire > 0))
                             {
                                 timeDeltaComputation =
@@ -498,9 +525,8 @@ namespace com.espertech.esper.epl.spec
                         else
                         {
                             Log.Warn(
-                                "Every-distinct node utilizes an expression returning a constant value, please check expression '" +
-                                ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expr) +
-                                "', not adding expression to distinct-value expression list");
+                                "Every-distinct node utilizes an expression returning a constant value, please check expression '{0}', not adding expression to distinct-value expression list",
+                                expr.ToExpressionStringMinPrecedenceSafe());
                         }
                     }
                     else
@@ -524,13 +550,19 @@ namespace com.espertech.esper.epl.spec
                 var streamTypeService = GetStreamTypeService(
                     context.EngineURI, context.StatementId, context.EventAdapterService,
                     untilMatchEventSpec.TaggedEventTypes, untilMatchEventSpec.ArrayEventTypes, subexpressionIdStack,
-                    "until");
+                    "until", context);
                 var validationContext = new ExprValidationContext(
-                    streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
-                    context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
-                    context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
-                    context.ScriptingService,
-                    false, false, false, false, null, false);
+                    streamTypeService,
+                    context.MethodResolutionService, null,
+                    context.SchedulingService,
+                    context.VariableService,
+                    context.TableService, evaluatorContext,
+                    context.EventAdapterService,
+                    context.StatementName,
+                    context.StatementId,
+                    context.Annotations,
+                    context.ContextDescriptor,
+                    context.ScriptingService, false, false, false, false, null, false);
 
                 var lower = ValidateBounds(matchUntilNode.LowerBounds, validationContext);
                 matchUntilNode.LowerBounds = lower;
@@ -541,7 +573,7 @@ namespace com.espertech.esper.epl.spec
                 var single = ValidateBounds(matchUntilNode.SingleBound, validationContext);
                 matchUntilNode.SingleBound = single;
 
-                MatchedEventConvertor convertor = new MatchedEventConvertorImpl(
+                var convertor = new MatchedEventConvertorImpl(
                     untilMatchEventSpec.TaggedEventTypes, untilMatchEventSpec.ArrayEventTypes, allTagNamesOrdered,
                     context.EventAdapterService);
                 matchUntilNode.Convertor = convertor;
@@ -583,8 +615,7 @@ namespace com.espertech.esper.epl.spec
                     streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
                     context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
                     context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
-                    context.ScriptingService,
-                    false, false, false, false, null, false);
+                    context.ScriptingService, false, false, false, false, null, false);
 
                 if (followedByNode.OptionalMaxExpressions != null)
                 {
@@ -613,8 +644,7 @@ namespace com.espertech.esper.epl.spec
                             if ((validatedExpr.ExprEvaluator.ReturnType == null) ||
                                 (!validatedExpr.ExprEvaluator.ReturnType.IsNumeric()))
                             {
-                                var message =
-                                    "Invalid maximum expression in followed-by, the expression must return an integer value";
+                                var message = "Invalid maximum expression in followed-by, the expression must return an integer value";
                                 throw new ExprValidationException(message);
                             }
                         }
@@ -668,7 +698,7 @@ namespace com.espertech.esper.epl.spec
             return indexes;
         }
 
-        private static int FindTagNumber(string findTag, ICollection<string> allTagNamesOrdered)
+        private static int FindTagNumber(string findTag, IEnumerable<string> allTagNamesOrdered)
         {
             var index = 0;
             foreach (var tag in allTagNamesOrdered)
@@ -689,15 +719,12 @@ namespace com.espertech.esper.epl.spec
                 return false;
             }
 
-            foreach (var deepParent in parentNodeStack)
+            foreach (var deepParent in parentNodeStack.OfType<EvalMatchUntilFactoryNode>())
             {
-                if (deepParent is EvalMatchUntilFactoryNode)
+                var matchUntilFactoryNode = deepParent;
+                if (matchUntilFactoryNode.ChildNodes[0] == currentNode)
                 {
-                    var matchUntilFactoryNode = (EvalMatchUntilFactoryNode) deepParent;
-                    if (matchUntilFactoryNode.ChildNodes[0] == currentNode)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -707,6 +734,7 @@ namespace com.espertech.esper.epl.spec
             ExprNodeOrigin exprNodeOrigin,
             IList<ExprNode> objectParameters,
             ExprValidationContext validationContext)
+
         {
             if (objectParameters == null)
             {
@@ -722,12 +750,13 @@ namespace com.espertech.esper.epl.spec
 
         private static StreamTypeService GetStreamTypeService(
             string engineURI,
-            string statementId,
+            int statementId,
             EventAdapterService eventAdapterService,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
-            Deque<int> subexpressionIdStack,
-            string objectType)
+            IEnumerable<int> subexpressionIdStack,
+            string objectType,
+            StatementContext statementContext)
         {
             var filterTypes = new LinkedHashMap<string, Pair<EventType, string>>();
             filterTypes.PutAll(taggedEventTypes);
@@ -738,6 +767,7 @@ namespace com.espertech.esper.epl.spec
                 var patternSubexEventType = GetPatternSubexEventType(statementId, objectType, subexpressionIdStack);
                 var arrayTagCompositeEventType = eventAdapterService.CreateSemiAnonymousMapType(
                     patternSubexEventType, new Dictionary<string, Pair<EventType, string>>(), arrayEventTypes, false);
+                statementContext.StatementSemiAnonymousTypeRegistry.Register(arrayTagCompositeEventType);
                 foreach (var entry in arrayEventTypes)
                 {
                     var tag = entry.Key;
@@ -753,7 +783,7 @@ namespace com.espertech.esper.epl.spec
         }
 
         private static string GetPatternSubexEventType(
-            string statementId,
+            int statementId,
             string objectType,
             IEnumerable<int> subexpressionIdStack)
         {
@@ -770,6 +800,7 @@ namespace com.espertech.esper.epl.spec
         }
 
         private static EvalFactoryNode RecursiveAddAuditNode(
+            PatternNodeFactory patternNodeFactory,
             EvalFactoryNode parentNode,
             bool auditPattern,
             bool auditPatternInstance,
@@ -780,7 +811,7 @@ namespace com.espertech.esper.epl.spec
             evalNode.ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
             var expressionText = writer.ToString();
             var filterChildNonQuitting = parentNode != null && parentNode.IsFilterChildNonQuitting;
-            var audit = new EvalAuditFactoryNode(
+            EvalFactoryNode audit = patternNodeFactory.MakeAuditNode(
                 auditPattern, auditPatternInstance, expressionText, instanceCount, filterChildNonQuitting);
             audit.AddChildNode(evalNode);
 
@@ -788,7 +819,8 @@ namespace com.espertech.esper.epl.spec
             foreach (var child in evalNode.ChildNodes)
             {
                 newChildNodes.Add(
-                    RecursiveAddAuditNode(evalNode, auditPattern, auditPatternInstance, child, instanceCount));
+                    RecursiveAddAuditNode(
+                        patternNodeFactory, evalNode, auditPattern, auditPatternInstance, child, instanceCount));
             }
 
             evalNode.ChildNodes.Clear();
@@ -819,7 +851,7 @@ namespace com.espertech.esper.epl.spec
             }
 
             // collect those filters under a repeat since they are arrays
-            ISet<string> arrayTags = new HashSet<string>();
+            var arrayTags = new HashSet<string>();
             foreach (var matchUntilNode in evalNodeAnalysisResult.RepeatNodes)
             {
                 var matchUntilAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(matchUntilNode.ChildNodes[0]);

@@ -30,7 +30,7 @@ namespace com.espertech.esper.multithread
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             _engine = EPServiceProviderManager.GetProvider(GetType().FullName, config);
-            _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _engine.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
         }
     

@@ -37,7 +37,9 @@ namespace com.espertech.esper.epl.agg.service
 
         public override AggregationService MakeService(
             AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService)
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             AggregationMethod[] aggregatorsAgentInstance = methodResolutionService.NewAggregators(
                 base.Aggregators, agentInstanceContext.AgentInstanceId);

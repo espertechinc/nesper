@@ -135,6 +135,9 @@ namespace com.espertech.esper.client
                     case "auto-import":
                         HandleAutoImports(configuration, element);
                         break;
+                    case "auto-import-annotations":
+                        HandleAutoImportAnnotations(configuration, element);
+                        break;
                     case "method-reference":
                         HandleMethodReference(configuration, element);
                         break;
@@ -491,6 +494,12 @@ namespace com.espertech.esper.client
             {
                 configuration.AddImport(name, assembly);
             }
+        }
+
+        private static void HandleAutoImportAnnotations(Configuration configuration, XmlElement element)
+        {
+            String name = GetRequiredAttribute(element, "import-name");
+            configuration.AddAnnotationImport(name);
         }
 
         private static void HandleDatabaseRefs(Configuration configuration, XmlElement element)
@@ -1113,12 +1122,30 @@ namespace com.espertech.esper.client
                         HandleExecution(configuration, subElement);
                         break;
                     case "exceptionHandling":
-                        configuration.EngineDefaults.ExceptionHandlingConfig.AddClasses(
-                            GetHandlerFactories(subElement));
+                        {
+                            configuration.EngineDefaults.ExceptionHandlingConfig.AddClasses(
+                                GetHandlerFactories(subElement));
+                            var enableUndeployRethrowStr = GetOptionalAttribute(subElement, "undeploy-rethrow-policy");
+                            if (enableUndeployRethrowStr != null)
+                            {
+                                configuration.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy = 
+                                    EnumHelper.Parse<ConfigurationEngineDefaults.UndeployRethrowPolicy>(enableUndeployRethrowStr);
+                            }
+                        }
+
                         break;
                     case "conditionHandling":
-                        configuration.EngineDefaults.ConditionHandlingConfig.AddClasses(
-                            GetHandlerFactories(subElement));
+                        {
+                            configuration.EngineDefaults.ConditionHandlingConfig.AddClasses(
+                                GetHandlerFactories(subElement));
+                            var enableUndeployRethrowStr = GetOptionalAttribute(subElement, "undeploy-rethrow-policy");
+                            if (enableUndeployRethrowStr != null)
+                            {
+                                configuration.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy =
+                                    EnumHelper.Parse<ConfigurationEngineDefaults.UndeployRethrowPolicy>(enableUndeployRethrowStr);
+                            }
+                        }
+
                         break;
                     case "scripts":
                         HandleDefaultScriptConfig(configuration, subElement);
@@ -1182,6 +1209,28 @@ namespace com.espertech.esper.client
                                 configuration.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking =
                                     EnumHelper.Parse<ConfigurationEngineDefaults.Threading.Locking>(value);
                             }
+                            break;
+                        }
+                    case "named-window-consumer-dispatch":
+                        {
+                            String preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
+                            Boolean preserveOrder = Boolean.Parse(preserveOrderText);
+                            configuration.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder = preserveOrder;
+
+                            if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
+                            {
+                                String timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").Value;
+                                Int64 timeoutMSec = Int64.Parse(timeoutMSecText);
+                                configuration.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout = timeoutMSec;
+                            }
+
+                            if (subElement.Attributes.GetNamedItem("locking") != null)
+                            {
+                                String value = subElement.Attributes.GetNamedItem("locking").Value;
+                                configuration.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking =
+                                    EnumHelper.Parse<ConfigurationEngineDefaults.Threading.Locking>(value);
+                            }
+
                             break;
                         }
                     case "internal-timer":

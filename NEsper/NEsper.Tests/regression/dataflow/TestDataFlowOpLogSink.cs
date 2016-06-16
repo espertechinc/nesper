@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.dataflow
 
         private void RunAssertion(String format, bool? log, String layout, String title, bool? linefeed)
         {
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String graph = "create dataflow MyConsoleOut\n" +
                     "Emitter -> instream<SupportBean>{name : 'e1'}\n" +

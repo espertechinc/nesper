@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 
 namespace com.espertech.esper.support.bean
 {
-	public class SupportLegacyBeanInt
+	[Serializable]
+    public class SupportLegacyBeanInt
 	{
 		public int IntPrimitive
 		{

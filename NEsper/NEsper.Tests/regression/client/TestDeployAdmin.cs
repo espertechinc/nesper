@@ -502,7 +502,7 @@ namespace com.espertech.esper.regression.client
     
         [Test]
         public void TestFlagUndeployNoDestroy() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             var resultOne = _deploymentAdmin.ParseDeploy("@Name('S0') select * from SupportBean");
             var resultTwo = _deploymentAdmin.ParseDeploy("@Name('S1') select * from SupportBean");

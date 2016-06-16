@@ -240,7 +240,7 @@ namespace com.espertech.esper.epl.parse
         {
             VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
             variableService.CreateNewVariable(null, "var1", typeof(long?).FullName, false, false, false, 100L, null);
-            variableService.AllocateVariableState("var1", 0, null);
+            variableService.AllocateVariableState("var1", 0, null, false);
     
             var expression = "on com.MyClass as myevent set var1 = 'a', var2 = 2*3, var3 = var1";
             var walker = SupportParserHelper.ParseAndWalkEPL(expression, null, variableService);

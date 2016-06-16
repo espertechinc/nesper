@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestExpireSeenBeforeKey()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverFilter()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestRepeatOverDistinct()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverRepeat()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestTimerWithinOverDistinct()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverTimerWithin()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverAnd()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverOr()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -418,7 +418,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverNot()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctOverFollowedBy()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryDistinctWithinFollowedBy()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestFollowedByWithDistinct()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
@@ -600,8 +600,12 @@ namespace com.espertech.esper.regression.pattern
     
             engine.EPRuntime.SendEvent(new SupportBean("B7", 3));
             var events = listener.GetAndResetLastNewData();
-            EPAssertionUtil.AssertProps(events[0], "a.TheString,b.TheString".Split(','), new Object[]{"A1", "B7"});
-            EPAssertionUtil.AssertProps(events[1], "a.TheString,b.TheString".Split(','), new Object[]{"A3", "B7"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "a.TheString,b.TheString".SplitCsv(),
+                new Object[][]
+                {
+                    new Object[]{ "A1", "B7" },
+                    new Object[]{ "A3", "B7" }
+                });
         }
     
         [Test]

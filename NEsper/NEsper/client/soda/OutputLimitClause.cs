@@ -346,9 +346,10 @@ namespace com.espertech.esper.client.soda
 
         /// <summary>Sets the after-keyword time period. </summary>
         /// <param name="afterTimePeriodExpression">after-keyword time period</param>
-        public void SetAfterTimePeriodExpression(Expression afterTimePeriodExpression)
+        public OutputLimitClause SetAfterTimePeriodExpression(Expression afterTimePeriodExpression)
         {
             AfterTimePeriodExpression = afterTimePeriodExpression;
+            return this;
         }
 
         /// <summary>Returns the after-keyword number of events, or null if undefined. </summary>
@@ -357,9 +358,10 @@ namespace com.espertech.esper.client.soda
 
         /// <summary>Sets the after-keyword number of events, or null if undefined. </summary>
         /// <param name="afterNumberOfEvents">set num events for after-keyword</param>
-        public void SetAfterNumberOfEvents(int? afterNumberOfEvents)
+        public OutputLimitClause SetAfterNumberOfEvents(int? afterNumberOfEvents)
         {
             AfterNumberOfEvents = afterNumberOfEvents;
+            return this;
         }
 
         /// <summary>Returns the optional expression evaluated when a context partition terminates before triggering output. </summary>

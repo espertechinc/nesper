@@ -26,7 +26,7 @@ namespace com.espertech.esper.events.bean
         /// <returns>
         /// builder/introspector implementation
         /// </returns>
-        public static IPropertyListBuilder CreateBuilder(ConfigurationEventTypeLegacy optionalLegacyClassConfigs)
+        public static PropertyListBuilder CreateBuilder(ConfigurationEventTypeLegacy optionalLegacyClassConfigs)
         {
             if (optionalLegacyClassConfigs == null)
             {

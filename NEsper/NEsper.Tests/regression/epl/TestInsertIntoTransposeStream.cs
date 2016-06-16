@@ -67,8 +67,8 @@ namespace com.espertech.esper.regression.epl
             _epService.EPAdministrator.CreateEPL("create " + representation.GetOutputTypeCreateSchemaName() + " schema MySchema(p0 string, p1 int)");
 
             String generateFunction = representation == EventRepresentationEnum.MAP ? "generateMap" : "generateOA";
-            String epl = "@Name('first') insert into MySchema select transpose(" + generateFunction + "(TheString, IntPrimitive)) from SupportBean";
-            _epService.EPAdministrator.CreateEPL(epl).Events += _listener.Update;
+            String epl = "insert into MySchema select transpose(" + generateFunction + "(TheString, IntPrimitive)) from SupportBean";
+            _epService.EPAdministrator.CreateEPL(epl, "first").Events += _listener.Update;
 
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.epl
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] {"E2", 2});
 
             // MySchema already exists, start second statement
-            _epService.EPAdministrator.CreateEPL(epl).AddListener(_listener);
+            _epService.EPAdministrator.CreateEPL(epl, "second").AddListener(_listener);
             _epService.EPAdministrator.GetStatement("first").Dispose();
 
             _epService.EPRuntime.SendEvent(new SupportBean("E3", 3));
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestTransposeFunctionToStreamWithProps()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib).FullName, "MakeSupportBean");
 
             String stmtTextOne = "insert into MyStream select 1 as dummy, Transpose(custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestTransposeFunctionToStream()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib).FullName, "MakeSupportBean");
 
             String stmtTextOne = "insert into OtherStream select transpose(custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regression.epl
             }
             catch (EPStatementException ex)
             {
-                Assert.AreEqual("Error starting statement: Invalid expression return type '" + Name.Of<object[]>() + "' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]", ex.Message);
+                Assert.AreEqual("Error starting statement: Invalid expression return type '" + Name.Clean<object[]>() + "' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]", ex.Message);
             }
         }
 

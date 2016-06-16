@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.pattern
             config.AddEventType("B", typeof(SupportBean_B).FullName);
             config.AddEventType("C", typeof(SupportBean_C).FullName);
     
-            epService = EPServiceProviderManager.GetProvider("TestDeadPattern", config);
+            epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
         }
     

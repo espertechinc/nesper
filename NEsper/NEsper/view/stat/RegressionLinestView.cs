@@ -132,7 +132,7 @@ namespace com.espertech.esper.view.stat
             StatViewAdditionalProps.AddCheckDupProperties(eventTypeMap, additionalProps,
                     ViewFieldEnum.REGRESSION__SLOPE, ViewFieldEnum.REGRESSION__YINTERCEPT);
             String outputEventTypeName = statementContext.StatementId + "_regview_" + streamNum;
-            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap);
+            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap, false);
         }
     }
 }

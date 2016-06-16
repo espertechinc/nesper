@@ -25,7 +25,7 @@ namespace com.espertech.esper.view.window
     public class LengthWindowViewFactory : DataWindowViewFactory, DataWindowViewWithPrevious
     {
         /// <summary>Count of length window. </summary>
-        protected int Size;
+        private int _size;
     
         private EventType _eventType;
     
@@ -49,8 +49,8 @@ namespace com.espertech.esper.view.window
                 throw new ViewParameterException(ViewParamMessage);
             }
     
-            Size =  numParam.AsInt();
-            if (Size <= 0)
+            _size =  numParam.AsInt();
+            if (_size <= 0)
             {
                 throw new ViewParameterException(ViewName + " view requires a positive number");
             }
@@ -67,14 +67,14 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRandomAccess randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
-                return new LengthWindowViewRStream(agentInstanceViewFactoryContext, this, Size);
+                return new LengthWindowViewRStream(agentInstanceViewFactoryContext, this, _size);
             }
             else
             {
-                return new LengthWindowView(agentInstanceViewFactoryContext, this, Size, randomAccess);
+                return new LengthWindowView(agentInstanceViewFactoryContext, this, _size, randomAccess);
             }
         }
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.view.window
             }
     
             var myView = (LengthWindowView) view;
-            if (myView.Size != Size)
+            if (myView.Size != _size)
             {
                 return false;
             }
@@ -101,6 +101,11 @@ namespace com.espertech.esper.view.window
         public string ViewName
         {
             get { return "Length"; }
+        }
+
+        public int Size
+        {
+            get { return _size; }
         }
 
         private string ViewParamMessage

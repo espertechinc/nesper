@@ -34,7 +34,7 @@ namespace com.espertech.esper.core.service
             return _spi.IsScheduled(handle);
         }
     
-        public ScheduleSet Take(ICollection<String> statementId)
+        public ScheduleSet Take(ICollection<int> statementId)
         {
             return _spi.Take(statementId);
         }

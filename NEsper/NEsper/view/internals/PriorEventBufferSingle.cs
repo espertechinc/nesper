@@ -119,36 +119,28 @@ namespace com.espertech.esper.view.internals
             {
                 throw new ArgumentException("Single prior event buffer takes only a given index of zero");
             }
-            EventBean priorEvent = _priorEventMap.Get(theEvent);
-            if (priorEvent == null)
-            {
-                if (!_priorEventMap.ContainsKey(theEvent))
-                {
-                    return null;
-                }
-            }
-            return priorEvent;
+            return _priorEventMap.Get(theEvent);
         }
     
-        public EventBean GetRelativeToEnd(EventBean theEvent, int index)
+        public EventBean GetRelativeToEnd(int index)
         {
             // No requirement to index from end of current buffer
             return null;
         }
     
-        public IEnumerator<EventBean> GetWindowToEvent(Object evalEvent)
+        public IEnumerator<EventBean> GetWindowToEvent()
         {
             // no requirement for window iterator support
             return null;
         }
     
-        public int GetWindowToEventCount(EventBean evalEvent)
+        public int GetWindowToEventCount()
         {
             // no requirement for count support
             return 0;
         }
     
-        public ICollection<EventBean> GetWindowToEventCollReadOnly(Object evalEvent) {
+        public ICollection<EventBean> GetWindowToEventCollReadOnly() {
             return null;
         }
 

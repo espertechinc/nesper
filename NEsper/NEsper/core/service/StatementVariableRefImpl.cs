@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 
@@ -29,20 +30,22 @@ namespace com.espertech.esper.core.service
         private readonly IDictionary<String, ICollection<String>> _stmtToVariable;
         private readonly VariableService _variableService;
         private readonly TableService _tableService;
+        private readonly NamedWindowMgmtService _namedWindowMgmtService;
         private readonly ICollection<String> _configuredVariables;
     
         /// <summary>Ctor. </summary>
         /// <param name="variableService">variables</param>
-        public StatementVariableRefImpl(VariableService variableService, TableService tableService)
+        public StatementVariableRefImpl(VariableService variableService, TableService tableService, NamedWindowMgmtService namedWindowMgmtService)
         {
             _variableToStmt = new Dictionary<String, ICollection<String>>().WithNullSupport();
             _stmtToVariable = new Dictionary<String, ICollection<String>>().WithNullSupport();
             _mapLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _variableService = variableService;
             _tableService = tableService;
+            _namedWindowMgmtService = namedWindowMgmtService;
     
             _configuredVariables = new HashSet<String>();
-            foreach (KeyValuePair<String, VariableReader> entry in variableService.VariableReadersNonCP)
+            foreach (var entry in variableService.VariableReadersNonCP)
             {
                 _configuredVariables.Add(entry.Key);
             }
@@ -68,7 +71,7 @@ namespace com.espertech.esper.core.service
                 }
                 if (tableNodes != null)
                 {
-                    foreach (ExprTableAccessNode tableNode in tableNodes)
+                    foreach (var tableNode in tableNodes)
                     {
                         AddReference(statementName, tableNode.TableName);
                     }
@@ -126,7 +129,7 @@ namespace com.espertech.esper.core.service
         {
             using(_mapLock.AcquireReadLock())
             {
-                ICollection<String> variables = _variableToStmt.Get(variableName);
+                var variables = _variableToStmt.Get(variableName);
                 if (variables == null)
                 {
                     return new string[0];
@@ -138,7 +141,7 @@ namespace com.espertech.esper.core.service
         private void AddReference(String statementName, String variableName)
         {
             // add to variables
-            ICollection<String> statements = _variableToStmt.Get(variableName);
+            var statements = _variableToStmt.Get(variableName);
             if (statements == null)
             {
                 statements = new HashSet<String>();
@@ -147,19 +150,20 @@ namespace com.espertech.esper.core.service
             statements.Add(statementName);
     
             // add to statements
-            ICollection<String> variables = _stmtToVariable.Get(statementName);
+            var variables = _stmtToVariable.Get(statementName);
             if (variables == null)
             {
                 variables = new HashSet<String>();
                 _stmtToVariable.Put(statementName, variables);
             }
+
             variables.Add(variableName);
         }
     
         private void RemoveReference(String statementName, String variableName)
         {
             // remove from variables
-            ICollection<String> statements = _variableToStmt.Get(variableName);
+            var statements = _variableToStmt.Get(variableName);
             if (statements != null)
             {
                 if (!statements.Remove(statementName))
@@ -174,12 +178,13 @@ namespace com.espertech.esper.core.service
                     if (!_configuredVariables.Contains(variableName)) {
                         _variableService.RemoveVariableIfFound(variableName);
                         _tableService.RemoveTableIfFound(variableName);
+                        _namedWindowMgmtService.RemoveNamedWindowIfFound(variableName);
                     }
                 }
             }
     
             // remove from statements
-            ICollection<String> variables = _stmtToVariable.Get(statementName);
+            var variables = _stmtToVariable.Get(statementName);
             if (variables != null)
             {
                 if (!variables.Remove(variableName))

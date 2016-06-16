@@ -19,6 +19,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.spec;
@@ -49,10 +50,14 @@ namespace com.espertech.esper.epl.db
         /// <param name="columnTypeConversionHook">The column type conversion hook.</param>
         /// <param name="outputRowConversionHook">The output row conversion hook.</param>
         /// <param name="enableAdoLogging">if set to <c>true</c> [enable JDBC logging].</param>
-        /// <returns>viewable providing poll functionality</returns>
+        /// <param name="dataCacheFactory">The data cache factory.</param>
+        /// <param name="statementContext">The statement context.</param>
+        /// <returns>
+        /// viewable providing poll functionality
+        /// </returns>
         /// <exception cref="ExprValidationException">the validation failed</exception>
         public static HistoricalEventViewable CreateDBStatementView(
-            String statementId,
+            int statementId,
             int streamNumber,
             DBStatementStreamSpec databaseStreamSpec,
             DatabaseConfigService databaseConfigService,
@@ -61,7 +66,9 @@ namespace com.espertech.esper.epl.db
             IEnumerable<Attribute> contextAttributes,
             SQLColumnTypeConversion columnTypeConversionHook,
             SQLOutputRowConversion outputRowConversionHook,
-            bool enableAdoLogging)
+            bool enableAdoLogging,
+            DataCacheFactory dataCacheFactory,
+            StatementContext statementContext)
         {
             // Parse the SQL for placeholders and text fragments
             var sqlFragments = GetSqlFragments(databaseStreamSpec);
@@ -93,7 +100,6 @@ namespace com.espertech.esper.epl.db
                 dbCommand,
                 contextAttributes);
 
-
             Func<SQLColumnTypeContext, Type> columnTypeConversionFunc = null;
             if (columnTypeConversionHook != null)
             {
@@ -123,7 +129,7 @@ namespace com.espertech.esper.epl.db
             {
                 connectionCache = databaseConfigService.GetConnectionCache(
                     databaseName, dbCommand.PseudoText, contextAttributes);
-                dataCache = databaseConfigService.GetDataCache(databaseName, epStatementAgentInstanceHandle);
+                dataCache = databaseConfigService.GetDataCache(databaseName, statementContext, epStatementAgentInstanceHandle, dataCacheFactory, streamNumber);
             }
             catch (DatabaseConfigException e)
             {
@@ -182,16 +188,17 @@ namespace com.espertech.esper.epl.db
         /// <param name="columnTypeConversionHook">The column type conversion hook.</param>
         /// <param name="outputRowConversionHook">The output row conversion hook.</param>
         /// <returns></returns>
-        private static EventType CreateEventType(String statementId,
-                                                 int streamNumber,
-                                                 QueryMetaData queryMetaData,
-                                                 EventAdapterService eventAdapterService,
-                                                 DBStatementStreamSpec databaseStreamSpec,
-                                                 Func<SQLColumnTypeContext, Type> columnTypeConversionHook,
-                                                 Func<SQLOutputRowTypeContext, Type> outputRowConversionHook)
+        private static EventType CreateEventType(
+            int statementId,
+            int streamNumber,
+            QueryMetaData queryMetaData,
+            EventAdapterService eventAdapterService,
+            DBStatementStreamSpec databaseStreamSpec,
+            Func<SQLColumnTypeContext, Type> columnTypeConversionHook,
+            Func<SQLOutputRowTypeContext, Type> outputRowConversionHook)
         {
             var columnNum = 1;
-            IDictionary<String, Object> eventTypeFields = new Dictionary<String, Object>();
+            var eventTypeFields = new Dictionary<String, Object>();
             foreach (var entry in queryMetaData.OutputParameters)
             {
                 var name = entry.Key;
@@ -232,7 +239,7 @@ namespace com.espertech.esper.epl.db
             if (outputRowConversionHook == null)
             {
                 var outputEventType = statementId + "_dbpoll_" + streamNumber;
-                eventType = eventAdapterService.CreateAnonymousMapType(outputEventType, eventTypeFields);
+                eventType = eventAdapterService.CreateAnonymousMapType(outputEventType, eventTypeFields, true);
             }
             else
             {

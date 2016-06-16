@@ -16,30 +16,34 @@ namespace com.espertech.esper.core.context.mgr
 {
     public interface ContextControllerLifecycleCallback
     {
-        ContextControllerInstanceHandle ContextPartitionInstantiate(int? optionalContextPartitionId,
-                                                                    int subpath,
-                                                                    int? importSubpathId,
-                                                                    ContextController originator, 
-                                                                    EventBean optionalTriggeringEvent,
-                                                                    IDictionary<String, Object> optionalTriggeringPattern,
-                                                                    Object partitionKey,
-                                                                    IDictionary<String, Object> contextProperties,
-                                                                    ContextControllerState states,
-                                                                    ContextInternalFilterAddendum filterAddendum,
-                                                                    bool isRecoveringResilient,
-                                                                    ContextPartitionState state);
-    
-        void ContextPartitionNavigate(ContextControllerInstanceHandle existingHandle,
-                                      ContextController originator,
-                                      ContextControllerState controllerState,
-                                      int exportedCPOrPathId,
-                                      ContextInternalFilterAddendum filterAddendum,
-                                      AgentInstanceSelector agentInstanceSelector, 
-                                      byte[] payload);
-    
-        void ContextPartitionTerminate(ContextControllerInstanceHandle contextNestedHandle,
-                                       IDictionary<String, Object> terminationProperties,
-                                       bool leaveLocksAcquired,
-                                       IList<AgentInstance> agentInstances);
+        ContextControllerInstanceHandle ContextPartitionInstantiate(
+            int? optionalContextPartitionId,
+            int subpath,
+            int? importSubpathId,
+            ContextController originator,
+            EventBean optionalTriggeringEvent,
+            IDictionary<String, Object> optionalTriggeringPattern,
+            Object partitionKey,
+            IDictionary<String, Object> contextProperties,
+            ContextControllerState states,
+            ContextInternalFilterAddendum filterAddendum,
+            bool isRecoveringResilient,
+            ContextPartitionState state);
+
+        void ContextPartitionNavigate(
+            ContextControllerInstanceHandle existingHandle,
+            ContextController originator,
+            ContextControllerState controllerState,
+            int exportedCPOrPathId,
+            ContextInternalFilterAddendum filterAddendum,
+            AgentInstanceSelector agentInstanceSelector,
+            byte[] payload,
+            bool isRecoveringResilient);
+
+        void ContextPartitionTerminate(
+            ContextControllerInstanceHandle contextNestedHandle,
+            IDictionary<String, Object> terminationProperties,
+            bool leaveLocksAcquired,
+            IList<AgentInstance> agentInstances);
     }
 }

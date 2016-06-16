@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
@@ -30,7 +31,6 @@ namespace com.espertech.esper.filter
         /// <param name="max">is the end point of the range</param>
         /// <throws>ArgumentException if an operator was supplied that does not take a double range value</throws>
         public FilterSpecParamRange(FilterSpecLookupable lookupable, FilterOperator filterOperator, FilterSpecParamRangeValue min, FilterSpecParamRangeValue max)
-
             : base(lookupable, filterOperator)
         {
             _min = min;
@@ -43,14 +43,14 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
             if (Lookupable.ReturnType == typeof(String))
             {
-                return new StringRange((String)_min.GetFilterValue(matchedEvents, evaluatorContext), (String)_max.GetFilterValue(matchedEvents, evaluatorContext));
+                return new StringRange((String)_min.GetFilterValue(matchedEvents, agentInstanceContext), (String)_max.GetFilterValue(matchedEvents, agentInstanceContext));
             }
-            var begin = (double?)_min.GetFilterValue(matchedEvents, evaluatorContext);
-            var end = (double?)_max.GetFilterValue(matchedEvents, evaluatorContext);
+            var begin = (double?)_min.GetFilterValue(matchedEvents, agentInstanceContext);
+            var end = (double?)_max.GetFilterValue(matchedEvents, agentInstanceContext);
             return new DoubleRange(begin, end);
         }
 

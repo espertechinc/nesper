@@ -22,6 +22,7 @@ namespace com.espertech.esper.view.internals
     public class UnionViewFactory 
         : ViewFactory
         , DataWindowViewFactory
+        , ViewFactoryContainer
     {
         /// <summary>The event type. </summary>
         private EventType _parentEventType;
@@ -86,6 +87,11 @@ namespace com.espertech.esper.view.internals
         public string ViewName
         {
             get { return IntersectViewFactory.GetViewNameUnionIntersect(false, _viewFactories); }
+        }
+
+        public ICollection<ViewFactory> ViewFactoriesContained
+        {
+            get { return _viewFactories; }
         }
     }
 }

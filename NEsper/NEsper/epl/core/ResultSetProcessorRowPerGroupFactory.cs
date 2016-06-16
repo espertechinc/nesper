@@ -12,11 +12,12 @@ using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.view;
 
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor Prototype for the fully-grouped case:
+    /// Result set processor _prototype for the fully-grouped case:
     /// there is a group-by and all non-aggregation event properties in the select clause are listed in the group by,
     /// and there are aggregation functions.
     /// </summary>
@@ -47,6 +48,11 @@ namespace com.espertech.esper.epl.core
         /// <param name="isSorting">if set to <c>true</c> [is sorting].</param>
         /// <param name="noDataWindowSingleStream">if set to <c>true</c> [no data window single stream].</param>
         /// <param name="isHistoricalOnly">if set to <c>true</c> [is historical only].</param>
+        /// <param name="iterateUnbounded">if set to <c>true</c> [iterate unbounded].</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
+        /// <param name="enableOutputLimitOpt">if set to <c>true</c> [enable output limit opt].</param>
+        /// <param name="numStreams">The number streams.</param>
+        /// <param name="optionalOutputFirstConditionFactory">The optional output first condition factory.</param>
         public ResultSetProcessorRowPerGroupFactory(
             SelectExprProcessor selectExprProcessor,
             ExprNode[] groupKeyNodeExpressions,
@@ -58,7 +64,11 @@ namespace com.espertech.esper.epl.core
             bool isSorting,
             bool noDataWindowSingleStream,
             bool isHistoricalOnly,
-            bool iterateUnbounded)
+            bool iterateUnbounded,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            bool enableOutputLimitOpt,
+            int numStreams,
+            OutputConditionPolledFactory optionalOutputFirstConditionFactory)
         {
             _groupKeyNodeExpressions = groupKeyNodeExpressions;
             _selectExprProcessor = selectExprProcessor;
@@ -71,6 +81,10 @@ namespace com.espertech.esper.epl.core
             _outputLimitSpec = outputLimitSpec;
             _noDataWindowSingleSnapshot = iterateUnbounded || (outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT && noDataWindowSingleStream);
             _isHistoricalOnly = isHistoricalOnly;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            NumStreams = numStreams;
+            OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
         }
 
         public ResultSetProcessor Instantiate(
@@ -155,5 +169,18 @@ namespace com.espertech.esper.epl.core
         {
             get { return _outputLimitSpec != null && _outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
+
+        public bool IsEnableOutputLimitOpt { get; private set; }
+
+        public int NumStreams { get; private set; }
+
+        public bool IsOutputFirst
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST; }
+        }
+
+        public OutputConditionPolledFactory OptionalOutputFirstConditionFactory { get; private set; }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
     }
 }

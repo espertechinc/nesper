@@ -25,12 +25,12 @@ namespace com.espertech.esper.core.context.mgr
             new LinkedHashMap<int, ContextControllerInstanceHandle>();
 
         private int _currentSubpathId;
-        private readonly ContextControllerCategoryFactory _factory;
+        private readonly ContextControllerCategoryFactoryImpl _factory;
 
         public ContextControllerCategory(
             int pathId,
             ContextControllerLifecycleCallback activationCallback,
-            ContextControllerCategoryFactory factory)
+            ContextControllerCategoryFactoryImpl factory)
         {
             PathId = pathId;
             _activationCallback = activationCallback;
@@ -43,7 +43,7 @@ namespace com.espertech.esper.core.context.mgr
             ContextInternalFilterAddendum filterAddendum,
             AgentInstanceSelector agentInstanceSelector)
         {
-            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector);
+            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector, true);
         }
 
         public void DeletePath(ContextPartitionIdentifier identifier)
@@ -139,7 +139,7 @@ namespace com.espertech.esper.core.context.mgr
             if (Factory.FactoryContext.NestingLevel == 1)
             {
                 controllerState = ContextControllerStateUtil.GetRecoveryStates(
-                    Factory.StateCache, Factory.FactoryContext.OutermostContextName);
+                    Factory.FactoryContext.StateCache, Factory.FactoryContext.OutermostContextName);
             }
 
             if (controllerState == null)
@@ -154,7 +154,7 @@ namespace com.espertech.esper.core.context.mgr
 
                     // merge filter addendum, if any
                     var filterAddendumToUse = activationFilterAddendum;
-                    if (_factory.HasFiltersSpecsNestedContexts())
+                    if (_factory.HasFiltersSpecsNestedContexts)
                     {
                         filterAddendumToUse = activationFilterAddendum != null
                             ? activationFilterAddendum.DeepCopy()
@@ -168,7 +168,7 @@ namespace com.espertech.esper.core.context.mgr
                         ContextPartitionState.STARTED);
                     _handleCategories.Put(count, handle);
 
-                    Factory.StateCache.AddContextPath(
+                    Factory.FactoryContext.StateCache.AddContextPath(
                         Factory.FactoryContext.OutermostContextName, Factory.FactoryContext.NestingLevel, PathId,
                         _currentSubpathId, handle.ContextPartitionOrPathId, count, _factory.Binding);
                     count++;
@@ -179,7 +179,7 @@ namespace com.espertech.esper.core.context.mgr
             var pathIdToUse = importPathId != null ? importPathId.Value : PathId;
             InitializeFromState(
                 optionalTriggeringEvent, optionalTriggeringPattern, activationFilterAddendum, controllerState,
-                pathIdToUse, null);
+                pathIdToUse, null, false);
         }
 
         public ContextControllerFactory Factory
@@ -200,7 +200,8 @@ namespace com.espertech.esper.core.context.mgr
             ContextInternalFilterAddendum activationFilterAddendum,
             ContextControllerState controllerState,
             int pathIdToUse,
-            AgentInstanceSelector agentInstanceSelector)
+            AgentInstanceSelector agentInstanceSelector,
+            bool loadingExistingState)
         {
             var states = controllerState.States;
             var childContexts = ContextControllerStateUtil.GetChildContexts(
@@ -214,7 +215,7 @@ namespace com.espertech.esper.core.context.mgr
 
                 // merge filter addendum, if any
                 var filterAddendumToUse = activationFilterAddendum;
-                if (_factory.HasFiltersSpecsNestedContexts())
+                if (_factory.HasFiltersSpecsNestedContexts)
                 {
                     filterAddendumToUse = activationFilterAddendum != null
                         ? activationFilterAddendum.DeepCopy()
@@ -230,7 +231,7 @@ namespace com.espertech.esper.core.context.mgr
                     {
                         _activationCallback.ContextPartitionNavigate(
                             existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value,
-                            filterAddendumToUse, agentInstanceSelector, entry.Value.Blob);
+                            filterAddendumToUse, agentInstanceSelector, entry.Value.Blob, loadingExistingState);
                         continue;
                     }
                 }
@@ -243,7 +244,7 @@ namespace com.espertech.esper.core.context.mgr
                 var handle =
                     _activationCallback.ContextPartitionInstantiate(
                         contextPartitionId, assignedSubPathId, entry.Key.SubPath, this, null, null, categoryNumber,
-                        context, controllerState, filterAddendumToUse, Factory.FactoryContext.IsRecoveringResilient,
+                        context, controllerState, filterAddendumToUse, loadingExistingState || Factory.FactoryContext.IsRecoveringResilient,
                         entry.Value.State);
                 _handleCategories.Put(categoryNumber, handle);
 

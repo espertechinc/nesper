@@ -12,61 +12,69 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.events;
-using com.espertech.esper.events.arr;
 
 namespace com.espertech.esper.epl.table.strategy
 {
-    public class ExprTableEvalStrategyUngroupedTopLevel 
-        : ExprTableEvalStrategyUngroupedBase 
+    public class ExprTableEvalStrategyUngroupedTopLevel
+        : ExprTableEvalStrategyUngroupedBase
         , ExprTableAccessEvalStrategy
     {
-        private readonly IDictionary<String, TableMetadataColumn> _items;
-    
-        public ExprTableEvalStrategyUngroupedTopLevel(ILockable @lock, Atomic<ObjectArrayBackedEventBean> aggregationState, IDictionary<String, TableMetadataColumn> items)
-            : base(@lock, aggregationState)
+        private readonly IDictionary<string, TableMetadataColumn> items;
+
+        public ExprTableEvalStrategyUngroupedTopLevel(
+            TableAndLockProviderUngrouped provider,
+            IDictionary<string, TableMetadataColumn> items)
+            : base(provider)
         {
-            _items = items;
+            this.items = items;
         }
-    
+
         public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             var @event = LockTableReadAndGet(context);
-            if (@event == null) {
+            if (@event == null)
+            {
                 return null;
             }
             var row = ExprTableEvalStrategyUtil.GetRow(@event);
-            return ExprTableEvalStrategyUtil.EvalMap(@event, row, _items, eventsPerStream, isNewData, context);
+            return ExprTableEvalStrategyUtil.EvalMap(@event, row, items, eventsPerStream, isNewData, context);
         }
-    
+
         public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             var @event = LockTableReadAndGet(context);
-            if (@event == null) {
+            if (@event == null)
+            {
                 return null;
             }
             var row = ExprTableEvalStrategyUtil.GetRow(@event);
-            return ExprTableEvalStrategyUtil.EvalTypable(@event, row, _items, eventsPerStream, isNewData, context);
+            return ExprTableEvalStrategyUtil.EvalTypable(@event, row, items, eventsPerStream, isNewData, context);
         }
-    
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
-    
+
         public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             return null;
         }
-    
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
     }
-}
+} // end of namespace

@@ -41,8 +41,8 @@ namespace com.espertech.esper.core.context.factory
         private readonly NamedWindowProcessor _processor;
     
         private readonly SubordinateWMatchExprQueryPlanResult _queryPlan;
-    
-        public StatementAgentInstanceFactoryOnTriggerNamedWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, ExprNode validatedJoin, ResultSetProcessorFactoryDesc outputResultSetProcessorPrototype, NamedWindowOnExprFactory onExprFactory, OutputProcessViewFactory outputProcessViewFactory, EventType activatorResultEventType, NamedWindowProcessor processor)
+
+        public StatementAgentInstanceFactoryOnTriggerNamedWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, ExprNode validatedJoin, ResultSetProcessorFactoryDesc outputResultSetProcessorPrototype, NamedWindowOnExprFactory onExprFactory, OutputProcessViewFactory outputProcessViewFactory, EventType activatorResultEventType, NamedWindowProcessor processor, IList<StopCallback> stopCallbacks)
             : base(statementContext, statementSpec, services, activator, subSelectStrategyCollection)    
         {
             _resultSetProcessorPrototype = resultSetProcessorPrototype;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.core.context.factory
                     processor.OptionalUniqueKeyProps, false, statementContext.StatementName, statementContext.StatementId, statementContext.Annotations);
             if (_queryPlan.IndexDescs != null) {
                 SubordinateQueryPlannerUtil.AddIndexMetaAndRef(_queryPlan.IndexDescs, processor.EventTableIndexMetadataRepo, statementContext.StatementName);
-                statementContext.StatementStopService.StatementStopped += () =>
+                stopCallbacks.Add(new ProxyStopCallback(() =>
                 {
                     for (int i = 0; i < _queryPlan.IndexDescs.Length; i++) {
                         bool last = processor.EventTableIndexMetadataRepo.RemoveIndexReference(_queryPlan.IndexDescs[i].IndexMultiKey, statementContext.StatementName);
@@ -70,16 +70,16 @@ namespace com.espertech.esper.core.context.factory
                             processor.RemoveAllInstanceIndexes(_queryPlan.IndexDescs[i].IndexMultiKey);
                         }
                     }
-                };
+                }));
             }
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(processor.RootView.IsQueryPlanLogging, NamedWindowRootView.QueryPlanLog,
                     _queryPlan, statementContext.Annotations);
         }
-    
-        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks)
+
+        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient)
         {
             // get result set processor and aggregation services
-            Pair<ResultSetProcessor, AggregationService> pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext);
+            Pair<ResultSetProcessor, AggregationService> pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext, false, null);
     
             // get named window processor instance
             NamedWindowProcessorInstance processorInstance = _processor.GetProcessorInstance(agentInstanceContext);
@@ -87,7 +87,7 @@ namespace com.espertech.esper.core.context.factory
             // obtain on-expr view
             EventTable[] indexes = null;
             if (_queryPlan.IndexDescs != null) {
-                indexes = SubordinateQueryPlannerUtil.RealizeTables(_queryPlan.IndexDescs, _processor.NamedWindowType, processorInstance.RootViewInstance.IndexRepository, processorInstance.RootViewInstance.DataWindowContents);
+                indexes = SubordinateQueryPlannerUtil.RealizeTables(_queryPlan.IndexDescs, _processor.NamedWindowType, processorInstance.RootViewInstance.IndexRepository, processorInstance.RootViewInstance.DataWindowContents, processorInstance.TailViewInstance.AgentInstanceContext, isRecoveringResilient);
             }
             SubordWMatchExprLookupStrategy strategy = _queryPlan.Factory.Realize(indexes, agentInstanceContext, processorInstance.RootViewInstance.DataWindowContents, processorInstance.RootViewInstance.VirtualDataWindow);
             NamedWindowOnExprBaseView onExprBaseView = _onExprFactory.Make(strategy, processorInstance.RootViewInstance, agentInstanceContext, pair.First);

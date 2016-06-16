@@ -224,6 +224,11 @@ namespace com.espertech.esper.regression.epl
             public Map Props { get; set; }
 
             public object[] Array { get; set; }
+
+            public object GetArray(int index)
+            {
+                return Array[index];
+            }
         }
     }
 }

@@ -29,10 +29,16 @@ namespace com.espertech.esper.core.context.stmt
         AIRegistryMatchRecognizePrevious AllocateMatchRecognizePrevious();
         AIRegistryTableAccess AllocateTableAccess(ExprTableAccessNode tableNode);
 
+        AIRegistryPrior GetOrAllocatePrior(ExprPriorNode key);
+        AIRegistryPrevious GetOrAllocatePrevious(ExprPreviousNode key);
+        AIRegistrySubselect GetOrAllocateSubquery(ExprSubselectNode key);
+        AIRegistryAggregation GetOrAllocateSubselectAggregation(ExprSubselectNode exprSubselectNode);
+
         int SubselectAgentInstanceCount { get; }
         int PreviousAgentInstanceCount { get; }
         int PriorAgentInstanceCount { get; }
 
         void DeassignService(int agentInstanceId);
+
     }
 }

@@ -6,11 +6,51 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.util
 {
     /// <summary>
-    ///  General pupose callback to Stop a resource and free it's underlying resources.
+    ///  General purpose callback to Stop a resource and free it's underlying resources.
     /// </summary>
 
-    public delegate void StopCallback();
+    public interface StopCallback
+    {
+        void Stop();
+    }
+
+    public class ProxyStopCallback : StopCallback
+    {
+        public Action ProcStop;
+
+        public ProxyStopCallback() { }
+        public ProxyStopCallback(Action procStop)
+        {
+            ProcStop = procStop;
+        }
+
+        public void Stop()
+        {
+            ProcStop.Invoke();
+        }
+
+        private bool Equals(ProxyStopCallback other)
+        {
+            return Equals(ProcStop, other.ProcStop);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            return obj is ProxyStopCallback && Equals((ProxyStopCallback) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (ProcStop != null ? ProcStop.GetHashCode() : 0);
+        }
+    }
 }

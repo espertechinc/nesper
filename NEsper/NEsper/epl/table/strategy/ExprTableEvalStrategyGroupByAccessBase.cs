@@ -6,17 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
-using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.table.strategy
 {
@@ -31,8 +27,8 @@ namespace com.espertech.esper.epl.table.strategy
         public abstract EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
         public abstract ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
 
-        protected ExprTableEvalStrategyGroupByAccessBase(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, AggregationAccessorSlotPair pair)
-            : base(@lock, aggregationState)
+        protected ExprTableEvalStrategyGroupByAccessBase(TableAndLockProviderGrouped provider, AggregationAccessorSlotPair pair)
+            : base(provider)
         {
             _pair = pair;
         }

@@ -19,6 +19,7 @@ using com.espertech.esper.epl.annotation;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
+using com.espertech.esper.support.util;
 
 using NUnit.Framework;
 
@@ -32,6 +33,58 @@ namespace com.espertech.esper.regression.client
         private readonly String NEWLINE = Environment.NewLine;
 
         private EPServiceProvider _epService;
+
+        [MyAnnotationValueEnum(SupportEnum = SupportEnum.ENUM_VALUE_1)]
+        [Test]
+        public void TestAnnotationSpecificImport()
+        {
+            Configuration configuration = SupportConfigFactory.GetConfiguration();
+            configuration.AddImport<MyAnnotationValueEnumAttribute>();
+            configuration.AddAnnotationImport<SupportEnum>();
+            configuration.AddEventType<SupportBean>();
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            _epService.Initialize();
+
+            RunAssertionAnnoImportValidate(_epService);
+
+            RunAssertionNoClassNameRequired(_epService);
+        }
+
+        private void RunAssertionNoClassNameRequired(EPServiceProvider epService)
+        {
+            TryAssertionNoClassNameRequired(epService, SupportEnum.ENUM_VALUE_2, "ENUM_VALUE_2");
+            TryAssertionNoClassNameRequired(epService, SupportEnum.ENUM_VALUE_3, "ENUM_value_3");
+            TryAssertionNoClassNameRequired(epService, SupportEnum.ENUM_VALUE_1, "enum_value_1");
+        }
+
+        private void TryAssertionNoClassNameRequired(EPServiceProvider epService, SupportEnum expected, String text)
+        {
+            var stmt = epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(supportEnum = " + text + ") select * from SupportBean");
+            var anno = (MyAnnotationValueEnumAttribute) stmt.Annotations.First();
+            Assert.That(expected, Is.EqualTo(anno.SupportEnum));
+        }
+
+        private void RunAssertionAnnoImportValidate(EPServiceProvider epService)
+        {
+            // init-time import
+            epService.EPAdministrator.CreateEPL(
+                "@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_1) " +
+                "select * from SupportBean");
+
+            // try invalid annotation not yet imported
+            String epl = "@MyAnnotationValueEnumTwoAttribute(supportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
+            SupportMessageAssertUtil.TryInvalid(epService, epl, "Failed to process statement annotations: Failed to resolve @-annotation");
+
+            // runtime import
+            epService.EPAdministrator.Configuration.AddAnnotationImport<MyAnnotationValueEnumTwoAttribute>();
+            epService.EPAdministrator.CreateEPL(epl);
+
+            // try invalid use : these are annotation-specific imports of an annotation and an enum
+            SupportMessageAssertUtil.TryInvalid(epService, "select * from MyAnnotationValueEnumTwoAttribute",
+                    "Failed to resolve event type: Event type or class named");
+            SupportMessageAssertUtil.TryInvalid(epService, "select SupportEnum.ENUM_VALUE_1 from SupportBean",
+                    "Error starting statement: Failed to validate select-clause expression 'SupportEnum.ENUM_VALUE_1'");
+        }
 
         [Test]
         public void TestInvalid()
@@ -370,7 +423,7 @@ namespace com.espertech.esper.regression.client
             {
                 var innerStmt = _epService.EPAdministrator.CreateEPL(testdata[i][0]) as EPStatementSPI;
                 Assert.That(innerStmt, Is.Not.Null);
-                Assert.AreEqual(testdata[i][1], innerStmt.ExpressionNoAnnotations, "Error on " + testdata[i][0]);
+                Assert.AreEqual(RemoveNewlines(testdata[i][1]), RemoveNewlines(innerStmt.ExpressionNoAnnotations), "Error on " + testdata[i][0]);
                 Assert.IsFalse(innerStmt.IsNameProvided);
             }
 
@@ -432,6 +485,11 @@ namespace com.espertech.esper.regression.client
                 result[ii] = array[ii];
             }
             return result;
+        }
+
+        private String RemoveNewlines(String text)
+        {
+            return text.Replace("\n", "").Replace("\r", "");
         }
     }
 }

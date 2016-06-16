@@ -327,7 +327,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        return result;
 	    }
 
-	    public static ExprDotEnumerationSource GetEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService, EventAdapterService eventAdapterService, string statementId, bool hasEnumerationMethod, bool disablePropertyExpressionEventCollCache)
+	    public static ExprDotEnumerationSource GetEnumerationSource(ExprNode inputExpression, StreamTypeService streamTypeService, EventAdapterService eventAdapterService, int statementId, bool hasEnumerationMethod, bool disablePropertyExpressionEventCollCache)
         {
 	        var rootNodeEvaluator = inputExpression.ExprEvaluator;
 	        ExprEvaluatorEnumeration rootLambdaEvaluator = null;

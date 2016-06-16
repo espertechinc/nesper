@@ -51,7 +51,7 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRandomAccess randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
             return new TimeWindowView(agentInstanceViewFactoryContext, this, _timeDeltaComputation, randomAccess);
         }
 

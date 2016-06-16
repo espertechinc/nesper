@@ -56,7 +56,7 @@ namespace com.espertech.esper.multithread
                 "select sa.Id,sb.Id,sc.Id,sd.Id from pattern [(sa=S0(Id=8)->sb=S0(Id=9)) or (sc=S0(Id=9)->sd=S0(Id=8))]"
             };
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++)
             {
                 var listener = new SupportMTUpdateListener();
                 var stmts = new EPStatement[epls.Length];

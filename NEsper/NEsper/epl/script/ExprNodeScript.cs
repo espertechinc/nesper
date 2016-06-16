@@ -184,7 +184,7 @@ namespace com.espertech.esper.epl.script
 
             try
             {
-                return validationContext.MethodResolutionService.ResolveType(returnTypeName);
+                return validationContext.MethodResolutionService.ResolveType(returnTypeName, false);
             }
             catch (EngineImportException e1)
             {

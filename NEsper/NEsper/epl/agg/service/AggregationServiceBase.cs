@@ -47,5 +47,7 @@ namespace com.espertech.esper.epl.agg.service
         public abstract void Accept(AggregationServiceVisitor visitor);
         public abstract void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor);
         public abstract bool IsGrouped { get; }
+
+        public abstract void Stop();
     }
 }

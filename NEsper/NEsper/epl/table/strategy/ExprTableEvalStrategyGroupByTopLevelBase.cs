@@ -26,10 +26,10 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly IDictionary<String, TableMetadataColumn> _items;
 
-        protected ExprTableEvalStrategyGroupByTopLevelBase(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, IDictionary<String, TableMetadataColumn> items)
-            : base(@lock, aggregationState)
+        protected ExprTableEvalStrategyGroupByTopLevelBase(TableAndLockProviderGrouped provider, IDictionary<String, TableMetadataColumn> items)
+            : base(provider)
         {
-            this._items = items;
+            _items = items;
         }
 
         public abstract object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);

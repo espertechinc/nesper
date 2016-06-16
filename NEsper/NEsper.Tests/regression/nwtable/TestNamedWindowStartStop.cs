@@ -169,7 +169,7 @@ namespace com.espertech.esper.regression.nwtable
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"E3", 3});
             Assert.IsFalse(_listenerSelect.IsInvoked);
             EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "E3", 3 } });
-            EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] { new object[] { "E1", 1 } });
+            EPAssertionUtil.AssertPropsPerRow(stmtSelect.GetEnumerator(), fields, new object[][] { new object[] { "E3", 3 } });
     
             // stop and start consumer: should pick up last event
             stmtSelect.Stop();

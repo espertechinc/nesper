@@ -16,10 +16,10 @@ namespace com.espertech.esper.core.context.util
 {
     public interface ContextEnumeratorHandler
     {
-        IEnumerator<EventBean> GetEnumerator(String statementId);
-        IEnumerator<EventBean> GetSafeEnumerator(String statementId);
-        IEnumerator<EventBean> GetEnumerator(String statementId, ContextPartitionSelector selector);
-        IEnumerator<EventBean> GetSafeEnumerator(String statementId, ContextPartitionSelector selector);
+        IEnumerator<EventBean> GetEnumerator(int statementId);
+        IEnumerator<EventBean> GetSafeEnumerator(int statementId);
+        IEnumerator<EventBean> GetEnumerator(int statementId, ContextPartitionSelector selector);
+        IEnumerator<EventBean> GetSafeEnumerator(int statementId, ContextPartitionSelector selector);
 
     }
 }

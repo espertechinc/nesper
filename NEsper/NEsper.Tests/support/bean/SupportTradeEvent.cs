@@ -10,7 +10,8 @@ using System;
 
 namespace com.espertech.esper.support.bean
 {
-	public class SupportTradeEvent
+	[Serializable]
+    public class SupportTradeEvent
 	{
 	    private int _id;
         private String _userId;

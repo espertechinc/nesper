@@ -34,25 +34,25 @@ namespace com.espertech.esper.epl.join.plan
         {
             _types = new EventType[] { SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)) };
     
-            PropertyIndexedEventTableFactory factory = new PropertyIndexedEventTableFactory(1, _types[0], new String[] {"IntBoxed"}, false, null);
-            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables()[0];
+            var factory = new PropertyIndexedEventTableFactory(1, _types[0], new String[] {"IntBoxed"}, false, null);
+            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
         }
     
         [Test]
         public void TestLookup()
         {
-            List<QueryGraphValueEntryHashKeyed> keys = new List<QueryGraphValueEntryHashKeyed>();
+            var keys = new List<QueryGraphValueEntryHashKeyed>();
             keys.Add(new QueryGraphValueEntryHashKeyedProp(new ExprIdentNodeImpl(_types[0], "IntBoxed", 0), "IntBoxed"));
-            IndexedTableLookupPlanMulti spec = new IndexedTableLookupPlanMulti(0, 1, new TableLookupIndexReqKey("idx1"), keys);
+            var spec = new IndexedTableLookupPlanMulti(0, 1, new TableLookupIndexReqKey("idx1"), keys);
 
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexes = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
+            var indexes = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
             indexes[0] = new Dictionary<TableLookupIndexReqKey, EventTable>();
             indexes[1] = new Dictionary<TableLookupIndexReqKey, EventTable>();
             indexes[1][new TableLookupIndexReqKey("idx1")] = _propertyMapEventIndex;
     
-            JoinExecTableLookupStrategy lookupStrategy = spec.MakeStrategy("ABC", "001", null, indexes, _types, new VirtualDWView[2]);
+            var lookupStrategy = spec.MakeStrategy("ABC", 1, null, indexes, _types, new VirtualDWView[2]);
     
-            IndexedTableLookupStrategy strategy = (IndexedTableLookupStrategy) lookupStrategy;
+            var strategy = (IndexedTableLookupStrategy) lookupStrategy;
             Assert.AreEqual(_types[0], strategy.EventType);
             Assert.AreEqual(_propertyMapEventIndex, strategy.Index);
             Assert.IsTrue(Collections.AreEqual(new String[] {"IntBoxed"}, strategy.Properties));

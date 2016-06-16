@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
@@ -20,13 +17,14 @@ namespace com.espertech.esper.core.context.mgr
 {
     public class ContextControllerFactoryHelper
     {
-        public static ContextControllerFactory[] GetFactory(ContextControllerFactoryServiceContext serviceContext,
-                                                            ContextStateCache contextStateCache)
+        public static ContextControllerFactory[] GetFactory(
+            ContextControllerFactoryServiceContext serviceContext,
+            ContextStateCache contextStateCache)
         {
             if (!(serviceContext.Detail is ContextDetailNested))
             {
-                ContextControllerFactory factory = BuildContextFactory(
-                    serviceContext, serviceContext.ContextName, serviceContext.Detail, 1, null, contextStateCache);
+                var factory = BuildContextFactory(
+                    serviceContext, serviceContext.ContextName, serviceContext.Detail, 1, 1, null, contextStateCache);
                 factory.ValidateFactory();
                 return new ContextControllerFactory[]
                 {
@@ -37,18 +35,19 @@ namespace com.espertech.esper.core.context.mgr
         }
 
         private static ContextControllerFactory[] BuildNestedContextFactories(
-            ContextControllerFactoryServiceContext serviceContext, ContextStateCache contextStateCache)
+            ContextControllerFactoryServiceContext serviceContext,
+            ContextStateCache contextStateCache)
         {
             var nestedSpec = (ContextDetailNested) serviceContext.Detail;
             // determine nested filter use
             IDictionary<CreateContextDesc, IList<FilterSpecCompiled>> filtersPerNestedContext = null;
-            for (int i = 0; i < nestedSpec.Contexts.Count; i++)
+            for (var i = 0; i < nestedSpec.Contexts.Count; i++)
             {
-                CreateContextDesc contextParent = nestedSpec.Contexts[i];
-                for (int j = i + 1; j < nestedSpec.Contexts.Count; j++)
+                var contextParent = nestedSpec.Contexts[i];
+                for (var j = i + 1; j < nestedSpec.Contexts.Count; j++)
                 {
-                    CreateContextDesc contextControlled = nestedSpec.Contexts[j];
-                    IList<FilterSpecCompiled> specs = contextControlled.FilterSpecs;
+                    var contextControlled = nestedSpec.Contexts[j];
+                    var specs = contextControlled.FilterSpecs;
                     if (specs == null)
                     {
                         continue;
@@ -57,7 +56,7 @@ namespace com.espertech.esper.core.context.mgr
                     {
                         filtersPerNestedContext = new Dictionary<CreateContextDesc, IList<FilterSpecCompiled>>();
                     }
-                    IList<FilterSpecCompiled> existing = filtersPerNestedContext.Get(contextParent);
+                    var existing = filtersPerNestedContext.Get(contextParent);
                     if (existing != null)
                     {
                         existing.AddAll(specs);
@@ -70,11 +69,11 @@ namespace com.espertech.esper.core.context.mgr
             }
 
             // create contexts
-            ICollection<String> namesUsed = new HashSet<String>();
+            var namesUsed = new HashSet<string>();
             var hierarchy = new ContextControllerFactory[nestedSpec.Contexts.Count];
-            for (int i = 0; i < nestedSpec.Contexts.Count; i++)
+            for (var i = 0; i < nestedSpec.Contexts.Count; i++)
             {
-                CreateContextDesc context = nestedSpec.Contexts[i];
+                var context = nestedSpec.Contexts[i];
 
                 if (namesUsed.Contains(context.ContextName))
                 {
@@ -84,7 +83,7 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 namesUsed.Add(context.ContextName);
 
-                int nestingLevel = i + 1;
+                var nestingLevel = i + 1;
 
                 IList<FilterSpecCompiled> optFiltersNested = null;
                 if (filtersPerNestedContext != null)
@@ -93,8 +92,8 @@ namespace com.espertech.esper.core.context.mgr
                 }
 
                 hierarchy[i] = BuildContextFactory(
-                    serviceContext, context.ContextName, context.ContextDetail, nestingLevel, optFiltersNested,
-                    contextStateCache);
+                    serviceContext, context.ContextName, context.ContextDetail, nestingLevel, nestedSpec.Contexts.Count,
+                    optFiltersNested, contextStateCache);
                 hierarchy[i].ValidateFactory();
             }
             return hierarchy;
@@ -102,24 +101,29 @@ namespace com.espertech.esper.core.context.mgr
 
         private static ContextControllerFactory BuildContextFactory(
             ContextControllerFactoryServiceContext serviceContext,
-            String contextName,
+            string contextName,
             ContextDetail detail,
             int nestingLevel,
+            int numNestingLevels,
             IList<FilterSpecCompiled> optFiltersNested,
             ContextStateCache contextStateCache)
         {
-            var factoryContext = new ContextControllerFactoryContext(
-                serviceContext.ContextName, contextName, serviceContext.ServicesContext,
-                serviceContext.AgentInstanceContextCreate, nestingLevel, serviceContext.IsRecoveringResilient);
+            var factoryContext =
+                new ContextControllerFactoryContext(
+                    serviceContext.ContextName, contextName, serviceContext.ServicesContext,
+                    serviceContext.AgentInstanceContextCreate, nestingLevel, numNestingLevels,
+                    serviceContext.IsRecoveringResilient, contextStateCache);
             return BuildContextFactory(factoryContext, detail, optFiltersNested, contextStateCache);
         }
 
-        private static ContextControllerFactory BuildContextFactory(ContextControllerFactoryContext factoryContext,
-                                                                    ContextDetail detail,
-                                                                    IList<FilterSpecCompiled> optFiltersNested,
-                                                                    ContextStateCache contextStateCache)
+        private static ContextControllerFactory BuildContextFactory(
+            ContextControllerFactoryContext factoryContext,
+            ContextDetail detail,
+            IList<FilterSpecCompiled> optFiltersNested,
+            ContextStateCache contextStateCache)
         {
-            return factoryContext.ServicesContext.ContextControllerFactoryFactorySvc.Make(factoryContext, detail, optFiltersNested, contextStateCache);
+            return factoryContext.ServicesContext.ContextControllerFactoryFactorySvc.Make(
+                factoryContext, detail, optFiltersNested);
         }
     }
-}
+} // end of namespace

@@ -75,7 +75,7 @@ namespace com.espertech.esper.core.context.mgr
             get { return false; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _agentInstanceContextCreateContext.StatementContext.StatementId; }
         }

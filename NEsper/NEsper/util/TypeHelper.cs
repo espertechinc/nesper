@@ -2121,20 +2121,21 @@ namespace com.espertech.esper.util
         /// <param name="methodResolutionService">The method resolution service.</param>
         /// <param name="engineImportService">The engine import service.</param>
         /// <returns></returns>
-        public static Object ResolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService, EngineImportService engineImportService)
+        public static Object ResolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService, EngineImportService engineImportService, bool isAnnotation)
         {
-            Func<String, Type> methodResolution = null;
+            Func<string, bool, Type> methodResolution = null;
             if (methodResolutionService != null)
                 methodResolution = methodResolutionService.ResolveType;
 
-            Func<String, Type> engineResolution = null;
+            Func<string, bool, Type> engineResolution = null;
             if (engineImportService != null)
                 engineResolution = engineImportService.ResolveType;
 
             return ResolveIdentAsEnumConst(
                 constant,
                 methodResolution,
-                engineResolution);
+                engineResolution,
+                isAnnotation);
         }
 
         /// <summary>
@@ -2146,7 +2147,11 @@ namespace com.espertech.esper.util
         /// <param name="engineImportService">for engine-level use to resolve enums, can be null</param>
         /// <returns>null or enumeration value</returns>
         /// <throws>ExprValidationException if there is an error accessing the enum</throws>
-        public static Object ResolveIdentAsEnumConst(String constant, Func<String, Type> methodResolutionService, Func<String, Type> engineImportService)
+        public static Object ResolveIdentAsEnumConst(
+            string constant,
+            Func<string, bool, Type> methodResolutionService,
+            Func<string, bool, Type> engineImportService,
+            bool isAnnotation)
         {
             int lastDotIndex = constant.LastIndexOf('.');
             if (lastDotIndex == -1)
@@ -2158,17 +2163,15 @@ namespace com.espertech.esper.util
             var constName = constant.Substring(lastDotIndex + 1);
 
             // un-escape
-            if (constName.StartsWith("`") && constName.EndsWith("`"))
-            {
-                constName = constName.Substring(1, constName.Length - 2);
-            }
+            className = Unescape(className);
+            constName = Unescape(constName);
 
             Type clazz;
             try
             {
                 clazz = engineImportService != null
-                    ? engineImportService.Invoke(className)
-                    : methodResolutionService.Invoke(className);
+                    ? engineImportService.Invoke(className, isAnnotation)
+                    : methodResolutionService.Invoke(className, isAnnotation);
             }
             catch (EngineImportException e)
             {
@@ -2299,7 +2302,7 @@ namespace com.espertech.esper.util
                     continue;
                 }
 
-                var hook = (HookAttribute)annotations[i];
+                var hook = (HookAttribute) annotations[i];
                 if (hook.Type != hookType)
                 {
                     continue;
@@ -2321,7 +2324,7 @@ namespace com.espertech.esper.util
                 }
                 else
                 {
-                    clazz = resolution.ResolveType(hookClass);
+                    clazz = resolution.ResolveType(hookClass, true);
                 }
             }
             catch (Exception e)
@@ -2714,6 +2717,15 @@ namespace com.espertech.esper.util
                 (clazzBoxed == typeof (DateTimeOffset?)) ||
                 (clazzBoxed == typeof (DateTime?)) ||
                 (clazzBoxed == typeof (long?));
+        }
+
+        private static String Unescape(String name)
+        {
+            if (name.StartsWith("`") && name.EndsWith("`"))
+            {
+                return name.Substring(1, name.Length - 2);
+            }
+            return name;
         }
 
         /// <summary>

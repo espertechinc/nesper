@@ -15,6 +15,8 @@ namespace com.espertech.esper.core.service
 {
     public interface EPContextPartitionAdminSPI : EPContextPartitionAdmin
     {
+        bool IsSupportsExtract { get; }
+
         EPContextPartitionExtract ExtractDestroyPaths(String contextName, ContextPartitionSelector selector);
         EPContextPartitionExtract ExtractStopPaths(String contextName, ContextPartitionSelector selector);
     

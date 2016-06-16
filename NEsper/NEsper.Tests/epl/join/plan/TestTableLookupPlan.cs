@@ -28,10 +28,10 @@ namespace com.espertech.esper.epl.join.plan
         {
             var indexesPerStream = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
             indexesPerStream[1] = new HashMap<TableLookupIndexReqKey, EventTable>();
-            indexesPerStream[1].Put(new TableLookupIndexReqKey("idx1"), new UnindexedEventTable(0));
+            indexesPerStream[1].Put(new TableLookupIndexReqKey("idx1"), new UnindexedEventTableImpl(0));
 
             var spec = new TableLookupNode(new FullTableScanLookupPlan(0, 1, new TableLookupIndexReqKey("idx1")));
-            var execNode = spec.MakeExec("ABC", "001", null, indexesPerStream, null, new Viewable[2], null, new VirtualDWView[2], new ILockable[2]);
+            var execNode = spec.MakeExec("ABC", 1, null, indexesPerStream, null, new Viewable[2], null, new VirtualDWView[2], new ILockable[2]);
             var exec = (TableLookupExecNode)execNode;
 
             Assert.AreSame(indexesPerStream[1].Get(new TableLookupIndexReqKey("idx1")), ((FullTableScanLookupStrategy)exec.LookupStrategy).EventIndex);

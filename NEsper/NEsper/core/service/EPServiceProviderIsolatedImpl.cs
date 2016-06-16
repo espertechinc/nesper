@@ -22,26 +22,27 @@ namespace com.espertech.esper.core.service
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly String _name;
-        private readonly EPRuntimeIsolatedImpl _runtime;
+        private readonly EPRuntimeIsolatedSPI _runtime;
         private readonly EPAdministratorIsolatedImpl _admin;
         private readonly EPIsolationUnitServices _isolatedServices;
         private readonly IDictionary<String, EPServiceProviderIsolatedImpl> _providers;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="name">name of isolated service</param>
         /// <param name="isolatedServices">filter and scheduling service isolated</param>
         /// <param name="unisolatedSvc">engine services</param>
         /// <param name="providers">names and isolated service providers</param>
-        public EPServiceProviderIsolatedImpl(String name,
-                                             EPIsolationUnitServices isolatedServices,
-                                             EPServicesContext unisolatedSvc,
-                                             IDictionary<String, EPServiceProviderIsolatedImpl> providers)
+        public EPServiceProviderIsolatedImpl(
+            String name,
+            EPIsolationUnitServices isolatedServices,
+            EPServicesContext unisolatedSvc,
+            IDictionary<String, EPServiceProviderIsolatedImpl> providers)
         {
             _name = name;
             _providers = providers;
             _isolatedServices = isolatedServices;
-    
-            _runtime = new EPRuntimeIsolatedImpl(isolatedServices, unisolatedSvc);
+
+            _runtime = unisolatedSvc.EpRuntimeIsolatedFactory.Make(isolatedServices, unisolatedSvc);
             _admin = new EPAdministratorIsolatedImpl(name, isolatedServices, unisolatedSvc, _runtime);
         }
 

@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp() {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType(typeof(SupportBeanInt));
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddImport(typeof(SupportJoinMethods).FullName);
             config.AddVariable("var1", typeof(int), 0);
             config.AddVariable("var2", typeof(int), 0);

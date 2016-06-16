@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.join.exec.composite
             CompositeIndexLookup last = null;
             foreach (CompositeIndexLookup action in queries) {
                 if (last != null) {
-                    last.Next = action;
+                    last.SetNext(action);
                 }
                 last = action;
             }

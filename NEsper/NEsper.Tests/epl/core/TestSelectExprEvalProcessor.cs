@@ -14,6 +14,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
@@ -24,6 +25,8 @@ using com.espertech.esper.support.epl;
 using com.espertech.esper.support.events;
 
 using NUnit.Framework;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -42,13 +45,21 @@ namespace com.espertech.esper.epl.core
 	        var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
             MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(SupportEngineImportServiceFactory.Make(), null);
 
-	        _methodOne = new SelectExprProcessorHelper(Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null, new Configuration(), null, new TableServiceImpl());
+            _methodOne = new SelectExprProcessorHelper(
+                Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(), null,
+                null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService,
+                selectExprEventTypeRegistry, methodResolutionService, 1, null, new Configuration(), null,
+                new TableServiceImpl(), null);
 
 	        var insertIntoDesc = new InsertIntoDesc(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "Hello");
 	        insertIntoDesc.Add("a");
 	        insertIntoDesc.Add("b");
 
-	        _methodTwo = new SelectExprProcessorHelper(Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(), insertIntoDesc, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry, methodResolutionService, null, null, new Configuration(), null, new TableServiceImpl());
+            _methodTwo = new SelectExprProcessorHelper(
+                Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(),
+                insertIntoDesc, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService,
+                selectExprEventTypeRegistry, methodResolutionService, 1, null, new Configuration(), null,
+                new TableServiceImpl(), null);
 	    }
 
         [Test]

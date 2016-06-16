@@ -137,7 +137,7 @@ namespace com.espertech.esper.epl.variable
 
         String IsContextVariable(String propertyName);
 
-        void AllocateVariableState(String variableName, int agentInstanceId, StatementExtensionSvcContext extensionServicesContext);
+        void AllocateVariableState(String variableName, int agentInstanceId, StatementExtensionSvcContext extensionServicesContext, bool isRecoveringResilient);
         void DeallocateVariableState(String variableName, int agentInstanceId);
 
         ConcurrentDictionary<int, VariableReader> GetReadersPerCP(String variableName);

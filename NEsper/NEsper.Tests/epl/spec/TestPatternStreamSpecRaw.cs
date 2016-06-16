@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.filter;
@@ -211,7 +212,7 @@ namespace com.espertech.esper.epl.spec
     
         private PatternStreamSpecCompiled Compile(PatternStreamSpecRaw raw)
         {
-            return raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false)
+            return raw.Compile(SupportStatementContextFactory.MakeContext(), new HashSet<String>(), false, Collections.GetEmptyList<int>(), false, false, false, null)
                     as PatternStreamSpecCompiled;
         }
     

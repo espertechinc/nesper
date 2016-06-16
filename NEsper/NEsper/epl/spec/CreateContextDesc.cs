@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.spec
 
         public IList<FilterSpecCompiled> FilterSpecs
         {
-            get { return ContextDetail.FilterSpecsIfAny; }
+            get { return ContextDetail.ContextDetailFilterSpecs; }
         }
     }
 }

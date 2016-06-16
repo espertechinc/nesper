@@ -114,15 +114,15 @@ namespace com.espertech.esper.epl.join.table
                     var streamNum = streamViewStreamNum;
                     _masterIndexingStrategy = new ProxyPollResultIndexingStrategy
                     {
-                        ProcIndex = (pollResult, isActiveCache) =>
+                        ProcIndex = (pollResult, isActiveCache, statementContext) =>
                         {
                             var tables = new EventTable[numIndexes];
                             for (var i = 0; i < numIndexes; i++)
                             {
-                                tables[i] = indexingStrategies[i].Index(pollResult, isActiveCache)[0];
+                                tables[i] = indexingStrategies[i].Index(pollResult, isActiveCache, statementContext)[0];
                             }
     
-                            var organization = new EventTableOrganization(null, false, false, streamNum, null, EventTableOrganization.EventTableOrganizationType.MULTIINDEX);
+                            var organization = new EventTableOrganization(null, false, false, streamNum, null, EventTableOrganizationType.MULTIINDEX);
                             return new EventTable[]
                             {
                                 new MultiIndexEventTable(tables, organization)

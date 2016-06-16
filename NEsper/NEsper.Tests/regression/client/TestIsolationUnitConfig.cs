@@ -23,8 +23,8 @@ namespace com.espertech.esper.regression.client
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_A>();
             configuration.EngineDefaults.ViewResourcesConfig.IsShareViews = false;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();

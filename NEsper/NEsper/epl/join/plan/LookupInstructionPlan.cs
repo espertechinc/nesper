@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.join.plan
         /// <param name="historicalStreamIndexLists">index management for historical streams</param>
         /// <param name="viewExternal">The view external.</param>
         /// <returns></returns>
-        public LookupInstructionExec MakeExec(String statementName, String statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal)
+        public LookupInstructionExec MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal)
         {
             JoinExecTableLookupStrategy[] strategies = new JoinExecTableLookupStrategy[_lookupPlans.Length];
             for (int i = 0; i < _lookupPlans.Length; i++)

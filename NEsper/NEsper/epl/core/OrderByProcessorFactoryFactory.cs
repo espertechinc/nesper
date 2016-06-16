@@ -54,7 +54,7 @@ namespace com.espertech.esper.epl.core
             // No order-by clause
     		if(orderByList.IsEmpty())
     		{
-    			Log.Debug(".getProcessor Using no OrderByProcessor");
+    			Log.Debug(".getProcessor Using no _orderByProcessor");
                 if (rowLimitSpec != null)
                 {
                     var rowLimitProcessorFactory = new RowLimitProcessorFactory(rowLimitSpec, variableService, optionalContextName);

@@ -76,8 +76,10 @@ namespace com.espertech.esper.regression.client
             TryCompile("insert into into",
                        "Incorrect syntax near 'into' (a reserved keyword) at line 1 column 12 [insert into into]");
 
-            TryCompile("select prior(A, x) from A",
-                       "Incorrect syntax near '(' ('prior' is a reserved keyword) at line 1 column 12 [");
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            SupportMessageAssertUtil.TryInvalid(
+                _epService, "on SupportBean select 1",
+                "Error starting statement: Required insert-into clause is not provided, the clause is required for split-stream syntax");
         }
     
         private void TryCompile(String expression, String expectedMsg)

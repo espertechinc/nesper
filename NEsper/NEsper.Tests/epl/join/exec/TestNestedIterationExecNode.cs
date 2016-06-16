@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.join.exec
             UnindexedEventTable[] indexes = new UnindexedEventTable[4];
             for (int i = 0; i < indexes.Length; i++)
             {
-                indexes[i] = new UnindexedEventTable(0);
+                indexes[i] = new UnindexedEventTableImpl(0);
             }
     
             _exec = new NestedIterationExecNode(new int[] {3, 0, 1});

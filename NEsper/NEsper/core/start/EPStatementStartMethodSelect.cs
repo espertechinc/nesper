@@ -6,14 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
-using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -26,7 +23,6 @@ using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.rowregex;
-using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.start
@@ -91,7 +87,7 @@ namespace com.espertech.esper.core.start
                     }
     
                     var subselectAggregation = aiRegistryExpr.AllocateSubselectAggregation(entry.Key);
-                    var strategyHolder = new SubSelectStrategyHolder(specificService, subselectAggregation, subselectPriorStrategies, subselectPreviousStrategies, null, null);
+                    var strategyHolder = new SubSelectStrategyHolder(specificService, subselectAggregation, subselectPriorStrategies, subselectPreviousStrategies, null, null, null);
                     subselectStrategyInstances.Put(entry.Key, strategyHolder);
                 }
     
@@ -129,25 +125,30 @@ namespace com.espertech.esper.core.start
                         selectDesc.SubSelectStrategyCollection);
                 services.ContextManagementService.AddStatement(contextName, statement, isRecoveringResilient);
                 var selectStop = selectDesc.StopMethod;
-                stopStatementMethod = () =>
+                stopStatementMethod = new ProxyEPStatementStopMethod(() =>
                 {
-                    services.ContextManagementService.StoppedStatement(contextName, statementContext.StatementName, statementContext.StatementId);
-                    selectStop.Invoke();
-                };
+                    services.ContextManagementService.StoppedStatement(
+                        contextName, 
+                        statementContext.StatementName, 
+                        statementContext.StatementId, 
+                        statementContext.Expression, 
+                        statementContext.ExceptionHandlingService);
+                    selectStop.Stop();
+                });
     
-                selectDesc.DestroyCallbacks.AddCallback(EPStatementDestroyCallbackContext.New(services.ContextManagementService, contextName, statementContext.StatementName, statementContext.StatementId));
+                selectDesc.DestroyCallbacks.AddCallback(new EPStatementDestroyCallbackContext(services.ContextManagementService, contextName, statementContext.StatementName, statementContext.StatementId));
             }
             // Without context - start here
             else {
                 var resultOfStart = (StatementAgentInstanceFactorySelectResult) selectDesc.StatementAgentInstanceFactorySelect.NewContext(defaultAgentInstanceContext, isRecoveringResilient);
                 finalViewable = resultOfStart.FinalView;
+                var startResultStop = services.EpStatementFactory.MakeStopMethod(resultOfStart);
                 var selectStop = selectDesc.StopMethod;
-                var startResultStop = resultOfStart.StopCallback;
-                stopStatementMethod = () =>
+                stopStatementMethod = new ProxyEPStatementStopMethod(() =>
                 {
                     StatementAgentInstanceUtil.StopSafe(startResultStop, statementContext);
-                    selectStop.Invoke();
-                };
+                    selectStop.Stop();
+                });
                 aggregationService = resultOfStart.OptionalAggegationService;
                 subselectStrategyInstances = resultOfStart.SubselectStrategies;
                 priorStrategyInstances = resultOfStart.PriorNodeStrategies;
@@ -191,7 +192,7 @@ namespace com.espertech.esper.core.start
                 services.StatementVariableRefService.AddReferences(statementContext.StatementName, StatementSpec.IntoTableSpec.Name);
             }
     
-            return new EPStatementStartResult(finalViewable, stopStatementMethod, selectDesc.DestroyCallbacks.Destroy);
+            return new EPStatementStartResult(finalViewable, stopStatementMethod, selectDesc.DestroyCallbacks);
         }
     
         private void ValidateTableAccessUse(IntoTableSpec bindingSpec, ExprTableAccessNode[] tableNodes)

@@ -16,14 +16,15 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.view.std
 {
     /// <summary>
     /// Factory for <seealso cref="GroupByView"/> instances.
     /// </summary>
-    public class GroupByViewFactory : ViewFactory, GroupByViewFactoryMarker
+    public class GroupByViewFactory 
+        : ViewFactory
+        , GroupByViewFactoryMarker
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
@@ -35,9 +36,10 @@ namespace com.espertech.esper.view.std
     
         private EventType _eventType;
     
-        protected bool IsReclaimAged;
-        protected double ReclaimMaxAge;
-        protected double ReclaimFrequency;
+        private bool _isReclaimAged;
+
+        private double _reclaimMaxAge;
+        private double _reclaimFrequency;
     
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
@@ -46,14 +48,14 @@ namespace com.espertech.esper.view.std
             var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(viewFactoryContext.StatementContext.Annotations);
     
             if (reclaimGroupAged != null) {
-                IsReclaimAged = true;
+                _isReclaimAged = true;
                 String hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueMaxAge == null)
                 {
                     throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' has not been provided");
                 }
                 try {
-                    ReclaimMaxAge = Double.Parse(hintValueMaxAge);
+                    _reclaimMaxAge = Double.Parse(hintValueMaxAge);
                 }
                 catch (Exception) {
                     throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' value '" + hintValueMaxAge + "' could not be parsed as a double value");
@@ -62,22 +64,22 @@ namespace com.espertech.esper.view.std
                 String hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueFrequency == null)
                 {
-                    ReclaimFrequency = ReclaimMaxAge;
+                    _reclaimFrequency = _reclaimMaxAge;
                 }
                 else {
                     try {
-                        ReclaimFrequency = Double.Parse(hintValueFrequency);
+                        _reclaimFrequency = Double.Parse(hintValueFrequency);
                     }
                     catch (Exception) {
                         throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
                     }
                 }
-                if (ReclaimMaxAge < 0.100) {
+                if (_reclaimMaxAge < 0.100) {
                     Log.Warn("Reclaim max age parameter is less then 100 milliseconds, are your sure?");
                 }
     
                 if (Log.IsDebugEnabled) {
-                    Log.Debug("Using reclaim-aged strategy for group-window age " + ReclaimMaxAge + " frequency " + ReclaimFrequency);
+                    Log.Debug("Using reclaim-aged strategy for group-window age " + _reclaimMaxAge + " frequency " + _reclaimFrequency);
                 }
             }
         }
@@ -105,7 +107,7 @@ namespace com.espertech.esper.view.std
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             if (IsReclaimAged) {
-                return new GroupByViewReclaimAged(agentInstanceViewFactoryContext, _criteriaExpressions, ExprNodeUtility.GetEvaluators(_criteriaExpressions), ReclaimMaxAge, ReclaimFrequency);
+                return new GroupByViewReclaimAged(agentInstanceViewFactoryContext, _criteriaExpressions, ExprNodeUtility.GetEvaluators(_criteriaExpressions), _reclaimMaxAge, _reclaimFrequency);
             }
             return new GroupByViewImpl(agentInstanceViewFactoryContext, _criteriaExpressions, ExprNodeUtility.GetEvaluators(_criteriaExpressions));
         }
@@ -135,9 +137,19 @@ namespace com.espertech.esper.view.std
             return true;
         }
 
-        public bool IsRetainAged
+        public bool IsReclaimAged
         {
-            get { return IsReclaimAged; }
+            get { return _isReclaimAged; }
+        }
+
+        public double ReclaimMaxAge
+        {
+            get { return _reclaimMaxAge; }
+        }
+
+        public double ReclaimFrequency
+        {
+            get { return _reclaimFrequency; }
         }
 
         public string ViewName

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
@@ -31,12 +32,6 @@ namespace com.espertech.esper.collection
         #endregion
 
         private IDictionary<String, EventBean> _events;
-
-        private void CheckResults(IEnumerable<IEnumerable<EventBean>> enumerableList, EventBean[] expectedValues)
-        {
-            var iterator = new IterablesListIterator(enumerableList);
-            EPAssertionUtil.AssertEqualsExactOrder(expectedValues, iterator);
-        }
 
         [Test]
         public void TestIterator()
@@ -109,7 +104,7 @@ namespace com.espertech.esper.collection
         {
             IList<IEnumerable<EventBean>> enumerableList = new List<IEnumerable<EventBean>>();
             enumerableList.Add(EventFactoryHelper.MakeList(_events, new[] {"a", "b", "c"}));
-            var enumerator = new IterablesListIterator(enumerableList);
+            var enumerator = enumerableList.SelectMany(e => e).GetEnumerator();
 
             try {
                 enumerator.Reset();
@@ -118,6 +113,12 @@ namespace com.espertech.esper.collection
             catch (NotSupportedException ex) {
                 // Expected
             }
+        }
+
+        private void CheckResults(IEnumerable<IEnumerable<EventBean>> enumerableList, EventBean[] expectedValues)
+        {
+            var iterator = enumerableList.SelectMany(e => e).GetEnumerator();
+            EPAssertionUtil.AssertEqualsExactOrder(expectedValues, iterator);
         }
     }
 }

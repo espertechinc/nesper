@@ -9,9 +9,8 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.start;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.baseagg;
@@ -31,6 +30,8 @@ using com.espertech.esper.timer;
 using com.espertech.esper.type;
 using com.espertech.esper.view;
 using com.espertech.esper.view.window;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.support.epl
 {
@@ -408,16 +409,16 @@ namespace com.espertech.esper.support.epl
 
 	        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
 	        variableService.CreateNewVariable(null, "IntPrimitive", typeof(int?).FullName, false, false, false, 10, null);
-	        variableService.AllocateVariableState("IntPrimitive", 0, null);
+	        variableService.AllocateVariableState("IntPrimitive", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
 	        variableService.CreateNewVariable(null, "var1", typeof(string).FullName, false, false, false, "my_variable_value", null);
-	        variableService.AllocateVariableState("var1", 0, null);
+            variableService.AllocateVariableState("var1", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
 
 	        ExprNodeUtility.GetValidatedSubtree(
 	            ExprNodeOrigin.SELECT, topNode, new ExprValidationContext(
 	                streamTypeService, MethodResService, viewResources,
                     null, variableService, null,
 	                new SupportExprEvaluatorContext(null),
-	                null, null, null, null, null, null,
+	                null, null, 1, null, null, null,
                     false, false, false, false, null, false));
 	    }
 

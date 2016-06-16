@@ -299,6 +299,18 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, new object[][] { new[] { "I" }, new[] { "am" }, new[] { "testing" }, new[] { "this" } });
 	    }
 
+        [Test]
+        public void TestArrayProperty()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<MyBeanWithArray>();
+            _epService.EPAdministrator.CreateEPL("create objectarray schema ContainedId(id string)");
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL("select * from MyBeanWithArray[select topId, * from containedIds @type(ContainedId)]");
+            stmt.AddListener(_listener);
+            _epService.EPRuntime.SendEvent(new MyBeanWithArray("A", "one,two,three".SplitCsv()));
+            EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), "topId,id".SplitCsv(),
+                    new Object[][] { new object[] { "A", "one" }, new object[] { "A", "two" }, new object[] { "A", "three" } });
+        }
+
 	    public static OrderBean MakeEventOne()
 	    {
 	        Order order = new Order("PO200901",
@@ -371,6 +383,19 @@ namespace com.espertech.esper.regression.view
                     new BookDesc("10022", "Stranger in a Strange Land", "Robert A Heinlein", 27.00d, new Review[0])
                 };
             }
+        }
+
+        public class MyBeanWithArray
+        {
+            public MyBeanWithArray(String topId, String[] containedIds)
+            {
+                TopId = topId;
+                ContainedIds = containedIds;
+            }
+
+            public string TopId { get; private set; }
+
+            public string[] ContainedIds { get; private set; }
         }
 	}
 } // end of namespace

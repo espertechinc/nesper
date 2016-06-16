@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.join.@base
         private readonly bool _isOuterJoins;
 
         public JoinSetComposerFAFImpl(IDictionary<TableLookupIndexReqKey, EventTable>[] repositories, QueryStrategy[] queryStrategies, bool isPureSelfJoin, ExprEvaluatorContext exprEvaluatorContext, bool joinRemoveStream, bool outerJoins)
-            : base(repositories, queryStrategies, isPureSelfJoin, exprEvaluatorContext, joinRemoveStream)
+            : base(false, repositories, queryStrategies, isPureSelfJoin, exprEvaluatorContext, joinRemoveStream)
         {
             _isOuterJoins = outerJoins;
         }

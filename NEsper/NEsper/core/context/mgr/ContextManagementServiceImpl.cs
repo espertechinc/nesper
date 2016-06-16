@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
@@ -55,7 +56,8 @@ namespace com.espertech.esper.core.context.mgr
             get { return _contexts.Count; }
         }
 
-        public ContextDescriptor GetContextDescriptor(String contextName) {
+        public ContextDescriptor GetContextDescriptor(String contextName)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
             if (entry == null) {
                 return null;
@@ -63,15 +65,14 @@ namespace com.espertech.esper.core.context.mgr
             return entry.ContextManager.ContextDescriptor;
         }
     
-        public ContextManager GetContextManager(String contextName) {
+        public ContextManager GetContextManager(String contextName)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
-                return null;
-            }
-            return entry.ContextManager;
+            return entry == null ? null : entry.ContextManager;
         }
     
-        public void AddStatement(String contextName, ContextControllerStatementBase statement, bool isRecoveringResilient) {
+        public void AddStatement(String contextName, ContextControllerStatementBase statement, bool isRecoveringResilient)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
             if (entry == null) {
                 throw new ExprValidationException(GetNotDecaredText(contextName));
@@ -80,7 +81,8 @@ namespace com.espertech.esper.core.context.mgr
             entry.ContextManager.AddStatement(statement, isRecoveringResilient);
         }
     
-        public void DestroyedStatement(String contextName, String statementName, String statementId) {
+        public void DestroyedStatement(String contextName, String statementName, int statementId)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
             if (entry == null) {
                 Log.Warn("Dispose statement for statement '" + statementName + "' failed to locate corresponding context manager '" + contextName + "'");
@@ -93,8 +95,9 @@ namespace com.espertech.esper.core.context.mgr
                 DestroyContext(contextName, entry);
             }
         }
-    
-        public void StoppedStatement(String contextName, String statementName, String statementId) {
+
+        public void StoppedStatement(String contextName, String statementName, int statementId, String epl, ExceptionHandlingService exceptionHandlingService)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
             if (entry == null) {
                 Log.Warn("Stop statement for statement '" + statementName + "' failed to locate corresponding context manager '" + contextName + "'");
@@ -103,59 +106,46 @@ namespace com.espertech.esper.core.context.mgr
             try {
                 entry.ContextManager.StopStatement(statementName, statementId);
             }
-            catch (Exception ex) {
-                Log.Warn("Failed to stop statement '" + statementName + "' as related to context '" + contextName + "': " + ex.Message, ex);
+            catch (Exception ex)
+            {
+                exceptionHandlingService.HandleException(ex, statementName, epl, ExceptionHandlerExceptionType.STOP);
             }
         }
     
-        public void DestroyedContext(String contextName) {
+        public void DestroyedContext(String contextName)
+        {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
+            if (entry == null)
+            {
                 Log.Warn("Dispose for context '" + contextName + "' failed to locate corresponding context manager '" + contextName + "'");
                 return;
             }
-            if (entry.StatementCount == 0) {
+            if (entry.StatementCount == 0)
+            {
                 DestroyContext(contextName, entry);
             }
-            else {
+            else
+            {
                 // some remaining statements have references
                 _destroyedContexts.Add(contextName);
             }
         }
     
-        private void DestroyContext(String contextName, ContextManagerEntry entry) {
+        private void DestroyContext(String contextName, ContextManagerEntry entry)
+        {
             entry.ContextManager.SafeDestroy();
             _contexts.Remove(contextName);
             _destroyedContexts.Remove(contextName);
         }
-    
-        private String GetNotDecaredText(String contextName) {
-            return "Context by name '" + contextName + "' has not been declared";
-        }
-    
-        public class ContextManagerEntry
+
+        public IDictionary<string, ContextManagerEntry> Contexts
         {
-            private readonly ICollection<String> _referringStatements;
-    
-            public ContextManagerEntry(ContextManager contextManager) {
-                ContextManager = contextManager;
-                _referringStatements = new HashSet<String>();
-            }
+            get { return _contexts; }
+        }
 
-            public ContextManager ContextManager { get; private set; }
-
-            public void AddStatement(String statementId) {
-                _referringStatements.Add(statementId);
-            }
-
-            public int StatementCount
-            {
-                get { return _referringStatements.Count; }
-            }
-
-            public void RemoveStatement(String statementId) {
-                _referringStatements.Remove(statementId);
-            }
+        private String GetNotDecaredText(String contextName)
+        {
+            return "Context by name '" + contextName + "' has not been declared";
         }
     }
 }

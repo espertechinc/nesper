@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestThisAsColumn()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("create window OneWindow.win:time(1 day) as select TheString as alertId, this from SupportBean");
             _epService.EPAdministrator.CreateEPL("insert into OneWindow select '1' as alertId, stream0.quote.this as this " +

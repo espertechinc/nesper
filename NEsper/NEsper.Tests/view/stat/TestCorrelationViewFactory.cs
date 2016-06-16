@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.epl;
@@ -27,7 +28,7 @@ namespace com.espertech.esper.view.stat
 	public class TestCorrelationViewFactory 
 	{
 	    private CorrelationViewFactory factory;
-	    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(null, 1, 1, null, null);
+	    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(null, 1, null, null, false, -1, false);
 
         [SetUp]
 	    public void SetUp()
@@ -50,7 +51,7 @@ namespace com.espertech.esper.view.stat
         [Test]
 	    public void TestCanReuse()
 	    {
-	        factory.SetViewParameters(new ViewFactoryContext(null, 1, 1, null, null), TestViewSupport.ToExprListMD(new object[] {"Price", "Volume"}));
+	        factory.SetViewParameters(new ViewFactoryContext(null, 1, null, null, false, -1 , false), TestViewSupport.ToExprListMD(new object[] {"Price", "Volume"}));
 	        factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
 	        Assert.IsFalse(factory.CanReuse(new FirstElementView(null)));
 	        EventType type = CorrelationView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);

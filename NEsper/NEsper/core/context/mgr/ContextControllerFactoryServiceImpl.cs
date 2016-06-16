@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.context.mgr
 	        return ContextControllerFactoryHelper.GetFactory(serviceContext, _cache);
 	    }
 
-	    public ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, string contextStmtId) {
+	    public ContextPartitionIdManager AllocatePartitionIdMgr(string contextName, int contextStmtId) {
 	        return new ContextPartitionIdManagerImpl();
 	    }
 	}

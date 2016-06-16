@@ -34,13 +34,13 @@ namespace com.espertech.esper.regression.view
         {
             _testListener = new SupportUpdateListener();
             var config = new Configuration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             Assert.IsFalse(_epService.EPRuntime.IsExternalClockingEnabled);
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
         }
     
         [TearDown]

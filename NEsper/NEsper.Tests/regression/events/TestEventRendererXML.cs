@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.events
             bean.CharPrimitive = 'x';
             bean.EnumValue = SupportEnum.ENUM_VALUE_2;
 
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement statement = _epService.EPAdministrator.CreateEPL("select * from SupportBean");
             _epService.EPRuntime.SendEvent(bean);
 
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regression.events
         public void TestSQLDate()
         {
             // ESPER-469
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement statement = _epService.EPAdministrator.CreateEPL("select DateTime.Parse(\"2010-01-31\") as mySqlDate from SupportBean");
             _epService.EPRuntime.SendEvent(new SupportBean());
 

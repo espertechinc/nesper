@@ -26,5 +26,8 @@ namespace com.espertech.esper.epl.view
         /// <param name="newEventsCount">number of new events incoming</param>
         /// <param name="oldEventsCount">number of old events incoming</param>
         public abstract void UpdateOutputCondition(int newEventsCount, int oldEventsCount);
+
+        /// <summary>Stops this instance.</summary>
+        public abstract void Stop();
     }
 }

@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.script
             get { return _returnType; }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }
@@ -92,7 +92,7 @@ namespace com.espertech.esper.epl.script
 
             throw new ArgumentException("invalid result type returned from evaluate; expected array");        }
     
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }

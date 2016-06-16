@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.named
 {
 	/// <summary>
 	/// This view is hooked into a named window's view chain as the last view and handles dispatching of named window
-	/// insert and remove stream results via <seealso cref="com.espertech.esper.epl.named.NamedWindowService" /> to consuming statements.
+    /// insert and remove stream results via <seealso cref="com.espertech.esper.epl.named.NamedWindowMgmtService" /> to consuming statements.
 	/// </summary>
 	public class NamedWindowTailViewInstance
         : ViewSupport
@@ -33,15 +33,17 @@ namespace com.espertech.esper.epl.named
 	{
 	    private readonly NamedWindowRootViewInstance _rootViewInstance;
 	    private readonly NamedWindowTailView _tailView;
+        private readonly NamedWindowProcessor _namedWindowProcessor;
 	    private readonly AgentInstanceContext _agentInstanceContext;
 
 	    private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersInContext;  // handles as copy-on-write
 	    private long _numberOfEvents;
 
-	    public NamedWindowTailViewInstance(NamedWindowRootViewInstance rootViewInstance, NamedWindowTailView tailView, AgentInstanceContext agentInstanceContext)
+        public NamedWindowTailViewInstance(NamedWindowRootViewInstance rootViewInstance, NamedWindowTailView tailView, NamedWindowProcessor namedWindowProcessor, AgentInstanceContext agentInstanceContext)
         {
 	        _rootViewInstance = rootViewInstance;
 	        _tailView = tailView;
+            _namedWindowProcessor = namedWindowProcessor;
 	        _agentInstanceContext = agentInstanceContext;
 	        _consumersInContext = NamedWindowUtil.CreateConsumerMap(tailView.IsPrioritized);
 	    }
@@ -70,12 +72,9 @@ namespace com.espertech.esper.epl.named
 	            UpdateChildren(newData, oldData);
 	        }
 
-	        if (!_consumersInContext.IsEmpty() || !_tailView.ConsumersNonContext.IsEmpty()) {
-	            var delta = new NamedWindowDeltaData(newData, oldData);
-	            _tailView.NamedWindowService.AddDispatch(delta, _consumersInContext);
-	            _tailView.NamedWindowService.AddDispatch(delta, _tailView.ConsumersNonContext);
-	        }
-	    }
+            var delta = new NamedWindowDeltaData(newData, oldData);
+            _tailView.AddDispatches(_consumersInContext, delta, _agentInstanceContext);
+        }
 
         /// <summary>
         /// Adds a consuming (selecting) statement to the named window.
@@ -88,7 +87,15 @@ namespace com.espertech.esper.epl.named
 	    public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc, bool isSubselect)
 	    {
 	        NamedWindowConsumerCallback consumerCallback = new ProxyNamedWindowConsumerCallback() {
-	            ProcGetEnumerator = GetEnumerator,
+	            ProcGetEnumerator = () =>
+	            {
+	                var instance = _namedWindowProcessor.GetProcessorInstance(_agentInstanceContext);
+                    if (instance == null) {
+                        // this can happen on context-partition "output when terminated"
+                        return GetEnumerator();
+                    }
+                    return instance.TailViewInstance.GetEnumerator();
+	            },
 	            ProcStopped = RemoveConsumer,
 	        };
 
@@ -302,11 +309,12 @@ namespace com.espertech.esper.epl.named
 	            return Collections.GetEmptyList<EventBean>();
 	        }
 
-	        var list = new ArrayDeque<EventBean>();
+	        var list = new ArrayDeque<EventBean>(1024);
 	        do
 	        {
 	            list.Add(en.Current);
 	        } while (en.MoveNext());
+
 	        return list;
 	    }
 
@@ -382,5 +390,10 @@ namespace com.espertech.esper.epl.named
         {
 	        agentInstanceContext.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
 	    }
+
+        public void Stop()
+        {
+            // no action
+        }
 	}
 } // end of namespace

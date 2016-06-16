@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestObjectArrayNestedMapEventType() {
             var eventAdapterService = ((EPServiceProviderSPI) _epService).EventAdapterService;
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var supportBeanType = _epService.EPAdministrator.Configuration.GetEventType("SupportBean");
     
             IDictionary<String, Object> lev2def = new Dictionary<String, Object>();

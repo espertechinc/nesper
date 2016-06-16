@@ -17,9 +17,9 @@ namespace com.espertech.esper.events.bean
     /// <summary>
     /// Introspector that considers explicitly configured event properties only.
     /// </summary>
-    public class PropertyListBuilderExplicit : IPropertyListBuilder
+    public class PropertyListBuilderExplicit : PropertyListBuilder
     {
-        private readonly ConfigurationEventTypeLegacy legacyConfig;
+        private readonly ConfigurationEventTypeLegacy _legacyConfig;
     
         /// <summary>
         /// Ctor.
@@ -31,13 +31,13 @@ namespace com.espertech.esper.events.bean
             {
                 throw new ArgumentException("Required configuration not passed");
             }
-            this.legacyConfig = legacyConfig;
+            _legacyConfig = legacyConfig;
         }
     
         public IList<InternalEventPropDescriptor> AssessProperties(Type clazz)
         {
             var result = new List<InternalEventPropDescriptor>();
-            GetExplicitProperties(result, clazz, legacyConfig);
+            GetExplicitProperties(result, clazz, _legacyConfig);
             return result;
         }
 

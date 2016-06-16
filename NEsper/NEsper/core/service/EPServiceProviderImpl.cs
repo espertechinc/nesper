@@ -267,7 +267,7 @@ namespace com.espertech.esper.core.service
             get { return _configSnapshot; }
         }
 
-        public NamedWindowService NamedWindowService
+        public NamedWindowMgmtService NamedWindowMgmtService
         {
             get
             {
@@ -275,7 +275,7 @@ namespace com.espertech.esper.core.service
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
-                return _engine.Services.NamedWindowService;
+                return _engine.Services.NamedWindowMgmtService;
             }
         }
 
@@ -993,7 +993,7 @@ namespace com.espertech.esper.core.service
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
-                return _engine.Services.EventProcessingRwLock;
+                return _engine.Services.EventProcessingRWLock;
             }
         }
     }

@@ -79,17 +79,19 @@ namespace com.espertech.esper.epl.join.exec.@base
 
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext context)
         {
-
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QIndexJoinLookup(this, _index);
             }
 
             var keys = new List<Object>(2);
-            var result = _chain.GetCollectKeys(theEvent, _index.MapIndex, context, keys);
+            var result = _chain.GetCollectKeys(theEvent, _index.IndexTable, context, keys, _index.PostProcessor);
 
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().AIndexJoinLookup(result, keys.Count > 1 ? keys.ToArray() : keys[0]);
             }
+
+            if (result != null && result.IsEmpty())
+                return null;
 
             return result;
         }

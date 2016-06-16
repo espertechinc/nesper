@@ -123,7 +123,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        return null;
 	    }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
 	        return _innerEvaluator.EventTypeCollection;
 	    }
@@ -133,11 +133,13 @@ namespace com.espertech.esper.epl.expression.dot
 	        get { return _innerEvaluator.ComponentTypeCollection; }
 	    }
 
-	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
 	        return null;
 	    }
 
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
 	        return null;
 	    }
 	}

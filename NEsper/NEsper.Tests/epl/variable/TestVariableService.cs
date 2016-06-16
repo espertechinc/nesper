@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.start;
 using com.espertech.esper.schedule;
 using com.espertech.esper.support.events;
 using com.espertech.esper.timer;
@@ -49,7 +50,7 @@ namespace com.espertech.esper.epl.variable
             for (int i = 0; i < numVariables; i++) {
                 variables[i] = String.Format("{0}", ((char) (ord + i)));
                 _service.CreateNewVariable(null, variables[i], typeof(int).FullName, false, false, false, 0, null);
-                _service.AllocateVariableState(variables[i], 0, null);
+                _service.AllocateVariableState(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
             }
 
             BasicExecutorService threadPool = Executors.NewFixedThreadPool(numThreads);
@@ -87,8 +88,8 @@ namespace com.espertech.esper.epl.variable
         public void TestInvalid()
         {
             _service.CreateNewVariable<long?>(null, "a", false, null, null);
-            _service.AllocateVariableState("a", 0, null);
-            Assert.IsNull(_service.GetReader("dummy", 0));
+            _service.AllocateVariableState("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
+            Assert.IsNull(_service.GetReader("dummy", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID));
 
             try {
                 _service.CreateNewVariable<long?>(null, "a", false, null, null);
@@ -126,21 +127,21 @@ namespace com.espertech.esper.epl.variable
         [Test]
         public void TestReadWrite()
         {
-            Assert.IsNull(_service.GetReader("a", 0));
+            Assert.IsNull(_service.GetReader("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID));
 
             _service.CreateNewVariable<long>(null, "a", false, 100L, null);
-            _service.AllocateVariableState("a", 0, null);
-            VariableReader reader = _service.GetReader("a", 0);
+            _service.AllocateVariableState("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
+            VariableReader reader = _service.GetReader("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             Assert.AreEqual(typeof(long?), reader.VariableMetaData.VariableType);
             Assert.AreEqual(100L, reader.Value);
 
-            _service.Write(reader.VariableMetaData.VariableNumber, 0, 101L);
+            _service.Write(reader.VariableMetaData.VariableNumber, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, 101L);
             _service.Commit();
             Assert.AreEqual(100L, reader.Value);
             _service.SetLocalVersion();
             Assert.AreEqual(101L, reader.Value);
 
-            _service.Write(reader.VariableMetaData.VariableNumber, 0, 102L);
+            _service.Write(reader.VariableMetaData.VariableNumber, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, 102L);
             _service.Commit();
             Assert.AreEqual(101L, reader.Value);
             _service.SetLocalVersion();
@@ -162,13 +163,13 @@ namespace com.espertech.esper.epl.variable
             var readers = new VariableReader[variables.Length];
             for (int i = 0; i < variables.Length; i++) {
                 _service.CreateNewVariable<long>(null, variables[i], false, 100L, null);
-                _service.AllocateVariableState(variables[i], 0, null);
-                readers[i] = _service.GetReader(variables[i], 0);
+                _service.AllocateVariableState(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
+                readers[i] = _service.GetReader(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }
 
             for (int i = 0; i < 1000; i++) {
                 for (int j = 0; j < variables.Length; j++) {
-                    _service.Write(readers[j].VariableMetaData.VariableNumber, 0, 100L + i);
+                    _service.Write(readers[j].VariableMetaData.VariableNumber, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, 100L + i);
                     _service.Commit();
                 }
                 ReadCompare(variables, 100L + i);

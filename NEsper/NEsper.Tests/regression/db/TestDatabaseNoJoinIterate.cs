@@ -57,7 +57,7 @@ namespace com.espertech.esper.regression.db
         [Test]
         public void TestExpressionPoll()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.CreateEPL("create variable boolean queryvar_bool");
             _epService.EPAdministrator.CreateEPL("create variable int queryvar_int");
             _epService.EPAdministrator.CreateEPL("create variable int lower");
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regression.db
         [Test]
         public void TestVariablesPoll()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.CreateEPL("create variable boolean queryvar_bool");
             _epService.EPAdministrator.CreateEPL("create variable int queryvar_int");
             _epService.EPAdministrator.CreateEPL("create variable int lower");

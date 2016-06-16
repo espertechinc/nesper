@@ -48,7 +48,7 @@ namespace com.espertech.esper.filter
         }
     
         private FilterSpecLookupable Make(String name) {
-            return new FilterSpecLookupable(name, null, null);
+            return new FilterSpecLookupable(name, null, null, false);
         }
     }
 }

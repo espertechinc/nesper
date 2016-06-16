@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.property;
 
@@ -50,6 +51,18 @@ namespace com.espertech.esper.epl.spec
         public PropertyEvaluator OptPropertyEvaluator
         {
             get { return _optPropertyEvaluator; }
+        }
+
+        public int GetConsumerSpecIndexAmongAll(NamedWindowConsumerStreamSpec[] consumerSpecAll)
+        {
+            for (int i = 0; i < consumerSpecAll.Length; i++)
+            {
+                if (this == consumerSpecAll[i])
+                {
+                    return i;
+                }
+            }
+            throw new EPException("Failed to find find named window consumer spec among list of known consumers");
         }
     }
 }

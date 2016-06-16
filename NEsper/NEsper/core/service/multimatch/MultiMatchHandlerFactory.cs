@@ -8,11 +8,13 @@
 
 namespace com.espertech.esper.core.service.multimatch
 {
-	public class MultiMatchHandlerFactory
+	public interface MultiMatchHandlerFactory
     {
-	    public static MultiMatchHandler DefaultHandler
-	    {
-	        get { return MultiMatchHandlerSubqueryPreevalNoDedup.INSTANCE; }
-	    }
+        MultiMatchHandler GetDefaultHandler();
+        MultiMatchHandler MakeNoDedupNoSubq();
+        MultiMatchHandler MakeNoDedupSubselectPreval();
+        MultiMatchHandler MakeNoDedupSubselectPosteval();
+        MultiMatchHandler MakeDedupNoSubq();
+        MultiMatchHandler MakeDedupSubq(bool isSubselectPreeval);
     }
 } // end of namespace

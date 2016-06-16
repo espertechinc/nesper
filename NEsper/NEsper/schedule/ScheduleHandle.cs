@@ -17,7 +17,7 @@ namespace com.espertech.esper.schedule
     {
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        string StatementId { get; }
+        int StatementId { get; }
 
         /// <summary>Returns the agent instance id. </summary>
         /// <value>agent instance id</value>

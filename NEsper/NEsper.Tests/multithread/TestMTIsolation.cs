@@ -35,7 +35,7 @@ namespace com.espertech.esper.multithread
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ViewResourcesConfig.IsShareViews = false;
             config.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = true;
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
     

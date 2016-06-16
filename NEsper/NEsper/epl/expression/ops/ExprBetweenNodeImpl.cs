@@ -136,14 +136,12 @@ namespace com.espertech.esper.epl.expression.ops
 
             if (!_isAlwaysFalse)
             {
-                var evaluators = _evaluators;
-
                 // Evaluate first child which is the base value to compare to
-                var value = evaluators[0].Evaluate(evaluateParams);
+                var value = _evaluators[0].Evaluate(evaluateParams);
                 if (value != null)
                 {
-                    var lower = evaluators[1].Evaluate(evaluateParams);
-                    var higher = evaluators[2].Evaluate(evaluateParams);
+                    var lower = _evaluators[1].Evaluate(evaluateParams);
+                    var higher = _evaluators[2].Evaluate(evaluateParams);
                     var result = _computer.IsBetween(value, lower, higher);
                     result = _isNotBetween ? result == false : result;
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprBetween(result); }

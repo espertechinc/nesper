@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.view
             int i = 0;
             foreach(var csv in groups)
             {
-                var @event = new object[]{ csv, 0 };
+                var @event = new object[]{ csv, 0f };
 
                 _epService.EPRuntime.SendEvent(@event, "MyEvent");
                 

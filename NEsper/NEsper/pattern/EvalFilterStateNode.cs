@@ -45,7 +45,7 @@ namespace com.espertech.esper.pattern
             get { return _evalFilterNode; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _evalFilterNode.Context.PatternContext.StatementId; }
         }

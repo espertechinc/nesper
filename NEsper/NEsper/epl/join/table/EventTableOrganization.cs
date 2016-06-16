@@ -40,15 +40,5 @@ namespace com.espertech.esper.epl.join.table
         public EventTableOrganizationType OrganizationType { get; private set; }
 
         public bool IsCoercing { get; private set; }
-
-        public enum EventTableOrganizationType
-        {
-            UNORGANIZED,
-            HASH,
-            BTREE,
-            COMPOSITE,
-            MULTIINDEX,
-            VDW
-        }
-    }
+   }
 }

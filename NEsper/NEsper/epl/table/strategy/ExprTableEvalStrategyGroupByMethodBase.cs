@@ -31,8 +31,8 @@ namespace com.espertech.esper.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
 
-        protected ExprTableEvalStrategyGroupByMethodBase(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, int index)
-            : base(@lock, aggregationState)
+        protected ExprTableEvalStrategyGroupByMethodBase(TableAndLockProviderGrouped provider, int index)
+            : base(provider)
         {
             _index = index;
         }

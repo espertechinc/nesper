@@ -442,7 +442,7 @@ namespace com.espertech.esper.regression.rowrecog
 	    private void InitService(long max, bool preventStart)
         {
 	        var config = SupportConfigFactory.GetConfiguration();
-	        config.AddEventType(typeof(SupportBean));
+	        config.AddEventType<SupportBean>();
 	        config.AddEventType(typeof(SupportBean_S0));
 	        config.AddEventType(typeof(SupportBean_S1));
 	        config.EngineDefaults.ConditionHandlingConfig.AddClass<SupportConditionHandlerFactory>();

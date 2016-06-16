@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
@@ -139,7 +140,7 @@ namespace com.espertech.esper.epl.expression.core
             _readersPerCp = validationContext.VariableService.GetReadersPerCP(_variableName);
             if (variableMetadata.ContextPartitionName == null)
             {
-                _readerNonCP = _readersPerCp.Get(VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+                _readerNonCP = _readersPerCp.Get(EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }
 
             return null;

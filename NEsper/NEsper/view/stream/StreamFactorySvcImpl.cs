@@ -87,7 +87,7 @@ namespace com.espertech.esper.view.stream
         /// <param name="filterService">filter service to activate filter if not already active</param>
         /// <param name="epStatementAgentInstanceHandle">is the statement resource lock</param>
         /// <param name="isJoin">is indicatng whether the stream will participate in a join statement, information necessary for stream reuse and multithreading concerns</param>
-        /// <param name="exprEvaluatorContext">expression evaluation context</param>
+        /// <param name="agentInstanceContext"></param>
         /// <param name="hasOrderBy">if the consumer has order-by</param>
         /// <param name="filterWithSameTypeSubselect">if set to <c>true</c> [filter with same type subselect].</param>
         /// <param name="annotations">The annotations.</param>
@@ -99,12 +99,12 @@ namespace com.espertech.esper.view.stream
         /// </returns>
         /// <exception cref="IllegalStateException">Filter spec object already found in collection</exception>
         public Pair<EventStream, IReaderWriterLock> CreateStream(
-            String statementId,
+            int statementId,
             FilterSpecCompiled filterSpec,
             FilterService filterService,
             EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
             bool isJoin,
-            ExprEvaluatorContext exprEvaluatorContext,
+            AgentInstanceContext agentInstanceContext,
             bool hasOrderBy,
             bool filterWithSameTypeSubselect,
             Attribute[] annotations,
@@ -174,7 +174,7 @@ namespace com.espertech.esper.view.stream
                     ProcStatementId = () => statementId,
                     ProcMatchFound = (theEvent, allStmtMatches) =>
                     {
-                        var result = filterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, exprEvaluatorContext);
+                        var result = filterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, agentInstanceContext);
                         if (result != null)
                         {
                             eventStream.Insert(result);
@@ -212,7 +212,7 @@ namespace com.espertech.esper.view.stream
             }
 
             // Activate filter
-            var filterValues = filterSpec.GetValueSet(null, exprEvaluatorContext, null);
+            var filterValues = filterSpec.GetValueSet(null, agentInstanceContext, null);
             var filterServiceEntry = filterService.Add(filterValues, handle);
             entry.FilterServiceEntry = filterServiceEntry;
 

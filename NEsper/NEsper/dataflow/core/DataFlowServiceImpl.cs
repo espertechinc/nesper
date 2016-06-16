@@ -833,7 +833,7 @@ namespace com.espertech.esper.dataflow.core
                         {
                             try
                             {
-                                clazz = engineImportService.ResolveType(typeName);
+                                clazz = engineImportService.ResolveType(typeName, false);
                             }
                             catch (EngineImportException e)
                             {
@@ -971,7 +971,7 @@ namespace com.espertech.esper.dataflow.core
                 Type factoryClass = null;
                 try
                 {
-                    factoryClass = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName + "Factory"));
+                    factoryClass = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName + "Factory"), false);
                 }
                 catch (EngineImportException e)
                 {
@@ -989,7 +989,7 @@ namespace com.espertech.esper.dataflow.core
                 Type clazz;
                 try
                 {
-                    clazz = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName));
+                    clazz = engineImportService.ResolveType(StringExtensions.Capitalize(operatorSpec.OperatorName), false);
                 }
                 catch (EngineImportException e)
                 {

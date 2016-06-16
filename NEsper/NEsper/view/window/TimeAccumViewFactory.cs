@@ -50,7 +50,7 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRandomAccess randomAccess = ViewServiceHelper.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
                 return new TimeAccumViewRStream(this, agentInstanceViewFactoryContext, _timeDeltaComputation);
@@ -85,6 +85,11 @@ namespace com.espertech.esper.view.window
         public string ViewName
         {
             get { return "Time-Accumulative-Batch"; }
+        }
+
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
+        {
+            get { return _timeDeltaComputation; }
         }
 
         private string ViewParamMessage

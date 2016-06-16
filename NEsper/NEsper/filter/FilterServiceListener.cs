@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -20,6 +19,6 @@ namespace com.espertech.esper.filter
         /// <param name="theEvent">event</param>
         /// <param name="matches">matches found</param>
         /// <param name="statementId">optional statement id if for a statement</param>
-        void Filtering(EventBean theEvent, ICollection<FilterHandle> matches, String statementId);
+        void Filtering(EventBean theEvent, ICollection<FilterHandle> matches, int? statementId);
     }
 }

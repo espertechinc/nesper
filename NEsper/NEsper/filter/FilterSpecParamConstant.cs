@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
@@ -42,9 +43,9 @@ namespace com.espertech.esper.filter
         /// Return the filter parameter constant to filter for.
         /// </summary>
         /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
-        /// <param name="evaluatorContext">The evaluator context.</param>
+        /// <param name="agentInstanceContext"></param>
         /// <returns>filter parameter constant's value</returns>
-        public override Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        public override object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
             return _filterConstant;
         }

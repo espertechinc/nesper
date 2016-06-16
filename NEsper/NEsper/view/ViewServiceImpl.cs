@@ -32,11 +32,7 @@ namespace com.espertech.esper.view
         {
         }
 
-        public ViewFactoryChain CreateFactories(int streamNum,
-                                                EventType parentEventType,
-                                                ViewSpec[] viewSpecDefinitions,
-                                                StreamSpecOptions options,
-                                                StatementContext context)
+        public ViewFactoryChain CreateFactories(int streamNum, EventType parentEventType, ViewSpec[] viewSpecDefinitions, StreamSpecOptions options, StatementContext context, bool isSubquery, int subqueryNumber)
         {
             // Clone the view spec list to prevent parameter modification
             IList<ViewSpec> viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
@@ -45,7 +41,7 @@ namespace com.espertech.esper.view
             ViewServiceHelper.AddMergeViews(viewSpecList);
 
             // Instantiate factories, not making them aware of each other yet
-            IList<ViewFactory> viewFactories = ViewServiceHelper.InstantiateFactories(streamNum, viewSpecList, context);
+            IList<ViewFactory> viewFactories = ViewServiceHelper.InstantiateFactories(streamNum, viewSpecList, context, isSubquery, subqueryNumber);
 
             ViewFactory parentViewFactory = null;
             IList<ViewFactory> attachedViewFactories = new List<ViewFactory>();
@@ -123,7 +119,7 @@ namespace com.espertech.esper.view
                 {
                     groupByFactory.Add(i);
                 }
-                else if (factory is MergeViewFactory)
+                else if (factory is MergeViewFactoryMarker)
                 {
                     mergeFactory.Add(i);
                 }
@@ -150,12 +146,12 @@ namespace com.espertech.esper.view
                 throw new ViewProcessingException("The merge view cannot be used in conjuntion with multiple data windows");
             }
 
-            GroupByViewFactory groupByViewFactory = null;
-            MergeViewFactory mergeViewFactory = null;
+            GroupByViewFactoryMarker groupByViewFactory = null;
+            MergeViewFactoryMarker mergeViewFactory = null;
             if (groupByFactory.IsNotEmpty())
             {
-                groupByViewFactory = (GroupByViewFactory) viewFactories[0];
-                mergeViewFactory = (MergeViewFactory) viewFactories[viewFactories.Count - 1];
+                groupByViewFactory = (GroupByViewFactoryMarker)viewFactories[0];
+                mergeViewFactory = (MergeViewFactoryMarker)viewFactories[viewFactories.Count - 1];
                 viewFactories.RemoveAt(0);
                 viewFactories.RemoveAt(viewFactories.Count - 1);
 
@@ -181,9 +177,9 @@ namespace com.espertech.esper.view
             nonRetainViewFactories.Add(retainPolicy);
             if (groupByViewFactory != null)
             {
-                nonRetainViewFactories.Insert(0, groupByViewFactory);
+                nonRetainViewFactories.Insert(0, (ViewFactory) groupByViewFactory);
                 nonRetainViewFactories.AddAll(derivedValueViews);
-                nonRetainViewFactories.Add(mergeViewFactory);
+                nonRetainViewFactories.Add((ViewFactory) mergeViewFactory);
             }
             else
             {

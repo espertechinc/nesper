@@ -13,7 +13,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.join.table
 {
-    public class PropertySortedEventTableCoerced : PropertySortedEventTable
+    public class PropertySortedEventTableCoerced : PropertySortedEventTableImpl
     {
         private readonly Type _coercionType;
     
@@ -39,8 +39,13 @@ namespace com.espertech.esper.epl.join.table
         {
             return "PropertySortedEventTableCoerced" +
                     " streamNum=" + Organization.StreamNum +
-                    " propertyGetter=" + PropertyGetter +
+                    " propertyGetter=" + _propertyGetter +
                     " coercionType=" + _coercionType;
+        }
+
+        public override Type ProviderClass
+        {
+            get { return typeof (PropertySortedEventTableCoerced); }
         }
     }
 }

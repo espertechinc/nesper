@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestPerfRemoveStream()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(MyStaticEval).FullName, "MyStaticEvaluator");
     

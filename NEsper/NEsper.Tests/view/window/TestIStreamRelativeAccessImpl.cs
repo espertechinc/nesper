@@ -24,7 +24,10 @@ namespace com.espertech.esper.view.window
         [SetUp]
         public void SetUp()
         {
-            _access = new IStreamRelativeAccess((acess, newData) => { });
+            _access = new IStreamRelativeAccess(new ProxyIStreamRelativeAccessUpdateObserver
+            {
+                ProcUpdated = (access, newData) => { }
+            });
     
             _events = new EventBean[100];
             for (int i = 0; i < _events.Length; i++)

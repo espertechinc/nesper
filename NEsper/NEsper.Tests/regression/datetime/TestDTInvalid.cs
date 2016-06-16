@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.datetime
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("SupportBean_ST0_Container", typeof(SupportBean_ST0_Container));
             config.AddEventType("SupportDateTime", typeof(SupportDateTime));
             config.AddImport(typeof(SupportBean_ST0_Container));

@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.client
             config.EngineDefaults.ExpressionConfig.IsUdfCache = false;
             config.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound = true;
             config.EngineDefaults.ThreadingConfig.ThreadPoolOutboundNumThreads = 5;
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
 
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();

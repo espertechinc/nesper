@@ -191,7 +191,7 @@ namespace com.espertech.esper.rowregex
 	            }
 
 	            // determine access to event properties from multi-matches
-	            var visitor = new ExprNodeIdentifierCollectVisitor();
+                var visitor = new ExprNodeStreamRequiredVisitor();
 	            validated.Accept(visitor);
 	            var streamsRequired = visitor.StreamsRequired;
 	            foreach (var streamRequired in streamsRequired) {
@@ -380,7 +380,7 @@ namespace com.espertech.esper.rowregex
 
 	        // create rowevent type
 	        var rowEventTypeName = statementContext.StatementId + "_rowrecogrow";
-	        _rowEventType = statementContext.EventAdapterService.CreateAnonymousMapType(rowEventTypeName, rowTypeDef);
+            _rowEventType = statementContext.EventAdapterService.CreateAnonymousMapType(rowEventTypeName, rowTypeDef, true);
 
 	        // validate partition-by expressions, if any
 	        if (!matchRecognizeSpec.PartitionByExpressions.IsEmpty())

@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.agg.service
 
 	    public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	    {
-	        AggregationLocalGroupByColumn col = localGroupByPlan.Columns[column];
+	        AggregationLocalGroupByColumn col = LocalGroupByPlan.Columns[column];
 
 	        if (col.PartitionEvaluators.Length == 0) {
 	            if (col.IsMethodAgg) {

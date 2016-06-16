@@ -37,9 +37,9 @@ namespace com.espertech.esper.epl.join.@base
             if (indexTable[0] is PropertyCompositeEventTable)
             {
                 var table = (PropertyCompositeEventTable) indexTable[0];
-                var index = table.MapIndex;
+                var index = table.IndexTable;
     
-                var events = _chain.Get(lookupEvent, index, context);
+                var events = _chain.Get(lookupEvent, index, context, table.PostProcessor);
                 if (events != null)
                 {
                     return events.GetEnumerator();

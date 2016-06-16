@@ -15,8 +15,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.@join.@base;
+using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.view
@@ -25,10 +25,14 @@ namespace com.espertech.esper.epl.view
         : View
         , JoinSetIndicator
         , OutputProcessViewTerminable
+        , StopCallback
     {
         protected readonly ResultSetProcessor ResultSetProcessor;
         protected UpdateDispatchView ChildView;
         protected Viewable ParentView;
+
+        public abstract OutputCondition OptionalOutputCondition { get; }
+        public abstract void Stop();
 
         protected OutputProcessViewBase(ResultSetProcessor resultSetProcessor)
         {

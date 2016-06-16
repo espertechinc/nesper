@@ -31,7 +31,9 @@ namespace com.espertech.esper.view.internals
     /// When the buffer receives old data (rstream) events it removes the prior events to the rstream events from the buffer 
     /// the next time it receives a post (not immediatly) to allow queries to the buffer.
     /// </summary>
-    public class PriorEventBufferMulti : ViewUpdatedCollection, RelativeAccessByEventNIndex
+    public class PriorEventBufferMulti 
+        : ViewUpdatedCollection
+        , RelativeAccessByEventNIndex
     {
         private readonly int _priorToIndexesSize;
         private readonly int[] _priorToIndexes;
@@ -162,25 +164,25 @@ namespace com.espertech.esper.view.internals
             return priorEvents[priorToIndex];
         }
     
-        public EventBean GetRelativeToEnd(EventBean theEvent, int index)
+        public EventBean GetRelativeToEnd(int index)
         {
             // No requirements to return events related to the end of the current buffer
             return null;
         }
     
-        public int GetWindowToEventCount(EventBean evalEvent)
+        public int GetWindowToEventCount()
         {
             // No requirements to return events related to the end of the current buffer
             return 0;
         }
     
-        public IEnumerator<EventBean> GetWindowToEvent(Object evalEvent)
+        public IEnumerator<EventBean> GetWindowToEvent()
         {
             // No requirements to return events related to the end of the current buffer
             return null;  
         }
     
-        public ICollection<EventBean> GetWindowToEventCollReadOnly(Object evalEvent)
+        public ICollection<EventBean> GetWindowToEventCollReadOnly()
         {
             // No requirements to return events related to the end of the current buffer
             return null;

@@ -10,24 +10,33 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 
-
 namespace com.espertech.esper.epl.view
 {
     /// <summary>
-    /// Factory for output process view that does not enforce any output policies and may simply hand over events to child views, does not handle distinct.
+    /// Factory for output process view that does not enforce any output policies and may simply
+    /// hand over events to child views, does not handle distinct.
     /// </summary>
     public class OutputProcessViewDirectFactory : OutputProcessViewFactory
     {
+        private readonly StatementContext _statementContext;
+        private readonly StatementResultService _statementResultService;
         protected readonly OutputStrategyPostProcessFactory PostProcessFactory;
+        protected readonly ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory;
 
-        public OutputProcessViewDirectFactory(StatementContext statementContext, OutputStrategyPostProcessFactory postProcessFactory)
+        public OutputProcessViewDirectFactory(
+            StatementContext statementContext,
+            OutputStrategyPostProcessFactory postProcessFactory,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory)
         {
-            StatementContext = statementContext;
-            StatementResultService = statementContext.StatementResultService;
+            _statementContext = statementContext;
+            _statementResultService = statementContext.StatementResultService;
             PostProcessFactory = postProcessFactory;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
         }
 
-        public virtual OutputProcessViewBase MakeView(ResultSetProcessor resultSetProcessor, AgentInstanceContext agentInstanceContext)
+        public virtual OutputProcessViewBase MakeView(
+            ResultSetProcessor resultSetProcessor,
+            AgentInstanceContext agentInstanceContext)
         {
             if (PostProcessFactory == null)
             {
@@ -37,8 +46,14 @@ namespace com.espertech.esper.epl.view
             return new OutputProcessViewDirectPostProcess(resultSetProcessor, this, postProcess);
         }
 
-        public StatementResultService StatementResultService { get; private set; }
+        public StatementResultService StatementResultService
+        {
+            get { return _statementResultService; }
+        }
 
-        public StatementContext StatementContext { get; private set; }
+        public StatementContext StatementContext
+        {
+            get { return _statementContext; }
+        }
     }
-}
+} // end of namespace

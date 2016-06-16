@@ -27,24 +27,18 @@ namespace com.espertech.esper.epl.join.plan
 	    public abstract TableLookupKeyDesc KeyDescriptor { get; }
 
 	    /// <summary>
-        /// Instantiates the lookup plan into a execution strategy for the lookup.
-        /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
-        /// <param name="statementId">The statement identifier.</param>
-        /// <param name="accessedByStmtAnnotations">The accessed by statement annotations.</param>
-        /// <param name="indexesPerStream">tables for each stream</param>
-        /// <param name="eventTypes">types of events in stream</param>
-        /// <param name="viewExternals">The view externals.</param>
-        /// <returns>
-        /// lookup strategy instance
-        /// </returns>
-	    public JoinExecTableLookupStrategy MakeStrategy(
-	        string statementName,
-	        string statementId,
-	        Attribute[] accessedByStmtAnnotations,
-	        IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
-	        EventType[] eventTypes,
-	        VirtualDWView[] viewExternals)
+	    /// Instantiates the lookup plan into a execution strategy for the lookup.
+	    /// </summary>
+	    /// <param name="statementName">Name of the statement.</param>
+	    /// <param name="statementId">The statement identifier.</param>
+	    /// <param name="accessedByStmtAnnotations">The accessed by statement annotations.</param>
+	    /// <param name="indexesPerStream">tables for each stream</param>
+	    /// <param name="eventTypes">types of events in stream</param>
+	    /// <param name="viewExternals">The view externals.</param>
+	    /// <returns>
+	    /// lookup strategy instance
+	    /// </returns>
+	    public JoinExecTableLookupStrategy MakeStrategy(string statementName, int statementId, Attribute[] accessedByStmtAnnotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] eventTypes, VirtualDWView[] viewExternals)
         {
 	        var eventTables = new EventTable[IndexNum.Length];
 	        for (var i = 0; i < IndexNum.Length; i++) {

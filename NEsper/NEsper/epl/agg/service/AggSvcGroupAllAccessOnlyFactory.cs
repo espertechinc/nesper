@@ -12,22 +12,26 @@ using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    /// <summary>Aggregation service for use when only first/last/window aggregation functions are used an none other. </summary>
+    /// <summary>
+    /// Aggregation service for use when only first/last/window aggregation functions are used an none other.
+    /// </summary>
     public class AggSvcGroupAllAccessOnlyFactory : AggregationServiceFactory
     {
-        protected readonly AggregationAccessorSlotPair[] accessors;
-        protected readonly AggregationStateFactory[] accessAggSpecs;
-        protected readonly bool isJoin;
+        protected internal readonly AggregationAccessorSlotPair[] Accessors;
+        protected internal readonly AggregationStateFactory[] AccessAggSpecs;
+        protected internal readonly bool IsJoin;
     
-        public AggSvcGroupAllAccessOnlyFactory(AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggSpecs, bool join) {
-            this.accessors = accessors;
-            this.accessAggSpecs = accessAggSpecs;
-            isJoin = join;
+        public AggSvcGroupAllAccessOnlyFactory(AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggSpecs, bool join)
+        {
+            Accessors = accessors;
+            AccessAggSpecs = accessAggSpecs;
+            IsJoin = join;
         }
-    
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService) {
-            AggregationState[] states = methodResolutionService.NewAccesses(agentInstanceContext.AgentInstanceId, isJoin, accessAggSpecs);
-            return new AggSvcGroupAllAccessOnlyImpl(accessors, states, accessAggSpecs);
+
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber)
+        {
+            AggregationState[] states = methodResolutionService.NewAccesses(agentInstanceContext.AgentInstanceId, IsJoin, AccessAggSpecs, null);
+            return new AggSvcGroupAllAccessOnlyImpl(Accessors, states, AccessAggSpecs);
         }
     }
 }

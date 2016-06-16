@@ -514,9 +514,8 @@ namespace com.espertech.esper.regression.client
             configuration.EngineDefaults.MetricsReportingConfig.EngineInterval = engineMetricInterval;
             configuration.EngineDefaults.MetricsReportingConfig.StatementInterval = stmtMetricInterval;
 
-            configuration.AddImport(typeof(MyMetricFunctions).FullName);
-
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddImport<MyMetricFunctions>();
+            configuration.AddEventType<SupportBean>();
 
             return configuration;
         }

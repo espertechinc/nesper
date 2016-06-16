@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.events
             eventTypeMeta.SchemaText = schemaText;
             config.AddEventType("OrderEvent", eventTypeMeta);
 
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.events
             eventTypeMeta.AddXPathProperty("url", "/ss:event-page-visit/ss:url", XPathResultType.String);
             config.AddEventType("PageVisitEvent", eventTypeMeta);
 
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestSchemaXMLQuery_XPathBacked()
         {
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", GetConfig(true));
+            _epService = EPServiceProviderManager.GetDefaultProvider(GetConfig(true));
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestSchemaXMLQuery_DOMGetterBacked()
         {
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", GetConfig(false));
+            _epService = EPServiceProviderManager.GetDefaultProvider(GetConfig(false));
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestAddRemoveType()
         {
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", GetConfig(false));
+            _epService = EPServiceProviderManager.GetDefaultProvider(GetConfig(false));
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.events
                 _epService.EPAdministrator.CreateEPL("select p01 from MyXMLEvent");
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // expected
             }
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestInvalid()
         {
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", GetConfig(false));
+            _epService = EPServiceProviderManager.GetDefaultProvider(GetConfig(false));
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 

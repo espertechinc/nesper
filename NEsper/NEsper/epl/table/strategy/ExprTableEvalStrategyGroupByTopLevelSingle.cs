@@ -23,8 +23,8 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly ExprEvaluator _groupExpr;
 
-        public ExprTableEvalStrategyGroupByTopLevelSingle(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, IDictionary<String, TableMetadataColumn> items, ExprEvaluator groupExpr) 
-            : base(@lock, aggregationState, items)
+        public ExprTableEvalStrategyGroupByTopLevelSingle(TableAndLockProviderGrouped provider, IDictionary<String, TableMetadataColumn> items, ExprEvaluator groupExpr) 
+            : base(provider, items)
         {
             this._groupExpr = groupExpr;
         }

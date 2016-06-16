@@ -14,13 +14,14 @@ using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.events;
 using com.espertech.esper.support.bean;
-using com.espertech.esper.support.core;
-using com.espertech.esper.support.events;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.support.epl.parse
 {

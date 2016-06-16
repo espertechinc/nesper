@@ -45,6 +45,7 @@ namespace com.espertech.esper.support.client
                     AccessorStyleEnum.NATIVE;
                 config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
                 config.EngineDefaults.ExceptionHandlingConfig.AddClass<SupportExceptionHandlerFactoryRethrow>();
+                config.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy = ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST;
             }
             return config;
         }

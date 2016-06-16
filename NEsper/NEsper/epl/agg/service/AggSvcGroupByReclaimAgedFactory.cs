@@ -83,8 +83,12 @@ namespace com.espertech.esper.epl.agg.service
                 EvaluationFunctionFrequency = GetEvaluationFunction(variableService, hintValueFrequency, optionalContextName);
             }
         }
-    
-        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService)
+
+        public override AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            MethodResolutionService methodResolutionService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             AggSvcGroupByReclaimAgedEvalFunc max = EvaluationFunctionMaxAge.Make(agentInstanceContext);
             AggSvcGroupByReclaimAgedEvalFunc freq = EvaluationFunctionFrequency.Make(agentInstanceContext);

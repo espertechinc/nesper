@@ -16,9 +16,11 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.property;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.filter;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.pattern;
+using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.context.activator
 {
@@ -33,7 +35,8 @@ namespace com.espertech.esper.core.context.activator
             Attribute[] annotations,
             bool subselect,
             InstrumentationAgent instrumentationAgentSubquery,
-            bool isCanIterate);
+            bool isCanIterate,
+            int? streamNumFromClause);
 
         ViewableActivator CreateStreamReuseView(
             EPServicesContext services,
@@ -57,8 +60,16 @@ namespace com.espertech.esper.core.context.activator
 
         ViewableActivator CreateNamedWindow(
             NamedWindowProcessor processor,
-            IList<ExprNode> filterExpressions,
-            PropertyEvaluator optPropertyEvaluator);
+            NamedWindowConsumerStreamSpec streamSpec,
+            StatementContext statementContext);
+
+        ViewableActivator CreateTable(
+            TableMetadata metadata, ExprEvaluator[] optionalTableFilters);
+
+        ViewableActivator MakeHistorical(
+            HistoricalEventViewable historicalEventViewable);
+
+        ViewableActivator MakeSubqueryNWIndexShare();
     }
 
     public class ProxyViewableActivatorFactory : ViewableActivatorFactory
@@ -75,7 +86,7 @@ namespace com.espertech.esper.core.context.activator
                 filterStreamSpec);
         }
 
-        public Func<EPServicesContext, FilterSpecCompiled, Attribute[], bool, InstrumentationAgent, bool, ViewableActivator>
+        public Func<EPServicesContext, FilterSpecCompiled, Attribute[], bool, InstrumentationAgent, bool, int?, ViewableActivator>
             ProcCreateActivatorProxy { get; set; }
 
         public ViewableActivator CreateFilterProxy(
@@ -84,7 +95,8 @@ namespace com.espertech.esper.core.context.activator
             Attribute[] annotations,
             bool subselect,
             InstrumentationAgent instrumentationAgentSubquery,
-            bool isCanIterate)
+            bool isCanIterate,
+            int? streamNumFromClause)
         {
             if (ProcCreateActivatorProxy == null)
                 throw new NotSupportedException();
@@ -95,7 +107,8 @@ namespace com.espertech.esper.core.context.activator
                 annotations,
                 subselect,
                 instrumentationAgentSubquery,
-                isCanIterate);
+                isCanIterate, 
+                streamNumFromClause);
         }
 
         public Func<EPServicesContext, StatementContext, StatementSpecCompiled, FilterStreamSpecCompiled, bool, ExprEvaluatorContextStatement, bool, int, bool, ViewableActivator>
@@ -152,21 +165,56 @@ namespace com.espertech.esper.core.context.activator
                 isCanIterateUnbound);
         }
 
-        public Func<NamedWindowProcessor, IList<ExprNode>, PropertyEvaluator, ViewableActivator>
+        public Func<NamedWindowProcessor, NamedWindowConsumerStreamSpec, StatementContext, ViewableActivator>
             ProcCreateNamedWindow { get; set; }
 
         public ViewableActivator CreateNamedWindow(
-            NamedWindowProcessor processor,
-            IList<ExprNode> filterExpressions,
-            PropertyEvaluator optPropertyEvaluator)
+           NamedWindowProcessor processor,
+           NamedWindowConsumerStreamSpec streamSpec,
+           StatementContext statementContext)
         {
             if (ProcCreateNamedWindow == null)
                 throw new NotSupportedException();
 
             return ProcCreateNamedWindow.Invoke(
                 processor,
-                filterExpressions,
-                optPropertyEvaluator);
+                streamSpec,
+                statementContext);
+        }
+
+        public Func<TableMetadata, ExprEvaluator[], ViewableActivator>
+            ProcCreateTable { get; set; }
+
+        public ViewableActivator CreateTable(TableMetadata metadata, ExprEvaluator[] optionalTableFilters)
+        {
+            if (ProcCreateTable == null)
+                throw new NotSupportedException();
+
+            return ProcCreateTable.Invoke(
+                metadata,
+                optionalTableFilters);
+        }
+
+        public Func<HistoricalEventViewable, ViewableActivator>
+            ProcMakeHistorical { get; set; }
+
+        public ViewableActivator MakeHistorical(HistoricalEventViewable historicalEventViewable)
+        {
+            if (ProcMakeHistorical == null)
+                throw new NotSupportedException();
+
+            return ProcMakeHistorical.Invoke(historicalEventViewable);
+        }
+
+        public Func<ViewableActivator>
+            ProcMakeSubqueryNWIndexShare { get; set; }
+
+        public ViewableActivator MakeSubqueryNWIndexShare()
+        {
+            if (ProcMakeSubqueryNWIndexShare == null)
+                throw new NotSupportedException();
+
+            return ProcMakeSubqueryNWIndexShare.Invoke();
         }
     }
 }

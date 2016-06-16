@@ -44,7 +44,7 @@ namespace com.espertech.esper.multithread
         [Test]
         public void TestThreadSafetyHistoricalJoin()
         {
-            _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _engine.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _engine.EPAdministrator.CreateEPL("create context CtxEachString partition by TheString from SupportBean");
             _engine.EPAdministrator.CreateEPL("@Name('select') context CtxEachString " +
                     "select * from SupportBean, " +

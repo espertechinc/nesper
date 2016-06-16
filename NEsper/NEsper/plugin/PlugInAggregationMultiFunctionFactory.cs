@@ -9,7 +9,7 @@
 namespace com.espertech.esper.plugin
 {
     /// <summary>
-    /// Entry point for the extension API for aggregation multi-functions.
+    /// Record point for the extension API for aggregation multi-functions.
     /// <para>
     /// This API allows adding one or more related aggregation functions that can share state, 
     /// share parameters or exhibit related behavior.

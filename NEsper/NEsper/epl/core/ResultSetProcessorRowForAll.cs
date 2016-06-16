@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -25,572 +24,598 @@ using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.core
 {
-    /// <summary>
-    /// Result set processor for the case: aggregation functions used in the select clause,
-    /// and no group-by, and all properties in the select clause are under an aggregation function.
-    /// <para/>
-    /// This processor does not perform grouping, every event entering and leaving is in the same
-    /// group. Produces one old event and one new event row every time either at least one old or 
-    /// new event is received. Aggregation state is simply one row holding all the state.
-    /// </summary>
-    public class ResultSetProcessorRowForAll : ResultSetProcessor
-    {
-        internal readonly ResultSetProcessorRowForAllFactory Prototype;
-        private readonly SelectExprProcessor _selectExprProcessor;
-        private readonly OrderByProcessor _orderByProcessor;
-        internal readonly AggregationService AggregationService;
-        internal ExprEvaluatorContext ExprEvaluatorContext;
-        private ResultSetProcessorRowForAllOutputLastHelper _outputLastHelper;
-        private ResultSetProcessorRowForAllOutputAllHelper _outputAllHelper;
+	/// <summary>
+	/// Result set processor for the case: aggregation functions used in the select clause, and no group-by,
+	/// and all properties in the select clause are under an aggregation function.
+	/// <para />This processor does not perform grouping, every event entering and leaving is in the same group.
+	/// Produces one old event and one new event row every time either at least one old or new event is received.
+	/// Aggregation state is simply one row holding all the state.
+	/// </summary>
+	public class ResultSetProcessorRowForAll : ResultSetProcessor
+	{
+	    protected internal readonly ResultSetProcessorRowForAllFactory _prototype;
+	    private readonly SelectExprProcessor _selectExprProcessor;
+	    private readonly OrderByProcessor _orderByProcessor;
+	    protected internal readonly AggregationService _aggregationService;
+        protected internal ExprEvaluatorContext _exprEvaluatorContext;
+	    private readonly ResultSetProcessorRowForAllOutputLastHelper _outputLastHelper;
+        private readonly ResultSetProcessorRowForAllOutputAllHelper _outputAllHelper;
 
-        public ResultSetProcessorRowForAll(ResultSetProcessorRowForAllFactory prototype, SelectExprProcessor selectExprProcessor, OrderByProcessor orderByProcessor, AggregationService aggregationService, ExprEvaluatorContext exprEvaluatorContext)
+	    public ResultSetProcessorRowForAll(
+	        ResultSetProcessorRowForAllFactory prototype,
+	        SelectExprProcessor selectExprProcessor,
+	        OrderByProcessor orderByProcessor,
+	        AggregationService aggregationService,
+	        AgentInstanceContext agentInstanceContext)
         {
-            this.Prototype = prototype;
-            _selectExprProcessor = selectExprProcessor;
-            _orderByProcessor = orderByProcessor;
-            this.AggregationService = aggregationService;
-            this.ExprEvaluatorContext = exprEvaluatorContext;
-            if (prototype.IsOutputLast)
-            {
-                _outputLastHelper = new ResultSetProcessorRowForAllOutputLastHelper(this);
-            }
-            else if (prototype.IsOutputAll)
-            {
-                _outputAllHelper = new ResultSetProcessorRowForAllOutputAllHelper(this);
-            }
-        }
+	        _prototype = prototype;
+	        _selectExprProcessor = selectExprProcessor;
+	        _orderByProcessor = orderByProcessor;
+	        _aggregationService = aggregationService;
+	        _exprEvaluatorContext = agentInstanceContext;
+	        if (prototype.IsOutputLast) {
+	            _outputLastHelper = prototype.ResultSetProcessorHelperFactory.MakeRSRowForAllOutputLast(this, prototype, agentInstanceContext);
+	        }
+	        else if (prototype.IsOutputAll) {
+	            _outputAllHelper = prototype.ResultSetProcessorHelperFactory.MakeRSRowForAllOutputAll(this, prototype, agentInstanceContext);
+	        }
+	    }
 
-        public AgentInstanceContext AgentInstanceContext
-        {
-            set { ExprEvaluatorContext = value; }
-            get { return (AgentInstanceContext) ExprEvaluatorContext; }
-        }
+	    public ResultSetProcessorRowForAllFactory Prototype
+	    {
+	        get { return _prototype; }
+	    }
 
-        public EventType ResultEventType
-        {
-            get { return Prototype.ResultEventType; }
-        }
+	    public AgentInstanceContext AgentInstanceContext
+	    {
+	        set { _exprEvaluatorContext = value; }
+	    }
 
-        public UniformPair<EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessUngroupedFullyAgg();}
-            EventBean[] selectOldEvents = null;
-            EventBean[] selectNewEvents;
-    
-            if (Prototype.IsUnidirectional)
-            {
-                Clear();
-            }
-    
-            if (Prototype.IsSelectRStream)
-            {
-                selectOldEvents = GetSelectListEvents(false, isSynthesize, true);
-            }
+	    public EventType ResultEventType
+	    {
+	        get { return _prototype.ResultEventType; }
+	    }
 
-            ResultSetProcessorUtil.ApplyAggJoinResult(AggregationService, ExprEvaluatorContext, newEvents, oldEvents);
-    
-            selectNewEvents = GetSelectListEvents(true, isSynthesize, true);
-    
-            if ((selectNewEvents == null) && (selectOldEvents == null))
-            {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(null, null);}
-                return null;
-            }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(selectNewEvents, selectOldEvents);}
-            return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
-        }
-    
-        public UniformPair<EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData, bool isSynthesize)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessUngroupedFullyAgg();}
-            EventBean[] selectOldEvents = null;
-            EventBean[] selectNewEvents;
-    
-            if (Prototype.IsSelectRStream)
-            {
-                selectOldEvents = GetSelectListEvents(false, isSynthesize, false);
-            }
-    
-            EventBean[] eventsPerStream = new EventBean[1];
-            ResultSetProcessorUtil.ApplyAggViewResult(AggregationService, ExprEvaluatorContext, newData, oldData, eventsPerStream);
-    
-            // generate new events using select expressions
-            selectNewEvents = GetSelectListEvents(true, isSynthesize, false);
-    
-            if ((selectNewEvents == null) && (selectOldEvents == null))
-            {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(null, null);}
-                return null;
-            }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(selectNewEvents, selectOldEvents);}
-            return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
-        }
-    
-        internal EventBean[] GetSelectListEvents(bool isNewData, bool isSynthesize, bool join)
-        {
-            if (Prototype.OptionalHavingNode != null)
-            {
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
-                if ((result == null) || (false.Equals(result)))
-                {
-                    return null;
-                }
-            }
-    
-            // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
-    
-            // The result is always a single row
-            return new EventBean[] {theEvent};
-        }
-    
-        private EventBean GetSelectListEvent(bool isNewData, bool isSynthesize, bool join)
-        {
-            if (Prototype.OptionalHavingNode != null)
-            {
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
-    
-                if ((result == null) || (false.Equals(result)))
-                {
-                    return null;
-                }
-            }
-    
-            // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
-    
-            // The result is always a single row
-            return theEvent;
-        }
-    
-        public IEnumerator<EventBean> GetEnumerator(Viewable parent)
-        {
-            if (!Prototype.IsHistoricalOnly)
-            {
-                return ObtainEnumerator();
-            }
+	    public UniformPair<EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize)
+	    {
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessUngroupedFullyAgg();}
+	        EventBean[] selectOldEvents = null;
+	        EventBean[] selectNewEvents;
 
-            ResultSetProcessorUtil.ClearAndAggregateUngrouped(ExprEvaluatorContext, AggregationService, parent);
+	        if (_prototype.IsUnidirectional)
+	        {
+	            Clear();
+	        }
 
-            var enumerator = ObtainEnumerator();
-            AggregationService.ClearResults(ExprEvaluatorContext);
-            return enumerator;
-        }
+	        if (_prototype.IsSelectRStream)
+	        {
+	            selectOldEvents = GetSelectListEvents(false, isSynthesize, true);
+	        }
 
-        public IEnumerator<EventBean> ObtainEnumerator()
+	        ResultSetProcessorUtil.ApplyAggJoinResult(_aggregationService, _exprEvaluatorContext, newEvents, oldEvents);
+
+	        selectNewEvents = GetSelectListEvents(true, isSynthesize, true);
+
+	        if ((selectNewEvents == null) && (selectOldEvents == null))
+	        {
+	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(null, null);}
+	            return null;
+	        }
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(selectNewEvents, selectOldEvents);}
+	        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
+	    }
+
+	    public UniformPair<EventBean[]> ProcessViewResult(EventBean[] newData, EventBean[] oldData, bool isSynthesize)
+	    {
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessUngroupedFullyAgg();}
+	        EventBean[] selectOldEvents = null;
+	        EventBean[] selectNewEvents;
+
+	        if (_prototype.IsSelectRStream)
+	        {
+	            selectOldEvents = GetSelectListEvents(false, isSynthesize, false);
+	        }
+
+	        var eventsPerStream = new EventBean[1];
+	        ResultSetProcessorUtil.ApplyAggViewResult(_aggregationService, _exprEvaluatorContext, newData, oldData, eventsPerStream);
+
+	        // generate new events using select expressions
+	        selectNewEvents = GetSelectListEvents(true, isSynthesize, false);
+
+	        if ((selectNewEvents == null) && (selectOldEvents == null))
+	        {
+	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(null, null);}
+	            return null;
+	        }
+
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AResultSetProcessUngroupedFullyAgg(selectNewEvents, selectOldEvents);}
+	        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
+	    }
+
+	    public EventBean[] GetSelectListEvents(bool isNewData, bool isSynthesize, bool join)
+	    {
+	        if (_prototype.OptionalHavingNode != null)
+	        {
+	            if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
+	            var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoolean()); }
+	            if ((result == null) || (false.Equals(result)))
+	            {
+	                return null;
+	            }
+	        }
+
+	        // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
+	        var theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
+
+	        // The result is always a single row
+	        return new EventBean[] {theEvent};
+	    }
+
+	    private EventBean GetSelectListEvent(bool isNewData, bool isSynthesize, bool join)
+	    {
+	        if (_prototype.OptionalHavingNode != null)
+	        {
+	            if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
+	            var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+	            if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoolean());}
+
+	            if ((result == null) || (false.Equals(result)))
+	            {
+	                return null;
+	            }
+	        }
+
+	        // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
+	        var theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
+
+	        // The result is always a single row
+	        return theEvent;
+	    }
+
+        public static readonly IList<EventBean> EMPTY_EVENT_BEAN_LIST = new EventBean[0]; 
+
+	    public IEnumerator<EventBean> GetEnumerator(Viewable parent)
+	    {
+	        if (!_prototype.IsHistoricalOnly) {
+	            return ObtainEnumerator();
+	        }
+
+	        ResultSetProcessorUtil.ClearAndAggregateUngrouped(_exprEvaluatorContext, _aggregationService, parent);
+
+	        var iterator = ObtainEnumerator();
+	        _aggregationService.ClearResults(_exprEvaluatorContext);
+	        return iterator;
+	    }
+
+	    public IEnumerator<EventBean> GetEnumerator(ISet<MultiKey<EventBean>> joinSet)
+	    {
+	        var result = GetSelectListEvents(true, true, true) ?? EMPTY_EVENT_BEAN_LIST;
+	        return result.GetEnumerator();
+	    }
+
+	    public void Clear()
+	    {
+	        _aggregationService.ClearResults(_exprEvaluatorContext);
+	    }
+
+	    public UniformPair<EventBean[]> ProcessOutputLimitedJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
+	    {
+	        if (outputLimitLimitType == OutputLimitLimitType.LAST) {
+	            return ProcessOutputLimitedJoinLast(joinEventsSet, generateSynthetic);
+	        }
+	        else {
+	            return ProcessOutputLimitedJoinDefault(joinEventsSet, generateSynthetic);
+	        }
+	    }
+
+	    public UniformPair<EventBean[]> ProcessOutputLimitedView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
+	    {
+	        if (outputLimitLimitType == OutputLimitLimitType.LAST) {
+	            return ProcessOutputLimitedViewLast(viewEventsList, generateSynthetic);
+	        }
+	        else {
+	            return ProcessOutputLimitedViewDefault(viewEventsList, generateSynthetic);
+	        }
+	    }
+
+	    public bool HasAggregation
+	    {
+	        get { return true; }
+	    }
+
+	    public void ApplyViewResult(EventBean[] newData, EventBean[] oldData)
         {
-            EventBean[] selectNewEvents = GetSelectListEvents(true, true, false);
-            if (selectNewEvents != null)
-            {
-                return EnumerationHelper<EventBean>.CreateSingletonEnumerator(selectNewEvents[0]);
-            }
+	        var events = new EventBean[1];
+	        ResultSetProcessorUtil.ApplyAggViewResult(_aggregationService, _exprEvaluatorContext, newData, oldData, events);
+	    }
 
-            return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
-        }
+	    public void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+        {
+	        ResultSetProcessorUtil.ApplyAggJoinResult(_aggregationService, _exprEvaluatorContext, newEvents, oldEvents);
+	    }
 
-        public IEnumerator<EventBean> GetEnumerator(ISet<MultiKey<EventBean>> joinSet)
-        {
-            EventBean[] result = GetSelectListEvents(true, true, true);
-            return ((IEnumerable<EventBean>) result).GetEnumerator();
-        }
-    
-        public void Clear()
-        {
-            AggregationService.ClearResults(ExprEvaluatorContext);
-        }
-    
-        public UniformPair<EventBean[]> ProcessOutputLimitedJoin(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
-        {
-            if (outputLimitLimitType == OutputLimitLimitType.LAST)
-            {
-                EventBean lastOldEvent = null;
-                EventBean lastNewEvent = null;
-    
-                // if empty (nothing to post)
-                if (joinEventsSet.IsEmpty())
-                {
-                    if (Prototype.IsSelectRStream)
-                    {
-                        lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
-                        lastNewEvent = lastOldEvent;
-                    }
-                    else
-                    {
-                        lastNewEvent = GetSelectListEvent(false, generateSynthetic, true);
-                    }
-                }
-    
-                foreach (UniformPair<ISet<MultiKey<EventBean>>> pair in joinEventsSet)
-                {
-                    if (Prototype.IsUnidirectional)
-                    {
-                        Clear();
-                    }
-    
-                    ICollection<MultiKey<EventBean>> newData = pair.First;
-                    ICollection<MultiKey<EventBean>> oldData = pair.Second;
-    
-                    if ((lastOldEvent == null) && (Prototype.IsSelectRStream))
-                    {
-                        lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
-                    }
-    
-                    if (newData != null)
-                    {
-                        // apply new data to aggregates
-                        foreach (MultiKey<EventBean> eventsPerStream in newData)
-                        {
-                            AggregationService.ApplyEnter(eventsPerStream.Array, null, ExprEvaluatorContext);
-                        }
-                    }
-                    if (oldData != null)
-                    {
-                        // apply old data to aggregates
-                        foreach (MultiKey<EventBean> eventsPerStream in oldData)
-                        {
-                            AggregationService.ApplyLeave(eventsPerStream.Array, null, ExprEvaluatorContext);
-                        }
-                    }
-    
-                    lastNewEvent = GetSelectListEvent(true, generateSynthetic, true);
-                }
-    
-                EventBean[] lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;
-                EventBean[] lastOld = (lastOldEvent != null) ? new EventBean[] {lastOldEvent} : null;
-    
-                if ((lastNew == null) && (lastOld == null))
-                {
-                    return null;
-                }
-                return new UniformPair<EventBean[]>(lastNew, lastOld);
-            }
-            else
-            {
-                ICollection<EventBean> newEvents = new List<EventBean>();
-                ICollection<EventBean> oldEvents = null;
-                if (Prototype.IsSelectRStream)
-                {
-                    oldEvents = new LinkedList<EventBean>();
-                }
+	    public AggregationService AggregationService
+	    {
+	        get { return _aggregationService; }
+	    }
 
-                ICollection<Object> newEventsSortKey = null;
-                ICollection<Object> oldEventsSortKey = null;
-                if (_orderByProcessor != null)
-                {
-                    newEventsSortKey = new LinkedList<Object>();
-                    if (Prototype.IsSelectRStream)
-                    {
-                        oldEventsSortKey = new LinkedList<Object>();
-                    }
-                }
-    
-                foreach (UniformPair<ISet<MultiKey<EventBean>>> pair in joinEventsSet)
-                {
-                    if (Prototype.IsUnidirectional)
-                    {
-                        Clear();
-                    }
-    
-                    ICollection<MultiKey<EventBean>> newData = pair.First;
-                    ICollection<MultiKey<EventBean>> oldData = pair.Second;
-    
-                    if (Prototype.IsSelectRStream)
-                    {
-                        GetSelectListEvent(false, generateSynthetic, oldEvents, true);
-                    }
-    
-                    if (newData != null)
-                    {
-                        // apply new data to aggregates
-                        foreach (MultiKey<EventBean> row in newData)
-                        {
-                            AggregationService.ApplyEnter(row.Array, null, ExprEvaluatorContext);
-                        }
-                    }
-                    if (oldData != null)
-                    {
-                        // apply old data to aggregates
-                        foreach (MultiKey<EventBean> row in oldData)
-                        {
-                            AggregationService.ApplyLeave(row.Array, null, ExprEvaluatorContext);
-                        }
-                    }
-    
-                    GetSelectListEvent(false, generateSynthetic, newEvents, true);
-                }
-    
-                EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
-                EventBean[] oldEventsArr = null;
-                if (Prototype.IsSelectRStream)
-                {
-                    oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
-                }
-    
-                if (_orderByProcessor != null)
-                {
-                    Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
-                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, ExprEvaluatorContext);
-                    if (Prototype.IsSelectRStream)
-                    {
-                        Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
-                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, ExprEvaluatorContext);
-                    }
-                }
-    
-                if (joinEventsSet.IsEmpty())
-                {
-                    if (Prototype.IsSelectRStream)
-                    {
-                        oldEventsArr = GetSelectListEvents(false, generateSynthetic, true);
-                    }
-                    newEventsArr = GetSelectListEvents(true, generateSynthetic, true);
-                }
-    
-                if ((newEventsArr == null) && (oldEventsArr == null))
-                {
-                    return null;
-                }
-                return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
-            }
-        }
-    
-        public UniformPair<EventBean[]> ProcessOutputLimitedView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic, OutputLimitLimitType outputLimitLimitType)
-        {
-            if (outputLimitLimitType == OutputLimitLimitType.LAST)
-            {
-                // For last, if there are no events:
-                //   As insert stream, return the current value, if matching the having clause
-                //   As remove stream, return the current value, if matching the having clause
-                // For last, if there are events in the batch:
-                //   As insert stream, return the newest value that is matching the having clause
-                //   As remove stream, return the oldest value that is matching the having clause
-    
-                EventBean lastOldEvent = null;
-                EventBean lastNewEvent = null;
-                EventBean[] eventsPerStream = new EventBean[1];
-    
-                // if empty (nothing to post)
-                if (viewEventsList.IsEmpty())
-                {
-                    if (Prototype.IsSelectRStream)
-                    {
-                        lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
-                        lastNewEvent = lastOldEvent;
-                    }
-                    else
-                    {
-                        lastNewEvent = GetSelectListEvent(false, generateSynthetic, false);
-                    }
-                }
-    
-                foreach (UniformPair<EventBean[]> pair in viewEventsList)
-                {
-                    EventBean[] newData = pair.First;
-                    EventBean[] oldData = pair.Second;
-    
-                    if ((lastOldEvent == null) && (Prototype.IsSelectRStream))
-                    {
-                        lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
-                    }
-    
-                    if (newData != null)
-                    {
-                        // apply new data to aggregates
-                        foreach (EventBean aNewData in newData)
-                        {
-                            eventsPerStream[0] = aNewData;
-                            AggregationService.ApplyEnter(eventsPerStream, null, ExprEvaluatorContext);
-                        }
-                    }
-                    if (oldData != null)
-                    {
-                        // apply old data to aggregates
-                        foreach (EventBean anOldData in oldData)
-                        {
-                            eventsPerStream[0] = anOldData;
-                            AggregationService.ApplyLeave(eventsPerStream, null, ExprEvaluatorContext);
-                        }
-                    }
-    
-                    lastNewEvent = GetSelectListEvent(false, generateSynthetic, false);
-                }
-    
-                EventBean[] lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;
-                EventBean[] lastOld = (lastOldEvent != null) ? new EventBean[] {lastOldEvent} : null;
-    
-                if ((lastNew == null) && (lastOld == null))
-                {
-                    return null;
-                }
-                return new UniformPair<EventBean[]>(lastNew, lastOld);
-            }
-            else
-            {
-                ICollection<EventBean> newEvents = new List<EventBean>();
-                ICollection<EventBean> oldEvents = null;
-                if (Prototype.IsSelectRStream)
-                {
-                    oldEvents = new LinkedList<EventBean>();
-                }
+	    public void Stop() {
+	        if (_outputLastHelper != null) {
+	            _outputLastHelper.Destroy();
+	        }
+	        if (_outputAllHelper != null) {
+	            _outputAllHelper.Destroy();
+	        }
+	    }
 
-                ICollection<Object> newEventsSortKey = null;
-                ICollection<Object> oldEventsSortKey = null;
-                if (_orderByProcessor != null)
-                {
-                    newEventsSortKey = new LinkedList<Object>();
-                    if (Prototype.IsSelectRStream)
-                    {
-                        oldEventsSortKey = new LinkedList<Object>();
-                    }
-                }
-    
-                foreach (UniformPair<EventBean[]> pair in viewEventsList)
-                {
-                    EventBean[] newData = pair.First;
-                    EventBean[] oldData = pair.Second;
-    
-                    if (Prototype.IsSelectRStream)
-                    {
-                        GetSelectListEvent(false, generateSynthetic, oldEvents, false);
-                    }
-    
-                    EventBean[] eventsPerStream = new EventBean[1];
-                    if (newData != null)
-                    {
-                        // apply new data to aggregates
-                        foreach (EventBean aNewData in newData)
-                        {
-                            eventsPerStream[0] = aNewData;
-                            AggregationService.ApplyEnter(eventsPerStream, null, ExprEvaluatorContext);
-                        }
-                    }
-                    if (oldData != null)
-                    {
-                        // apply old data to aggregates
-                        foreach (EventBean anOldData in oldData)
-                        {
-                            eventsPerStream[0] = anOldData;
-                            AggregationService.ApplyLeave(eventsPerStream, null, ExprEvaluatorContext);
-                        }
-                    }
-    
-                    GetSelectListEvent(true, generateSynthetic, newEvents, false);
-                }
-    
-                EventBean[] newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
-                EventBean[] oldEventsArr = null;
-                if (Prototype.IsSelectRStream)
-                {
-                    oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
-                }
-                if (_orderByProcessor != null)
-                {
-                    Object[] sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
-                    newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, ExprEvaluatorContext);
-                    if (Prototype.IsSelectRStream)
-                    {
-                        Object[] sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
-                        oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, ExprEvaluatorContext);
-                    }
-                }
-    
-                if (viewEventsList.IsEmpty())
-                {
-                    if (Prototype.IsSelectRStream)
-                    {
-                        oldEventsArr = GetSelectListEvents(false, generateSynthetic, false);
-                    }
-                    newEventsArr = GetSelectListEvents(true, generateSynthetic, false);
-                }
-    
-                if ((newEventsArr == null) && (oldEventsArr == null))
-                {
-                    return null;
-                }
-                return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
-            }
-        }
+	    public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll) {
+	        if (isAll) {
+	            _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+	        }
+	        else {
+	            _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
+	        }
+	    }
 
-        public bool HasAggregation
-        {
-            get { return true; }
-        }
+	    public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll) {
+	        if (isAll) {
+	            _outputAllHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+	        }
+	        else {
+	            _outputLastHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
+	        }
+	    }
 
-        public void ApplyViewResult(EventBean[] newData, EventBean[] oldData)
+	    public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
         {
-            EventBean[] events = new EventBean[1];
-            ResultSetProcessorUtil.ApplyAggViewResult(AggregationService, ExprEvaluatorContext, newData, oldData, events);
-        }
+	        if (isAll) {
+	            return _outputAllHelper.OutputView(isSynthesize);
+	        }
+	        return _outputLastHelper.OutputView(isSynthesize);
+	    }
 
-        public void ApplyJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents)
+	    public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
         {
-            ResultSetProcessorUtil.ApplyAggJoinResult(AggregationService, ExprEvaluatorContext, newEvents, oldEvents);
-        }
+	        if (isAll) {
+	            return _outputAllHelper.OutputJoin(isSynthesize);
+	        }
+	        return _outputLastHelper.OutputJoin(isSynthesize);
+	    }
 
-        public void ProcessOutputLimitedLastAllNonBufferedView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic, bool isAll)
-        {
-            if (isAll)
-            {
-                _outputAllHelper.ProcessView(newData, oldData, isGenerateSynthetic);
-            }
-            else
-            {
-                _outputLastHelper.ProcessView(newData, oldData, isGenerateSynthetic);
-            }
-        }
+	    private void GetSelectListEvent(bool isNewData, bool isSynthesize, IList<EventBean> resultEvents, bool join)
+	    {
+	        if (_prototype.OptionalHavingNode != null)
+	        {
+	            if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
+	            var result = _prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, _exprEvaluatorContext));
+                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoolean()); }
+	            if ((result == null) || (false.Equals(result)))
+	            {
+	                return;
+	            }
+	        }
 
-        public void ProcessOutputLimitedLastAllNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isGenerateSynthetic, bool isAll)
-        {
-            if (isAll)
-            {
-                _outputAllHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
-            }
-            else
-            {
-                _outputLastHelper.ProcessJoin(newEvents, oldEvents, isGenerateSynthetic);
-            }
-        }
+	        // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
+	        var theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, _exprEvaluatorContext);
 
-        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize, bool isAll)
-        {
-            if (isAll)
-            {
-                return _outputAllHelper.OutputView(isSynthesize);
-            }
-            return _outputLastHelper.OutputView(isSynthesize);
-        }
+	        resultEvents.Add(theEvent);
+	    }
 
-        public UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedJoin(bool isSynthesize, bool isAll)
+	    private UniformPair<EventBean[]> ProcessOutputLimitedJoinDefault(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
         {
-            if (isAll)
-            {
-                return _outputAllHelper.OutputJoin(isSynthesize);
-            }
-            return _outputLastHelper.OutputJoin(isSynthesize);
-        }
+	        IList<EventBean> newEvents = new List<EventBean>();
+	        IList<EventBean> oldEvents = null;
+	        if (_prototype.IsSelectRStream)
+	        {
+	            oldEvents = new List<EventBean>();
+	        }
 
-        private void GetSelectListEvent(bool isNewData, bool isSynthesize, ICollection<EventBean> resultEvents, bool join)
+	        IList<object> newEventsSortKey = null;
+	        IList<object> oldEventsSortKey = null;
+	        if (_orderByProcessor != null)
+	        {
+	            newEventsSortKey = new List<object>();
+	            if (_prototype.IsSelectRStream)
+	            {
+	                oldEventsSortKey = new List<object>();
+	            }
+	        }
+
+	        foreach (var pair in joinEventsSet)
+	        {
+	            if (_prototype.IsUnidirectional)
+	            {
+	                Clear();
+	            }
+
+	            var newData = pair.First;
+	            var oldData = pair.Second;
+
+	            if (_prototype.IsSelectRStream)
+	            {
+	                GetSelectListEvent(false, generateSynthetic, oldEvents, true);
+	            }
+
+	            if (newData != null)
+	            {
+	                // apply new data to aggregates
+	                foreach (var row in newData)
+	                {
+	                    _aggregationService.ApplyEnter(row.Array, null, _exprEvaluatorContext);
+	                }
+	            }
+	            if (oldData != null)
+	            {
+	                // apply old data to aggregates
+	                foreach (var row in oldData)
+	                {
+	                    _aggregationService.ApplyLeave(row.Array, null, _exprEvaluatorContext);
+	                }
+	            }
+
+	            GetSelectListEvent(false, generateSynthetic, newEvents, true);
+	        }
+
+	        var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+	        EventBean[] oldEventsArr = null;
+	        if (_prototype.IsSelectRStream)
+	        {
+	            oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
+	        }
+
+	        if (_orderByProcessor != null)
+	        {
+	            var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
+	            newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _exprEvaluatorContext);
+	            if (_prototype.IsSelectRStream)
+	            {
+	                var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
+	                oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _exprEvaluatorContext);
+	            }
+	        }
+
+	        if (joinEventsSet.IsEmpty())
+	        {
+	            if (_prototype.IsSelectRStream)
+	            {
+	                oldEventsArr = GetSelectListEvents(false, generateSynthetic, true);
+	            }
+	            newEventsArr = GetSelectListEvents(true, generateSynthetic, true);
+	        }
+
+	        if ((newEventsArr == null) && (oldEventsArr == null))
+	        {
+	            return null;
+	        }
+	        return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
+	    }
+
+	    private UniformPair<EventBean[]> ProcessOutputLimitedJoinLast(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
         {
-            if (Prototype.OptionalHavingNode != null)
-            {
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().QHavingClauseNonJoin(null); else InstrumentationHelper.Get().QHavingClauseJoin(null);}
-                var result = Prototype.OptionalHavingNode.Evaluate(new EvaluateParams(null, isNewData, ExprEvaluatorContext));
-                if (InstrumentationHelper.ENABLED) { if (!join) InstrumentationHelper.Get().AHavingClauseNonJoin(result.AsBoxedBoolean()); else InstrumentationHelper.Get().AHavingClauseJoin(result.AsBoxedBoolean()); }
-                if ((result == null) || (false.Equals(result)))
-                {
-                    return;
-                }
-            }
-    
-            // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-            EventBean theEvent = _selectExprProcessor.Process(CollectionUtil.EVENTBEANARRAY_EMPTY, isNewData, isSynthesize, ExprEvaluatorContext);
-    
-            resultEvents.Add(theEvent);
-        }
-    }
-}
+	        EventBean lastOldEvent = null;
+	        EventBean lastNewEvent = null;
+
+	        // if empty (nothing to post)
+	        if (joinEventsSet.IsEmpty())
+	        {
+	            if (_prototype.IsSelectRStream)
+	            {
+	                lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
+	                lastNewEvent = lastOldEvent;
+	            }
+	            else
+	            {
+	                lastNewEvent = GetSelectListEvent(false, generateSynthetic, true);
+	            }
+	        }
+
+	        foreach (var pair in joinEventsSet)
+	        {
+	            if (_prototype.IsUnidirectional)
+	            {
+	                Clear();
+	            }
+
+	            var newData = pair.First;
+	            var oldData = pair.Second;
+
+	            if ((lastOldEvent == null) && (_prototype.IsSelectRStream))
+	            {
+	                lastOldEvent = GetSelectListEvent(false, generateSynthetic, true);
+	            }
+
+	            if (newData != null)
+	            {
+	                // apply new data to aggregates
+	                foreach (var eventsPerStream in newData)
+	                {
+	                    _aggregationService.ApplyEnter(eventsPerStream.Array, null, _exprEvaluatorContext);
+	                }
+	            }
+	            if (oldData != null)
+	            {
+	                // apply old data to aggregates
+	                foreach (var eventsPerStream in oldData)
+	                {
+	                    _aggregationService.ApplyLeave(eventsPerStream.Array, null, _exprEvaluatorContext);
+	                }
+	            }
+
+	            lastNewEvent = GetSelectListEvent(true, generateSynthetic, true);
+	        }
+
+	        var lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;
+	        var lastOld = (lastOldEvent != null) ? new EventBean[] {lastOldEvent} : null;
+
+	        if ((lastNew == null) && (lastOld == null))
+	        {
+	            return null;
+	        }
+	        return new UniformPair<EventBean[]>(lastNew, lastOld);
+	    }
+
+	    private UniformPair<EventBean[]> ProcessOutputLimitedViewDefault(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
+        {
+	        IList<EventBean> newEvents = new List<EventBean>();
+	        IList<EventBean> oldEvents = null;
+	        if (_prototype.IsSelectRStream)
+	        {
+	            oldEvents = new List<EventBean>();
+	        }
+
+	        IList<object> newEventsSortKey = null;
+	        IList<object> oldEventsSortKey = null;
+	        if (_orderByProcessor != null)
+	        {
+	            newEventsSortKey = new List<object>();
+	            if (_prototype.IsSelectRStream)
+	            {
+	                oldEventsSortKey = new List<object>();
+	            }
+	        }
+
+	        foreach (var pair in viewEventsList)
+	        {
+	            var newData = pair.First;
+	            var oldData = pair.Second;
+
+	            if (_prototype.IsSelectRStream)
+	            {
+	                GetSelectListEvent(false, generateSynthetic, oldEvents, false);
+	            }
+
+	            var eventsPerStream = new EventBean[1];
+	            if (newData != null)
+	            {
+	                // apply new data to aggregates
+	                foreach (var aNewData in newData)
+	                {
+	                    eventsPerStream[0] = aNewData;
+	                    _aggregationService.ApplyEnter(eventsPerStream, null, _exprEvaluatorContext);
+	                }
+	            }
+	            if (oldData != null)
+	            {
+	                // apply old data to aggregates
+	                foreach (var anOldData in oldData)
+	                {
+	                    eventsPerStream[0] = anOldData;
+	                    _aggregationService.ApplyLeave(eventsPerStream, null, _exprEvaluatorContext);
+	                }
+	            }
+
+	            GetSelectListEvent(true, generateSynthetic, newEvents, false);
+	        }
+
+	        var newEventsArr = (newEvents.IsEmpty()) ? null : newEvents.ToArray();
+	        EventBean[] oldEventsArr = null;
+	        if (_prototype.IsSelectRStream)
+	        {
+	            oldEventsArr = (oldEvents.IsEmpty()) ? null : oldEvents.ToArray();
+	        }
+	        if (_orderByProcessor != null)
+	        {
+	            var sortKeysNew = (newEventsSortKey.IsEmpty()) ? null : newEventsSortKey.ToArray();
+	            newEventsArr = _orderByProcessor.Sort(newEventsArr, sortKeysNew, _exprEvaluatorContext);
+	            if (_prototype.IsSelectRStream)
+	            {
+	                var sortKeysOld = (oldEventsSortKey.IsEmpty()) ? null : oldEventsSortKey.ToArray();
+	                oldEventsArr = _orderByProcessor.Sort(oldEventsArr, sortKeysOld, _exprEvaluatorContext);
+	            }
+	        }
+
+	        if (viewEventsList.IsEmpty())
+	        {
+	            if (_prototype.IsSelectRStream)
+	            {
+	                oldEventsArr = GetSelectListEvents(false, generateSynthetic, false);
+	            }
+	            newEventsArr = GetSelectListEvents(true, generateSynthetic, false);
+	        }
+
+	        if ((newEventsArr == null) && (oldEventsArr == null))
+	        {
+	            return null;
+	        }
+	        return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
+	    }
+
+	    private UniformPair<EventBean[]> ProcessOutputLimitedViewLast(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
+        {
+	        // For last, if there are no events:
+	        //   As insert stream, return the current value, if matching the having clause
+	        //   As remove stream, return the current value, if matching the having clause
+	        // For last, if there are events in the batch:
+	        //   As insert stream, return the newest value that is matching the having clause
+	        //   As remove stream, return the oldest value that is matching the having clause
+
+	        EventBean lastOldEvent = null;
+	        EventBean lastNewEvent = null;
+	        var eventsPerStream = new EventBean[1];
+
+	        // if empty (nothing to post)
+	        if (viewEventsList.IsEmpty())
+	        {
+	            if (_prototype.IsSelectRStream)
+	            {
+	                lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
+	                lastNewEvent = lastOldEvent;
+	            }
+	            else
+	            {
+	                lastNewEvent = GetSelectListEvent(false, generateSynthetic, false);
+	            }
+	        }
+
+	        foreach (var pair in viewEventsList)
+	        {
+	            var newData = pair.First;
+	            var oldData = pair.Second;
+
+	            if ((lastOldEvent == null) && (_prototype.IsSelectRStream))
+	            {
+	                lastOldEvent = GetSelectListEvent(false, generateSynthetic, false);
+	            }
+
+	            if (newData != null)
+	            {
+	                // apply new data to aggregates
+	                foreach (var aNewData in newData)
+	                {
+	                    eventsPerStream[0] = aNewData;
+	                    _aggregationService.ApplyEnter(eventsPerStream, null, _exprEvaluatorContext);
+	                }
+	            }
+	            if (oldData != null)
+	            {
+	                // apply old data to aggregates
+	                foreach (var anOldData in oldData)
+	                {
+	                    eventsPerStream[0] = anOldData;
+	                    _aggregationService.ApplyLeave(eventsPerStream, null, _exprEvaluatorContext);
+	                }
+	            }
+
+	            lastNewEvent = GetSelectListEvent(false, generateSynthetic, false);
+	        }
+
+	        var lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;
+	        var lastOld = (lastOldEvent != null) ? new EventBean[] {lastOldEvent} : null;
+
+	        if ((lastNew == null) && (lastOld == null))
+	        {
+	            return null;
+	        }
+	        return new UniformPair<EventBean[]>(lastNew, lastOld);
+	    }
+
+	    private IEnumerator<EventBean> ObtainEnumerator()
+	    {
+	        var selectNewEvents = GetSelectListEvents(true, true, false);
+	        return selectNewEvents != null 
+                ? EnumerationHelper<EventBean>.CreateSingletonEnumerator(selectNewEvents[0])
+                : EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+	    }
+	}
+} // end of namespace

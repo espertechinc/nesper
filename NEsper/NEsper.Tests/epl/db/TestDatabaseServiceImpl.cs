@@ -19,7 +19,6 @@ using com.espertech.esper.timer;
 
 using NUnit.Framework;
 
-
 namespace com.espertech.esper.epl.db
 {
     [TestFixture]
@@ -32,7 +31,7 @@ namespace com.espertech.esper.epl.db
         {
             IDictionary<String, ConfigurationDBRef> configs = new Dictionary<String, ConfigurationDBRef>();
     
-            ConfigurationDBRef config = new ConfigurationDBRef();
+            var config = new ConfigurationDBRef();
             config.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative); 
             configs["name1"] = config;
     
@@ -54,7 +53,7 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestGetConnection()
         {
-            DatabaseConnectionFactory factory = _databaseServiceImpl.GetConnectionFactory("name1");
+            var factory = _databaseServiceImpl.GetConnectionFactory("name1");
             Assert.IsTrue(factory is DatabaseDriverConnFactory);
     
             factory = _databaseServiceImpl.GetConnectionFactory("name2");
@@ -64,12 +63,14 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestGetCache()
         {
-            Assert.IsTrue(_databaseServiceImpl.GetDataCache("name1", null) is DataCacheNullImpl);
-    
-            DataCacheLRUImpl lru = (DataCacheLRUImpl) _databaseServiceImpl.GetDataCache("name2", null);
+            var dataCacheFactory = new DataCacheFactory();
+
+            Assert.That(_databaseServiceImpl.GetDataCache("name1", null, null, dataCacheFactory, 0), Is.InstanceOf<DataCacheNullImpl>());
+
+            var lru = (DataCacheLRUImpl) _databaseServiceImpl.GetDataCache("name2", null, null, dataCacheFactory, 0);
             Assert.AreEqual(10000, lru.CacheSize);
-    
-            DataCacheExpiringImpl exp = (DataCacheExpiringImpl) _databaseServiceImpl.GetDataCache("name3", null);
+
+            var exp = (DataCacheExpiringImpl) _databaseServiceImpl.GetDataCache("name3", null, null, dataCacheFactory, 0);
             Assert.AreEqual(1000, exp.MaxAgeMSec);
             Assert.AreEqual(3000, exp.PurgeIntervalMSec);
         }

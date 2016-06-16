@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 
@@ -20,8 +21,8 @@ namespace com.espertech.esper.epl.view
     {
         private readonly OutputStrategyPostProcess _postProcessor;
 
-        public OutputProcessViewDirectDistinctOrAfterPostProcess(ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewDirectDistinctOrAfterFactory parent, OutputStrategyPostProcess postProcessor)
-            : base(resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent)
+        public OutputProcessViewDirectDistinctOrAfterPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewDirectDistinctOrAfterFactory parent, OutputStrategyPostProcess postProcessor)
+            : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent)
         {
             _postProcessor = postProcessor;
         }

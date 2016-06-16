@@ -9,26 +9,20 @@
 
 using System;
 
+using com.espertech.esper.util;
+
 namespace com.espertech.esper.pattern
 {
     /// <summary>
     /// Interface for executing a Stop on an active event expression.
     /// </summary>
-    public interface PatternStopCallback
+    public interface PatternStopCallback : StopCallback
     {
-        void Stop();
     }
 
-    public class ProxyPatternStopCallback : PatternStopCallback
+    public class ProxyPatternStopCallback : ProxyStopCallback, PatternStopCallback
     {
-        public Action ProcStop { get; set; }
-
-        /// <summary>
-        /// Stops this instance.
-        /// </summary>
-        public void Stop()
-        {
-            ProcStop();
-        }
+        public ProxyPatternStopCallback() { }
+        public ProxyPatternStopCallback(Action procStop) : base(procStop) { }
     }
 }

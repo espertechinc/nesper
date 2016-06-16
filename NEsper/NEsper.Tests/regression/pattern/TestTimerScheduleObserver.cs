@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.pattern
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _listener = new SupportUpdateListener();
 	        _epService.Initialize();
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
 	    }
 

@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.AddXPathProperty("xpathAttrNumTwo", "/myevent/@attrnumtwo", XPathResultType.String, "long");
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.RootElementName = "my.event2";
             configuration.AddEventType("TestXMLWithDots", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.IsXPathPropertyExpr = false;    // <== DOM getter
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regression.events
             xmlDOMEventTypeDesc.IsXPathPropertyExpr = true;    // <== XPath getter
             configuration.AddEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
-            _epService = EPServiceProviderManager.GetProvider("TestNoSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             

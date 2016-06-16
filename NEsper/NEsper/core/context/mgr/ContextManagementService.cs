@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
@@ -20,13 +21,15 @@ namespace com.espertech.esper.core.context.mgr
         void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient, EventType statementResultEventType);
         int ContextCount { get; }
 
-        ContextDescriptor GetContextDescriptor(String contextName);
+        ContextDescriptor GetContextDescriptor(string contextName);
 
-        void AddStatement(String contextName, ContextControllerStatementBase statement, bool isRecoveringResilient);
-        void StoppedStatement(String contextName, String statementName, String statementId);
-        void DestroyedStatement(String contextName, String statementName, String statementId);
+        void AddStatement(string contextName, ContextControllerStatementBase statement, bool isRecoveringResilient);
+        void StoppedStatement(string contextName, string statementName, int statementId, string epl, ExceptionHandlingService exceptionHandlingService);
+        void DestroyedStatement(string contextName, string statementName, int statementId);
     
         void DestroyedContext(String contextName);
+
+        IDictionary<string, ContextManagerEntry> Contexts { get; }
 
         ContextManager GetContextManager(String contextName);
     }

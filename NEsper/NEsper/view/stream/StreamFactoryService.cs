@@ -36,21 +36,23 @@ namespace com.espertech.esper.view.stream
         /// <param name="filterService">filter service to activate filter if not already active</param>
         /// <param name="epStatementAgentInstanceHandle">is the statements-own handle for use in registering callbacks with services</param>
         /// <param name="isJoin">is indicatng whether the stream will participate in a join statement, informationnecessary for stream reuse and multithreading concerns</param>
-        /// <param name="exprEvaluatorContext">expression evaluation context</param>
+        /// <param name="agentInstanceContext">The agent instance context.</param>
         /// <param name="hasOrderBy">if the consumer has order-by</param>
         /// <param name="filterWithSameTypeSubselect">if set to <c>true</c> [filter with same type subselect].</param>
         /// <param name="annotations">The annotations.</param>
         /// <param name="stateless">if set to <c>true</c> [stateless].</param>
         /// <param name="streamNum">The stream num.</param>
         /// <param name="isCanIterateUnbound">if set to <c>true</c> [is can iterate unbound].</param>
-        /// <returns>event stream representing active filter</returns>
+        /// <returns>
+        /// event stream representing active filter
+        /// </returns>
         Pair<EventStream, IReaderWriterLock> CreateStream(
-            String statementId,
+            int statementId,
             FilterSpecCompiled filterSpec,
             FilterService filterService,
             EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
             bool isJoin,
-            ExprEvaluatorContext exprEvaluatorContext,
+            AgentInstanceContext agentInstanceContext,
             bool hasOrderBy,
             bool filterWithSameTypeSubselect,
             Attribute[] annotations,

@@ -147,6 +147,8 @@ namespace com.espertech.esper.regression.events
             // try enum with keyword
             TryEnumWithKeyword();
 
+            TryEnumItselfReserved();
+
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
         }
 
@@ -400,6 +402,13 @@ namespace com.espertech.esper.regression.events
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
         }
 
+        private void TryEnumItselfReserved()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<LocalEventWithGroup>();
+            _epService.EPAdministrator.Configuration.AddImport<GROUP>();
+            _epService.EPAdministrator.CreateEPL("select * from LocalEventWithGroup(`GROUP`=`GROUP`.FOO)");
+        }
+
         public class LocalEventWithEnum
         {
             public LocalEventEnum LocalEventEnum { get; private set; }
@@ -412,6 +421,22 @@ namespace com.espertech.esper.regression.events
         public enum LocalEventEnum
         {
             NEW
+        }
+
+        public class LocalEventWithGroup
+        {
+            public LocalEventWithGroup(GROUP groupGroup)
+            {
+                GROUP = groupGroup;
+            }
+
+            public GROUP GROUP { get; private set; }
+        }
+
+        public enum GROUP
+        {
+            FOO,
+            BAR
         }
     }
 }

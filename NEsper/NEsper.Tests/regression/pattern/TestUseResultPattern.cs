@@ -170,8 +170,7 @@ namespace com.espertech.esper.regression.pattern
             // Test for ESPER-121
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType<SupportTradeEvent>("FxTradeEvent");
-            EPServiceProvider epService = EPServiceProviderManager.GetProvider(
-                    "testRFIDZoneEnter", config);
+            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
     

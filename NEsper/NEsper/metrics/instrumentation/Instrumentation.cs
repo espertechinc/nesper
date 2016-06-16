@@ -445,13 +445,13 @@ namespace com.espertech.esper.metrics.instrumentation
 	    void QInfraMergeWhenThenActionItem(int count, string actionName);
 	    void AInfraMergeWhenThenActionItem(bool applies);
 
-	    void QEngineManagementStmtCompileStart(string engineURI, string statementId, string statementName, string epl, long engineTime);
+	    void QEngineManagementStmtCompileStart(string engineURI, int statementId, string statementName, string epl, long engineTime);
 	    void AEngineManagementStmtCompileStart(bool success, string message);
-	    void QaEngineManagementStmtStarted(string engineURI, string statementId, string statementName, string epl, long engineTime);
-	    void QEngineManagementStmtStop(EPStatementState targetState, string engineURI, string statementId, string statementName, string epl, long engineTime);
+	    void QaEngineManagementStmtStarted(string engineURI, int statementId, string statementName, string epl, long engineTime);
+	    void QEngineManagementStmtStop(EPStatementState targetState, string engineURI, int statementId, string statementName, string epl, long engineTime);
 	    void AEngineManagementStmtStop();
 
-	    void QaStatementResultExecute(UniformPair<EventBean[]> events, string statementId, string statementName, int agentInstanceId, long threadId);
+	    void QaStatementResultExecute(UniformPair<EventBean[]> events, int statementId, string statementName, int agentInstanceId, long threadId);
 
 	    void QSplitStream(bool all, EventBean theEvent, ExprEvaluator[] whereClauses);
 	    void ASplitStream(bool all, bool handled);

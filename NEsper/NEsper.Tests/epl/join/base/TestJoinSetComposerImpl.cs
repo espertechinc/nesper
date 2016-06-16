@@ -40,9 +40,9 @@ namespace com.espertech.esper.epl.join.@base
             _newEventOne = SupportEventBeanFactory.MakeEvents(new String[] { "s1_3"});
             _newEventTwo = SupportEventBeanFactory.MakeEvents(new String[] { "s2_3"});
     
-            _indexLeft = new UnindexedEventTable(1);
+            _indexLeft = new UnindexedEventTableImpl(1);
             _indexLeft.Add(_indexedEventOne);
-            _indexRight = new UnindexedEventTable(1);
+            _indexRight = new UnindexedEventTableImpl(1);
             _indexRight.Add(_indexedEventTwo);
     
             var queryStrategies = new QueryStrategy[2];
@@ -57,7 +57,7 @@ namespace com.espertech.esper.epl.join.@base
             indexes[0].Put(new TableLookupIndexReqKey("idxLeft"), _indexLeft);
             indexes[1].Put(new TableLookupIndexReqKey("idxLeft"), _indexRight);
     
-            _joinSetComposerImpl = new JoinSetComposerImpl(indexes, queryStrategies, false, null, true);
+            _joinSetComposerImpl = new JoinSetComposerImpl(true, indexes, queryStrategies, false, null, true);
         }
     
         [Test]

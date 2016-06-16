@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.IO.Ports;
+
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 
@@ -29,7 +31,11 @@ namespace com.espertech.esper.epl.core
         public EventBean Transform(EventBean theEvent)
         {
             _newData[0] = theEvent;
-            UniformPair<EventBean[]> pair = _resultSetProcessor.ProcessViewResult(_newData, null, true);
+            var pair = _resultSetProcessor.ProcessViewResult(_newData, null, true);
+            if (pair == null)
+                return null;
+            if (pair.First == null)
+                return null;
             return pair.First[0];
         }
     }

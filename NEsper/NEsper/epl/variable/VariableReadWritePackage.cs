@@ -14,6 +14,7 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
@@ -90,7 +91,7 @@ namespace com.espertech.esper.epl.variable
                     throw new ExprValidationException("Variable by name '" + variableName + "' is declared constant and may not be set");
                 }
                 if (variableMetadata.ContextPartitionName == null) {
-                    _readersForGlobalVars[count] = variableService.GetReader(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+                    _readersForGlobalVars[count] = variableService.GetReader(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
                 }
     
                 if (subPropertyName != null) {
@@ -214,7 +215,7 @@ namespace com.espertech.esper.epl.variable
                     foreach (var assignment in _assignments)
                     {
                         var variableMetaData = _metaData[count];
-                        int agentInstanceId = variableMetaData.ContextPartitionName == null ? VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID : exprEvaluatorContext.AgentInstanceId;
+                        int agentInstanceId = variableMetaData.ContextPartitionName == null ? EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID : exprEvaluatorContext.AgentInstanceId;
                         var value = assignment.Evaluator.Evaluate(
                             new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
     

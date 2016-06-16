@@ -14,7 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
@@ -29,33 +28,33 @@ namespace com.espertech.esper.view.window
         , DataWindowBatchingViewFactory
     {
         /// <summary>Number of events to collect before batch fires. </summary>
-        protected long NumberOfEvents;
+        private long _numberOfEvents;
 
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            Object[] viewParameters = new Object[expressionParameters.Count];
-            for (int i = 1; i < expressionParameters.Count; i++)
+            var viewParameters = new Object[expressionParameters.Count];
+            for (var i = 1; i < expressionParameters.Count; i++)
             {
                 viewParameters[i] = ViewFactorySupport.ValidateAndEvaluate(
                     ViewName, viewFactoryContext.StatementContext, expressionParameters[i]);
             }
-            String errorMessage = ViewName +
+            var errorMessage = ViewName +
                                   " view requires a numeric or time period parameter as a time interval size, and an integer parameter as a maximal number-of-events, and an optional list of control keywords as a string parameter (please see the documentation)";
             if ((viewParameters.Length != 2) && (viewParameters.Length != 3))
             {
                 throw new ViewParameterException(errorMessage);
             }
 
-            timeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
+            TimeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
                 ViewName, viewFactoryContext.StatementContext, expressionParameters[0], errorMessage, 0);
 
             // parameter 2
-            Object parameter = viewParameters[1];
+            var parameter = viewParameters[1];
             if (!(parameter.IsNumber()) || (TypeHelper.IsFloatingPointNumber(parameter)))
             {
                 throw new ViewParameterException(errorMessage);
             }
-            NumberOfEvents = parameter.AsLong();
+            _numberOfEvents = parameter.AsLong();
 
             if (viewParameters.Length > 2)
             {
@@ -69,26 +68,18 @@ namespace com.espertech.esper.view.window
             ViewFactory optionalParentFactory,
             IList<ViewFactory> parentViewFactories)
         {
-            eventType = parentEventType;
+            base.EventType = parentEventType;
         }
 
         public Object MakePreviousGetter()
         {
-            return new RelativeAccessByEventNIndexMap();
+            return new RelativeAccessByEventNIndexGetterImpl();
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRelativeAccess relativeAccessByEvent =
-                ViewServiceHelper.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
-            return new TimeLengthBatchView(
-                this, agentInstanceViewFactoryContext, timeDeltaComputation, NumberOfEvents, isForceUpdate,
-                isStartEager, relativeAccessByEvent);
-        }
-
-        public EventType EventType
-        {
-            get { return eventType; }
+            var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
+            return new TimeLengthBatchView(this, agentInstanceViewFactoryContext, TimeDeltaComputation, _numberOfEvents, IsForceUpdate, IsStartEager, viewUpdatedCollection);
         }
 
         public bool CanReuse(View view)
@@ -98,19 +89,19 @@ namespace com.espertech.esper.view.window
                 return false;
             }
 
-            TimeLengthBatchView myView = (TimeLengthBatchView) view;
+            var myView = (TimeLengthBatchView) view;
 
-            if (!timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
+            if (!TimeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
             {
                 return false;
             }
 
-            if (myView.NumberOfEvents != NumberOfEvents)
+            if (myView.NumberOfEvents != _numberOfEvents)
             {
                 return false;
             }
 
-            if (myView.IsForceOutput != isForceUpdate)
+            if (myView.IsForceOutput != IsForceUpdate)
             {
                 return false;
             }
@@ -126,6 +117,11 @@ namespace com.espertech.esper.view.window
         public string ViewName
         {
             get { return "Time-Length-Batch"; }
+        }
+
+        public long NumberOfEvents
+        {
+            get { return _numberOfEvents; }
         }
     }
 }

@@ -16,6 +16,8 @@ using NUnit.Core;
 using NUnit.Core.Filters;
 using NUnit.Util;
 
+using com.espertech.esper.client;
+
 namespace NEsper.Tests.Runner
 {
     /// <summary>
@@ -52,7 +54,7 @@ namespace NEsper.Tests.Runner
             
             try
             {
-                var assembly = typeof(com.espertech.esper.client.TestConfiguration).Assembly.Location;
+                var assembly = typeof(TestConfiguration).Assembly.Location;
                 var framework = RuntimeFramework.CurrentFramework;
 
                 var testPackage = new TestPackage(assembly);

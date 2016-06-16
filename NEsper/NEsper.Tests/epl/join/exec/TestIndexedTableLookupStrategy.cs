@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.join.exec
             _eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 
             PropertyIndexedEventTableFactory factory = new PropertyIndexedEventTableFactory(0, _eventType, new String[] { "TheString", "IntPrimitive" }, false, null);
-            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables()[0];
+            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
             _lookupStrategy = new IndexedTableLookupStrategy(_eventType, new String[] {"TheString", "IntPrimitive"}, _propertyMapEventIndex);
     
             _propertyMapEventIndex.Add(new EventBean[] {SupportEventBeanFactory.CreateObject(new SupportBean("a", 1))});

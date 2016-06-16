@@ -20,5 +20,7 @@ namespace com.espertech.esper.epl.view
     	void UpdateOutputCondition(int newEventsCount, int oldEventsCount);
     
         void Terminated();
+
+        void Stop();
     }
 }

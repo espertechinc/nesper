@@ -18,5 +18,10 @@ namespace com.espertech.esper.epl.view
         public override void UpdateOutputCondition(int newEventsCount, int oldEventsCount)
         {
         }
+
+        public override void Stop()
+        {
+            // no action required
+        }
     }
 }

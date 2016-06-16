@@ -35,9 +35,9 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
+            configuration.AddEventType<SupportBean_S1>();
             configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
             epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             epService.Initialize();
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regression.context
                 stmtSelectCount.GetEnumerator();
             }
             catch (UnsupportedOperationException ex) {
-                Assert.AreEqual("Iterator not supported on statements that have a context attached", ex.Message);
+                Assert.AreEqual("GetEnumerator not supported on statements that have a context attached", ex.Message);
             }
         }
     

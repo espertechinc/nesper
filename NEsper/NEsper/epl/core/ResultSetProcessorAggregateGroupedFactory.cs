@@ -12,11 +12,12 @@ using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.view;
 
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result-set processor prototype for the aggregate-grouped case: there is a group-by and 
+    /// Result-set processor _prototype for the aggregate-grouped case: there is a group-by and 
     /// one or more non-aggregation event properties in the select clause are not listed in the 
     /// group by, and there are aggregation functions.
     /// </summary>
@@ -35,6 +36,11 @@ namespace com.espertech.esper.epl.core
         /// <param name="isUnidirectional">true if unidirectional join</param>
         /// <param name="outputLimitSpec">The output limit spec.</param>
         /// <param name="isSorting">if set to <c>true</c> [is sorting].</param>
+        /// <param name="isHistoricalOnly">if set to <c>true</c> [is historical only].</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
+        /// <param name="optionalOutputFirstConditionFactory">The optional output first condition factory.</param>
+        /// <param name="enableOutputLimitOpt">if set to <c>true</c> [enable output limit opt].</param>
+        /// <param name="numStreams">The number streams.</param>
         public ResultSetProcessorAggregateGroupedFactory(
             SelectExprProcessor selectExprProcessor,
             ExprNode[] groupKeyNodeExpressions,
@@ -44,7 +50,11 @@ namespace com.espertech.esper.epl.core
             bool isUnidirectional,
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
-            bool isHistoricalOnly)
+            bool isHistoricalOnly,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            OutputConditionPolledFactory optionalOutputFirstConditionFactory,
+            bool enableOutputLimitOpt,
+            int numStreams)
         {
             _selectExprProcessor = selectExprProcessor;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
@@ -56,6 +66,10 @@ namespace com.espertech.esper.epl.core
             IsUnidirectional = isUnidirectional;
             IsHistoricalOnly = isHistoricalOnly;
             OutputLimitSpec = outputLimitSpec;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
+            IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            NumStreams = numStreams;
         }
     
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
@@ -105,5 +119,18 @@ namespace com.espertech.esper.epl.core
         {
             get { return ResultSetProcessorType.AGGREGATED_GROUPED; }
         }
+
+        public OutputConditionPolledFactory OptionalOutputFirstConditionFactory { get; private set; }
+
+        public bool IsEnableOutputLimitOpt { get; private set; }
+
+        public int NumStreams { get; private set; }
+
+        public bool IsOutputFirst
+        {
+            get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST; }
+        }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
     }
 }

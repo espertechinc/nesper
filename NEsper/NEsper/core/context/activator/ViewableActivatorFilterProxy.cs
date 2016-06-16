@@ -88,7 +88,7 @@ namespace com.espertech.esper.core.context.activator
             var filterServiceEntry = _services.FilterService.Add(filterValueSet, filterHandle);
 
             var stopCallback = new ViewableActivatorFilterProxyStopCallback(this, filterHandle, filterServiceEntry);
-            return new ViewableActivationResult(inputStream, stopCallback.Stop, null, null, null, false, false, null);
+            return new ViewableActivationResult(inputStream, stopCallback, null, null, null, false, false, null);
         }
 
         public EPServicesContext Services

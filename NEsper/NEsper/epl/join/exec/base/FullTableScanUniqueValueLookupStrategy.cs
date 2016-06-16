@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.join.exec.@base
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexJoinLookup(this, _eventIndex); }
-            ISet<EventBean> result = _eventIndex.AllValues();
+            ISet<EventBean> result = _eventIndex.AllValues;
             if (result.IsEmpty())
             {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexJoinLookup(null, null); }

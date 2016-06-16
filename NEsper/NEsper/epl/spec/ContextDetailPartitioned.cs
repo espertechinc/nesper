@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.spec
             Items = items;
         }
 
-        public IList<FilterSpecCompiled> FilterSpecsIfAny
+        public IList<FilterSpecCompiled> ContextDetailFilterSpecs
         {
             get
             {

@@ -119,22 +119,26 @@ namespace com.espertech.esper.epl.agg.service
                 return row;
             }
     
-            row = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggSpecs, groupKey, _groupKeyBinding, null);
+            row = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggSpecs, groupKey, _groupKeyBinding, null, null);
             _accessMap.Put(groupKey, row);
             return row;
         }
     
-        public void SetRemovedCallback(AggregationRowRemovedCallback callback) {
+        public void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
             // not applicable
         }
     
-        public void Accept(AggregationServiceVisitor visitor) {
+        public void Accept(AggregationServiceVisitor visitor)
+        {
             visitor.VisitAggregations(_accessMap.Count, _accessMap);
         }
     
-        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
+        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
             visitor.VisitGrouped(_accessMap.Count);
-            foreach (var entry in _accessMap) {
+            foreach (var entry in _accessMap)
+            {
                 visitor.VisitGroup(entry.Key, entry.Value);
             }
         }
@@ -144,12 +148,18 @@ namespace com.espertech.esper.epl.agg.service
             get { return true; }
         }
 
-        public Object GetGroupKey(int agentInstanceId) {
+        public Object GetGroupKey(int agentInstanceId)
+        {
             return _currentGroupKey;
         }
     
-        public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
             return _accessMap.Keys;
+        }
+
+        public void Stop()
+        {
         }
     }
 }

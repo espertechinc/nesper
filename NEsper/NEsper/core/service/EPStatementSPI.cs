@@ -18,7 +18,7 @@ namespace com.espertech.esper.core.service
     {
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        string StatementId { get; }
+        int StatementId { get; }
         
         /// <summary>Returns the statements expression without annotations. </summary>
         /// <value>expression</value>

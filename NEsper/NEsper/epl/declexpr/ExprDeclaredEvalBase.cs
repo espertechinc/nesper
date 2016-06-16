@@ -177,12 +177,12 @@ namespace com.espertech.esper.epl.declexpr
             }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return _innerEvaluatorLambda != null ? _innerEvaluatorLambda.GetEventTypeCollection(eventAdapterService, statementId) : null;
         }
 
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return _innerEvaluatorLambda != null ? _innerEvaluatorLambda.GetEventTypeSingle(eventAdapterService, statementId) : null;
         }

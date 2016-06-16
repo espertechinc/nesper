@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.context.mgr
             _contextStatePathKey = contextStatePathKey;
         }
     
-        public void Activate(EventBean optionalTriggeringEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringReslient) {
+        public void Activate(EventBean optionalTriggeringEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringResilient) {
             if (PatternStopCallback != null) {
                 PatternStopCallback.Stop();
             }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.core.context.mgr
     
             // capture any callbacks that may occur right after start
             ConditionPatternMatchCallback callback = new ConditionPatternMatchCallback(this);
-            PatternStopCallback = rootNode.Start(callback.MatchFound, patternContext, priorMatches, isRecoveringReslient);
+            PatternStopCallback = rootNode.Start(callback.MatchFound, patternContext, priorMatches, isRecoveringResilient);
             callback.ForwardCalls = true;
 
             if (_agentInstanceContext.StatementContext.StatementExtensionServicesContext != null &&

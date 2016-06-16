@@ -104,7 +104,7 @@ namespace com.espertech.esper.regression.pattern
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             TryInvalid(epService, "select * from pattern [every SupportBean while ('abc')]",
                     "Invalid parameter for pattern guard 'SupportBean while (\"abc\")': Expression pattern guard requires a single expression as a parameter returning a true or false (bool) value [select * from pattern [every SupportBean while ('abc')]]");

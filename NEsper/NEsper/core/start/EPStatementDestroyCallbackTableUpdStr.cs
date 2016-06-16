@@ -7,10 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    public class EPStatementDestroyCallbackTableUpdStr
+    public class EPStatementDestroyCallbackTableUpdStr : DestroyCallback
     {
         private readonly TableService _tableService;
         private readonly TableMetadata _tableMetadata;

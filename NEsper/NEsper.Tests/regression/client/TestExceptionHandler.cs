@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.client
             config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories.Clear();
             config.EngineDefaults.ExceptionHandlingConfig.AddClass(typeof(SupportExceptionHandlerFactory));
             config.EngineDefaults.ExceptionHandlingConfig.AddClass(typeof(SupportExceptionHandlerFactory));
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddPlugInAggregationFunctionFactory("myinvalidagg", typeof(InvalidAggTestFactory).FullName);
     
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
@@ -93,6 +93,30 @@ namespace com.espertech.esper.regression.client
             catch (EPException ex) {
                 // expected
             }
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
+        }
+
+        /// <summary>
+        /// Exercise the configuration that does not have an exception handler.
+        /// </summary>
+        public void testNoHandler()
+        {
+            Configuration config = SupportConfigFactory.GetConfiguration();
+            config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories.Clear();
+            config.AddPlugInAggregationFunctionFactory(
+                "myinvalidagg", typeof (InvalidAggTestFactory));
+
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
+            _epService.Initialize();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
+
+            var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+
+            _epService.EPAdministrator.CreateEPL(epl);
+            _epService.EPRuntime.SendEvent(new SupportBean());
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
         }

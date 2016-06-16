@@ -43,18 +43,20 @@ namespace com.espertech.esper.epl.expression.accessagg
             if (_ever) {
                 var spec = new AggregationStateMinMaxByEverSpec(_streamNum, _evaluators, _parent.IsMax, comparator, criteriaKeyBinding);
                 factory = new ProxyAggregationStateFactory() {
-                    ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey) => methodResolutionService.MakeAccessAggMinMaxEver(agentInstanceId, groupId, aggregationId, spec),
+                    ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
+                        methodResolutionService.MakeAccessAggMinMaxEver(agentInstanceId, groupId, aggregationId, spec, passThru),
                     ProcAggregationExpression = () => _parent,
                 };
             }
             else {
                 var spec = new AggregationStateSortedSpec(_streamNum, _evaluators, comparator, criteriaKeyBinding);
                 factory = new ProxyAggregationStateFactory() {
-                    ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey) =>  {
+                    ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
+                    {
                         if (join) {
-                            return methodResolutionService.MakeAccessAggSortedJoin(agentInstanceId, groupId, aggregationId, spec);
+                            return methodResolutionService.MakeAccessAggSortedJoin(agentInstanceId, groupId, aggregationId, spec, passThru);
                         }
-                        return methodResolutionService.MakeAccessAggSortedNonJoin(agentInstanceId, groupId, aggregationId, spec);
+                        return methodResolutionService.MakeAccessAggSortedNonJoin(agentInstanceId, groupId, aggregationId, spec, passThru);
                     },
     
                     ProcAggregationExpression = () => _parent,

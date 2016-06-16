@@ -11,6 +11,7 @@ using System.Threading;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.start;
 
 using NUnit.Framework;
 
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.variable
             _readers = new VariableReader[variables.Length];
             for (int i = 0; i < variables.Length; i++)
             {
-                _readers[i] = variableService.GetReader(variables[i], 0);
+                _readers[i] = variableService.GetReader(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }
         }
 
@@ -87,7 +88,7 @@ namespace com.espertech.esper.epl.variable
                                             variableName,
                                             newMark);
                         }
-                        _variableService.Write(_readers[variableNum].VariableMetaData.VariableNumber, 0, newMark);
+                        _variableService.Write(_readers[variableNum].VariableMetaData.VariableNumber, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, newMark);
                     }
                 }
 

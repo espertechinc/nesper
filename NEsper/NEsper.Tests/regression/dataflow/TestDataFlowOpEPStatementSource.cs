@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.dataflow
     
         [Test]
         public void TestStmtNameDynamic() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             _epService.EPAdministrator.CreateEPL("create dataflow MyDataFlowOne " +
                     "create map schema SingleProp (id string), " +
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regression.dataflow
     
         [Test]
         public void TestStatementFilter() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_A));
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_B));
     

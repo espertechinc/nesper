@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.fafquery;
@@ -19,6 +18,7 @@ using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.virtualdw;
 using com.espertech.esper.filter;
+using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.named
@@ -38,13 +38,27 @@ namespace com.espertech.esper.epl.named
 
 	    private IEnumerable<EventBean> _dataWindowContents;
 
-	    public NamedWindowRootViewInstance(NamedWindowRootView rootView, AgentInstanceContext agentInstanceContext)
+	    public NamedWindowRootViewInstance(NamedWindowRootView rootView, AgentInstanceContext agentInstanceContext, EventTableIndexMetadata eventTableIndexMetadata)
         {
 	        _rootView = rootView;
 	        _agentInstanceContext = agentInstanceContext;
 
 	        _indexRepository = new EventTableIndexRepository();
+	        foreach (KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> entry in eventTableIndexMetadata.Indexes)
+            {
+	            if (entry.Value.QueryPlanIndexItem != null)
+                {
+	                EventTable index = EventTableUtil.BuildIndex(agentInstanceContext, 0, entry.Value.QueryPlanIndexItem, rootView.EventType, true, entry.Key.IsUnique, entry.Value.OptionalIndexName, null, false);
+	                _indexRepository.AddIndex(entry.Key, new EventTableIndexRepositoryEntry(entry.Value.OptionalIndexName, index));
+	            }
+	        }
+
 	        _tablePerMultiLookup = new Dictionary<SubordWMatchExprLookupStrategy, EventTable[]>();
+	    }
+
+	    public AgentInstanceContext AgentInstanceContext
+	    {
+	        get { return _agentInstanceContext; }
 	    }
 
 	    public EventTableIndexRepository IndexRepository
@@ -54,11 +68,11 @@ namespace com.espertech.esper.epl.named
 
 	    public IndexMultiKey[] Indexes
 	    {
-	        get { return _indexRepository.IndexDescriptors; }
+	        get { return _indexRepository.GetIndexDescriptors(); }
 	    }
 
 	    /// <summary>
-	    /// Sets the iterator to use to obtain current named window data window contents.
+	    /// Gets or sets the enumeratable to use to obtain current named window data window contents.
 	    /// </summary>
 	    /// <value>iterator over events help by named window</value>
 	    public IEnumerable<EventBean> DataWindowContents
@@ -79,7 +93,7 @@ namespace com.espertech.esper.epl.named
 	        }
 	        else
 	        {
-	            foreach (var table in _indexRepository.Tables)
+	            foreach (EventTable table in _indexRepository.GetTables())
 	            {
 	                table.Remove(oldData);
 	            }
@@ -94,7 +108,7 @@ namespace com.espertech.esper.epl.named
 	    {
 	        if (_rootView.RevisionProcessor == null) {
 	            // Update indexes for fast deletion, if there are any
-	            foreach (var table in _indexRepository.Tables)
+	            foreach (EventTable table in _indexRepository.GetTables())
 	            {
 	                table.Add(newData);
 	            }
@@ -111,7 +125,7 @@ namespace com.espertech.esper.epl.named
 	        else
 	        {
 	            // Update indexes for fast deletion, if there are any
-	            foreach (var table in _indexRepository.Tables)
+	            foreach (EventTable table in _indexRepository.GetTables())
 	            {
 	                if (_rootView.IsChildBatching) {
 	                    table.Add(newData);
@@ -130,7 +144,7 @@ namespace com.espertech.esper.epl.named
 
 	    public override IEnumerator<EventBean> GetEnumerator()
 	    {
-	        return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+	        return null;
 	    }
 
 	    /// <summary>
@@ -140,16 +154,16 @@ namespace com.espertech.esper.epl.named
 	    {
 	        _indexRepository.Destroy();
 	        _tablePerMultiLookup.Clear();
+	        if (IsVirtualDataWindow) {
+	            VirtualDataWindow.HandleStopWindow();
+	        }
 	    }
 
-        /// <summary>
-        /// Return a snapshot using index lookup filters.
-        /// </summary>
-        /// <param name="optionalFilter">to index lookup</param>
-        /// <param name="annotations">The annotations.</param>
-        /// <returns>
-        /// events
-        /// </returns>
+	    /// <summary>
+	    /// Return a snapshot using index lookup filters.
+	    /// </summary>
+	    /// <param name="optionalFilter">to index lookup</param>
+	    /// <returns>events</returns>
 	    public ICollection<EventBean> Snapshot(FilterSpecCompiled optionalFilter, Attribute[] annotations)
         {
 	        VirtualDWView virtualDataWindow = null;
@@ -161,18 +175,23 @@ namespace com.espertech.esper.epl.named
 	                _rootView.EventType.Name, _agentInstanceContext);
 	    }
 
-	    /// <summary>
-	    /// Add an explicit index.
-	    /// </summary>
-	    /// <param name="unique">indicator whether unique</param>
-	    /// <param name="indexName">indexname</param>
-	    /// <param name="columns">properties indexed</param>
-	    /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the index fails to be valid</throws>
-	    public void AddExplicitIndex(bool unique, string indexName, IList<CreateIndexItem> columns) {
+        /// <summary>
+        /// Add an explicit index.
+        /// </summary>
+        /// <param name="unique">indicator whether unique</param>
+        /// <param name="indexName">indexname</param>
+        /// <param name="columns">properties indexed</param>
+        /// <param name="isRecoveringResilient">if set to <c>true</c> [is recovering resilient].</param>
+        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the index fails to be valid</throws>
+	    public void AddExplicitIndex(bool unique, string indexName, IList<CreateIndexItem> columns, bool isRecoveringResilient)
+        {
 	        lock (this)
 	        {
+	            var initIndex = _agentInstanceContext.StatementContext.EventTableIndexService.AllowInitIndex(isRecoveringResilient);
+	            var initializeFrom = initIndex ? _dataWindowContents : CollectionUtil.NULL_EVENT_ITERABLE;
 	            _indexRepository.ValidateAddExplicitIndex(
-	                unique, indexName, columns, _rootView.EventType, _dataWindowContents);
+	                unique, indexName, columns, _rootView.EventType, initializeFrom, _agentInstanceContext,
+	                isRecoveringResilient, null);
 	        }
 	    }
 
@@ -195,10 +214,11 @@ namespace com.espertech.esper.epl.named
 
 	    public void PostLoad()
         {
-	        var events = new EventBean[1];
-	        foreach (var @event in _dataWindowContents) {
+	        EventBean[] events = new EventBean[1];
+	        foreach (EventBean @event in _dataWindowContents)
+            {
 	            events[0] = @event;
-	            foreach (var table in _indexRepository.Tables) {
+	            foreach (EventTable table in _indexRepository.GetTables()) {
 	                table.Add(events);
 	            }
 	        }
@@ -206,12 +226,18 @@ namespace com.espertech.esper.epl.named
 
 	    public void VisitIndexes(StatementAgentInstancePostLoadIndexVisitor visitor)
         {
-	        visitor.Visit(_indexRepository.Tables);
+            visitor.Visit(_indexRepository.GetTables());
 	    }
 
 	    public bool IsQueryPlanLogging
 	    {
 	        get { return _rootView.IsQueryPlanLogging; }
+	    }
+
+	    public void Stop() {
+	        if (IsVirtualDataWindow) {
+	            VirtualDataWindow.HandleStopWindow();
+	        }
 	    }
 	}
 } // end of namespace

@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.util;
+
 namespace com.espertech.esper.view
 {
-    public interface StoppableView {
-        void StopView();
+    public interface StoppableView : StopCallback
+    {
     }
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.@join.table;
 
 namespace com.espertech.esper.epl.join.pollindex
@@ -35,7 +36,7 @@ namespace com.espertech.esper.epl.join.pollindex
             _propertyName = propertyName;
         }
     
-        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache)
+        public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
         {
             if (!isActiveCache)
             {
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.join.pollindex
                 };
             }
             var factory = new PropertyIndexedEventTableSingleFactory(_streamNum, _eventType, _propertyName, false, null);
-            var tables = factory.MakeEventTables();
+            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
             foreach (var table in tables)
             {
                 table.Add(pollResult.ToArray());

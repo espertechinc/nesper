@@ -44,7 +44,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestSingleColumnConversion()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanVariantStream", typeof(SupportBeanVariantStream));
             _epService.EPAdministrator.Configuration.AddImport(GetType().FullName);
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestCoercionBoxedTypeMatch()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanVariantStream", typeof(SupportBeanVariantStream));
 
             ConfigurationVariantStream variant = new ConfigurationVariantStream();
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestNamedWin()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanVariantStream", typeof(SupportBeanVariantStream));
 
             ConfigurationVariantStream variant = new ConfigurationVariantStream();
@@ -261,8 +261,8 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestPatternSubquery()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanVariantStream", typeof(SupportBeanVariantStream));
 
             ConfigurationVariantStream variant = new ConfigurationVariantStream();
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestInvalidInsertInto()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanVariantStream", typeof(SupportBeanVariantStream));
 
             ConfigurationVariantStream variant = new ConfigurationVariantStream();

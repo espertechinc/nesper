@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -142,11 +141,6 @@ namespace com.espertech.esper.view.window
             // may fire the batch
             if (fireBatch) {
                 Expire(numEventsInBatch);
-            }
-            else {
-                if (newData != null) {
-                    Window.AddAll(newData);
-                }
             }
     
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}

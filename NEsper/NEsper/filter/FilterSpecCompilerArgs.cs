@@ -30,10 +30,11 @@ namespace com.espertech.esper.filter
         public readonly ConfigurationInformation ConfigurationInformation;
         public readonly ContextDescriptor ContextDescriptor;
         public readonly EventAdapterService EventAdapterService;
+        public readonly FilterBooleanExpressionFactory FilterBooleanExpressionFactory;
         public readonly ExprEvaluatorContext ExprEvaluatorContext;
         public readonly MethodResolutionService MethodResolutionService;
         public readonly ScriptingService ScriptingService;
-        public readonly string StatementId;
+        public readonly int StatementId;
         public readonly string StatementName;
         public readonly StreamTypeService StreamTypeService;
         public readonly TableService TableService;
@@ -41,22 +42,7 @@ namespace com.espertech.esper.filter
         public readonly TimeProvider TimeProvider;
         public readonly VariableService VariableService;
 
-        public FilterSpecCompilerArgs(
-            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
-            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
-            ExprEvaluatorContext exprEvaluatorContext,
-            string statementName,
-            string statementId,
-            StreamTypeService streamTypeService,
-            MethodResolutionService methodResolutionService,
-            TimeProvider timeProvider,
-            VariableService variableService,
-            TableService tableService,
-            EventAdapterService eventAdapterService,
-            ScriptingService scriptingService,
-            Attribute[] annotations,
-            ContextDescriptor contextDescriptor,
-            ConfigurationInformation configurationInformation)
+        public FilterSpecCompilerArgs(IDictionary<string, Pair<EventType, string>> taggedEventTypes, IDictionary<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName, int statementId, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, TableService tableService, EventAdapterService eventAdapterService, FilterBooleanExpressionFactory filterBooleanExpressionFactory, ScriptingService scriptingService, Attribute[] annotations, ContextDescriptor contextDescriptor, ConfigurationInformation configurationInformation)
         {
             TaggedEventTypes = taggedEventTypes;
             ArrayEventTypes = arrayEventTypes;
@@ -69,6 +55,7 @@ namespace com.espertech.esper.filter
             VariableService = variableService;
             TableService = tableService;
             EventAdapterService = eventAdapterService;
+            FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
             ScriptingService = scriptingService;
             Annotations = annotations;
             ContextDescriptor = contextDescriptor;

@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.EngineDefaults.ExecutionConfig.IsPrioritized = true;
     
             var legacy = new ConfigurationEventTypeLegacy();
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestFieldUpdateOrder() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddVariable("myvar", typeof(int), 10);
     
             _epService.EPAdministrator.CreateEPL("update istream SupportBean " +
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.epl
             type.Put("p2", typeof(long));
             type.Put("p3", typeof(String));
             _epService.EPAdministrator.Configuration.AddEventType("MyMapType", type);
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanReadOnly", typeof(SupportBeanReadOnly));
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanErrorTestingOne", typeof(SupportBeanErrorTestingOne));
     
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regression.epl
             type.Put("p0", typeof(String));
             type.Put("p1", typeof(String));
             _epService.EPAdministrator.Configuration.AddEventType("MyMapType", type);
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             var fields = "p0,p1".Split(',');
             var listenerWindow = new SupportUpdateListener();
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regression.epl
             type.Put("p0", typeof(String));
             type.Put("p1", typeof(String));
             _epService.EPAdministrator.Configuration.AddEventType("MyMapType", type);
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // test map
             var stmtSelect = _epService.EPAdministrator.CreateEPL("select * from MyMapType");

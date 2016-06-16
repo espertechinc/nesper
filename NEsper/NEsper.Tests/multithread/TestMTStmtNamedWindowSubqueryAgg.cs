@@ -47,7 +47,7 @@ namespace com.espertech.esper.multithread
         private void TrySend(int numThreads, int numEventsPerThread, bool indexShare)
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddPlugInAggregationFunctionFactory("intListAgg", typeof(MyIntListAggregationFactory).FullName);
             config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = EventRepresentation.MAP; // use Map-type events for testing
             _engine = EPServiceProviderManager.GetDefaultProvider(config);

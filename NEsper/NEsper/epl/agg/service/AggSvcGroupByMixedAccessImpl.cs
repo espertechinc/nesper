@@ -20,7 +20,9 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    /// <summary>Implementation for handling aggregation with grouping by group-keys. </summary>
+    /// <summary>
+    /// Implementation for handling aggregation with grouping by group-keys.
+    /// </summary>
     public class AggSvcGroupByMixedAccessImpl : AggregationServiceBaseGrouped
     {
         private readonly AggregationAccessorSlotPair[] _accessorsFactory;
@@ -47,15 +49,15 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="accessorsFactory">accessor definitions</param>
         /// <param name="accessAggregations">access aggs</param>
         /// <param name="isJoin">true for join, false for single-stream</param>
-        public AggSvcGroupByMixedAccessImpl(ExprEvaluator[] evaluators,
-                                            AggregationMethodFactory[] prototypes,
-                                            Object groupKeyBinding,
-                                            MethodResolutionService methodResolutionService,
-                                            AggregationAccessorSlotPair[] accessorsFactory,
-                                            AggregationStateFactory[] accessAggregations,
-                                            bool isJoin)
-
-                    : base(evaluators, prototypes, groupKeyBinding)
+        public AggSvcGroupByMixedAccessImpl(
+            ExprEvaluator[] evaluators,
+            AggregationMethodFactory[] prototypes,
+            Object groupKeyBinding,
+            MethodResolutionService methodResolutionService,
+            AggregationAccessorSlotPair[] accessorsFactory,
+            AggregationStateFactory[] accessAggregations,
+            bool isJoin)
+            : base(evaluators, prototypes, groupKeyBinding)
         {
             _accessorsFactory = accessorsFactory;
             AccessAggregations = accessAggregations;
@@ -80,7 +82,7 @@ namespace com.espertech.esper.epl.agg.service
             if (groupAggregators == null)
             {
                 AggregationMethod[] methods = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                states = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                states = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
                 groupAggregators = new AggregationRowPair(methods, states);
                 AggregatorsPerGroup.Put(groupByKey, groupAggregators);
             }
@@ -118,7 +120,7 @@ namespace com.espertech.esper.epl.agg.service
             if (groupAggregators == null)
             {
                 AggregationMethod[] methods = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                states = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                states = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
                 groupAggregators = new AggregationRowPair(methods, states);
                 AggregatorsPerGroup.Put(groupByKey, groupAggregators);
             }
@@ -155,7 +157,7 @@ namespace com.espertech.esper.epl.agg.service
             if (_currentAggregatorRow == null)
             {
                 AggregationMethod[] methods = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, null);
-                AggregationState[] states = _methodResolutionService.NewAccesses(agentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                AggregationState[] states = _methodResolutionService.NewAccesses(agentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
                 _currentAggregatorRow = new AggregationRowPair(methods, states);
                 AggregatorsPerGroup.Put(groupByKey, _currentAggregatorRow);
             }

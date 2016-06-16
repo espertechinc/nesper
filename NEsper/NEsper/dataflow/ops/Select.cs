@@ -183,7 +183,7 @@ namespace com.espertech.esper.dataflow.ops
                         (agentInstanceContext2, isSubselect, isRecoveringResilient) =>
                         new ViewableActivationResult(
                             viewable,
-                            () => { },
+                            new ProxyStopCallback(() => { }),
                             null,
                             null,
                             null,

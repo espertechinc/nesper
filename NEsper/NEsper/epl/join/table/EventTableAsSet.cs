@@ -17,6 +17,6 @@ namespace com.espertech.esper.epl.join.table
 {
     public interface EventTableAsSet : EventTable
     {
-        ISet<EventBean> AllValues();
+        ISet<EventBean> AllValues { get; }
     }
 }

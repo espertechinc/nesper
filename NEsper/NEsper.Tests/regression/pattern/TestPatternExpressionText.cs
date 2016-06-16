@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.pattern
             config.AddEventType<SupportBean_F>("F");
             config.AddEventType<SupportBean_G>("G");
     
-            _epService = EPServiceProviderManager.GetProvider(typeof(TestPatternExpressionText).Name, config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
         }

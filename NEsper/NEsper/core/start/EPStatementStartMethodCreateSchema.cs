@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
@@ -50,7 +51,7 @@ namespace com.espertech.esper.core.start
                 });
 
             EventType allocatedEventType = eventType;
-            EPStatementStopMethod stopMethod = () =>
+            EPStatementStopMethod stopMethod = new ProxyEPStatementStopMethod(() =>
             {
                 services.StatementEventTypeRefService.RemoveReferencesStatement(statementContext.StatementName);
                 if (services.StatementEventTypeRefService.GetStatementNamesForType(spec.SchemaName).IsEmpty())
@@ -58,9 +59,13 @@ namespace com.espertech.esper.core.start
                     services.EventAdapterService.RemoveType(allocatedEventType.Name);
                     services.FilterService.RemoveType(allocatedEventType);
                 }
-            };
+            });
 
             Viewable viewable = new ViewableDefaultImpl(eventType);
+
+            // assign agent instance factory (an empty op)
+            statementContext.StatementAgentInstanceFactory = new StatementAgentInstanceFactoryNoAgentInstance(viewable);
+
             return new EPStatementStartResult(viewable, stopMethod, null);
         }
 

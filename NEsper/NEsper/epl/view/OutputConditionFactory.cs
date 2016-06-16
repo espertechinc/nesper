@@ -12,7 +12,6 @@ namespace com.espertech.esper.epl.view
 {
     public interface OutputConditionFactory
     {
-        OutputCondition Make(AgentInstanceContext agentInstanceContext,
-                             OutputCallback outputCallback);
+        OutputCondition Make(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback);
     }
 }

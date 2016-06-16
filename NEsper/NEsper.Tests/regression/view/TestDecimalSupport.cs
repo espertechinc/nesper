@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.view
             epService.Initialize();
             listener = new SupportUpdateListener();
             epService.EPAdministrator.Configuration.AddEventType("SupportBeanNumeric", typeof(SupportBeanNumeric));
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
         }
 
         [Test]

@@ -35,8 +35,8 @@ namespace com.espertech.esper.core.context.factory
         protected readonly EPServicesContext Services;
         private readonly ViewableActivator _activator;
         private readonly SubSelectStrategyCollection _subSelectStrategyCollection;
-    
-        public abstract OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks);
+
+        public abstract OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient);
         public abstract View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView);
     
         public StatementAgentInstanceFactoryOnTriggerBase(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection)
@@ -59,12 +59,10 @@ namespace com.espertech.esper.core.context.factory
             ViewableActivationResult activationResult;
 
             StopCallback stopCallback;
-            try {
-                if (Services.SchedulableAgentInstanceDirectory != null) {
-                    Services.SchedulableAgentInstanceDirectory.Add(agentInstanceContext.EpStatementAgentInstanceHandle);
-                }
-    
-                OnExprViewResult onExprViewResult = DetermineOnExprView(agentInstanceContext, stopCallbacks);
+            try
+            {
+                var onExprViewResult = DetermineOnExprView(agentInstanceContext, stopCallbacks, isRecoveringResilient);
+
                 view = onExprViewResult.OnExprView;
                 aggregationService = onExprViewResult.OptionalAggregationService;
     
@@ -78,7 +76,7 @@ namespace com.espertech.esper.core.context.factory
                 view = DetermineFinalOutputView(agentInstanceContext, view);
     
                 // start subselects
-                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(Services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks);
+                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(Services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
     
                 // plan table access
                 tableAccessStrategies = EPStatementStartMethodHelperTableAccess.AttachTableAccess(Services, agentInstanceContext, StatementSpec.TableNodes);

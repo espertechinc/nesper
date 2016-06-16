@@ -14,7 +14,7 @@ namespace com.espertech.esper.epl.join.exec.composite
 {
     public interface CompositeIndexLookup
     {
-        void Lookup(IDictionary<object,object> parent, ICollection<EventBean> result);
-        CompositeIndexLookup Next { set; }
+        void Lookup(IDictionary<object, object> parent, ICollection<EventBean> result, CompositeIndexQueryResultPostProcessor postProcessor);
+        void SetNext(CompositeIndexLookup value);
     }
 }

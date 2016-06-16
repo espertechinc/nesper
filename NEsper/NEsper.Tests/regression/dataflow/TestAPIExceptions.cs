@@ -46,7 +46,7 @@ namespace com.espertech.esper.regression.dataflow
         [Test]
         public void TestExceptionHandler()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // test exception by graph source
             var stmtGraph = _epService.EPAdministrator.CreateEPL("create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");

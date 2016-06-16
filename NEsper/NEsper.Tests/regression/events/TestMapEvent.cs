@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
+using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
 
@@ -170,27 +171,6 @@ namespace com.espertech.esper.regression.events
         }
 
         [Test]
-        public void TestInvalidConfig()
-        {
-            _properties = new Properties();
-            _properties["astring"] = "XXXX";
-
-            Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("MyInvalidEvent", _properties);
-
-            try
-            {
-                _epService = EPServiceProviderManager.GetProvider("testInvalidConfig", configuration);
-                Assert.Fail();
-            }
-            catch (ConfigurationException ex)
-            {
-                Log.Debug(ex.Message, ex);
-                // expected
-            }
-        }
-
-        [Test]
         public void TestInvalidStatement()
         {
             TryInvalid("select XXX from MyMapEvent.win:length(5)");
@@ -302,8 +282,9 @@ namespace com.espertech.esper.regression.events
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddEventType("MyPrimMapEvent", _properties);
 
-            _epService = EPServiceProviderManager.GetProvider("testPrimitivesTypes", configuration);
-
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            _epService.Initialize();
             _epService.Dispose();
         }
 

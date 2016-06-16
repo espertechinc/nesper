@@ -21,22 +21,22 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.nwtable
 {
     [TestFixture]
-    public class TestTableIterate  {
-    
-        private readonly string METHOD_NAME = "method:SupportStaticMethodLib.FetchTwoRows3Cols()";
-    
-        private EPServiceProvider epService;
+    public class TestTableIterate
+    {
+        private const string METHOD_NAME = "method:SupportStaticMethodLib.FetchTwoRows3Cols()";
+
+        private EPServiceProvider _epService;
     
         [SetUp]
         public void SetUp() {
-            Configuration config = SupportConfigFactory.GetConfiguration();
-            epService = EPServiceProviderManager.GetDefaultProvider(config);
-            epService.Initialize();
-            foreach (Type clazz in new Type[] {typeof(SupportBean)}) {
-                epService.EPAdministrator.Configuration.AddEventType(clazz);
+            var config = SupportConfigFactory.GetConfiguration();
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
+            _epService.Initialize();
+            foreach (var clazz in new Type[] {typeof(SupportBean)}) {
+                _epService.EPAdministrator.Configuration.AddEventType(clazz);
             }
-            epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
+            _epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
         }
     
         [TearDown]
@@ -46,8 +46,8 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestIterate() {
-            epService.EPAdministrator.CreateEPL("@Resilient create table MyTable(pkey0 string primary key, pkey1 int primary key, c0 long)");
-            epService.EPAdministrator.CreateEPL("@Resilient insert into MyTable select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean");
+            _epService.EPAdministrator.CreateEPL("@Resilient create table MyTable(pkey0 string primary key, pkey1 int primary key, c0 long)");
+            _epService.EPAdministrator.CreateEPL("@Resilient insert into MyTable select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean");
     
             SendSupportBean("E1", 10, 100);
             SendSupportBean("E2", 20, 200);
@@ -66,48 +66,48 @@ namespace com.espertech.esper.regression.nwtable
         }
     
         private void RunUnaggregatedUngroupedSelectStar(bool useTable) {
-            string epl = "select * from " + (useTable ? "MyTable" : METHOD_NAME);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
+            var epl = "select * from " + (useTable ? "MyTable" : METHOD_NAME);
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,c0".Split(','), new object[][] { new object[] { "E1", 10, 100L }, new object[] { "E2", 20, 200L } });
         }
     
         private void RunFullyAggregatedAndUngrouped(bool useTable) {
-            string epl = "select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            for (int i = 0; i < 2; i++) {
-                EventBean @event = stmt.First();
+            var epl = "select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
+            for (var i = 0; i < 2; i++) {
+                var @event = stmt.First();
                 Assert.AreEqual(2L, @event.Get("thecnt"));
             }
         }
     
         private void RunAggregatedAndUngrouped(bool useTable) {
-            string epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            for (int i = 0; i < 2; i++) {
+            var epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
+            for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new object[][] { new object[] { "E1", 2L }, new object[] { "E2", 2L } });
             }
         }
     
         private void RunFullyAggregatedAndGrouped(bool useTable) {
-            string epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            for (int i = 0; i < 2; i++) {
+            var epl = "select pkey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
+            for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,thecnt".Split(','), new object[][] { new object[] { "E1", 1L }, new object[] { "E2", 1L } });
             }
         }
     
         private void RunAggregatedAndGrouped(bool useTable) {
-            string epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            for (int i = 0; i < 2; i++) {
+            var epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by pkey0";
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
+            for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new object[][] { new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L } });
             }
         }
     
         private void RunAggregatedAndGroupedRollup(bool useTable) {
-            string epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by rollup (pkey0, pkey1)";
-            EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
-            for (int i = 0; i < 2; i++) {
+            var epl = "select pkey0, pkey1, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME) + " group by rollup (pkey0, pkey1)";
+            var stmt = _epService.EPAdministrator.CreateEPL(epl);
+            for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "pkey0,pkey1,thecnt".Split(','), new object[][]{
                         new object[]{"E1", 10, 1L},
                         new object[]{"E2", 20, 1L},
@@ -119,9 +119,9 @@ namespace com.espertech.esper.regression.nwtable
         }
     
         private SupportBean SendSupportBean(string theString, int intPrimitive, long longPrimitive) {
-            SupportBean bean = new SupportBean(theString, intPrimitive);
+            var bean = new SupportBean(theString, intPrimitive);
             bean.LongPrimitive = longPrimitive;
-            epService.EPRuntime.SendEvent(bean);
+            _epService.EPRuntime.SendEvent(bean);
             return bean;
         }
     }

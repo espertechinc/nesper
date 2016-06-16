@@ -84,7 +84,7 @@ namespace com.espertech.esper.compat.collections
 
         public LinkedHashSet(SerializationInfo info, StreamingContext context)
         {
-            var count = info.GetInt32("_count");
+            var count = info.GetInt32("Count");
             var array = (T[])info.GetValue("_list", typeof(T[]));
             Debug.Assert(array.Length == count);
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.compat.collections
         {
             var hashArray = ToArray();
             info.AddValue("_list", hashArray);
-            info.AddValue("_count", _entryCount);
+            info.AddValue("Count", _entryCount);
         }
 
         /// <summary>

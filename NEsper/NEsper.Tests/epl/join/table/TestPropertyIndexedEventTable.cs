@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.join.table
             _propertyNames = new[] {"IntPrimitive", "TheString"};
             _eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             var factory = new PropertyIndexedEventTableFactory(1, _eventType, _propertyNames, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables()[0];
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
 
             // Populate with testEvents
             var intValues = new[] {0, 1, 1, 2, 1, 0};
@@ -66,7 +66,7 @@ namespace com.espertech.esper.epl.join.table
                 _index.Add(new[] {theEvent});
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // Expected
             }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.join.table
                 _index.Add(new EventBean[] {null});
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // Expected
             }
@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.join.table
         public void TestAddArray()
         {
             var factory = new PropertyIndexedEventTableFactory(1, _eventType, _propertyNames, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables()[0];
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
 
             // Add just 2
             var events = new EventBean[2];

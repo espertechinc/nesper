@@ -182,7 +182,7 @@ namespace com.espertech.esper.regression.events
         private void TryPublicAccessors(CodeGenerationEnum codeGeneration)
         {
             var config = SupportConfigFactory.GetConfiguration();
-            _epService = EPServiceProviderManager.GetProvider(GetType().FullName + ".test1" + codeGeneration, config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regression.events
             legacyDef.CodeGeneration = codeGeneration;
             config.AddEventType("MySupportBean", typeof(SupportBean).FullName, legacyDef);
 
-            _epService = EPServiceProviderManager.GetProvider(GetType().FullName + ".test2" + codeGeneration, config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regression.events
             legacyDef.AddMethodProperty("explicitMReadInt", "ReadIntPrimitive");
             config.AddEventType("MyLegacyEvent", typeof(SupportLegacyBeanInt).FullName, legacyDef);
 
-            _epService = EPServiceProviderManager.GetProvider(GetType().FullName + ".test3" + codeGeneration, config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config); 
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regression.events
             legacyDef.CodeGeneration = codeGeneration;
             config.AddEventType("MyFinalEvent", typeof(SupportBeanFinal).FullName, legacyDef);
 
-            _epService = EPServiceProviderManager.GetProvider(GetType().FullName + ".test4" + codeGeneration, config);
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
 

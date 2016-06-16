@@ -8,10 +8,11 @@
 
 using com.espertech.esper.core.service;
 using com.espertech.esper.filter;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.context.activator
 {
-    public class ViewableActivatorFilterProxyStopCallback 
+    public class ViewableActivatorFilterProxyStopCallback : StopCallback
     {
         private readonly ViewableActivatorFilterProxy _parent;
         private EPStatementHandleCallback _filterHandle;

@@ -53,7 +53,7 @@ namespace com.espertech.esper.filter
     
             // Add an indexOne
             EventType eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-            FilterSpecLookupable lookupable = new FilterSpecLookupable("IntPrimitive", eventType.GetGetter("IntPrimitive"), eventType.GetPropertyType("IntPrimitive"));
+            FilterSpecLookupable lookupable = new FilterSpecLookupable("IntPrimitive", eventType.GetGetter("IntPrimitive"), eventType.GetPropertyType("IntPrimitive"), false);
             FilterParamIndexBase indexOne = new SupportFilterParamIndex(lookupable);
             _testNode.Add(indexOne);
     
@@ -102,7 +102,7 @@ namespace com.espertech.esper.filter
         }
     
         private FilterSpecLookupable MakeLookupable(String fieldName, EventType eventType) {
-            return new FilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName));
+            return new FilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName), false);
         }
     }
 }

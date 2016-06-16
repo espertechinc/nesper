@@ -76,7 +76,7 @@ namespace com.espertech.esper.regression.epl
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             _listener = new SupportUpdateListener();
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             String viewExpr = "select * from SupportBean(IntPrimitive<10) where IntPrimitive not in (select IntPrimitive from SupportBean.std:unique(IntPrimitive))";
             EPStatement stmtOne = _epService.EPAdministrator.CreateEPL(viewExpr);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regression.epl
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             _listener = new SupportUpdateListener();
     
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             String viewExpr = "select * from SupportBean(IntPrimitive<10) where IntPrimitive not in (select IntPrimitive from SupportBean.std:unique(IntPrimitive))";
             EPStatement stmtOne = _epService.EPAdministrator.CreateEPL(viewExpr);

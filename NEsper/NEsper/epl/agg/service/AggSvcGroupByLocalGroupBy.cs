@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.agg.service
 
 	    public override void SetCurrentAccess(object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
 	    {
-	        if (!localGroupByPlan.AllLevels[0].IsDefaultLevel) {
+	        if (!LocalGroupByPlan.AllLevels[0].IsDefaultLevel) {
 	            return;
 	        }
 	        var row = AggregatorsPerLevelAndGroup[0].Get(groupByKey);
@@ -52,14 +52,14 @@ namespace com.espertech.esper.epl.agg.service
 	        }
 
 	        if (_currentAggregatorMethods == null) {
-	            _currentAggregatorMethods = methodResolutionService.NewAggregators(localGroupByPlan.AllLevels[0].MethodFactories, agentInstanceId, groupByKey, null, null);
-	            _currentAggregatorStates = methodResolutionService.NewAccesses(agentInstanceId, isJoin, localGroupByPlan.AllLevels[0].StateFactories, groupByKey, null, null);
+	            _currentAggregatorMethods = MethodResolutionService.NewAggregators(LocalGroupByPlan.AllLevels[0].MethodFactories, agentInstanceId, groupByKey, null, null);
+	            _currentAggregatorStates = MethodResolutionService.NewAccesses(agentInstanceId, IsJoin, LocalGroupByPlan.AllLevels[0].StateFactories, groupByKey, null, null, null);
 	        }
 	    }
 
 	    public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
 	    {
-	        var col = localGroupByPlan.Columns[column];
+	        var col = LocalGroupByPlan.Columns[column];
 	        if (col.IsDefaultGroupLevel) {
 	            if (col.IsMethodAgg) {
 	                return _currentAggregatorMethods[col.MethodOffset].Value;

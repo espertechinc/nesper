@@ -270,7 +270,7 @@ namespace com.espertech.esper.regression.enummethod
         [Test]
         public void TestScalarArray()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             Validate("{1, 2, 3}.aggregate(0, (result, value) => result + value)", 6);
             Validate("{1, 2, 3}.allOf(v => v > 0)", true);

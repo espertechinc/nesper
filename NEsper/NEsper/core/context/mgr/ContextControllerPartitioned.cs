@@ -23,7 +23,7 @@ namespace com.espertech.esper.core.context.mgr
     {
         private readonly int _pathId;
         private readonly ContextControllerLifecycleCallback _activationCallback;
-        private readonly ContextControllerPartitionedFactory _factory;
+        private readonly ContextControllerPartitionedFactoryImpl _factory;
 
         private readonly IList<ContextControllerPartitionedFilterCallback> _filterCallbacks =
             new List<ContextControllerPartitionedFilterCallback>();
@@ -33,8 +33,8 @@ namespace com.espertech.esper.core.context.mgr
     
         private ContextInternalFilterAddendum _activationFilterAddendum;
         private int _currentSubpathId;
-    
-        public ContextControllerPartitioned(int pathId, ContextControllerLifecycleCallback activationCallback, ContextControllerPartitionedFactory factory)
+
+        public ContextControllerPartitioned(int pathId, ContextControllerLifecycleCallback activationCallback, ContextControllerPartitionedFactoryImpl factory)
         {
             _pathId = pathId;
             _activationCallback = activationCallback;
@@ -43,7 +43,7 @@ namespace com.espertech.esper.core.context.mgr
     
         public void ImportContextPartitions(ContextControllerState state, int pathIdToUse, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector)
         {
-            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector);
+            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector, true);
         }
     
         public void DeletePath(ContextPartitionIdentifier identifier)
@@ -121,14 +121,14 @@ namespace com.espertech.esper.core.context.mgr
             }
     
             if (factoryContext.NestingLevel == 1) {
-                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.StateCache, factoryContext.OutermostContextName);
+                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.FactoryContext.StateCache, factoryContext.OutermostContextName);
             }
             if (controllerState == null) {
                 return;
             }
     
             int? pathIdToUse = importPathId ?? _pathId;
-            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse.Value, null);
+            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse.Value, null, false);
         }
 
         public ContextControllerFactory Factory
@@ -141,7 +141,8 @@ namespace com.espertech.esper.core.context.mgr
             get { return _pathId; }
         }
 
-        public void Deactivate() {
+        public void Deactivate()
+        {
             lock(this)
             {
                 var factoryContext = _factory.FactoryContext;
@@ -151,12 +152,13 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 _partitionKeys.Clear();
                 _filterCallbacks.Clear();
-                _factory.StateCache.RemoveContextParentPath(
+                _factory.FactoryContext.StateCache.RemoveContextParentPath(
                     factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId);
             }
         }
     
-        public void Create(Object key, EventBean theEvent) {
+        public void Create(Object key, EventBean theEvent)
+        {
             lock (this)
             {
                 var exists = _partitionKeys.ContainsKey(key);
@@ -189,7 +191,7 @@ namespace com.espertech.esper.core.context.mgr
                 _partitionKeys.Put(key, handle);
 
                 var keyObjectSaved = GetKeyObjectsAccountForMultikey(key);
-                _factory.StateCache.AddContextPath(
+                _factory.FactoryContext.StateCache.AddContextPath(
                     factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId, _currentSubpathId,
                     handle.ContextPartitionOrPathId, keyObjectSaved, _factory.Binding);
             }
@@ -222,14 +224,15 @@ namespace com.espertech.esper.core.context.mgr
             }
         }
 
-        private void InitializeFromState(EventBean optionalTriggeringEvent,
-                                         IDictionary<String, Object> optionalTriggeringPattern,
-                                         ContextInternalFilterAddendum filterAddendum,
-                                         ContextControllerState controllerState,
-                                         int pathIdToUse,
-                                         AgentInstanceSelector agentInstanceSelector)
+        private void InitializeFromState(
+            EventBean optionalTriggeringEvent,
+            IDictionary<String, Object> optionalTriggeringPattern,
+            ContextInternalFilterAddendum filterAddendum,
+            ContextControllerState controllerState,
+            int pathIdToUse,
+            AgentInstanceSelector agentInstanceSelector,
+            bool loadingExistingState)
         {
-
             var factoryContext = _factory.FactoryContext;
             var states = controllerState.States;
 
@@ -248,8 +251,8 @@ namespace com.espertech.esper.core.context.mgr
                 if (_factory.HasFiltersSpecsNestedContexts)
                 {
                     filterAddendum = _activationFilterAddendum != null
-                                         ? _activationFilterAddendum.DeepCopy()
-                                         : new ContextInternalFilterAddendum();
+                        ? _activationFilterAddendum.DeepCopy()
+                        : new ContextInternalFilterAddendum();
                     _factory.PopulateContextInternalFilterAddendums(filterAddendum, mapKey);
                 }
 
@@ -261,7 +264,7 @@ namespace com.espertech.esper.core.context.mgr
                     {
                         _activationCallback.ContextPartitionNavigate(
                             existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value,
-                            myFilterAddendum, agentInstanceSelector, entry.Value.Blob);
+                            myFilterAddendum, agentInstanceSelector, entry.Value.Blob, loadingExistingState);
                         continue;
                     }
                 }
@@ -274,7 +277,7 @@ namespace com.espertech.esper.core.context.mgr
                     _activationCallback.ContextPartitionInstantiate(
                         entry.Value.OptionalContextPartitionId, assignedSubpathId, entry.Key.SubPath, this,
                         optionalTriggeringEvent, optionalTriggeringPattern, mapKey, props, controllerState,
-                        myFilterAddendum, factoryContext.IsRecoveringResilient, entry.Value.State);
+                        myFilterAddendum, loadingExistingState || factoryContext.IsRecoveringResilient, entry.Value.State);
                 _partitionKeys.Put(mapKey, handle);
 
                 if (entry.Key.SubPath > maxSubpathId)

@@ -51,7 +51,7 @@ namespace com.espertech.esper.util
             foreach (var entry in _dependencies)
             {
                 count++;
-                writer.WriteLine("Entry {0}: from={1} to={2}", count, entry.Key, entry.Value.Render());
+                writer.WriteLine("Record {0}: from={1} to={2}", count, entry.Key, entry.Value.Render());
             }
     
             return writer.ToString();

@@ -56,12 +56,12 @@ namespace com.espertech.esper.regression.support
         {
         }
     
-        public void Execute()
+        public void Execute(bool allowAnyOrder)
         {
             bool isAssert = Environment.GetEnvironmentVariable("ASSERTION_DISABLED") == null;
 
             bool expectRemoveStream = _stmt.Text.ToLower().Contains("select irstream");
-            Execute(isAssert, !expectRemoveStream);
+            Execute(isAssert, !expectRemoveStream, allowAnyOrder);
             _stmt.Stop();
 
             // Second execution is for IRSTREAM, asserting both the insert and remove stream
@@ -71,11 +71,11 @@ namespace com.espertech.esper.regression.support
                 String irStreamEPL = epl.Replace("select ", "select irstream ");
                 _stmt = _engine.EPAdministrator.CreateEPL(irStreamEPL);
                 _stmt.AddListener(_listener);
-                Execute(isAssert, false);
+                Execute(isAssert, false, allowAnyOrder);
             }
         }
-    
-        private void Execute(bool isAssert, bool isExpectNullRemoveStream)
+
+        private void Execute(bool isAssert, bool isExpectNullRemoveStream, bool allowAnyOrder)
         {
             // For use in join tests, send join-to events
             _engine.EPRuntime.SendEvent(new SupportBean("IBM", 0));
@@ -110,16 +110,16 @@ namespace com.espertech.esper.regression.support
                     Log.Debug(String.Format("{0,-5} {1,-24} {2}", timeInSec, "", comment));
                 }
 
-                ProcessAction(time, timeInSec, timeEntry.Value, isAssert, isExpectNullRemoveStream);
+                ProcessAction(time, timeInSec, timeEntry.Value, isAssert, isExpectNullRemoveStream, allowAnyOrder);
             }
         }
     
-        private void ProcessAction(long currentTime, String timeInSec, TimeAction value, bool isAssert, bool isExpectNullRemoveStream) {
-    
+        private void ProcessAction(long currentTime, String timeInSec, TimeAction value, bool isAssert, bool isExpectNullRemoveStream, bool allowAnyOrder)
+        {
             IDictionary<int, StepDesc> assertions = _expected.Assertions.Get(currentTime);
     
             // Assert step 0 which is the timer event result then send events and assert remaining
-            AssertStep(timeInSec, 0, assertions, _expected.Properties, isAssert, isExpectNullRemoveStream);
+            AssertStep(timeInSec, 0, assertions, _expected.Properties, isAssert, isExpectNullRemoveStream, allowAnyOrder);
     
             for (int step = 1; step < 10; step++)
             {
@@ -140,13 +140,13 @@ namespace com.espertech.esper.regression.support
                             sendEvent.EventDesc);
                     }
                 }
-    
-                AssertStep(timeInSec, step, assertions, _expected.Properties, isAssert, isExpectNullRemoveStream);
+
+                AssertStep(timeInSec, step, assertions, _expected.Properties, isAssert, isExpectNullRemoveStream, allowAnyOrder);
             }
         }
     
-        private void AssertStep(String timeInSec, int step, IDictionary<int, StepDesc> stepAssertions, String[] fields, bool isAssert, bool isExpectNullRemoveStream) {
-    
+        private void AssertStep(String timeInSec, int step, IDictionary<int, StepDesc> stepAssertions, String[] fields, bool isAssert, bool isExpectNullRemoveStream, bool allowAnyOrder)
+        {
             if (Log.IsDebugEnabled)
             {
                 if (_listener.IsInvoked)
@@ -194,11 +194,18 @@ namespace com.espertech.esper.regression.support
                 {
                     String message = "At time " + timeInSec;
                     Assert.IsTrue(_listener.IsInvoked, message + " expected events but received none");
-                    EPAssertionUtil.AssertPropsPerRow(_listener.LastNewData, _expected.Properties,
-                            stepDesc.NewDataPerRow, "newData");
-    
-                    EPAssertionUtil.AssertPropsPerRow(_listener.LastOldData, _expected.Properties,
-                            stepDesc.OldDataPerRow, "oldData");
+
+
+                    if (allowAnyOrder)
+                    {
+                        EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.LastNewData, _expected.Properties, stepDesc.NewDataPerRow);
+                        EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.LastOldData, _expected.Properties, stepDesc.OldDataPerRow);
+                    }
+                    else
+                    {
+                        EPAssertionUtil.AssertPropsPerRow(_listener.LastNewData, _expected.Properties, stepDesc.NewDataPerRow, "newData");
+                        EPAssertionUtil.AssertPropsPerRow(_listener.LastOldData, _expected.Properties, stepDesc.OldDataPerRow, "oldData");
+                    }
                 }
                 // If we don't expect remove stream events (istream only), then asset new data only if there
                 else
@@ -207,8 +214,14 @@ namespace com.espertech.esper.regression.support
                     if (stepDesc.NewDataPerRow != null)
                     {
                         Assert.IsTrue(_listener.IsInvoked, "At time " + timeInSec + " expected events but received none");
-                        EPAssertionUtil.AssertPropsPerRow(_listener.LastNewData, _expected.Properties,
-                                stepDesc.NewDataPerRow, "newData");
+                        if (allowAnyOrder)
+                        {
+                            EPAssertionUtil.AssertPropsPerRowAnyOrder(_listener.LastNewData, _expected.Properties, stepDesc.NewDataPerRow);
+                        }
+                        else
+                        {
+                            EPAssertionUtil.AssertPropsPerRow(_listener.LastNewData, _expected.Properties, stepDesc.NewDataPerRow, "newData");
+                        }
                     }
                     else
                     {

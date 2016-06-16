@@ -12,14 +12,15 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.mgr;
-using com.espertech.esper.core.context.schedule;
 using com.espertech.esper.core.deploy;
+using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dataflow.core;
 using com.espertech.esper.dispatch;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.db;
 using com.espertech.esper.epl.declexpr;
+using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
@@ -65,9 +66,10 @@ namespace com.espertech.esper.core.service
         /// <param name="timerService">is the timer service</param>
         /// <param name="filterService">the filter service</param>
         /// <param name="streamFactoryService">is hooking up filters to streams</param>
-        /// <param name="namedWindowService">is holding information about the named windows active in the system</param>
+        /// <param name="namedWindowMgmtService">The named window MGMT service.</param>
+        /// <param name="namedWindowDispatchService">The named window dispatch service.</param>
         /// <param name="variableService">provides access to variable values</param>
-        /// <param name="tableService"></param>
+        /// <param name="tableService">The table service.</param>
         /// <param name="timeSourceService">time source provider class</param>
         /// <param name="valueAddEventService">handles Update events</param>
         /// <param name="metricsReportingService">for metric reporting</param>
@@ -84,10 +86,24 @@ namespace com.espertech.esper.core.service
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
         /// <param name="statementMetadataFactory">The statement metadata factory.</param>
         /// <param name="contextManagementService">The context management service.</param>
-        /// <param name="schedulableAgentInstanceDirectory">The schedulable agent instance directory.</param>
         /// <param name="patternSubexpressionPoolSvc">The pattern subexpression pool SVC.</param>
+        /// <param name="matchRecognizeStatePoolEngineSvc">The match recognize state pool engine SVC.</param>
         /// <param name="dataFlowService">The data flow service.</param>
         /// <param name="exprDeclaredService">The expr declared service.</param>
+        /// <param name="contextControllerFactoryFactorySvc">The context controller factory factory SVC.</param>
+        /// <param name="contextManagerFactoryService">The context manager factory service.</param>
+        /// <param name="epStatementFactory">The ep statement factory.</param>
+        /// <param name="regexHandlerFactory">The regex handler factory.</param>
+        /// <param name="viewableActivatorFactory">The viewable activator factory.</param>
+        /// <param name="filterNonPropertyRegisteryService">The filter non property registery service.</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
+        /// <param name="viewServicePreviousFactory">The view service previous factory.</param>
+        /// <param name="eventTableIndexService">The event table index service.</param>
+        /// <param name="epRuntimeIsolatedFactory">The ep runtime isolated factory.</param>
+        /// <param name="filterBooleanExpressionFactory">The filter boolean expression factory.</param>
+        /// <param name="dataCacheFactory">The data cache factory.</param>
+        /// <param name="multiMatchHandlerFactory">The multi match handler factory.</param>
+        /// <param name="namedWindowConsumerMgmtService">The named window consumer MGMT service.</param>
         /// <param name="scriptingService">The scripting service.</param>
         public EPServicesContext(
             string engineURI,
@@ -106,7 +122,8 @@ namespace com.espertech.esper.core.service
             TimerService timerService,
             FilterServiceSPI filterService,
             StreamFactoryService streamFactoryService,
-            NamedWindowService namedWindowService,
+            NamedWindowMgmtService namedWindowMgmtService,
+            NamedWindowDispatchService namedWindowDispatchService,
             VariableService variableService,
             TableService tableService,
             TimeSourceService timeSourceService,
@@ -125,7 +142,6 @@ namespace com.espertech.esper.core.service
             EventTypeIdGenerator eventTypeIdGenerator,
             StatementMetadataFactory statementMetadataFactory,
             ContextManagementService contextManagementService,
-            SchedulableAgentInstanceDirectory schedulableAgentInstanceDirectory,
             PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
             MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
             DataFlowService dataFlowService,
@@ -135,6 +151,15 @@ namespace com.espertech.esper.core.service
             EPStatementFactory epStatementFactory,
             RegexHandlerFactory regexHandlerFactory,
             ViewableActivatorFactory viewableActivatorFactory,
+            FilterNonPropertyRegisteryService filterNonPropertyRegisteryService,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            ViewServicePreviousFactory viewServicePreviousFactory,
+            EventTableIndexService eventTableIndexService,
+            EPRuntimeIsolatedFactory epRuntimeIsolatedFactory,
+            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
+            DataCacheFactory dataCacheFactory,
+            MultiMatchHandlerFactory multiMatchHandlerFactory,
+            NamedWindowConsumerMgmtService namedWindowConsumerMgmtService,
             ScriptingService scriptingService)
         {
             EngineURI = engineURI;
@@ -150,12 +175,13 @@ namespace com.espertech.esper.core.service
             StreamService = streamFactoryService;
             PlugInViews = plugInViews;
             StatementLockFactory = statementLockFactory;
-            EventProcessingRwLock = eventProcessingRWLock;
+            EventProcessingRWLock = eventProcessingRWLock;
             EngineLevelExtensionServicesContext = extensionServicesContext;
             EngineEnvContext = engineEnvContext;
             StatementContextFactory = statementContextFactory;
             PlugInPatternObjects = plugInPatternObjects;
-            NamedWindowService = namedWindowService;
+            NamedWindowMgmtService = namedWindowMgmtService;
+            NamedWindowDispatchService = namedWindowDispatchService;
             VariableService = variableService;
             TableService = tableService;
             TimeSource = timeSourceService;
@@ -174,7 +200,6 @@ namespace com.espertech.esper.core.service
             EventTypeIdGenerator = eventTypeIdGenerator;
             StatementMetadataFactory = statementMetadataFactory;
             ContextManagementService = contextManagementService;
-            SchedulableAgentInstanceDirectory = schedulableAgentInstanceDirectory;
             PatternSubexpressionPoolSvc = patternSubexpressionPoolSvc;
             MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
@@ -185,6 +210,15 @@ namespace com.espertech.esper.core.service
             EpStatementFactory = epStatementFactory;
             RegexHandlerFactory = regexHandlerFactory;
             ViewableActivatorFactory = viewableActivatorFactory;
+            FilterNonPropertyRegisteryService = filterNonPropertyRegisteryService;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            ViewServicePreviousFactory = viewServicePreviousFactory;
+            EventTableIndexService = eventTableIndexService;
+            EpRuntimeIsolatedFactory = epRuntimeIsolatedFactory;
+            FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
+            DataCacheFactory = dataCacheFactory;
+            MultiMatchHandlerFactory = multiMatchHandlerFactory;
+            NamedWindowConsumerMgmtService = namedWindowConsumerMgmtService;
             ScriptingService = scriptingService;
         }
 
@@ -248,7 +282,7 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the event processing lock for coordinating statement administration with event processing. </summary>
         /// <value>lock</value>
-        public IReaderWriterLock EventProcessingRwLock { get; private set; }
+        public IReaderWriterLock EventProcessingRWLock { get; private set; }
 
         /// <summary>Returns statement lifecycle svc </summary>
         /// <value>service for statement start and stop</value>
@@ -280,7 +314,11 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the named window management service. </summary>
         /// <value>service for managing named windows</value>
-        public NamedWindowService NamedWindowService { get; private set; }
+        public NamedWindowMgmtService NamedWindowMgmtService { get; private set; }
+
+        /// <summary>Gets the named window dispatch service.</summary>
+        /// <value>The named window dispatch service.</value>
+        public NamedWindowDispatchService NamedWindowDispatchService { get; private set; }
 
         /// <summary>Returns the variable service. </summary>
         /// <value>variable service</value>
@@ -328,8 +366,6 @@ namespace com.espertech.esper.core.service
 
         public ContextManagementService ContextManagementService { get; private set; }
 
-        public SchedulableAgentInstanceDirectory SchedulableAgentInstanceDirectory { get; private set; }
-
         public PatternSubexpressionPoolEngineSvc PatternSubexpressionPoolSvc { get; private set; }
 
         public MatchRecognizeStatePoolEngineSvc MatchRecognizeStatePoolEngineSvc { get; private set; }
@@ -353,6 +389,24 @@ namespace com.espertech.esper.core.service
         public RegexHandlerFactory RegexHandlerFactory { get; private set; }
 
         public ViewableActivatorFactory ViewableActivatorFactory { get; private set; }
+
+        public FilterNonPropertyRegisteryService FilterNonPropertyRegisteryService { get; private set; }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
+
+        public ViewServicePreviousFactory ViewServicePreviousFactory { get; private set; }
+
+        public EventTableIndexService EventTableIndexService { get; private set; }
+
+        public EPRuntimeIsolatedFactory EpRuntimeIsolatedFactory { get; private set; }
+
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; private set; }
+
+        public DataCacheFactory DataCacheFactory { get; private set; }
+
+        public MultiMatchHandlerFactory MultiMatchHandlerFactory { get; private set; }
+
+        public NamedWindowConsumerMgmtService NamedWindowConsumerMgmtService { get; private set; }
         
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>
@@ -408,9 +462,13 @@ namespace com.espertech.esper.core.service
             {
                 StreamService.Destroy();
             }
-            if (NamedWindowService != null)
+            if (NamedWindowMgmtService != null)
             {
-                NamedWindowService.Dispose();
+                NamedWindowMgmtService.Dispose();
+            }
+            if (NamedWindowDispatchService != null)
+            {
+                NamedWindowDispatchService.Dispose();
             }
             if (EngineLevelExtensionServicesContext != null)
             {
@@ -448,7 +506,7 @@ namespace com.espertech.esper.core.service
             EngineEnvContext = null;
             StatementContextFactory = null;
             PlugInPatternObjects = null;
-            NamedWindowService = null;
+            NamedWindowMgmtService = null;
             ValueAddEventService = null;
             MetricsReportingService = null;
             StatementEventTypeRefService = null;

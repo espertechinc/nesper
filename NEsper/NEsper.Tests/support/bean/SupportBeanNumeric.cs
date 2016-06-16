@@ -7,12 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Numerics;
 
 namespace com.espertech.esper.support.bean
 {
     [Serializable]
 	public class SupportBeanNumeric
 	{
+        public SupportBeanNumeric(int? intOne, int? intTwo, BigInteger? bigint, decimal? decimalOne, double doubleOne, double doubleTwo)
+        {
+            IntOne = intOne;
+            IntTwo = intTwo;
+            BigInt = bigint;
+            DecimalOne = decimalOne;
+            DoubleOne = doubleOne;
+            DoubleTwo = doubleTwo;
+        }
+
         public SupportBeanNumeric(int? intOne, int? intTwo, decimal? decimalOne, double doubleOne, double doubleTwo)
         {
             IntOne = intOne;
@@ -23,20 +34,16 @@ namespace com.espertech.esper.support.bean
             DoubleTwo = doubleTwo;
         }
 
-        public SupportBeanNumeric(int? intOne, int? intTwo, decimal? decimalOne, decimal? decimalTwo, double doubleOne, double doubleTwo)
-        {
-            IntOne = intOne;
-            IntTwo = intTwo;
-            DecimalOne = decimalOne;
-            DecimalTwo = decimalTwo;
-            DoubleOne = doubleOne;
-            DoubleTwo = doubleTwo;
-        }
-
         public SupportBeanNumeric(int? intOne, int? intTwo)
         {
             IntOne = intOne;
             IntTwo = intTwo;
+        }
+
+        public SupportBeanNumeric(BigInteger bigint, decimal? decimalOne)
+        {
+            BigInt = bigint;
+            DecimalOne = decimalOne;
         }
 
         public SupportBeanNumeric(int? intOne, decimal? decimalOne)
@@ -64,6 +71,8 @@ namespace com.espertech.esper.support.bean
 
         public int? IntOne { set; get; }
         public int? IntTwo { set; get; }
+
+        private BigInteger? BigInt { get; set; }
 
         public decimal? DecimalOne { set; get; }
         public decimal? DecimalTwo { set; get; }

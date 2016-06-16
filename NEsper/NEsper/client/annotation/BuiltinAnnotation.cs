@@ -40,7 +40,6 @@ namespace com.espertech.esper.client.annotation
                     typeof(HookAttribute),
                     typeof(IterableUnboundAttribute),
                     typeof(NameAttribute),
-                    typeof(NoCacheAttribute),
                     typeof(NoLockAttribute),
                     typeof(OverflowAttribute),
                     typeof(PriorityAttribute),

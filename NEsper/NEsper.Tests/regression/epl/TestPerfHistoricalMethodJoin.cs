@@ -69,9 +69,8 @@ namespace com.espertech.esper.regression.epl
                 {
                     for (int i = 1; i < 5000; i++)
                     {
-                        int num = random.Next(98) + 1;
+                        var num = random.Next(98) + 1;
                         SendBeanInt("E1", num);
-
                         var result = new Object[][] { new Object[] { "E1", "H0" + num, "H1" + num } };
                         EPAssertionUtil.AssertPropsPerRow(_listener.GetAndResetLastNewData(), fields, result);
                     }

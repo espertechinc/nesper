@@ -15,12 +15,30 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 
 namespace com.espertech.esper.core.service
 {
     public class StatementLifecycleSvcUtil
     {
+        public static void AssignFilterSpecIds(FilterSpecCompiled filterSpec, FilterSpecCompiled[] filterSpecsAll)
+        {
+            for (int path = 0; path < filterSpec.Parameters.Length; path++)
+            {
+                foreach (FilterSpecParam param in filterSpec.Parameters[path])
+                {
+                    if (param is FilterSpecParamExprNode)
+                    {
+                        var index = filterSpec.GetFilterSpecIndexAmongAll(filterSpecsAll);
+                        var exprNode = (FilterSpecParamExprNode) param;
+                        exprNode.FilterSpecId = index;
+                        exprNode.FilterSpecParamPathNum = path;
+                    }
+                }
+            }
+        }
+
         public static void WalkStatement(StatementSpecRaw spec, ExprNodeSubselectDeclaredDotVisitor visitor)
         {
             // Look for expressions with sub-selects in select expression list and filter expression
@@ -231,7 +249,7 @@ namespace com.espertech.esper.core.service
                 if (onTriggerDesc.OnTriggerType == OnTriggerType.ON_SPLITSTREAM) {
                     OnTriggerSplitStreamDesc split = (OnTriggerSplitStreamDesc) onTriggerDesc;
                     foreach (OnTriggerSplitStream stream in split.SplitStreams) {
-                        if (IsTable(stream.InsertInto.EventTypeName, tableService)) {
+                        if (stream.InsertInto != null && IsTable(stream.InsertInto.EventTypeName, tableService)) {
                             return true;
                         }
                     }

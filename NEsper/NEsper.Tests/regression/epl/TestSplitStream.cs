@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("S0", typeof(SupportBean_S0));
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();

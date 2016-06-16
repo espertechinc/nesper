@@ -12,7 +12,6 @@ using System.Reflection;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
@@ -133,10 +132,10 @@ namespace com.espertech.esper.epl.view
 
             _handle = new EPStatementHandleCallback(_context.EpStatementAgentInstanceHandle, callback);
             _context.StatementContext.SchedulingService.Add(afterMSec, _handle, _scheduleSlot);
-            _context.AddTerminationCallback(Stop);
+            _context.AddTerminationCallback(new ProxyStopCallback(Stop));
         }
 
-        public void Stop()
+        public override void Stop()
         {
             if (_handle != null)
             {

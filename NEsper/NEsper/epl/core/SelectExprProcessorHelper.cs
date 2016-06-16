@@ -13,7 +13,6 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core.eval;
@@ -51,11 +50,12 @@ namespace com.espertech.esper.epl.core
 	    private readonly ValueAddEventService _valueAddEventService;
 	    private readonly SelectExprEventTypeRegistry _selectExprEventTypeRegistry;
 	    private readonly MethodResolutionService _methodResolutionService;
-	    private readonly string _statementId;
+	    private readonly int _statementId;
 	    private readonly Attribute[] _annotations;
 	    private readonly ConfigurationInformation _configuration;
-	    private readonly NamedWindowService _namedWindowService;
+	    private readonly NamedWindowMgmtService _namedWindowMgmtService;
 	    private readonly TableService _tableService;
+	    private readonly GroupByRollupInfo _groupByRollupInfo;
 
         /// <summary>
         /// Ctor.
@@ -74,8 +74,9 @@ namespace com.espertech.esper.epl.core
         /// <param name="statementId">The statement identifier.</param>
         /// <param name="annotations">The annotations.</param>
         /// <param name="configuration">The configuration.</param>
-        /// <param name="namedWindowService">The named window service.</param>
+        /// <param name="namedWindowMgmtService">The named window MGMT service.</param>
         /// <param name="tableService">The table service.</param>
+        /// <param name="groupByRollupInfo">The group by rollup information.</param>
         /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException thrown if any of the expressions don't validate</throws>
 	    public SelectExprProcessorHelper(
 	        ICollection<int> assignedTypeNumberStack,
@@ -89,11 +90,12 @@ namespace com.espertech.esper.epl.core
 	        ValueAddEventService valueAddEventService,
 	        SelectExprEventTypeRegistry selectExprEventTypeRegistry,
 	        MethodResolutionService methodResolutionService,
-	        string statementId,
+	        int statementId,
 	        Attribute[] annotations,
 	        ConfigurationInformation configuration,
-	        NamedWindowService namedWindowService,
-	        TableService tableService)
+	        NamedWindowMgmtService namedWindowMgmtService,
+	        TableService tableService,
+	        GroupByRollupInfo groupByRollupInfo)
 	    {
 	        _assignedTypeNumberStack = assignedTypeNumberStack;
 	        _selectionList = selectionList;
@@ -109,8 +111,9 @@ namespace com.espertech.esper.epl.core
 	        _statementId = statementId;
 	        _annotations = annotations;
 	        _configuration = configuration;
-	        _namedWindowService = namedWindowService;
+	        _namedWindowMgmtService = namedWindowMgmtService;
 	        _tableService = tableService;
+	        _groupByRollupInfo = groupByRollupInfo;
 	    }
 
 	    public SelectExprProcessor Evaluator
@@ -122,7 +125,8 @@ namespace com.espertech.esper.epl.core
 	            IList<SelectExprStreamDesc> unnamedStreams = new List<SelectExprStreamDesc>();
 	            foreach (var spec in _selectedStreams)
 	            {
-	                if ((spec.StreamSelected != null && spec.StreamSelected.OptionalName == null) ||
+	                if ((spec.StreamSelected != null && spec.StreamSelected.OptionalName == null)
+	                    ||
 	                    (spec.ExpressionSelectedAsStream != null)) // handle special "transpose(...)" function
 	                {
 	                    unnamedStreams.Add(spec);
@@ -270,12 +274,24 @@ namespace com.espertech.esper.epl.core
 	                    continue;
 	                }
 
+	                // handle select-clause expressions that match group-by expressions with rollup and therefore should be boxed types as rollup can produce a null value
+	                if (_groupByRollupInfo != null && _groupByRollupInfo.RollupDesc != null)
+	                {
+	                    var returnType = evaluator.ReturnType;
+	                    var returnTypeBoxed = returnType.GetBoxedType();
+	                    if (returnType != returnTypeBoxed && IsGroupByRollupNullableExpression(expr, _groupByRollupInfo))
+	                    {
+	                        exprEvaluators[i] = evaluator;
+	                        expressionReturnTypes[i] = returnTypeBoxed;
+	                        continue;
+	                    }
+	                }
+
 	                // assign normal expected return type
 	                exprEvaluators[i] = evaluator;
 	                expressionReturnTypes[i] = exprEvaluators[i].ReturnType;
 	            }
 
-	            int count;
 	            // Get column names
 	            string[] columnNames;
 	            string[] columnNamesAsProvided;
@@ -294,7 +310,7 @@ namespace com.espertech.esper.epl.core
 	                }
 	                columnNames = new string[_selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
 	                columnNamesAsProvided = new string[columnNames.Length];
-	                count = 0;
+	                var count = 0;
 	                foreach (var aSelectionList in _selectionList)
 	                {
 	                    columnNames[count] = aSelectionList.AssignedName;
@@ -352,7 +368,7 @@ namespace com.espertech.esper.epl.core
 	                var fragmentType = eventTypeStream.GetFragmentType(propertyName);
 	                if ((fragmentType == null) || (fragmentType.IsNative))
 	                {
-	                    continue; // we also ignore native classes as fragments for performance reasons
+	                    continue; // we also ignore native Java classes as fragments for performance reasons
 	                }
 
 	                // may need to unwrap the fragment if the target type has this underlying type
@@ -362,7 +378,7 @@ namespace com.espertech.esper.epl.core
 	                    targetFragment = insertIntoTargetType.GetFragmentType(columnNames[i]);
 	                }
 	                if ((insertIntoTargetType != null) &&
-	                    (ReferenceEquals(fragmentType.FragmentType.UnderlyingType, expressionReturnTypes[i])) &&
+	                    (fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i]) &&
 	                    ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
 	                {
 	                    ExprEvaluator evaluatorFragment;
@@ -374,7 +390,7 @@ namespace com.espertech.esper.epl.core
 	                    {
 	                        ProcEvaluate = args =>
 	                        {
-	                            EventBean streamEvent = args.EventsPerStream[streamNum];
+	                            var streamEvent = args.EventsPerStream[streamNum];
 	                            if (streamEvent == null)
 	                            {
 	                                return null;
@@ -397,7 +413,7 @@ namespace com.espertech.esper.epl.core
 	                    {
 	                        ProcEvaluate = args =>
 	                        {
-	                            EventBean streamEvent = args.EventsPerStream[streamNum];
+	                            var streamEvent = args.EventsPerStream[streamNum];
 	                            if (streamEvent == null)
 	                            {
 	                                return null;
@@ -421,7 +437,7 @@ namespace com.espertech.esper.epl.core
 	                    {
 	                        ProcEvaluate = args =>
 	                        {
-	                            EventBean streamEvent = args.EventsPerStream[streamNum];
+	                            var streamEvent = args.EventsPerStream[streamNum];
 	                            if (streamEvent == null)
 	                            {
 	                                return null;
@@ -451,7 +467,7 @@ namespace com.espertech.esper.epl.core
 	            // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
 	            for (var i = 0; i < _selectionList.Count; i++)
 	            {
-	                var pair = HandleUnderlyingStreamInsert(exprEvaluators[i], _namedWindowService, _eventAdapterService);
+	                var pair = HandleUnderlyingStreamInsert(exprEvaluators[i], _namedWindowMgmtService, _eventAdapterService);
 	                if (pair != null)
 	                {
 	                    exprEvaluators[i] = pair.First;
@@ -461,12 +477,12 @@ namespace com.espertech.esper.epl.core
 
 	            // Build event type that reflects all selected properties
 	            IDictionary<string, object> selPropertyTypes = new LinkedHashMap<string, object>();
-	            count = 0;
+	            var countX = 0;
 	            for (var i = 0; i < exprEvaluators.Length; i++)
 	            {
-	                var expressionReturnType = expressionReturnTypes[count];
-	                selPropertyTypes.Put(columnNames[count], expressionReturnType);
-	                count++;
+	                var expressionReturnType = expressionReturnTypes[countX];
+	                selPropertyTypes.Put(columnNames[countX], expressionReturnType);
+	                countX++;
 	            }
 	            if (!_selectedStreams.IsEmpty())
 	            {
@@ -481,16 +497,16 @@ namespace com.espertech.esper.epl.core
 	                    {
 	                        eventTypeStream = _typeService.EventTypes[element.StreamNumber];
 	                    }
-	                    selPropertyTypes.Put(columnNames[count], eventTypeStream);
-	                    count++;
+	                    selPropertyTypes.Put(columnNames[countX], eventTypeStream);
+	                    countX++;
 	                }
 	                if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
 	                {
 	                    for (var i = 0; i < _typeService.EventTypes.Length; i++)
 	                    {
 	                        var eventTypeStream = _typeService.EventTypes[i];
-	                        selPropertyTypes.Put(columnNames[count], eventTypeStream);
-	                        count++;
+	                        selPropertyTypes.Put(columnNames[countX], eventTypeStream);
+	                        countX++;
 	                    }
 	                }
 	            }
@@ -531,7 +547,7 @@ namespace com.espertech.esper.epl.core
 	                                var propertyType = streamSpec.PropertyType;
 	                                var streamNumber = streamSpec.StreamNumber;
 
-	                                if (TypeHelper.IsBuiltinDataType(streamSpec.PropertyType))
+	                                if (streamSpec.PropertyType.IsBuiltinDataType())
 	                                {
 	                                    throw new ExprValidationException(
 	                                        "The property wildcard syntax cannot be used on built-in types as returned by property '" +
@@ -563,12 +579,12 @@ namespace com.espertech.esper.epl.core
 	                            {
 	                                var expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
 	                                var returnType = expression.ExprEvaluator.ReturnType;
-	                                if (returnType == typeof (object[]) || returnType.IsGenericDictionary() ||
-	                                    TypeHelper.IsBuiltinDataType(returnType))
+	                                if (returnType == typeof (object[]) ||
+	                                    returnType.IsImplementsInterface(typeof (IDictionary<string, object>)) ||
+	                                    returnType.IsBuiltinDataType())
 	                                {
 	                                    throw new ExprValidationException(
-	                                        "Invalid expression return type '" + returnType.FullName +
-	                                        "' for transpose function");
+	                                        "Invalid expression return type '" + returnType.GetCleanName() + "' for transpose function");
 	                                }
 	                                underlyingEventType = _eventAdapterService.AddBeanType(
 	                                    returnType.Name, returnType, false, false, false);
@@ -600,11 +616,11 @@ namespace com.espertech.esper.epl.core
 
 	            var selectExprContext = new SelectExprContext(exprEvaluators, columnNames, _eventAdapterService);
 
-	            EventType resultEventType;
 	            if (_insertIntoDesc == null)
 	            {
 	                if (!_selectedStreams.IsEmpty())
 	                {
+	                    EventType resultEventTypeX;
 	                    if (underlyingEventType != null)
 	                    {
 	                        var tableMetadata = _tableService.GetTableMetadataFromEventType(underlyingEventType);
@@ -612,43 +628,44 @@ namespace com.espertech.esper.epl.core
 	                        {
 	                            underlyingEventType = tableMetadata.PublicEventType;
 	                        }
-	                        resultEventType =
+	                        resultEventTypeX =
 	                            _eventAdapterService.CreateAnonymousWrapperType(
 	                                _statementId + "_wrapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
 	                                underlyingEventType, selPropertyTypes);
 	                        return new EvalSelectStreamWUnderlying(
-	                            selectExprContext, resultEventType, namedStreams, _isUsingWildcard,
+	                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
 	                            unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
 	                            underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
 	                    }
 	                    else
 	                    {
-	                        resultEventType =
+	                        resultEventTypeX =
 	                            _eventAdapterService.CreateAnonymousMapType(
 	                                _statementId + "_mapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-	                                selPropertyTypes);
+	                                selPropertyTypes, true);
 	                        return new EvalSelectStreamNoUnderlyingMap(
-	                            selectExprContext, resultEventType, namedStreams, _isUsingWildcard);
+	                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
 	                    }
 	                }
 
 	                if (_isUsingWildcard)
 	                {
-	                    resultEventType =
+	                    var resultEventTypeX =
 	                        _eventAdapterService.CreateAnonymousWrapperType(
 	                            _statementId + "_wrapoutwild_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
 	                            eventType, selPropertyTypes);
 	                    if (singleStreamWrapper)
 	                    {
-	                        return new EvalSelectWildcardSSWrapper(selectExprContext, resultEventType);
+	                        return new EvalSelectWildcardSSWrapper(selectExprContext, resultEventTypeX);
 	                    }
 	                    if (joinWildcardProcessor == null)
 	                    {
-	                        return new EvalSelectWildcard(selectExprContext, resultEventType);
+	                        return new EvalSelectWildcard(selectExprContext, resultEventTypeX);
 	                    }
-	                    return new EvalSelectWildcardJoin(selectExprContext, resultEventType, joinWildcardProcessor);
+	                    return new EvalSelectWildcardJoin(selectExprContext, resultEventTypeX, joinWildcardProcessor);
 	                }
 
+	                EventType resultEventType;
 	                if (!useMapOutput)
 	                {
 	                    resultEventType =
@@ -661,7 +678,7 @@ namespace com.espertech.esper.epl.core
 	                    resultEventType =
 	                        _eventAdapterService.CreateAnonymousMapType(
 	                            _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-	                            selPropertyTypes);
+	                            selPropertyTypes, true);
 	                }
 	                if (selectExprContext.ExpressionNodes.Length == 0)
 	                {
@@ -686,6 +703,8 @@ namespace com.espertech.esper.epl.core
 	            {
 	                if (!_selectedStreams.IsEmpty())
 	                {
+	                    EventType resultEventTypeX;
+
 	                    // handle "transpose" special function with predefined target type
 	                    if (insertIntoTargetType != null && _selectedStreams[0].ExpressionSelectedAsStream != null)
 	                    {
@@ -706,14 +725,16 @@ namespace com.espertech.esper.epl.core
 	                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceObjectArray(
 	                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
 	                        }
-	                        else if (insertIntoTargetType is MapEventType && returnType.IsGenericDictionary())
+	                        else if (insertIntoTargetType is MapEventType &&
+	                                 returnType.IsImplementsInterface(typeof (IDictionary<string, object>)))
 	                        {
 	                            return
 	                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceMap(
 	                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
 	                        }
 	                        else if (insertIntoTargetType is BeanEventType &&
-	                                 TypeHelper.IsSubclassOrImplementsInterface(returnType, insertIntoTargetType.UnderlyingType))
+	                                 TypeHelper.IsSubclassOrImplementsInterface(
+	                                     returnType, insertIntoTargetType.UnderlyingType))
 	                        {
 	                            return
 	                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceNative(
@@ -727,7 +748,7 @@ namespace com.espertech.esper.epl.core
 	                            if (existing.UnderlyingEventType is BeanEventType)
 	                            {
 	                                var innerType = (BeanEventType) existing.UnderlyingEventType;
-	                                ExprEvaluator evalExprEvaluator =
+	                                var evalExprEvaluator =
 	                                    unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression.ExprEvaluator;
 	                                if (
 	                                    !TypeHelper.IsSubclassOrImplementsInterface(
@@ -737,12 +758,13 @@ namespace com.espertech.esper.epl.core
 	                                        "Invalid expression return type '" + evalExprEvaluator.ReturnType +
 	                                        "' for transpose function, expected '" + innerType.UnderlyingType.Name + "'");
 	                                }
-	                                resultEventType = _eventAdapterService.AddWrapperType(
+	                                resultEventTypeX = _eventAdapterService.AddWrapperType(
 	                                    insertIntoTargetType.Name, existing.UnderlyingEventType, selPropertyTypes, false,
 	                                    true);
 	                                return new EvalSelectStreamWUnderlying(
-	                                    selectExprContext, resultEventType, namedStreams, _isUsingWildcard,
-	                                    unnamedStreams, false, false, underlyingStreamNumber, null, evalExprEvaluator, null);
+	                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
+	                                    unnamedStreams, false, false, underlyingStreamNumber, null, evalExprEvaluator,
+	                                    null);
 	                            }
 	                        }
 	                        throw EvalInsertUtil.MakeEventTypeCastException(returnType, insertIntoTargetType);
@@ -781,10 +803,10 @@ namespace com.espertech.esper.epl.core
 	                        {
 	                            underlyingEventType = tableMetadata.PublicEventType;
 	                        }
-	                        resultEventType = _eventAdapterService.AddWrapperType(
+	                        resultEventTypeX = _eventAdapterService.AddWrapperType(
 	                            _insertIntoDesc.EventTypeName, underlyingEventType, selPropertyTypes, false, true);
 	                        return new EvalSelectStreamWUnderlying(
-	                            selectExprContext, resultEventType, namedStreams, _isUsingWildcard,
+	                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
 	                            unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
 	                            underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
 	                    }
@@ -792,8 +814,8 @@ namespace com.espertech.esper.epl.core
 	                    {
 	                        if (insertIntoTargetType is BeanEventType)
 	                        {
-	                            string name = _selectedStreams[0].StreamSelected.StreamName;
-	                            string alias = _selectedStreams[0].StreamSelected.OptionalName;
+	                            var name = _selectedStreams[0].StreamSelected.StreamName;
+	                            var alias = _selectedStreams[0].StreamSelected.OptionalName;
 	                            var syntaxUsed = name + ".*" + (alias != null ? " as " + alias : "");
 	                            var syntaxInstead = name + (alias != null ? " as " + alias : "");
 	                            throw new ExprValidationException(
@@ -803,18 +825,18 @@ namespace com.espertech.esper.epl.core
 	                        }
 	                        if (insertIntoTargetType == null || insertIntoTargetType is MapEventType)
 	                        {
-	                            resultEventType = _eventAdapterService.AddNestableMapType(
+	                            resultEventTypeX = _eventAdapterService.AddNestableMapType(
 	                                _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false, false, true);
-	                            var propertiesToUnwrap = GetEventBeanToObjectProps(selPropertyTypes, resultEventType);
+	                            var propertiesToUnwrap = GetEventBeanToObjectProps(selPropertyTypes, resultEventTypeX);
 	                            if (propertiesToUnwrap.IsEmpty())
 	                            {
 	                                return new EvalSelectStreamNoUnderlyingMap(
-	                                    selectExprContext, resultEventType, namedStreams, _isUsingWildcard);
+	                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
 	                            }
 	                            else
 	                            {
 	                                return new EvalSelectStreamNoUndWEventBeanToObj(
-	                                    selectExprContext, resultEventType, namedStreams, _isUsingWildcard, propertiesToUnwrap);
+	                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard, propertiesToUnwrap);
 	                            }
 	                        }
 	                        else
@@ -836,6 +858,7 @@ namespace com.espertech.esper.epl.core
 	                }
 
 	                var vaeProcessor = _valueAddEventService.GetValueAddProcessor(_insertIntoDesc.EventTypeName);
+	                EventType resultEventType;
 	                if (_isUsingWildcard)
 	                {
 	                    if (vaeProcessor != null)
@@ -1062,7 +1085,7 @@ namespace com.espertech.esper.epl.core
 	                            resultEventType =
 	                                _eventAdapterService.CreateAnonymousMapType(
 	                                    _statementId + "_vae_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-	                                    selPropertyTypes);
+	                                    selPropertyTypes, true);
 	                        }
 	                        else
 	                        {
@@ -1080,7 +1103,7 @@ namespace com.espertech.esper.epl.core
 	                            Type clazz = null;
 	                            try
 	                            {
-	                                clazz = _methodResolutionService.ResolveType(_insertIntoDesc.EventTypeName);
+	                                clazz = _methodResolutionService.ResolveType(_insertIntoDesc.EventTypeName, false);
 	                            }
 	                            catch (EngineImportException e)
 	                            {
@@ -1167,8 +1190,29 @@ namespace com.espertech.esper.epl.core
 	        }
 	    }
 
-	    private SelectExprProcessor MakeObjectArrayConsiderReorder(SelectExprContext selectExprContext, ObjectArrayEventType resultEventType)
+	    private bool IsGroupByRollupNullableExpression(ExprNode expr, GroupByRollupInfo groupByRollupInfo)
+        {
+	        // if all levels include this key, we are fine
+	        foreach (var level in groupByRollupInfo.RollupDesc.Levels) {
+	            if (level.IsAggregationTop) {
+	                return true;
+	            }
+	            var found = false;
+	            foreach (var rollupKeyIndex in level.RollupKeys) {
+	                var groupExpression = groupByRollupInfo.ExprNodes[rollupKeyIndex];
+	                if (ExprNodeUtility.DeepEquals(groupExpression, expr)) {
+	                    found = true;
+	                    break;
+	                }
+	            }
+	            if (!found) {
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
 
+	    private SelectExprProcessor MakeObjectArrayConsiderReorder(SelectExprContext selectExprContext, ObjectArrayEventType resultEventType)
 	    {
 	        // for single-property it is allowed to insert into that property directly, but not for tables
 	        if (selectExprContext.ColumnNames.Length == 1 &&
@@ -1190,7 +1234,7 @@ namespace com.espertech.esper.epl.core
 	            if (index != i) {
 	                needRemap = true;
 	            }
-	            Type sourceColumnType = selectExprContext.ExpressionNodes[i].ReturnType;
+	            var sourceColumnType = selectExprContext.ExpressionNodes[i].ReturnType;
 	            var targetPropType = resultEventType.GetPropertyType(colName);
 	            wideners[i] = TypeWidenerFactory.GetCheckPropertyAssignType(colName, sourceColumnType, targetPropType, colName);
 	        }
@@ -1212,14 +1256,15 @@ namespace com.espertech.esper.epl.core
 	        return "type '" + resultEventType.Name + "'";
 	    }
 
-	    private Pair<ExprEvaluator, object> HandleUnderlyingStreamInsert(ExprEvaluator exprEvaluator, NamedWindowService namedWindowService, EventAdapterService eventAdapterService) {
+	    private Pair<ExprEvaluator, object> HandleUnderlyingStreamInsert(ExprEvaluator exprEvaluator, NamedWindowMgmtService namedWindowMgmtService, EventAdapterService eventAdapterService)
+        {
 	        if (!(exprEvaluator is ExprStreamUnderlyingNode)) {
 	            return null;
 	        }
 	        var undNode = (ExprStreamUnderlyingNode) exprEvaluator;
 	        var streamNum = undNode.StreamId;
-	        Type returnType = undNode.ExprEvaluator.ReturnType;
-	        var namedWindowAsType = GetNamedWindowUnderlyingType(namedWindowService, eventAdapterService, _typeService.EventTypes[streamNum]);
+	        var returnType = undNode.ExprEvaluator.ReturnType;
+	        var namedWindowAsType = GetNamedWindowUnderlyingType(namedWindowMgmtService, eventAdapterService, _typeService.EventTypes[streamNum]);
 	        var tableMetadata = _tableService.GetTableMetadataFromEventType(_typeService.EventTypes[streamNum]);
 
 	        EventType eventTypeStream;
@@ -1228,13 +1273,16 @@ namespace com.espertech.esper.epl.core
 	            eventTypeStream = tableMetadata.PublicEventType;
 	            evaluator = new ProxyExprEvaluator
 	            {
-	                ProcEvaluate = args =>  {
+	                ProcEvaluate = args =>
+                    {
 	                    if (InstrumentationHelper.ENABLED) {
 	                        InstrumentationHelper.Get().QExprStreamUndSelectClause(undNode);
 	                    }
-	                    EventBean @event = args.EventsPerStream == null ? null : args.EventsPerStream[streamNum];
+
+                        var eventsPerStream = args.EventsPerStream;
+	                    var @event = eventsPerStream == null ? null : eventsPerStream[streamNum];
 	                    if (@event != null) {
-	                        @event = tableMetadata.EventToPublic.Convert(@event, args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
+                            @event = tableMetadata.EventToPublic.Convert(@event, eventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    }
 	                    if (InstrumentationHelper.ENABLED) {
 	                        InstrumentationHelper.Get().AExprStreamUndSelectClause(@event);
@@ -1242,28 +1290,26 @@ namespace com.espertech.esper.epl.core
 	                    return @event;
 	                },
 
-	                ProcReturnType = () =>  {
-	                    return returnType;
-	                },
+	                ProcReturnType = () => returnType,
 	            };
 	        }
 	        else if (namedWindowAsType == null) {
 	            eventTypeStream = _typeService.EventTypes[streamNum];
 	            evaluator = new ProxyExprEvaluator
 	            {
-	                ProcEvaluate = args =>  {
+	                ProcEvaluate = args =>
+	                {
+	                    var eventsPerStream = args.EventsPerStream;
 	                    if (InstrumentationHelper.ENABLED) {
 	                        InstrumentationHelper.Get().QExprStreamUndSelectClause(undNode);
-	                        EventBean @event = args.EventsPerStream == null ? null : args.EventsPerStream[streamNum];
+	                        var @event = eventsPerStream == null ? null : eventsPerStream[streamNum];
 	                        InstrumentationHelper.Get().AExprStreamUndSelectClause(@event);
 	                        return @event;
 	                    }
-	                    return args.EventsPerStream == null ? null : args.EventsPerStream[streamNum];
+	                    return eventsPerStream == null ? null : eventsPerStream[streamNum];
 	                },
 
-	                ProcReturnType = () =>  {
-	                    return returnType;
-	                },
+	                ProcReturnType = () => returnType,
 	            };
 	        }
 	        else {
@@ -1271,7 +1317,7 @@ namespace com.espertech.esper.epl.core
 	            evaluator = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>  {
-	                    EventBean @event = args.EventsPerStream[streamNum];
+                        var @event = args.EventsPerStream[streamNum];
 	                    if (@event == null) {
 	                        return null;
 	                    }
@@ -1287,16 +1333,16 @@ namespace com.espertech.esper.epl.core
 	        return new Pair<ExprEvaluator, object>(evaluator, eventTypeStream);
 	    }
 
-	    private EventType GetNamedWindowUnderlyingType(NamedWindowService namedWindowService, EventAdapterService eventAdapterService, EventType eventType)
+	    private EventType GetNamedWindowUnderlyingType(NamedWindowMgmtService namedWindowMgmtService, EventAdapterService eventAdapterService, EventType eventType)
         {
-	        if (!namedWindowService.IsNamedWindow(eventType.Name)) {
+	        if (!namedWindowMgmtService.IsNamedWindow(eventType.Name)) {
 	            return null;
 	        }
-	        var processor = namedWindowService.GetProcessor(eventType.Name);
-	        if (processor.GetEventTypeAsName() == null) {
+	        var processor = namedWindowMgmtService.GetProcessor(eventType.Name);
+	        if (processor.EventTypeAsName == null) {
 	            return null;
 	        }
-	        return eventAdapterService.GetEventTypeByName(processor.GetEventTypeAsName());
+	        return eventAdapterService.GetEventTypeByName(processor.EventTypeAsName);
 	    }
 
 	    private static EPType[] DetermineInsertedEventTypeTargets(EventType targetType, IList<SelectClauseExprCompiledSpec> selectionList)
@@ -1338,7 +1384,6 @@ namespace com.espertech.esper.epl.core
 	    }
 
 	    private TypeAndFunctionPair HandleTypableExpression(ExprEvaluator exprEvaluator, int expressionNum)
-
 	    {
 	        if (!(exprEvaluator is ExprEvaluatorTypableReturn)) {
 	            return null;
@@ -1350,22 +1395,19 @@ namespace com.espertech.esper.epl.core
 	            return null;
 	        }
 
-	        var mapType = _eventAdapterService.CreateAnonymousMapType(_statementId + "_innereval_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_") + "_" + expressionNum, eventTypeExpr);
+	        var mapType = _eventAdapterService.CreateAnonymousMapType(_statementId + "_innereval_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_") + "_" + expressionNum, eventTypeExpr, true);
 	        var innerEvaluator = exprEvaluator;
 	        ExprEvaluator evaluatorFragment = new ProxyExprEvaluator
 	        {
 	            ProcEvaluate = args =>
 	            {
-	                var values = (IDictionary<string, object>) innerEvaluator.Evaluate(args);
+	                var values = (IDictionary<string,object>) innerEvaluator.Evaluate(args);
 	                if (values == null) {
 	                    return _eventAdapterService.AdapterForTypedMap(Collections.GetEmptyMap<string, object>(), mapType);
 	                }
 	                return _eventAdapterService.AdapterForTypedMap(values, mapType);
 	            },
-	            ProcReturnType = () =>
-	            {
-	                return typeof(IDictionary<string, object>);
-	            },
+	            ProcReturnType = () => typeof(IDictionary<string,object>),
 	        };
 
 	        return new TypeAndFunctionPair(mapType, evaluatorFragment);
@@ -1374,14 +1416,14 @@ namespace com.espertech.esper.epl.core
 	    private TypeAndFunctionPair HandleInsertIntoEnumeration(string insertIntoColName, EPType insertIntoTarget, ExprEvaluator exprEvaluator, EngineImportService engineImportService)
 	    {
 	        if (!(exprEvaluator is ExprEvaluatorEnumeration) || insertIntoTarget == null
-	                || (!EPTypeHelper.IsCarryEvent(insertIntoTarget))) {
+	                || (!insertIntoTarget.IsCarryEvent())) {
 	            return null;
 	        }
 
 	        var enumeration = (ExprEvaluatorEnumeration) exprEvaluator;
 	        var eventTypeSingle = enumeration.GetEventTypeSingle(_eventAdapterService, _statementId);
 	        var eventTypeColl = enumeration.GetEventTypeCollection(_eventAdapterService, _statementId);
-	        var sourceType = eventTypeSingle ?? eventTypeColl;
+	        var sourceType = eventTypeSingle != null ? eventTypeSingle : eventTypeColl;
 	        if (eventTypeColl == null && eventTypeSingle == null) {
 	            return null;    // enumeration is untyped events (select-clause provided to subquery or 'new' operator)
 	        }
@@ -1390,21 +1432,16 @@ namespace com.espertech.esper.epl.core
 	        }
 
 	        // check type info
-	        var targetType = EPTypeHelper.GetEventType(insertIntoTarget);
+	        var targetType = insertIntoTarget.GetEventType();
 	        CheckTypeCompatible(insertIntoColName, targetType, sourceType);
-
-            ExprEvaluator evaluatorFragment;
 
 	        // handle collection target - produce EventBean[]
 	        if (insertIntoTarget is EventMultiValuedEPType) {
 	            if (eventTypeColl != null) {
-	                evaluatorFragment = new ProxyExprEvaluator
+	                ExprEvaluator evaluatorFragment = new ProxyExprEvaluator
 	                {
 	                    ProcEvaluate = args =>  {
-	                        var events = enumeration.EvaluateGetROCollectionEvents(
-                                args.EventsPerStream,
-                                args.IsNewData,
-                                args.ExprEvaluatorContext);
+                            var events = enumeration.EvaluateGetROCollectionEvents(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                        if (events == null) {
 	                            return null;
 	                        }
@@ -1416,13 +1453,10 @@ namespace com.espertech.esper.epl.core
 	                };
 	                return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragment);
 	            }
-	            evaluatorFragment = new ProxyExprEvaluator
+	            ExprEvaluator evaluatorFragmentZ = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>  {
-                        var @event = enumeration.EvaluateGetEventBean(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+                        var @event = enumeration.EvaluateGetEventBean(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (@event == null) {
 	                        return null;
 	                    }
@@ -1432,35 +1466,29 @@ namespace com.espertech.esper.epl.core
 	                    return TypeHelper.GetArrayType(targetType.UnderlyingType);
 	                },
 	            };
-	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragment);
+	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragmentZ);
 	        }
 
 	        // handle single-bean target
 	        // handle single-source
 	        if (eventTypeSingle != null) {
-	            evaluatorFragment = new ProxyExprEvaluator
+	            ExprEvaluator evaluatorFragmentY = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>  {
-	                    return enumeration.EvaluateGetEventBean(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+	                    return enumeration.EvaluateGetEventBean(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                },
 	                ProcReturnType = () =>  {
 	                    return targetType.UnderlyingType;
 	                },
 	            };
-	            return new TypeAndFunctionPair(targetType, evaluatorFragment);
+	            return new TypeAndFunctionPair(targetType, evaluatorFragmentY);
 	        }
 
 	        // handle collection-source by taking the first
-	        evaluatorFragment = new ProxyExprEvaluator
+	        ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	        {
 	            ProcEvaluate = args =>  {
-	                var events = enumeration.EvaluateGetROCollectionEvents(
-                        args.EventsPerStream,
-                        args.IsNewData,
-                        args.ExprEvaluatorContext);
+                    var events = enumeration.EvaluateGetROCollectionEvents(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                if (events == null || events.Count == 0) {
 	                    return null;
 	                }
@@ -1470,7 +1498,7 @@ namespace com.espertech.esper.epl.core
 	                return targetType.UnderlyingType;
 	            },
 	        };
-	        return new TypeAndFunctionPair(targetType, evaluatorFragment);
+	        return new TypeAndFunctionPair(targetType, evaluatorFragmentX);
 	    }
 
 	    private void CheckTypeCompatible(string insertIntoCol, EventType targetType, EventType selectedType)
@@ -1483,14 +1511,16 @@ namespace com.espertech.esper.epl.core
 	    }
 
 	    private TypeAndFunctionPair HandleInsertIntoTypableExpression(EPType insertIntoTarget, ExprEvaluator exprEvaluator, EngineImportService engineImportService)
+
 	    {
-	        if (!(exprEvaluator is ExprEvaluatorTypableReturn)
-	                || insertIntoTarget == null
-	                || (!EPTypeHelper.IsCarryEvent(insertIntoTarget))) {
+	        if ((!(exprEvaluator is ExprEvaluatorTypableReturn)) ||
+                (insertIntoTarget == null) ||
+                (!insertIntoTarget.IsCarryEvent()))
+            {
 	            return null;
 	        }
 
-	        var targetType = EPTypeHelper.GetEventType(insertIntoTarget);
+	        var targetType = insertIntoTarget.GetEventType();
 	        var typable = (ExprEvaluatorTypableReturn) exprEvaluator;
 	        if (typable.IsMultirow == null) { // not typable after all
 	            return null;
@@ -1500,12 +1530,12 @@ namespace com.espertech.esper.epl.core
 	            return null;
 	        }
 
-	        ICollection<WriteablePropertyDescriptor> writables = _eventAdapterService.GetWriteableProperties(targetType, false);
+	        var writables = _eventAdapterService.GetWriteableProperties(targetType, false);
 	        IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
 	        IList<KeyValuePair<string, object>> writtenOffered = new List<KeyValuePair<string, object>>();
 
 	        // from Map<String, Object> determine properties and type widening that may be required
-	        foreach (KeyValuePair<string, object> offeredProperty in eventTypeExpr) {
+	        foreach (var offeredProperty in eventTypeExpr) {
 	            var writable = EventTypeUtility.FindWritable(offeredProperty.Key, writables);
 	            if (writable == null) {
 	                throw new ExprValidationException("Failed to find property '" + offeredProperty.Key + "' among properties for target event type '" + targetType.Name + "'");
@@ -1527,7 +1557,7 @@ namespace com.espertech.esper.epl.core
 	        var hasWideners = !CollectionUtil.IsAllNullArray(wideners);
 
 	        // obtain factory
-	        WriteablePropertyDescriptor[] writtenArray = written.ToArray();
+	        var writtenArray = written.ToArray();
 	        EventBeanManufacturer manufacturer;
 	        try {
 	            manufacturer = _eventAdapterService.GetManufacturer(targetType, writtenArray, engineImportService, false);
@@ -1536,19 +1566,15 @@ namespace com.espertech.esper.epl.core
 	            throw new ExprValidationException("Failed to obtain eventbean factory: " + e.Message, e);
 	        }
 
-            ExprEvaluator evaluatorFragment;
-
 	        // handle collection
 	        var factory = manufacturer;
-	        if (insertIntoTarget is EventMultiValuedEPType && typable.IsMultirow.Value) {
-	            evaluatorFragment = new ProxyExprEvaluator
+	        if (insertIntoTarget is EventMultiValuedEPType && typable.IsMultirow.GetValueOrDefault())
+            {
+	            ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>
 	                {
-	                    var rows = typable.EvaluateTypableMulti(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+                        var rows = typable.EvaluateTypableMulti(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (rows == null) {
 	                        return null;
 	                    }
@@ -1570,17 +1596,15 @@ namespace com.espertech.esper.epl.core
 	                },
 	            };
 
-	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragment);
+	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragmentX);
 	        }
-	        else if (insertIntoTarget is EventMultiValuedEPType && !typable.IsMultirow.Value) {
-	            evaluatorFragment = new ProxyExprEvaluator
+	        else if (insertIntoTarget is EventMultiValuedEPType && !typable.IsMultirow.GetValueOrDefault())
+            {
+	            ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>
 	                {
-	                    var row = typable.EvaluateTypableSingle(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+                        var row = typable.EvaluateTypableSingle(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (row == null) {
 	                        return null;
 	                    }
@@ -1594,17 +1618,15 @@ namespace com.espertech.esper.epl.core
 	                    return TypeHelper.GetArrayType(targetType.UnderlyingType);
 	                },
 	            };
-	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragment);
+	            return new TypeAndFunctionPair(new EventType[] {targetType}, evaluatorFragmentX);
 	        }
-	        else if (insertIntoTarget is EventEPType && !typable.IsMultirow.Value) {
-	            evaluatorFragment = new ProxyExprEvaluator
+	        else if (insertIntoTarget is EventEPType && !typable.IsMultirow.GetValueOrDefault())
+            {
+	            ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>
 	                {
-	                    var row = typable.EvaluateTypableSingle(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+                        var row = typable.EvaluateTypableSingle(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (row == null) {
 	                        return null;
 	                    }
@@ -1618,18 +1640,15 @@ namespace com.espertech.esper.epl.core
 	                    return TypeHelper.GetArrayType(targetType.UnderlyingType);
 	                },
 	            };
-	            return new TypeAndFunctionPair(targetType, evaluatorFragment);
+	            return new TypeAndFunctionPair(targetType, evaluatorFragmentX);
 	        }
 
 	        // we are discarding all but the first row
-	        evaluatorFragment = new ProxyExprEvaluator
+	        ExprEvaluator evaluatorFragment = new ProxyExprEvaluator
 	        {
 	            ProcEvaluate = args =>
 	            {
-	                var rows = typable.EvaluateTypableMulti(
-                        args.EventsPerStream, 
-                        args.IsNewData, 
-                        args.ExprEvaluatorContext);
+                    var rows = typable.EvaluateTypableMulti(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                if (rows == null) {
 	                    return null;
 	                }
@@ -1657,17 +1676,15 @@ namespace com.espertech.esper.epl.core
 	        }
 	    }
 
-	    private void ApplyWideners(object[][] rows, TypeWidener[] wideners) {
+	    private void ApplyWideners(object[][] rows, TypeWidener[] wideners)
+        {
 	        foreach (var row in rows) {
 	            ApplyWideners(row, wideners);
 	        }
 	    }
 
 	    private TypeAndFunctionPair HandleAtEventbeanEnumeration(bool isEventBeans, ExprEvaluator evaluator)
-
 	    {
-	        ExprEvaluator evaluatorFragment;
-
 	        if (!(evaluator is ExprEvaluatorEnumeration) || !isEventBeans) {
 	            return null;
 	        }
@@ -1677,41 +1694,23 @@ namespace com.espertech.esper.epl.core
 	        if (eventTypeSingle != null) {
 	            var tableMetadata = _tableService.GetTableMetadataFromEventType(eventTypeSingle);
 	            if (tableMetadata == null) {
-	                evaluatorFragment = new ProxyExprEvaluator
+	                ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	                {
-	                    ProcEvaluate = args =>
-	                    {
-	                        return enumEval.EvaluateGetEventBean(
-	                            args.EventsPerStream,
-	                            args.IsNewData,
-	                            args.ExprEvaluatorContext);
-	                    },
-	                    ProcReturnType = () => {
-	                        return eventTypeSingle.UnderlyingType;
-	                    },
+	                    ProcEvaluate = args => enumEval.EvaluateGetEventBean(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext),
+	                    ProcReturnType = () => eventTypeSingle.UnderlyingType,
 	                };
-	                return new TypeAndFunctionPair(eventTypeSingle, evaluatorFragment);
+	                return new TypeAndFunctionPair(eventTypeSingle, evaluatorFragmentX);
 	            }
-	            evaluatorFragment = new ProxyExprEvaluator
+	            ExprEvaluator evaluatorFragment = new ProxyExprEvaluator
 	            {
-	                ProcEvaluate = args =>
-	                {
-	                    var @event = enumEval.EvaluateGetEventBean(
-	                        args.EventsPerStream,
-	                        args.IsNewData,
-	                        args.ExprEvaluatorContext);
+	                ProcEvaluate = args =>  {
+                        var @event = enumEval.EvaluateGetEventBean(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (@event == null) {
 	                        return null;
 	                    }
-	                    return tableMetadata.EventToPublic.Convert(
-	                        @event,
-                            args.EventsPerStream,
-	                        args.IsNewData,
-	                        args.ExprEvaluatorContext);
+                        return tableMetadata.EventToPublic.Convert(@event, args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                },
-	                ProcReturnType = () => {
-	                    return tableMetadata.PublicEventType.UnderlyingType;
-	                },
+	                ProcReturnType = () => tableMetadata.PublicEventType.UnderlyingType,
 	            };
 	            return new TypeAndFunctionPair(tableMetadata.PublicEventType, evaluatorFragment);
 	        }
@@ -1720,15 +1719,12 @@ namespace com.espertech.esper.epl.core
 	        if (eventTypeColl != null) {
 	            var tableMetadata = _tableService.GetTableMetadataFromEventType(eventTypeColl);
 	            if (tableMetadata == null) {
-	                evaluatorFragment = new ProxyExprEvaluator
+	                ExprEvaluator evaluatorFragmentX = new ProxyExprEvaluator
 	                {
 	                    ProcEvaluate = args =>  {
 	                        // the protocol is EventBean[]
-                            object result = enumEval.EvaluateGetROCollectionEvents(
-                                args.EventsPerStream,
-                                args.IsNewData,
-                                args.ExprEvaluatorContext);
-	                        if (result != null && result is ICollection<EventBean>) {
+                            var result = enumEval.EvaluateGetROCollectionEvents(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
+	                        if (result is ICollection<EventBean>) {
 	                            var events = (ICollection<EventBean>) result;
 	                            return events.ToArray();
 	                        }
@@ -1738,47 +1734,33 @@ namespace com.espertech.esper.epl.core
 	                        return TypeHelper.GetArrayType(eventTypeColl.UnderlyingType);
 	                    },
 	                };
-	                return new TypeAndFunctionPair(new EventType[]{eventTypeColl}, evaluatorFragment);
+	                return new TypeAndFunctionPair(new EventType[]{eventTypeColl}, evaluatorFragmentX);
 	            }
-	            evaluatorFragment = new ProxyExprEvaluator
+	            ExprEvaluator evaluatorFragment = new ProxyExprEvaluator
 	            {
 	                ProcEvaluate = args =>  {
 	                    // the protocol is EventBean[]
-	                    object result = enumEval.EvaluateGetROCollectionEvents(
-                            args.EventsPerStream,
-                            args.IsNewData,
-                            args.ExprEvaluatorContext);
+                        var result = enumEval.EvaluateGetROCollectionEvents(args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    if (result == null) {
 	                        return null;
 	                    }
-                        if (result is ICollection<EventBean>)
+	                    if (result is ICollection<EventBean>)
                         {
 	                        var eventsX = (ICollection<EventBean>) result;
 	                        var @out = new EventBean[eventsX.Count];
 	                        var index = 0;
 	                        foreach (var @event in eventsX) {
-	                            @out[index++] = tableMetadata.EventToPublic.Convert(
-                                    @event,
-                                    args.EventsPerStream,
-                                    args.IsNewData,
-                                    args.ExprEvaluatorContext);
+                                @out[index++] = tableMetadata.EventToPublic.Convert(@event, args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                        }
 	                        return @out;
 	                    }
 	                    var events = (EventBean[]) result;
-	                    for (var i = 0; i < events.Length; i++)
-	                    {
-	                        events[i] = tableMetadata.EventToPublic.Convert(
-	                            events[i],
-	                            args.EventsPerStream,
-	                            args.IsNewData,
-	                            args.ExprEvaluatorContext);
+	                    for (var i = 0; i < events.Length; i++) {
+                            events[i] = tableMetadata.EventToPublic.Convert(events[i], args.EventsPerStream, args.IsNewData, args.ExprEvaluatorContext);
 	                    }
 	                    return events;
 	                },
-	                ProcReturnType = () => {
-	                    return TypeHelper.GetArrayType(tableMetadata.PublicEventType.UnderlyingType);
-	                },
+	                ProcReturnType = () => TypeHelper.GetArrayType(tableMetadata.PublicEventType.UnderlyingType),
 	            };
 	            return new TypeAndFunctionPair(new EventType[]{tableMetadata.PublicEventType}, evaluatorFragment);
 	        }
@@ -1794,7 +1776,7 @@ namespace com.espertech.esper.epl.core
 	        }
 	        var mapEventType = (BaseNestableEventType) resultEventType;
 	        ISet<string> props = null;
-	        foreach (KeyValuePair<string, object> entry in selPropertyTypes) {
+	        foreach (var entry in selPropertyTypes) {
 	            if (entry.Value is BeanEventType && mapEventType.Types.Get(entry.Key) is Type) {
 	                if (props == null) {
 	                    props = new HashSet<string>();
@@ -1803,7 +1785,7 @@ namespace com.espertech.esper.epl.core
 	            }
 	        }
 	        if (props == null) {
-	            return Collections.GetEmptySet<string>();
+                return Collections.GetEmptySet<string>();
 	        }
 	        return props;
 	    }
@@ -1829,17 +1811,16 @@ namespace com.espertech.esper.epl.core
 	        }
 	    }
 
-	    internal class TypeAndFunctionPair
-        {
-            internal TypeAndFunctionPair(object type, ExprEvaluator function)
-            {
+        internal class TypeAndFunctionPair
+	    {
+	        internal TypeAndFunctionPair(object type, ExprEvaluator function)
+	        {
 	            Type = type;
 	            Function = function;
 	        }
 
-	        public object Type { get; private set; }
-
-	        public ExprEvaluator Function { get; private set; }
-        }
+	        public readonly object Type;
+	        public readonly ExprEvaluator Function;
+	    }
 	}
 } // end of namespace

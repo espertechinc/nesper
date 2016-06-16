@@ -6,30 +6,28 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.util;
 using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.epl.agg.service
 {
-	public class AggSvcGroupByLocalGroupByFactory : AggregationServiceFactory {
+	public class AggSvcGroupByLocalGroupByFactory : AggregationServiceFactory
+    {
+	    protected internal readonly bool Join;
+        protected internal readonly AggregationLocalGroupByPlan LocalGroupByPlan;
+        protected internal readonly object GroupKeyBinding;
 
-	    private readonly bool join;
-	    private readonly AggregationLocalGroupByPlan localGroupByPlan;
-	    private readonly object groupKeyBinding;
-
-	    public AggSvcGroupByLocalGroupByFactory(bool join, AggregationLocalGroupByPlan localGroupByPlan, object groupKeyBinding) {
-	        this.join = join;
-	        this.localGroupByPlan = localGroupByPlan;
-	        this.groupKeyBinding = groupKeyBinding;
+	    public AggSvcGroupByLocalGroupByFactory(bool join, AggregationLocalGroupByPlan localGroupByPlan, object groupKeyBinding)
+        {
+	        Join = join;
+	        LocalGroupByPlan = localGroupByPlan;
+	        GroupKeyBinding = groupKeyBinding;
 	    }
 
-	    public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService) {
-	        return new AggSvcGroupByLocalGroupBy(methodResolutionService, join, localGroupByPlan, groupKeyBinding);
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber)
+        {
+	        return new AggSvcGroupByLocalGroupBy(methodResolutionService, Join, LocalGroupByPlan, GroupKeyBinding);
 	    }
 	}
 } // end of namespace

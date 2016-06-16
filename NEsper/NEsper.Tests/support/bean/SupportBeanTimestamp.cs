@@ -11,7 +11,8 @@ using System;
 
 namespace com.espertech.esper.support.bean
 {
-	public class SupportBeanTimestamp
+	[Serializable]
+    public class SupportBeanTimestamp
 	{
 		private readonly String id;
         private readonly long timestamp;

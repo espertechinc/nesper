@@ -40,7 +40,7 @@ namespace com.espertech.esper.core.context.activator
             var consumerDesc = new NamedWindowConsumerDesc(
                 _filterExpressions, _optPropertyEvaluator, agentInstanceContext);
             var consumerView = _processor.AddConsumer(consumerDesc, isSubselect);
-            return new ViewableActivationResult(consumerView, consumerView.Stop, null, null, null, false, false, null);
+            return new ViewableActivationResult(consumerView, consumerView, null, null, null, false, false, null);
         }
     }
 }

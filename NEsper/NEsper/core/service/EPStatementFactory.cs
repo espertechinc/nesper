@@ -7,15 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.dispatch;
 using com.espertech.esper.timer;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
     public interface EPStatementFactory
     {
         EPStatementSPI Make(
-            EPServiceProvider serviceProvider,
             string expressionNoAnnotations,
             bool isPattern,
             DispatchService dispatchService,
@@ -30,5 +31,7 @@ namespace com.espertech.esper.core.service
             StatementContext statementContext,
             bool isFailed,
             bool nameProvided);
+
+        StopCallback MakeStopMethod(StatementAgentInstanceFactoryResult startResult);
     }
 } // end of namespace

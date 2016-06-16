@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.client
             configuration.AddPlugInVirtualDataWindow("invalid", "invalid", typeof(InvalidTypeForTest).FullName);
             configuration.AddPlugInVirtualDataWindow("test", "testnoindex", typeof(SupportVirtualDWInvalidFactory).FullName);
             configuration.AddPlugInVirtualDataWindow("test", "exceptionvdw", typeof(SupportVirtualDWExceptionFactory).FullName);
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddEventType<SupportBean>();
             configuration.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
             configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regression.client
             var result = _epService.EPRuntime.ExecuteQuery("select col1 from MyVDW vdw");
             AssertIndexSpec(window.LastRequestedIndex, "", "");
             Assert.AreEqual("MyVDW", window.LastRequestedIndex.NamedWindowName);
-            Assert.IsNull(window.LastRequestedIndex.StatementId);
+            Assert.That(window.LastRequestedIndex.StatementId, Is.EqualTo(-1));
             Assert.IsNull(window.LastRequestedIndex.StatementName);
             Assert.NotNull(window.LastRequestedIndex.StatementAnnotations);
             Assert.IsTrue(window.LastRequestedIndex.IsFireAndForget);
@@ -366,13 +366,13 @@ namespace com.espertech.esper.regression.client
             result = _epService.EPRuntime.ExecuteQuery("select col1 from MyVDW vdw where col1='key1' and col2='key2' and col3 between 5 and 15");
             AssertIndexSpec(window.LastRequestedIndex, "col1=(String)|col2=(String)", "col3[,](Double)");
             EPAssertionUtil.AssertProps(result.Array[0], "col1".Split(','), new Object[] { "key1" });
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[] { "key1", "key2", new VirtualDataWindowKeyRange(5d, 15d) }, window.LastAccessKeys);
+            EPAssertionUtil.AssertEqualsAnyOrder(new Object[] { "key1", "key2", new VirtualDataWindowKeyRange(5d, 15d) }, window.LastAccessKeys);
 
             // test multi-criteria subquery
             result = _epService.EPRuntime.ExecuteQuery("select col1 from MyVDW vdw where col1='key1' and col2>'key0' and col3 between 5 and 15");
             AssertIndexSpec(window.LastRequestedIndex, "col1=(String)", "col3[,](Double)|col2>(String)");
             EPAssertionUtil.AssertProps(result.Array[0], "col1".Split(','), new Object[] { "key1" });
-            EPAssertionUtil.AssertEqualsExactOrder(new Object[] { "key1", new VirtualDataWindowKeyRange(5d, 15d), "key0" }, window.LastAccessKeys);
+            EPAssertionUtil.AssertEqualsAnyOrder(new Object[] { "key1", new VirtualDataWindowKeyRange(5d, 15d), "key0" }, window.LastAccessKeys);
         }
 
         [Test]
@@ -603,14 +603,17 @@ namespace com.espertech.esper.regression.client
             {
                 return;
             }
+
             var split = hashfields.Split('|');
+            var found = new List<string>();
             for (var i = 0; i < split.Length; i++)
             {
-                var expected = split[i];
                 var field = fields[i];
-                var found = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.GetCleanName(false) + ")";
-                Assert.AreEqual(expected, found);
+                var result = field.PropertyName + field.Operator.Value.GetOp() + "(" + field.LookupValueType.GetCleanName(false) + ")";
+                found.Add(result);
             }
+
+            EPAssertionUtil.AssertEqualsAnyOrder(split, found);
         }
 
         private VirtualDataWindow GetFromContext(String name)

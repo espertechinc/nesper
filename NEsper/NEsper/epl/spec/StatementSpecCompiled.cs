@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.expression.core;
@@ -351,5 +350,7 @@ namespace com.espertech.esper.epl.spec
 	    public CreateTableDesc CreateTableDesc { get; private set; }
 
         public FilterSpecCompiled[] FilterSpecsOverall { get; set; }
+
+	    public NamedWindowConsumerStreamSpec[] NamedWindowConsumersAll { get; set; }
 	}
 } // end of namespace

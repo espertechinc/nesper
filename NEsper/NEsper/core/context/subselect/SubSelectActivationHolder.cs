@@ -14,7 +14,7 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.core.context.subselect
 {
     /// <summary>
-    /// Entry holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />. 
+    /// Record holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />. 
     /// </summary>
     public class SubSelectActivationHolder
     {

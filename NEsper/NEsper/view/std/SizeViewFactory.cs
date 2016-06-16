@@ -26,7 +26,7 @@ namespace com.espertech.esper.view.std
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
     
-        protected StatViewAdditionalProps AdditionalProps;
+        protected StatViewAdditionalProps _additionalProps;
     
         private EventType _eventType;
     
@@ -39,13 +39,13 @@ namespace com.espertech.esper.view.std
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
-            AdditionalProps = StatViewAdditionalProps.Make(validated, 0, parentEventType);
-            _eventType = SizeView.CreateEventType(statementContext, AdditionalProps, _streamNumber);
+            _additionalProps = StatViewAdditionalProps.Make(validated, 0, parentEventType);
+            _eventType = SizeView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            return new SizeView(agentInstanceViewFactoryContext.AgentInstanceContext, _eventType, AdditionalProps);
+            return new SizeView(agentInstanceViewFactoryContext.AgentInstanceContext, _eventType, _additionalProps);
         }
 
         public EventType EventType
@@ -59,7 +59,7 @@ namespace com.espertech.esper.view.std
             {
                 return false;
             }
-            if (AdditionalProps != null) {
+            if (_additionalProps != null) {
                 return false;
             }
             return true;
@@ -68,6 +68,11 @@ namespace com.espertech.esper.view.std
         public string ViewName
         {
             get { return NAME; }
+        }
+
+        public StatViewAdditionalProps AdditionalProps
+        {
+            get { return _additionalProps; }
         }
     }
 }

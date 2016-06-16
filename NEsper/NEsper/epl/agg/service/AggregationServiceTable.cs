@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
@@ -89,6 +90,9 @@ namespace com.espertech.esper.epl.agg.service
     
         private UnsupportedOperationException HandleNotSupported() {
             return new UnsupportedOperationException("Operation not supported, aggregation server for reporting only");
+        }
+
+        public void Stop() {
         }
     }
 }

@@ -59,9 +59,10 @@ namespace com.espertech.esper.epl.core
         /// <param name="oldData">old events posted by view</param>
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
         /// <returns>pair of new events and old events</returns>
-        public abstract UniformPair<EventBean[]> ProcessViewResult(EventBean[] newData,
-                                                                   EventBean[] oldData,
-                                                                   bool isSynthesize);
+        public abstract UniformPair<EventBean[]> ProcessViewResult(
+            EventBean[] newData,
+            EventBean[] oldData,
+            bool isSynthesize);
 
         /// <summary>
         /// For use by joins posting their result, process the event rows that are entered and removed (new and old events).
@@ -72,7 +73,10 @@ namespace com.espertech.esper.epl.core
         /// <param name="oldEvents">old events posted by join</param>
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
         /// <returns>pair of new events and old events</returns>
-        public abstract UniformPair<EventBean[]> ProcessJoinResult(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, bool isSynthesize);
+        public abstract UniformPair<EventBean[]> ProcessJoinResult(
+            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKey<EventBean>> oldEvents,
+            bool isSynthesize);
 
         /// <summary>
         /// Returns the iterator implementing the group-by and aggregation and order-by logic
@@ -141,5 +145,7 @@ namespace com.espertech.esper.epl.core
 
             throw new IllegalStateException("Output last is provided by " + typeof(OutputProcessViewConditionLastAllUnord).Name);
         }
+
+        public abstract void Stop();
     }
 }

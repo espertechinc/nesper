@@ -154,7 +154,7 @@ namespace com.espertech.esper.epl.agg.access
             get { return Size; }
         }
 
-        internal static Object GetComparable(ExprEvaluator[] criteria, EventBean[] eventsPerStream, bool istream, ExprEvaluatorContext exprEvaluatorContext)
+        public static Object GetComparable(ExprEvaluator[] criteria, EventBean[] eventsPerStream, bool istream, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (criteria.Length == 1) {
                 return criteria[0].Evaluate(new EvaluateParams(eventsPerStream, istream, exprEvaluatorContext));

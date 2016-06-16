@@ -25,12 +25,12 @@ namespace com.espertech.esper.epl.view
             TYPEINFO.Put("count_remove_total", typeof(int));
             TYPEINFO.Put("last_output_timestamp", typeof(long));
         }
-    
-        public static Object[] GetOAPrototype()
+
+        public static object[] OAPrototype
         {
-            return new Object[TYPEINFO.Count];
+            get { return new Object[TYPEINFO.Count]; }
         }
-    
+
         public static void Populate(Object[] builtinProperties, int totalNewEventsCount, int totalOldEventsCount,
                                     int totalNewEventsSum, int totalOldEventsSum, long? lastOutputTimestamp)
         {

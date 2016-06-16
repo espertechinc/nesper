@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.view
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
         }
     
         [TearDown]
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regression.view
     
         [Test]
         public void TestReuseUnique() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("select irstream * from SupportBean.std:unique(IntBoxed)");
             stmt.Events += _testListener.Update;
     

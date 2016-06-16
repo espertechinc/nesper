@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.nwtable
             epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("S0Bean", typeof(SupportBean_S0));
             epService.EPAdministrator.Configuration.AddEventType("S1Bean", typeof(SupportBean_S1));
             listener = new SupportUpdateListener();

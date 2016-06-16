@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.enummethod
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();

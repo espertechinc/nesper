@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -44,13 +45,13 @@ namespace com.espertech.esper.view.window
         public override View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var builtinBean = new ObjectArrayEventBean(ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(), BuiltinMapType);
-            var relativeAccessByEvent = ViewServiceHelper.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
-            return new ExpressionBatchView(this, relativeAccessByEvent, ExpiryExpression.ExprEvaluator, AggregationServiceFactoryDesc, builtinBean, VariableNames, agentInstanceViewFactoryContext);
+            var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
+            return new ExpressionBatchView(this, viewUpdatedCollection, ExpiryExpression.ExprEvaluator, AggregationServiceFactoryDesc, builtinBean, VariableNames, agentInstanceViewFactoryContext);
         }
     
         public override Object MakePreviousGetter()
         {
-            return new RelativeAccessByEventNIndexMap();
+            return new RelativeAccessByEventNIndexGetterImpl();
         }
 
         public bool IsIncludeTriggeringEvent

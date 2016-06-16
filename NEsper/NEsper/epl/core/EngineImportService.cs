@@ -21,7 +21,8 @@ namespace com.espertech.esper.epl.core
     /// <summary>
     /// Service for engine-level resolution of static methods and aggregation methods.
     /// </summary>
-    public interface EngineImportService
+    public interface 
+        EngineImportService
     {
         /// <summary>
         /// Returns the method invocation caches for the from-clause for a class.
@@ -43,6 +44,18 @@ namespace com.espertech.esper.epl.core
         /// <param name="importDesc">The import desc.</param>
         void AddImport(AutoImportDesc importDesc);
     
+        /// <summary>
+        /// Add an import for annotation-only use, such as "MyPackage.Attributes"
+        /// </summary>
+        /// <param name="importName">Name of the import.</param>
+        void AddAnnotationImport(String importName);
+
+        /// <summary>
+        /// Add an import for annotation-only use, such as "MyPackage.Attributes"
+        /// </summary>
+        /// <param name="importDesc">The import desc.</param>
+        void AddAnnotationImport(AutoImportDesc importDesc);
+
         /// <summary>
         /// Add an aggregation function.
         /// </summary>
@@ -105,14 +118,17 @@ namespace com.espertech.esper.epl.core
         /// <returns>method this resolves to</returns>
         /// <throws>EngineImportException if the ctor cannot be resolved</throws>
         ConstructorInfo ResolveCtor(Type clazz, Type[] paramTypes) ;
-    
+
         /// <summary>
         /// Resolves a given class name, either fully qualified and simple and imported to a class.
         /// </summary>
         /// <param name="typeName">is the class name to use</param>
-        /// <returns>class this resolves to</returns>
+        /// <param name="forAnnotation">if set to <c>true</c> [for annotation].</param>
+        /// <returns>
+        /// class this resolves to
+        /// </returns>
         /// <throws>EngineImportException if there was an error resolving the class</throws>
-        Type ResolveType(String typeName) ;
+        Type ResolveType(String typeName, bool forAnnotation) ;
     
         /// <summary>
         /// Resolves a given class name, either fully qualified and simple and imported to a annotation.

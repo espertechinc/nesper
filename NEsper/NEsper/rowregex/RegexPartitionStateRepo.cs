@@ -13,7 +13,7 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.rowregex
 {
     /// <summary>Service for holding partition state. </summary>
-    public interface RegexPartitionStateRepo
+    public interface RegexPartitionStateRepo : IDisposable
     {
         /// <summary>Return state for key or create state if not found. </summary>
         /// <param name="key">to look up</param>

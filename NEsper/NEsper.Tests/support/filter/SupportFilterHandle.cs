@@ -37,9 +37,9 @@ namespace com.espertech.esper.support.filter
             return count;
         }
 
-        public string StatementId
+        public int StatementId
         {
-            get { return ""; }
+            get { return 1; }
         }
     }
 }

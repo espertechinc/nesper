@@ -141,7 +141,7 @@ namespace com.espertech.esper.regression.dataflow
         [Test]
         public void TestIterateFinalMarker()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regression.dataflow
         [Test]
         public void TestOutputRateLimit()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regression.dataflow
         [Test]
         public void TestTimeWindowTriggered()
         {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             String graph = "create dataflow MySelect\n" +
                     "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +

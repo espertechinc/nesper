@@ -24,15 +24,15 @@ namespace com.espertech.esper.core.context.mgr
     {
         private readonly int _pathId;
         private readonly ContextControllerLifecycleCallback _activationCallback;
-        private readonly ContextControllerHashFactory _factory;
+        private readonly ContextControllerHashFactoryImpl _factory;
     
         private readonly IList<ContextControllerHashedFilterCallback> _filterCallbacks = new List<ContextControllerHashedFilterCallback>();
         private readonly IDictionary<int, ContextControllerInstanceHandle> _partitionKeys = new LinkedHashMap<int, ContextControllerInstanceHandle>();
 
         private ContextInternalFilterAddendum _activationFilterAddendum;
         private int _currentSubpathId;
-    
-        public ContextControllerHash(int pathId, ContextControllerLifecycleCallback activationCallback, ContextControllerHashFactory factory)
+
+        public ContextControllerHash(int pathId, ContextControllerLifecycleCallback activationCallback, ContextControllerHashFactoryImpl factory)
         {
             _pathId = pathId;
             _activationCallback = activationCallback;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.core.context.mgr
     
         public void ImportContextPartitions(ContextControllerState state, int pathIdToUse, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector)
         {
-            InitializeFromState(null, null, state, pathIdToUse, agentInstanceSelector);
+            InitializeFromState(null, null, state, pathIdToUse, agentInstanceSelector, true);
         }
     
         public void DeletePath(ContextPartitionIdentifier identifier)
@@ -112,7 +112,7 @@ namespace com.espertech.esper.core.context.mgr
             _activationFilterAddendum = activationFilterAddendum;
     
             if (factoryContext.NestingLevel == 1) {
-                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.StateCache, factoryContext.OutermostContextName);
+                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.FactoryContext.StateCache, factoryContext.OutermostContextName);
             }
             if (controllerState == null) {
     
@@ -124,15 +124,19 @@ namespace com.espertech.esper.core.context.mgr
     
                         // merge filter addendum, if any
                         var filterAddendumToUse = activationFilterAddendum;
-                        if (_factory.HasFiltersSpecsNestedContexts()) {
+                        if (_factory.HasFiltersSpecsNestedContexts) {
                             filterAddendumToUse = activationFilterAddendum != null ? activationFilterAddendum.DeepCopy() : new ContextInternalFilterAddendum();
                             _factory.PopulateContextInternalFilterAddendums(filterAddendumToUse, i);
                         }
     
                         ContextControllerInstanceHandle handle = _activationCallback.ContextPartitionInstantiate(null, _currentSubpathId, null, this, optionalTriggeringEvent, null, i, properties, controllerState, filterAddendumToUse, _factory.FactoryContext.IsRecoveringResilient, ContextPartitionState.STARTED);
                         _partitionKeys.Put(i, handle);
-    
-                        _factory.StateCache.AddContextPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId, _currentSubpathId, handle.ContextPartitionOrPathId, i, _factory.Binding);
+
+                        _factory.FactoryContext.StateCache.AddContextPath(
+                            _factory.FactoryContext.OutermostContextName,
+                            _factory.FactoryContext.NestingLevel, 
+                            _pathId, _currentSubpathId, handle.ContextPartitionOrPathId, i,
+                            _factory.Binding);
                     }
                     return;
                 }
@@ -145,7 +149,7 @@ namespace com.espertech.esper.core.context.mgr
     
             // initialize from existing state
             int pathIdToUse = importPathId ?? _pathId;
-            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, controllerState, pathIdToUse, null);
+            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, controllerState, pathIdToUse, null, false);
     
             // activate filters
             if (!_factory.HashedSpec.IsPreallocate) {
@@ -187,7 +191,7 @@ namespace com.espertech.esper.core.context.mgr
     
                 // merge filter addendum, if any
                 ContextInternalFilterAddendum filterAddendumToUse = _activationFilterAddendum;
-                if (_factory.HasFiltersSpecsNestedContexts())
+                if (_factory.HasFiltersSpecsNestedContexts)
                 {
                     filterAddendumToUse = _activationFilterAddendum != null ? _activationFilterAddendum.DeepCopy() : new ContextInternalFilterAddendum();
                     _factory.PopulateContextInternalFilterAddendums(filterAddendumToUse, id);
@@ -195,7 +199,7 @@ namespace com.espertech.esper.core.context.mgr
     
                 ContextControllerInstanceHandle handle = _activationCallback.ContextPartitionInstantiate(null, _currentSubpathId, null, this, theEvent, null, id, properties, null, filterAddendumToUse, _factory.FactoryContext.IsRecoveringResilient, ContextPartitionState.STARTED);
                 _partitionKeys.Put(id, handle);
-                _factory.StateCache.AddContextPath(factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId, _currentSubpathId, handle.ContextPartitionOrPathId, id, _factory.Binding);
+                _factory.FactoryContext.StateCache.AddContextPath(factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId, _currentSubpathId, handle.ContextPartitionOrPathId, id, _factory.Binding);
             }
         }
 
@@ -220,52 +224,67 @@ namespace com.espertech.esper.core.context.mgr
             _filterCallbacks.Clear();
             _factory.StateCache.RemoveContextParentPath(factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId);
         }
-    
-        private void InitializeFromState(EventBean optionalTriggeringEvent,
-                                         IDictionary<String, Object> optionalTriggeringPattern,
-                                         ContextControllerState controllerState,
-                                         int pathIdToUse,
-                                         AgentInstanceSelector agentInstanceSelector)
+
+        private void InitializeFromState(
+            EventBean optionalTriggeringEvent,
+            IDictionary<String, Object> optionalTriggeringPattern,
+            ContextControllerState controllerState,
+            int pathIdToUse,
+            AgentInstanceSelector agentInstanceSelector,
+            bool loadingExistingState)
+
+    {
+        var factoryContext = _factory.FactoryContext;
+        var states = controllerState.States;
+        var childContexts = ContextControllerStateUtil.GetChildContexts(factoryContext, pathIdToUse, states);
+
+        var maxSubpathId = int.MinValue;
+
+        foreach (var entry in childContexts)
         {
-            var factoryContext = _factory.FactoryContext;
-            var states = controllerState.States;
-            var childContexts = ContextControllerStateUtil.GetChildContexts(factoryContext, pathIdToUse, states);
-    
-            var maxSubpathId = int.MinValue;
-    
-            foreach (var entry in childContexts)
+            var hashAlgoGeneratedId = (int?) _factory.Binding.ByteArrayToObject(entry.Value.Blob, null);
+
+            // merge filter addendum, if any
+            var filterAddendumToUse = _activationFilterAddendum;
+            if (_factory.HasFiltersSpecsNestedContexts)
             {
-                var hashAlgoGeneratedId = (int?) _factory.Binding.ByteArrayToObject(entry.Value.Blob, null);
-    
-                // merge filter addendum, if any
-                var filterAddendumToUse = _activationFilterAddendum;
-                if (_factory.HasFiltersSpecsNestedContexts()) {
-                    filterAddendumToUse = _activationFilterAddendum != null ? _activationFilterAddendum.DeepCopy() : new ContextInternalFilterAddendum();
-                    _factory.PopulateContextInternalFilterAddendums(filterAddendumToUse, hashAlgoGeneratedId);
-                }
-    
-                // check if exists already
-                if (controllerState.IsImported) {
-                    var existingHandle = _partitionKeys.Get(hashAlgoGeneratedId.Value);
-                    if (existingHandle != null) {
-                        _activationCallback.ContextPartitionNavigate(existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value, filterAddendumToUse, agentInstanceSelector, entry.Value.Blob);
-                        continue;
-                    }
-                }
-    
-                var properties = ContextPropertyEventType.GetHashBean(factoryContext.ContextName, hashAlgoGeneratedId.Value);
-    
-                var assignedSubPathId = !controllerState.IsImported ? entry.Key.SubPath : ++_currentSubpathId;
-                var handle = _activationCallback.ContextPartitionInstantiate(entry.Value.OptionalContextPartitionId, assignedSubPathId, entry.Key.SubPath, this, optionalTriggeringEvent, optionalTriggeringPattern, hashAlgoGeneratedId, properties, controllerState, filterAddendumToUse, factoryContext.IsRecoveringResilient, entry.Value.State);
-                _partitionKeys.Put(hashAlgoGeneratedId.Value, handle);
-    
-                if (entry.Key.SubPath > maxSubpathId) {
-                    maxSubpathId = assignedSubPathId;
+                filterAddendumToUse = _activationFilterAddendum != null
+                    ? _activationFilterAddendum.DeepCopy()
+                    : new ContextInternalFilterAddendum();
+                _factory.PopulateContextInternalFilterAddendums(filterAddendumToUse, hashAlgoGeneratedId);
+            }
+
+            // check if exists already
+            if (controllerState.IsImported)
+            {
+                var existingHandle = _partitionKeys.Get(hashAlgoGeneratedId.Value);
+                if (existingHandle != null)
+                {
+                    _activationCallback.ContextPartitionNavigate(
+                        existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value,
+                        filterAddendumToUse, agentInstanceSelector, entry.Value.Blob, loadingExistingState);
+                    continue;
                 }
             }
-            if (!controllerState.IsImported) {
-                _currentSubpathId = maxSubpathId != int.MinValue ? maxSubpathId : 0;
+
+            var properties = ContextPropertyEventType.GetHashBean(factoryContext.ContextName, hashAlgoGeneratedId.Value);
+
+            var assignedSubPathId = !controllerState.IsImported ? entry.Key.SubPath : ++_currentSubpathId;
+            var handle = _activationCallback.ContextPartitionInstantiate(
+                entry.Value.OptionalContextPartitionId, assignedSubPathId, entry.Key.SubPath, this,
+                optionalTriggeringEvent, optionalTriggeringPattern, hashAlgoGeneratedId, properties, controllerState,
+                filterAddendumToUse, loadingExistingState || factoryContext.IsRecoveringResilient, entry.Value.State);
+            _partitionKeys.Put(hashAlgoGeneratedId.Value, handle);
+
+            if (entry.Key.SubPath > maxSubpathId)
+            {
+                maxSubpathId = assignedSubPathId;
             }
         }
+        if (!controllerState.IsImported)
+        {
+            _currentSubpathId = maxSubpathId != int.MinValue ? maxSubpathId : 0;
+        }
+    }
     }
 }

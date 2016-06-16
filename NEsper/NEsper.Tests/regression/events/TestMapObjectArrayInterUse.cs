@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.events;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.map;
 using com.espertech.esper.metrics.instrumentation;
@@ -65,7 +66,7 @@ namespace com.espertech.esper.regression.events
             // test inserting from array to map
             _epService.EPAdministrator.CreateEPL("insert into MapType(im) select p0 from OAType").Events += _listener.Update;
             _epService.EPRuntime.SendEvent(new Object[]{"E1", null, null, null}, "OAType");
-            Assert.IsTrue(_listener.AssertOneGetNew() is MapEventBean);
+            Assert.That(_listener.AssertOneGetNew(), Is.InstanceOf<MappedEventBean>());
             Assert.AreEqual("E1", _listener.AssertOneGetNew().Get("im"));
         }
     
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regression.events
             // test inserting from map to array
             _epService.EPAdministrator.CreateEPL("insert into OAType select 'a' as p0, 1 as p1 from MapType").Events += _listener.Update;
             _epService.EPRuntime.SendEvent(data, "MapType");
-            Assert.IsTrue(_listener.AssertOneGetNew() is ObjectArrayEventBean);
+            Assert.That(_listener.AssertOneGetNew(), Is.InstanceOf<ObjectArrayBackedEventBean>());
             Assert.AreEqual("a", _listener.AssertOneGetNew().Get("p0"));
             Assert.AreEqual(1, _listener.AssertOneGetNew().Get("p1"));
         }

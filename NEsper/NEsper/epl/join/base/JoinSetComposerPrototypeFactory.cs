@@ -56,27 +56,13 @@ namespace com.espertech.esper.epl.join.@base
         /// <param name="hasAggregations">if set to <c>true</c> [has aggregations].</param>
         /// <param name="tableService">The table service.</param>
         /// <param name="isOnDemandQuery">if set to <c>true</c> [is on demand query].</param>
+        /// <param name="allowIndexInit">if set to <c>true</c> [allow index initialize].</param>
         /// <returns>
         /// composer implementation
         /// </returns>
         /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException is thrown to indicate thatvalidation of view use in joins failed.
-        /// </throws>
-	    public static JoinSetComposerPrototype MakeComposerPrototype(
-	        string statementName,
-	        string statementId,
-	        OuterJoinDesc[] outerJoinDescList,
-	        ExprNode optionalFilterNode,
-	        EventType[] streamTypes,
-	        string[] streamNames,
-	        StreamJoinAnalysisResult streamJoinAnalysisResult,
-	        bool queryPlanLogging,
-	        StatementContext statementContext,
-	        HistoricalViewableDesc historicalViewableDesc,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        bool selectsRemoveStream,
-	        bool hasAggregations,
-	        TableService tableService,
-	        bool isOnDemandQuery)
+        /// {D255958A-8513-4226-94B9-080D98F904A1}</throws>
+	    public static JoinSetComposerPrototype MakeComposerPrototype(string statementName, int statementId, OuterJoinDesc[] outerJoinDescList, ExprNode optionalFilterNode, EventType[] streamTypes, string[] streamNames, StreamJoinAnalysisResult streamJoinAnalysisResult, bool queryPlanLogging, StatementContext statementContext, HistoricalViewableDesc historicalViewableDesc, ExprEvaluatorContext exprEvaluatorContext, bool selectsRemoveStream, bool hasAggregations, TableService tableService, bool isOnDemandQuery, bool allowIndexInit)
 	    {
 	        // Determine if there is a historical stream, and what dependencies exist
 	        var historicalDependencyGraph = new DependencyGraph(streamTypes.Length, false);
@@ -95,7 +81,7 @@ namespace com.espertech.esper.epl.join.@base
 	        // Handle a join with a database or other historical data source for 2 streams
 	        if ((historicalViewableDesc.HasHistorical) && (streamTypes.Length == 2))
 	        {
-	            return MakeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, historicalViewableDesc, queryPlanLogging, exprEvaluatorContext, statementContext, streamNames);
+	            return MakeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, historicalViewableDesc, queryPlanLogging, exprEvaluatorContext, statementContext, streamNames, allowIndexInit);
 	        }
 
 	        var isOuterJoins = !OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
@@ -179,33 +165,27 @@ namespace com.espertech.esper.epl.join.@base
 	        }
 
 	        var joinRemoveStream = selectsRemoveStream || hasAggregations;
-	        return new JoinSetComposerPrototypeImpl(statementName,
-	                                                statementId,
-	                                                outerJoinDescList,
-	                                                optionalFilterNode,
-	                                                streamTypes,
-	                                                streamNames,
-	                                                streamJoinAnalysisResult,
-	                                                statementContext.Annotations,
-	                                                historicalViewableDesc,
-	                                                exprEvaluatorContext,
-	                                                indexSpecs,
-	                                                queryPlan,
-	                                                historicalStreamIndexLists,
-	                                                joinRemoveStream,
-	                                                isOuterJoins,
-	                tableService);
+            return new JoinSetComposerPrototypeImpl(
+                statementName,
+                statementId,
+                outerJoinDescList,
+                optionalFilterNode,
+                streamTypes,
+                streamNames,
+                streamJoinAnalysisResult,
+                statementContext.Annotations,
+                historicalViewableDesc,
+                exprEvaluatorContext,
+                indexSpecs,
+                queryPlan,
+                historicalStreamIndexLists,
+                joinRemoveStream,
+                isOuterJoins,
+                tableService,
+                statementContext.EventTableIndexService);
 	    }
 
-	    private static JoinSetComposerPrototype MakeComposerHistorical2Stream(
-	        OuterJoinDesc[] outerJoinDescList,
-	        ExprNode optionalFilterNode,
-	        EventType[] streamTypes,
-	        HistoricalViewableDesc historicalViewableDesc,
-	        bool queryPlanLogging,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        StatementContext statementContext,
-	        string[] streamNames)
+	    private static JoinSetComposerPrototype MakeComposerHistorical2Stream(OuterJoinDesc[] outerJoinDescList, ExprNode optionalFilterNode, EventType[] streamTypes, HistoricalViewableDesc historicalViewableDesc, bool queryPlanLogging, ExprEvaluatorContext exprEvaluatorContext, StatementContext statementContext, string[] streamNames, bool allowIndexInit)
 	    {
 	        var polledViewNum = 0;
 	        var streamViewNum = 1;
@@ -304,16 +284,17 @@ namespace com.espertech.esper.epl.join.@base
 	        }
 
 	        return new JoinSetComposerPrototypeHistorical2StreamImpl(
-	                                                    optionalFilterNode,
-	                                                    streamTypes,
-	                                                    exprEvaluatorContext,
-	                                                    polledViewNum,
-	                                                    streamViewNum,
-	                                                    isOuterJoin,
-	                                                    outerJoinEqualsNode,
-	                                                    indexStrategies,
-	                                                    isAllHistoricalNoSubordinate,
-	                                                    outerJoinDescList);
+	            optionalFilterNode,
+	            streamTypes,
+	            exprEvaluatorContext,
+	            polledViewNum,
+	            streamViewNum,
+	            isOuterJoin,
+	            outerJoinEqualsNode,
+	            indexStrategies,
+	            isAllHistoricalNoSubordinate,
+	            outerJoinDescList,
+	            allowIndexInit);
 	    }
 
 	    private static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> DetermineIndexing(ExprNode filterForIndexing,

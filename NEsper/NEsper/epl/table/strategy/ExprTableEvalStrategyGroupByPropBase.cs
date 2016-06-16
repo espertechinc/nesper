@@ -27,8 +27,8 @@ namespace com.espertech.esper.epl.table.strategy
         public abstract EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
         public abstract ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
 
-        protected ExprTableEvalStrategyGroupByPropBase(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval)
-            : base(@lock, aggregationState)
+        protected ExprTableEvalStrategyGroupByPropBase(TableAndLockProviderGrouped provider, int propertyIndex, ExprEvaluatorEnumerationGivenEvent optionalEnumEval)
+            : base(provider)
         {
             _propertyIndex = propertyIndex;
             _optionalEnumEval = optionalEnumEval;

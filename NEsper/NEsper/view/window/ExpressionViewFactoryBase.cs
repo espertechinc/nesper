@@ -79,11 +79,11 @@ namespace com.espertech.esper.view.window
                         Collections.GetEmptyList<ExprAggregateNodeGroupKey>(), false, 
                         statementContext.Annotations, 
                         statementContext.VariableService, false, false, null, null, 
-                        AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY, 
+                        statementContext.AggregationServiceFactoryService, 
                         streamTypeService.EventTypes, 
                         statementContext.MethodResolutionService, null,
                         statementContext.ContextName,
-                        null, null);
+                        null, null, false, false, false);
                 }
                 catch (ExprValidationException ex) {
                     throw new ViewParameterException(ex.Message, ex);

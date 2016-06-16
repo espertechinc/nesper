@@ -26,13 +26,18 @@ namespace com.espertech.esper.client.annotation
         /// </returns>
         public string Value { get; set; }
 
+        public string Model { get; set; }
+
+        public AppliesTo Applies { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HintAttribute"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public HintAttribute(string value)
+        public HintAttribute(string value = "", string model = "", AppliesTo applies = AppliesTo.UNDEFINED)
         {
             Value = value;
+            Model = model;
         }
 
         /// <summary>

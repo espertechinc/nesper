@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestWindowAgg()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
     
             RunAssertionWindowAgg(true);

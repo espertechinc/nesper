@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
 using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.epl.db
@@ -125,7 +126,7 @@ namespace com.espertech.esper.epl.db
         /// <param name="epStatementAgentInstanceHandle">is the statements-own handle for use in registering callbacks with services</param>
         /// <returns>cache implementation</returns>
         /// <throws>  DatabaseConfigException is thrown to indicate database configuration errors </throws>
-        public virtual DataCache GetDataCache(String databaseName, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle)
+        public virtual DataCache GetDataCache(String databaseName, StatementContext statementContext, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle, DataCacheFactory dataCacheFactory, int streamNumber)
         {
             ConfigurationDBRef config;
             if (!_mapDatabaseRef.TryGetValue(databaseName, out config))
@@ -134,7 +135,7 @@ namespace com.espertech.esper.epl.db
             }
 
             ConfigurationDataCache dataCacheDesc = config.DataCacheDesc;
-            return DataCacheFactory.GetDataCache(dataCacheDesc, epStatementAgentInstanceHandle, _schedulingService, _scheduleBucket);
+            return dataCacheFactory.GetDataCache(dataCacheDesc, statementContext, epStatementAgentInstanceHandle, _schedulingService, _scheduleBucket, streamNumber);
         }
 
         public ColumnSettings GetQuerySetting(String databaseName)

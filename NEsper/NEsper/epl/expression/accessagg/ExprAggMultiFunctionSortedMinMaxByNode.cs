@@ -299,7 +299,7 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        return null;
 	    }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId) {
+	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
 	        if (!_sortedwin) {
 	            return null;
 	        }
@@ -311,7 +311,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { return null; }
         }
 
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
 	        if (_sortedwin) {
 	            return null;
 	        }

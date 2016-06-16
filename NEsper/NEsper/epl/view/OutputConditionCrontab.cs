@@ -114,6 +114,11 @@ namespace com.espertech.esper.epl.view
             OutputCallback.Invoke(true, true);
         }
 
+        public override void Stop()
+        {
+            // no action required
+        }
+
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }

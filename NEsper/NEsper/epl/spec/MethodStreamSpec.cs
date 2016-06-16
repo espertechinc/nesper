@@ -59,12 +59,13 @@ namespace com.espertech.esper.epl.spec
 
         public StreamSpecCompiled Compile(
             StatementContext context,
-            ICollection<String> eventTypeReferences,
+            ICollection<string> eventTypeReferences,
             bool isInsertInto,
             ICollection<int> assignedTypeNumberStack,
             bool isJoin,
             bool isContextDeclaration,
-            bool isOnTrigger)
+            bool isOnTrigger,
+            string optionalStreamName)
         {
             if (!Ident.Equals("method"))
             {

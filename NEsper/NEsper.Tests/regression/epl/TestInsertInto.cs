@@ -250,7 +250,7 @@ namespace com.espertech.esper.regression.epl
             Assert.IsFalse(spi.StatementEventTypeRef.IsInUse("Event_1"));
     
             // test insert wildcard to wildcard
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var listener = new SupportUpdateListener();
     
             var stmtSelectText = "insert into ABCStream select * from SupportBean";
@@ -260,7 +260,7 @@ namespace com.espertech.esper.regression.epl
     
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
             Assert.AreEqual("E1", listener.AssertOneGetNew().Get("TheString"));
-            Assert.IsTrue(listener.AssertOneGetNew() is BeanEventBean);
+            Assert.That(listener.AssertOneGetNew().Underlying,  Is.InstanceOf<SupportBean>());
         }
     
         [Test]

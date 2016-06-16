@@ -25,23 +25,23 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestRevision()
         {
-            Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            config.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            var config = SupportConfigFactory.GetConfiguration();
+            config.AddEventType<SupportBean_S0>();
+            config.AddEventType<SupportBean_S1>();
     
-            ConfigurationRevisionEventType revType = new ConfigurationRevisionEventType();
+            var revType = new ConfigurationRevisionEventType();
             revType.AddNameBaseEventType("SupportBean_S0");
             revType.AddNameDeltaEventType("SupportBean_S1");
             revType.KeyPropertyNames = new string[] {"Id"};
             revType.PropertyRevision = PropertyRevisionEnum.MERGE_EXISTS;
             config.AddRevisionEventType("RevType", revType);
     
-            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
+            var epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
     
             // widen to long
-            string stmtTextCreate = "create window MyWindowOne.win:keepall() as select * from RevType";
+            var stmtTextCreate = "create window MyWindowOne.win:keepall() as select * from RevType";
             epService.EPAdministrator.CreateEPL(stmtTextCreate);
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean_S0");
             epService.EPAdministrator.CreateEPL("insert into MyWindowOne select * from SupportBean_S1");
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.nwtable
             epService.EPRuntime.SendEvent(new SupportBean_S0(1, "P00"));
             epService.EPRuntime.SendEvent(new SupportBean_S1(1, "P10"));
     
-            EPOnDemandQueryResult result = epService.EPRuntime.ExecuteQuery("select * from MyWindowOne where P10='1'");
+            var result = epService.EPRuntime.ExecuteQuery("select * from MyWindowOne where P10='1'");
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();}
         }
     }

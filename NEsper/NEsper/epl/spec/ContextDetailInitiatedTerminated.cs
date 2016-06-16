@@ -48,7 +48,7 @@ namespace com.espertech.esper.epl.spec
             get { return _overlapping; }
         }
 
-        public IList<FilterSpecCompiled> FilterSpecsIfAny
+        public IList<FilterSpecCompiled> ContextDetailFilterSpecs
         {
             get
             {
@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.spec
                 IList<FilterSpecCompiled> endFS = _end.FilterSpecIfAny;
                 if (startFS == null && endFS == null)
                 {
-                    return null;
+                    return Collections.GetEmptyList<FilterSpecCompiled>();
                 }
                 IList<FilterSpecCompiled> filters = new List<FilterSpecCompiled>(2);
                 if (startFS != null)

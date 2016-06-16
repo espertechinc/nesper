@@ -26,11 +26,12 @@ namespace com.espertech.esper.support.epl
     {
         private static readonly IList<Object[]> invocations = new List<Object[]>();
         private static readonly IList<EPLMethodInvocationContext> methodInvocationContexts = new List<EPLMethodInvocationContext>();
-    
-        public static IList<Object[]> GetInvocations() {
-            return invocations;
+
+        public static IList<object[]> Invocations
+        {
+            get { return invocations; }
         }
-    
+
         public static IList<EPLMethodInvocationContext> GetMethodInvocationContexts() {
             return methodInvocationContexts;
         }

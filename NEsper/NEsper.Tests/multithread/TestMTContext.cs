@@ -47,7 +47,7 @@ namespace com.espertech.esper.multithread
         [Test]
         public void TestContextCountSimple()
         {
-            _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _engine.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _engine.EPAdministrator.CreateEPL("create context HashByUserCtx as coalesce by Consistent_hash_crc32(TheString) from SupportBean granularity 10000000");
             _engine.EPAdministrator.CreateEPL("@Name('select') context HashByUserCtx select TheString from SupportBean");
     

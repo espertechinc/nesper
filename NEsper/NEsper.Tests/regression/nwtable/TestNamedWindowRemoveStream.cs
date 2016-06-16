@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.nwtable
         public void TestRemoveStream()
         {
             string[] fields = new string[] {"TheString"};
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatement stmt1 = epService.EPAdministrator.CreateEPL("create window W1.win:length(2) as select * from SupportBean");
             EPStatement stmt2 = epService.EPAdministrator.CreateEPL("create window W2.win:length(2) as select * from SupportBean");
             EPStatement stmt3 = epService.EPAdministrator.CreateEPL("create window W3.win:length(2) as select * from SupportBean");

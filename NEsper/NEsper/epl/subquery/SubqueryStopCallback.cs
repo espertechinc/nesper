@@ -14,7 +14,7 @@ namespace com.espertech.esper.epl.subquery
     /// <summary>
     /// Implements a stop callback for use with subqueries to clear their indexes when a statement is stopped.
     /// </summary>
-    public class SubqueryStopCallback
+    public class SubqueryStopCallback : StopCallback
     {
         private readonly EventTable[] _eventIndex;
 
@@ -25,11 +25,6 @@ namespace com.espertech.esper.epl.subquery
             _eventIndex = eventIndex;
         }
 
-        public static StopCallback Create(EventTable[] eventIndex)
-        {
-            return (new SubqueryStopCallback(eventIndex).Stop);
-        }
-
         // Clear out index on statement stop
         public void Stop()
         {
@@ -37,7 +32,7 @@ namespace com.espertech.esper.epl.subquery
             {
                 foreach (EventTable table in _eventIndex)
                 {
-                    table.Clear();
+                    table.Destroy();
                 }
             }
         }

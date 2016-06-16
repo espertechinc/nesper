@@ -34,17 +34,15 @@ namespace com.espertech.esper.epl.join.table
             Coercer = coercionType.IsNumeric() ? CoercerFactory.GetCoercer(null, coercionType) : null;
         }
 
-        public override EventTable[] MakeEventTables()
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            EventTableOrganization organization = new EventTableOrganization(
-                OptionalIndexName, Unique, true, StreamNum, new String[]
-                {
-                    PropertyName
-                }, EventTableOrganization.EventTableOrganizationType.HASH);
-            return new EventTable[]
-            {
-                new PropertyIndexedEventTableSingleCoerceAdd(PropertyGetter, organization, Coercer, CoercionType)
-            };
+            EventTableOrganization organization = GetOrganization();
+            return new EventTable[] { new PropertyIndexedEventTableSingleCoerceAdd(PropertyGetter, organization, Coercer, CoercionType) };
+        }
+
+        protected virtual EventTableOrganization GetOrganization()
+        {
+            return new EventTableOrganization(OptionalIndexName, Unique, true, StreamNum, new String[] { PropertyName }, EventTableOrganizationType.HASH);
         }
     }
 }

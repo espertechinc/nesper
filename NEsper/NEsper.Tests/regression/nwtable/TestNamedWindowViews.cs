@@ -74,10 +74,33 @@ namespace com.espertech.esper.regression.nwtable
             RunAssertionBeanBacked(EventRepresentationEnum.MAP);
             RunAssertionBeanBacked(EventRepresentationEnum.DEFAULT);
         }
+
+        [Test]
+        public void TestIntersection()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(
+                    "create window MyWindow.win:length(2).std:unique(intPrimitive) as SupportBean;\n" +
+                            "insert into MyWindow select * from SupportBean;\n" +
+                            "@name('out') select irstream * from MyWindow");
+
+            String[] fields = "theString".SplitCsv();
+            SupportUpdateListener listener = new SupportUpdateListener();
+            _epService.EPAdministrator.GetStatement("out").AddListener(listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), fields, new Object[][] { new object[] { "E1" } }, null);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
+            EPAssertionUtil.AssertPropsPerRow(listener.AssertInvokedAndReset(), fields, new Object[][] { new object[] { "E2" } }, null);
+
+            _epService.EPRuntime.SendEvent(new SupportBean("E3", 2));
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(listener.AssertInvokedAndReset(), fields, new Object[][] { new object[] { "E3" } }, new Object[][] { new object[] { "E1" }, new object[] { "E2" } });
+        }
     
         private void RunAssertionBeanBacked(EventRepresentationEnum eventRepresentationEnum) {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             // Test create from class
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(eventRepresentationEnum.GetAnnotationText() + " create window MyWindow.win:keepall() as SupportBean");
@@ -1290,6 +1313,8 @@ namespace com.espertech.esper.regression.nwtable
             string[] fields = new string[] {"key", "value"};
     
             // create window
+            SendTimer(0);
+
             string stmtTextCreate = "create window MyWindow.std:groupwin(value).win:time_batch(10 sec) as MyMap";
             EPStatement stmtCreate = _epService.EPAdministrator.CreateEPL(stmtTextCreate);
             stmtCreate.AddListener(_listenerWindow);

@@ -127,7 +127,7 @@ namespace com.espertech.esper.regression.events
                 Assert.AreEqual("Error updating Object-array event type: Event type named 'dummy' has not been declared", ex.Message);
             }
     
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             try
             {
                 epService.EPAdministrator.Configuration.UpdateObjectArrayEventType("SupportBean", new String[0], new Object[0]);
@@ -541,8 +541,8 @@ namespace com.espertech.esper.regression.events
             var eventResult = listener.AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(eventResult, "a,b,c,d".Split(','), new Object[] {1, 2, 3, n0_1});
             var valueE = (Map[]) eventResult.Get("e");
-            Assert.AreSame(valueE[0], n0_2[0]);
-            Assert.AreSame(valueE[1], n0_2[1]);
+            Assert.AreEqual(valueE[0], n0_2[0]);
+            Assert.AreEqual(valueE[1], n0_2[1]);
 
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("a"));
             Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("b"));

@@ -35,9 +35,9 @@ namespace com.espertech.esper.view.window
         /// <summary>
         /// The timestamp property name.
         /// </summary>
-        internal ExprNode TimestampExpression;
-        internal ExprEvaluator TimestampExpressionEval;
-        internal long? OptionalReferencePoint;
+        private ExprNode _timestampExpression;
+        private ExprEvaluator _timestampExpressionEval;
+        private long? _optionalReferencePoint;
     
         /// <summary>
         /// The number of msec to expire.
@@ -61,8 +61,8 @@ namespace com.espertech.esper.view.window
             if (!validated[0].ExprEvaluator.ReturnType.IsNumeric()) {
                 throw new ViewParameterException(ViewParamMessage);
             }
-            TimestampExpression = validated[0];
-            TimestampExpressionEval = TimestampExpression.ExprEvaluator;
+            _timestampExpression = validated[0];
+            _timestampExpressionEval = _timestampExpression.ExprEvaluator;
             ViewFactorySupport.AssertReturnsNonConstant(windowName, validated[0], 0);
     
             TimeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(ViewName, statementContext, _viewParameters[1], ViewParamMessage, 1);
@@ -74,20 +74,21 @@ namespace com.espertech.esper.view.window
                 {
                     throw new ViewParameterException("Externally-timed batch view requires a Long-typed reference point in msec as a third parameter");
                 }
-                OptionalReferencePoint = constant.AsLong();
+                _optionalReferencePoint = constant.AsLong();
             }
     
             this._eventType = parentEventType;
         }
     
-        public Object MakePreviousGetter() {
-            return new RelativeAccessByEventNIndexMap();
+        public Object MakePreviousGetter()
+        {
+            return new RelativeAccessByEventNIndexGetterImpl();
         }
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRelativeAccess relativeAccessByEvent = ViewServiceHelper.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
-            return new ExternallyTimedBatchView(this, TimestampExpression, TimestampExpressionEval, TimeDeltaComputation, OptionalReferencePoint, relativeAccessByEvent, agentInstanceViewFactoryContext);
+            var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
+            return new ExternallyTimedBatchView(this, _timestampExpression, _timestampExpressionEval, TimeDeltaComputation, _optionalReferencePoint, viewUpdatedCollection, agentInstanceViewFactoryContext);
         }
 
         public EventType EventType
@@ -104,7 +105,7 @@ namespace com.espertech.esper.view.window
     
             ExternallyTimedBatchView myView = (ExternallyTimedBatchView) view;
             if ((!TimeDeltaComputation.EqualsTimePeriod(myView.GetTimeDeltaComputation())) ||
-                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, TimestampExpression)))
+                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression)))
             {
                 return false;
             }
@@ -123,6 +124,26 @@ namespace com.espertech.esper.view.window
                 return ViewName +
                        " view requires a timestamp expression and a numeric or time period parameter for window size and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
             }
+        }
+
+        public ExprNode TimestampExpression
+        {
+            get { return _timestampExpression; }
+        }
+
+        public ExprEvaluator TimestampExpressionEval
+        {
+            get { return _timestampExpressionEval; }
+        }
+
+        public long? OptionalReferencePoint
+        {
+            get { return _optionalReferencePoint; }
+        }
+
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation1
+        {
+            get { return TimeDeltaComputation; }
         }
     }
 }

@@ -146,6 +146,31 @@ namespace com.espertech.esper.client
         void AddImport<T>();
 
         /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        void AddAnnotationImport(String importName, String assemblyNameOrFile);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        void AddAnnotationImport(String autoImport);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        void AddAnnotationImport(Type autoImport);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        void AddAnnotationImport<T>();
+
+        /// <summary>
         /// Adds an import for the namespace associated with the given type.
         /// </summary>
         /// <typeparam name="T"></typeparam>

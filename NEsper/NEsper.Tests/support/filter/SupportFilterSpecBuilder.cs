@@ -51,7 +51,7 @@ namespace com.espertech.esper.support.filter
         }
     
         private static FilterSpecLookupable MakeLookupable(EventType eventType, String fieldName) {
-            return new FilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName));
+            return new FilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName), false);
         }
     }
     

@@ -14,6 +14,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.enummethod.dot;
@@ -124,7 +125,7 @@ namespace com.espertech.esper.epl.expression.dot
 	            ExprNode rootNode = ChildNodes[0];
 	            ExprEvaluator rootNodeEvaluator = rootNode.ExprEvaluator;
 
-	            // the root expression may also provide a lambda-function input (Iterator<EventBean>)
+	            // the root expression may also provide a lambda-function input (GetEnumerator<EventBean>)
 	            // Determine collection-type and evaluator if any for root node
 	            ExprDotEnumerationSource enumSrc = ExprDotNodeUtility.GetEnumerationSource(rootNode, validationContext.StreamTypeService, validationContext.EventAdapterService, validationContext.StatementId, hasEnumerationMethod, validationContext.IsDisablePropertyExpressionEventCollCache);
 
@@ -367,7 +368,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        if (contextNameVariable != null) {
 	            throw new ExprValidationException("Method invocation on context-specific variable is not supported");
 	        }
-	        VariableReader variableReader = validationContext.VariableService.GetReader(firstItem.Name, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+	        VariableReader variableReader = validationContext.VariableService.GetReader(firstItem.Name, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
 	        if (variableReader != null) {
 	            EPType typeInfo;
 	            ExprDotStaticMethodWrap wrap;
@@ -390,7 +391,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        }
 
 	        // try resolve as enumeration class with value
-	        object enumconstant = TypeHelper.ResolveIdentAsEnumConst(firstItem.Name, validationContext.MethodResolutionService, null);
+	        object enumconstant = TypeHelper.ResolveIdentAsEnumConst(firstItem.Name, validationContext.MethodResolutionService, null, false);
 	        if (enumconstant != null) {
 
 	            // try resolve method

@@ -105,7 +105,7 @@ namespace com.espertech.esper.view.stat
             StatViewAdditionalProps.AddCheckDupProperties(eventTypeMap, additionalProps,
                     ViewFieldEnum.CORRELATION__CORRELATION);
             String outputEventTypeName = statementContext.StatementId + "_correlview_" + streamNum;
-            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap);
+            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap, false);
         }
     }
 }

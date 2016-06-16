@@ -12,8 +12,8 @@ using System.Configuration;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.db;
-using com.espertech.esper.support.schedule;
 
 namespace com.espertech.esper.support.epl
 {

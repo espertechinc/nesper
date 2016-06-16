@@ -16,13 +16,16 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.core.context.subselect
 {
     /// <summary>
-    /// Entry holding lookup resource references for use by <seealso cref="SubSelectActivationCollection"/>.
+    /// Record holding lookup resource references for use by <seealso cref="SubSelectActivationCollection"/>.
     /// </summary>
     public interface SubSelectStrategyFactory
     {
-        SubSelectStrategyRealization Instantiate(EPServicesContext services,
-                                                 Viewable viewableRoot,
-                                                 AgentInstanceContext agentInstanceContext,
-                                                 IList<StopCallback> stopCallbackList);
+        SubSelectStrategyRealization Instantiate(
+            EPServicesContext services,
+            Viewable viewableRoot,
+            AgentInstanceContext agentInstanceContext,
+            IList<StopCallback> stopCallbackList,
+            int subqueryNumber,
+            bool isRecoveringResilient);
     }
 }

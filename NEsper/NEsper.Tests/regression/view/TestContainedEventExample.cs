@@ -298,6 +298,7 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetLastNewData(), fields, new object[][] { new object[] { "svcOne", "typeA", 750.0 }, new object[] { "svcOne", "typeB", 600.0 } });
 	    }
 
+        [Serializable]
 	    public class ResponseEvent
 	    {
 	        public ResponseEvent(string category, SubEvent[] subEvents)
@@ -311,6 +312,7 @@ namespace com.espertech.esper.regression.view
 	        public SubEvent[] SubEvents { get; private set; }
 	    }
 
+        [Serializable]
 	    public class SubEvent
 	    {
 	        public SubEvent(long responseTimeMillis, string subEventType)

@@ -90,8 +90,8 @@ namespace com.espertech.esper.epl.expression.subquery
 
 	    public abstract Type ReturnType { get; }
 	    public abstract Type ComponentTypeCollection { get; }
-	    public abstract EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId);
-	    public abstract EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId);
+	    public abstract EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId);
+	    public abstract EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId);
 
 	    /// <summary>
 	    /// Ctor.

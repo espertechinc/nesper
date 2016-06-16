@@ -264,8 +264,25 @@ namespace com.espertech.esper.compat.collections
 
         public static void Fill<T>(this T[] arrayThis, T value)
         {
-            for( int ii = 0 ; ii < arrayThis.Length ; ii++ ) {
+            for (int ii = 0; ii < arrayThis.Length; ii++)
+            {
                 arrayThis[ii] = value;
+            }
+        }
+
+        public static void Fill<T>(this T[] arrayThis, Func<T> generator)
+        {
+            for (int ii = 0; ii < arrayThis.Length; ii++)
+            {
+                arrayThis[ii] = generator.Invoke();
+            }
+        }
+
+        public static void Fill<T>(this T[] arrayThis, Func<int, T> generator)
+        {
+            for (int ii = 0; ii < arrayThis.Length; ii++)
+            {
+                arrayThis[ii] = generator.Invoke(ii);
             }
         }
 

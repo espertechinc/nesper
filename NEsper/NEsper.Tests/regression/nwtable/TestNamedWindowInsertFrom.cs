@@ -36,7 +36,7 @@ namespace com.espertech.esper.regression.nwtable
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
@@ -226,8 +226,8 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestVariantStream()
         {
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean_B", typeof(SupportBean_B));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean_B>();
     
             ConfigurationVariantStream config = new ConfigurationVariantStream();
             //config.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
@@ -320,19 +320,19 @@ namespace com.espertech.esper.regression.nwtable
     
         private long GetCount(string windowName) 
         {
-            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowService.GetProcessor(windowName);
+            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowMgmtService.GetProcessor(windowName);
             return processor.GetProcessorInstance(null).CountDataWindow;
         }    
     
         private string GetStatementName(string windowName) 
         {
-            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowService.GetProcessor(windowName);
+            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowMgmtService.GetProcessor(windowName);
             return processor.StatementName;
         }
     
         private string GetEPL(string windowName) 
         {
-            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowService.GetProcessor(windowName);
+            NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).NamedWindowMgmtService.GetProcessor(windowName);
             return processor.EplExpression;
         }
     }

@@ -12,24 +12,30 @@ using Castle.Core.Internal;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
     /// <summary>
     /// Method to call to destroy an EPStatement.
     /// </summary>
-    public class EPStatementDestroyCallbackList
+    public class EPStatementDestroyCallbackList : EPStatementDestroyMethod
     {
         private static readonly ILog Log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private Deque<Action> _callbacks;
+        private Deque<DestroyCallback> _callbacks;
 
-        public void AddCallback(Action destroyCallback)
+        public void AddCallback(Action destroyAction)
+        {
+            AddCallback(new ProxyDestroyCallback(destroyAction));
+        }
+
+        public void AddCallback(DestroyCallback destroyCallback)
         {
             if (_callbacks == null)
             {
-                _callbacks = new ArrayDeque<Action>(2);
+                _callbacks = new ArrayDeque<DestroyCallback>(2);
             }
             _callbacks.Add(destroyCallback);
         }
@@ -43,7 +49,7 @@ namespace com.espertech.esper.core.start
                     {
                         try
                         {
-                            destroyCallback.Invoke();
+                            destroyCallback.Destroy();
                         }
                         catch (Exception ex)
                         {

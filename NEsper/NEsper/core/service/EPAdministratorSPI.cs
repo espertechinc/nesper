@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
 
@@ -24,49 +23,49 @@ namespace com.espertech.esper.core.service
         /// <param name="expression">to compile</param>
         /// <returns>compiled expression</returns>
         /// <throws>EPException if compile failed</throws>
-        ExprNode CompileExpression(String expression);
+        ExprNode CompileExpression(string expression);
     
         /// <summary>Compile expression. </summary>
         /// <param name="expression">to compile</param>
         /// <returns>compiled expression</returns>
         /// <throws>EPException if compile failed</throws>
-        Expression CompileExpressionToSODA(String expression);
+        Expression CompileExpressionToSODA(string expression);
     
         /// <summary>Compile pattern. </summary>
         /// <param name="expression">to compile</param>
         /// <returns>compiled expression</returns>
         /// <throws>EPException if compile failed</throws>
-        EvalFactoryNode CompilePatternToNode(String expression);
+        EvalFactoryNode CompilePatternToNode(string expression);
 
         /// <summary>Compile pattern. </summary>
         /// <param name="expression">to compile</param>
         /// <returns>compiled expression</returns>
         /// <throws>EPException if compile failed</throws>
-        PatternExpr CompilePatternToSODA(String expression);
+        PatternExpr CompilePatternToSODA(string expression);
     
         /// <summary>Compile pattern. </summary>
         /// <param name="expression">to compile</param>
         /// <returns>compiled expression</returns>
         /// <throws>EPException if compile failed</throws>
-        EPStatementObjectModel CompilePatternToSODAModel(String expression);
+        EPStatementObjectModel CompilePatternToSODAModel(string expression);
     
         /// <summary>Compile annotation expressions. </summary>
         /// <param name="annotationExpression">to compile</param>
         /// <returns>model representation</returns>
-        AnnotationPart CompileAnnotationToSODA(String annotationExpression);
+        AnnotationPart CompileAnnotationToSODA(string annotationExpression);
     
         /// <summary>Compile match recognize pattern expression. </summary>
         /// <param name="matchRecogPatternExpression">to compile</param>
         /// <returns>model representation</returns>
-        MatchRecognizeRegEx CompileMatchRecognizePatternToSODA(String matchRecogPatternExpression);
+        MatchRecognizeRegEx CompileMatchRecognizePatternToSODA(string matchRecogPatternExpression);
     
-        StatementSpecRaw CompileEPLToRaw(String epl);
+        StatementSpecRaw CompileEPLToRaw(string epl);
         EPStatementObjectModel MapRawToSODA(StatementSpecRaw raw);
         StatementSpecRaw MapSODAToRaw(EPStatementObjectModel model);
-        EPStatement CreateEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId);
-        EPStatement CreateModelStatementId(EPStatementObjectModel sodaStatement, String statementName, Object userObject, String statementId);
-        EPStatement CreatePatternStatementId(String pattern, String statementName, Object userObject, String statementId);
-        EPStatement CreatePreparedEPLStatementId(EPPreparedStatementImpl prepared, String statementName, Object userObject, String statementId);
-        String GetStatementNameForId(String statementId);
+        EPStatement CreateEPLStatementId(string eplStatement, string statementName, object userObject, int statementId);
+        EPStatement CreateModelStatementId(EPStatementObjectModel sodaStatement, string statementName, object userObject, int statementId);
+        EPStatement CreatePatternStatementId(string pattern, string statementName, object userObject, int statementId);
+        EPStatement CreatePreparedEPLStatementId(EPPreparedStatementImpl prepared, string statementName, object userObject, int statementId);
+        string GetStatementNameForId(int statementId);
     }
 }

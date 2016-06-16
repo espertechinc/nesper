@@ -99,7 +99,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return result.Unwrap<object>();
 	    }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
 	        return _factory.EventTypeCollection;
 	    }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        get { return _factory.ComponentTypeCollection; }
 	    }
 
-	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId)
+	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
 	        return _factory.EventTypeSingle;
 	    }

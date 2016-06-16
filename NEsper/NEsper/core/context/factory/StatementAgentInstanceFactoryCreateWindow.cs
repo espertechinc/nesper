@@ -17,7 +17,6 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
@@ -73,7 +72,7 @@ namespace com.espertech.esper.core.context.factory
                 eventStreamParentViewable = viewableActivationResult.Viewable;
     
                 // Obtain processor for this named window
-                var processor = _services.NamedWindowService.GetProcessor(windowName);
+                var processor = _services.NamedWindowMgmtService.GetProcessor(windowName);
                 if (processor == null) {
                     throw new Exception("Failed to obtain named window processor for named window '" + windowName + "'");
                 }
@@ -88,6 +87,9 @@ namespace com.espertech.esper.core.context.factory
                 var createResult = _services.ViewService.CreateViews(rootView, _unmaterializedViewChain.FactoryChain, viewFactoryChainContext, false);
                 topView = createResult.TopViewable;
                 finalView = createResult.FinalViewable;
+
+                // add views to stop callback if applicable
+                StatementAgentInstanceFactorySelect.AddViewStopCallback(stopCallbacks, createResult.NewViews);
     
                 // If this is a virtual data window implementation, bind it to the context for easy lookup
                 StopCallback envStopCallback = null;
@@ -95,36 +97,46 @@ namespace com.espertech.esper.core.context.factory
                     var objectName = "/virtualdw/" + windowName;
                     var virtualDWView = (VirtualDWView) finalView;
                     _services.EngineEnvContext.Bind(objectName, virtualDWView.VirtualDataWindow);
-                    envStopCallback = () =>
+                    envStopCallback = new ProxyStopCallback(() =>
                     {
                         virtualDWView.Dispose();
                         _services.EngineEnvContext.Unbind(objectName);
-                    };
+                    });
                 }
                 StopCallback environmentStopCallback = envStopCallback;
     
-                // create stop method using statement stream specs
-                StopCallback allInOneStopMethod = () =>
+                // Only if we are context-allocated: destroy the instance
+                var contextName = processor.ContextName;
+                var agentInstanceId = agentInstanceContext.AgentInstanceId;
+                var allInOneStopMethod = new ProxyStopCallback(() =>
                 {
-                    var iwindowName = _statementSpec.CreateWindowDesc.WindowName;
-                    var iprocessor = _services.NamedWindowService.GetProcessor(iwindowName);
-                    if (iprocessor == null)
+                    var windowNameX = _statementSpec.CreateWindowDesc.WindowName;
+                    var processorX = _services.NamedWindowMgmtService.GetProcessor(windowNameX);
+                    if (processorX == null)
                     {
-                        Log.Warn("Named window processor by name '" + iwindowName + "' has not been found");
+                        Log.Warn("Named window processor by name '" + windowNameX + "' has not been found");
                     }
                     else
                     {
-                        var instance = iprocessor.GetProcessorInstance(agentInstanceContext);
-                        if (instance != null && instance.RootViewInstance.IsVirtualDataWindow)
+                        NamedWindowProcessorInstance instance =
+                            processorX.GetProcessorInstanceAllowUnpartitioned(agentInstanceId);
+                        if (instance != null)
                         {
-                            instance.RootViewInstance.VirtualDataWindow.HandleStopWindow();
+                            if (contextName != null)
+                            {
+                                instance.Dispose();
+                            }
+                            else
+                            {
+                                instance.Stop();
+                            }
                         }
                     }
                     if (environmentStopCallback != null)
                     {
-                        environmentStopCallback.Invoke();
+                        environmentStopCallback.Stop();
                     }
-                };
+                });
 
                 stopCallbacks.Add(allInOneStopMethod);
     
@@ -134,7 +146,7 @@ namespace com.espertech.esper.core.context.factory
                 finalView = tailView;
     
                 // obtain result set processor
-                ResultSetProcessor resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(agentInstanceContext, _resultSetProcessorPrototype);
+                ResultSetProcessor resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(agentInstanceContext, _resultSetProcessorPrototype, false, null, false);
     
                 // Attach output view
                 View outputView = _outputProcessViewFactory.MakeView(resultSetProcessor, agentInstanceContext);
@@ -148,7 +160,7 @@ namespace com.espertech.esper.core.context.factory
                 if (_statementSpec.CreateWindowDesc.IsInsert && !_isRecoveringStatement)
                 {
                     String insertFromWindow = _statementSpec.CreateWindowDesc.InsertFromWindow;
-                    NamedWindowProcessor namedWindowProcessor = _services.NamedWindowService.GetProcessor(insertFromWindow);
+                    NamedWindowProcessor namedWindowProcessor = _services.NamedWindowMgmtService.GetProcessor(insertFromWindow);
                     NamedWindowProcessorInstance sourceWindowInstances = namedWindowProcessor.GetProcessorInstance(agentInstanceContext);
                     IList<EventBean> events = new List<EventBean>();
                     if (_statementSpec.CreateWindowDesc.InsertFilter != null)
@@ -189,7 +201,7 @@ namespace com.espertech.esper.core.context.factory
                 throw;
             }
 
-            StatementAgentInstanceFactoryCreateWindowResult createWindowResult = new StatementAgentInstanceFactoryCreateWindowResult(
+            var createWindowResult = new StatementAgentInstanceFactoryCreateWindowResult(
                 finalView, null, agentInstanceContext, eventStreamParentViewable, postLoad, topView, processorInstance, viewableActivationResult);
             if (_statementContext.StatementExtensionServicesContext != null)
             {

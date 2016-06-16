@@ -9,9 +9,9 @@
 using System;
 
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.pattern;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.view;
 
 namespace com.espertech.esper.support.pattern
 {

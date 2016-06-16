@@ -46,8 +46,9 @@ namespace com.espertech.esper.regression.client
         }
     
         [Test]
-        public void TestListenerWithReplay() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+        public void TestListenerWithReplay()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             EPStatementSPI stmt = (EPStatementSPI) _epService.EPAdministrator.CreateEPL("select * from SupportBean.win:length(2)");
             Assert.IsFalse(stmt.StatementContext.IsStatelessSelect);
     
@@ -122,6 +123,14 @@ namespace com.espertech.esper.regression.client
             } catch (IllegalStateException ex) {
                 //
             }
+
+            // test named window and having-clause
+            _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(
+                "create window SupportBeanWindow.win:keepall() as SupportBean;\n" +
+                "insert into SupportBeanWindow select * from SupportBean;\n");
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            var stmtWHaving = _epService.EPAdministrator.CreateEPL("select theString, intPrimitive from SupportBeanWindow having intPrimitive > 4000");
+            stmtWHaving.AddEventHandlerWithReplay(_listener.Update);
         }
     
         [Test]

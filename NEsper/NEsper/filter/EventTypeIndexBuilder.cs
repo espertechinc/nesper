@@ -147,7 +147,7 @@ namespace com.espertech.esper.filter
         /// </summary>
         /// <param name="statementIds">ids to take</param>
         /// <returns>set of filters for taken statements</returns>
-        public FilterSet Take(ICollection<String> statementIds)
+        public FilterSet Take(ICollection<int> statementIds)
         {
             if (_isolatableCallbacks == null)
             {
@@ -193,6 +193,11 @@ namespace com.espertech.esper.filter
             {
                 Add(entry.FilterValueSet, entry.Handle, lockFactory);
             }
+        }
+
+        public bool IsSupportsTakeApply
+        {
+            get { return _isolatableCallbacks != null; }
         }
     }
 }

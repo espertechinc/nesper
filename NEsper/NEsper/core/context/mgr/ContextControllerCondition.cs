@@ -13,7 +13,7 @@ namespace com.espertech.esper.core.context.mgr
 {
     public interface ContextControllerCondition
     {
-        void Activate(EventBean optionalTriggeringEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringReslient);
+        void Activate(EventBean optionalTriggeringEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringResilient);
         void Deactivate();
         bool IsRunning { get; }
         long? ExpectedEndTime { get; }

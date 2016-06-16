@@ -72,12 +72,20 @@ namespace com.espertech.esper.client
         IDictionary<string, ConfigurationEventTypeLegacy> EventTypesLegacy { get; }
 
         /// <summary>
-        /// Returns the class and package imports.
+        /// Returns the import information for types.
         /// </summary>
         /// <returns>
         /// imported names
         /// </returns>
         IList<AutoImportDesc> Imports { get; }
+
+        /// <summary>
+        /// Returns the import information for annotations.
+        /// </summary>
+        /// <value>
+        /// The annotation imports.
+        /// </value>
+        IList<AutoImportDesc> AnnotationImports { get; }
 
         /// <summary>
         /// Returns a map of string database names to database configuration options.

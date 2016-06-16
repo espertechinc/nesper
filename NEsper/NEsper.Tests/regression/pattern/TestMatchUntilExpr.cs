@@ -472,7 +472,7 @@ namespace com.espertech.esper.regression.pattern
             statement.Dispose();
 
             // test with timer:interval
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
             String query = "select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))->([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
 
@@ -545,8 +545,8 @@ namespace com.espertech.esper.regression.pattern
 
             epService.EPAdministrator.Configuration.AddVariable("lower", typeof(int), null);
             epService.EPAdministrator.Configuration.AddVariable("upper", typeof(int), null);
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
 
             // test variables - closed bounds
             epService.EPRuntime.SetVariableValue("lower", 2);
@@ -707,7 +707,7 @@ namespace com.espertech.esper.regression.pattern
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
 
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
             TryInvalid(epService, "[:0] A until B", "Incorrect range specification, a bounds value of zero or negative value is not allowed [[:0] A until B]");
             TryInvalid(epService, "[10:4] A", "Incorrect range specification, lower bounds value '10' is higher then higher bounds '4' [[10:4] A]");

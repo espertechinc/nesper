@@ -38,7 +38,10 @@ namespace com.espertech.esper.regression.client
             set
             {
                 base.Parent = value;
-                _eventType = value.EventType;
+                if (value != null)
+                {
+                    _eventType = value.EventType;
+                }
             }
         }
 

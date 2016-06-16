@@ -23,25 +23,31 @@ using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.context.factory
 {
-    public class StatementAgentInstanceFactoryCreateIndex : StatementAgentInstanceFactory {
-    
+    public class StatementAgentInstanceFactoryCreateIndex : StatementAgentInstanceFactory
+    {
         private readonly EPServicesContext services;
         private readonly CreateIndexDesc spec;
         private readonly Viewable finalView;
         private readonly NamedWindowProcessor namedWindowProcessor;
         private readonly string tableName;
+        private readonly string contextName;
     
-        public StatementAgentInstanceFactoryCreateIndex(EPServicesContext services, CreateIndexDesc spec, Viewable finalView, NamedWindowProcessor namedWindowProcessor, string tableName) {
+        public StatementAgentInstanceFactoryCreateIndex(EPServicesContext services, CreateIndexDesc spec, Viewable finalView, NamedWindowProcessor namedWindowProcessor, string tableName, string contextName)
+        {
             this.services = services;
             this.spec = spec;
             this.finalView = finalView;
             this.namedWindowProcessor = namedWindowProcessor;
             this.tableName = tableName;
+            this.contextName = contextName;
         }
     
         public StatementAgentInstanceFactoryResult NewContext(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             StopCallback stopCallback;
+
+            int agentInstanceId = agentInstanceContext.AgentInstanceId;
+
             if (namedWindowProcessor != null) {
                 // handle named window index
                 NamedWindowProcessorInstance processorInstance = namedWindowProcessor.GetProcessorInstance(agentInstanceContext);
@@ -49,32 +55,51 @@ namespace com.espertech.esper.core.context.factory
                 if (namedWindowProcessor.IsVirtualDataWindow) {
                     VirtualDWView virtualDWView = processorInstance.RootViewInstance.VirtualDataWindow;
                     virtualDWView.HandleStartIndex(spec);
-                    stopCallback = () =>  {
-                        virtualDWView.HandleStopIndex(spec);
-                    };
+                    stopCallback = new ProxyStopCallback(() => virtualDWView.HandleStopIndex(spec));
                 }
                 else {
                     try {
-                        processorInstance.RootViewInstance.AddExplicitIndex(spec.IsUnique, spec.IndexName, spec.Columns);
+                        processorInstance.RootViewInstance.AddExplicitIndex(spec.IsUnique, spec.IndexName, spec.Columns, isRecoveringResilient);
                     }
                     catch (ExprValidationException e) {
                         throw new EPException("Failed to create index: " + e.Message, e);
                     }
-                    stopCallback = () =>  {
-                    };
+                    stopCallback = new ProxyStopCallback(() =>  {
+                        // we remove the index when context partitioned.
+                        // when not context partition the index gets removed when the last reference to the named window gets destroyed.
+                        if (contextName != null)
+                        {
+                            var instance = namedWindowProcessor.GetProcessorInstance(agentInstanceId);
+                            if (instance != null)
+                            {
+                                instance.RemoveExplicitIndex(spec.IndexName);
+                            }
+                        }
+
+                    });
                 }
             }
             else {
                 // handle table access
                 try {
                     TableStateInstance instance = services.TableService.GetState(tableName, agentInstanceContext.AgentInstanceId);
-                    instance.AddExplicitIndex(spec);
+                    instance.AddExplicitIndex(spec, isRecoveringResilient, contextName != null);
                 }
                 catch (ExprValidationException ex) {
                     throw new EPException("Failed to create index: " + ex.Message, ex);
                 }
-                stopCallback = () =>  {
-                };
+                stopCallback = new ProxyStopCallback(() =>  {
+                    // we remove the index when context partitioned.
+                    // when not context partition the index gets removed when the last reference to the table gets destroyed.
+                    if (contextName != null)
+                    {
+                        TableStateInstance instance = services.TableService.GetState(tableName, agentInstanceId);
+                        if (instance != null)
+                        {
+                            instance.RemoveExplicitIndex(spec.IndexName);
+                        }
+                    }
+                });
             }
     
             return new StatementAgentInstanceFactoryCreateIndexResult(finalView, stopCallback, agentInstanceContext);

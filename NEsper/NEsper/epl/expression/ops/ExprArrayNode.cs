@@ -256,7 +256,7 @@ namespace com.espertech.esper.epl.expression.ops
             return resultList;
         }
     
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }
@@ -266,7 +266,7 @@ namespace com.espertech.esper.epl.expression.ops
             return null;
         }
     
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }

@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.expression.prior
             }
             if (!(ChildNodes[0].IsConstantResult))
             {
-                throw new ExprValidationException("Prior function requires an integer index parameter");
+                throw new ExprValidationException("Prior function requires a constant-value integer-typed index expression as the first parameter");
             }
 
             var constantNode = ChildNodes[0];

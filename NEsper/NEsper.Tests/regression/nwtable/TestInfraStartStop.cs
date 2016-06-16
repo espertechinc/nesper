@@ -187,7 +187,7 @@ namespace com.espertech.esper.regression.nwtable
             SupportNamedWindowObserver observer = new SupportNamedWindowObserver();
             NamedWindowLifecycleEvent theEvent;
             if (namedWindow) {
-                _epService.NamedWindowService.AddObserver(observer);
+                _epService.NamedWindowMgmtService.AddObserver(observer);
             }
     
             // create window

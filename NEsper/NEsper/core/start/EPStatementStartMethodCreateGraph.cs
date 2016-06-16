@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.view;
@@ -32,17 +33,19 @@ namespace com.espertech.esper.core.start
     
             // define output event type
             var typeName = "EventType_Graph_" + createGraphDesc.GraphName;
-            var resultType = services.EventAdapterService.CreateAnonymousMapType(typeName, Collections.GetEmptyMap<String, Object>());
+            var resultType = services.EventAdapterService.CreateAnonymousMapType(typeName, Collections.GetEmptyMap<String, Object>(), true);
     
             services.DataFlowService.AddStartGraph(createGraphDesc, statementContext, services, agentInstanceContext, isNewStatement);
     
-            var stopMethod = new EPStatementStopMethod(() => 
+            var stopMethod = new ProxyEPStatementStopMethod(() => 
                 services.DataFlowService.StopGraph(createGraphDesc.GraphName));
-    
-            var destroyMethod = new EPStatementDestroyMethod(() =>
+
+            var destroyMethod = new ProxyEPStatementDestroyMethod(() =>
                     services.DataFlowService.RemoveGraph(createGraphDesc.GraphName));
 
-            return new EPStatementStartResult(new ZeroDepthStreamNoIterate(resultType), stopMethod, destroyMethod);
+            var resultView = new ZeroDepthStreamNoIterate(resultType);
+            statementContext.StatementAgentInstanceFactory = new StatementAgentInstanceFactoryNoAgentInstance(resultView);
+            return new EPStatementStartResult(resultView, stopMethod, destroyMethod);
         }
     }
 }

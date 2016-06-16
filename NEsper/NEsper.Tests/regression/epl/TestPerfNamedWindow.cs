@@ -42,15 +42,16 @@ namespace com.espertech.esper.regression.epl
         }
     
         [TearDown]
-        public void TearDown() {
+        public void TearDown()
+        {
             _listener = null;
         }
 
         [Test]
         public void TestOnSelectInKeywordPerformance()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S1>();
 
             // create window
             _epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() as SupportBean_S0");
@@ -71,7 +72,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestOnSelectEqualsAndRangePerformance()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
     
             // create window one
@@ -110,11 +111,11 @@ namespace com.espertech.esper.regression.epl
 
         private void RunOnDemandAssertion(String epl, int numIndexes, Object theEvent, int expected)
         {
-            Assert.AreEqual(0, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
-    
+            Assert.AreEqual(0, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
+
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
             stmt.Events += _listener.Update;
-            Assert.AreEqual(numIndexes, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(numIndexes, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
     
             long start = Environment.TickCount;
             int loops = 1000;
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regression.epl
             Assert.IsTrue(delta < 1000,"delta=" + delta);
     
             stmt.Dispose();
-            Assert.AreEqual(0, _epService.NamedWindowService.GetNamedWindowIndexes("MyWindow").Length);
+            Assert.AreEqual(0, _epService.NamedWindowMgmtService.GetNamedWindowIndexes("MyWindow").Length);
         }
     
         [Test]
@@ -234,7 +235,7 @@ namespace com.espertech.esper.regression.epl
                     }
                 });
 
-            Assert.That(delta, Is.LessThan(500));
+            Assert.That(delta, Is.LessThan(1500));
     
             // assert they are all deleted
             Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(stmtCreate.GetEnumerator()));

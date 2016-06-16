@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.agg.service
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const long DEFAULT_MAX_AGE_MSEC = 60000L;
+        public const long DEFAULT_MAX_AGE_MSEC = 60000L;
 
         private readonly AggregationAccessorSlotPair[] _accessors;
         private readonly AggregationStateFactory[] _accessAggregations;
@@ -99,7 +99,7 @@ namespace com.espertech.esper.epl.agg.service
             if (row == null)
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null);
+                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
                 row = new AggregationMethodRowAged(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, currentTime, groupAggregators, groupStates);
                 _aggregatorsPerGroup.Put(groupByKey, row);
             }
@@ -190,7 +190,7 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null);
+                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
                 row = new AggregationMethodRowAged(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, currentTime, groupAggregators, groupStates);
                 _aggregatorsPerGroup.Put(groupByKey, row);
             }
@@ -238,7 +238,7 @@ namespace com.espertech.esper.epl.agg.service
     
             if (_currentAggregatorMethods == null) {
                 _currentAggregatorMethods = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, null);
-                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null);
+                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
             }
     
             _currentGroupKey = groupByKey;

@@ -23,18 +23,18 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly String _isolatedServiceName;
+        private readonly string _isolatedServiceName;
         private readonly EPIsolationUnitServices _services;
         private readonly EPServicesContext _unisolatedServices;
-        private readonly EPRuntimeIsolatedImpl _isolatedRuntime;
-        private readonly ICollection<String> _statementNames = new HashSet<string>().AsSyncCollection();
+        private readonly EPRuntimeIsolatedSPI _isolatedRuntime;
+        private readonly ICollection<string> _statementNames = new HashSet<string>().AsSyncCollection();
     
         /// <summary>Ctor. </summary>
         /// <param name="isolatedServiceName">name of the isolated service</param>
         /// <param name="services">isolated services</param>
         /// <param name="unisolatedServices">engine services</param>
         /// <param name="isolatedRuntime">the runtime for this isolated service</param>
-        public EPAdministratorIsolatedImpl(String isolatedServiceName, EPIsolationUnitServices services, EPServicesContext unisolatedServices, EPRuntimeIsolatedImpl isolatedRuntime)
+        public EPAdministratorIsolatedImpl(string isolatedServiceName, EPIsolationUnitServices services, EPServicesContext unisolatedServices, EPRuntimeIsolatedSPI isolatedRuntime)
         {
             _isolatedServiceName = isolatedServiceName;
             _services = services;
@@ -42,16 +42,16 @@ namespace com.espertech.esper.core.service
             _isolatedRuntime = isolatedRuntime;
         }
     
-        public EPStatement CreateEPL(String eplStatement, String statementName, Object userObject)
+        public EPStatement CreateEPL(string eplStatement, string statementName, object userObject)
         {
-            return CreateEPLStatementId(eplStatement, statementName, userObject, null)  ;
+            return CreateEPLStatementId(eplStatement, statementName, userObject, null);
         }
     
-        public EPStatement CreateEPLStatementId(String eplStatement, String statementName, Object userObject, String statementId)
+        public EPStatement CreateEPLStatementId(string eplStatement, string statementName, object userObject, int? optionalStatementId)
         {
             var defaultStreamSelector = _unisolatedServices.ConfigSnapshot.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector.MapFromSODA();
             var statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, statementName, _unisolatedServices, defaultStreamSelector);
-            var statement = _unisolatedServices.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, _services, statementId, null);
+            var statement = _unisolatedServices.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, _services, optionalStatementId, null);
             var stmtSpi = (EPStatementSPI) statement;
             stmtSpi.StatementContext.InternalEventEngineRouteDest = _isolatedRuntime;
             stmtSpi.ServiceIsolated = _isolatedServiceName;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.core.service
             get { return _statementNames.ToArray(); }
         }
 
-        public void AddStatement(String name)
+        public void AddStatement(string name)
         {
             _statementNames.Add(name);   // for recovery
         }
@@ -76,7 +76,7 @@ namespace com.espertech.esper.core.service
     
         public void AddStatement(EPStatement[] stmt)
         {
-            using (_unisolatedServices.EventProcessingRwLock.AcquireWriteLock())
+            using (_unisolatedServices.EventProcessingRWLock.AcquireWriteLock())
             {
                 try
                 {
@@ -85,7 +85,7 @@ namespace com.espertech.esper.core.service
                     long delta = toTime - fromTime;
 
                     // perform checking
-                    ICollection<String> statementIds = new HashSet<String>();
+                    ICollection<int> statementIds = new HashSet<int>();
                     foreach (EPStatement aStmt in stmt)
                     {
                         if (aStmt == null)
@@ -129,7 +129,7 @@ namespace com.espertech.esper.core.service
                     _unisolatedServices.StatementIsolationService.CommitIsolatingStatements(_isolatedServiceName,
                                                                                            _services.UnitId, stmt);
                 }
-                catch (EPServiceIsolationException ex)
+                catch (EPServiceIsolationException)
                 {
                     throw;
                 }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.core.service
                     _unisolatedServices.StatementIsolationService.RollbackIsolatingStatements(_isolatedServiceName,
                                                                                              _services.UnitId, stmt);
 
-                    String message = "Unexpected exception taking statements: " + ex.Message;
+                    string message = "Unexpected exception taking statements: " + ex.Message;
                     Log.Error(message, ex);
                     throw new EPException(message, ex);
                 }
@@ -152,7 +152,7 @@ namespace com.espertech.esper.core.service
     
         public void RemoveStatement(IList<EPStatement> stmt) {
     
-            using(_unisolatedServices.EventProcessingRwLock.AcquireWriteLock())
+            using(_unisolatedServices.EventProcessingRWLock.AcquireWriteLock())
             {
                 try
                 {
@@ -160,7 +160,7 @@ namespace com.espertech.esper.core.service
                     long toTime = _unisolatedServices.SchedulingService.Time;
                     long delta = toTime - fromTime;
 
-                    ICollection<String> statementIds = new HashSet<String>();
+                    ICollection<int> statementIds = new HashSet<int>();
                     foreach (EPStatement aStmt in stmt)
                     {
                         if (aStmt == null)
@@ -213,7 +213,7 @@ namespace com.espertech.esper.core.service
                     _unisolatedServices.StatementIsolationService.CommitUnisolatingStatements(
                         _isolatedServiceName, _services.UnitId, stmt);
                 }
-                catch (EPServiceIsolationException ex)
+                catch (EPServiceIsolationException)
                 {
                     throw;
                 }
@@ -222,7 +222,7 @@ namespace com.espertech.esper.core.service
                     _unisolatedServices.StatementIsolationService.RollbackUnisolatingStatements(_isolatedServiceName,
                                                                                                _services.UnitId, stmt);
 
-                    String message = "Unexpected exception taking statements: " + ex.Message;
+                    string message = "Unexpected exception taking statements: " + ex.Message;
                     Log.Error(message, ex);
                     throw new EPException(message, ex);
                 }
@@ -233,7 +233,7 @@ namespace com.espertech.esper.core.service
         public void RemoveAllStatements()
         {
             var statements = new List<EPStatement>();
-            foreach (String stmtName in _statementNames)
+            foreach (string stmtName in _statementNames)
             {
                 EPStatement stmt = _unisolatedServices.StatementLifecycleSvc.GetStatementByName(stmtName);
                 if (stmt == null)

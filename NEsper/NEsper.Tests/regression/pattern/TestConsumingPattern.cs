@@ -770,6 +770,7 @@ namespace com.espertech.esper.regression.pattern
             }
         }
 
+        [Serializable]
         public sealed class AEvent
         {
             public AEvent(String id, String pa, int? mysec)
@@ -786,6 +787,7 @@ namespace com.espertech.esper.regression.pattern
             public int? Mysec { get; private set; }
         }
 
+        [Serializable]
         public sealed class BEvent
         {
             public BEvent(String id, String pb)
@@ -799,6 +801,7 @@ namespace com.espertech.esper.regression.pattern
             public string Pb { get; private set; }
         }
 
+        [Serializable]
         public sealed class CEvent
         {
             public CEvent(String id, String pc)
@@ -812,6 +815,7 @@ namespace com.espertech.esper.regression.pattern
             public string Pc { get; private set; }
         }
 
+        [Serializable]
         public sealed class DEvent
         {
             public DEvent(String id)

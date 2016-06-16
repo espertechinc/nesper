@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.db
         [Test]
         public void Test3Stream()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanTwo", typeof(SupportBeanTwo));
 
             String stmtText = "select * from SupportBean.std:lastevent() sb, SupportBeanTwo.std:lastevent() sbt, " +
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regression.db
         [Test]
         public void TestVariables()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("A", typeof(SupportBean_A));
             _epService.EPAdministrator.CreateEPL("create variable int queryvar");
             _epService.EPAdministrator.CreateEPL("on SupportBean set queryvar=IntPrimitive");

@@ -232,7 +232,7 @@ namespace com.espertech.esper.view.stat
 	        schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), typeof(double?));
 	        StatViewAdditionalProps.AddCheckDupProperties(schemaMap, additionalProps, ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
 	        string outputEventTypeName = statementContext.StatementId + "_wavgview_" + streamNum;
-	        return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, schemaMap);
+            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, schemaMap, false);
 	    }
 
 	    public double SumXtimesW { get; set; }

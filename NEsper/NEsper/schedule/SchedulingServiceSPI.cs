@@ -20,7 +20,7 @@ namespace com.espertech.esper.schedule
         /// </summary>
         /// <param name="statementId">statements to take out</param>
         /// <returns>schedules</returns>
-        ScheduleSet Take(ICollection<string> statementId);
+        ScheduleSet Take(ICollection<int> statementId);
 
         /// <summary>
         /// Apply the set of schedules.

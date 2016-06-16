@@ -27,7 +27,8 @@ namespace com.espertech.esper.regression.epl
         [SetUp]
         public void SetUp()
         {
-            _epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
+            var configuration = SupportConfigFactory.GetConfiguration();
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             _listener = new SupportUpdateListener();
         }

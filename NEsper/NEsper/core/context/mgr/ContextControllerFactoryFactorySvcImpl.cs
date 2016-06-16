@@ -16,22 +16,22 @@ namespace com.espertech.esper.core.context.mgr
 {
 	public class ContextControllerFactoryFactorySvcImpl : ContextControllerFactoryFactorySvc
     {
-	    public ContextControllerFactory Make(ContextControllerFactoryContext factoryContext, ContextDetail detail, IList<FilterSpecCompiled> optFiltersNested, ContextStateCache contextStateCache)
+        public ContextControllerFactory Make(ContextControllerFactoryContext factoryContext, ContextDetail detail, IList<FilterSpecCompiled> optFiltersNested)
         {
-	        ContextControllerFactory factory;
-	        if (detail is ContextDetailInitiatedTerminated) {
-	            factory = new ContextControllerInitTermFactory(factoryContext, (ContextDetailInitiatedTerminated) detail, contextStateCache);
-	        } else if (detail is ContextDetailPartitioned) {
-	            factory = new ContextControllerPartitionedFactory(factoryContext, (ContextDetailPartitioned) detail, optFiltersNested, contextStateCache);
-	        } else if (detail is ContextDetailCategory) {
-	            factory = new ContextControllerCategoryFactory(factoryContext, (ContextDetailCategory) detail, optFiltersNested, contextStateCache);
-	        } else if (detail is ContextDetailHash) {
-	            factory = new ContextControllerHashFactory(factoryContext, (ContextDetailHash) detail, optFiltersNested, contextStateCache);
-	        } else {
-	            throw new UnsupportedOperationException("Context detail " + detail + " is not yet supported in a nested context");
-	        }
+            ContextControllerFactory factory;
+            if (detail is ContextDetailInitiatedTerminated) {
+                factory = new ContextControllerInitTermFactoryImpl(factoryContext, (ContextDetailInitiatedTerminated) detail);
+            } else if (detail is ContextDetailPartitioned) {
+                factory = new ContextControllerPartitionedFactoryImpl(factoryContext, (ContextDetailPartitioned) detail, optFiltersNested);
+            } else if (detail is ContextDetailCategory) {
+                factory = new ContextControllerCategoryFactoryImpl(factoryContext, (ContextDetailCategory) detail, optFiltersNested);
+            } else if (detail is ContextDetailHash) {
+                factory = new ContextControllerHashFactoryImpl(factoryContext, (ContextDetailHash) detail, optFiltersNested);
+            } else {
+                throw new UnsupportedOperationException("Context detail " + detail + " is not yet supported in a nested context");
+            }
 
-	        return factory;
-	    }
+            return factory;
+        }
 	}
 } // end of namespace

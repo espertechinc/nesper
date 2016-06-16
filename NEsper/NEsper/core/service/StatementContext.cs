@@ -17,6 +17,7 @@ using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.script;
@@ -31,6 +32,7 @@ using com.espertech.esper.pattern.pool;
 using com.espertech.esper.rowregex;
 using com.espertech.esper.schedule;
 using com.espertech.esper.script;
+using com.espertech.esper.timer;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.service
@@ -49,7 +51,6 @@ namespace com.espertech.esper.core.service
         /// Constructor.
         /// </summary>
         /// <param name="stmtEngineServices">is the engine services for the statement</param>
-        /// <param name="statementIdBytes">The statement id bytes.</param>
         /// <param name="schedulingService">implementation for schedule registration</param>
         /// <param name="scheduleBucket">is for ordering scheduled callbacks within the view statements</param>
         /// <param name="epStatementHandle">is the statements-own handle for use in registering callbacks with services</param>
@@ -67,6 +68,7 @@ namespace com.espertech.esper.core.service
         /// <param name="defaultAgentInstanceLock">The default agent instance lock.</param>
         /// <param name="contextDescriptor">The context descriptor.</param>
         /// <param name="patternSubexpressionPoolSvc">The pattern subexpression pool SVC.</param>
+        /// <param name="matchRecognizeStatePoolStmtSvc">The match recognize state pool statement SVC.</param>
         /// <param name="statelessSelect">if set to <c>true</c> [stateless select].</param>
         /// <param name="contextControllerFactoryService">The context controller factory service.</param>
         /// <param name="defaultAgentInstanceScriptContext">The default agent instance script context.</param>
@@ -74,36 +76,39 @@ namespace com.espertech.esper.core.service
         /// <param name="scriptingService">The scripting service.</param>
         /// <param name="writesToTables">if set to <c>true</c> [writes to tables].</param>
         /// <param name="statementUserObject">The statement user object.</param>
-        public StatementContext(StatementContextEngineServices stmtEngineServices,
-                                byte[] statementIdBytes,
-                                SchedulingService schedulingService,
-                                ScheduleBucket scheduleBucket,
-                                EPStatementHandle epStatementHandle,
-                                ViewResolutionService viewResultionService,
-                                PatternObjectResolutionService patternResolutionService,
-                                StatementExtensionSvcContext statementExtensionSvcContext,
-                                StatementStopService statementStopService,
-                                MethodResolutionService methodResolutionService,
-                                PatternContextFactory patternContextFactory,
-                                FilterService filterService,
-                                StatementResultService statementResultService,
-                                InternalEventRouteDest internalEventEngineRouteDest,
-                                Attribute[] annotations,
-                                StatementAIResourceRegistry statementAgentInstanceRegistry,
-                                IReaderWriterLock defaultAgentInstanceLock,
-                                ContextDescriptor contextDescriptor,
-                                PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc,
-                                MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc,
-                                bool statelessSelect,
-                                ContextControllerFactoryService contextControllerFactoryService,
-                                AgentInstanceScriptContext defaultAgentInstanceScriptContext,
-                                AggregationServiceFactoryService aggregationServiceFactoryService,
-                                ScriptingService scriptingService,
-                                bool writesToTables,
-                                object statementUserObject)
+        /// <param name="statementSemiAnonymousTypeRegistry">The statement semi anonymous type registry.</param>
+        /// <param name="priority">The priority.</param>
+        public StatementContext(
+            StatementContextEngineServices stmtEngineServices,
+            SchedulingService schedulingService,
+            ScheduleBucket scheduleBucket,
+            EPStatementHandle epStatementHandle,
+            ViewResolutionService viewResultionService,
+            PatternObjectResolutionService patternResolutionService,
+            StatementExtensionSvcContext statementExtensionSvcContext,
+            StatementStopService statementStopService,
+            MethodResolutionService methodResolutionService,
+            PatternContextFactory patternContextFactory,
+            FilterService filterService,
+            StatementResultService statementResultService,
+            InternalEventRouteDest internalEventEngineRouteDest,
+            Attribute[] annotations,
+            StatementAIResourceRegistry statementAgentInstanceRegistry,
+            IReaderWriterLock defaultAgentInstanceLock,
+            ContextDescriptor contextDescriptor,
+            PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc,
+            bool statelessSelect,
+            ContextControllerFactoryService contextControllerFactoryService,
+            AgentInstanceScriptContext defaultAgentInstanceScriptContext,
+            AggregationServiceFactoryService aggregationServiceFactoryService,
+            ScriptingService scriptingService,
+            bool writesToTables,
+            object statementUserObject,
+            StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry,
+            int priority)
         {
             _stmtEngineServices = stmtEngineServices;
-            StatementIdBytes = statementIdBytes;
             SchedulingService = schedulingService;
             ScheduleBucket = scheduleBucket;
             EpStatementHandle = epStatementHandle;
@@ -130,11 +135,13 @@ namespace com.espertech.esper.core.service
             ScriptingService = scriptingService;
             IsWritesToTables = writesToTables;
             StatementUserObject = statementUserObject;
+            StatementSemiAnonymousTypeRegistry = statementSemiAnonymousTypeRegistry;
+            Priority = priority;
         }
 
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        public string StatementId
+        public int StatementId
         {
             get { return EpStatementHandle.StatementId; }
         }
@@ -211,6 +218,21 @@ namespace com.espertech.esper.core.service
             get { return _stmtEngineServices.RegexHandlerFactory; }
         }
 
+        public ViewServicePreviousFactory ViewServicePreviousFactory
+        {
+            get { return _stmtEngineServices.ViewServicePreviousFactory; }
+        }
+
+        public PatternNodeFactory PatternNodeFactory
+        {
+            get { return _stmtEngineServices.PatternNodeFactory; }
+        }
+
+        public EventTableIndexService EventTableIndexService
+        {
+            get { return _stmtEngineServices.EventTableIndexService; }
+        }
+
         public StatementLockFactory StatementLockFactory
         {
             get { return _stmtEngineServices.StatementLockFactory; }
@@ -236,9 +258,9 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the named window management service. </summary>
         /// <value>service for managing named windows</value>
-        public NamedWindowService NamedWindowService
+        public NamedWindowMgmtService NamedWindowMgmtService
         {
-            get { return _stmtEngineServices.NamedWindowService; }
+            get { return _stmtEngineServices.NamedWindowMgmtService; }
         }
 
         /// <summary>Returns variable service. </summary>
@@ -326,6 +348,11 @@ namespace com.espertech.esper.core.service
             get { return _stmtEngineServices.TableExprEvaluatorContext; }
         }
 
+        public ContextManagementService ContextManagementService
+        {
+            get { return _stmtEngineServices.ContextManagementService; }
+        }
+
         public Attribute[] Annotations { get; private set; }
 
         public ExpressionResultCacheService ExpressionResultCacheServiceSharable
@@ -344,8 +371,6 @@ namespace com.espertech.esper.core.service
 
         public ContextDescriptor ContextDescriptor { get; private set; }
 
-        public byte[] StatementIdBytes { get; private set; }
-
         public PatternSubexpressionPoolStmtSvc PatternSubexpressionPoolSvc { get; private set; }
 
         public bool IsStatelessSelect { get; private set; }
@@ -355,6 +380,27 @@ namespace com.espertech.esper.core.service
         public AgentInstanceScriptContext DefaultAgentInstanceScriptContext { get; private set; }
 
         public AggregationServiceFactoryService AggregationServiceFactoryService { get; private set; }
+
+        public StatementSemiAnonymousTypeRegistry StatementSemiAnonymousTypeRegistry { get; private set; }
+
+        public int Priority { get; private set; }
+
+        public FilterFaultHandlerFactory FilterFaultHandlerFactory { get; set; }
+
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory
+        {
+            get { return _stmtEngineServices.FilterBooleanExpressionFactory; }
+        }
+
+        public EngineSettingsService EngineSettingsService
+        {
+            get { return _stmtEngineServices.EngineSettingsService; }
+        }
+
+        public TimeSourceService TimeSourceService
+        {
+            get { return _stmtEngineServices.TimeSourceService; }
+        }
 
         public StatementEventTypeRef StatementEventTypeRef
         {

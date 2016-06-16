@@ -18,7 +18,7 @@ namespace com.espertech.esper.epl.agg.service
 	/// </summary>
 	public class AggSvcGroupByWTableRollupSingleKeyImpl : AggSvcGroupByWTableBase
 	{
-	    public AggSvcGroupByWTableRollupSingleKeyImpl(TableMetadata tableMetadata, TableColumnMethodPair[] methodPairs, AggregationAccessorSlotPair[] accessors, bool join, TableStateInstanceGroupBy tableStateInstance, int[] targetStates, ExprNode[] accessStateExpr, AggregationAgent[] agents)
+        public AggSvcGroupByWTableRollupSingleKeyImpl(TableMetadata tableMetadata, TableColumnMethodPair[] methodPairs, AggregationAccessorSlotPair[] accessors, bool join, TableStateInstanceGrouped tableStateInstance, int[] targetStates, ExprNode[] accessStateExpr, AggregationAgent[] agents)
             : base(tableMetadata, methodPairs, accessors, join, tableStateInstance, targetStates, accessStateExpr, agents)
         {
 	    }

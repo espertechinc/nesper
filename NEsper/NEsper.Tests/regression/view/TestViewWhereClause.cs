@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.view
             Assert.IsTrue(_listener.GetAndClearIsInvoked());
             
             // invalid return type for filter during compilation time
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             try {
                 _epService.EPAdministrator.CreateEPL("select TheString From SupportBean.win:time(30 seconds) where IntPrimitive group by TheString");
                 Assert.Fail();

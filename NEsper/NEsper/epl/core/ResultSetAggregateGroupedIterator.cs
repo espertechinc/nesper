@@ -21,7 +21,7 @@ using com.espertech.esper.metrics.instrumentation;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Iterator for group-by with aggregation.
+    /// GetEnumerator for group-by with aggregation.
     /// </summary>
     public class ResultSetAggregateGroupedIterator : IEnumerator<EventBean>
     {

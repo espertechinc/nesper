@@ -28,7 +28,7 @@ namespace com.espertech.esper.support.filter
             throw new UnsupportedOperationException();
         }
 
-        public long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, String statementId)
+        public long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, int statementId)
         {
             throw new UnsupportedOperationException();
         }

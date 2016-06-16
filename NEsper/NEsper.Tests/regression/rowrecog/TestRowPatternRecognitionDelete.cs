@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.rowrecog
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType("SupportRecogBean", typeof(SupportRecogBean));
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.rowrecog
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
             config.AddEventType("SupportRecogBean", typeof(SupportRecogBean));
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }

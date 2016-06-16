@@ -1,4 +1,6 @@
-﻿delimiter ;
+delimiter ;
+
+create schema if not exists test;
 
 use test;
 

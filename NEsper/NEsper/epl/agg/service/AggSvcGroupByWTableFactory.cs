@@ -31,8 +31,17 @@ namespace com.espertech.esper.epl.agg.service
         private readonly ExprNode[] _accessStateExpr;
         private readonly AggregationAgent[] _agents;
         private readonly AggregationGroupByRollupDesc _groupByRollupDesc;
-    
-        public AggSvcGroupByWTableFactory(TableMetadata tableMetadata, TableColumnMethodPair[] methodPairs, AggregationAccessorSlotPair[] accessors, bool join, int[] targetStates, ExprNode[] accessStateExpr, AggregationAgent[] agents, AggregationGroupByRollupDesc groupByRollupDesc) {
+
+        public AggSvcGroupByWTableFactory(
+            TableMetadata tableMetadata,
+            TableColumnMethodPair[] methodPairs,
+            AggregationAccessorSlotPair[] accessors,
+            bool join,
+            int[] targetStates,
+            ExprNode[] accessStateExpr,
+            AggregationAgent[] agents,
+            AggregationGroupByRollupDesc groupByRollupDesc)
+        {
             _tableMetadata = tableMetadata;
             _methodPairs = methodPairs;
             _accessors = accessors;
@@ -43,8 +52,9 @@ namespace com.espertech.esper.epl.agg.service
             _groupByRollupDesc = groupByRollupDesc;
         }
     
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService) {
-            var tableState = (TableStateInstanceGroupBy) agentInstanceContext.StatementContext.TableService.GetState(_tableMetadata.TableName, agentInstanceContext.AgentInstanceId);
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber)
+        {
+            var tableState = (TableStateInstanceGrouped) agentInstanceContext.StatementContext.TableService.GetState(_tableMetadata.TableName, agentInstanceContext.AgentInstanceId);
             if (_groupByRollupDesc == null)
             {
                 return new AggSvcGroupByWTableImpl(

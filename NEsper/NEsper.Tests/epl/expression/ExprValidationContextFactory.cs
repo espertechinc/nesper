@@ -26,14 +26,18 @@ namespace com.espertech.esper.epl.expression
         {
             return new ExprValidationContext(
                 null,
-                new MethodResolutionServiceImpl(new EngineImportServiceImpl(false, false, false, false, null, TimeZoneInfo.Local, threadingProfile), null), 
-                null, null, null, null, new SupportExprEvaluatorContext(null), null, null, null, null, null, null,
+                new MethodResolutionServiceImpl(
+                    new EngineImportServiceImpl(false, false, false, false, null, TimeZoneInfo.Local, threadingProfile),
+                    null),
+                null, null, null, null, new SupportExprEvaluatorContext(null), null, null, 1, null, null, null,
                 false, false, false, false, null, false);
         }
 
         public static ExprValidationContext Make(StreamTypeService streamTypeService)
         {
-            return new ExprValidationContext(streamTypeService, null, null, null, null, null, new SupportExprEvaluatorContext(null), null, null, null, null, null, null, false, false, false, false, null, false);
+            return new ExprValidationContext(
+                streamTypeService, null, null, null, null, null, new SupportExprEvaluatorContext(null), null, null, -1,
+                null, null, null, false, false, false, false, null, false);
         }
     }
 }

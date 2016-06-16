@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.db
             _cache = new DataCacheLRUImpl(3);
             for (int i = 0; i < _lists.Length; i++)
             {
-                _lists[i] = new UnindexedEventTable(0);
+                _lists[i] = new UnindexedEventTableImpl(0);
             }
         }
     

@@ -139,7 +139,7 @@ namespace com.espertech.esper.regression.client
         [Test]
 	    public void TestDistinctAndStarParam()
 	    {
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        // test *-parameter
 	        var textTwo = "select concatstring(*) as val from SupportBean";

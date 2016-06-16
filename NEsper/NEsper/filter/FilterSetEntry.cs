@@ -11,7 +11,7 @@ using System.IO;
 namespace com.espertech.esper.filter
 {
     /// <summary>
-    /// Entry to a <seealso cref="FilterSet"/> filter set taken from a <seealso cref="FilterService"/>.
+    /// Record to a <seealso cref="FilterSet"/> filter set taken from a <seealso cref="FilterService"/>.
     /// </summary>
     public class FilterSetEntry
     {

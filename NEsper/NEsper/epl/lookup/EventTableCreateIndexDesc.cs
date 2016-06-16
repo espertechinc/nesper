@@ -24,5 +24,13 @@ namespace com.espertech.esper.epl.lookup
         public IList<IndexedPropDesc> BtreeProps { get; private set; }
 
         public bool IsUnique { get; private set; }
+
+        public static EventTableCreateIndexDesc FromMultiKey(IndexMultiKey multiKey)
+        {
+            return new EventTableCreateIndexDesc(
+                multiKey.HashIndexedProps,
+                multiKey.RangeIndexedProps,
+                multiKey.IsUnique);
+        }
     }
 }

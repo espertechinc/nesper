@@ -16,7 +16,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -42,8 +41,8 @@ namespace com.espertech.esper.epl.view
     
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        public OutputProcessViewConditionFirst(ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext)
-                    : base(resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
+        public OutputProcessViewConditionFirst(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext)
+            : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
         {
             _parent = parent;
     
@@ -54,6 +53,11 @@ namespace com.espertech.esper.epl.view
         public override int NumChangesetRows
         {
             get { return Math.Max(_viewEventsList.Count, _joinEventsSet.Count); }
+        }
+
+        public override OutputCondition OptionalOutputCondition
+        {
+            get { return _outputCondition; }
         }
 
         /// <summary>The Update method is called if the view does not participate in a join. </summary>

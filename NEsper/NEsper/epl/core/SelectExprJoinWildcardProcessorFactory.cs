@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.core
         /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the expression validation failed</throws>
 	    public static SelectExprProcessor Create(
 	        ICollection<int> assignedTypeNumberStack,
-	        string statementId,
+	        int statementId,
 	        string[] streamNames,
 	        EventType[] streamTypes,
 	        EventAdapterService eventAdapterService,
@@ -122,7 +122,7 @@ namespace com.espertech.esper.epl.core
 	            {
 	                resultEventType =
 	                    eventAdapterService.CreateAnonymousMapType(
-	                        statementId + "_join_" + CollectionUtil.ToString(assignedTypeNumberStack, "_"), eventTypeMap);
+	                        statementId + "_join_" + CollectionUtil.ToString(assignedTypeNumberStack, "_"), eventTypeMap, true);
 	            }
 	            else
 	            {

@@ -107,10 +107,18 @@ namespace com.espertech.esper.core.context.util
             get { return _agentInstanceContext.TerminationCallbackRO; }
         }
 
+        public void AddTerminationCallback(Action action) {
+            AddTerminationCallback(new ProxyStopCallback(action));
+        }
+
         public void AddTerminationCallback(StopCallback callback) {
             _agentInstanceContext.AddTerminationCallback(callback);
         }
-    
+
+        public void RemoveTerminationCallback(Action action) {
+            RemoveTerminationCallback(new ProxyStopCallback(action));
+        }
+
         public void RemoveTerminationCallback(StopCallback callback) {
             _agentInstanceContext.RemoveTerminationCallback(callback);
         }
@@ -159,7 +167,7 @@ namespace com.espertech.esper.core.context.util
             get { return _agentInstanceContext.EngineURI; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _agentInstanceContext.StatementId; }
         }

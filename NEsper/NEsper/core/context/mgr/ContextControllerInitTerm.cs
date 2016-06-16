@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.context.mgr
     {
         private readonly int _pathId;
         protected readonly ContextControllerLifecycleCallback ActivationCallback;
-        private readonly ContextControllerInitTermFactory _factory;
+        private readonly ContextControllerInitTermFactoryImpl _factory;
     
         protected ContextControllerCondition StartCondition;
         private readonly IDictionary<Object, EventBean> _distinctContexts;
@@ -53,7 +53,7 @@ namespace com.espertech.esper.core.context.mgr
             get { return _distinctEvaluators; }
         }
 
-        public ContextControllerInitTerm(int pathId, ContextControllerLifecycleCallback lifecycleCallback, ContextControllerInitTermFactory factory)
+        public ContextControllerInitTerm(int pathId, ContextControllerLifecycleCallback lifecycleCallback, ContextControllerInitTermFactoryImpl factory)
         {
             _pathId = pathId;
             ActivationCallback = lifecycleCallback;
@@ -68,7 +68,7 @@ namespace com.espertech.esper.core.context.mgr
     
         public void ImportContextPartitions(ContextControllerState state, int pathIdToUse, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector)
         {
-            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector);
+            InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector, true);
         }
     
         public void DeletePath(ContextPartitionIdentifier identifier)
@@ -88,7 +88,7 @@ namespace com.espertech.esper.core.context.mgr
         public void Activate(EventBean optionalTriggeringEvent, IDictionary<String, Object> optionalTriggeringPattern, ContextControllerState controllerState, ContextInternalFilterAddendum filterAddendum, int? importPathId)
         {
             if (_factory.FactoryContext.NestingLevel == 1) {
-                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.StateCache, _factory.FactoryContext.OutermostContextName);
+                controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.FactoryContext.StateCache, _factory.FactoryContext.OutermostContextName);
             }
 
             bool currentlyRunning;
@@ -113,7 +113,7 @@ namespace com.espertech.esper.core.context.mgr
                     EndConditions.Put(endEndpoint, new ContextControllerInitTermInstance(instanceHandle, null, startTime, endTime, CurrentSubpathId));
     
                     var state = new ContextControllerInitTermState(_factory.FactoryContext.ServicesContext.SchedulingService.Time, builtinProps);
-                    _factory.StateCache.AddContextPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId, CurrentSubpathId, instanceHandle.ContextPartitionOrPathId, state, _factory.Binding);
+                    _factory.FactoryContext.StateCache.AddContextPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId, CurrentSubpathId, instanceHandle.ContextPartitionOrPathId, state, _factory.Binding);
                 }
     
                 // non-overlapping and not currently running, or overlapping
@@ -136,7 +136,7 @@ namespace com.espertech.esper.core.context.mgr
             }
     
             int pathIdToUse = importPathId ?? _pathId;
-            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse, null);
+            InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse, null, false);
         }
     
         protected ContextControllerCondition MakeEndpoint(ContextDetailCondition endpoint, ContextInternalFilterAddendum filterAddendum, bool isStartEndpoint, int subPathId)
@@ -239,10 +239,9 @@ namespace com.espertech.esper.core.context.mgr
                         if (!_factory.ContextDetailInitiatedTerminated.IsOverlapping)
                         {
                             StartCondition.Activate(optionalTriggeringEvent, null, 0, false);
-                            startNow = StartCondition is ContextControllerConditionImmediate;
                         }
 
-                        _factory.StateCache.RemoveContextPath(
+                        _factory.FactoryContext.StateCache.RemoveContextPath(
                             _factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId,
                             instance.SubPathId);
                     }
@@ -303,7 +302,7 @@ namespace com.espertech.esper.core.context.mgr
                         var state =
                             new ContextControllerInitTermState(
                                 _factory.FactoryContext.ServicesContext.SchedulingService.Time, builtinProperties);
-                        _factory.StateCache.AddContextPath(
+                        _factory.FactoryContext.StateCache.AddContextPath(
                             _factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId,
                             CurrentSubpathId, instanceHandle.ContextPartitionOrPathId, state, _factory.Binding);
                     }
@@ -403,7 +402,7 @@ namespace com.espertech.esper.core.context.mgr
                 }
             }
             EndConditions.Clear();
-            _factory.StateCache.RemoveContextParentPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId);
+            _factory.FactoryContext.StateCache.RemoveContextParentPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId);
         }
 
         internal static IDictionary<String, Object> GetBuiltinProperties(String contextName, long startTime, long? endTime, IDictionary<String, Object> startEndpointData)
@@ -415,13 +414,15 @@ namespace com.espertech.esper.core.context.mgr
             props.PutAll(startEndpointData);
             return props;
         }
-    
-        private void InitializeFromState(EventBean optionalTriggeringEvent,
-                                         IDictionary<String, Object> optionalTriggeringPattern,
-                                         ContextInternalFilterAddendum filterAddendum,
-                                         ContextControllerState controllerState,
-                                         int pathIdToUse,
-                                         AgentInstanceSelector agentInstanceSelector)
+
+        private void InitializeFromState(
+            EventBean optionalTriggeringEvent,
+            IDictionary<String, Object> optionalTriggeringPattern,
+            ContextInternalFilterAddendum filterAddendum,
+            ContextControllerState controllerState,
+            int pathIdToUse,
+            AgentInstanceSelector agentInstanceSelector,
+            bool loadingExistingState)
         {
             var states = controllerState.States;
             var childContexts = ContextControllerStateUtil.GetChildContexts(_factory.FactoryContext, pathIdToUse, states);
@@ -449,7 +450,7 @@ namespace com.espertech.esper.core.context.mgr
                     if (existing != null) {
                         ContextControllerInstanceHandle existingHandle = existing.Value.Value.InstanceHandle;
                         if (existingHandle != null) {
-                            ActivationCallback.ContextPartitionNavigate(existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value, filterAddendum, agentInstanceSelector, entry.Value.Blob);
+                            ActivationCallback.ContextPartitionNavigate(existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value, filterAddendum, agentInstanceSelector, entry.Value.Blob, loadingExistingState);
                             continue;
                         }
                     }
@@ -465,7 +466,7 @@ namespace com.espertech.esper.core.context.mgr
                 var contextPartitionId = entry.Value.OptionalContextPartitionId;
     
                 var assignedSubPathId = !controllerState.IsImported ? entry.Key.SubPath : ++CurrentSubpathId;
-                var instanceHandle = ActivationCallback.ContextPartitionInstantiate(contextPartitionId, assignedSubPathId, entry.Key.SubPath, this, optionalTriggeringEvent, optionalTriggeringPattern, null, builtinProps, controllerState, filterAddendum, _factory.FactoryContext.IsRecoveringResilient, entry.Value.State);
+                var instanceHandle = ActivationCallback.ContextPartitionInstantiate(contextPartitionId, assignedSubPathId, entry.Key.SubPath, this, optionalTriggeringEvent, optionalTriggeringPattern, null, builtinProps, controllerState, filterAddendum, loadingExistingState || _factory.FactoryContext.IsRecoveringResilient, entry.Value.State);
                 EndConditions.Put(endEndpoint, new ContextControllerInitTermInstance(instanceHandle, state.PatternData, startTime, endTime, assignedSubPathId));
     
                 if (entry.Key.SubPath > maxSubpathId) {

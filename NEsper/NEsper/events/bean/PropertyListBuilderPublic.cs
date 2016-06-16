@@ -18,9 +18,9 @@ namespace com.espertech.esper.events.bean
     /// public field as the exposed event properties, plus any explicitly configured
     /// props.
     /// </summary>
-    public class PropertyListBuilderPublic : IPropertyListBuilder
+    public class PropertyListBuilderPublic : PropertyListBuilder
     {
-        private readonly ConfigurationEventTypeLegacy legacyConfig;
+        private readonly ConfigurationEventTypeLegacy _legacyConfig;
     
         /// <summary>
         /// Ctor.
@@ -32,13 +32,13 @@ namespace com.espertech.esper.events.bean
             {
                 throw new ArgumentException("Required configuration not passed");
             }
-            this.legacyConfig = legacyConfig;
+            this._legacyConfig = legacyConfig;
         }
     
         public IList<InternalEventPropDescriptor> AssessProperties(Type clazz)
         {
             var result = new List<InternalEventPropDescriptor>();
-            PropertyListBuilderExplicit.GetExplicitProperties(result, clazz, legacyConfig);
+            PropertyListBuilderExplicit.GetExplicitProperties(result, clazz, _legacyConfig);
             AddPublicFields(result, clazz);
             AddPublicMethods(result, clazz);
             return result;

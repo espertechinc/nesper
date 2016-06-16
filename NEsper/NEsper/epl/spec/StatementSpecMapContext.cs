@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
@@ -45,15 +43,15 @@ namespace com.espertech.esper.epl.spec
         /// <param name="schedulingService">The scheduling service.</param>
         /// <param name="engineURI">The engine URI.</param>
         /// <param name="patternNodeFactory">The pattern node factory.</param>
-        /// <param name="namedWindowService">The named window service.</param>
+        /// <param name="namedWindowMgmtService">The named window service.</param>
         /// <param name="contextManagementService">The context management service.</param>
         /// <param name="exprDeclaredService">The expr declared service.</param>
         /// <param name="contextDescriptor">optional context description</param>
         /// <param name="tableService">The table service.</param>
-	    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, string engineURI, PatternNodeFactory patternNodeFactory, NamedWindowService namedWindowService, ContextManagementService contextManagementService, ExprDeclaredService exprDeclaredService, ContextDescriptor contextDescriptor, TableService tableService)
+        public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, string engineURI, PatternNodeFactory patternNodeFactory, NamedWindowMgmtService namedWindowMgmtService, ContextManagementService contextManagementService, ExprDeclaredService exprDeclaredService, ContextDescriptor contextDescriptor, TableService tableService)
 	    {
 	        PlugInAggregations = new LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>();
-	        TableExpressions = new List<ExprTableAccessNode>(1);
+	        TableExpressions = new HashSet<ExprTableAccessNode>();
 	        EngineImportService = engineImportService;
 	        VariableService = variableService;
 	        Configuration = configuration;
@@ -61,7 +59,7 @@ namespace com.espertech.esper.epl.spec
 	        SchedulingService = schedulingService;
 	        EngineURI = engineURI;
 	        PatternNodeFactory = patternNodeFactory;
-	        NamedWindowService = namedWindowService;
+	        NamedWindowMgmtService = namedWindowMgmtService;
 	        ContextManagementService = contextManagementService;
 	        ExprDeclaredService = exprDeclaredService;
 	        ContextDescriptor = contextDescriptor;
@@ -104,7 +102,7 @@ namespace com.espertech.esper.epl.spec
 
 	    public PatternNodeFactory PatternNodeFactory { get; private set; }
 
-	    public NamedWindowService NamedWindowService { get; private set; }
+	    public NamedWindowMgmtService NamedWindowMgmtService { get; private set; }
 
 	    public IDictionary<string, ExpressionDeclItem> ExpressionDeclarations
 	    {
@@ -157,6 +155,6 @@ namespace com.espertech.esper.epl.spec
 
 	    public TableService TableService { get; private set; }
 
-	    public IList<ExprTableAccessNode> TableExpressions { get; private set; }
+	    public ISet<ExprTableAccessNode> TableExpressions { get; private set; }
 	}
 } // end of namespace

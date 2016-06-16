@@ -10,98 +10,55 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.epl.view
 {
-    public abstract class OutputProcessViewBaseWAfter : OutputProcessViewBase
-    {
-        private readonly int? _afterConditionNumberOfEvents;
-        private readonly long? _afterConditionTime;
-        private int _afterConditionEventsFound;
+	public abstract class OutputProcessViewBaseWAfter : OutputProcessViewBase
+	{
+	    private readonly OutputProcessViewAfterState _afterConditionState;
 
-        protected bool IsAfterConditionSatisfied;
-
-        protected OutputProcessViewBaseWAfter(ResultSetProcessor resultSetProcessor,
-                                              long? afterConditionTime,
-                                              int? afterConditionNumberOfEvents,
-                                              bool afterConditionSatisfied)
-            : base(resultSetProcessor)
+	    protected OutputProcessViewBaseWAfter(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied)
+	        : base(resultSetProcessor)
         {
-            _afterConditionTime = afterConditionTime;
-            _afterConditionNumberOfEvents = afterConditionNumberOfEvents;
-            IsAfterConditionSatisfied = afterConditionSatisfied;
-        }
+	        _afterConditionState = resultSetProcessorHelperFactory.MakeOutputConditionAfter(afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, agentInstanceContext);
+	    }
 
-        /// <summary>
-        /// Returns true if the after-condition is satisfied.
-        /// </summary>
-        /// <param name="newEvents">is the view new events</param>
-        /// <param name="statementContext">The statement context.</param>
-        /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(EventBean[] newEvents,
-                                        StatementContext statementContext)
+	    /// <summary>
+	    /// Returns true if the after-condition is satisfied.
+	    /// </summary>
+	    /// <param name="newEvents">is the view new events</param>
+	    /// <returns>indicator for output condition</returns>
+	    public bool CheckAfterCondition(EventBean[] newEvents, StatementContext statementContext)
+	    {
+	        return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
+	    }
+
+	    /// <summary>
+	    /// Returns true if the after-condition is satisfied.
+	    /// </summary>
+	    /// <param name="newEvents">is the join new events</param>
+	    /// <returns>indicator for output condition</returns>
+	    public bool CheckAfterCondition(ISet<MultiKey<EventBean>> newEvents, StatementContext statementContext)
+	    {
+	        return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);
+	    }
+
+	    /// <summary>
+	    /// Returns true if the after-condition is satisfied.
+	    /// </summary>
+	    /// <param name="newOldEvents">is the new and old events pair</param>
+	    /// <returns>indicator for output condition</returns>
+	    public bool CheckAfterCondition(UniformPair<EventBean[]> newOldEvents, StatementContext statementContext)
+	    {
+	        return _afterConditionState.CheckUpdateAfterCondition(newOldEvents, statementContext);
+	    }
+
+	    public override void Stop()
         {
-            return IsAfterConditionSatisfied ||
-                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Length, statementContext);
-        }
-
-        /// <summary>
-        /// Returns true if the after-condition is satisfied.
-        /// </summary>
-        /// <param name="newEvents">is the join new events</param>
-        /// <param name="statementContext">The statement context.</param>
-        /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(ICollection<MultiKey<EventBean>> newEvents,
-                                        StatementContext statementContext)
-        {
-            return IsAfterConditionSatisfied ||
-                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Count, statementContext);
-        }
-
-        /// <summary>
-        /// Returns true if the after-condition is satisfied.
-        /// </summary>
-        /// <param name="newOldEvents">is the new and old events pair</param>
-        /// <param name="statementContext">The statement context.</param>
-        /// <returns>indicator for output condition</returns>
-        public bool CheckAfterCondition(UniformPair<EventBean[]> newOldEvents,
-                                        StatementContext statementContext)
-        {
-            return IsAfterConditionSatisfied ||
-                   CheckAfterCondition(
-                       newOldEvents == null ? 0 : (newOldEvents.First == null ? 0 : newOldEvents.First.Length),
-                       statementContext);
-        }
-
-        private bool CheckAfterCondition(int numOutputEvents,
-                                         StatementContext statementContext)
-        {
-            if (_afterConditionTime != null)
-            {
-                long time = statementContext.TimeProvider.Time;
-                if (time < _afterConditionTime)
-                {
-                    return false;
-                }
-
-                IsAfterConditionSatisfied = true;
-                return true;
-            }
-            if (_afterConditionNumberOfEvents != null)
-            {
-                _afterConditionEventsFound += numOutputEvents;
-                if (_afterConditionEventsFound <= _afterConditionNumberOfEvents)
-                {
-                    return false;
-                }
-
-                IsAfterConditionSatisfied = true;
-                return true;
-            }
-            IsAfterConditionSatisfied = true;
-            return true;
-        }
-    }
-}
+	        _afterConditionState.Destroy();
+	    }
+	}
+} // end of namespace

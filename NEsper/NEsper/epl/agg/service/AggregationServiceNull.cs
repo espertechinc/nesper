@@ -20,7 +20,6 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggregationServiceNull : AggregationService
     {
-
         public AggregationServiceNull()
         {
         }
@@ -94,6 +93,10 @@ namespace com.espertech.esper.epl.agg.service
         public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
+        }
+
+        public void Stop()
+        {
         }
     }
 }

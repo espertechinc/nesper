@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.events
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddEventType("TestXMLSchemaType", eventTypeMeta);
     
-            _epService = EPServiceProviderManager.GetProvider("TestSchemaXML", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
     

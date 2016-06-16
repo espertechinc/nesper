@@ -35,9 +35,10 @@ namespace com.espertech.esper.core.start
                 new Dictionary<ExprTableAccessNode, ExprTableAccessEvalStrategy>();
             foreach (var tableNode in tableNodes)
             {
-                var state = services.TableService.GetState(tableNode.TableName, agentInstanceContext.AgentInstanceId);
-                var tableMetadata = services.TableService.GetTableMetadata(tableNode.TableName);
-                var strategy = ExprTableEvalStrategyFactory.GetTableAccessEvalStrategy(agentInstanceContext.StatementContext.IsWritesToTables, tableNode, state, tableMetadata);
+                var writesToTables = agentInstanceContext.StatementContext.IsWritesToTables;
+                TableAndLockProvider provider = services.TableService.GetStateProvider(tableNode.TableName, agentInstanceContext.AgentInstanceId, writesToTables);
+                TableMetadata tableMetadata = services.TableService.GetTableMetadata(tableNode.TableName);
+                ExprTableAccessEvalStrategy strategy = ExprTableEvalStrategyFactory.GetTableAccessEvalStrategy(tableNode, provider, tableMetadata);
                 strategies.Put(tableNode, strategy);
             }
 

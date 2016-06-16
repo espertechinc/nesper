@@ -60,18 +60,18 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="rollupLevelDesc">The rollup level desc.</param>
         /// <param name="topGroupAggregators">The top group aggregators.</param>
         /// <param name="topGroupStates">The top group states.</param>
-        public AggSvcGroupByRefcountedWAccessRollupImpl(ExprEvaluator[] evaluators,
-                                                        AggregationMethodFactory[] prototypes,
-                                                        Object groupKeyBinding,
-                                                        MethodResolutionService methodResolutionService,
-                                                        AggregationAccessorSlotPair[] accessors,
-                                                        AggregationStateFactory[] accessAggregations,
-                                                        bool isJoin,
-                                                        AggregationGroupByRollupDesc rollupLevelDesc,
-                                                        AggregationMethod[] topGroupAggregators,
-                                                        AggregationState[] topGroupStates)
-
-                    : base(evaluators, prototypes, groupKeyBinding)
+        public AggSvcGroupByRefcountedWAccessRollupImpl(
+            ExprEvaluator[] evaluators,
+            AggregationMethodFactory[] prototypes,
+            Object groupKeyBinding,
+            MethodResolutionService methodResolutionService,
+            AggregationAccessorSlotPair[] accessors,
+            AggregationStateFactory[] accessAggregations,
+            bool isJoin,
+            AggregationGroupByRollupDesc rollupLevelDesc,
+            AggregationMethod[] topGroupAggregators,
+            AggregationState[] topGroupStates)
+            : base(evaluators, prototypes, groupKeyBinding)
         {
             _methodResolutionService = methodResolutionService;
     
@@ -136,7 +136,7 @@ namespace com.espertech.esper.epl.agg.service
                 if (row == null)
                 {
                     groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupKey, GroupKeyBinding, level);
-                    groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupKey, GroupKeyBinding, level);
+                    groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupKey, GroupKeyBinding, level, null);
                     row = new AggregationMethodPairRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, groupAggregators, groupStates);
                     if (!level.IsAggregationTop) {
                         _aggregatorsPerGroup[level.AggregationOffset].Put(groupKey, row);
@@ -207,7 +207,7 @@ namespace com.espertech.esper.epl.agg.service
                 else
                 {
                     groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupKey, GroupKeyBinding, level);
-                    groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupKey, GroupKeyBinding, level);
+                    groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupKey, GroupKeyBinding, level, null);
                     row = new AggregationMethodPairRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, groupAggregators, groupStates);
                     if (!level.IsAggregationTop) {
                         _aggregatorsPerGroup[level.AggregationOffset].Put(groupKey, row);
@@ -265,7 +265,7 @@ namespace com.espertech.esper.epl.agg.service
     
             if (_currentAggregatorMethods == null) {
                 _currentAggregatorMethods = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, rollupLevel);
-                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, rollupLevel);
+                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, rollupLevel, null);
             }
     
             _currentGroupKey = groupByKey;

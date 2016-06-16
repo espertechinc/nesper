@@ -34,8 +34,18 @@ namespace com.espertech.esper.core.context.mgr
         private readonly FastMethod _fastMethod;
         private readonly ExprEvaluator[] _evaluators;
         private readonly int _granularity;
-    
-        public ContextControllerHashedGetterSingleRow(String statementName, String functionName, Pair<Type, EngineImportSingleRowDesc> func, IList<ExprNode> parameters, int granularity, MethodResolutionService methodResolutionService, EventType eventType, EventAdapterService eventAdapterService, String statementId, TableService tableService)
+
+        public ContextControllerHashedGetterSingleRow(
+            string statementName,
+            string functionName,
+            Pair<Type, EngineImportSingleRowDesc> func,
+            IList<ExprNode> parameters,
+            int granularity,
+            MethodResolutionService methodResolutionService,
+            EventType eventType,
+            EventAdapterService eventAdapterService,
+            int statementId,
+            TableService tableService)
         {
             ExprNodeUtilMethodDesc staticMethodDesc = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
                 func.First.Name, null, 
@@ -83,7 +93,8 @@ namespace com.espertech.esper.core.context.mgr
             return 0;
         }
     
-        public bool IsExistsProperty(EventBean eventBean) {
+        public bool IsExistsProperty(EventBean eventBean)
+        {
             return false;
         }
     

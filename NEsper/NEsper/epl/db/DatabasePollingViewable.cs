@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
@@ -46,6 +47,7 @@ namespace com.espertech.esper.epl.db
         private ExprEvaluator[] _evaluators;
         private ICollection<int> _subordinateStreams;
         private ExprEvaluatorContext _exprEvaluatorContext;
+        private StatementContext _statementContext;
 
         private static readonly EventBean[][] NULL_ROWS;
 
@@ -57,7 +59,7 @@ namespace com.espertech.esper.epl.db
 
         private class IteratorIndexingStrategy : PollResultIndexingStrategy
         {
-            public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache)
+            public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
             {
                 return new EventTable[]
                 {
@@ -110,6 +112,17 @@ namespace com.espertech.esper.epl.db
         }
 
         /// <summary>
+        /// Returns the optional data cache.
+        /// </summary>
+        /// <value>
+        /// The optional data cache.
+        /// </value>
+        public DataCache OptionalDataCache
+        {
+            get { return _dataCache; }
+        }
+
+        /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="myStreamNumber">is the stream number of the view</param>
@@ -156,53 +169,39 @@ namespace com.espertech.esper.epl.db
         /// <param name="engineURI">The engine URI.</param>
         /// <param name="sqlParameters">The SQL parameters.</param>
         /// <param name="eventAdapterService">The event adapter service.</param>
-        /// <param name="statementName">Name of the statement.</param>
-        /// <param name="statementId">The statement id.</param>
-        /// <param name="annotations">The annotations.</param>
+        /// <param name="statementContext">The statement context</param>
         /// <throws>  ExprValidationException is thrown to indicate an exception in validating the view </throws>
-        public void Validate(
-            EngineImportService engineImportService,
-            StreamTypeService streamTypeService,
-            MethodResolutionService methodResolutionService,
-            TimeProvider timeProvider,
-            VariableService variableService,
-            TableService tableService,
-            ScriptingService scriptingService,
-            ExprEvaluatorContext exprEvaluatorContext,
-            ConfigurationInformation configSnapshot,
-            SchedulingService schedulingService,
-            string engineURI,
-            IDictionary<int, IList<ExprNode>> sqlParameters,
-            EventAdapterService eventAdapterService,
-            string statementName,
-            string statementId,
-            Attribute[] annotations)
+        public void Validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, TableService tableService, ScriptingService scriptingService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot, SchedulingService schedulingService, string engineURI, IDictionary<int, IList<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, StatementContext statementContext)
         {
+            _statementContext = statementContext;
             _evaluators = new ExprEvaluator[_inputParameters.Count];
             _subordinateStreams = new SortedSet<int>();
             _exprEvaluatorContext = exprEvaluatorContext;
 
-            int count = 0;
+            var count = 0;
             var validationContext = new ExprValidationContext(
                 streamTypeService, methodResolutionService, null, timeProvider, variableService, tableService,
-                exprEvaluatorContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService,
-                false, false, true, false, null, false);
+                exprEvaluatorContext, eventAdapterService,
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations, null,
+                scriptingService, false, false, true, false, null, false);
 
-            foreach (string inputParam in _inputParameters)
+            foreach (var inputParam in _inputParameters)
             {
-                ExprNode raw = FindSQLExpressionNode(_myStreamNumber, count, sqlParameters);
+                var raw = FindSQLExpressionNode(_myStreamNumber, count, sqlParameters);
                 if (raw == null)
                 {
                     throw new ExprValidationException(
                         "Internal error find expression for historical stream parameter " + count + " stream " +
                         _myStreamNumber);
                 }
-                ExprNode evaluator = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.DATABASEPOLL, raw, validationContext);
+                var evaluator = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.DATABASEPOLL, raw, validationContext);
                 _evaluators[count++] = evaluator.ExprEvaluator;
 
-                ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+                var visitor = new ExprNodeIdentifierCollectVisitor();
                 visitor.Visit(evaluator);
-                foreach (ExprIdentNode identNode in visitor.ExprProperties)
+                foreach (var identNode in visitor.ExprProperties)
                 {
                     if (identNode.StreamId == _myStreamNumber)
                     {
@@ -229,21 +228,21 @@ namespace com.espertech.esper.epl.db
         /// </returns>
         public EventTable[][] Poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy, ExprEvaluatorContext exprEvaluatorContext)
         {
-            DataCache localDataCache = _dataCacheThreadLocal.GetOrCreate();
-            bool strategyStarted = false;
+            var localDataCache = _dataCacheThreadLocal.GetOrCreate();
+            var strategyStarted = false;
 
-            EventTable[][] resultPerInputRow = new EventTable[lookupEventsPerStream.Length][];
+            var resultPerInputRow = new EventTable[lookupEventsPerStream.Length][];
 
             // Get input parameters for each row
-            for (int row = 0; row < lookupEventsPerStream.Length; row++)
+            for (var row = 0; row < lookupEventsPerStream.Length; row++)
             {
-                Object[] lookupValues = new Object[_inputParameters.Count];
+                var lookupValues = new Object[_inputParameters.Count];
 
                 // Build lookup keys
-                for (int valueNum = 0; valueNum < _inputParameters.Count; valueNum++)
+                for (var valueNum = 0; valueNum < _inputParameters.Count; valueNum++)
                 {
-                    EventBean[] eventsPerStream = lookupEventsPerStream[row];
-                    Object lookupValue = _evaluators[valueNum].Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+                    var eventsPerStream = lookupEventsPerStream[row];
+                    var lookupValue = _evaluators[valueNum].Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                     lookupValues[valueNum] = lookupValue;
                 }
 
@@ -258,7 +257,7 @@ namespace com.espertech.esper.epl.db
                 // try the connection cache
                 if (result == null)
                 {
-                    EventTable[] multi = _dataCache.GetCached(lookupValues);
+                    var multi = _dataCache.GetCached(lookupValues);
                     if (multi != null) {
                         result = multi;
                         if (localDataCache != null)
@@ -286,10 +285,10 @@ namespace com.espertech.esper.epl.db
                         }
 
                         // Poll using the polling execution strategy and lookup values
-                        IList<EventBean> pollResult = _pollExecStrategy.Poll(lookupValues, exprEvaluatorContext);
+                        var pollResult = _pollExecStrategy.Poll(lookupValues, exprEvaluatorContext);
 
                         // index the result, if required, using an indexing strategy
-                        EventTable[] indexTable = indexingStrategy.Index(pollResult, _dataCache.IsActive);
+                        var indexTable = indexingStrategy.Index(pollResult, _dataCache.IsActive, _statementContext);
 
                         // assign to row
                         resultPerInputRow[row] = indexTable;
@@ -388,13 +387,13 @@ namespace com.espertech.esper.epl.db
         /// </returns>
         public IEnumerator<EventBean> GetEnumerator()
         {
-            EventTable[][] result = Poll(NULL_ROWS, _iteratorIndexingStrategy, _exprEvaluatorContext);
+            var result = Poll(NULL_ROWS, _iteratorIndexingStrategy, _exprEvaluatorContext);
 
-            foreach (EventTable[] tableList in result)
+            foreach (var tableList in result)
             {
-                foreach (EventTable table in tableList)
+                foreach (var table in tableList)
                 {
-                    foreach (EventBean e in table)
+                    foreach (var e in table)
                     {
                         yield return e;
                     }
@@ -422,7 +421,7 @@ namespace com.espertech.esper.epl.db
             {
                 return null;
             }
-            IList<ExprNode> paramList = sqlParameters.Get(myStreamNumber);
+            var paramList = sqlParameters.Get(myStreamNumber);
             if ((paramList == null) || (paramList.IsEmpty()) || (paramList.Count < (count + 1)))
             {
                 return null;

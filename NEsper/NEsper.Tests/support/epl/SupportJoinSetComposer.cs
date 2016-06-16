@@ -48,5 +48,10 @@ namespace com.espertech.esper.support.epl
         {
             throw new System.NotImplementedException();
         }
+
+        public bool AllowsInit
+        {
+            get { return true; }
+        }
     }
 }

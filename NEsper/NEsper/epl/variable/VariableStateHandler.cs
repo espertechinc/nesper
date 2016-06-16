@@ -15,17 +15,26 @@ using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.epl.variable
 {
-    /// <summary>Interface for a plug-in to <seealso cref="VariableService" /> to handle variable persistent state. </summary>
+    /// <summary>
+    /// Interface for a plug-in to <seealso cref="VariableService" /> to handle variable persistent state.
+    /// </summary>
     public interface VariableStateHandler
     {
-        /// <summary>Returns the current variable state plus Boolean.TRUE if there is a current state since the variable may have the value of null; returns Boolean.FALSE and null if there is no current state </summary>
+        /// <summary>
+        /// Returns the current variable state plus true if there is a current state since the variable may have 
+        /// the value of null; returns false and null if there is no current state
+        /// </summary>
         /// <param name="variableName">variable name</param>
         /// <param name="variableNumber">number of the variable</param>
+        /// <param name="agentInstanceId">The agent instance identifier.</param>
         /// <param name="type">type of the variable</param>
         /// <param name="eventType">event type or null if not a variable that represents an event</param>
         /// <param name="statementExtContext">for caches etc.</param>
-        /// <returns>indicator whether the variable is known and it's state, or whether it doesn't have state (false)</returns>
-        Pair<Boolean, Object> GetHasState(String variableName, int variableNumber, int agentInstanceId, Type type, EventType eventType, StatementExtensionSvcContext statementExtContext);
+        /// <param name="isConstant">if set to <c>true</c> [is constant].</param>
+        /// <returns>
+        /// indicator whether the variable is known and it's state, or whether it doesn't have state (false)
+        /// </returns>
+        Pair<bool, object> GetHasState(string variableName, int variableNumber, int agentInstanceId, Type type, EventType eventType, StatementExtensionSvcContext statementExtContext, bool isConstant);
     
         /// <summary>Sets the new variable value </summary>
         /// <param name="variableName">name of the variable</param>

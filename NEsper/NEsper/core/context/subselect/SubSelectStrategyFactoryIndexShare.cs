@@ -32,7 +32,7 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.core.context.subselect
 {
     /// <summary>
-    /// Entry holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
+    /// Record holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
     /// </summary>
     public class SubSelectStrategyFactoryIndexShare : SubSelectStrategyFactory
     {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.core.context.subselect
 
         public SubSelectStrategyFactoryIndexShare(
             string statementName,
-            string statementId,
+            int statementId,
             int subqueryNum,
             EventType[] outerEventTypesSelect,
             NamedWindowProcessor optionalNamedWindowProcessor,
@@ -104,73 +104,111 @@ namespace com.espertech.esper.core.context.subselect
     
             SubordinateQueryPlannerUtil.QueryPlanLogOnSubq(isLogging, log, _queryPlan, subqueryNum, annotations);
         }
-    
-        public SubSelectStrategyRealization Instantiate(EPServicesContext services,
-                                                        Viewable viewableRoot,
-                                                        AgentInstanceContext agentInstanceContext,
-                                                        IList<StopCallback> stopCallbackList)
+
+        public SubSelectStrategyRealization Instantiate(
+            EPServicesContext services,
+            Viewable viewableRoot,
+            AgentInstanceContext agentInstanceContext,
+            IList<StopCallback> stopCallbackList,
+            int subqueryNumber,
+            bool isRecoveringResilient)
         {
             SubselectAggregationPreprocessorBase subselectAggregationPreprocessor = null;
-    
+
             AggregationService aggregationService = null;
-            if (_aggregationServiceFactory != null) {
-                aggregationService = _aggregationServiceFactory.AggregationServiceFactory.MakeService(agentInstanceContext, agentInstanceContext.StatementContext.MethodResolutionService);
-                if (_groupByKeys == null) {
-                    if (_filterExprEval == null) {
-                        subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredUngrouped(aggregationService, _filterExprEval, null);
+            if (_aggregationServiceFactory != null)
+            {
+                aggregationService = _aggregationServiceFactory.AggregationServiceFactory.MakeService(
+                    agentInstanceContext, agentInstanceContext.StatementContext.MethodResolutionService, true, subqueryNumber);
+                if (_groupByKeys == null)
+                {
+                    if (_filterExprEval == null)
+                    {
+                        subselectAggregationPreprocessor =
+                            new SubselectAggregationPreprocessorUnfilteredUngrouped(
+                                aggregationService, _filterExprEval, null);
                     }
-                    else {
-                        subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredUngrouped(aggregationService, _filterExprEval, null);
+                    else
+                    {
+                        subselectAggregationPreprocessor =
+                            new SubselectAggregationPreprocessorFilteredUngrouped(aggregationService, _filterExprEval, null);
                     }
                 }
-                else {
-                    if (_filterExprEval == null) {
-                        subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredGrouped(aggregationService, _filterExprEval, _groupByKeys);
+                else
+                {
+                    if (_filterExprEval == null)
+                    {
+                        subselectAggregationPreprocessor =
+                            new SubselectAggregationPreprocessorUnfilteredGrouped(
+                                aggregationService, _filterExprEval, _groupByKeys);
                     }
-                    else {
-                        subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredGrouped(aggregationService, _filterExprEval, _groupByKeys);
+                    else
+                    {
+                        subselectAggregationPreprocessor =
+                            new SubselectAggregationPreprocessorFilteredGrouped(
+                                aggregationService, _filterExprEval, _groupByKeys);
                     }
                 }
             }
-    
+
             SubordTableLookupStrategy subqueryLookup;
-            if (_optionalNamedWindowProcessor != null) {
-                NamedWindowProcessorInstance instance = _optionalNamedWindowProcessor.GetProcessorInstance(agentInstanceContext);
-                if (_queryPlan == null) {
-                    if (instance.RootViewInstance.IsQueryPlanLogging && NamedWindowRootView.QueryPlanLog.IsInfoEnabled) {
+            if (_optionalNamedWindowProcessor != null)
+            {
+                NamedWindowProcessorInstance instance =
+                    _optionalNamedWindowProcessor.GetProcessorInstance(agentInstanceContext);
+                if (_queryPlan == null)
+                {
+                    if (instance.RootViewInstance.IsQueryPlanLogging && NamedWindowRootView.QueryPlanLog.IsInfoEnabled)
+                    {
                         NamedWindowRootView.QueryPlanLog.Info("shared, full table scan");
                     }
-                    subqueryLookup = new SubordFullTableScanLookupStrategyLocking(instance.RootViewInstance.DataWindowContents, agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock);
+                    subqueryLookup =
+                        new SubordFullTableScanLookupStrategyLocking(
+                            instance.RootViewInstance.DataWindowContents,
+                            agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock);
                 }
-                else {
+                else
+                {
                     EventTable[] tables = null;
-                    if (!_optionalNamedWindowProcessor.IsVirtualDataWindow) {
-                        tables = SubordinateQueryPlannerUtil.RealizeTables(_queryPlan.IndexDescs, instance.RootViewInstance.EventType, instance.RootViewInstance.IndexRepository, instance.RootViewInstance.DataWindowContents);
+                    if (!_optionalNamedWindowProcessor.IsVirtualDataWindow)
+                    {
+                        tables = SubordinateQueryPlannerUtil.RealizeTables(
+                            _queryPlan.IndexDescs, instance.RootViewInstance.EventType,
+                            instance.RootViewInstance.IndexRepository,
+                            instance.RootViewInstance.DataWindowContents, agentInstanceContext,
+                            isRecoveringResilient);
                     }
-                    SubordTableLookupStrategy strategy = _queryPlan.LookupStrategyFactory.MakeStrategy(tables, instance.RootViewInstance.VirtualDataWindow);
-                    subqueryLookup = new SubordIndexedTableLookupStrategyLocking(strategy, instance.TailViewInstance.AgentInstanceContext.AgentInstanceLock);
+                    SubordTableLookupStrategy strategy = _queryPlan.LookupStrategyFactory.MakeStrategy(
+                        tables, instance.RootViewInstance.VirtualDataWindow);
+                    subqueryLookup = new SubordIndexedTableLookupStrategyLocking(
+                        strategy, instance.TailViewInstance.AgentInstanceContext.AgentInstanceLock);
                 }
             }
-            else {
-                TableStateInstance state = _tableService.GetState(_optionalTableMetadata.TableName, agentInstanceContext.AgentInstanceId);
-                ILockable iLock = agentInstanceContext.StatementContext.IsWritesToTables ?
-                        state.TableLevelRWLock.WriteLock :
-                        state.TableLevelRWLock.ReadLock;
-                if (_queryPlan == null) {
+            else
+            {
+                TableStateInstance state = _tableService.GetState(
+                    _optionalTableMetadata.TableName, agentInstanceContext.AgentInstanceId);
+                ILockable iLock = agentInstanceContext.StatementContext.IsWritesToTables
+                    ? state.TableLevelRWLock.WriteLock
+                    : state.TableLevelRWLock.ReadLock;
+                if (_queryPlan == null)
+                {
                     subqueryLookup = new SubordFullTableScanTableLookupStrategy(iLock, state.IterableTableScan);
                 }
-                else {
+                else
+                {
                     EventTable[] indexes = new EventTable[_queryPlan.IndexDescs.Length];
-                    for (int i = 0; i < indexes.Length; i++) {
+                    for (int i = 0; i < indexes.Length; i++)
+                    {
                         indexes[i] = state.IndexRepository.GetIndexByDesc(_queryPlan.IndexDescs[i].IndexMultiKey);
                     }
                     subqueryLookup = _queryPlan.LookupStrategyFactory.MakeStrategy(indexes, null);
                     subqueryLookup = new SubordIndexedTableLookupTableStrategy(subqueryLookup, iLock);
                 }
             }
-    
+
             return new SubSelectStrategyRealization(
-                subqueryLookup, subselectAggregationPreprocessor, aggregationService, 
+                subqueryLookup, subselectAggregationPreprocessor, aggregationService,
                 Collections.GetEmptyMap<ExprPriorNode, ExprPriorEvalStrategy>(),
                 Collections.GetEmptyMap<ExprPreviousNode, ExprPreviousEvalStrategy>(),
                 null, null);

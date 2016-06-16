@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestJoinDerivedValue() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             _epService.EPAdministrator.CreateEPL("select\n" +
                     "Math.Sign(stream1.slope) as s1,\n" +

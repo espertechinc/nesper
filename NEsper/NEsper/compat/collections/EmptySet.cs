@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace com.espertech.esper.compat.collections
 {
+    [Serializable]
     public class EmptySet<T> : ISet<T>
     {
         public static readonly EmptySet<T> Instance = new EmptySet<T>(); 

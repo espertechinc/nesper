@@ -24,17 +24,18 @@ namespace com.espertech.esper.epl.expression.prev
         private readonly bool _isConstantIndex;
         private readonly bool _isTail;
         private readonly RandomAccessByIndexGetter _randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexMap _relativeAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
         private readonly int _streamNumber;
 
-        public ExprPreviousEvalStrategyPrev(int streamNumber,
-                                            ExprEvaluator indexNode,
-                                            ExprEvaluator evalNode,
-                                            RandomAccessByIndexGetter randomAccessGetter,
-                                            RelativeAccessByEventNIndexMap relativeAccessGetter,
-                                            bool constantIndex,
-                                            int? constantIndexNumber,
-                                            bool tail)
+        public ExprPreviousEvalStrategyPrev(
+            int streamNumber,
+            ExprEvaluator indexNode,
+            ExprEvaluator evalNode,
+            RandomAccessByIndexGetter randomAccessGetter,
+            RelativeAccessByEventNIndexGetter relativeAccessGetter,
+            bool constantIndex,
+            int? constantIndexNumber,
+            bool tail)
         {
             _streamNumber = streamNumber;
             _indexNode = indexNode;
@@ -66,20 +67,17 @@ namespace com.espertech.esper.epl.expression.prev
             return evalResult;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream,
-                                              ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             return GetSubstitute(eventsPerStream, context);
         }
 
-        public ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream,
-                                                            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream,
-                                                 ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             Object result = Evaluate(eventsPerStream, context);
             if (result == null)
@@ -91,8 +89,7 @@ namespace com.espertech.esper.epl.expression.prev
 
         #endregion
 
-        private EventBean GetSubstitute(EventBean[] eventsPerStream,
-                                        ExprEvaluatorContext exprEvaluatorContext)
+        private EventBean GetSubstitute(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             // Use constant if supplied
             int? index;
@@ -103,7 +100,7 @@ namespace com.espertech.esper.epl.expression.prev
             else
             {
                 // evaluate first child, which returns the index
-                Object indexResult = _indexNode.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+                var indexResult = _indexNode.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                 if (indexResult == null)
                 {
                     return null;
@@ -139,7 +136,7 @@ namespace com.espertech.esper.epl.expression.prev
                 }
                 else
                 {
-                    substituteEvent = relativeAccess.GetRelativeToEnd(evalEvent, index.Value);
+                    substituteEvent = relativeAccess.GetRelativeToEnd(index.Value);
                 }
             }
             return substituteEvent;

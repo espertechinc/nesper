@@ -52,13 +52,14 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="accessors">accessor definitions</param>
         /// <param name="accessAggregations">access aggs</param>
         /// <param name="isJoin">true for join, false for single-stream</param>
-        public AggSvcGroupByRefcountedWAccessImpl(ExprEvaluator[] evaluators,
-                                                  AggregationMethodFactory[] prototypes,
-                                                  Object groupKeyBinding,
-                                                  MethodResolutionService methodResolutionService,
-                                                  AggregationAccessorSlotPair[] accessors,
-                                                  AggregationStateFactory[] accessAggregations,
-                                                  bool isJoin)
+        public AggSvcGroupByRefcountedWAccessImpl(
+            ExprEvaluator[] evaluators,
+            AggregationMethodFactory[] prototypes,
+            Object groupKeyBinding,
+            MethodResolutionService methodResolutionService,
+            AggregationAccessorSlotPair[] accessors,
+            AggregationStateFactory[] accessAggregations,
+            bool isJoin)
             : base(evaluators, prototypes, groupKeyBinding)
         {
             _methodResolutionService = methodResolutionService;
@@ -87,7 +88,7 @@ namespace com.espertech.esper.epl.agg.service
             if (row == null)
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
                 row = new AggregationMethodPairRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, groupAggregators, groupStates);
                 AggregatorsPerGroup.Put(groupByKey, row);
             }
@@ -137,7 +138,7 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
                 row = new AggregationMethodPairRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, groupAggregators, groupStates);
                 AggregatorsPerGroup.Put(groupByKey, row);
             }
@@ -186,7 +187,7 @@ namespace com.espertech.esper.epl.agg.service
     
             if (_currentAggregatorMethods == null) {
                 _currentAggregatorMethods = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, null);
-                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null);
+                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, IsJoin, AccessAggregations, groupByKey, GroupKeyBinding, null, null);
             }
     
             _currentGroupKey = groupByKey;

@@ -9,6 +9,7 @@
 using Antlr4.Runtime;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.parse;
@@ -16,9 +17,8 @@ using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.pattern;
-using com.espertech.esper.support.core;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.schedule;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.support.epl.parse
 {

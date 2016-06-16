@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.support;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.view;
 

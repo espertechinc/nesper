@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.core.start
@@ -37,5 +38,10 @@ namespace com.espertech.esper.core.start
             bool isRecoveringResilient);
 
         StatementSpecCompiled StatementSpec { get; }
+    }
+
+    public class EPStatementStartMethodConst
+    {
+        public const int DEFAULT_AGENT_INSTANCE_ID = -1;
     }
 }

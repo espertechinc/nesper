@@ -67,9 +67,9 @@ namespace com.espertech.esper.epl.expression.core
             get { return null; }
         }
 
-        public String StatementId
+        public int StatementId
         {
-            get { return null; }
+            get { return -1; }
         }
 
         public IReaderWriterLock AgentInstanceLock

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 
 namespace com.espertech.esper.core.service
@@ -21,11 +19,12 @@ namespace com.espertech.esper.core.service
         /// Add a statement name to the list of statements held by the isolated service provider.
         /// </summary>
         /// <param name="name">to add</param>
-        void AddStatement(String name);
+        void AddStatement(string name);
 
-        EPStatement CreateEPLStatementId(String eplStatement,
-                                         String statementName,
-                                         Object userObject,
-                                         String statementId);
+        EPStatement CreateEPLStatementId(
+            string eplStatement,
+            string statementName,
+            object userObject,
+            int? optionalStatementId);
     }
 }

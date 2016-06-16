@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.join.exec.@base
     /// implementation 'hops' from the first child to the next recursively for each row 
     /// returned by a child.
     /// <para/>
-    /// It passes a 'Prototype' row (prefillPath) to each new child which contains the 
+    /// It passes a '_prototype' row (prefillPath) to each new child which contains the 
     /// current partial event set.
     /// </summary>
     public class NestedIterationExecNode : ExecNode
@@ -55,7 +55,7 @@ namespace com.espertech.esper.epl.join.exec.@base
         /// <summary>Recursive method to run through all child nodes and, for each result set tuple returned by a child node, execute the inner child of the child node until there are no inner child nodes. </summary>
         /// <param name="lookupEvent">current event to use for lookup by child node</param>
         /// <param name="nestingOrderIndex">index within the child nodes indicating what nesting level we are at</param>
-        /// <param name="currentPath">Prototype result row to use by child nodes for generating result rows</param>
+        /// <param name="currentPath">_prototype result row to use by child nodes for generating result rows</param>
         /// <param name="result">result tuple rows to be populated</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         protected void RecursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, ICollection<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)

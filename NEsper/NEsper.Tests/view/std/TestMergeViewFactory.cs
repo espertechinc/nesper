@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.bean;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.view.std
     {
         private MergeViewFactory _factory;
         private IList<ViewFactory> _parents;
-        private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(SupportStatementContextFactory.MakeContext(), 1, 0, null, null);
+        private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(SupportStatementContextFactory.MakeContext(), 1, null, null, false, -1, false);
     
         [SetUp]
         public void SetUp()

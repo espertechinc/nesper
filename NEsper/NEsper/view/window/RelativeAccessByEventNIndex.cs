@@ -21,17 +21,17 @@ namespace com.espertech.esper.view.window
         /// <summary>
         /// Returns the prior event to the given event counting back the number of events as supplied by index.
         /// </summary>
-        /// <param name="theEvent">is the event to count back from</param>
+        /// <param name="theEvent"></param>
         /// <param name="index">is the number of events to go back</param>
         /// <returns>event</returns>
         EventBean GetRelativeToEvent(EventBean theEvent, int index);
     
-        EventBean GetRelativeToEnd(EventBean theEvent, int index);
+        EventBean GetRelativeToEnd(int index);
     
-        IEnumerator<EventBean> GetWindowToEvent(Object evalEvent);
+        IEnumerator<EventBean> GetWindowToEvent();
     
-        ICollection<EventBean> GetWindowToEventCollReadOnly(Object evalEvent);
+        ICollection<EventBean> GetWindowToEventCollReadOnly();
     
-        int GetWindowToEventCount(EventBean evalEvent);
+        int GetWindowToEventCount();
     }
 }

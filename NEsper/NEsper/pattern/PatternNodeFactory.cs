@@ -28,5 +28,7 @@ namespace com.espertech.esper.pattern
         EvalFactoryNode MakeObserverNode(PatternObserverSpec patternObserverSpec);
         EvalFactoryNode MakeOrNode();
         EvalRootFactoryNode MakeRootNode(EvalFactoryNode childNode);
+        EvalFactoryNode MakeAuditNode(bool auditPattern, bool auditPatternInstance, String expressionText, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting);
+        bool IsAuditSupported { get; }
     }
 }

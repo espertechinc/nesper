@@ -12,6 +12,7 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
+    [Serializable]
     public class EmptyDictionary<K,V> : IDictionary<K,V>
     {
         public static readonly EmptyDictionary<K, V> Instance = new EmptyDictionary<K, V>();

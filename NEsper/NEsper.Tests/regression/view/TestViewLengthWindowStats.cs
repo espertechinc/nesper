@@ -123,7 +123,7 @@ namespace com.espertech.esper.regression.view
             statement.Dispose();
     
             // Test copying all properties
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             String viewExprWildcard = "select * from SupportBean.win:length(3).stat:uni(IntPrimitive, *)";
             statement = _epService.EPAdministrator.CreateEPL(viewExprWildcard);
             statement.Events += _testListener.Update;

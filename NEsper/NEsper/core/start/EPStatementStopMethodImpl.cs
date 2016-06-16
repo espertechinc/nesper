@@ -18,15 +18,10 @@ namespace com.espertech.esper.core.start
     /// <summary>
     /// Method to call to stop an EPStatement.
     /// </summary>
-    public class EPStatementStopMethodImpl
+    public class EPStatementStopMethodImpl : EPStatementStopMethod
     {
         private readonly StatementContext _statementContext;
         private readonly StopCallback[] _stopCallbacks;
-
-        public static EPStatementStopMethod New(StatementContext statementContext, IList<StopCallback> stopCallbacks)
-        {
-            return (new EPStatementStopMethodImpl(statementContext, stopCallbacks)).Stop;
-        }
 
         public EPStatementStopMethodImpl(StatementContext statementContext, IList<StopCallback> stopCallbacks)
         {

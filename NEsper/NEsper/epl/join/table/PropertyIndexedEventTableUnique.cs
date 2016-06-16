@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -15,11 +16,9 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.join.table
 {
-	public class PropertyIndexedEventTableUnique
-        : PropertyIndexedEventTable
-        , EventTableAsSet
+	public class PropertyIndexedEventTableUnique : PropertyIndexedEventTable , EventTableAsSet
 	{
-	    private readonly IDictionary<MultiKeyUntyped, EventBean> _propertyIndex;
+	    internal readonly IDictionary<MultiKeyUntyped, EventBean> _propertyIndex;
 	    private readonly bool _canClear;
 
 	    public PropertyIndexedEventTableUnique(EventPropertyGetter[] propertyGetters, EventTableOrganization organization)
@@ -57,60 +56,6 @@ namespace com.espertech.esper.epl.join.table
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
 	    }
 
-	    /// <summary>
-	    /// Add an array of events. Same event instance is not added twice. Event properties should be immutable.
-	    /// Allow null passed instead of an empty array.
-	    /// </summary>
-	    /// <param name="events">to add</param>
-	    /// <throws>IllegalArgumentException if the event was already existed in the index</throws>
-	    public override void Add(EventBean[] events)
-	    {
-	        if (events != null) {
-
-	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
-	                InstrumentationHelper.Get().QIndexAdd(this, events);
-	                foreach (var theEvent in events) {
-	                    Add(theEvent);
-	                }
-	                InstrumentationHelper.Get().AIndexAdd();
-	                return;
-	            }
-
-	            foreach (var theEvent in events) {
-	                Add(theEvent);
-	            }
-	        }
-	    }
-
-	    /// <summary>
-	    /// Remove events.
-	    /// </summary>
-	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
-	    /// <throws>IllegalArgumentException when the event could not be removed as its not in the index</throws>
-	    public override void Remove(EventBean[] events)
-	    {
-	        if (events != null) {
-
-	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
-	                InstrumentationHelper.Get().QIndexRemove(this, events);
-	                foreach (var theEvent in events) {
-	                    Remove(theEvent);
-	                }
-	                InstrumentationHelper.Get().AIndexRemove();
-	                return;
-	            }
-
-	            foreach (var theEvent in events) {
-	                Remove(theEvent);
-	            }
-	        }
-	    }
-
-	    /// <summary>
-	    /// Returns the set of events that have the same property value as the given event.
-	    /// </summary>
-	    /// <param name="keys">to compare against</param>
-	    /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
 	    public override ISet<EventBean> Lookup(object[] keys)
 	    {
 	        var key = new MultiKeyUntyped(keys);
@@ -124,14 +69,13 @@ namespace com.espertech.esper.epl.join.table
 	    public override void Add(EventBean theEvent)
 	    {
 	        var key = GetMultiKey(theEvent);
-
 	        var existing = _propertyIndex.Push(key, theEvent);
 	        if (existing != null && !existing.Equals(theEvent)) {
-	            throw HandleUniqueIndexViolation(Organization.IndexName, key);
+	            throw HandleUniqueIndexViolation(organization.IndexName, key);
 	        }
 	    }
 
-	    internal static EPException HandleUniqueIndexViolation(string indexName, object key)
+	    public static EPException HandleUniqueIndexViolation(string indexName, object key)
         {
 	        var indexNameDisplay = indexName == null ? "" : " '" + indexName + "'";
 	        throw new EPException("Unique index violation, index" + indexNameDisplay + " is a unique index and key '" + key + "' already exists");
@@ -160,6 +104,11 @@ namespace com.espertech.esper.epl.join.table
 	        }
 	    }
 
+	    public override void Destroy()
+        {
+	        Clear();
+	    }
+
 	    public override int? NumberOfEvents
 	    {
 	        get { return _propertyIndex.Count; }
@@ -175,19 +124,21 @@ namespace com.espertech.esper.epl.join.table
 	        get { return _propertyIndex; }
 	    }
 
-	    public override string ToQueryPlan()
+	    public ISet<EventBean> AllValues
 	    {
-	        return GetType().Name +
-	                " streamNum=" + Organization.StreamNum +
-	                " propertyGetters=" + PropertyGetters.Render();
+	        get
+	        {
+	            if (_propertyIndex.IsEmpty())
+	            {
+	                return Collections.GetEmptySet<EventBean>();
+	            }
+	            return new HashSet<EventBean>(_propertyIndex.Values);
+	        }
 	    }
 
-	    public ISet<EventBean> AllValues()
-        {
-	        if (_propertyIndex.IsEmpty()) {
-	            return Collections.GetEmptySet<EventBean>();
-	        }
-	        return new HashSet<EventBean>(_propertyIndex.Values);
+	    public override Type ProviderClass
+	    {
+	        get { return typeof (PropertyIndexedEventTableUnique); }
 	    }
 	}
 } // end of namespace

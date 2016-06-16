@@ -64,16 +64,16 @@ namespace com.espertech.esper.multithread
             Object[][] statements;
     
             statements = new Object[][] {STMT[10]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
     
             statements = new Object[][] {STMT[10], STMT[11]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
     
             statements = new Object[][] {STMT[10], STMT[11], STMT[12]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
     
             statements = new Object[][] {STMT[10], STMT[11], STMT[12], STMT[13]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
         }
     
         [Test]
@@ -83,7 +83,7 @@ namespace com.espertech.esper.multithread
             for (int i = 0; i < STMT.Length; i++)
             {
                 Object[][] statements = new Object[][] {STMT[i]};
-                TryStatementCreateSendAndStop(numThreads, statements, 250);
+                TryStatementCreateSendAndStop(numThreads, statements, 10);
             }
         }
     
@@ -92,17 +92,17 @@ namespace com.espertech.esper.multithread
         {
             int numThreads = 2;
             Object[][] statements = new Object[][] {STMT[1], STMT[4], STMT[6], STMT[7], STMT[8]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
     
             statements = new Object[][] {STMT[1], STMT[7], STMT[8], STMT[11], STMT[12]};
-            TryStatementCreateSendAndStop(numThreads, statements, 500);
+            TryStatementCreateSendAndStop(numThreads, statements, 10);
         }
     
         [Test]
         public void TestStatementsAll()
         {
             int numThreads = 3;
-            TryStatementCreateSendAndStop(numThreads, STMT, 100);
+            TryStatementCreateSendAndStop(numThreads, STMT, 10);
         }
     
         private void TryStatementCreateSendAndStop(int numThreads, Object[][] statements, int numRepeats)

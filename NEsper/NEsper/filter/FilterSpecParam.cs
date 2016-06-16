@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.pattern;
@@ -45,9 +46,11 @@ namespace com.espertech.esper.filter
         /// Return the filter parameter constant to filter for.
         /// </summary>
         /// <param name="matchedEvents">is the prior results that can be used to determine filter parameters</param>
-        /// <param name="evaluatorContext">The evaluator context.</param>
-        /// <returns>filter parameter constant's value</returns>
-        public abstract Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext);
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        /// <returns>
+        /// filter parameter constant's value
+        /// </returns>
+        public abstract object GetFilterValue(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext);
 
         public override String ToString()
         {

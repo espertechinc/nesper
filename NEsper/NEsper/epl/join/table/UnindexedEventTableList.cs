@@ -130,6 +130,11 @@ namespace com.espertech.esper.epl.join.table
             _eventSet.Clear();
         }
 
+        public void Destroy()
+        {
+            Clear();
+        }
+
         public int? NumberOfEvents
         {
             get { return _eventSet.Count; }
@@ -150,8 +155,13 @@ namespace com.espertech.esper.epl.join.table
             get
             {
                 return new EventTableOrganization(
-                    null, false, false, _streamNum, null, EventTableOrganization.EventTableOrganizationType.UNORGANIZED);
+                    null, false, false, _streamNum, null, EventTableOrganizationType.UNORGANIZED);
             }
+        }
+
+        public Type ProviderClass
+        {
+            get { return typeof (UnindexedEventTableList); }
         }
     }
 }

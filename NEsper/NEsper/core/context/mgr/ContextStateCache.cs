@@ -12,8 +12,8 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.core.context.mgr
 {
-    public interface ContextStateCache {
-    
+    public interface ContextStateCache
+    {
         ContextStatePathValueBinding GetBinding(Object bindingInfo);
         void AddContextPath(String contextName, int level, int parentPath, int subPath, int? optionalContextPartitionId, Object additionalInfo, ContextStatePathValueBinding binding);
         void UpdateContextPath(String contextName, ContextStatePathKey key, ContextStatePathValue value);

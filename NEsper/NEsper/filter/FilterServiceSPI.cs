@@ -16,10 +16,12 @@ namespace com.espertech.esper.filter
     /// <summary>Service provider interface for filter service. </summary>
     public interface FilterServiceSPI : FilterService
     {
+        bool IsSupportsTakeApply { get; }
+
         /// <summary>Take a set of statements of out the active filters, returning a save-set of filters. </summary>
         /// <param name="statementId">statement ids to remove</param>
         /// <returns>filters</returns>
-        FilterSet Take(ICollection<String> statementId);
+        FilterSet Take(ICollection<int> statementId);
     
         /// <summary>Apply a set of previously taken filters. </summary>
         /// <param name="filterSet">to apply</param>

@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.epl
             EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fieldsVar, new Object[] {null, "abc"});
     
             // ESPER-545
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             String createText = "create variable int FOO = 0";
             _epService.EPAdministrator.CreateEPL(createText);
             _epService.EPAdministrator.CreateEPL("on pattern [every SupportBean] set FOO = FOO + 1");
@@ -110,6 +110,20 @@ namespace com.espertech.esper.regression.epl
             _epService.EPAdministrator.DestroyAllStatements();
             _epService.EPAdministrator.CreateEPL(createText);
             Assert.AreEqual(0, _epService.EPRuntime.GetVariableValue("FOO"));
+
+            // cleanup of variable when statement exception occurs
+            _epService.EPAdministrator.CreateEPL("create variable int x = 123");
+            try {
+                _epService.EPAdministrator.CreateEPL("select missingScript(x) from SupportBean");
+            }
+            catch(Exception) {
+                foreach (var statementName in _epService.EPAdministrator.StatementNames)
+                {
+                    _epService.EPAdministrator.GetStatement(statementName).Dispose();
+                }
+            }
+            _epService.EPAdministrator.CreateEPL("create variable int x = 123");
+
         }
     
         [Test]

@@ -73,7 +73,7 @@ namespace com.espertech.esper.filter
             get { return _evaluatorContext.StatementName; ; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _evaluatorContext.StatementId; }
         }

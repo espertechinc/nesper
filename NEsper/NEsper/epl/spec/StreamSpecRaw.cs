@@ -29,16 +29,18 @@ namespace com.espertech.esper.epl.spec
         /// <param name="isJoin">indicates whether a join or not a join</param>
         /// <param name="isContextDeclaration">indicates whether declared as part of the context declarations, if any</param>
         /// <param name="isOnTrigger">if set to <c>true</c> [is on trigger].</param>
+        /// <param name="optionalStreamName"></param>
         /// <returns>compiled stream</returns>
         /// <throws>ExprValidationException to indicate validation errors</throws>
         StreamSpecCompiled Compile(
             StatementContext statementContext,
-            ICollection<String> eventTypeReferences,
+            ICollection<string> eventTypeReferences,
             bool isInsertInto,
             ICollection<int> assignedTypeNumberStack,
             bool isJoin,
             bool isContextDeclaration,
-            bool isOnTrigger);
+            bool isOnTrigger,
+            string optionalStreamName);
 
     }
 }

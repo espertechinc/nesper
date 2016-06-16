@@ -16,7 +16,7 @@ using com.espertech.esper.epl.spec;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor Prototype for the case: aggregation functions used in the 
+    /// Result set processor _prototype for the case: aggregation functions used in the 
     /// select clause, and no group-by, and all properties in the select clause are under 
     /// an aggregation function.
     /// </summary>
@@ -32,13 +32,16 @@ namespace com.espertech.esper.epl.core
         /// <param name="isSelectRStream">true if remove stream events should be generated</param>
         /// <param name="isUnidirectional">true if unidirectional join</param>
         /// <param name="isHistoricalOnly">if set to <c>true</c> [is historical only].</param>
+        /// <param name="outputLimitSpec">The output limit spec.</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
         public ResultSetProcessorRowForAllFactory(
             SelectExprProcessor selectExprProcessor,
             ExprEvaluator optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
             bool isHistoricalOnly,
-            OutputLimitSpec outputLimitSpec)
+            OutputLimitSpec outputLimitSpec,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory)
         {
             _selectExprProcessor = selectExprProcessor;
             OutputLimitSpec = outputLimitSpec;
@@ -46,6 +49,7 @@ namespace com.espertech.esper.epl.core
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
             IsHistoricalOnly = isHistoricalOnly;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
         }
 
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
@@ -87,5 +91,7 @@ namespace com.espertech.esper.epl.core
         {
             get { return OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL; }
         }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
     }
 }

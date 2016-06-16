@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.core.start
         {
             ExprTableEvalLockUtil.ObtainLockUnless(_instance.TableLevelRWLock.WriteLock, insert.Services.TableService.TableExprEvaluatorContext);
             var theEvent = insert.InsertHelper.Process(new EventBean[0], true, true, insert.ExprEvaluatorContext);
-            var aggs = _instance.TableMetadata.RowFactory.MakeAggs(insert.ExprEvaluatorContext.AgentInstanceId, null, null);
+            var aggs = _instance.TableMetadata.RowFactory.MakeAggs(insert.ExprEvaluatorContext.AgentInstanceId, null, null, _instance.AggregationServicePassThru);
             ((object[]) theEvent.Underlying)[0] = aggs;
             _instance.AddEvent(theEvent);
             return CollectionUtil.EVENTBEANARRAY_EMPTY;
@@ -47,7 +48,8 @@ namespace com.espertech.esper.core.start
             ExprTableEvalLockUtil.ObtainLockUnless(_instance.TableLevelRWLock.WriteLock, delete.Services.TableService.TableExprEvaluatorContext);
     
             if (delete.OptionalWhereClause == null) {
-                _instance.ClearEvents();
+                _instance.ClearInstance();
+                return CollectionUtil.EVENTBEANARRAY_EMPTY;
             }
     
             var found = SnapshotAndApplyFilter(delete.Filter, delete.Annotations, delete.OptionalWhereClause, _instance.AgentInstanceContext);

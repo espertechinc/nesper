@@ -61,20 +61,21 @@ namespace com.espertech.esper.view.window
             _eventType = parentEventType;
         }
     
-        public Object MakePreviousGetter() {
-            return new RelativeAccessByEventNIndexMap();
+        public Object MakePreviousGetter()
+        {
+            return new RelativeAccessByEventNIndexGetterImpl();
         }
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            IStreamRelativeAccess relativeAccessByEvent = ViewServiceHelper.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
+            var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext); 
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
                 return new LengthBatchViewRStream(agentInstanceViewFactoryContext, this, Size);
             }
             else
             {
-                return new LengthBatchView(agentInstanceViewFactoryContext, this, Size, relativeAccessByEvent);
+                return new LengthBatchView(agentInstanceViewFactoryContext, this, Size, viewUpdatedCollection);
             }
         }
 

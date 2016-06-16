@@ -102,6 +102,12 @@ namespace com.espertech.esper.client
 
         private IList<AutoImportDesc> _imports;
 
+        /// <summary>
+        /// For annotations only, will be used to resolve partial class names 
+        /// (not available in EPL statements unless used in an annotation).
+        /// </summary>
+        private IList<AutoImportDesc> _annotationImports;
+
         private IDictionary<String, ConfigurationDBRef> _databaseReferences;
 
         /// <summary>List of configured plug-in views.</summary>
@@ -596,6 +602,52 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        public void AddAnnotationImport(String importName, String assemblyNameOrFile)
+        {
+            _annotationImports.Add(new AutoImportDesc(importName, assemblyNameOrFile));
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void AddAnnotationImport(string autoImport)
+        {
+            string[] importParts = autoImport.Split(',');
+            if (importParts.Length == 1)
+            {
+                AddAnnotationImport(autoImport, null);
+            }
+            else
+            {
+                AddAnnotationImport(importParts[0], importParts[1]);
+            }
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        public void AddAnnotationImport(Type autoImport)
+        {
+            AddAnnotationImport(autoImport.FullName, autoImport.Assembly.FullName);
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void AddAnnotationImport<T>()
+        {
+            AddAnnotationImport(typeof (T).FullName, typeof (T).Assembly.FullName);
+        }
+
+        /// <summary>
         /// Removes the import.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -679,6 +731,11 @@ namespace com.espertech.esper.client
         public IList<AutoImportDesc> Imports
         {
             get { return _imports; }
+        }
+
+        public IList<AutoImportDesc> AnnotationImports
+        {
+            get { return _annotationImports; }
         }
 
         /// <summary> Returns a map of string database names to database configuration options.</summary>
@@ -1296,6 +1353,7 @@ namespace com.espertech.esper.client
             _eventTypesLegacy = new Dictionary<String, ConfigurationEventTypeLegacy>();
             _databaseReferences = new Dictionary<String, ConfigurationDBRef>();
             _imports = new List<AutoImportDesc>();
+            _annotationImports = new List<AutoImportDesc>();
             AddDefaultImports();
             _plugInViews = new List<ConfigurationPlugInView>();
             _plugInVirtualDataWindows = new List<ConfigurationPlugInVirtualDataWindow>();

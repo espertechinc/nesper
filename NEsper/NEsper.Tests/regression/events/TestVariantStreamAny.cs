@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.events
             ConfigurationVariantStream configVariantStream = new ConfigurationVariantStream();
             configVariantStream.TypeVariance = TypeVarianceEnum.ANY;
             _epService.EPAdministrator.Configuration.AddVariantStream("VarStream", configVariantStream);
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportMarketDataBean", typeof(SupportMarketDataBean));
     
             _epService.EPAdministrator.CreateEPL("insert into MyStream select TheString, IntPrimitive from SupportBean");

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.events
             _epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             _epService.Initialize();
             _listener = new SupportUpdateListener();
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanComplexProps", typeof(SupportBeanComplexProps));
         }
 

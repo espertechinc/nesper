@@ -8,14 +8,15 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.resource;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.events.vaevent;
@@ -37,21 +38,20 @@ namespace com.espertech.esper.epl.named
 	    private readonly string _statementName;
 	    private readonly bool _isEnableSubqueryIndexShare;
 	    private readonly bool _isVirtualDataWindow;
-	    private readonly StatementMetricHandle _statementMetricHandle;
 	    private readonly ICollection<string> _optionalUniqueKeyProps;
 	    private readonly string _eventTypeAsName;
 	    private readonly EventTableIndexMetadata _eventTableIndexMetadataRepo = new EventTableIndexMetadata();
-        private readonly StatementResourceService _statementResourceService;
+	    private readonly StatementContext _statementContextCreateWindow;
 
-	    private readonly ILockable _lock;
+        private readonly ILockable _lock = LockManager.CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
 
 	    /// <summary>
 	    /// Ctor.
 	    /// </summary>
 	    /// <param name="namedWindowName">Name of the named window.</param>
-	    /// <param name="namedWindowService">service for dispatching results</param>
+	    /// <param name="namedWindowMgmtService">service for dispatching results</param>
+	    /// <param name="namedWindowDispatchService">The named window dispatch service.</param>
 	    /// <param name="contextName">Name of the context.</param>
-	    /// <param name="singleInstanceContext">if set to <c>true</c> [single instance context].</param>
 	    /// <param name="eventType">the type of event held by the named window</param>
 	    /// <param name="statementResultService">for coordinating on whether insert and remove stream events should be posted</param>
 	    /// <param name="revisionProcessor">for revision processing</param>
@@ -63,29 +63,11 @@ namespace com.espertech.esper.epl.named
 	    /// <param name="metricReportingService">The metric reporting service.</param>
 	    /// <param name="isBatchingDataWindow">if set to <c>true</c> [is batching data window].</param>
 	    /// <param name="isVirtualDataWindow">if set to <c>true</c> [is virtual data window].</param>
-	    /// <param name="statementMetricHandle">The statement metric handle.</param>
 	    /// <param name="optionalUniqueKeyProps">The optional unique key props.</param>
 	    /// <param name="eventTypeAsName">Name of the event type as.</param>
-	    public NamedWindowProcessor(
-	        string namedWindowName,
-	        NamedWindowService namedWindowService,
-	        string contextName,
-	        EventType eventType,
-	        StatementResultService statementResultService,
-	        ValueAddEventProcessor revisionProcessor,
-	        string eplExpression,
-	        string statementName,
-	        bool isPrioritized,
-	        bool isEnableSubqueryIndexShare,
-	        bool enableQueryPlanLog,
-	        MetricReportingService metricReportingService,
-	        bool isBatchingDataWindow,
-	        bool isVirtualDataWindow,
-	        StatementMetricHandle statementMetricHandle,
-            ICollection<string> optionalUniqueKeyProps,
-	        string eventTypeAsName,
-	        StatementResourceService statementResourceService)
-        {
+	    /// <param name="statementContextCreateWindow">The statement context create window.</param>
+	    public NamedWindowProcessor(string namedWindowName, NamedWindowMgmtService namedWindowMgmtService, NamedWindowDispatchService namedWindowDispatchService, string contextName, EventType eventType, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized, bool isEnableSubqueryIndexShare, bool enableQueryPlanLog, MetricReportingService metricReportingService, bool isBatchingDataWindow, bool isVirtualDataWindow, ICollection<string> optionalUniqueKeyProps, string eventTypeAsName, StatementContext statementContextCreateWindow)
+	    {
 	        _namedWindowName = namedWindowName;
 	        _contextName = contextName;
 	        _eventType = eventType;
@@ -93,18 +75,17 @@ namespace com.espertech.esper.epl.named
 	        _statementName = statementName;
 	        _isEnableSubqueryIndexShare = isEnableSubqueryIndexShare;
 	        _isVirtualDataWindow = isVirtualDataWindow;
-	        _statementMetricHandle = statementMetricHandle;
 	        _optionalUniqueKeyProps = optionalUniqueKeyProps;
 	        _eventTypeAsName = eventTypeAsName;
-            _statementResourceService = statementResourceService;
-	        _lock = LockManager.CreateLock(GetType());
+	        _statementContextCreateWindow = statementContextCreateWindow;
 
 	        _rootView = new NamedWindowRootView(revisionProcessor, enableQueryPlanLog, metricReportingService, eventType, isBatchingDataWindow, isEnableSubqueryIndexShare, optionalUniqueKeyProps);
-	        _tailView = new NamedWindowTailView(eventType, namedWindowService, statementResultService, revisionProcessor, isPrioritized, isBatchingDataWindow);
+	        _tailView = namedWindowDispatchService.CreateTailView(eventType, namedWindowMgmtService, namedWindowDispatchService, statementResultService, revisionProcessor, isPrioritized, isBatchingDataWindow, contextName, statementContextCreateWindow.TimeSourceService, statementContextCreateWindow.ConfigSnapshot.EngineDefaults.ThreadingConfig);
 	    }
 
-	    public string GetEventTypeAsName() {
-	        return _eventTypeAsName;
+	    public string EventTypeAsName
+	    {
+	        get { return _eventTypeAsName; }
 	    }
 
 	    public NamedWindowProcessorInstance AddInstance(AgentInstanceContext agentInstanceContext)
@@ -113,53 +94,70 @@ namespace com.espertech.esper.epl.named
 	        {
 	            if (_contextName == null)
 	            {
-                    return new NamedWindowProcessorInstance(null, this, agentInstanceContext);
-                }
+	                return new NamedWindowProcessorInstance(null, this, agentInstanceContext);
+	            }
 
-	            var instanceId = agentInstanceContext.AgentInstanceId;
-                return new NamedWindowProcessorInstance(instanceId, this, agentInstanceContext);
-            }
+	            int instanceId = agentInstanceContext.AgentInstanceId;
+	            return new NamedWindowProcessorInstance(instanceId, this, agentInstanceContext);
+	        }
 	    }
 
 	    public NamedWindowProcessorInstance ProcessorInstanceNoContext
 	    {
 	        get
 	        {
-	            StatementResourceHolder holder = _statementResourceService.Unpartitioned;
+	            StatementResourceHolder holder =
+	                _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources.Unpartitioned;
 	            return holder == null ? null : holder.NamedWindowProcessorInstance;
 	        }
 	    }
 
 	    public NamedWindowProcessorInstance GetProcessorInstance(int agentInstanceId)
         {
-            StatementResourceHolder holder = _statementResourceService.GetPartitioned(agentInstanceId);
-            return holder == null ? null : holder.NamedWindowProcessorInstance;
-        }
+	        StatementResourceHolder holder = _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources.GetPartitioned(agentInstanceId);
+	        return holder == null ? null : holder.NamedWindowProcessorInstance;
+	    }
 
-        public ICollection<int> GetProcessorInstancesAll()
+	    public NamedWindowProcessorInstance GetProcessorInstanceAllowUnpartitioned(int agentInstanceId)
         {
-            using (_lock.Acquire())
+	        if (agentInstanceId == EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID)
             {
-                var keyset = _statementResourceService.ResourcesPartitioned.Keys;
-                return new ArrayDeque<int>(keyset);
-            }
-        }
+	            return ProcessorInstanceNoContext;
+	        }
+	        StatementResourceHolder holder = _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources.GetPartitioned(agentInstanceId);
+	        return holder == null ? null : holder.NamedWindowProcessorInstance;
+	    }
+
+	    public ICollection<int> ProcessorInstancesAll
+	    {
+	        get
+	        {
+	            using (_lock.Acquire())
+	            {
+	                var keyset =
+	                    _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources.ResourcesPartitioned.Keys;
+	                return new ArrayDeque<int>(keyset);
+	            }
+	        }
+	    }
 
 	    public NamedWindowProcessorInstance GetProcessorInstance(AgentInstanceContext agentInstanceContext)
         {
-	        if (_contextName == null) {
-                StatementResourceHolder holder = _statementResourceService.Unpartitioned;
-                return holder == null ? null : holder.NamedWindowProcessorInstance;
+	        if (_contextName == null)
+            {
+	            return ProcessorInstanceNoContext;
 	        }
 
-	        if (agentInstanceContext.StatementContext.ContextDescriptor == null) {
+	        if (agentInstanceContext.StatementContext.ContextDescriptor == null)
+            {
 	            return null;
 	        }
 
-	        if (_contextName.Equals(agentInstanceContext.StatementContext.ContextDescriptor.ContextName)) {
-                StatementResourceHolder holder = _statementResourceService.GetPartitioned(agentInstanceContext.AgentInstanceId);
-                return holder == null ? null : holder.NamedWindowProcessorInstance;
-            }
+	        if (_contextName.Equals(agentInstanceContext.StatementContext.ContextDescriptor.ContextName))
+            {
+	            return GetProcessorInstance(agentInstanceContext.AgentInstanceId);
+	        }
+
 	        return null;
 	    }
 
@@ -170,13 +168,15 @@ namespace com.espertech.esper.epl.named
 
 	    public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc, bool isSubselect)
         {
+	        StatementResourceService statementResourceService = _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources;
+
 	        // handle same-context consumer
 	        if (_contextName != null) {
-	            var contextDescriptor = consumerDesc.AgentInstanceContext.StatementContext.ContextDescriptor;
+	            ContextDescriptor contextDescriptor = consumerDesc.AgentInstanceContext.StatementContext.ContextDescriptor;
 	            if (contextDescriptor != null && _contextName.Equals(contextDescriptor.ContextName)) {
-                    var holder = _statementResourceService.GetPartitioned(consumerDesc.AgentInstanceContext.AgentInstanceId);
-                    return holder.NamedWindowProcessorInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
-                }
+	                StatementResourceHolder holder = statementResourceService.GetPartitioned(consumerDesc.AgentInstanceContext.AgentInstanceId);
+	                return holder.NamedWindowProcessorInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
+	            }
 	            else {
 	                // consumer is out-of-context
 	                return _tailView.AddConsumer(consumerDesc);  // non-context consumers
@@ -184,7 +184,7 @@ namespace com.espertech.esper.epl.named
 	        }
 
 	        // handle no context associated
-            return _statementResourceService.ResourcesUnpartitioned.NamedWindowProcessorInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
+	        return statementResourceService.ResourcesUnpartitioned.NamedWindowProcessorInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
 	    }
 
 	    public bool IsVirtualDataWindow
@@ -209,7 +209,7 @@ namespace com.espertech.esper.epl.named
 	    /// <value>tail view</value>
 	    public NamedWindowRootView RootView
 	    {
-	        get { return _rootView; }  // hooked as the top view before any data windows
+	        get { return _rootView; } // hooked as the top view before any data windows
 	    }
 
 	    /// <summary>
@@ -253,7 +253,7 @@ namespace com.espertech.esper.epl.named
 
 	    public StatementMetricHandle CreateNamedWindowMetricsHandle
 	    {
-	        get { return _statementMetricHandle; }
+	        get { return _statementContextCreateWindow.EpStatementHandle.MetricsHandle; }
 	    }
 
 	    public string NamedWindowName
@@ -261,32 +261,40 @@ namespace com.espertech.esper.epl.named
 	        get { return _namedWindowName; }
 	    }
 
-	    public string[][] GetUniqueIndexes(NamedWindowProcessorInstance processorInstance)
-        {
-	        IList<string[]> unique = null;
-	        if (processorInstance != null) {
-	            var indexDescriptors = processorInstance.IndexDescriptors;
-	            foreach (var index in indexDescriptors) {
-	                if (!index.IsUnique) {
+	    public string[][] UniqueIndexes
+	    {
+	        get
+	        {
+	            IList<string[]> unique = null;
+
+	            var indexDescriptors = EventTableIndexMetadataRepo.Indexes.Keys;
+	            foreach (var index in indexDescriptors)
+	            {
+	                if (!index.IsUnique)
+	                {
 	                    continue;
 	                }
-	                var uniqueKeys = IndexedPropDesc.GetIndexProperties(index.HashIndexedProps);
-	                if (unique == null) {
+	                string[] uniqueKeys = IndexedPropDesc.GetIndexProperties(index.HashIndexedProps);
+	                if (unique == null)
+	                {
 	                    unique = new List<string[]>();
 	                }
 	                unique.Add(uniqueKeys);
 	            }
-	        }
-	        if (_optionalUniqueKeyProps != null) {
-	            if (unique == null) {
-	                unique = new List<string[]>();
+	            if (_optionalUniqueKeyProps != null)
+	            {
+	                if (unique == null)
+	                {
+	                    unique = new List<string[]>();
+	                }
+	                unique.Add(_optionalUniqueKeyProps.ToArray());
 	            }
-	            unique.Add(_optionalUniqueKeyProps.ToArray());
+	            if (unique == null)
+	            {
+	                return null;
+	            }
+	            return unique.ToArray();
 	        }
-	        if (unique == null) {
-	            return null;
-	        }
-	        return unique.ToArray();
 	    }
 
 	    public ICollection<string> OptionalUniqueKeyProps
@@ -299,39 +307,61 @@ namespace com.espertech.esper.epl.named
 	        get { return _eventTableIndexMetadataRepo; }
 	    }
 
-	    public void RemoveAllInstanceIndexes(IndexMultiKey index) {
-            if (_contextName == null) {
-                StatementResourceHolder holder = _statementResourceService.Unpartitioned;
-                if (holder != null && holder.NamedWindowProcessorInstance != null) {
-                    holder.NamedWindowProcessorInstance.RemoveIndex(index);
-                }
-            }
-            else {
-                foreach (var entry in _statementResourceService.ResourcesPartitioned) {
-                    if (entry.Value.NamedWindowProcessorInstance != null) {
-                        entry.Value.NamedWindowProcessorInstance.RemoveIndex(index);
-                    }
-                }
-            }
-        }
-
-	    public void ValidateAddIndex(string statementName, string indexName, IndexMultiKey imk) {
-	        _eventTableIndexMetadataRepo.AddIndex(false, imk, indexName, statementName, true);
+	    public StatementContext StatementContextCreateWindow
+	    {
+	        get { return _statementContextCreateWindow; }
 	    }
 
-	    public void RemoveIndexReferencesStmtMayRemoveIndex(IndexMultiKey imk, string finalStatementName) {
-	        var last = _eventTableIndexMetadataRepo.RemoveIndexReference(imk, finalStatementName);
+	    public void RemoveAllInstanceIndexes(IndexMultiKey index)
+        {
+	        StatementResourceService statementResourceService = _statementContextCreateWindow.StatementExtensionServicesContext.StmtResources;
+
+	        if (_contextName == null) {
+	            StatementResourceHolder holder = statementResourceService.Unpartitioned;
+	            if (holder != null && holder.NamedWindowProcessorInstance != null) {
+	                holder.NamedWindowProcessorInstance.RemoveIndex(index);
+	            }
+	        }
+	        else {
+	            foreach (var entry in statementResourceService.ResourcesPartitioned) {
+	                if (entry.Value.NamedWindowProcessorInstance != null) {
+	                    entry.Value.NamedWindowProcessorInstance.RemoveIndex(index);
+	                }
+	            }
+	        }
+	    }
+
+	    public void ValidateAddIndex(string statementName, string indexName, IndexMultiKey imk)
+        {
+	        _eventTableIndexMetadataRepo.AddIndex(false, imk, indexName, statementName, true, null);
+	    }
+
+	    public void RemoveIndexReferencesStmtMayRemoveIndex(IndexMultiKey imk, string finalStatementName)
+        {
+	        bool last = _eventTableIndexMetadataRepo.RemoveIndexReference(imk, finalStatementName);
 	        if (last) {
 	            _eventTableIndexMetadataRepo.RemoveIndex(imk);
 	            RemoveAllInstanceIndexes(imk);
 	        }
 	    }
 
-        private void CheckAlreadyAllocated(StatementResourceHolder holder) {
-            if (holder.NamedWindowProcessorInstance != null)
-            {
-                throw new IllegalStateException("Failed to allocated processor instance: already allocated and not released");
-            }
-        }
+	    public void ClearProcessorInstances()
+        {
+	        if (_contextName == null) {
+	            NamedWindowProcessorInstance instance = ProcessorInstanceNoContext;
+	            if (instance != null) {
+	                instance.Dispose();
+	            }
+	            return;
+	        }
+	        var cpids = ProcessorInstancesAll;
+	        foreach (int cpid in cpids) {
+	            NamedWindowProcessorInstance instance = GetProcessorInstance(cpid);
+	            if (instance != null) {
+	                instance.Dispose();
+	            }
+	            return;
+	        }
+	    }
 	}
 } // end of namespace

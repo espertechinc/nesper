@@ -16,11 +16,9 @@ using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.util;
-using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.metric;
@@ -77,7 +75,7 @@ namespace com.espertech.esper.core.service
             return new StatementContextEngineServices(
                 services.EngineURI,
                 services.EventAdapterService,
-                services.NamedWindowService,
+                services.NamedWindowMgmtService,
                 services.VariableService,
                 services.TableService,
                 services.EngineSettingsService,
@@ -91,12 +89,18 @@ namespace com.espertech.esper.core.service
                 services.TableService.TableExprEvaluatorContext,
                 services.EngineLevelExtensionServicesContext,
                 services.RegexHandlerFactory,
-                services.StatementLockFactory
+                services.StatementLockFactory,
+                services.ContextManagementService,
+                services.ViewServicePreviousFactory,
+                services.EventTableIndexService,
+                services.PatternNodeFactory,
+                services.FilterBooleanExpressionFactory,
+                services.TimeSource
                 );
         }
 
         public StatementContext MakeContext(
-            string statementId,
+            int statementId,
             string statementName,
             string expression,
             StatementType statementType,
@@ -126,7 +130,7 @@ namespace com.espertech.esper.core.service
                 var windowName = ((OnTriggerWindowDesc) optOnTriggerDesc).WindowName;
                 if (engineServices.TableService.GetTableMetadata(windowName) == null)
                 {
-                    defaultStatementAgentInstanceLock = engineServices.NamedWindowService.GetNamedWindowLock(windowName);
+                    defaultStatementAgentInstanceLock = engineServices.NamedWindowMgmtService.GetNamedWindowLock(windowName);
                     if (defaultStatementAgentInstanceLock == null)
                     {
                         throw new EPStatementException("Named window or table '" + windowName + "' has not been declared", expression);
@@ -141,12 +145,12 @@ namespace com.espertech.esper.core.service
             else if (optCreateWindowDesc != null)
             {
                 defaultStatementAgentInstanceLock =
-                    engineServices.NamedWindowService.GetNamedWindowLock(optCreateWindowDesc.WindowName);
+                    engineServices.NamedWindowMgmtService.GetNamedWindowLock(optCreateWindowDesc.WindowName);
                 if (defaultStatementAgentInstanceLock == null)
                 {
                     defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(
                             statementName, annotations, false);
-                    engineServices.NamedWindowService.AddNamedWindowLock(
+                    engineServices.NamedWindowMgmtService.AddNamedWindowLock(
                         optCreateWindowDesc.WindowName, defaultStatementAgentInstanceLock, statementName);
                 }
             }
@@ -166,7 +170,12 @@ namespace com.espertech.esper.core.service
             var hasVariables = statementSpecRaw.HasVariables || (statementSpecRaw.CreateContextDesc != null);
             var hasTableAccess = StatementContextFactoryUtil.DetermineHasTableAccess(subselectNodes, statementSpecRaw, engineServices);
             var epStatementHandle = new EPStatementHandle(
-                statementId, statementName, expression, statementType, expression, hasVariables, stmtMetric, annotationData.Priority, annotationData.IsPremptive, hasTableAccess, MultiMatchHandlerFactory.DefaultHandler);
+                statementId, statementName, expression, statementType, expression,
+                hasVariables, stmtMetric,
+                annotationData.Priority,
+                annotationData.IsPremptive,
+                hasTableAccess,
+                engineServices.MultiMatchHandlerFactory.GetDefaultHandler());
 
             var methodResolutionService =
                 new MethodResolutionServiceImpl(engineServices.EngineImportService, engineServices.SchedulingService);
@@ -250,7 +259,6 @@ namespace com.espertech.esper.core.service
             // Create statement context
             return new StatementContext(
                 _stmtEngineServices,
-                null,
                 schedulingService,
                 scheduleBucket,
                 epStatementHandle,
@@ -262,7 +270,9 @@ namespace com.espertech.esper.core.service
                 patternContextFactory,
                 filterService,
                 new StatementResultServiceImpl(
-                    statementName, engineServices.StatementLifecycleSvc, engineServices.MetricsReportingService,
+                    statementName,
+                    engineServices.StatementLifecycleSvc,
+                    engineServices.MetricsReportingService,
                     engineServices.ThreadingService),
                 engineServices.InternalEventEngineRouteDest,
                 annotations,
@@ -277,7 +287,9 @@ namespace com.espertech.esper.core.service
                 AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
                 engineServices.ScriptingService,
                 writesToTables,
-                statementUserObject);
+                statementUserObject,
+                StatementSemiAnonymousTypeRegistryImpl.INSTANCE,
+                annotationData.Priority);
         }
 
         private ContextControllerFactoryService GetContextControllerFactoryService(Attribute[] annotations)

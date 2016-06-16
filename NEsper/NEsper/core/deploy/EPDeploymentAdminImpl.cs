@@ -8,10 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Runtime.InteropServices;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
@@ -38,10 +36,9 @@ namespace com.espertech.esper.core.deploy
         private readonly StatementEventTypeRef _statementEventTypeRef;
         private readonly EventAdapterService _eventAdapterService;
         private readonly StatementIsolationService _statementIsolationService;
-        private readonly StatementIdGenerator _optionalStatementIdGenerator;
         private readonly FilterService _filterService;
         private readonly TimeZoneInfo _timeZone;
-
+        private readonly ConfigurationEngineDefaults.UndeployRethrowPolicy _undeployRethrowPolicy;
         private readonly ILockable _iLock = LockManager.CreateDefaultLock();
 
         /// <summary>
@@ -60,18 +57,18 @@ namespace com.espertech.esper.core.deploy
                                      StatementEventTypeRef statementEventTypeRef,
                                      EventAdapterService eventAdapterService,
                                      StatementIsolationService statementIsolationService,
-                                     StatementIdGenerator optionalStatementIdGenerator,
                                      FilterService filterService,
-                                     TimeZoneInfo timeZone)
+                                     TimeZoneInfo timeZone,
+                                     ConfigurationEngineDefaults.UndeployRethrowPolicy undeployRethrowPolicy)
         {
             _epService = epService;
             _deploymentStateService = deploymentStateService;
             _statementEventTypeRef = statementEventTypeRef;
             _eventAdapterService = eventAdapterService;
             _statementIsolationService = statementIsolationService;
-            _optionalStatementIdGenerator = optionalStatementIdGenerator;
             _filterService = filterService;
             _timeZone = timeZone;
+            _undeployRethrowPolicy = undeployRethrowPolicy;
         }
     
         public Module Read(Stream stream, String uri)
@@ -205,25 +202,11 @@ namespace com.espertech.esper.core.deploy
     
                 try {
                     EPStatement stmt;
-                    if (_optionalStatementIdGenerator == null) {
-                        if (options.IsolatedServiceProvider == null) {
-                            stmt = _epService.CreateEPL(item.Expression, statementName, userObject);
-                        }
-                        else {
-                            var unit = _statementIsolationService.GetIsolationUnit(options.IsolatedServiceProvider, -1);
-                            stmt = unit.EPAdministrator.CreateEPL(item.Expression, statementName, userObject);
-                        }
-                    }
-                    else {
-                        var statementId = _optionalStatementIdGenerator.Invoke();
-                        if (options.IsolatedServiceProvider == null) {
-                            stmt = _epService.CreateEPLStatementId(item.Expression, statementName, userObject, statementId);
-                        }
-                        else {
-                            var unit = _statementIsolationService.GetIsolationUnit(options.IsolatedServiceProvider, -1);
-                            var spi = (EPAdministratorIsolatedSPI) unit.EPAdministrator;
-                            stmt = spi.CreateEPLStatementId(item.Expression, statementName, userObject, statementId);
-                        }
+                    if (options.IsolatedServiceProvider == null) {
+                        stmt = _epService.CreateEPL(item.Expression, statementName, userObject);
+                    } else {
+                        EPServiceProviderIsolated unit = _statementIsolationService.GetIsolationUnit(options.IsolatedServiceProvider, -1);
+                        stmt = unit.EPAdministrator.CreateEPL(item.Expression, statementName, userObject);
                     }
                     statementNames.Add(new DeploymentInformationItem(stmt.Name, stmt.Text));
                     statements.Add(stmt);
@@ -731,6 +714,9 @@ namespace com.espertech.esper.core.deploy
             var revertedStatements = new List<DeploymentInformationItem>();
             if (undeploymentOptions.IsDestroyStatements) {
                 var referencedTypes = new HashSet<String>();
+
+                Exception firstExceptionEncountered = null;
+
                 foreach (var item in reverted) {
                     var statement = _epService.GetStatement(item.StatementName);
                     if (statement == null) {
@@ -746,11 +732,18 @@ namespace com.espertech.esper.core.deploy
                     }
                     catch (Exception ex) {
                         Log.Warn("Unexpected exception destroying statement: " + ex.Message, ex);
+                        if (firstExceptionEncountered == null) {
+                            firstExceptionEncountered = ex;
+                        }
                     }
                     revertedStatements.Add(item);
                 }
                 EPLModuleUtil.UndeployTypes(referencedTypes, _statementEventTypeRef, _eventAdapterService, _filterService);
                 revertedStatements.Reverse();
+
+                if (firstExceptionEncountered != null && _undeployRethrowPolicy == ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST) {
+                    throw firstExceptionEncountered;
+                }
             }
 
             return new UndeploymentResult(info.DeploymentId, revertedStatements);

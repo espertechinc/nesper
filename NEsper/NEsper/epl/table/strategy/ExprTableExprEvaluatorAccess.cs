@@ -17,15 +17,24 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.table.strategy
 {
-    public class ExprTableExprEvaluatorAccess 
-        : ExprTableExprEvaluatorBase 
-        , ExprEvaluator
-        , ExprEvaluatorEnumeration
+    public class ExprTableExprEvaluatorAccess
+        : ExprTableExprEvaluatorBase
+            ,
+            ExprEvaluator
+            ,
+            ExprEvaluatorEnumeration
     {
         private readonly AggregationAccessorSlotPair _accessAccessorSlotPair;
         private readonly EventType _eventTypeColl;
-    
-        public ExprTableExprEvaluatorAccess(ExprNode exprNode, string tableName, string subpropName, int streamNum, Type returnType, AggregationAccessorSlotPair accessAccessorSlotPair, EventType eventTypeColl)
+
+        public ExprTableExprEvaluatorAccess(
+            ExprNode exprNode,
+            string tableName,
+            string subpropName,
+            int streamNum,
+            Type returnType,
+            AggregationAccessorSlotPair accessAccessorSlotPair,
+            EventType eventTypeColl)
             : base(exprNode, tableName, subpropName, streamNum, returnType)
         {
             _accessAccessorSlotPair = accessAccessorSlotPair;
@@ -42,17 +51,15 @@ namespace com.espertech.esper.epl.table.strategy
 
         public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
-            if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().QExprTableSubproperty(exprNode, tableName, subpropName);
-            }
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprTableSubproperty(exprNode, tableName, subpropName); }
+
             var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
-            var result = _accessAccessorSlotPair.Accessor.GetValue(row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
-    
-            if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().AExprTableSubproperty(result);
-            }
+            var result = _accessAccessorSlotPair.Accessor.GetValue(
+                row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTableSubproperty(result); }
+
             return result;
         }
 
@@ -61,14 +68,20 @@ namespace com.espertech.esper.epl.table.strategy
             get { return returnType; }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId) {
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
+        {
             return _eventTypeColl;
         }
-    
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
-            return _accessAccessorSlotPair.Accessor.GetEnumerableEvents(row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
+            return _accessAccessorSlotPair.Accessor.GetEnumerableEvents(
+                row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
         }
 
         public Type ComponentTypeCollection
@@ -76,15 +89,21 @@ namespace com.espertech.esper.epl.table.strategy
             get { return null; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
             return null;
         }
-    
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
     }

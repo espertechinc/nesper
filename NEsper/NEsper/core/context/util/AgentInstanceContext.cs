@@ -43,16 +43,6 @@ namespace com.espertech.esper.core.context.util
             AgentInstanceFilterProxy = agentInstanceFilterProxy;
             _agentInstanceProperties = agentInstanceProperties;
             AgentInstanceScriptContext = agentInstanceScriptContext;
-
-            if (statementContext.IsStatelessSelect)
-            {
-                ExpressionResultCacheService = statementContext.ExpressionResultCacheServiceSharable;
-            }
-            else
-            {
-                ExpressionResultCacheService = new ExpressionResultCacheServiceAgentInstance();
-            }
-
             _terminationCallbacks = null;
         }
 
@@ -68,7 +58,10 @@ namespace com.espertech.esper.core.context.util
             get { return StatementContext.TimeProvider; }
         }
 
-        public ExpressionResultCacheService ExpressionResultCacheService { get; private set; }
+        public ExpressionResultCacheService ExpressionResultCacheService
+        {
+            get { return StatementContext.ExpressionResultCacheServiceSharable; }
+        }
 
         public int AgentInstanceId { get; private set; }
 
@@ -92,7 +85,7 @@ namespace com.espertech.esper.core.context.util
             get { return StatementContext.EngineURI; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return StatementContext.StatementId; }
         }
@@ -128,6 +121,11 @@ namespace com.espertech.esper.core.context.util
             }
         }
 
+        public void AddTerminationCallback(Action action)
+        {
+            AddTerminationCallback(new ProxyStopCallback(action));
+        }
+
         public void AddTerminationCallback(StopCallback callback)
         {
             if (_terminationCallbacks == null)
@@ -146,6 +144,11 @@ namespace com.espertech.esper.core.context.util
                 q.Add(callback);
                 _terminationCallbacks = q;
             }
+        }
+
+        public void RemoveTerminationCallback(Action action)
+        {
+            RemoveTerminationCallback(new ProxyStopCallback(action));
         }
 
         public void RemoveTerminationCallback(StopCallback callback)

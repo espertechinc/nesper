@@ -25,6 +25,7 @@ namespace com.espertech.esper.view.internals
         : ViewFactory
         , DataWindowViewFactory
         , DataWindowViewFactoryUniqueCandidate
+        , ViewFactoryContainer
     {
         /// <summary>The event type. </summary>
         private EventType _parentEventType;
@@ -109,6 +110,11 @@ namespace com.espertech.esper.view.internals
         public bool CanReuse(View view)
         {
             return false;
+        }
+
+        public ICollection<ViewFactory> ViewFactoriesContained
+        {
+            get { return _viewFactories; }
         }
 
         public ICollection<string> UniquenessCandidatePropertyNames

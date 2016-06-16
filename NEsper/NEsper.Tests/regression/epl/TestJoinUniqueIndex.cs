@@ -51,7 +51,7 @@ namespace com.espertech.esper.regression.epl
         public void TestIndexChoicesJoinUnique() {
             _epService.EPAdministrator.Configuration.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
             _epService.EPAdministrator.Configuration.AddEventType("SSB2", typeof(SupportSimpleBeanTwo));
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             // test no where clause with unique on multiple props, exact specification of where-clause
             IndexAssertionEventSend assertSendEvents = 

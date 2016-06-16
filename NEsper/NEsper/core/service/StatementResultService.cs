@@ -86,7 +86,7 @@ namespace com.espertech.esper.core.service
         /// Gets the statement id.
         /// </summary>
         /// <value>The statement id.</value>
-        string StatementId { get; }
+        int StatementId { get; }
 
         /// <summary>
         /// Gets the statement listener set.

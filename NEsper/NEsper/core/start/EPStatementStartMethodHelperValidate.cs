@@ -17,7 +17,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.named;
@@ -43,7 +42,7 @@ namespace com.espertech.esper.core.start
                 }
                 if (viewFactory is DataWindowViewFactory)
                 {
-                    throw new ExprValidationException(NamedWindowServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
+                    throw new ExprValidationException(NamedWindowMgmtServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
                 }
             }
         }
@@ -174,19 +173,23 @@ namespace com.espertech.esper.core.start
                 var outerJoinDesc = statementSpec.OuterJoinDescList[outerJoinCount];
     
                 // validate on-expression nodes, if provided
-                if (outerJoinDesc.OptLeftNode != null) {
-                    var streamIdPair = ValidateOuterJoinPropertyPair(statementContext, outerJoinDesc.OptLeftNode, outerJoinDesc.OptRightNode, outerJoinCount,
-                            typeService, viewResourceDelegate);
+                if (outerJoinDesc.OptLeftNode != null)
+                {
+                    var streamIdPair = ValidateOuterJoinPropertyPair(
+                        statementContext, outerJoinDesc.OptLeftNode, outerJoinDesc.OptRightNode, outerJoinCount,
+                        typeService, viewResourceDelegate);
     
                     if (outerJoinDesc.AdditionalLeftNodes != null)
                     {
-                        ISet<int?> streamSet = new HashSet<int?>();
+                        ISet<int> streamSet = new HashSet<int>();
                         streamSet.Add(streamIdPair.First);
                         streamSet.Add(streamIdPair.Second);
                         for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++)
                         {
-                            var streamIdPairAdd = ValidateOuterJoinPropertyPair(statementContext, outerJoinDesc.AdditionalLeftNodes[i], outerJoinDesc.AdditionalRightNodes[i], outerJoinCount,
-                                    typeService, viewResourceDelegate);
+                            var streamIdPairAdd = ValidateOuterJoinPropertyPair(
+                                statementContext, outerJoinDesc.AdditionalLeftNodes[i],
+                                outerJoinDesc.AdditionalRightNodes[i], outerJoinCount,
+                                typeService, viewResourceDelegate);
     
                             // make sure all additional properties point to the same two streams
                             if ((!streamSet.Contains(streamIdPairAdd.First) || (!streamSet.Contains(streamIdPairAdd.Second))))
@@ -216,7 +219,7 @@ namespace com.espertech.esper.core.start
             }
         }
 
-        internal static UniformPair<int?> ValidateOuterJoinPropertyPair(
+        internal static UniformPair<int> ValidateOuterJoinPropertyPair(
                 StatementContext statementContext,
                 ExprIdentNode leftNode,
                 ExprIdentNode rightNode,
@@ -291,7 +294,7 @@ namespace com.espertech.esper.core.start
                 throw new EPStatementException("Error validating expression: " + message, statementContext.Expression);
             }
     
-            return new UniformPair<int?>(streamIdLeft, streamIdRight);
+            return new UniformPair<int>(streamIdLeft, streamIdRight);
         }
 
         internal static ExprNode ValidateExprNoAgg(

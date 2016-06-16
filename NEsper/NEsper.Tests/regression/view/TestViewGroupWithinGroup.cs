@@ -52,7 +52,7 @@ namespace com.espertech.esper.regression.view
             // Listen to all ticks
             EPStatement viewGrouped = _epService.EPAdministrator.CreateEPL(
                     "select irstream datapoints as size, Symbol, feed, Volume from " + typeof(SupportMarketDataBean).FullName +
-                            ".std:groupwin(Symbol).std:groupwin(feed).std:groupwin(Volume).stat:uni(Price)");
+                            ".std:groupwin(Symbol).std:groupwin(feed).std:groupwin(Volume).stat:uni(Price) order by Symbol, feed, Volume");
 
             // Counts per Symbol, feed and volume the events
             viewGrouped.Events += _listener.Update;

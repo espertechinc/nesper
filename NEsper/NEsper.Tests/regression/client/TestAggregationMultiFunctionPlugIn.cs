@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.client
     
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _listener = new SupportUpdateListener();
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }

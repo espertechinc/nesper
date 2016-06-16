@@ -22,12 +22,9 @@ namespace com.espertech.esper.epl.join.table
             _streamNum = streamNum;
         }
 
-        public EventTable[] MakeEventTables()
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
-            return new EventTable[]
-            {
-                new UnindexedEventTable(_streamNum)
-            };
+            return new EventTable[] { new UnindexedEventTableImpl(_streamNum) };
         }
 
         public Type EventTableType

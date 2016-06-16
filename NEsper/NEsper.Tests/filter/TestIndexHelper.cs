@@ -95,8 +95,9 @@ namespace com.espertech.esper.filter
             Assert.AreEqual(_parameterOne, IndexHelper.FindParameter(_parameters, indexThree));
         }
     
-        private FilterSpecLookupable MakeLookupable(String fieldName) {
-            return new FilterSpecLookupable(fieldName, _eventType.GetGetter(fieldName), _eventType.GetPropertyType(fieldName));
+        private FilterSpecLookupable MakeLookupable(String fieldName)
+        {
+            return new FilterSpecLookupable(fieldName, _eventType.GetGetter(fieldName), _eventType.GetPropertyType(fieldName), false);
         }
     }
 }

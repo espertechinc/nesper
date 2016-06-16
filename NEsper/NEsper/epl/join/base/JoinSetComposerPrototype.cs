@@ -12,11 +12,11 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.epl.join.@base
 {
     /// <summary>
-    /// Interface for a Prototype populating a join tuple result set from new data and
+    /// Interface for a _prototype populating a join tuple result set from new data and
     /// old data for each stream.
     /// </summary>
     public interface JoinSetComposerPrototype
     {
-        JoinSetComposerDesc Create(Viewable[] streamViews, bool isFireAndForget, AgentInstanceContext agentInstanceContext);
+        JoinSetComposerDesc Create(Viewable[] streamViews, bool isFireAndForget, AgentInstanceContext agentInstanceContext, bool isRecoveringResilient);
     }
 }

@@ -13,11 +13,12 @@ using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.epl.view;
 
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Result set processor Prototype for the fully-grouped case: there is a group-by and 
+    /// Result set processor _prototype for the fully-grouped case: there is a group-by and 
     /// all non-aggregation event properties in the select clause are listed in the group by, 
     /// and there are aggregation functions.
     /// </summary>
@@ -39,6 +40,11 @@ namespace com.espertech.esper.epl.core
         /// <param name="groupByRollupDesc">The group by rollup desc.</param>
         /// <param name="isJoin">if set to <c>true</c> [is join].</param>
         /// <param name="isHistoricalOnly">if set to <c>true</c> [is historical only].</param>
+        /// <param name="iterateUnbounded">if set to <c>true</c> [iterate unbounded].</param>
+        /// <param name="optionalOutputFirstConditionFactory">The optional output first condition factory.</param>
+        /// <param name="resultSetProcessorHelperFactory">The result set processor helper factory.</param>
+        /// <param name="enableOutputLimitOpt">if set to <c>true</c> [enable output limit opt].</param>
+        /// <param name="numStreams">The number streams.</param>
         public ResultSetProcessorRowPerGroupRollupFactory(
             GroupByRollupPerLevelExpression perLevelExpression,
             ExprNode[] groupKeyNodeExpressions,
@@ -51,7 +57,11 @@ namespace com.espertech.esper.epl.core
             AggregationGroupByRollupDesc groupByRollupDesc,
             bool isJoin,
             bool isHistoricalOnly,
-            bool iterateUnbounded)
+            bool iterateUnbounded,
+            OutputConditionPolledFactory optionalOutputFirstConditionFactory,
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            bool enableOutputLimitOpt,
+            int numStreams)
         {
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
             PerLevelExpression = perLevelExpression;
@@ -65,6 +75,10 @@ namespace com.espertech.esper.epl.core
             GroupByRollupDesc = groupByRollupDesc;
             IsJoin = isJoin;
             IsHistoricalOnly = isHistoricalOnly;
+            OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
+            ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            IsEnableOutputLimitOpt = enableOutputLimitOpt;
+            NumStreams = numStreams;
         }
     
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
@@ -111,5 +125,13 @@ namespace com.espertech.esper.epl.core
         {
             get { return ResultSetProcessorType.FULLYAGGREGATED_GROUPED_ROLLUP; }
         }
+
+        public OutputConditionPolledFactory OptionalOutputFirstConditionFactory { get; private set; }
+
+        public bool IsEnableOutputLimitOpt { get; private set; }
+
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; private set; }
+
+        public int NumStreams { get; private set; }
     }
 }

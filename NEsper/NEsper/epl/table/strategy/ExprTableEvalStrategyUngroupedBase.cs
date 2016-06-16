@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 
@@ -15,21 +13,18 @@ namespace com.espertech.esper.epl.table.strategy
 {
     public abstract class ExprTableEvalStrategyUngroupedBase
     {
-        private readonly ILockable _lock;
-        protected readonly Atomic<ObjectArrayBackedEventBean> AggregationState;
+        private readonly TableAndLockProviderUngrouped _provider;
 
-        protected ExprTableEvalStrategyUngroupedBase(
-            ILockable @lock,
-            Atomic<ObjectArrayBackedEventBean> aggregationState)
+        protected ExprTableEvalStrategyUngroupedBase(TableAndLockProviderUngrouped provider)
         {
-            _lock = @lock;
-            AggregationState = aggregationState;
+            _provider = provider;
         }
 
         protected ObjectArrayBackedEventBean LockTableReadAndGet(ExprEvaluatorContext context)
         {
-            ExprTableEvalLockUtil.ObtainLockUnless(_lock, context);
-            return AggregationState.Get();
+            var pair = _provider.Get();
+            ExprTableEvalLockUtil.ObtainLockUnless(pair.Lock, context);
+            return pair.Ungrouped.EventUngrouped;
         }
     }
-}
+} // end of namespace

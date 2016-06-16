@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.filter;
 
@@ -19,6 +20,7 @@ namespace com.espertech.esper.epl.spec
     {
         public ContextDetailConditionTimePeriod(ExprTimePeriod timePeriod, bool immediate)
         {
+            ScheduleCallbackId = -1;
             TimePeriod = timePeriod;
             IsImmediate = immediate;
         }
@@ -31,5 +33,14 @@ namespace com.espertech.esper.epl.spec
         }
 
         public bool IsImmediate { get; private set; }
+
+        public int ScheduleCallbackId { get; set; }
+
+        public long GetExpectedEndTime(AgentInstanceContext agentInstanceContext)
+        {
+            var current = agentInstanceContext.StatementContext.TimeProvider.Time;
+            var msec = TimePeriod.NonconstEvaluator().DeltaMillisecondsAdd(current, null, true, agentInstanceContext);
+            return current + msec;
+        }
     }
 }

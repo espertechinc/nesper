@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.virtualdw
         , VirtualDWView
     {
         private static readonly EventTableOrganization TABLE_ORGANIZATION = new EventTableOrganization(
-            null, false, false, 0, null, EventTableOrganization.EventTableOrganizationType.VDW);
+            null, false, false, 0, null, EventTableOrganizationType.VDW);
 
         private static readonly ILog Log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.epl.virtualdw
 
         public SubordTableLookupStrategy GetSubordinateLookupStrategy(
             String accessedByStatementName,
-            String accessedByStatementId,
+            int accessedByStatementId,
             Attribute[] accessedByStmtAnnotations,
             EventType[] outerStreamTypes,
             IList<SubordPropHashKey> hashKeys,
@@ -145,8 +145,8 @@ namespace com.espertech.esper.epl.virtualdw
         }
 
         public JoinExecTableLookupStrategy GetJoinLookupStrategy(
-            String accessedByStmtName, 
-            String accessedByStmtId, 
+            String accessedByStmtName,
+            int accessedByStmtId, 
             Attribute[] accessedByStmtAnnotations, 
             EventTable[] eventTables, 
             TableLookupKeyDesc keyDescriptor, 
@@ -253,7 +253,7 @@ namespace com.espertech.esper.epl.virtualdw
             var index =
                 _dataExternal.GetLookup(
                     new VirtualDataWindowLookupContext(
-                        null, null, annotations, true, _namedWindowName, noopTable.HashAccess, noopTable.BtreeAccess));
+                        null, -1, annotations, true, _namedWindowName, noopTable.HashAccess, noopTable.BtreeAccess));
             CheckIndex(index);
             if (index == null)
             {

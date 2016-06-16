@@ -9,10 +9,13 @@
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.context.activator
 {
-    public class ViewableActivatorStreamReuseView : ViewableActivator
+    public class ViewableActivatorStreamReuseView 
+        : ViewableActivator
+        , StopCallback
     {
         private readonly EPServicesContext _services;
         private readonly StatementContext _statementContext;
@@ -44,14 +47,14 @@ namespace com.espertech.esper.core.context.activator
                 _statementContext.FilterService,
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 _join,
-                _evaluatorContextStmt,
+                agentInstanceContext,
                 _statementSpec.OrderByList.Length > 0,
                 _filterSubselectSameStream,
                 _statementContext.Annotations,
                 _statementContext.IsStatelessSelect,
                 _streamNum,
                 _isCanIterateUnbound);
-            return new ViewableActivationResult(pair.First, Stop, pair.Second, null, null, false, false, null);
+            return new ViewableActivationResult(pair.First, this, pair.Second, null, null, false, false, null);
         }
     
         public void Stop()

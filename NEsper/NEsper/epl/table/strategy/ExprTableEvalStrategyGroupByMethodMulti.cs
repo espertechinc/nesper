@@ -6,16 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.events;
-using com.espertech.esper.events.arr;
 
 namespace com.espertech.esper.epl.table.strategy
 {
@@ -23,8 +15,8 @@ namespace com.espertech.esper.epl.table.strategy
     {
         private readonly ExprEvaluator[] _groupExpr;
 
-        public ExprTableEvalStrategyGroupByMethodMulti(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState, int index, ExprEvaluator[] groupExpr)
-            : base(@lock, aggregationState, index)
+        public ExprTableEvalStrategyGroupByMethodMulti(TableAndLockProviderGrouped provider, int index, ExprEvaluator[] groupExpr)
+            : base(provider, index)
         {
             _groupExpr = groupExpr;
         }

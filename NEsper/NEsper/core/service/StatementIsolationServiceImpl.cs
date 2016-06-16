@@ -27,14 +27,14 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly IDictionary<String, EPServiceProviderIsolatedImpl> _isolatedProviders;
+        private readonly IDictionary<string, EPServiceProviderIsolatedImpl> _isolatedProviders;
         private EPServicesContext _epServicesContext;
         private volatile int _currentUnitId = 0;
     
         /// <summary>Ctor. </summary>
         public StatementIsolationServiceImpl()
         {
-            _isolatedProviders = new ConcurrentDictionary<String, EPServiceProviderIsolatedImpl>();
+            _isolatedProviders = new ConcurrentDictionary<string, EPServiceProviderIsolatedImpl>();
         }
 
         /// <summary>Set the engine service context. </summary>
@@ -45,7 +45,7 @@ namespace com.espertech.esper.core.service
             set { _epServicesContext = value; }
         }
 
-        public EPServiceProviderIsolated GetIsolationUnit(String name, int? optionalUnitId)
+        public EPServiceProviderIsolated GetIsolationUnit(string name, int? optionalUnitId)
         {
             var serviceProviderIsolated = _isolatedProviders.Get(name);
             if (serviceProviderIsolated != null)
@@ -70,12 +70,12 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                ICollection<String> keyset = _isolatedProviders.Keys;
+                ICollection<string> keyset = _isolatedProviders.Keys;
                 return keyset.ToArray();
             }
         }
 
-        public void BeginIsolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void BeginIsolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -83,7 +83,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public void CommitIsolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void CommitIsolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -91,7 +91,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public void RollbackIsolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void RollbackIsolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -99,7 +99,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public void BeginUnisolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void BeginUnisolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -107,7 +107,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public void CommitUnisolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void CommitUnisolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -115,7 +115,7 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        public void RollbackUnisolatingStatements(String name, int unitId, IList<EPStatement> stmt)
+        public void RollbackUnisolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
             {
@@ -123,12 +123,12 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        public void NewStatement(String stmtId, String stmtName, EPIsolationUnitServices isolatedServices)
+        public void NewStatement(int stmtId, string stmtName, EPIsolationUnitServices isolatedServices)
         {
             Log.Info("New statement '" + stmtName + "' unit " + isolatedServices.Name);
         }
     
-        private String Print(IEnumerable<EPStatement> stmts)
+        private string Print(IEnumerable<EPStatement> stmts)
         {
             var buf = new StringBuilder();
             var delimiter = "";

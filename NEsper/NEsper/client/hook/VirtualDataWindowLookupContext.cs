@@ -36,13 +36,14 @@ namespace com.espertech.esper.client.hook
         /// <param name="namedWindowName">Name of the named window.</param>
         /// <param name="hashFields">The hash fields.</param>
         /// <param name="btreeFields">The btree fields.</param>
-        public VirtualDataWindowLookupContext(string statementName,
-                                              string statementId,
-                                              Attribute[] statementAnnotations,
-                                              bool fireAndForget,
-                                              string namedWindowName,
-                                              IList<VirtualDataWindowLookupFieldDesc> hashFields,
-                                              IList<VirtualDataWindowLookupFieldDesc> btreeFields)
+        public VirtualDataWindowLookupContext(
+            string statementName,
+            int statementId,
+            Attribute[] statementAnnotations,
+            bool fireAndForget,
+            string namedWindowName,
+            IList<VirtualDataWindowLookupFieldDesc> hashFields,
+            IList<VirtualDataWindowLookupFieldDesc> btreeFields)
         {
             StatementName = statementName;
             StatementId = statementId;
@@ -73,9 +74,9 @@ namespace com.espertech.esper.client.hook
         public string StatementName { get; private set; }
 
         /// <summary>
-        /// Returns the statement id of the statement to be performing the lookup, or null for fire-and-forget statements.
+        /// Returns the statement id of the statement to be performing the lookup, or -1 for fire-and-forget statements.
         /// </summary>
-        public string StatementId { get; private set; }
+        public int StatementId { get; private set; }
 
         /// <summary>
         /// Returns the statement annotations of the statement to be performing the lookup, or null for fire-and-forget statements.

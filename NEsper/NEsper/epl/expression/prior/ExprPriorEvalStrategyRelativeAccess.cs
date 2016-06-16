@@ -9,7 +9,6 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.view.window;
 
 namespace com.espertech.esper.epl.expression.prior

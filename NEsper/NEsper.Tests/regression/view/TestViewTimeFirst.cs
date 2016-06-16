@@ -42,7 +42,7 @@ namespace com.espertech.esper.regression.view
     
         [Test]
         public void TestMonthScoped() {
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             SendCurrentTime("2002-02-01T9:00:00.000");
             EPStatement stmt = _epService.EPAdministrator.CreateEPL("select * from SupportBean.win:firsttime(1 month)");
     

@@ -55,6 +55,10 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
 
+        public void Stop()
+        {
+        }
+
         public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
         public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
         public abstract ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);

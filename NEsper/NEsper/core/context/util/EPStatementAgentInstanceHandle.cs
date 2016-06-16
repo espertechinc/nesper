@@ -22,13 +22,17 @@ namespace com.espertech.esper.core.context.util
         private IReaderWriterLock _statementAgentInstanceLock = null;
         private EPStatementDispatch _optionalDispatchable;
 
-        public EPStatementAgentInstanceHandle(EPStatementHandle statementHandle, IReaderWriterLock statementAgentInstanceLock, int agentInstanceId, StatementAgentInstanceFilterVersion statementFilterVersion)
+        public EPStatementAgentInstanceHandle(EPStatementHandle statementHandle, IReaderWriterLock statementAgentInstanceLock, int agentInstanceId, StatementAgentInstanceFilterVersion statementFilterVersion, FilterFaultHandlerFactory filterFaultHandlerFactory)
         {
             StatementHandle = statementHandle;
             _statementAgentInstanceLock = statementAgentInstanceLock;
             AgentInstanceId = agentInstanceId;
             _hashCode = 31 * statementHandle.GetHashCode() + agentInstanceId;
             StatementFilterVersion = statementFilterVersion;
+            if (filterFaultHandlerFactory != null)
+            {
+                FilterFaultHandler = filterFaultHandlerFactory.MakeFilterFaultHandler();
+            }
         }
 
         public EPStatementHandle StatementHandle { get; private set; }
@@ -86,7 +90,7 @@ namespace com.espertech.esper.core.context.util
             }
     
             var other = (EPStatementAgentInstanceHandle) otherObj;
-            return other.StatementHandle.StatementId.Equals(StatementHandle.StatementId) && other.AgentInstanceId == AgentInstanceId;
+            return (other.StatementHandle.StatementId == StatementHandle.StatementId) && (other.AgentInstanceId == AgentInstanceId);
         }
     
         public override int GetHashCode()
@@ -130,7 +134,7 @@ namespace com.espertech.esper.core.context.util
 
         public FilterFaultHandler FilterFaultHandler { get; set; }
 
-        public string StatementId
+        public int StatementId
         {
             get { return StatementHandle.StatementId; }
         }

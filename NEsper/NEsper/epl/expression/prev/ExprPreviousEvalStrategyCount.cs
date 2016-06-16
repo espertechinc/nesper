@@ -18,12 +18,13 @@ namespace com.espertech.esper.epl.expression.prev
     public class ExprPreviousEvalStrategyCount : ExprPreviousEvalStrategy
     {
         private readonly RandomAccessByIndexGetter _randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexMap _relativeAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
         private readonly int _streamNumber;
 
-        public ExprPreviousEvalStrategyCount(int streamNumber,
-                                             RandomAccessByIndexGetter randomAccessGetter,
-                                             RelativeAccessByEventNIndexMap relativeAccessGetter)
+        public ExprPreviousEvalStrategyCount(
+            int streamNumber,
+            RandomAccessByIndexGetter randomAccessGetter,
+            RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
             _streamNumber = streamNumber;
             _randomAccessGetter = randomAccessGetter;
@@ -32,8 +33,7 @@ namespace com.espertech.esper.epl.expression.prev
 
         #region ExprPreviousEvalStrategy Members
 
-        public Object Evaluate(EventBean[] eventsPerStream,
-                               ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             long size;
             if (_randomAccessGetter != null)
@@ -49,26 +49,23 @@ namespace com.espertech.esper.epl.expression.prev
                 {
                     return null;
                 } 
-                size = relativeAccess.GetWindowToEventCount(evalEvent);
+                size = relativeAccess.GetWindowToEventCount();
             }
 
             return size;
         }
 
-        public ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream,
-                                                            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream,
-                                                 ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream,
-                                              ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             return null;
         }

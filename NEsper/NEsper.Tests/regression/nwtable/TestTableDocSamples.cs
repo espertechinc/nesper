@@ -9,6 +9,9 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -38,6 +41,40 @@ namespace com.espertech.esper.regression.nwtable
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest();}
         }
     
+        [Test]
+        public void TestIncreasingUseCase()
+        {
+            String epl =
+                    "create schema ValueEvent(value long);\n" +
+                    "create schema ResetEvent(startThreshold long);\n" +
+                    "create table CurrentMaxTable(currentThreshold long);\n" +
+                    "@name('trigger') insert into ThresholdTriggered select * from ValueEvent(value >= CurrentMaxTable.currentThreshold);\n" +
+                    "on ResetEvent merge CurrentMaxTable when matched then update set currentThreshold = startThreshold when not matched then insert select startThreshold as currentThreshold;\n" +
+                    "on ThresholdTriggered update CurrentMaxTable set currentThreshold = value + 100;\n";
+            epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+
+            SupportUpdateListener listener = new SupportUpdateListener();
+            epService.EPAdministrator.GetStatement("trigger").AddListener(listener);
+
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("startThreshold", 100L), "ResetEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 30L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 99L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 100L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".SplitCsv(), new Object[]{100L});
+
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 101L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 103L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 130L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 199L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 200L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".SplitCsv(), new Object[] { 200L });
+
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 201L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 260L), "ValueEvent");
+            epService.EPRuntime.SendEvent(Collections.SingletonDataMap("value", 301L), "ValueEvent");
+            EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), "value".SplitCsv(), new Object[] { 301L });
+        }
+
         [Test]
         public void TestDoc() {
             epService.EPAdministrator.CreateEPL("create table agg_srcdst as (key0 string primary key, key1 string primary key, cnt count(*))");

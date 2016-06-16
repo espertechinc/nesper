@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.spec
             _filterSpecRaw = filterSpecRaw;
         }
 
-        public IList<FilterSpecCompiled> FilterSpecsIfAny
+        public IList<FilterSpecCompiled> ContextDetailFilterSpecs
         {
             get
             {

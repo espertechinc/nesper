@@ -309,26 +309,34 @@ namespace com.espertech.esper.view.std
             return subview.ViewFactory == removed.ViewFactory;
         }
     
-        private void RemoveSubview(View view) {
+        private void RemoveSubview(View view)
+        {
             view.Parent = null;
             RecursiveMergeViewRemove(view);
-            if (view is StoppableView) {
-                ((StoppableView) view).StopView();
+            var stoppableView = view as StoppableView;
+            if (stoppableView != null) {
+                stoppableView.Stop();
             }
         }
     
         private void RecursiveMergeViewRemove(View view)
         {
-            foreach (var child in view.Views) {
-                if (child is MergeView) {
-                    var mergeView = (MergeView) child;
+            foreach (var child in view.Views)
+            {
+                var mergeView = child as MergeView;
+                if (mergeView != null)
+                {
                     mergeView.RemoveParentView(view);
                 }
-                else {
-                    if (child is StoppableView) {
-                        ((StoppableView) child).StopView();
+                else
+                {
+                    var stoppableView = child as StoppableView;
+                    if (stoppableView != null)
+                    {
+                        stoppableView.Stop();
                     }
-                    if (child.Views.Length > 0) {
+                    if (child.Views.Length > 0)
+                    {
                         RecursiveMergeViewRemove(child);
                     }
                 }

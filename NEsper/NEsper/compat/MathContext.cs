@@ -14,6 +14,13 @@ namespace com.espertech.esper.compat
     [Serializable]
     public class MathContext
     {
+        public static readonly MathContext DECIMAL32;
+
+        static MathContext()
+        {
+            DECIMAL32 = new MathContext(MidpointRounding.AwayFromZero, 7);
+        }
+
         /// <summary>
         /// Gets the rounding mode.
         /// </summary>

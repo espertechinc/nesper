@@ -69,8 +69,8 @@ namespace com.espertech.esper.epl.join.@base
             {
                 var eventArr = key.Array;
                 var evaluateParams = new EvaluateParams(eventArr, isNewData, exprEvaluatorContext);
-                var matched = (bool?) filterExprNode.Evaluate(evaluateParams);
-                if ((matched == null) || (!matched.Value))
+                var matched = filterExprNode.Evaluate(evaluateParams);
+                if ((matched == null) || (false.Equals(matched)))
                 {
                     keyList.Add(key);
                 }

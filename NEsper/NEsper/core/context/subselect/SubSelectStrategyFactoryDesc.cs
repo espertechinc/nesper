@@ -16,21 +16,24 @@ using com.espertech.esper.epl.expression.prior;
 namespace com.espertech.esper.core.context.subselect
 {
     /// <summary>
-    /// Entry holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
+    /// Record holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
     /// </summary>
     public class SubSelectStrategyFactoryDesc
     {
-        public SubSelectStrategyFactoryDesc(SubSelectActivationHolder subSelectActivationHolder,
-                                            SubSelectStrategyFactory factory,
-                                            AggregationServiceFactoryDesc aggregationServiceFactoryDesc,
-                                            IList<ExprPriorNode> priorNodesList,
-                                            IList<ExprPreviousNode> prevNodesList)
+        public SubSelectStrategyFactoryDesc(
+            SubSelectActivationHolder subSelectActivationHolder,
+            SubSelectStrategyFactory factory,
+            AggregationServiceFactoryDesc aggregationServiceFactoryDesc,
+            IList<ExprPriorNode> priorNodesList,
+            IList<ExprPreviousNode> prevNodesList,
+            int subqueryNumber)
         {
             SubSelectActivationHolder = subSelectActivationHolder;
             Factory = factory;
             AggregationServiceFactoryDesc = aggregationServiceFactoryDesc;
             PriorNodesList = priorNodesList;
             PrevNodesList = prevNodesList;
+            SubqueryNumber = subqueryNumber;
         }
 
         public SubSelectActivationHolder SubSelectActivationHolder { get; private set; }
@@ -42,5 +45,7 @@ namespace com.espertech.esper.core.context.subselect
         public IList<ExprPriorNode> PriorNodesList { get; private set; }
 
         public IList<ExprPreviousNode> PrevNodesList { get; private set; }
+
+        public int SubqueryNumber { get; private set; }
     }
 }

@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.dataflow
             _epService.EPRuntime.DataFlowRuntime.Instantiate("MyDataFlow");
     
             // test options-provided beacon field
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             var eplMinimal = "create dataflow MyGraph " +
                     "BeaconSource -> outstream<SupportBean> {iterations:1} " +
                     "EventBusSink(outstream) {}";

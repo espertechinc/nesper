@@ -83,7 +83,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { return _aggType; }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }
@@ -103,7 +103,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return null;
         }
     
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId) {
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
             return null;
         }
     
@@ -133,12 +133,12 @@ namespace com.espertech.esper.epl.expression.accessagg
     
             // validate number of parameters
             if (_aggType == CountMinSketchAggType.ADD || _aggType == CountMinSketchAggType.FREQ) {
-                if (this.ChildNodes.Length == 0 || this.ChildNodes.Length > 1) {
+                if (ChildNodes.Length == 0 || ChildNodes.Length > 1) {
                     throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
                 }
             }
             else {
-                if (this.ChildNodes.Length != 0) {
+                if (ChildNodes.Length != 0) {
                     throw new ExprValidationException(MessagePrefix + "requires a no parameter expressions");
                 }
             }
@@ -153,7 +153,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                 if (tableAccessColumn == null) {
                     throw new ExprValidationException(MessagePrefix + "requires the use of a table-access expression");
                 }
-                ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, this.ChildNodes, context);
+                ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, context);
             }
     
             // obtain evaluator
@@ -170,15 +170,15 @@ namespace com.espertech.esper.epl.expression.accessagg
             var spec = new CountMinSketchSpec(new CountMinSketchSpecHashes(DEFAULT__EPS_OF_TOTAL_COUNT, DEFAULT__CONFIDENCE, DEFAULT__SEED), null, DEFAULT__AGENT);
     
             // no parameters
-            if (this.ChildNodes.Length == 0) {
+            if (ChildNodes.Length == 0) {
                 return spec;
             }
     
             // check expected parameter type: a json object
-            if (this.ChildNodes.Length > 1 || !(this.ChildNodes[0] is ExprConstantNode)) {
+            if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode)) {
                 throw DeclaredWrongParameterExpr;
             }
-            var constantNode = (ExprConstantNode) this.ChildNodes[0];
+            var constantNode = (ExprConstantNode) ChildNodes[0];
             var value = constantNode.GetConstantValue(exprEvaluatorContext);
             if (!(value is IDictionary<string, object>)) {
                 throw DeclaredWrongParameterExpr;
@@ -202,7 +202,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                         if (vv != null) {
                             CountMinSketchAgent transform;
                             try {
-                                var transformClass = engineImportService.ResolveType((string) vv);
+                                var transformClass = engineImportService.ResolveType((string) vv, false);
                                 transform = TypeHelper.Instantiate<CountMinSketchAgent>(transformClass.FullName);
                             }
                             catch (Exception e) {

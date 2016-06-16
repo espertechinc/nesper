@@ -15,8 +15,15 @@ namespace com.espertech.esper.util
 	/// <summary>
 	/// Stop callback that performs no action.
 	/// </summary>
-	public class StopCallbackNoAction
+	public class StopCallbackNoAction : StopCallback
 	{
-        public readonly static StopCallback INSTANCE = () => { };
+        public readonly static StopCallbackNoAction INSTANCE = new StopCallbackNoAction();
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+	    public void Stop()
+	    {
+	    }
 	}
 } // end of namespace

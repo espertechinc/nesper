@@ -38,7 +38,7 @@ namespace com.espertech.esper.filter
     {
         public Action<EventBean, ICollection<FilterHandleCallback>> ProcMatchFound { get; set; }
         public Func<bool> ProcIsSubselect { get; set; }
-        public Func<string> ProcStatementId { get; set; }
+        public Func<int> ProcStatementId { get; set; }
 
         public ProxyFilterHandleCallback()
         {
@@ -52,7 +52,7 @@ namespace com.espertech.esper.filter
         /// <param name="statementId">The statement id.</param>
         public ProxyFilterHandleCallback(Action<EventBean, ICollection<FilterHandleCallback>> matchFound,
                                          bool isSubSelect,
-                                         string statementId)
+                                         int statementId)
         {
             ProcMatchFound = matchFound;
             ProcIsSubselect = () => isSubSelect;
@@ -67,7 +67,7 @@ namespace com.espertech.esper.filter
         /// <param name="statementId">The statement id.</param>
         public ProxyFilterHandleCallback(Action<EventBean, IEnumerable<FilterHandleCallback>> matchFound,
                                          Func<bool> isSubSelect,
-                                         Func<string> statementId)
+                                         Func<int> statementId)
         {
             ProcMatchFound = matchFound;
             ProcIsSubselect = isSubSelect;
@@ -78,7 +78,7 @@ namespace com.espertech.esper.filter
         /// Gets the statement id.
         /// </summary>
         /// <value>The statement id.</value>
-        public string StatementId
+        public int StatementId
         {
             get { return ProcStatementId.Invoke(); }
         }

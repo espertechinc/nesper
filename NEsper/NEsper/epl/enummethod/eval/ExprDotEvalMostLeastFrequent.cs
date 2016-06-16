@@ -37,17 +37,7 @@ namespace com.espertech.esper.epl.enummethod.eval
                 eventAdapterService);
         }
 
-        public override EnumEval GetEnumEval(
-            MethodResolutionService methodResolutionService,
-            EventAdapterService eventAdapterService,
-            StreamTypeService streamTypeService,
-            String statementId,
-            String enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache)
+        public override EnumEval GetEnumEval(MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache)
         {
             Type returnType;
             if (bodiesAndParameters.IsEmpty())

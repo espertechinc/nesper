@@ -107,13 +107,14 @@ namespace com.espertech.esper.filter
                     stmtContext.Annotations, 
                     stmtContext.ContextDescriptor,
 	                stmtContext.MethodResolutionService, 
-                    stmtContext.EventAdapterService, 
+                    stmtContext.EventAdapterService,
+                    stmtContext.FilterBooleanExpressionFactory,
                     stmtContext.TimeProvider, 
                     stmtContext.VariableService,
                     stmtContext.ScriptingService,
                     stmtContext.TableService, 
                     stmtContext.ConfigSnapshot, 
-                    stmtContext.NamedWindowService);
+                    stmtContext.NamedWindowMgmtService);
 	    }
 
 	    public static FilterSpecCompiled BuildNoStmtCtx(
@@ -127,18 +128,19 @@ namespace com.espertech.esper.filter
 	        string optionalStreamName,
 	        ICollection<int> assignedTypeNumberStack,
 	        ExprEvaluatorContext exprEvaluatorContext,
-	        string statementId,
+	        int statementId,
 	        string statementName,
 	        Attribute[] annotations,
 	        ContextDescriptor contextDescriptor,
 	        MethodResolutionService methodResolutionService,
 	        EventAdapterService eventAdapterService,
+            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
 	        TimeProvider timeProvider,
 	        VariableService variableService,
             ScriptingService scriptingService,
 	        TableService tableService,
 	        ConfigurationInformation configurationInformation,
-	        NamedWindowService namedWindowService)
+	        NamedWindowMgmtService namedWindowMgmtService)
         {
             var args = new FilterSpecCompilerArgs(
                 taggedEventTypes, 
@@ -152,6 +154,7 @@ namespace com.espertech.esper.filter
                 variableService, 
                 tableService, 
                 eventAdapterService,
+                filterBooleanExpressionFactory,
                 scriptingService,
                 annotations, 
                 contextDescriptor, 
@@ -176,7 +179,7 @@ namespace com.espertech.esper.filter
                     annotations, 
                     assignedTypeNumberStack, 
                     configurationInformation, 
-                    namedWindowService);
+                    namedWindowMgmtService);
             }
 
             var spec = new FilterSpecCompiled(eventType, eventTypeName, parameters, optionalPropertyEvaluator);
@@ -297,14 +300,14 @@ namespace com.espertech.esper.filter
 	                }
 
 	                // Register filter, create view factories
-	                viewFactoryChain = statementContext.ViewService.CreateFactories(subselectStreamNumber, filterStreamSpecCompiled.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext);
+	                viewFactoryChain = statementContext.ViewService.CreateFactories(subselectStreamNumber, filterStreamSpecCompiled.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext, true, subselect.SubselectNumber);
 	                subselect.RawEventType = viewFactoryChain.EventType;
 	            }
 	            else
 	            {
 	                var namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.StreamSpecs[0];
-	                var processor = statementContext.NamedWindowService.GetProcessor(namedSpec.WindowName);
-	                viewFactoryChain = statementContext.ViewService.CreateFactories(0, processor.NamedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
+	                var processor = statementContext.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
+	                viewFactoryChain = statementContext.ViewService.CreateFactories(0, processor.NamedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext, true, subselect.SubselectNumber);
 	                subselecteventTypeName = namedSpec.WindowName;
                     EPLValidationUtil.ValidateContextName(false, processor.NamedWindowName, processor.ContextName, statementContext.ContextName, true);
                 }

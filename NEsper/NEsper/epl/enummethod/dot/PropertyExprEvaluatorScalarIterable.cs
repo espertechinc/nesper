@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }
@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             get { return _componentType; }
         }
 
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }

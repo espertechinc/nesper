@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.agg.service
 	        TableColumnMethodPair[] methodPairs,
 	        AggregationAccessorSlotPair[] accessors,
 	        bool join,
-	        TableStateInstanceGroupBy tableStateInstance,
+            TableStateInstanceGrouped tableStateInstance,
 	        int[] targetStates,
 	        ExprNode[] accessStateExpr,
 	        AggregationAgent[] agents,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.epl.agg.service
 	    public override void SetCurrentAccess(object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
 	    {
 	        var key = rollupLevel.ComputeMultiKey(groupByKey, TableMetadata.KeyTypes.Length);
-	        var bean = TableStateInstance.Rows.Get(key);
+	        var bean = TableStateInstance.GetRowForGroupKey(key);
 
 	        if (bean != null) {
 	            var row = (AggregationRowPair) bean.Properties[0];

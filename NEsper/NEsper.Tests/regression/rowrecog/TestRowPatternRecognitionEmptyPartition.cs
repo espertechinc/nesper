@@ -65,7 +65,7 @@ namespace com.espertech.esper.regression.rowrecog
             EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {7});
     
             // Comment-in for testing partition removal.
-            for (int i = 0; i < 1000000; i++) {
+            for (int i = 0; i < 10000; i++) {
                 epService.EPRuntime.SendEvent(new SupportRecogBean("A", i));
                 //epService.EPRuntime.SendEvent(new SupportRecogBean("B", i));
                 //EPAssertionUtil.AssertProps(listener.AssertOneGetNewAndReset(), fields, new Object[] {i});

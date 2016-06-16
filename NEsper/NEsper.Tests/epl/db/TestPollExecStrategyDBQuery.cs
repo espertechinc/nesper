@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.db
     
             var resultProperties = new Dictionary<String, Object>();
             resultProperties["myvarchar"] = typeof(string);
-            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties);
+            var resultEventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", resultProperties, true);
     
             IDictionary<String, DBOutputTypeDesc> propertiesOut = new Dictionary<String, DBOutputTypeDesc>();
             propertiesOut["myvarchar"] = new DBOutputTypeDesc("TIME", typeof(string), null);

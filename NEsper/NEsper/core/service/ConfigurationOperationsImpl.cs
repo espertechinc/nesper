@@ -8,12 +8,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.metric;
@@ -206,6 +206,33 @@ namespace com.espertech.esper.core.service
             {
                 throw new ConfigurationException(e.Message, e);
             }
+        }
+
+        public void AddAnnotationImport(string importName, string assemblyNameOrFile)
+        {
+            try
+            {
+                _engineImportService.AddAnnotationImport(new AutoImportDesc(importName, assemblyNameOrFile));
+            }
+            catch (EngineImportException e)
+            {
+                throw new ConfigurationException(e.Message, e);
+            }
+        }
+
+        public void AddAnnotationImport(string importName)
+        {
+            AddAnnotationImport(importName, null);
+        }
+
+        public void AddAnnotationImport(Type autoImport)
+        {
+            AddAnnotationImport(autoImport.FullName, autoImport.AssemblyQualifiedName);
+        }
+
+        public void AddAnnotationImport<T>()
+        {
+            AddAnnotationImport(typeof(T));
         }
 
         public void AddImport(string importName, string assemblyNameOrFile)
@@ -450,7 +477,7 @@ namespace com.espertech.esper.core.service
             {
                 var arrayType = TypeHelper.IsGetArrayType(type);
                 _variableService.CreateNewVariable(null, variableName, arrayType.First, constant, arrayType.Second, false, initializationValue, _engineImportService);
-                _variableService.AllocateVariableState(variableName, 0, null);
+                _variableService.AllocateVariableState(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
                 _statementVariableRef.AddConfiguredVariable(variableName);
             }
             catch (VariableExistsException e)
@@ -644,7 +671,7 @@ namespace com.espertech.esper.core.service
                 }
             }
 
-            VariableReader reader = _variableService.GetReader(name, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+            var reader = _variableService.GetReader(name, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             if (reader == null)
             {
                 return false;
@@ -676,7 +703,8 @@ namespace com.espertech.esper.core.service
             return statements.AsReadOnlyCollection();
         }
     
-        public EventType GetEventType(String eventTypeName) {
+        public EventType GetEventType(String eventTypeName)
+        {
             return _eventAdapterService.GetEventTypeByName(eventTypeName);
         }
 

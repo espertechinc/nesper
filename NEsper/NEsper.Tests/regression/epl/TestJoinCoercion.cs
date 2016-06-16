@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.epl
     
         [Test]
         public void TestJoinCoercionRange() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("SupportBeanRange", typeof(SupportBeanRange));
     
             String[] fields = "sbs,sbi,sbri".Split(',');

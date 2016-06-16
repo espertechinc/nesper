@@ -77,7 +77,7 @@ namespace com.espertech.esper.rowregex
 
         public override String ToString()
         {
-            return "Entry " + State;
+            return "Record " + State;
         }
     }
 }

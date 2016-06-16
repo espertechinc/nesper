@@ -27,8 +27,7 @@ namespace com.espertech.esper.epl.spec
         /// <param name="sqlWithSubsParams">is the SQL with placeholder parameters</param>
         /// <param name="metadataSQL">is the sample SQL to retrieve statement metadata, if any was supplied</param>
         public DBStatementStreamSpec(String optionalStreamName, ViewSpec[] viewSpecs, String databaseName, String sqlWithSubsParams, String metadataSQL)
-
-                    : base(optionalStreamName, viewSpecs, new StreamSpecOptions())
+            : base(optionalStreamName, viewSpecs, new StreamSpecOptions())
         {
             DatabaseName = databaseName;
             SqlWithSubsParams = sqlWithSubsParams;
@@ -49,12 +48,13 @@ namespace com.espertech.esper.epl.spec
 
         public StreamSpecCompiled Compile(
             StatementContext statementContext,
-            ICollection<String> eventTypeReferences,
+            ICollection<string> eventTypeReferences,
             bool isInsertInto,
             ICollection<int> assignedTypeNumberStack,
             bool isJoin,
             bool isContextDeclaration,
-            bool isOnTrigger)
+            bool isOnTrigger,
+            string optionalStreamName)
         {
             return this;
         }

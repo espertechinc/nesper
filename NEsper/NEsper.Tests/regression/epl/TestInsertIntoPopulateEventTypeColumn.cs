@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.epl
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             _listener = new SupportUpdateListener();
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S1));
         }
@@ -314,9 +314,20 @@ namespace com.espertech.esper.regression.epl
     
             _epService.EPRuntime.SendEvent(new SupportBean_S0(100, "x2"));
             _epService.EPRuntime.SendEvent(new SupportBean("E2", 2));
-            expected = filter ? new Object[] {"x2"} : new Object[] {"x1"};
-            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, expected);
-    
+
+            var received = (string) _listener.AssertOneGetNewAndReset().Get(fields[0]);
+            if (filter)
+            {
+                Assert.AreEqual("x2", received);
+            }
+            else
+            {
+                if ((received != "x1") && (received != "x2"))
+                {
+                    Assert.Fail();
+                }
+            }
+
             _epService.EPAdministrator.DestroyAllStatements();
             _epService.EPAdministrator.Configuration.RemoveEventType("EventOne", true);
         }

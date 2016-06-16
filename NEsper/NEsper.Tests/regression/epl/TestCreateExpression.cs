@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType(typeof(SupportBean_S0));
             config.AddEventType(typeof(SupportCollection));
             _epService = EPServiceProviderManager.GetDefaultProvider(config);

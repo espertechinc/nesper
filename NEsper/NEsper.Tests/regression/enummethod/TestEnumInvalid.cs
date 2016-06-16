@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.enummethod
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("SupportBean_ST0", typeof(SupportBean_ST0));
             config.AddEventType("SupportBean_ST0_Container", typeof(SupportBean_ST0_Container));
             config.AddEventType("SupportBeanComplexProps", typeof(SupportBeanComplexProps));

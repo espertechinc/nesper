@@ -8,6 +8,7 @@
 
 using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.support.guard;
 using com.espertech.esper.support.pattern;

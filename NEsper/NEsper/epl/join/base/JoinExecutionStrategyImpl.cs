@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.join.@base
         public void Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinExexStrategy();}
-            UniformPair<ISet<MultiKey<EventBean>>> joinSet = _composer.Join(newDataPerStream, oldDataPerStream, _staticExprEvaluatorContext);
+            var joinSet = _composer.Join(newDataPerStream, oldDataPerStream, _staticExprEvaluatorContext);
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinExecStrategy(joinSet);}
 
             _filter.Process(joinSet.First, joinSet.Second, _staticExprEvaluatorContext);

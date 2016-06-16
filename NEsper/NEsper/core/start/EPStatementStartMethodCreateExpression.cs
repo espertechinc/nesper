@@ -9,17 +9,20 @@
 using System;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.start
 {
-    /// <summary>Starts and provides the stop method for EPL statements. </summary>
+    /// <summary>
+    /// Starts and provides the stop method for EPL statements.
+    /// </summary>
     public class EPStatementStartMethodCreateExpression : EPStatementStartMethodBase
     {
         public EPStatementStartMethodCreateExpression(StatementSpecCompiled statementSpec)
-                    : base(statementSpec)
+            : base(statementSpec)
         {
         }
 
@@ -36,18 +39,20 @@ namespace com.espertech.esper.core.start
             // define output event type
             var typeName = "EventType_Expression_" + expressionName;
             var resultType = services.EventAdapterService.CreateAnonymousMapType(
-                typeName, Collections.GetEmptyMap<String, Object>());
+                typeName, Collections.GetEmptyMap<String, Object>(), true);
 
-            var stopMethod = new EPStatementStopMethod(
+            var stopMethod = new ProxyEPStatementStopMethod(
                 () =>
                 {
                     // no action
                 });
 
-            var destroyMethod = new EPStatementDestroyMethod(
+            var destroyMethod = new ProxyEPStatementDestroyMethod(
                 () => services.ExprDeclaredService.DestroyedExpression(StatementSpec.CreateExpressionDesc));
 
-            return new EPStatementStartResult(new ZeroDepthStreamNoIterate(resultType), stopMethod, destroyMethod);
+            Viewable resultView = new ZeroDepthStreamNoIterate(resultType);
+            statementContext.StatementAgentInstanceFactory = new StatementAgentInstanceFactoryNoAgentInstance(resultView);
+            return new EPStatementStartResult(resultView, stopMethod, destroyMethod);
         }
     }
 }

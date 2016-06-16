@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
@@ -42,10 +43,22 @@ namespace com.espertech.esper.view
         /// <param name="engineURI">The engine URI.</param>
         /// <param name="sqlParameters">The SQL parameters.</param>
         /// <param name="eventAdapterService">The event adapter service.</param>
-        /// <param name="statementName">Name of the statement.</param>
-        /// <param name="statementId">The statement id.</param>
-        /// <param name="annotations">The annotations.</param>
+        /// <param name="statementContext"></param>
         /// <throws>ExprValidationException is thrown to indicate an exception in validating the view</throws>
-        void Validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, TableService tableService, ScriptingService scriptingService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot, SchedulingService schedulingService, string engineURI, IDictionary<int, IList<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, string statementName, string statementId, Attribute[] annotations);
+        void Validate(
+            EngineImportService engineImportService,
+            StreamTypeService streamTypeService,
+            MethodResolutionService methodResolutionService,
+            TimeProvider timeProvider,
+            VariableService variableService,
+            TableService tableService,
+            ScriptingService scriptingService,
+            ExprEvaluatorContext exprEvaluatorContext,
+            ConfigurationInformation configSnapshot,
+            SchedulingService schedulingService,
+            string engineURI,
+            IDictionary<int, IList<ExprNode>> sqlParameters,
+            EventAdapterService eventAdapterService,
+            StatementContext statementContext);
     }
 }

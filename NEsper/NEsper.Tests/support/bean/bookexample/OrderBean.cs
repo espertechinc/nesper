@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.support.bean.bookexample
 {
+    [Serializable]
     public class OrderBean
     {
         private Order orderdetail;

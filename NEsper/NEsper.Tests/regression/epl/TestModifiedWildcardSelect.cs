@@ -196,7 +196,8 @@ namespace com.espertech.esper.regression.epl
             typeMap["int"] = typeof(int);
             typeMap["string"] = typeof(string);
             configuration.AddEventType("mapEvent", typeMap);
-            _epService = EPServiceProviderManager.GetProvider("wildcard map event", configuration);
+            _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            _epService.Initialize();
 
             String text = "select *, string||string as concat from mapEvent.win:length(5)";
 

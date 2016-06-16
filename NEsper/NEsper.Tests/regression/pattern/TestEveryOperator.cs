@@ -17,7 +17,6 @@ using com.espertech.esper.support.client;
 
 using NUnit.Framework;
 
-
 namespace com.espertech.esper.regression.pattern
 {
     [TestFixture]
@@ -82,7 +81,7 @@ namespace com.espertech.esper.regression.pattern
         public void TestEveryAndNot()
         {
             var config = SupportConfigFactory.GetConfiguration();
-            var engine = EPServiceProviderManager.GetProvider("testRFIDZoneExit", config);
+            var engine = EPServiceProviderManager.GetDefaultProvider(config);
             engine.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(engine, GetType(), GetType().FullName); }
 

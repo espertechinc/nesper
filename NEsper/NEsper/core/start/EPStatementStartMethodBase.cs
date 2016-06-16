@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.start
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
     
-        private readonly StatementSpecCompiled _statementSpec;
+        internal readonly StatementSpecCompiled _statementSpec;
     
         protected EPStatementStartMethodBase(StatementSpecCompiled statementSpec)
         {
@@ -61,12 +61,12 @@ namespace com.espertech.esper.core.start
         }
     
         protected EPStatementAgentInstanceHandle GetDefaultAgentInstanceHandle(StatementContext statementContext) {
-            return new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion());
+            return new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion(), statementContext.FilterFaultHandlerFactory);
         }
     
         protected AgentInstanceContext GetDefaultAgentInstanceContext(StatementContext statementContext) {
             EPStatementAgentInstanceHandle handle = GetDefaultAgentInstanceHandle(statementContext);
-            return new AgentInstanceContext(statementContext, handle, -1, null, null, statementContext.DefaultAgentInstanceScriptContext);
+            return new AgentInstanceContext(statementContext, handle, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, null, statementContext.DefaultAgentInstanceScriptContext);
         }
     
         protected bool IsQueryPlanLogging(EPServicesContext services) {

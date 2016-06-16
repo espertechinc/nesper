@@ -113,5 +113,8 @@ namespace com.espertech.esper.epl.agg.service
         public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
             return null;
         }
+
+        public void Stop() {
+        }
     }
 }

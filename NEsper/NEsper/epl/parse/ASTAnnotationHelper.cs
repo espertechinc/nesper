@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.parse
             var enumValueText = ctx.GetText();
             Object enumValue;
             try {
-                enumValue = TypeHelper.ResolveIdentAsEnumConst(enumValueText, null, engineImportService);
+                enumValue = TypeHelper.ResolveIdentAsEnumConst(enumValueText, null, engineImportService, true);
             }
             catch (ExprValidationException) {
                 throw ASTWalkException.From("Annotation value '" + enumValueText + "' is not recognized as an enumeration value, please check imports or use a primitive or string type");

@@ -122,7 +122,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public static IList<T> GetEmptyList<T>()
         {
-            return new T[0] ;
+            return EmptyList<T>.Instance;
         }
 
         /// <summary>

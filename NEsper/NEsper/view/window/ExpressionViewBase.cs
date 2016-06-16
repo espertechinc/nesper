@@ -20,6 +20,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
 {
@@ -31,6 +32,7 @@ namespace com.espertech.esper.view.window
         , DataWindowView
         , CloneableView
         , StoppableView
+        , StopCallback
     {
         protected readonly ExprEvaluator ExpiryExpression;
         protected readonly ObjectArrayEventBean BuiltinEventProps;
@@ -71,8 +73,8 @@ namespace com.espertech.esper.view.window
                     var variableService = agentInstanceContext.StatementContext.VariableService;
 
                     agentInstanceContext.StatementContext.VariableService.RegisterCallback(variable, agentInstanceId, Update);
-                    agentInstanceContext.AddTerminationCallback(() =>
-                        variableService.UnregisterCallback(variableName, agentInstanceId, Update));
+                    agentInstanceContext.AddTerminationCallback(
+                        new ProxyStopCallback(() => variableService.UnregisterCallback(variableName, agentInstanceId, Update)));
                 }
     
                 ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
@@ -84,7 +86,7 @@ namespace com.espertech.esper.view.window
                 };
                 ScheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
                 ScheduleHandle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
-                agentInstanceContext.AddTerminationCallback(Stop);
+                agentInstanceContext.AddTerminationCallback(this);
             }
             else {
                 ScheduleSlot = null;
@@ -92,7 +94,7 @@ namespace com.espertech.esper.view.window
             }
     
             if (aggregationServiceFactoryDesc != null) {
-                AggregationService = aggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(agentInstanceContext.AgentInstanceContext, agentInstanceContext.AgentInstanceContext.StatementContext.MethodResolutionService);
+                AggregationService = aggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(agentInstanceContext.AgentInstanceContext, agentInstanceContext.AgentInstanceContext.StatementContext.MethodResolutionService, false, null);
                 AggregateNodes = aggregationServiceFactoryDesc.Expressions;
             }
             else {
@@ -117,7 +119,7 @@ namespace com.espertech.esper.view.window
     
         public void StopView() {
             StopScheduleAndVar();
-            AgentInstanceContext.RemoveTerminationCallback(Stop);
+            AgentInstanceContext.RemoveTerminationCallback(this);
         }
     
         public void Stop() {

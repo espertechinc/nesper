@@ -6,28 +6,24 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
-using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.table.strategy
 {
     public class ExprTableEvalStrategyUngroupedMethod : ExprTableEvalStrategyUngroupedBase , ExprTableAccessEvalStrategy {
     
-        private readonly int methodOffset;
-    
-        public ExprTableEvalStrategyUngroupedMethod(ILockable @lock, Atomic<ObjectArrayBackedEventBean> aggregationState, int methodOffset)
-            : base(@lock, aggregationState)
+        private readonly int _methodOffset;
+
+        public ExprTableEvalStrategyUngroupedMethod(TableAndLockProviderUngrouped provider, int methodOffset)
+            : base(provider)
         {
-            this.methodOffset = methodOffset;
+            this._methodOffset = methodOffset;
         }
     
         public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -38,7 +34,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationRowPair row = ExprTableEvalStrategyUtil.GetRow(@event);
-            return row.Methods[methodOffset].Value;
+            return row.Methods[_methodOffset].Value;
         }
     
         public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)

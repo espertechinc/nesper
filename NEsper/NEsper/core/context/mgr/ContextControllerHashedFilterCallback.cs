@@ -46,7 +46,8 @@ namespace com.espertech.esper.core.context.mgr
             agentInstanceContextCreateContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
     
-        public void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches) {
+        public void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
+        {
             int value = _getter.Get(theEvent).AsInt();
             _callback.Create(value, theEvent);
         }
@@ -56,7 +57,7 @@ namespace com.espertech.esper.core.context.mgr
             get { return false; }
         }
 
-        public string StatementId
+        public int StatementId
         {
             get { return _agentInstanceContextCreateContext.StatementContext.StatementId; }
         }

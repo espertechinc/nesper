@@ -325,8 +325,13 @@ namespace com.espertech.esper.epl.parse
         private static bool IsContainsScriptExpression(CommonTokenStream tokens) {
             for (var i = 0; i < tokens.Size; i++) {
                 if (tokens.Get(i).Type == EsperEPL2GrammarParser.EXPRESSIONDECL) {
-                    var startIndex = FindStartTokenScript(i + 1, tokens, EsperEPL2GrammarParser.LBRACK);
-                    if (startIndex != -1) {
+                    var startTokenLcurly = FindStartTokenScript(i + 1, tokens, EsperEPL2GrammarParser.LCURLY);
+                    var startTokenLbrack = FindStartTokenScript(i + 1, tokens, EsperEPL2GrammarParser.LBRACK);
+                    // Handle:
+                    // expression ABC { some[other] }
+                    // expression boolean js:doit(...) [ {} ]
+                    if (startTokenLbrack != -1 && (startTokenLcurly == -1 || startTokenLcurly > startTokenLbrack))
+                    {
                         return true;
                     }
                 }

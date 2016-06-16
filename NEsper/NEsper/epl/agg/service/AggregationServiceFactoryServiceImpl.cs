@@ -6,22 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.util;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
 
+
 namespace com.espertech.esper.epl.agg.service
 {
     public class AggregationServiceFactoryServiceImpl : AggregationServiceFactoryService
     {
-        public static AggregationServiceFactoryService DEFAULT_FACTORY = new AggregationServiceFactoryServiceImpl();
+        public static readonly AggregationServiceFactoryService DEFAULT_FACTORY =
+            new AggregationServiceFactoryServiceImpl();
 
         public AggregationServiceFactory GetNullAggregationService()
         {
@@ -30,7 +29,10 @@ namespace com.espertech.esper.epl.agg.service
 
         public AggregationServiceFactory GetNoGroupNoAccess(
             ExprEvaluator[] evaluatorsArr,
-            AggregationMethodFactory[] aggregatorsArr)
+            AggregationMethodFactory[] aggregatorsArr,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupAllNoAccessFactory(evaluatorsArr, aggregatorsArr, null);
         }
@@ -38,7 +40,10 @@ namespace com.espertech.esper.epl.agg.service
         public AggregationServiceFactory GetNoGroupAccessOnly(
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggSpecs,
-            bool join)
+            bool join,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupAllAccessOnlyFactory(pairs, accessAggSpecs, join);
         }
@@ -48,7 +53,10 @@ namespace com.espertech.esper.epl.agg.service
             AggregationMethodFactory[] aggregatorsArr,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
-            bool join)
+            bool join,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupAllMixedAccessFactory(
                 evaluatorsArr, aggregatorsArr, null, pairs, accessAggregations, join);
@@ -57,7 +65,10 @@ namespace com.espertech.esper.epl.agg.service
         public AggregationServiceFactory GetGroupedNoReclaimNoAccess(
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByNoAccessFactory(evaluatorsArr, aggregatorsArr, groupKeyBinding);
         }
@@ -65,8 +76,11 @@ namespace com.espertech.esper.epl.agg.service
         public AggregationServiceFactory GetGroupNoReclaimAccessOnly(
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggSpecs,
-            Object groupKeyBinding,
-            bool join)
+            object groupKeyBinding,
+            bool join,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByAccessOnlyFactory(pairs, accessAggSpecs, groupKeyBinding, join);
         }
@@ -77,7 +91,10 @@ namespace com.espertech.esper.epl.agg.service
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
             bool join,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByMixedAccessFactory(
                 evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join);
@@ -92,8 +109,11 @@ namespace com.espertech.esper.epl.agg.service
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
             bool join,
-            Object groupKeyBinding,
-            String optionalContextName)
+            object groupKeyBinding,
+            string optionalContextName,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByReclaimAgedFactory(
                 evaluatorsArr, aggregatorsArr, groupKeyBinding, reclaimGroupAged, reclaimGroupFrequency, variableService,
@@ -106,7 +126,10 @@ namespace com.espertech.esper.epl.agg.service
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
             bool join,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByRefcountedNoAccessFactory(evaluatorsArr, aggregatorsArr, groupKeyBinding);
         }
@@ -117,22 +140,29 @@ namespace com.espertech.esper.epl.agg.service
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
             bool join,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByRefcountedWAccessFactory(
                 evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join);
         }
 
         public AggregationServiceFactory GetGroupReclaimMixableRollup(
-            ExprEvaluator[] evaluatorsArr, 
-            AggregationMethodFactory[] aggregatorsArr, 
-            AggregationAccessorSlotPair[] pairs, 
-            AggregationStateFactory[] accessAggregations, 
-            bool join, 
-            Object groupKeyBinding, 
-            AggregationGroupByRollupDesc groupByRollupDesc)
+            ExprEvaluator[] evaluatorsArr,
+            AggregationMethodFactory[] aggregatorsArr,
+            AggregationAccessorSlotPair[] pairs,
+            AggregationStateFactory[] accessAggregations,
+            bool join,
+            object groupKeyBinding,
+            AggregationGroupByRollupDesc groupByRollupDesc,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
-            return new AggSvcGroupByRefcountedWAccessRollupFactory(evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join, groupByRollupDesc);
+            return new AggSvcGroupByRefcountedWAccessRollupFactory(
+                evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join, groupByRollupDesc);
         }
 
         public AggregationServiceFactory GetGroupWBinding(
@@ -146,14 +176,16 @@ namespace com.espertech.esper.epl.agg.service
             AggregationAgent[] agents,
             AggregationGroupByRollupDesc groupByRollupDesc)
         {
-            return new AggSvcGroupByWTableFactory(tableMetadata, methodPairs, accessorPairs, join, targetStates, accessStateExpr, agents, groupByRollupDesc);
+            return new AggSvcGroupByWTableFactory(
+                tableMetadata, methodPairs, accessorPairs, join, targetStates, accessStateExpr, agents,
+                groupByRollupDesc);
         }
 
         public AggregationServiceFactory GetNoGroupWBinding(
             AggregationAccessorSlotPair[] accessors,
             bool join,
             TableColumnMethodPair[] methodPairs,
-            String tableName,
+            string tableName,
             int[] targetStates,
             ExprNode[] accessStateExpr,
             AggregationAgent[] agents)
@@ -165,7 +197,10 @@ namespace com.espertech.esper.epl.agg.service
         public AggregationServiceFactory GetNoGroupLocalGroupBy(
             bool join,
             AggregationLocalGroupByPlan localGroupByPlan,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupAllLocalGroupByFactory(join, localGroupByPlan, groupKeyBinding);
         }
@@ -173,9 +208,12 @@ namespace com.espertech.esper.epl.agg.service
         public AggregationServiceFactory GetGroupLocalGroupBy(
             bool join,
             AggregationLocalGroupByPlan localGroupByPlan,
-            Object groupKeyBinding)
+            object groupKeyBinding,
+            bool isUnidirectional,
+            bool isFireAndForget,
+            bool isOnSelect)
         {
             return new AggSvcGroupByLocalGroupByFactory(join, localGroupByPlan, groupKeyBinding);
         }
     }
-}
+} // end of namespace

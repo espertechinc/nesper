@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.join.exec.composite
         {
         }
 
-        public ISet<EventBean> Lookup(EventBean theEvent, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
+        public ICollection<EventBean> Lookup(EventBean theEvent, Map parent, ICollection<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector, CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var comparableStart = base.EvaluateLookupStart(theEvent, context);
             if (optionalKeyCollector != null) {
@@ -51,10 +51,10 @@ namespace com.espertech.esper.epl.join.exec.composite
             var index = (TreeMap) parent;
             var submapOne = index.Head(comparableStart, !IncludeStart);
             var submapTwo = index.Tail(comparableEnd, !IncludeEnd);
-            return CompositeIndexQueryRange.Handle(theEvent, submapOne, submapTwo, result, next);
+            return CompositeIndexQueryRange.Handle(theEvent, submapOne, submapTwo, result, next, postProcessor);
         }
 
-        public ISet<EventBean> Lookup(EventBean[] eventPerStream, Map parent, ISet<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector)
+        public ICollection<EventBean> Lookup(EventBean[] eventPerStream, Map parent, ICollection<EventBean> result, CompositeIndexQuery next, ExprEvaluatorContext context, IList<object> optionalKeyCollector, CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var comparableStart = base.EvaluatePerStreamStart(eventPerStream, context);
             if (optionalKeyCollector != null) {
@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.join.exec.composite
             var index = (TreeMap) parent;
             var submapOne = index.Head(comparableStart, !IncludeStart);
             var submapTwo = index.Tail(comparableEnd, !IncludeEnd);
-            return CompositeIndexQueryRange.Handle(eventPerStream, submapOne, submapTwo, result, next);
+            return CompositeIndexQueryRange.Handle(eventPerStream, submapOne, submapTwo, result, next, postProcessor);
         }
     }
 }

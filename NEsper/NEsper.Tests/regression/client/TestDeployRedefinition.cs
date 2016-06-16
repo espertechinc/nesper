@@ -67,7 +67,7 @@ namespace com.espertech.esper.regression.client
             Assert.AreEqual(0, filterSPI.CountTypes);
 
             // test on-merge
-            _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             String moduleString =
                     "@Name('S0') create window MyWindow.std:unique(IntPrimitive) as SupportBean;\n" +
                             "@Name('S1') on MyWindow insert into SecondStream select *;\n" +

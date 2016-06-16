@@ -36,8 +36,8 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             var configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            configuration.AddEventType<SupportBean>();
+            configuration.AddEventType<SupportBean_S0>();
             configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -52,6 +52,21 @@ namespace com.espertech.esper.regression.context
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _listener = null;
+        }
+
+        [Test]
+        public void TestBooleanExprFilter()
+        {
+            var eplCtx = "create context Ctx600a group by TheString like 'A%' as agroup, group by TheString like 'B%' as bgroup, group by TheString like 'C%' as cgroup from SupportBean";
+            _epService.EPAdministrator.CreateEPL(eplCtx);
+            var eplSum = "context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
+            var stmt = _epService.EPAdministrator.CreateEPL(eplSum);
+            stmt.Events += _listener.Update;
+
+            SendAssertBooleanExprFilter("B1", "bgroup", 1);
+            SendAssertBooleanExprFilter("A1", "agroup", 1);
+            SendAssertBooleanExprFilter("B171771", "bgroup", 2);
+            SendAssertBooleanExprFilter("A  x", "agroup", 2);
         }
     
         [Test]
@@ -238,7 +253,14 @@ namespace com.espertech.esper.regression.context
             AgentInstanceAssertionUtil.AssertInstanceCounts(statement.StatementContext, 0, 0, 0, 0);
             Assert.AreEqual(0, _spi.ContextManagementService.ContextCount);
         }
-    
+
+        private void SendAssertBooleanExprFilter(String theString, String groupExpected, long countExpected)
+        {
+            String[] fields = "c0,c1".Split(',');
+            _epService.EPRuntime.SendEvent(new SupportBean(theString, 1));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new Object[] { groupExpected, countExpected });
+        }
+
         private class MySelectorFilteredCategory : ContextPartitionSelectorFiltered
         {
             private readonly String _matchCategory;

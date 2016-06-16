@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestWindowUnidirectionalJoin() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));
     
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestRightOuterJoinLateStart()
         {
-            // Test for ESPER-186 Iterator not honoring order by clause for grouped join query with output-rate clause
+            // Test for ESPER-186 GetEnumerator not honoring order by clause for grouped join query with output-rate clause
             // Test for ESPER-187 Join of two or more named windows on late start may not return correct aggregation state on iterate
     
             // create window for Leave events
@@ -702,8 +702,8 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestUnidirectional()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
             _epService.EPAdministrator.CreateEPL("create window MyWindow.win:keepall() select * from SupportBean");
             _epService.EPAdministrator.CreateEPL("insert into MyWindow select * from SupportBean");
     

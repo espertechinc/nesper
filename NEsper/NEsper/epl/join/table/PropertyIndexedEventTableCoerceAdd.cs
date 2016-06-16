@@ -24,16 +24,12 @@ namespace com.espertech.esper.epl.join.table
     /// have as long as the properties exist. If the same event is added twice, the class 
     /// throws an exception on add.
     /// </summary>
-    public class PropertyIndexedEventTableCoerceAdd : PropertyIndexedEventTable
+    public class PropertyIndexedEventTableCoerceAdd : PropertyIndexedEventTableUnadorned
     {
         protected readonly Coercer[] Coercers;
         protected readonly Type[] CoercionTypes;
 
-        public PropertyIndexedEventTableCoerceAdd(
-            EventPropertyGetter[] propertyGetters,
-            EventTableOrganization organization,
-            Coercer[] coercers,
-            Type[] coercionTypes)
+        public PropertyIndexedEventTableCoerceAdd(EventPropertyGetter[] propertyGetters, EventTableOrganization organization, Coercer[] coercers, Type[] coercionTypes)
             : base(propertyGetters, organization)
         {
             Coercers = coercers;
@@ -42,10 +38,10 @@ namespace com.espertech.esper.epl.join.table
 
         protected override MultiKeyUntyped GetMultiKey(EventBean theEvent)
         {
-            var keyValues = new Object[PropertyGetters.Length];
-            for (int i = 0; i < PropertyGetters.Length; i++)
+            var keyValues = new Object[propertyGetters.Length];
+            for (int i = 0; i < propertyGetters.Length; i++)
             {
-                var value = PropertyGetters[i].Get(theEvent);
+                var value = propertyGetters[i].Get(theEvent);
                 if ((value != null) && (value.GetType() != CoercionTypes[i]))
                 {
                     if (value.IsNumber())

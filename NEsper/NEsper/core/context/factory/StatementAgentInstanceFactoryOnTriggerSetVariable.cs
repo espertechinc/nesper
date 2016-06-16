@@ -38,7 +38,7 @@ namespace com.espertech.esper.core.context.factory
             _outputProcessViewFactory = outputProcessViewFactory;
         }
     
-        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks)
+        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient)
         {
             OnSetVariableView view = _onSetVariableViewFactory.Instantiate(agentInstanceContext);
             return new OnExprViewResult(view, null);

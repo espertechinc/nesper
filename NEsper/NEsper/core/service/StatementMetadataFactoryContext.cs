@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.epl.spec;
 
@@ -17,13 +16,14 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class StatementMetadataFactoryContext
     {
-        public StatementMetadataFactoryContext(String statementName,
-                                               String statementId,
-                                               StatementContext statementContext,
-                                               StatementSpecRaw statementSpec,
-                                               String expression,
-                                               bool pattern,
-                                               EPStatementObjectModel optionalModel)
+        public StatementMetadataFactoryContext(
+            string statementName,
+            int statementId,
+            StatementContext statementContext,
+            StatementSpecRaw statementSpec,
+            string expression,
+            bool pattern,
+            EPStatementObjectModel optionalModel)
         {
             StatementName = statementName;
             StatementId = statementId;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.core.service
 
         public string StatementName { get; private set; }
 
-        public string StatementId { get; private set; }
+        public int StatementId { get; private set; }
 
         public StatementContext StatementContext { get; private set; }
 

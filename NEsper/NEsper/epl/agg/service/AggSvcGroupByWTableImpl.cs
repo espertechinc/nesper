@@ -32,12 +32,11 @@ namespace com.espertech.esper.epl.agg.service
             TableColumnMethodPair[] methodPairs,
             AggregationAccessorSlotPair[] accessors,
             bool join,
-            TableStateInstanceGroupBy tableStateInstance,
+            TableStateInstanceGrouped tableStateInstance,
             int[] targetStates,
             ExprNode[] accessStateExpr,
             AggregationAgent[] agents)
-            : base(
-                tableMetadata, methodPairs, accessors, join, tableStateInstance, targetStates, accessStateExpr, agents)
+            : base(tableMetadata, methodPairs, accessors, join, tableStateInstance, targetStates, accessStateExpr, agents)
         {
         }
 

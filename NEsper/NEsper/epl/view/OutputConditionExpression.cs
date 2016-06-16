@@ -14,7 +14,6 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
@@ -65,7 +64,7 @@ namespace com.espertech.esper.epl.view
             if (parent.BuiltinPropertiesEventType != null)
             {
                 _builtinProperties = new ObjectArrayEventBean(
-                    OutputConditionExpressionTypeUtil.GetOAPrototype(), parent.BuiltinPropertiesEventType);
+                    OutputConditionExpressionTypeUtil.OAPrototype, parent.BuiltinPropertiesEventType);
                 _lastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             }
 
@@ -78,8 +77,9 @@ namespace com.espertech.esper.epl.view
                     agentInstanceContext.StatementContext.VariableService.RegisterCallback(
                         variableName, agentInstanceContext.AgentInstanceId, Update);
                     agentInstanceContext.AddTerminationCallback(
-                        () => _agentInstanceContext.StatementContext.VariableService.UnregisterCallback(
-                            theVariableName, agentInstanceContext.AgentInstanceId, Update));
+                        new ProxyStopCallback(
+                            () => _agentInstanceContext.StatementContext.VariableService.UnregisterCallback(
+                                theVariableName, agentInstanceContext.AgentInstanceId, Update)));
                 }
             }
 
@@ -121,7 +121,7 @@ namespace com.espertech.esper.epl.view
             }
         }
 
-        public void Stop()
+        public override void Stop()
         {
             if (_scheduleHandle != null)
             {
@@ -194,7 +194,7 @@ namespace com.espertech.esper.epl.view
                     " now=" + current);
             }
 
-            ScheduleHandleCallback callback = new ProxyScheduleHandleCallback()
+            ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
             {
                 ProcScheduledTrigger = extensionServicesContext => Instrument.With(
                     i => i.QOutputRateConditionScheduledEval(),
@@ -209,7 +209,7 @@ namespace com.espertech.esper.epl.view
             _scheduleHandle = new EPStatementHandleCallback(
                 _agentInstanceContext.EpStatementAgentInstanceHandle, callback);
             _agentInstanceContext.StatementContext.SchedulingService.Add(0, _scheduleHandle, _scheduleSlot);
-            _agentInstanceContext.AddTerminationCallback(Stop);
+            _agentInstanceContext.AddTerminationCallback(new ProxyStopCallback(Stop));
 
             // execute assignments
             ExecuteThenAssignments();

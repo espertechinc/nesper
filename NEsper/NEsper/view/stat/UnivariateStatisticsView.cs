@@ -207,7 +207,7 @@ namespace com.espertech.esper.view.stat
                     ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE
                     );
             String outputEventTypeName = statementContext.StatementId + "_statview_" + streamNum;
-            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap);
+            return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, eventTypeMap, false);
         }
 
         public BaseStatisticsBean BaseStatisticsBean

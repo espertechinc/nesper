@@ -49,7 +49,7 @@ namespace com.espertech.esper.multithread
         private void TrySend(int numThreads, int numEventsPerThread)
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             _engine = EPServiceProviderManager.GetDefaultProvider(config);
             _engine.Initialize();
     

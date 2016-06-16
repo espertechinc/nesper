@@ -97,7 +97,7 @@ namespace com.espertech.esper.epl.expression.funcs
 	                ProcGetFragment = eventBean => null
 	            };
 	            return new FilterSpecLookupable(
-	                this.ToExpressionStringMinPrecedenceSafe(), getter, typeof (string));
+	                this.ToExpressionStringMinPrecedenceSafe(), getter, typeof (string), true);
 	        }
 	    }
 

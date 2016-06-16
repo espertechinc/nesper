@@ -20,6 +20,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
@@ -143,7 +144,7 @@ namespace com.espertech.esper.epl.variable
             _timeProvider = timeProvider;
             _eventAdapterService = eventAdapterService;
             _optionalStateHandler = optionalStateHandler;
-            _variables = new Dictionary<String, VariableMetaData>();
+            _variables = new Dictionary<String, VariableMetaData>().WithNullSupport();
             _readWriteLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             _variableVersionsPerCP = new List<ConcurrentDictionary<int, VariableReader>>();
             _changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();
@@ -203,7 +204,7 @@ namespace com.espertech.esper.epl.variable
             }
     
             if (metaData.ContextPartitionName == null) {
-                agentInstanceId = 0;
+                agentInstanceId = EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID;
             }
     
             ICollection<VariableChangeCallback> callbacks = cps.Get(agentInstanceId);
@@ -278,7 +279,7 @@ namespace com.espertech.esper.epl.variable
                 {
                     try
                     {
-                        type = engineImportService.ResolveType(variableType);
+                        type = engineImportService.ResolveType(variableType, false);
                         if (array)
                         {
                             arrayType = TypeHelper.GetArrayType(type.GetBoxedType());
@@ -349,7 +350,7 @@ namespace com.espertech.esper.epl.variable
                 // check if it exists
                 var metaData = _variables.Get(variableName);
                 if (metaData != null) {
-                    throw new VariableExistsException(VariableServiceUtil.GetAlreadyDeclaredEx(variableName));
+                    throw new VariableExistsException(VariableServiceUtil.GetAlreadyDeclaredEx(variableName, false));
                 }
     
                 // find empty spot
@@ -433,7 +434,7 @@ namespace com.espertech.esper.epl.variable
             }
         }
     
-        public void AllocateVariableState(String variableName, int agentInstanceId, StatementExtensionSvcContext extensionServicesContext)
+        public void AllocateVariableState(String variableName, int agentInstanceId, StatementExtensionSvcContext extensionServicesContext, bool isRecoveringResilient)
         {
             var metaData = _variables.Get(variableName);
             if (metaData == null) {
@@ -445,11 +446,20 @@ namespace com.espertech.esper.epl.variable
             if (_optionalStateHandler != null) {
                 var priorValue = _optionalStateHandler.GetHasState(
                     variableName, 
-                    metaData.VariableNumber, agentInstanceId, 
-                    metaData.VariableType, 
-                    metaData.EventType, extensionServicesContext);
-                if (priorValue.First) {
-                    initialState = priorValue.Second;
+                    metaData.VariableNumber, agentInstanceId,
+                    metaData.VariableType,
+                    metaData.EventType, extensionServicesContext, 
+                    metaData.IsConstant);
+                if (isRecoveringResilient)
+                {
+                    if (priorValue.First)
+                    {
+                        initialState = priorValue.Second;
+                    }
+                }
+                else
+                {
+                    _optionalStateHandler.SetState(variableName, metaData.VariableNumber, agentInstanceId, initialState);
                 }
             }
     
@@ -489,7 +499,7 @@ namespace com.espertech.esper.epl.variable
             }
             var cps = _variableVersionsPerCP[metaData.VariableNumber];
             if (metaData.ContextPartitionName == null) {
-                return cps.Get(0);
+                return cps.Get(EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }
             return cps.Get(agentInstanceIdAccessor);
         }
@@ -561,7 +571,9 @@ namespace com.espertech.esper.epl.variable
                 if (_optionalStateHandler != null)
                 {
                     var name = versions.Name;
-                    int agentInstanceId = reader.VariableMetaData.ContextPartitionName == null ? VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID : uncommittedEntry.Value.First;
+                    int agentInstanceId = reader.VariableMetaData.ContextPartitionName == null
+                        ? EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID 
+                        : uncommittedEntry.Value.First;
                     _optionalStateHandler.SetState(name, uncommittedEntry.Key, agentInstanceId, newValue);
                 }
             }

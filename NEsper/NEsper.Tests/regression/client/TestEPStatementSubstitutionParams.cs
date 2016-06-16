@@ -461,13 +461,18 @@ namespace com.espertech.esper.regression.client
             }
         }
     
-        public interface IKey {
+        public interface IKey
+        {
         }
     
-        public class MyObjectKeyInterface : IKey {
+        [Serializable]
+        public class MyObjectKeyInterface : IKey
+        {
         }
-    
-        public class MyEventOne {
+
+        [Serializable]
+        public class MyEventOne
+        {
             private IKey key;
     
             public MyEventOne(IKey key) {
@@ -478,11 +483,15 @@ namespace com.espertech.esper.regression.client
                 return key;
             }
         }
-    
-        public class MyObjectKeyConcrete {
+
+        [Serializable]
+        public class MyObjectKeyConcrete
+        {
         }
-    
-        public class MyEventTwo {
+
+        [Serializable]
+        public class MyEventTwo
+        {
             private MyObjectKeyConcrete key;
     
             public MyEventTwo(MyObjectKeyConcrete key) {

@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
@@ -32,9 +33,11 @@ namespace com.espertech.esper.epl.table.mgmt
     public class TableServiceImpl : TableService
     {
         internal static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
-    
-        private readonly IDictionary<String, TableMetadata> _tables = new Dictionary<string, TableMetadata>();
-        private readonly TableExprEvaluatorContext _tableExprEvaluatorContext = new TableExprEvaluatorContext();
+
+        private readonly IDictionary<String, TableMetadata> _tables =
+            new Dictionary<string, TableMetadata>().WithNullSupport();
+        private readonly TableExprEvaluatorContext _tableExprEvaluatorContext = 
+            new TableExprEvaluatorContext();
     
         public TableServiceImpl()
         {
@@ -71,24 +74,20 @@ namespace com.espertech.esper.epl.table.mgmt
     
         public TableMetadata AddTable(string tableName, string eplExpression, string statementName, Type[] keyTypes, IDictionary<String, TableMetadataColumn> tableColumns, TableStateRowFactory tableStateRowFactory, int numberMethodAggregations, StatementContext statementContext, ObjectArrayEventType internalEventType, ObjectArrayEventType publicEventType, TableMetadataInternalEventToPublic eventToPublic, bool queryPlanLogging)
         {
-            var metadata = new TableMetadata(tableName, eplExpression, statementName, keyTypes, tableColumns, tableStateRowFactory, numberMethodAggregations, statementContext.StatementExtensionServicesContext.StmtResources, statementContext.ContextName, internalEventType, publicEventType, eventToPublic, queryPlanLogging, statementContext.StatementName);
+            var metadata = new TableMetadata(tableName, eplExpression, statementName, keyTypes, tableColumns, tableStateRowFactory, numberMethodAggregations, statementContext, internalEventType, publicEventType, eventToPublic, queryPlanLogging);
     
             // determine table state factory
             TableStateFactory tableStateFactory;
             if (keyTypes.Length == 0) { // ungrouped
                 tableStateFactory = new ProxyTableStateFactory
                 {
-                    ProcMakeTableState = agentInstanceContext =>  {
-                        return new TableStateInstanceUngrouped(metadata, agentInstanceContext);
-                    },
+                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceUngroupedImpl(metadata, agentInstanceContext),
                 };
             }
             else {
                 tableStateFactory = new ProxyTableStateFactory
                 {
-                    ProcMakeTableState = agentInstanceContext =>  {
-                        return new TableStateInstanceGroupBy(metadata, agentInstanceContext);
-                    },
+                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceGroupedImpl(metadata, agentInstanceContext),
                 };
             }
             metadata.TableStateFactory = tableStateFactory;
@@ -199,6 +198,20 @@ namespace com.espertech.esper.epl.table.mgmt
         public string[] Tables
         {
             get { return CollectionUtil.ToArray(_tables.Keys); }
+        }
+
+        public TableAndLockProvider GetStateProvider(String tableName, int agentInstanceId, bool writesToTables)
+        {
+            TableStateInstance instance = AssertGetState(tableName, agentInstanceId);
+            ILockable @lock = writesToTables ? instance.TableLevelRWLock.WriteLock : instance.TableLevelRWLock.ReadLock;
+            if (instance is TableStateInstanceGrouped)
+            {
+                return new TableAndLockProviderGroupedImpl(new TableAndLockGrouped(@lock, (TableStateInstanceGrouped) instance));
+            }
+            else
+            {
+                return new TableAndLockProviderUngroupedImpl(new TableAndLockUngrouped(@lock, (TableStateInstanceUngrouped) instance));
+            }
         }
 
         private StreamTableColWStreamName FindTableColumnMayByPrefixed(StreamTypeService streamTypeService, string streamAndPropName)

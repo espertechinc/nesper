@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.epl.view
@@ -19,7 +18,7 @@ namespace com.espertech.esper.epl.view
     /// <summary>
     /// Output condition handling crontab-at schedule output.
     /// </summary>
-    public sealed class OutputConditionCrontabFactory : OutputConditionFactory
+    public class OutputConditionCrontabFactory : OutputConditionFactory
     {
         public OutputConditionCrontabFactory(
             IList<ExprNode> scheduleSpecExpressionList,

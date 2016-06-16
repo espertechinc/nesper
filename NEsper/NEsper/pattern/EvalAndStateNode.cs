@@ -357,7 +357,7 @@ namespace com.espertech.esper.pattern
                     child.Quit();
                 }
             }
-            ActiveChildNodes.Fill(null);
+            ActiveChildNodes.Fill((EvalStateNode) null);
             EventsPerChild = null;
         }
     }

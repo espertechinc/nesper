@@ -21,26 +21,25 @@ namespace com.espertech.esper.core.start
     public class FireAndForgetProcessorFactory
     {
         public static FireAndForgetProcessor ValidateResolveProcessor(StreamSpecCompiled streamSpec, EPServicesContext services)
-                
         {
             // resolve processor
             string processorName;
             if (streamSpec is NamedWindowConsumerStreamSpec) {
-                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                 processorName = namedSpec.WindowName;
             }
             else {
-                TableQueryStreamSpec tableSpec = (TableQueryStreamSpec) streamSpec;
+                var tableSpec = (TableQueryStreamSpec) streamSpec;
                 processorName = tableSpec.TableName;
             }
     
             // get processor instance
-            TableMetadata tableMetadata = services.TableService.GetTableMetadata(processorName);
+            var tableMetadata = services.TableService.GetTableMetadata(processorName);
             if (tableMetadata != null) {
                 return new FireAndForgetProcessorTable(services.TableService, tableMetadata);
             }
             else {
-                NamedWindowProcessor nwprocessor = services.NamedWindowService.GetProcessor(processorName);
+                var nwprocessor = services.NamedWindowMgmtService.GetProcessor(processorName);
                 if (nwprocessor == null) {
                     throw new ExprValidationException("A table or named window by name '" + processorName + "' does not exist");
                 }

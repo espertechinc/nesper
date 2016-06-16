@@ -260,7 +260,7 @@ namespace com.espertech.esper.epl.join.plan
             foreach (var entry in _streamJoinMap)
             {
                 count++;
-                writer.WriteLine("Entry " + count + ": key=" + entry.Key);
+                writer.WriteLine("Record " + count + ": key=" + entry.Key);
                 writer.WriteLine("  value=" + entry.Value);
             }
 

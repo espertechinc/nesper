@@ -247,6 +247,8 @@ namespace com.espertech.esper.rowregex
                 poolSvc.EngineSvc.DecreaseCount(_agentInstanceContext, size);
                 poolSvc.StmtHandler.DecreaseCount(size);
             }
+
+            _regexPartitionStateRepo.Dispose();
         }
     
         public void Init(EventBean[] newEvents)
@@ -971,6 +973,7 @@ namespace com.espertech.esper.rowregex
                         if ((_isCollectMultimatches) && (currentState.State.IsMultiple))
                         {
                             multimatches = AddTag(currentState.State.StreamNum, theEvent, multimatches);
+                            eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
     
                         if ((currentState.State.IsGreedy != null) && (currentState.State.IsGreedy.Value))
@@ -1075,6 +1078,7 @@ namespace com.espertech.esper.rowregex
 
                         if ((_isCollectMultimatches) && (startState.IsMultiple)) {
                             multimatches = AddTag(startState.StreamNum, theEvent, multimatches);
+                            eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
 
                         if ((startState.IsGreedy != null) && (startState.IsGreedy.Value)) {

@@ -21,12 +21,12 @@ namespace com.espertech.esper.epl.join.table
 {
     public class SingleReferenceEventTable : EventTable, EventTableAsSet
     {
-        private readonly EventTableOrganization organization;
-        private readonly Atomic<ObjectArrayBackedEventBean> eventReference;
+        private readonly EventTableOrganization _organization;
+        private readonly Atomic<ObjectArrayBackedEventBean> _eventReference;
     
         public SingleReferenceEventTable(EventTableOrganization organization, Atomic<ObjectArrayBackedEventBean> eventReference) {
-            this.organization = organization;
-            this.eventReference = eventReference;
+            this._organization = organization;
+            this._eventReference = eventReference;
         }
     
         public void AddRemove(EventBean[] newData, EventBean[] oldData) {
@@ -56,52 +56,66 @@ namespace com.espertech.esper.epl.join.table
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            var eventBean = eventReference.Get();
+            var eventBean = _eventReference.Get();
             if (eventBean != null)
                 yield return eventBean;
         }
 
-        public bool IsEmpty()
+        public virtual bool IsEmpty()
         {
-            return eventReference.Get() == null;
+            return _eventReference.Get() == null;
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             throw new UnsupportedOperationException();
         }
-    
-        public string ToQueryPlan()
+
+        public virtual void Destroy()
+        {
+        }
+
+        public virtual string ToQueryPlan()
         {
             return "single-reference";
         }
 
-        public int? NumberOfEvents
+        public virtual int? NumberOfEvents
         {
-            get { return eventReference.Get() == null ? 0 : 1; }
+            get { return _eventReference.Get() == null ? 0 : 1; }
         }
 
-        public int NumKeys
+        public virtual int NumKeys
         {
             get { return 0; }
         }
 
-        public object Index
+        public virtual object Index
         {
             get { return null; }
         }
 
-        public EventTableOrganization Organization
+        public virtual EventTableOrganization Organization
         {
-            get { return organization; }
+            get { return _organization; }
         }
 
-        public ISet<EventBean> AllValues() {
-            EventBean @event = eventReference.Get();
-            if (@event != null) {
-                return Collections.SingletonSet<EventBean>(@event);
+        public virtual ISet<EventBean> AllValues
+        {
+            get
+            {
+                EventBean @event = _eventReference.Get();
+                if (@event != null)
+                {
+                    return Collections.SingletonSet<EventBean>(@event);
+                }
+                return Collections.GetEmptySet<EventBean>();
             }
-            return Collections.GetEmptySet<EventBean>();
+        }
+
+        public virtual Type ProviderClass
+        {
+            get { return typeof (SingleReferenceEventTable); }
         }
     }
 }

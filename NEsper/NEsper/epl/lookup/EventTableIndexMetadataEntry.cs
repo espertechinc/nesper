@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.@join.plan;
 
 namespace com.espertech.esper.epl.lookup
 {
@@ -17,11 +18,13 @@ namespace com.espertech.esper.epl.lookup
     {
         private readonly bool _primary;
         private readonly ISet<string> _referencedByStmt;
-    
-        public EventTableIndexMetadataEntry(string optionalIndexName, bool primary)
+        private readonly QueryPlanIndexItem _queryPlanIndexItem;
+
+        public EventTableIndexMetadataEntry(string optionalIndexName, bool primary, QueryPlanIndexItem queryPlanIndexItem)
             : base(optionalIndexName)
         {
             _primary = primary;
+            _queryPlanIndexItem = queryPlanIndexItem;
             _referencedByStmt = primary ? null : new HashSet<string>();
         }
     
@@ -51,6 +54,11 @@ namespace com.espertech.esper.epl.lookup
         public string[] ReferringStatements
         {
             get { return _referencedByStmt.ToArray(); }
+        }
+
+        public QueryPlanIndexItem QueryPlanIndexItem
+        {
+            get { return _queryPlanIndexItem; }
         }
     }
 }

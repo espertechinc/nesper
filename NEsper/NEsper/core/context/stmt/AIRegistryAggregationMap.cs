@@ -119,5 +119,9 @@ namespace com.espertech.esper.core.context.stmt
         {
             return _services.Get(exprEvaluatorContext.AgentInstanceId).GetGroupKeys(exprEvaluatorContext);
         }
+
+        public void Stop()
+        {
+        }
     }
 }

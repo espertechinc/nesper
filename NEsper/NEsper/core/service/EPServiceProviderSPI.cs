@@ -57,7 +57,7 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the named window service. </summary>
         /// <value>named window service</value>
-        NamedWindowService NamedWindowService { get; }
+        NamedWindowMgmtService NamedWindowMgmtService { get; }
 
         /// <summary>Returns the table service.</summary>
         /// <value>The table service.</value>

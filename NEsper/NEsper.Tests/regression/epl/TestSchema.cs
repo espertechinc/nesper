@@ -78,8 +78,8 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestSchemaWithEventType()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             _epService.EPAdministrator.Configuration.AddEventType("BeanSourceEvent", typeof(BeanSourceEvent));
             BeanSourceEvent theEvent = new BeanSourceEvent(new SupportBean("E1", 1), new SupportBean_S0[] {new SupportBean_S0(2)});
     
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regression.epl
         
         [Test]
         public void TestConfiguredNotRemoved() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("MapType", new Dictionary<String, Object>());
             ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
             xmlDOMEventTypeDesc.RootElementName = "myevent";

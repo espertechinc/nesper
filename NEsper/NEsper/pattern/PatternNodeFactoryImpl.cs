@@ -15,8 +15,8 @@ using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.pattern
 {
-    public class PatternNodeFactoryImpl : PatternNodeFactory {
-    
+    public class PatternNodeFactoryImpl : PatternNodeFactory
+    {
         public EvalFactoryNode MakeAndNode() {
             return new EvalAndFactoryNode();
         }
@@ -59,6 +59,16 @@ namespace com.espertech.esper.pattern
     
         public EvalRootFactoryNode MakeRootNode(EvalFactoryNode childNode) {
             return new EvalRootFactoryNode(childNode);
+        }
+
+        public EvalFactoryNode MakeAuditNode(bool auditPattern, bool auditPatternInstance, String expressionText, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting)
+        {
+            return new EvalAuditFactoryNode(auditPattern, auditPatternInstance, expressionText, instanceCount, filterChildNonQuitting);
+        }
+
+        public bool IsAuditSupported
+        {
+            get { return true; }
         }
     }
 }

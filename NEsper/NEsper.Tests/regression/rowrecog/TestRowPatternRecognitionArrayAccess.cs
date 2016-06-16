@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.rowrecog
         [SetUp]
         public void SetUp() {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType(typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             _listener = new SupportUpdateListener();

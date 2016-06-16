@@ -89,7 +89,7 @@ namespace com.espertech.esper.epl.expression.table
             return _accessor.GetValue(state, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
             return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeCollection(eventAdapterService, statementId);
         }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.epl.expression.table
             return _accessor.GetEnumerableScalar(state, eventsPerStream, isNewData, context);
         }
     
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeSingle(eventAdapterService, statementId);
         }

@@ -20,7 +20,7 @@ namespace com.espertech.esper.filter
             ReaderWriterLockManager.CreateDefaultLock();
 
         public FilterServiceLockCoarse(bool allowIsolation)
-            : base(new FilterServiceGranularLockFactoryNone(), allowIsolation)
+            : base(FilterServiceGranularLockFactoryNone.Instance, allowIsolation)
         {
         }
 
@@ -29,7 +29,7 @@ namespace com.espertech.esper.filter
             get { return _iLock.WriteLock; }
         }
 
-        public override FilterSet Take(ICollection<String> statementId)
+        public override FilterSet Take(ICollection<int> statementId)
         {
             using(_iLock.AcquireWriteLock())
             {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, String statementId)
+        public override long Evaluate(EventBean theEvent, ICollection<FilterHandle> matches, int statementId)
         {
             using (_iLock.AcquireReadLock())
             {

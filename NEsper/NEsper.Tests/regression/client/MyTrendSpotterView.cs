@@ -131,7 +131,7 @@ namespace com.espertech.esper.regression.client
         {
             IDictionary<String, Object> eventTypeMap = new Dictionary<String, Object>();
             eventTypeMap.Put(PROPERTY_NAME, typeof(long));
-            return statementContext.EventAdapterService.CreateAnonymousMapType("test", eventTypeMap);
+            return statementContext.EventAdapterService.CreateAnonymousMapType("test", eventTypeMap, true);
         }
     }
 }

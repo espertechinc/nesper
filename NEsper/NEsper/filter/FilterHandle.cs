@@ -18,7 +18,7 @@ namespace com.espertech.esper.filter
         /// Gets the statement id.
         /// </summary>
         /// <value>The statement id.</value>
-        string StatementId { get; }
+        int StatementId { get; }
 	}
 
 } // End of namespace

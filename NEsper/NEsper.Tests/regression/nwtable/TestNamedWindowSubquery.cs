@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.nwtable
             epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType("ABean", typeof(SupportBean_S0));
             listener = new SupportUpdateListener();
         }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regression.nwtable
                 "\n create variable long myvar = 0;" +
                 "\n @Name('assign') on MyWindowTwo set myvar = (select mycount from MyWindowTwo);";
             EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider();
-            engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            engine.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             engine.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
     

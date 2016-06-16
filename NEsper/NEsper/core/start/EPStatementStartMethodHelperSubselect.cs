@@ -76,8 +76,8 @@ namespace com.espertech.esper.core.start
                     }
     
                     // Register filter, create view factories
-                    ViewableActivator activatorDeactivator = services.ViewableActivatorFactory.CreateFilterProxy(services, filterStreamSpec.FilterSpec, statementSpec.Annotations, true, instrumentationAgentSubquery, false);
-                    var viewFactoryChain = services.ViewService.CreateFactories(subselectStreamNumber, filterStreamSpec.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext);
+                    ViewableActivator activatorDeactivator = services.ViewableActivatorFactory.CreateFilterProxy(services, filterStreamSpec.FilterSpec, statementSpec.Annotations, true, instrumentationAgentSubquery, false, null);
+                    var viewFactoryChain = services.ViewService.CreateFactories(subselectStreamNumber, filterStreamSpec.FilterSpec.ResultEventType, filterStreamSpec.ViewSpecs, filterStreamSpec.Options, statementContext, true, subselect.SubselectNumber);
                     subselect.RawEventType = viewFactoryChain.EventType;
     
                     // Add lookup to list, for later starts
@@ -87,14 +87,16 @@ namespace com.espertech.esper.core.start
                     var table = (TableQueryStreamSpec) streamSpec;
                     var metadata = services.TableService.GetTableMetadata(table.TableName);
                     var viewFactoryChain = ViewFactoryChain.FromTypeNoViews(metadata.InternalEventType);
-                    subSelectStreamDesc.Add(subselect, new SubSelectActivationHolder(subselectStreamNumber, metadata.InternalEventType, viewFactoryChain, new ViewableActivatorTable(metadata, null), streamSpec));
+                    var viewableActivator = services.ViewableActivatorFactory.CreateTable(metadata, null);
+                    subSelectStreamDesc.Add(subselect, new SubSelectActivationHolder(subselectStreamNumber, metadata.InternalEventType, viewFactoryChain, viewableActivator, streamSpec));
                     subselect.RawEventType = metadata.InternalEventType;
                     destroyCallbacks.AddCallback(new EPStatementDestroyCallbackTableIdxRef(services.TableService, metadata, statementContext.StatementName).Destroy);
+                    services.StatementVariableRefService.AddReferences(statementContext.StatementName, metadata.TableName);
                 }
                 else
                 {
                     var namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.StreamSpecs[0];
-                    var processor = services.NamedWindowService.GetProcessor(namedSpec.WindowName);
+                    var processor = services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
                     var namedWindowType = processor.TailView.EventType;
                     if (namedSpec.OptPropertyEvaluator != null) {
                         namedWindowType = namedSpec.OptPropertyEvaluator.FragmentEventType;
@@ -102,21 +104,26 @@ namespace com.espertech.esper.core.start
     
                     // if named-window index sharing is disabled (the default) or filter expressions are provided then consume the insert-remove stream
                     var disableIndexShare = HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(statementSpecContainer.Annotations) != null;
-                    if (disableIndexShare && processor.IsVirtualDataWindow) {
+                    if (disableIndexShare && processor.IsVirtualDataWindow)
+                    {
                         disableIndexShare = false;
                     }
-                    if (!namedSpec.FilterExpressions.IsEmpty() || !processor.IsEnableSubqueryIndexShare || disableIndexShare) {
-                        var activatorNamedWindow = services.ViewableActivatorFactory.CreateNamedWindow(processor, namedSpec.FilterExpressions, namedSpec.OptPropertyEvaluator);
-                        var viewFactoryChain = services.ViewService.CreateFactories(0, namedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
+                    if (!namedSpec.FilterExpressions.IsEmpty() || !processor.IsEnableSubqueryIndexShare || disableIndexShare)
+                    {
+                        var activatorNamedWindow = services.ViewableActivatorFactory.CreateNamedWindow(processor, namedSpec, statementContext);
+                        var viewFactoryChain = services.ViewService.CreateFactories(0, namedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext, true, subselect.SubselectNumber);
                         subselect.RawEventType = viewFactoryChain.EventType;
                         subSelectStreamDesc.Add(subselect, new SubSelectActivationHolder(subselectStreamNumber, namedWindowType, viewFactoryChain, activatorNamedWindow, streamSpec));
+                        services.NamedWindowConsumerMgmtService.AddConsumer(statementContext, namedSpec);
                     }
                     // else if there are no named window stream filter expressions and index sharing is enabled
-                    else {
-                        var viewFactoryChain = services.ViewService.CreateFactories(0, processor.NamedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext);
+                    else
+                    {
+                        var viewFactoryChain = services.ViewService.CreateFactories(0, processor.NamedWindowType, namedSpec.ViewSpecs, namedSpec.Options, statementContext, true, subselect.SubselectNumber);
                         subselect.RawEventType = processor.NamedWindowType;
-                        var activator = new ViewableActivatorSubselectNone();
+                        var activator = services.ViewableActivatorFactory.MakeSubqueryNWIndexShare();
                         subSelectStreamDesc.Add(subselect, new SubSelectActivationHolder(subselectStreamNumber, namedWindowType, viewFactoryChain, activator, streamSpec));
+                        services.StatementVariableRefService.AddReferences(statementContext.StatementName, processor.NamedWindowType.Name);
                     }
                 }
             }
@@ -168,7 +175,8 @@ namespace com.espertech.esper.core.start
             EPServicesContext services,
             SubSelectStrategyCollection subSelectStrategyCollection,
             AgentInstanceContext agentInstanceContext,
-            IList<StopCallback> stopCallbackList)
+            IList<StopCallback> stopCallbackList,
+            bool isRecoveringResilient)
         {
             IDictionary<ExprSubselectNode, SubSelectStrategyHolder> subselectStrategies = new Dictionary<ExprSubselectNode, SubSelectStrategyHolder>();
     
@@ -177,14 +185,23 @@ namespace com.espertech.esper.core.start
                 var subselectNode = subselectEntry.Key;
                 var factoryDesc = subselectEntry.Value;
                 var holder = factoryDesc.SubSelectActivationHolder;
-    
-                // activate view
-                var subselectActivationResult = holder.Activator.Activate(agentInstanceContext, true, false);
+
+                // activate viewable
+                var subselectActivationResult = holder.Activator.Activate(agentInstanceContext, true, isRecoveringResilient);
                 stopCallbackList.Add(subselectActivationResult.StopCallback);
     
                 // apply returning the strategy instance
-                var result = factoryDesc.Factory.Instantiate(services, subselectActivationResult.Viewable, agentInstanceContext, stopCallbackList);
-    
+                var result = factoryDesc.Factory.Instantiate(services, subselectActivationResult.Viewable, agentInstanceContext, stopCallbackList, factoryDesc.SubqueryNumber, isRecoveringResilient);
+
+                // handle stoppable view
+                if (result.SubselectView is StoppableView) {
+                    stopCallbackList.Add((StoppableView) result.SubselectView);
+                }
+                if (result.SubselectAggregationService != null) {
+                    AggregationService subselectAggregationService = result.SubselectAggregationService;
+                    stopCallbackList.Add(new ProxyStopCallback(subselectAggregationService.Stop));
+                } 
+   
                 // set aggregation
                 var lookupStrategy = result.Strategy;
                 var aggregationPreprocessor = result.SubselectAggregationPreprocessor;
@@ -213,7 +230,8 @@ namespace com.espertech.esper.core.start
                         result.PriorNodeStrategies,
                         result.PreviousNodeStrategies,
                         result.SubselectView,
-                        result.PostLoad);
+                        result.PostLoad,
+                        subselectActivationResult);
                 subselectStrategies.Put(subselectNode, instance);
             }
     
@@ -262,9 +280,9 @@ namespace com.espertech.esper.core.start
             // No filter expression means full table scan
             if ((filterExpr == null) || fullTableScan)
             {
-                var table = new UnindexedEventTableFactory(0);
+                var tableFactory = statementContext.EventTableIndexService.CreateUnindexed(0, null, false);
                 var strategy = new SubordFullTableScanLookupStrategyFactory();
-                return new Pair<EventTableFactory, SubordTableLookupStrategyFactory>(table, strategy);
+                return new Pair<EventTableFactory, SubordTableLookupStrategyFactory>(tableFactory, strategy);
             }
     
             // Build a list of streams and indexes
@@ -313,18 +331,16 @@ namespace com.espertech.esper.core.start
     
                 if (hashKeys.Count == 1) {
                     if (!hashCoercionDesc.IsCoerce) {
-                        eventTableFactory = new PropertyIndexedEventTableSingleFactory(0, viewableEventType, indexedProps[0], unique, null);
-                    }
-                    else {
-                        eventTableFactory = new PropertyIndexedEventTableSingleCoerceAddFactory(0, viewableEventType, indexedProps[0], hashCoercionDesc.CoercionTypes[0]);
+                        eventTableFactory = statementContext.EventTableIndexService.CreateSingle(0, viewableEventType, indexedProps[0], unique, null, null, false);
+                    } else {
+                        eventTableFactory = statementContext.EventTableIndexService.CreateSingleCoerceAdd(0, viewableEventType, indexedProps[0], hashCoercionDesc.CoercionTypes[0], null, false);
                     }
                 }
                 else {
                     if (!hashCoercionDesc.IsCoerce) {
-                        eventTableFactory = new PropertyIndexedEventTableFactory(0, viewableEventType, indexedProps, unique, null);
-                    }
-                    else {
-                        eventTableFactory = new PropertyIndexedEventTableCoerceAddFactory(0, viewableEventType, indexedProps, hashCoercionDesc.CoercionTypes);
+                        eventTableFactory = statementContext.EventTableIndexService.CreateMultiKey(0, viewableEventType, indexedProps, unique, null, null, false);
+                    } else {
+                        eventTableFactory = statementContext.EventTableIndexService.CreateMultiKeyCoerceAdd(0, viewableEventType, indexedProps, hashCoercionDesc.CoercionTypes, false);
                     }
                 }
             }
@@ -333,15 +349,15 @@ namespace com.espertech.esper.core.start
                 hashCoercionDesc = new CoercionDesc(false, null);
                 rangeCoercionDesc = new CoercionDesc(false, null);
                 if (joinPropDesc.InKeywordSingleIndex != null) {
-                    eventTableFactory = new PropertyIndexedEventTableSingleFactory(0, viewableEventType, joinPropDesc.InKeywordSingleIndex.IndexedProp, unique, null);
+                    eventTableFactory = statementContext.EventTableIndexService.CreateSingle(0, viewableEventType, joinPropDesc.InKeywordSingleIndex.IndexedProp, unique, null, null, false);
                     inKeywordSingleIdxKeys = joinPropDesc.InKeywordSingleIndex.Expressions;
                 }
                 else if (joinPropDesc.InKeywordMultiIndex != null) {
-                    eventTableFactory = new PropertyIndexedEventTableSingleArrayFactory(0, viewableEventType, joinPropDesc.InKeywordMultiIndex.IndexedProp, unique, null);
+                    eventTableFactory = statementContext.EventTableIndexService.CreateInArray(0, viewableEventType, joinPropDesc.InKeywordMultiIndex.IndexedProp, unique);
                     inKeywordMultiIdxKey = joinPropDesc.InKeywordMultiIndex.Expression;
                 }
                 else {
-                    eventTableFactory = new UnindexedEventTableFactory(0);
+                    eventTableFactory = statementContext.EventTableIndexService.CreateUnindexed(0, null, false);
                 }
             }
             else if (hashKeys.IsEmpty() && rangeKeys.Count == 1)
@@ -349,10 +365,9 @@ namespace com.espertech.esper.core.start
                 var indexedProp = rangeKeys.Keys.First();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(viewableEventType, rangeKeys, outerEventTypes);
                 if (!coercionRangeTypes.IsCoerce) {
-                    eventTableFactory = new PropertySortedEventTableFactory(0, viewableEventType, indexedProp);
-                }
-                else {
-                    eventTableFactory = new PropertySortedEventTableCoercedFactory(0, viewableEventType, indexedProp, coercionRangeTypes.CoercionTypes[0]);
+                    eventTableFactory = statementContext.EventTableIndexService.CreateSorted(0, viewableEventType, indexedProp, false);
+                } else {
+                    eventTableFactory = statementContext.EventTableIndexService.CreateSortedCoerce(0, viewableEventType, indexedProp, coercionRangeTypes.CoercionTypes[0], false);
                 }
                 hashCoercionDesc = new CoercionDesc(false, null);
                 rangeCoercionDesc = coercionRangeTypes;
@@ -362,7 +377,7 @@ namespace com.espertech.esper.core.start
                 var coercionKeyTypes = SubordPropUtil.GetCoercionTypes(hashKeys.Values);
                 var indexedRangeProps = rangeKeys.Keys.ToArray();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(viewableEventType, rangeKeys, outerEventTypes);
-                eventTableFactory = new PropertyCompositeEventTableFactory(0, viewableEventType, indexedKeyProps, coercionKeyTypes, indexedRangeProps, coercionRangeTypes.CoercionTypes);
+                eventTableFactory = statementContext.EventTableIndexService.CreateComposite(0, viewableEventType, indexedKeyProps, coercionKeyTypes, indexedRangeProps, coercionRangeTypes.CoercionTypes, false);
                 hashCoercionDesc = CoercionUtil.GetCoercionTypesHash(viewableEventType, indexedKeyProps, hashKeyList);
                 rangeCoercionDesc = coercionRangeTypes;
             }
@@ -691,7 +706,7 @@ namespace com.espertech.esper.core.start
 
                 IList<ExprAggregateNode> havingAgg = Collections.GetEmptyList<ExprAggregateNode>();
                 IList<ExprAggregateNode> orderByAgg = Collections.GetEmptyList<ExprAggregateNode>();
-                aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(aggExprNodes, Collections.GetEmptyMap<ExprNode, String>(), Collections.GetEmptyList<ExprDeclaredNode>(), groupByExpressions, havingAgg, orderByAgg, groupKeyExpressions, hasGroupBy, annotations, statementContext.VariableService, false, true, statementSpec.FilterRootNode, statementSpec.HavingExprRootNode, statementContext.AggregationServiceFactoryService, subselectTypeService.EventTypes, statementContext.MethodResolutionService, null, statementSpec.OptionalContextName, null, null);
+                aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(aggExprNodes, Collections.GetEmptyMap<ExprNode, String>(), Collections.GetEmptyList<ExprDeclaredNode>(), groupByExpressions, havingAgg, orderByAgg, groupKeyExpressions, hasGroupBy, annotations, statementContext.VariableService, false, true, statementSpec.FilterRootNode, statementSpec.HavingExprRootNode, statementContext.AggregationServiceFactoryService, subselectTypeService.EventTypes, statementContext.MethodResolutionService, null, statementSpec.OptionalContextName, null, null, false, false, false);
 
                 // assign select-clause
                 if (!selectExpressions.IsEmpty()) {
@@ -780,7 +795,7 @@ namespace com.espertech.esper.core.start
             if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
                 var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
                 if (namedSpec.FilterExpressions.IsEmpty()) {
-                    var processor = services.NamedWindowService.GetProcessor(namedSpec.WindowName);
+                    var processor = services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
                     if (processor == null) {
                         throw new ExprValidationException("A named window by name '" + namedSpec.WindowName + "' does not exist");
                     }
@@ -800,7 +815,7 @@ namespace com.espertech.esper.core.start
                         var joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(filterExpr, outerEventTypes.Length, subselectTypeService.EventTypes, excludePlanHint);
                         SubSelectStrategyFactory factoryX = new SubSelectStrategyFactoryIndexShare(statementContext.StatementName, statementContext.StatementId, subqueryNum, outerEventTypesSelect,
                                 processor, null, fullTableScanX, indexHint, joinedPropPlan, filterExprEval, aggregationServiceFactoryDesc, groupByEvaluators, services.TableService, statementContext.Annotations, statementContext.StatementStopService);
-                        return new SubSelectStrategyFactoryDesc(subSelectActivation, factoryX, aggregationServiceFactoryDesc, priorNodes, previousNodes);
+                        return new SubSelectStrategyFactoryDesc(subSelectActivation, factoryX, aggregationServiceFactoryDesc, priorNodes, previousNodes, subqueryNum);
                     }
                 }
             }
@@ -819,7 +834,7 @@ namespace com.espertech.esper.core.start
                 var joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(filterExpr, outerEventTypes.Length, subselectTypeService.EventTypes, excludePlanHint);
                 SubSelectStrategyFactory factoryX = new SubSelectStrategyFactoryIndexShare(statementContext.StatementName, statementContext.StatementId, subqueryNum, outerEventTypesSelect,
                         null, metadata, fullTableScanX, indexHint, joinedPropPlan, filterExprEval, aggregationServiceFactoryDesc, groupByEvaluators, services.TableService, statementContext.Annotations, statementContext.StatementStopService);
-                return new SubSelectStrategyFactoryDesc(subSelectActivation, factoryX, aggregationServiceFactoryDesc, priorNodes, previousNodes);
+                return new SubSelectStrategyFactoryDesc(subSelectActivation, factoryX, aggregationServiceFactoryDesc, priorNodes, previousNodes, subqueryNum);
             }
     
             // determine unique keys, if any
@@ -829,7 +844,7 @@ namespace com.espertech.esper.core.start
             }
             if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
                 var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
-                var processor = services.NamedWindowService.GetProcessor(namedSpec.WindowName);
+                var processor = services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
                 optionalUniqueProps = processor.OptionalUniqueKeyProps;
             }
     
@@ -839,7 +854,7 @@ namespace com.espertech.esper.core.start
                     outerEventTypes, subselectTypeService, fullTableScan, queryPlanLogging, optionalUniqueProps, statementContext, subqueryNum);
     
             SubSelectStrategyFactory factory = new SubSelectStrategyFactoryLocalViewPreloaded(subqueryNum, subSelectActivation, indexPair, filterExpr, filterExprEval, correlatedSubquery, aggregationServiceFactoryDesc, viewResourceDelegateVerified, groupByEvaluators);
-            return new SubSelectStrategyFactoryDesc(subSelectActivation, factory, aggregationServiceFactoryDesc, priorNodes, previousNodes);
+            return new SubSelectStrategyFactoryDesc(subSelectActivation, factory, aggregationServiceFactoryDesc, priorNodes, previousNodes, subqueryNum);
         }
     
         public static string GetSubqueryInfoText(int subqueryNum, ExprSubselectNode subselect)

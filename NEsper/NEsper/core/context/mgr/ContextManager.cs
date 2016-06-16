@@ -20,10 +20,11 @@ namespace com.espertech.esper.core.context.mgr
     {
         ContextDescriptor ContextDescriptor { get; }
         int NumNestingLevels { get; }
+        ContextStateCache ContextStateCache { get; }
 
         void AddStatement(ContextControllerStatementBase statement, bool isRecoveringResilient);
-        void StopStatement(String statementName, String statementId);
-        void DestroyStatement(String statementName, String statementId);
+        void StopStatement(String statementName, int statementId);
+        void DestroyStatement(String statementName, int statementId);
     
         void SafeDestroy();
     
@@ -36,6 +37,6 @@ namespace com.espertech.esper.core.context.mgr
         IDictionary<int, ContextPartitionDescriptor> StartPaths(ContextPartitionSelector contextPartitionSelector);
     
         ICollection<int> GetAgentInstanceIds(ContextPartitionSelector contextPartitionSelector);
-        IDictionary<string, ContextControllerStatementDesc> Statements { get; }
+        IDictionary<int, ContextControllerStatementDesc> Statements { get; }
     }
 }

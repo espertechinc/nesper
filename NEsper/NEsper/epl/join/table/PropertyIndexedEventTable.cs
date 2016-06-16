@@ -6,9 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -18,168 +18,127 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.join.table
 {
-    /// <summary>
-    /// MapIndex that organizes events by the event property values into hash buckets. 
-    /// Based on a HashMap with <seealso cref="com.espertech.esper.collection.MultiKeyUntyped"/> 
-    /// keys that store the property values. Takes a list of property names as parameter. Doesn't 
-    /// care which event type the events have as long as the properties exist. If the same event
-    /// is added twice, the class throws an exception on add.
-    /// </summary>
-    public class PropertyIndexedEventTable : EventTable
-    {
-        internal readonly EventPropertyGetter[] PropertyGetters;
-        private readonly EventTableOrganization _organization;
-        protected internal readonly IDictionary<MultiKeyUntyped, ISet<EventBean>> PropertyIndex;
-    
-        public PropertyIndexedEventTable(EventPropertyGetter[] propertyGetters, EventTableOrganization organization)
-        {
-            PropertyGetters = propertyGetters;
-            _organization = organization;
-            PropertyIndex = new Dictionary<MultiKeyUntyped, ISet<EventBean>>();
-        }
-    
-        /// <summary>Determine multikey for index access. </summary>
-        /// <param name="theEvent">to get properties from for key</param>
-        /// <returns>multi key</returns>
-        protected virtual MultiKeyUntyped GetMultiKey(EventBean theEvent)
-        {
-            return EventBeanUtility.GetMultiKey(theEvent, PropertyGetters);
-        }
-    
-        public virtual void AddRemove(EventBean[] newData, EventBean[] oldData)
-        {
-            Instrument.With(
-                i => i.QIndexAddRemove(this, newData, oldData),
-                i => i.AIndexAddRemove(),
-                () =>
-                {
-                    if (newData != null)
-                        newData.ForEach(Add);
-                    if (oldData != null)
-                        oldData.ForEach(Remove);
-                });
-        }
+	/// <summary>
+	/// Index that organizes events by the event property values into hash buckets. Based on a HashMap
+	/// with <seealso cref="com.espertech.esper.collection.MultiKeyUntyped" /> keys that store the property values.
+	/// Takes a list of property names as parameter. Doesn't care which event type the events have as long as the properties
+	/// exist. If the same event is added twice, the class throws an exception on add.
+	/// </summary>
+	public abstract class PropertyIndexedEventTable : EventTable
+	{
+	    protected readonly EventPropertyGetter[] propertyGetters;
+	    protected readonly EventTableOrganization organization;
 
-        /// <summary>
-        /// Add an array of events. Same event instance is not added twice. Event properties should be immutable. Allow null passed instead of an empty array.
-        /// </summary>
-        /// <param name="events">to add</param>
-        /// <throws>ArgumentException if the event was already existed in the index</throws>
-        public virtual void Add(EventBean[] events)
+	    public abstract ISet<EventBean> Lookup(object[] keys);
+
+	    public abstract void Add(EventBean @event);
+	    public abstract void Remove(EventBean @event);
+	    public abstract bool IsEmpty();
+	    public abstract void Clear();
+	    public abstract void Destroy();
+	    public abstract IEnumerator<EventBean> GetEnumerator();
+
+	    IEnumerator IEnumerable.GetEnumerator()
+	    {
+	        return GetEnumerator();
+	    }
+
+	    protected PropertyIndexedEventTable(EventPropertyGetter[] propertyGetters, EventTableOrganization organization)
         {
-            if (events != null && events.Length > 0)
-            {
-                Instrument.With(
-                    i => i.QIndexAdd(this, events),
-                    i => i.AIndexAdd(),
-                    () => events.ForEach(Add));
-            }
-        }
-    
-        /// <summary>Remove events. </summary>
-        /// <param name="events">to be removed, can be null instead of an empty array.</param>
-        /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
+	        this.propertyGetters = propertyGetters;
+	        this.organization = organization;
+	    }
+
+	    /// <summary>
+	    /// Determine multikey for index access.
+	    /// </summary>
+	    /// <param name="theEvent">to get properties from for key</param>
+	    /// <returns>multi key</returns>
+	    protected virtual MultiKeyUntyped GetMultiKey(EventBean theEvent)
+	    {
+	        return EventBeanUtility.GetMultiKey(theEvent, propertyGetters);
+	    }
+
+	    public virtual void AddRemove(EventBean[] newData, EventBean[] oldData)
+        {
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
+	        if (newData != null) {
+	            foreach (EventBean theEvent in newData) {
+	                Add(theEvent);
+	            }
+	        }
+	        if (oldData != null) {
+	            foreach (EventBean theEvent in oldData) {
+	                Remove(theEvent);
+	            }
+	        }
+	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
+	    }
+
+	    /// <summary>
+	    /// Add an array of events. Same event instance is not added twice. Event properties should be immutable.
+	    /// Allow null passed instead of an empty array.
+	    /// </summary>
+	    /// <param name="events">to add</param>
+	    /// <throws>IllegalArgumentException if the event was already existed in the index</throws>
+	    public virtual void Add(EventBean[] events)
+	    {
+	        if (events != null) {
+
+	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
+	                InstrumentationHelper.Get().QIndexAdd(this, events);
+	                foreach (EventBean theEvent in events) {
+	                    Add(theEvent);
+	                }
+	                InstrumentationHelper.Get().AIndexAdd();
+	                return;
+	            }
+
+	            foreach (EventBean theEvent in events) {
+	                Add(theEvent);
+	            }
+	        }
+	    }
+
+	    /// <summary>
+	    /// Remove events.
+	    /// </summary>
+	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
+	    /// <throws>IllegalArgumentException when the event could not be removed as its not in the index</throws>
         public virtual void Remove(EventBean[] events)
-        {
-            if (events != null && events.Length > 0)
-            {
-                Instrument.With(
-                    i => i.QIndexRemove(this, events),
-                    i => i.AIndexRemove(),
-                    () => events.ForEach(Remove));
-            }
-        }
+	    {
+	        if (events != null) {
 
-        /// <summary>Returns the set of events that have the same property value as the given event. </summary>
-        /// <param name="keys">to compare against</param>
-        /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
-        public virtual ISet<EventBean> Lookup(object[] keys)
-        {
-            var key = new MultiKeyUntyped(keys);
-            return PropertyIndex.Get(key);
-        }
+	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
+	                InstrumentationHelper.Get().QIndexRemove(this, events);
+	                foreach (EventBean theEvent in events) {
+	                    Remove(theEvent);
+	                }
+	                InstrumentationHelper.Get().AIndexRemove();
+	                return;
+	            }
 
-        public virtual void Add(EventBean theEvent)
-        {
-            var key = GetMultiKey(theEvent);
-    
-            var events = PropertyIndex.Get(key);
-            if (events == null)
-            {
-                events = new LinkedHashSet<EventBean>();
-                PropertyIndex.Put(key, events);
-            }
-    
-            events.Add(theEvent);
-        }
+	            foreach (EventBean theEvent in events) {
+	                Remove(theEvent);
+	            }
+	        }
+	    }
 
-        public virtual void Remove(EventBean theEvent)
-        {
-            var key = GetMultiKey(theEvent);
-    
-            var events = PropertyIndex.Get(key);
-            if (events == null)
-            {
-                return;
-            }
-    
-            if (!events.Remove(theEvent))
-            {
-                // Not an error, its possible that an old-data event is artificial (such as for statistics) and
-                // thus did not correspond to a new-data event raised earlier.
-                return;
-            }
-    
-            if (events.IsEmpty())
-            {
-                PropertyIndex.Remove(key);
-            }
-        }
+	    public string ToQueryPlan()
+	    {
+	        return this.GetType().Name +
+	                " streamNum=" + organization.StreamNum +
+	                " propertyGetters=" + CompatExtensions.Render(propertyGetters);
+	    }
 
-        public virtual bool IsEmpty()
-        {
-            return PropertyIndex.IsEmpty();
-        }
+	    public EventTableOrganization Organization
+	    {
+	        get { return organization; }
+	    }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public virtual IEnumerator<EventBean> GetEnumerator()
-        {
-            return PropertyIndex.SelectMany(entry => entry.Value).GetEnumerator();        }
-
-        public virtual void Clear()
-        {
-            PropertyIndex.Clear();
-        }
-
-        public virtual string ToQueryPlan()
-        {
-            return GetType().Name +
-                    " streamNum=" + _organization.StreamNum +
-                    " propertyGetters=" + PropertyGetters.Render();
-        }
-
-        public virtual int? NumberOfEvents
-        {
-            get { return null; }
-        }
-
-        public virtual int NumKeys
-        {
-            get { return PropertyIndex.Count; }
-        }
-
-        public virtual object Index
-        {
-            get { return PropertyIndex; }
-        }
-
-        public virtual EventTableOrganization Organization
-        {
-            get { return _organization; }
-        }
-    }
-}
+	    public abstract Type ProviderClass { get; }
+	    public abstract int? NumberOfEvents { get; }
+	    public abstract int NumKeys { get; }
+	    public abstract object Index { get; }
+	}
+} // end of namespace

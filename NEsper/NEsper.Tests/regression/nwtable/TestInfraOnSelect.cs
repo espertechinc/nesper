@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestWindowAgg() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("S0", typeof(SupportBean_S0));
             _epService.EPAdministrator.Configuration.AddEventType("S1", typeof(SupportBean_S1));
     
@@ -69,8 +69,8 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestSelectAggregationHavingStreamWildcard() {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             RunAssertionSelectAggregationHavingStreamWildcard(true);
             RunAssertionSelectAggregationHavingStreamWildcard(false);

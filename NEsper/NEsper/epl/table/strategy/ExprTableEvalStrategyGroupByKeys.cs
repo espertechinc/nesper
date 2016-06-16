@@ -6,49 +6,56 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
-using com.espertech.esper.events;
+using com.espertech.esper.epl.table.mgmt;
 
 namespace com.espertech.esper.epl.table.strategy
 {
     public class ExprTableEvalStrategyGroupByKeys
-        : ExprTableEvalStrategyGroupByBase 
-        , ExprTableAccessEvalStrategy
+        : ExprTableEvalStrategyGroupByBase,
+            ExprTableAccessEvalStrategy
     {
-
-        public ExprTableEvalStrategyGroupByKeys(ILockable @lock, IDictionary<Object, ObjectArrayBackedEventBean> aggregationState)
-            : base(@lock, aggregationState)
+        public ExprTableEvalStrategyGroupByKeys(TableAndLockProviderGrouped provider)
+            : base(provider)
         {
         }
-    
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            LockTableRead(context);
-            return AggregationState.Keys.ToArray();
+
+        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
+            TableStateInstanceGrouped grouped = LockTableRead(context);
+            ICollection<object> keys = grouped.GroupKeys;
+            return keys.ToArray();
         }
-    
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public ICollection<object> EvaluateGetROCollectionScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
     }
-}
+} // end of namespace

@@ -38,16 +38,7 @@ namespace com.espertech.esper.epl.join.plan
         /// <param name="viewExternal">@return execution node matching spec</param>
         /// <param name="tableSecondaryIndexLocks">The table secondary index locks.</param>
         /// <returns></returns>
-        public abstract ExecNode MakeExec(
-            string statementName,
-            string statementId,
-            Attribute[] annotations,
-            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
-            EventType[] streamTypes,
-            Viewable[] streamViews,
-            HistoricalStreamIndexList[] historicalStreamIndexLists,
-            VirtualDWView[] viewExternal,
-            ILockable[] tableSecondaryIndexLocks);
+        public abstract ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks);
 
         public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
 

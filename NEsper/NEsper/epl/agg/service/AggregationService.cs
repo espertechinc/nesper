@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.agg.service
 {
@@ -18,7 +19,7 @@ namespace com.espertech.esper.epl.agg.service
     /// Service for maintaining aggregation state. Processes events entering (a window, a join etc,) 
     /// and events leaving. Answers questions about current aggregation state for a given row.
     /// </summary>
-    public interface AggregationService : AggregationResultFuture
+    public interface AggregationService : AggregationResultFuture, StopCallback
     {
         /// <summary>
         /// Apply events as entering a window (new events).

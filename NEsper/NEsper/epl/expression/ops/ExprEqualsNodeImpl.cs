@@ -24,10 +24,12 @@ namespace com.espertech.esper.epl.expression.ops
 	/// Represents an equals (=) comparator in a filter expressiun tree.
 	/// </summary>
 	[Serializable]
-    public class ExprEqualsNodeImpl : ExprNodeBase , ExprEqualsNode
+    public class ExprEqualsNodeImpl
+        : ExprNodeBase
+        , ExprEqualsNode
 	{
-	    private readonly bool _isNotEquals;
-	    private readonly bool _isIs;
+	    internal readonly bool vIsNotEquals;
+	    internal readonly bool vIsIs;
 	    [NonSerialized] private ExprEvaluator _evaluator;
 
 	    /// <summary>
@@ -37,8 +39,8 @@ namespace com.espertech.esper.epl.expression.ops
 	    /// <param name="isIs">true when "is" or "is not" (instead of = or &lt;&gt;)</param>
 	    public ExprEqualsNodeImpl(bool isNotEquals, bool isIs)
 	    {
-	        _isNotEquals = isNotEquals;
-	        _isIs = isIs;
+	        vIsNotEquals = isNotEquals;
+	        vIsIs = isIs;
 	    }
 
 	    public override ExprEvaluator ExprEvaluator
@@ -48,12 +50,12 @@ namespace com.espertech.esper.epl.expression.ops
 
 	    public bool IsNotEquals
 	    {
-	        get { return _isNotEquals; }
+	        get { return vIsNotEquals; }
 	    }
 
 	    public bool IsIs
 	    {
-	        get { return _isIs; }
+	        get { return vIsIs; }
 	    }
 
 	    public override ExprNode Validate(ExprValidationContext validationContext)
@@ -134,14 +136,14 @@ namespace com.espertech.esper.epl.expression.ops
 	    public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
 	        ChildNodes[0].ToEPL(writer, Precedence);
-	        if (_isIs) {
+	        if (vIsIs) {
                 writer.Write(" is ");
-	            if (_isNotEquals) {
+	            if (vIsNotEquals) {
                     writer.Write("not ");
 	            }
 	        }
 	        else {
-	            if (!_isNotEquals) {
+	            if (!vIsNotEquals) {
                     writer.Write("=");
 	            }
 	            else {
@@ -158,17 +160,12 @@ namespace com.espertech.esper.epl.expression.ops
 
 	    public override bool EqualsNode(ExprNode node)
 	    {
-	        if (!(node is ExprEqualsNodeImpl))
-	        {
-	            return false;
-	        }
-
-	        var other = (ExprEqualsNodeImpl) node;
-	        return other._isNotEquals == _isNotEquals;
+	        var other = node as ExprEqualsNodeImpl;
+	        return other != null && other.vIsNotEquals == vIsNotEquals;
 	    }
 
 	    private ExprEvaluator GetEvaluator(ExprEvaluator lhs, ExprEvaluator rhs) {
-	        if (_isIs) {
+	        if (vIsIs) {
 	            return new ExprEqualsEvaluatorIs(this, lhs, rhs);
 	        }
 	        else {
@@ -228,7 +225,7 @@ namespace com.espertech.esper.epl.expression.ops
 
                 if (leftArray.Length != rightArray.Length)
                 {
-                    return !_parent.IsNotEquals;
+                    return !_parent.vIsNotEquals;
                 }
 
                 var isEquals = true;
@@ -240,7 +237,7 @@ namespace com.espertech.esper.epl.expression.ops
                     isEquals &= Equals(valueL, valueR);
                 }
 
-                return isEquals ^ _parent.IsNotEquals;
+                return isEquals ^ _parent.vIsNotEquals;
 	        }
 
             public Type ReturnType
@@ -280,7 +277,7 @@ namespace com.espertech.esper.epl.expression.ops
 	            var leftResult = _lhs.Evaluate(evaluateParams);
 	            var rightResult = _rhs.Evaluate(evaluateParams);
 
-	            if (!_parent.IsIs)
+	            if (!_parent.vIsIs)
                 {
 	                if (leftResult == null || rightResult == null)  // null comparison
 	                {
@@ -298,7 +295,7 @@ namespace com.espertech.esper.epl.expression.ops
 
 	            var left = _numberCoercerLHS.Invoke(leftResult);
 	            var right = _numberCoercerRHS.Invoke(rightResult);
-	            return left.Equals(right) ^ _parent.IsNotEquals;
+	            return left.Equals(right) ^ _parent.vIsNotEquals;
 	        }
 
             public Type ReturnType
@@ -337,11 +334,16 @@ namespace com.espertech.esper.epl.expression.ops
 	            }
 
                 var leftResult = _lhs.Evaluate(evaluateParams);
+                if (leftResult == null) { // null comparison
+                    return null;
+                }
+
                 var rightResult = _rhs.Evaluate(evaluateParams);
-	            if (leftResult == null || rightResult == null) { // null comparison
+	            if (rightResult == null) { // null comparison
 	                return null;
 	            }
-	            return leftResult.Equals(rightResult) ^ _parent.IsNotEquals;
+
+	            return leftResult.Equals(rightResult) ^ _parent.vIsNotEquals;
 	        }
 
 	        public Type ReturnType
@@ -386,9 +388,9 @@ namespace com.espertech.esper.epl.expression.ops
                 var rightResult = _rhs.Evaluate(evaluateParams);
 
 	            if (leftResult == null) {
-                    return rightResult == null ^ _parent.IsNotEquals;
+                    return rightResult == null ^ _parent.vIsNotEquals;
 	            }
-                return (rightResult != null && leftResult.Equals(rightResult)) ^ _parent.IsNotEquals;
+                return (rightResult != null && leftResult.Equals(rightResult)) ^ _parent.vIsNotEquals;
 	        }
 
 	        public Type ReturnType

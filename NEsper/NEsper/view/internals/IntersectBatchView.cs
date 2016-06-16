@@ -42,6 +42,7 @@ namespace com.espertech.esper.view.internals
         , DataWindowView
         , IntersectViewMarker
         , ViewDataVisitableContainer
+        , ViewContainer
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -101,7 +102,12 @@ namespace com.espertech.esper.view.internals
                 view.Observer = this;
             }
         }
-    
+
+        public View[] ViewContained
+        {
+            get { return _views; }
+        }
+
         public View CloneView()
         {
             return _intersectViewFactory.MakeView(_agentInstanceViewFactoryContext);
@@ -109,7 +115,7 @@ namespace com.espertech.esper.view.internals
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            // handle remove stream: post oldData to all views
+            // handle remove stream:post oldData to all views
             if (oldData != null && oldData.Length != 0)
             {
                 try
@@ -260,14 +266,11 @@ namespace com.espertech.esper.view.internals
             }
         }
 
-        public void StopView()
+        public void Stop()
         {
-            foreach (View view in _views)
+            foreach (var view in _views.OfType<StoppableView>())
             {
-                if (view is StoppableView)
-                {
-                    ((StoppableView) view).StopView();
-                }
+                view.Stop();
             }
         }
 

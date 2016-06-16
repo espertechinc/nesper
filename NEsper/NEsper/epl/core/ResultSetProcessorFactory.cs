@@ -13,7 +13,7 @@ using com.espertech.esper.epl.agg.service;
 namespace com.espertech.esper.epl.core
 {
     /// <summary>
-    /// Processor Prototype for result sets for instances that apply the select-clause, group-by-clause and having-clauses as supplied.
+    /// Processor _prototype for result sets for instances that apply the select-clause, group-by-clause and having-clauses as supplied.
     /// </summary>
     public interface ResultSetProcessorFactory
     {

@@ -652,7 +652,7 @@ namespace com.espertech.esper.events
         {
             var existingType = _nameToTypeMap.Get(eventTypeName);
             if (!(existingType is MapEventType)) {
-                throw new EPException(GetMessageExpecting(eventTypeName, existingType, "Map"));
+                throw new EPException(EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Map"));
             }
 
             return AdapterForTypedMap(theEvent, existingType);
@@ -662,7 +662,7 @@ namespace com.espertech.esper.events
         {
             var existingType = _nameToTypeMap.Get(eventTypeName);
             if (!(existingType is ObjectArrayEventType)) {
-                throw new EPException(GetMessageExpecting(eventTypeName, existingType, "Object-array"));
+                throw new EPException(EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Object-array"));
             }
 
             return AdapterForTypedObjectArray(theEvent, existingType);
@@ -802,7 +802,7 @@ namespace com.espertech.esper.events
             }
         }
 
-        public EventType CreateAnonymousMapType(String typeName, IDictionary<String, Object> propertyTypes)
+        public EventType CreateAnonymousMapType(string typeName, DataMap propertyTypes, bool isTransient)
         {
             var assignedTypeName = EventAdapterServiceConstants.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
             var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName);
@@ -832,7 +832,7 @@ namespace com.espertech.esper.events
             {
                 mapProperties.Put(entry.Key, new[] {entry.Value.First});
             }
-            return CreateAnonymousMapType(typeName, mapProperties);
+            return CreateAnonymousMapType(typeName, mapProperties, true);
         }
 
         public EventType CreateAnonymousWrapperType(String typeName,
@@ -1181,20 +1181,6 @@ namespace com.espertech.esper.events
         public EventBeanSPI GetShellForType(EventType eventType)
         {
             return EventAdapterServiceHelper.GetShellForType(eventType);
-        }
-
-        private static String GetMessageExpecting(String eventTypeName, EventType existingType, String typeOfEventType)
-        {
-            var message = "Event type named '" + eventTypeName + "' has not been defined or is not a " + typeOfEventType + " event type";
-            if (existingType != null)
-            {
-                message += ", the name '" + eventTypeName + "' refers to a " + TypeHelper.GetTypeNameFullyQualPretty(existingType.UnderlyingType) + " event type";
-            }
-            else
-            {
-                message += ", the name '" + eventTypeName + "' has not been defined as an event type";
-            }
-            return message;
         }
 
         public EventBeanAdapterFactory GetAdapterFactoryForType(EventType eventType)

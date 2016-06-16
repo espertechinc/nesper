@@ -108,7 +108,7 @@ namespace com.espertech.esper.core.start
                 StatementContext.Annotations, 
                 StatementContext.ContextDescriptor,
                 StatementContext.ConfigSnapshot, null, 
-                StatementContext.NamedWindowService, null);
+                StatementContext.NamedWindowMgmtService, null, null);
     
             return new EPPreparedExecuteIUDSingleStreamExecInsert(exprEvaluatorContextStatement, insertHelper, StatementSpec.TableNodes, Services);
         }

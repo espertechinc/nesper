@@ -20,6 +20,6 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public interface AggregationServiceFactory
     {
-        AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService);
+        AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber);
     }
 }

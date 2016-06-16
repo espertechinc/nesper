@@ -14,31 +14,31 @@ namespace com.espertech.esper.support.schedule
 {
     public class SupportScheduleCallback : ScheduleHandle, ScheduleHandleCallback 
     {
-        private static int orderAllCallbacks;
+        private static int _orderAllCallbacks;
     
-        private int orderTriggered = 0;
+        private int _orderTriggered = 0;
     
         public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
             log.Debug(".scheduledTrigger");
-            orderAllCallbacks++;
-            orderTriggered = orderAllCallbacks;
+            _orderAllCallbacks++;
+            _orderTriggered = _orderAllCallbacks;
         }
     
         public int ClearAndGetOrderTriggered()
         {
-            int result = orderTriggered;
-            orderTriggered = 0;
+            int result = _orderTriggered;
+            _orderTriggered = 0;
             return result;
         }
     
         public static void SetCallbackOrderNum(int orderAllCallbacks) {
-            SupportScheduleCallback.orderAllCallbacks = orderAllCallbacks;
+            SupportScheduleCallback._orderAllCallbacks = orderAllCallbacks;
         }
 
-        public string StatementId
+        public int StatementId
         {
-            get { return null; }
+            get { return 1; }
         }
 
         public int AgentInstanceId

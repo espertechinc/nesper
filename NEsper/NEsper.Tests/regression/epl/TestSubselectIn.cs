@@ -364,7 +364,7 @@ namespace com.espertech.esper.regression.epl
         [Test]
         public void TestInvalid()
         {
-            _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _epService.EPAdministrator.Configuration.AddEventType("ArrayBean", typeof(SupportBeanArrayCollMap));
             try
             {

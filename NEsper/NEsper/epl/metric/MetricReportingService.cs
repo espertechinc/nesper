@@ -52,7 +52,7 @@ namespace com.espertech.esper.epl.metric
         /// <param name="statementId">statement id</param>
         /// <param name="statementName">statement name</param>
         /// <returns>handle</returns>
-        StatementMetricHandle GetStatementHandle(String statementId, String statementName);
+        StatementMetricHandle GetStatementHandle(int statementId, string statementName);
 
         /// <summary>Change the reporting interval for the given statement group name. </summary>
         /// <param name="stmtGroupName">group name</param>
@@ -73,6 +73,4 @@ namespace com.espertech.esper.epl.metric
         /// <summary>Disables metrics reporting globally. </summary>
         void SetMetricsReportingDisabled();
     }
-
-    public delegate void PerformanceCollector(StatementMetricHandle statementMetricHandle, long cpuTime, long wallTime, int numInput);
 }

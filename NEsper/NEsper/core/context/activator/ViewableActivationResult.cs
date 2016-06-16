@@ -49,6 +49,6 @@ namespace com.espertech.esper.core.context.activator
 
         public bool IsDiscardPartialsOnMatch { get; private set; }
 
-        public ViewableActivationResultExtension ViewableActivationResultExtension { get; private set; }
+        public ViewableActivationResultExtension ViewableActivationResultExtension { get; set; }
     }
 }

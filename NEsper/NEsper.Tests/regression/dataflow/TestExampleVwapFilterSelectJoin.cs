@@ -72,8 +72,8 @@ namespace com.espertech.esper.regression.dataflow
             stmtGraph.Dispose();
             var model = _epService.EPAdministrator.CompileEPL(epl);
             var text = model.ToEPL(new EPStatementFormatter(true));
-            Assert.AreEqual(epl, text);
-            stmtGraph = _epService.EPAdministrator.Create(model);
+            Assert.AreEqual(RemoveNewlines(epl), RemoveNewlines(text));
+            _epService.EPAdministrator.Create(model);
     
             RunAssertion();
         }
@@ -94,6 +94,11 @@ namespace com.espertech.esper.regression.dataflow
             var received = future.GetValue(TimeSpan.FromSeconds(5));
             Assert.AreEqual(1, received.Length);
             EPAssertionUtil.AssertProps(received[0], "index".Split(','), new Object[] {2000*Math.Exp(100-99.5)});
+        }
+
+        private String RemoveNewlines(String text)
+        {
+            return text.Replace("\n", "").Replace("\r", "");
         }
     }
 }

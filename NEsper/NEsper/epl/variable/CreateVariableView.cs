@@ -24,16 +24,15 @@ namespace com.espertech.esper.epl.variable
     /// <para/> The view returns the current variable value for the iterator. 
     /// <para/> The event type for such posted events is a single field Map with the variable value. 
     /// </summary>
-    public class CreateVariableView : ViewSupport
+    public class CreateVariableView
+        : ViewSupport
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly EventAdapterService _eventAdapterService;
         private readonly VariableReader _reader;
         private readonly EventType _eventType;
         private readonly String _variableName;
         private readonly StatementResultService _statementResultService;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -42,21 +41,22 @@ namespace com.espertech.esper.epl.variable
         /// <param name="variableService">for looking up variables</param>
         /// <param name="variableName">is the name of the variable to create</param>
         /// <param name="statementResultService">for coordinating on whether insert and remove stream events should be posted</param>
-        public CreateVariableView(String statementId, EventAdapterService eventAdapterService, VariableService variableService, String variableName, StatementResultService statementResultService)
+        /// <param name="agentInstanceId"></param>
+        public CreateVariableView(int statementId, EventAdapterService eventAdapterService, VariableService variableService, string variableName, StatementResultService statementResultService, int agentInstanceId)
         {
             _eventAdapterService = eventAdapterService;
             _variableName = variableName;
             _statementResultService = statementResultService;
-            _reader = variableService.GetReader(variableName, VariableServiceConstants.NOCONTEXT_AGENTINSTANCEID);
+            _reader = variableService.GetReader(variableName, agentInstanceId);
             _eventType = GetEventType(statementId, eventAdapterService, _reader.VariableMetaData);
         }
 
-        public static EventType GetEventType(String statementId, EventAdapterService eventAdapterService, VariableMetaData variableMetaData)
+        public static EventType GetEventType(int statementId, EventAdapterService eventAdapterService, VariableMetaData variableMetaData)
         {
             var variableTypes = new Dictionary<String, Object>();
             variableTypes.Put(variableMetaData.VariableName, variableMetaData.VariableType);
             String outputEventTypeName = statementId + "_outcreatevar";
-            return eventAdapterService.CreateAnonymousMapType(outputEventTypeName, variableTypes);
+            return eventAdapterService.CreateAnonymousMapType(outputEventTypeName, variableTypes, true);
         }
     
         public void Update(Object newValue, Object oldValue)

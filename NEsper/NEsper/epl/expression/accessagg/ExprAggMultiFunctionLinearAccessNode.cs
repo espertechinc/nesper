@@ -198,12 +198,12 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        var theStreamNum = streamNum;
 	        AggregationStateFactory stateFactory =  new ProxyAggregationStateFactory
 	        {
-	            ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey) =>
+                ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
                 {
 	                if (join) {
-	                    return methodResolutionService.MakeAccessAggLinearJoin(agentInstanceId, groupId, aggregationId, theStreamNum);
+	                    return methodResolutionService.MakeAccessAggLinearJoin(agentInstanceId, groupId, aggregationId, theStreamNum, passThru);
 	                }
-	                return methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, theStreamNum);
+                    return methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, theStreamNum, passThru);
 	            },
 
                 ProcAggregationExpression = () => me
@@ -233,7 +233,8 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        ExprNode me = this;
 	        AggregationStateFactory stateFactory = new ProxyAggregationStateFactory
             {
-	            ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey) => methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, 0),
+                ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
+                    methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, 0, passThru),
 	            ProcAggregationExpression = () => me,
 	        };
 	        var factory = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, TypeHelper.GetArrayType(componentType), containedType, null, stateFactory, null);
@@ -404,7 +405,7 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        return base.AggregationResultFuture.GetCollectionScalar(Column, eventsPerStream, isNewData, context);
 	    }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, string statementId)
+	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
 	        if (_stateType == AggregationStateType.FIRST || _stateType == AggregationStateType.LAST) {
 	            return null;
@@ -417,7 +418,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { return _scalarCollectionComponentType; }
         }
 
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, string statementId)
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
 	        if (_stateType == AggregationStateType.FIRST || _stateType == AggregationStateType.LAST) {
 	            return _containedType;

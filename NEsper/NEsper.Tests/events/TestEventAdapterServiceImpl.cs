@@ -45,7 +45,7 @@ namespace com.espertech.esper.events
             IDictionary<String, Object> testTypesMap;
             testTypesMap = new Dictionary<String, Object>();
             testTypesMap.Put("key1", typeof(String));
-            var eventType = _adapterService.CreateAnonymousMapType("test", testTypesMap);
+            var eventType = _adapterService.CreateAnonymousMapType("test", testTypesMap, true);
     
             Assert.AreEqual(typeof(DataMap), eventType.UnderlyingType);
             Assert.AreEqual(1, eventType.PropertyNames.Length);

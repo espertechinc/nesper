@@ -7,13 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
 using com.espertech.esper.support.util;
+using com.espertech.esper.util;
 
 using NUnit.Framework;
 
@@ -28,12 +33,12 @@ namespace com.espertech.esper.regression.epl
         [SetUp]
 	    public void SetUp()
 	    {
-	        Configuration config = SupportConfigFactory.GetConfiguration();
+	        var config = SupportConfigFactory.GetConfiguration();
 	        config.AddMethodRef(typeof(MyStaticService), new ConfigurationMethodRef());
 	        config.AddImport(typeof(MyStaticService));
 
 	        config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
-	        config.AddEventType(typeof(SupportBean));
+	        config.AddEventType<SupportBean>();
 	        config.AddEventType(typeof(SupportBean_S0));
 	        config.AddEventType(typeof(SupportBean_S1));
 	        config.AddEventType(typeof(SupportBean_S2));
@@ -62,9 +67,36 @@ namespace com.espertech.esper.regression.epl
 
 	        RunAssertionContextVariable();
 
+            RunAssertionVariableMapAndOA();
+
 	        // invalid footprint
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select * from method:MyConstantServiceVariable.FetchABean() as h0",
-	                "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'FetchABean' in class 'com.espertech.esper.regression.epl.TestFromClauseMethodVariable+MyConstantServiceVariable' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
+	            "Error starting statement: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'FetchABean' in class 'com.espertech.esper.regression.epl.TestFromClauseMethodVariable+MyConstantServiceVariable' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
+            
+            // null variable value and metadata is instance method
+            _epService.EPAdministrator.Configuration.AddVariable("MyNullMap", typeof(MyMethodHandlerMap), null);
+            SupportMessageAssertUtil.TryInvalid(_epService, "select field1, field2 from method:MyNullMap.GetMapData()",
+                    "Error starting statement: Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
+
+            // variable with context and metadata is instance method
+            _epService.EPAdministrator.CreateEPL("create context BetweenStartAndEnd start SupportBean end SupportBean");
+            _epService.EPAdministrator.CreateEPL("context BetweenStartAndEnd create variable " + typeof(MyMethodHandlerMap).MaskTypeName() + " themap");
+            SupportMessageAssertUtil.TryInvalid(_epService, "context BetweenStartAndEnd select field1, field2 from method:themap.GetMapData()",
+                    "Error starting statement: Failed to access variable method invocation metadata: The metadata method is an instance method however the variable is contextual, please declare the metadata method as static or remove the context declaration for the variable");
+        }
+
+        private void RunAssertionVariableMapAndOA()
+        {
+            _epService.EPAdministrator.Configuration.AddVariable<MyMethodHandlerMap>("MyMethodHandlerMap", new MyMethodHandlerMap("a", "b"));
+            _epService.EPAdministrator.Configuration.AddVariable<MyMethodHandlerOA>("MyMethodHandlerOA", new MyMethodHandlerOA("a", "b"));
+
+            foreach (var epl in new String[] {
+                    "select field1, field2 from method:MyMethodHandlerMap.GetMapData()",
+                    "select field1, field2 from method:MyMethodHandlerOA.GetOAData()"
+            }) {
+                var stmt = _epService.EPAdministrator.CreateEPL(epl);
+                EPAssertionUtil.AssertProps(stmt.First(), "field1,field2".SplitCsv(), new Object[] {"a", "b"});
+            }
 	    }
 
 	    private void RunAssertionContextVariable()
@@ -104,9 +136,9 @@ namespace com.espertech.esper.regression.epl
 
 	    private void RunAssertionConstantVariable()
 	    {
-	        string epl = "select id as c0 from SupportBean as sb, " +
+	        var epl = "select id as c0 from SupportBean as sb, " +
 	                   "method:MyConstantServiceVariable.FetchABean(intPrimitive) as h0";
-	        EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
+	        var stmt = _epService.EPAdministrator.CreateEPL(epl);
 	        _listener = new SupportUpdateListener();
 	        stmt.AddListener(_listener);
 
@@ -118,12 +150,12 @@ namespace com.espertech.esper.regression.epl
 
 	    private void RunAssertionNonConstantVariable(bool soda)
 	    {
-	        string modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=p00";
+	        var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=p00";
 	        SupportModelHelper.CreateByCompileOrParse(_epService, soda, modifyEPL);
 
-	        string epl = "select id as c0 from SupportBean as sb, " +
+	        var epl = "select id as c0 from SupportBean as sb, " +
                     "method:MyNonConstantServiceVariable.FetchABean(IntPrimitive) as h0";
-	        EPStatement stmt = SupportModelHelper.CreateByCompileOrParse(_epService, soda, epl);
+	        var stmt = SupportModelHelper.CreateByCompileOrParse(_epService, soda, epl);
 	        _listener = new SupportUpdateListener();
 	        stmt.AddListener(_listener);
 
@@ -141,7 +173,7 @@ namespace com.espertech.esper.regression.epl
 
 	    private void SendEventAssert(string theString, int intPrimitive, string expected)
         {
-	        string[] fields = "c0".Split(',');
+	        var fields = "c0".Split(',');
 	        _epService.EPRuntime.SendEvent(new SupportBean(theString, intPrimitive));
 	        EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[]{expected});
 	    }
@@ -188,5 +220,60 @@ namespace com.espertech.esper.regression.epl
 	            return new MyNonConstantServiceVariable("context_postfix");
 	        }
 	    }
+
+        public class MyMethodHandlerMap
+        {
+            private readonly string _field1;
+            private readonly string _field2;
+
+            public MyMethodHandlerMap(string field1, string field2)
+            {
+                _field1 = field1;
+                _field2 = field2;
+            }
+
+            public IDictionary<string, object> GetMapDataMetadata()
+            {
+                var fields = new Dictionary<string, object>();
+                fields.Put("field1", typeof (string));
+                fields.Put("field2", typeof (string));
+                return fields;
+            }
+
+            public IDictionary<string, object>[] GetMapData()
+            {
+                var maps = new IDictionary<string, object>[1];
+                var row = new Dictionary<string, object>();
+                maps[0] = row;
+                row.Put("field1", _field1);
+                row.Put("field2", _field2);
+                return maps;
+            }
+        }
+
+        public class MyMethodHandlerOA
+        {
+            private readonly string _field1;
+            private readonly string _field2;
+
+            public MyMethodHandlerOA(string field1, string field2)
+            {
+                _field1 = field1;
+                _field2 = field2;
+            }
+
+            public static IDictionary<string, object> GetOADataMetadata()
+            {
+                var fields = new LinkedHashMap<String, Object>();
+                fields.Put("field1", typeof (string));
+                fields.Put("field2", typeof (string));
+                return fields;
+            }
+
+            public object[][] GetOAData()
+            {
+                return new object[][] { new object[] {_field1, _field2}};
+            }
+        }
 	}
 } // end of namespace

@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.core.context.util;
-using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.view
@@ -16,11 +14,11 @@ namespace com.espertech.esper.epl.view
     /// <summary>
     /// Output condition that is satisfied at the end of every time interval of a given length.
     /// </summary>
-    public sealed class OutputConditionTimeFactory : OutputConditionFactory
+    public class OutputConditionTimeFactory : OutputConditionFactory
     {
         private readonly ExprTimePeriod _timePeriod;
         private readonly ExprTimePeriodEvalDeltaNonConst _timePeriodDeltaComputation;
-        private readonly bool _isStartConditionOnCreation;
+        protected readonly bool _isStartConditionOnCreation;
 
         /// <summary>
         /// Constructor.

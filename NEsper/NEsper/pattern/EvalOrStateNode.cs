@@ -159,7 +159,7 @@ namespace com.espertech.esper.pattern
                     child.Quit();
                 }
             }
-            ChildNodes.Fill(null);
+            ChildNodes.Fill((EvalStateNode) null);
         }
     }
 }

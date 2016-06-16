@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             try
             {
-                _targetClass = validationContext.MethodResolutionService.ResolveType(_classIdent);
+                _targetClass = validationContext.MethodResolutionService.ResolveType(_classIdent, false);
             }
             catch (EngineImportException e)
             {

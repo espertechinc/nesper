@@ -90,7 +90,8 @@ namespace com.espertech.esper.core.context.mgr
                 new EPStatementAgentInstanceHandle(
                     _agentInstanceContext.StatementContext.EpStatementHandle,
                     _agentInstanceContext.StatementContext.DefaultAgentInstanceLock, -1,
-                    new StatementAgentInstanceFilterVersion());
+                    new StatementAgentInstanceFilterVersion(),
+                    _agentInstanceContext.StatementContext.FilterFaultHandlerFactory);
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
 
             long msec = _spec.TimePeriod.NonconstEvaluator().DeltaMillisecondsUseEngineTime(null, _agentInstanceContext) - timeOffset;
@@ -110,9 +111,7 @@ namespace com.espertech.esper.core.context.mgr
         {
             get
             {
-                long current = _agentInstanceContext.StatementContext.TimeProvider.Time;
-                long msec = _spec.TimePeriod.NonconstEvaluator().DeltaMillisecondsAdd(current, null, true, _agentInstanceContext);
-                return current + msec;
+                return _spec.GetExpectedEndTime(_agentInstanceContext);
             }
         }
     }

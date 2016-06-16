@@ -45,6 +45,16 @@ namespace com.espertech.esper.compat.collections
             _head = 0;
             _tail = ncount;
         }
+
+        public T[] Array
+        {
+            get
+            {
+                var array = new T[Count];
+                CopyTo(array, 0);
+                return array;
+            }
+        }
             
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -99,15 +109,15 @@ namespace com.espertech.esper.compat.collections
 
             if (_tail > _head)
             {
-                Array.Copy(_array, _head, narray, 0, _tail - _head);
+                System.Array.Copy(_array, _head, narray, 0, _tail - _head);
             }
             else
             {
                 var nl = _head;
                 var nr = _array.Length - _head;
 
-                Array.Copy(_array, _head, narray, 0, nr);
-                Array.Copy(_array, 0, narray, nr, nl);
+                System.Array.Copy(_array, _head, narray, 0, nr);
+                System.Array.Copy(_array, 0, narray, nr, nl);
             }
 
             _head = 0;
@@ -286,17 +296,21 @@ namespace com.espertech.esper.compat.collections
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (_tail > _head)
+            if (_tail == _head)
             {
-                Array.Copy(_array, _head, array, 0, _tail - _head);
+                    
+            }
+            else if (_tail > _head)
+            {
+                System.Array.Copy(_array, _head, array, 0, _tail - _head);
             }
             else
             {
                 var nl = _head;
                 var nr = _array.Length - _head;
 
-                Array.Copy(_array, _head, array, 0, nr);
-                Array.Copy(_array, 0, array, nr, nl);
+                System.Array.Copy(_array, _head, array, 0, nr);
+                System.Array.Copy(_array, 0, array, nr, nl);
             }
         }
 

@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.events
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
     
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             config.AddEventType("FullEvent", typeof(SupportRevisionFull));
             config.AddEventType("D1", typeof(SupportDeltaOne));
             config.AddEventType("D2", typeof(SupportDeltaTwo));

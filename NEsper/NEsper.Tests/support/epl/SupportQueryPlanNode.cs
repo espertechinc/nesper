@@ -29,16 +29,7 @@ namespace com.espertech.esper.support.epl
 	        _id = id;
 	    }
 
-	    public override ExecNode MakeExec(
-	        string statementName,
-	        string statementId,
-	        Attribute[] annotations,
-	        IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
-	        EventType[] streamTypes,
-	        Viewable[] streamViews,
-	        HistoricalStreamIndexList[] historicalStreamIndexLists,
-	        VirtualDWView[] viewExternal,
-	        ILockable[] tableSecondaryIndexLocks)
+	    public override ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks)
 	    {
 	        return new SupportQueryExecNode(_id);
 	    }

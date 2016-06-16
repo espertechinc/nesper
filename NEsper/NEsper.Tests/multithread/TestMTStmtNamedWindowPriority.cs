@@ -28,8 +28,8 @@ namespace com.espertech.esper.multithread
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean_S0", typeof(SupportBean_S0));
-            configuration.AddEventType("SupportBean_S1", typeof(SupportBean_S1));
+            configuration.AddEventType<SupportBean_S0>();
+            configuration.AddEventType<SupportBean_S1>();
             configuration.EngineDefaults.ExecutionConfig.IsPrioritized = true;
             configuration.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder = false;
             _engine = EPServiceProviderManager.GetDefaultProvider(configuration);

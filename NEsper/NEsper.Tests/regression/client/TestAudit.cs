@@ -199,21 +199,26 @@ namespace com.espertech.esper.regression.client
         {
             // view
             AuditLog.Info("*** View: ");
-            var stmtView =
-                _epService.EPAdministrator.CreateEPL(
+            var stmtView = _epService.EPAdministrator.CreateEPL(
                     "@Name('ABC') @Audit('view') select IntPrimitive from SupportBean.std:lastevent()");
             stmtView.Events += _listener.Update;
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             Assert.AreEqual(50, _listener.AssertOneGetNewAndReset().Get("IntPrimitive"));
             stmtView.Dispose();
 
-            var stmtGroupedView =
-                _epService.EPAdministrator.CreateEPL(
+            var stmtGroupedView = _epService.EPAdministrator.CreateEPL(
                     "@Audit Select * From SupportBean.std:groupwin(TheString).win:length(2)");
             stmtGroupedView.Events += _listener.Update;
             _epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
             _listener.Reset();
             stmtGroupedView.Dispose();
+
+            var stmtGroupedWIntersectionView = _epService.EPAdministrator.CreateEPL(
+                "@Audit Select * From SupportBean.std:groupwin(TheString).win:length(2).std:unique(IntPrimitive)");
+            stmtGroupedWIntersectionView.Events += _listener.Update;
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 50));
+            _listener.Reset();
+            stmtGroupedWIntersectionView.Dispose();
         }
 
         [Test]

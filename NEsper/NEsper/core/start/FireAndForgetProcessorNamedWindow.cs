@@ -72,7 +72,7 @@ namespace com.espertech.esper.core.start
     
         public override ICollection<int> GetProcessorInstancesAll()
         {
-            return _namedWindowProcessor.GetProcessorInstancesAll();
+            return _namedWindowProcessor.ProcessorInstancesAll;
         }
 
         public override string NamedWindowOrTableName
@@ -90,7 +90,7 @@ namespace com.espertech.esper.core.start
             if (processorInstance == null) {
                 return new string[0][];
             }
-            return _namedWindowProcessor.GetUniqueIndexes(((FireAndForgetInstanceNamedWindow) processorInstance).ProcessorInstance);
+            return _namedWindowProcessor.UniqueIndexes;
         }
     }
 }

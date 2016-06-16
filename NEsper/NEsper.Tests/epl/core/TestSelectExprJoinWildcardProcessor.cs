@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.core
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
             var supportTypes = new SupportStreamTypeSvc3Stream();
     
-            _processor = SelectExprJoinWildcardProcessorFactory.Create(Collections.GetEmptyList<int>(), "id", supportTypes.StreamNames, supportTypes.EventTypes,
+            _processor = SelectExprJoinWildcardProcessorFactory.Create(Collections.GetEmptyList<int>(), 1, supportTypes.StreamNames, supportTypes.EventTypes,
                     SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, null, null, new Configuration(), new TableServiceImpl());
         }
     

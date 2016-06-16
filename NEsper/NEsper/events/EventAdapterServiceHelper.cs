@@ -25,6 +25,20 @@ namespace com.espertech.esper.events
     /// <summary>Helper for writeable events. </summary>
     public class EventAdapterServiceHelper
     {
+        public static String GetMessageExpecting(String eventTypeName, EventType existingType, String typeOfEventType)
+        {
+            String message = "Event type named '" + eventTypeName + "' has not been defined or is not a " + typeOfEventType + " event type";
+            if (existingType != null)
+            {
+                message += ", the name '" + eventTypeName + "' refers to a " + TypeHelper.GetTypeNameFullyQualPretty(existingType.UnderlyingType) + " event type";
+            }
+            else
+            {
+                message += ", the name '" + eventTypeName + "' has not been defined as an event type";
+            }
+            return message;
+        }
+
         public static EventBeanFactory GetFactoryForType(EventType type, EventAdapterService eventAdapterService)
         {
             if (type is WrapperEventType)

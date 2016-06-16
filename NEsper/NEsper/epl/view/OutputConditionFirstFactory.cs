@@ -8,6 +8,7 @@
 
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.epl.view
@@ -18,8 +19,8 @@ namespace com.espertech.esper.epl.view
     public class OutputConditionFirstFactory : OutputConditionFactory
     {
     	private readonly OutputConditionFactory _innerConditionFactory;
-    
-    	public OutputConditionFirstFactory(OutputLimitSpec outputLimitSpec, StatementContext statementContext, bool isGrouped, bool isWithHavingClause)
+
+        public OutputConditionFirstFactory(OutputLimitSpec outputLimitSpec, StatementContext statementContext, bool isGrouped, bool isWithHavingClause, ResultSetProcessorHelperFactory resultSetProcessorHelperFactory)
     	{
     	    var innerSpec = new OutputLimitSpec(outputLimitSpec.Rate,
     	                                        outputLimitSpec.VariableName,
@@ -34,7 +35,7 @@ namespace com.espertech.esper.epl.view
     	                                        outputLimitSpec.AndAfterTerminateExpr,
     	                                        outputLimitSpec.AndAfterTerminateThenExpressions);
 
-    		_innerConditionFactory = OutputConditionFactoryFactory.CreateCondition(innerSpec, statementContext, isGrouped, isWithHavingClause, false);
+    		_innerConditionFactory = OutputConditionFactoryFactory.CreateCondition(innerSpec, statementContext, isGrouped, isWithHavingClause, false, resultSetProcessorHelperFactory);
     	}
     
         public OutputCondition Make(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback) {

@@ -98,7 +98,7 @@ namespace com.espertech.esper.filter
         }
     
         private FilterSpecLookupable MakeLookupable(String fieldName) {
-            return new FilterSpecLookupable(fieldName, _eventType.GetGetter(fieldName), _eventType.GetPropertyType(fieldName));
+            return new FilterSpecLookupable(fieldName, _eventType.GetGetter(fieldName), _eventType.GetPropertyType(fieldName), false);
         }
     
         [Test]

@@ -273,8 +273,8 @@ namespace com.espertech.esper.regression.pattern
             SendTime(isolated, startTime);
             isolated.EPAdministrator.CreateEPL(epl, "S0", null).Events += _listener.Update;
             RunSequence(isolated, times);
-            isolated.Dispose();
             epService.EPAdministrator.DestroyAllStatements();
+            isolated.Dispose();
         }
     
         private void RunSequence(EPServiceProviderIsolated epService, String[] times) {

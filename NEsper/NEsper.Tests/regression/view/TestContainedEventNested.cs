@@ -68,7 +68,7 @@ namespace com.espertech.esper.regression.view
 	    {
 	        string[] fields = "theString,totalPrice".Split(',');
 	        _epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        _epService.EPAdministrator.CreateEPL("create window OrderWindow.std:lastevent() as OrderEvent");
 	        _epService.EPAdministrator.CreateEPL("insert into OrderWindow select * from OrderEvent");
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regression.view
 	    {
 	        string[] fields = "theString,intPrimitive".Split(',');
 	        _epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        _epService.EPAdministrator.CreateEPL("create window SupportBeanWindow.std:lastevent() as SupportBean");
 	        _epService.EPAdministrator.CreateEPL("insert into SupportBeanWindow select * from SupportBean");
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regression.view
 	    public void TestPatternSelect()
 	    {
 	        _epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        EPStatement stmt = _epService.EPAdministrator.CreateEPL("select * from pattern [" +
 	                "every r=OrderEvent[books][reviews] -> SupportBean(intPrimitive = r[0].reviewId)]");
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regression.view
 	    public void TestSubSelect()
 	    {
 	        _epService.EPAdministrator.Configuration.AddEventType("OrderEvent", typeof(OrderBean));
-	        _epService.EPAdministrator.Configuration.AddEventType("SupportBean", typeof(SupportBean));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 
 	        EPStatement stmt = _epService.EPAdministrator.CreateEPL("select theString from SupportBean s0 where " +
 	                "exists (select * from OrderEvent[books][reviews].std:unique(reviewId) where reviewId = s0.intPrimitive)");

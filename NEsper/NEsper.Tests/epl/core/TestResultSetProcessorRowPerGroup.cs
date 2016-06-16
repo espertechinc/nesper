@@ -10,6 +10,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
@@ -20,6 +21,8 @@ using com.espertech.esper.support.events;
 using com.espertech.esper.support.view;
 
 using NUnit.Framework;
+
+using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -41,7 +44,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false, new SupportStreamTypeSvc1Stream(),
                 SupportEventAdapterService.Service, null, selectExprEventTypeRegistry,
                 _agentInstanceContext.StatementContext.MethodResolutionService,
-                null, null, new Configuration(), null, new TableServiceImpl());
+                1, null, new Configuration(), null, new TableServiceImpl(), null);
             var selectProcessor = factory.Evaluator;
             _supportAggregationService = new SupportAggregationService();
     
@@ -49,7 +52,7 @@ namespace com.espertech.esper.epl.core
             groupKeyNodes[0] = SupportExprNodeFactory.MakeIdentNode("IntPrimitive", "s0").ExprEvaluator;
             groupKeyNodes[1] = SupportExprNodeFactory.MakeIdentNode("IntBoxed", "s0").ExprEvaluator;
 
-            var prototype = new ResultSetProcessorRowPerGroupFactory(selectProcessor, null, groupKeyNodes, null, true, false, null, false, false, false, false);
+            var prototype = new ResultSetProcessorRowPerGroupFactory(selectProcessor, null, groupKeyNodes, null, true, false, null, false, false, false, false, null, false, 1, null);
             _processor = (ResultSetProcessorRowPerGroup) prototype.Instantiate(null, _supportAggregationService, _agentInstanceContext);
         }
     

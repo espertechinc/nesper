@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.nwtable
             epService = (EPServiceProviderSPI) EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
             epService.EPAdministrator.Configuration.AddEventType(typeof(OrderBean));
         }
     
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regression.nwtable
     
         [Test]
         public void TestInvalid() {
-            epService.EPAdministrator.Configuration.AddEventType("SupportBean_A", typeof(SupportBean_A));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean_A>();
     
             epService.EPAdministrator.CreateEPL("create window OrderWindow.win:time(30) as OrderBean");
     

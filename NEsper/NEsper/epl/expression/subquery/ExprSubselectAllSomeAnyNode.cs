@@ -99,7 +99,7 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
     
-        public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, String statementId) {
+        public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
             return null;
         }
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
     
-        public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, String statementId) {
+        public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
             return null;
         }
     

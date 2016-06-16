@@ -62,7 +62,7 @@ namespace com.espertech.esper.regression.view
 	    }
 
 	    private void RunAssertion() {
-	        epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanArrayCollMap));
 
 	        string epl = "create objectarray schema DeleteId(id int);" +

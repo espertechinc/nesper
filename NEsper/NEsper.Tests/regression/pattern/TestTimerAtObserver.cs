@@ -165,7 +165,7 @@ namespace com.espertech.esper.regression.pattern
             testCase = new EventExpressionCase("timer:at(22, 8, *, *, *, 1) where timer:within(1 second)");
             testCaseList.AddTest(testCase);
     
-            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *, 1) where timer:within(30 minutes)");
+            testCase = new EventExpressionCase("timer:at(22, 8, *, *, *, 1) where timer:within(31 minutes)");
             testCase.Add("C1");
             testCaseList.AddTest(testCase);
     
@@ -333,13 +333,13 @@ namespace com.espertech.esper.regression.pattern
     
             // test timezone
             if (TimeZoneInfo.Local.BaseUtcOffset == TimeSpan.FromHours(-5))  {    // asserting only in EST timezone, see schedule util tests
-                SendTimeEvent("2008-08-04 06:50:00.000", epService);
-                epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 8, *, 0, 'PST')]").Events += listener.Update;
+                SendTimeEvent("2008-01-04 06:50:00.000", epService);
+                epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]").Events += listener.Update;
     
-                SendTimeEvent("2008-08-04 07:59:59.999", epService);
+                SendTimeEvent("2008-01-04 07:59:59.999", epService);
                 Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-                SendTimeEvent("2008-08-04 08:00:00.000", epService);
+                SendTimeEvent("2008-01-04 08:00:00.000", epService);
                 Assert.IsTrue(listener.GetAndClearIsInvoked());
             }
             epService.EPAdministrator.CreateEPL("select * from pattern [timer:at(0, 5, 4, 8, *, 0, 'xxx')]").Events += listener.Update;

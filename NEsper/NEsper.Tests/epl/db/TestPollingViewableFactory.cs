@@ -25,11 +25,12 @@ namespace com.espertech.esper.epl.db
         {
             DBStatementStreamSpec spec = new DBStatementStreamSpec("s0", ViewSpec.EMPTY_VIEWSPEC_ARRAY,
                     "mydb", "select * from mytesttable where mybigint=${idnum}", null);
-    
+
             EventCollection eventCollection = DatabasePollingViewableFactory.CreateDBStatementView(
-                "id", 1, spec,
+                1, 1, spec,
                 SupportDatabaseService.MakeService(),
-                SupportEventAdapterService.Service, null, null, null, null, true);
+                SupportEventAdapterService.Service,
+                null, null, null, null, true, new DataCacheFactory(), null);
             
             Assert.AreEqual(typeof(long?), eventCollection.EventType.GetPropertyType("mybigint"));
             Assert.AreEqual(typeof(string), eventCollection.EventType.GetPropertyType("myvarchar"));

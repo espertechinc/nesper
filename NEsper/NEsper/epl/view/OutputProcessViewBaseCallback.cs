@@ -12,11 +12,12 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.view
 {
-    /// <summary>Factory for output processing views. </summary>
+    /// <summary>
+    /// Factory for output processing views.
+    /// </summary>
     public class OutputProcessViewBaseCallback : OutputProcessViewBase
     {
         private readonly OutputProcessViewCallback _callback;
@@ -31,6 +32,12 @@ namespace com.espertech.esper.epl.view
         {
             get { return 0; }
         }
+
+        public override OutputCondition OptionalOutputCondition
+        {
+            get { return null; }
+        }
+
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -55,6 +62,11 @@ namespace com.espertech.esper.epl.view
         {
             UniformPair<EventBean[]> pair = ResultSetProcessor.ProcessViewResult(newData, oldData, false);
             _callback.OutputViaCallback(pair.First);
+        }
+        
+        public override void Stop()
+        {
+            // Not applicable
         }
     }
 }

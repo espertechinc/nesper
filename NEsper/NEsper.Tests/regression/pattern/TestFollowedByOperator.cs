@@ -80,7 +80,7 @@ namespace com.espertech.esper.regression.pattern
         {
             // ESPER-411
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
@@ -287,7 +287,7 @@ namespace com.espertech.esper.regression.pattern
         {
             // ESPER-451
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.AddEventType("SupportBean", typeof(SupportBean));
+            config.AddEventType<SupportBean>();
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(config);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, GetType(), GetType().FullName); }
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regression.pattern
             var listener = new SupportUpdateListener();
             statement.Events += listener.Update;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 10; i++)
             {
                 /*
                 if (i % 1000 == 0)

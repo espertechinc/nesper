@@ -24,6 +24,7 @@ namespace com.espertech.esper.core.service
     {
         private readonly StatementContext _statementContext;
         private readonly bool _allowTableAccess;
+        private EventBean _contextProperties;
 
         public ExprEvaluatorContextStatement(StatementContext statementContext, bool allowTableAccess)
         {
@@ -50,7 +51,8 @@ namespace com.espertech.esper.core.service
 
         public EventBean ContextProperties
         {
-            get { return null; }
+            get { return _contextProperties; }
+            set { _contextProperties = value; }
         }
 
         public AgentInstanceScriptContext AgentInstanceScriptContext
@@ -68,7 +70,7 @@ namespace com.espertech.esper.core.service
             get { return _statementContext.EngineURI; }
         }
 
-        public String StatementId
+        public int StatementId
         {
             get { return _statementContext.StatementId; }
         }

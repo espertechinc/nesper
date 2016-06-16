@@ -41,7 +41,7 @@ namespace com.espertech.esper.multithread
         [Test]
         public void TestUpdateIStreamSubselect()
         {
-            _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            _engine.EPAdministrator.Configuration.AddEventType<SupportBean>();
             _engine.EPAdministrator.Configuration.AddEventType(typeof(SupportBean_S0));
             EPStatement stmt = _engine.EPAdministrator.CreateEPL("Update istream SupportBean as sb " +
                             "set LongPrimitive = (select count(*) from SupportBean_S0.win:keepall() as s0 where s0.P00 = sb.TheString)");

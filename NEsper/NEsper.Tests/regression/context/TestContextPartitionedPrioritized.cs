@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.context
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.AddEventType<SupportBean>();
             configuration.EngineDefaults.ExecutionConfig.IsPrioritized = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();

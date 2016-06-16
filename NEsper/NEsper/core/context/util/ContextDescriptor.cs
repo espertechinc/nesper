@@ -16,16 +16,16 @@ using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.core.context.util
 {
-    public class ContextDescriptor {
-    
-        private readonly String _contextName;
+    public class ContextDescriptor
+    {
+        private readonly string _contextName;
         private readonly bool _singleInstanceContext;
         private readonly ContextPropertyRegistry _contextPropertyRegistry;
         private readonly StatementAIResourceRegistryFactory _aiResourceRegistryFactory;
         private readonly ContextEnumeratorHandler _iteratorHandler;
         private readonly ContextDetail _contextDetail;
 
-        public ContextDescriptor(String contextName, bool singleInstanceContext, ContextPropertyRegistry contextPropertyRegistry, StatementAIResourceRegistryFactory aiResourceRegistryFactory, ContextEnumeratorHandler iteratorHandler, ContextDetail contextDetail)
+        public ContextDescriptor(string contextName, bool singleInstanceContext, ContextPropertyRegistry contextPropertyRegistry, StatementAIResourceRegistryFactory aiResourceRegistryFactory, ContextEnumeratorHandler iteratorHandler, ContextDetail contextDetail)
         {
             _contextName = contextName;
             _singleInstanceContext = singleInstanceContext;
@@ -55,21 +55,21 @@ namespace com.espertech.esper.core.context.util
             get { return _aiResourceRegistryFactory; }
         }
 
-        public IEnumerator<EventBean> GetEnumerator(String statementId) {
+        public IEnumerator<EventBean> GetEnumerator(int statementId) {
             return _iteratorHandler.GetEnumerator(statementId);
         }
 
-        public IEnumerator<EventBean> GetSafeEnumerator(String statementId)
+        public IEnumerator<EventBean> GetSafeEnumerator(int statementId)
         {
             return _iteratorHandler.GetSafeEnumerator(statementId);
         }
 
-        public IEnumerator<EventBean> GetEnumerator(String statementId, ContextPartitionSelector selector)
+        public IEnumerator<EventBean> GetEnumerator(int statementId, ContextPartitionSelector selector)
         {
             return _iteratorHandler.GetEnumerator(statementId, selector);
         }
 
-        public IEnumerator<EventBean> GetSafeEnumerator(String statementId, ContextPartitionSelector selector)
+        public IEnumerator<EventBean> GetSafeEnumerator(int statementId, ContextPartitionSelector selector)
         {
             return _iteratorHandler.GetSafeEnumerator(statementId, selector);
         }

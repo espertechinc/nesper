@@ -122,25 +122,6 @@ namespace com.espertech.esper.regression.view
             stmt.Dispose();
         }
 
-        public class MyEvent
-        {
-            public MyEvent(String id, long mytimestamp)
-            {
-                Id = id;
-                Mytimestamp = mytimestamp;
-            }
-
-            public string Id { get; private set; }
-
-            public long Mytimestamp { get; private set; }
-
-            public static MyEvent MakeTime(String id, String mytime)
-            {
-                long msec = DateTimeParser.ParseDefaultMSec("2002-05-1T" + mytime);
-                return new MyEvent(id, msec);
-            }
-        }
-
         [Test]
         public void TestExtBatchedNoReference()
         {
@@ -252,5 +233,26 @@ namespace com.espertech.esper.regression.view
             epl = "select irstream * from MyEvent.win:ext_timed_batch(mytimestamp, 1 minute, 65000)";
             RunAssertionWithRefTime(epl);
         }
+
+        [Serializable]
+        public class MyEvent
+        {
+            public MyEvent(String id, long mytimestamp)
+            {
+                Id = id;
+                Mytimestamp = mytimestamp;
+            }
+
+            public string Id { get; private set; }
+
+            public long Mytimestamp { get; private set; }
+
+            public static MyEvent MakeTime(String id, String mytime)
+            {
+                long msec = DateTimeParser.ParseDefaultMSec("2002-05-1T" + mytime);
+                return new MyEvent(id, msec);
+            }
+        }
+
     }
 }
