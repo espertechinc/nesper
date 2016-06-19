@@ -127,7 +127,7 @@ namespace NEsper.Benchmark.Perforator
                     null,
                     null,
                     null,
-                    null,
+                    -1,
                     null,
                     null,
                     null,
