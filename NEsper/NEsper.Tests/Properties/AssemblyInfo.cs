@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+ï»¿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -18,7 +18,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("EsperTech")]
 [assembly: AssemblyProduct("NEsper.Tests")]
-[assembly: AssemblyCopyright("Copyright EsperTech © 2007-2014")]
+[assembly: AssemblyCopyright("Copyright EsperTech ï¿½ 2007-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -39,5 +39,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.3.0")]
-[assembly: AssemblyFileVersion("5.3.0")]
+[assembly: AssemblyVersion("5.4.0")]
+[assembly: AssemblyFileVersion("5.4.0")]
