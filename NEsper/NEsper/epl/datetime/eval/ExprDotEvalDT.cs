@@ -644,7 +644,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                 return ReformatOp.Evaluate((DateTimeOffset) target, eventsPerStream, isNewData, exprEvaluatorContext);
+                 return ReformatOp.Evaluate(target.AsDateTimeOffset(), eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
 
