@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         }
 
         public AggregationMethod Make(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId) {
-	        AggregationMethod method = methodResolutionService.MakeMedianAggregator(agentInstanceId, groupId, aggregationId, _parent.HasFilter);
+            AggregationMethod method = methodResolutionService.MakeMedianAggregator(agentInstanceId, groupId, aggregationId, _parent.HasFilter, _aggregatedValueType);
 	        if (!_parent.IsDistinct) {
 	            return method;
 	        }

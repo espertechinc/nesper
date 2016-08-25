@@ -72,7 +72,7 @@ namespace com.espertech.esper.support.bean
         public int? IntOne { set; get; }
         public int? IntTwo { set; get; }
 
-        private BigInteger? BigInt { get; set; }
+        public BigInteger? BigInt { get; set; }
 
         public decimal? DecimalOne { set; get; }
         public decimal? DecimalTwo { set; get; }

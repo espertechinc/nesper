@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Numerics;
 using System.Reflection;
 
 using com.espertech.esper.client.hook;
@@ -141,6 +142,10 @@ namespace com.espertech.esper.epl.core
                 {
                     return new AggregatorSumFloat();
                 }
+                if ((type == typeof(BigInteger?)) || (type == typeof(BigInteger)))
+                {
+                    return new AggregatorSumBigInteger();
+                }
                 return new AggregatorSumNumInteger();
             }
             else
@@ -164,6 +169,10 @@ namespace com.espertech.esper.epl.core
                 if ((type == typeof(float?)) || (type == typeof(float)))
                 {
                     return new AggregatorSumFloatFilter();
+                }
+                if ((type == typeof(BigInteger?)) || (type == typeof(BigInteger)))
+                {
+                    return new AggregatorSumBigIntegerFilter();
                 }
                 return new AggregatorSumNumIntegerFilter();
             }
@@ -191,7 +200,11 @@ namespace com.espertech.esper.epl.core
             {
                 return typeof(float?);
             }
-            return typeof(int?);
+	        if ((type == typeof (BigInteger?)) || (type == typeof (BigInteger)))
+	        {
+	            return typeof(BigInteger?);
+	        }
+	        return typeof(int?);
         }
 
 	    public AggregationMethod MakeDistinctAggregator(int agentInstanceId, int groupId, int aggregationId, AggregationMethod aggregationMethod, Type childType, bool hasFilter)
@@ -210,21 +223,31 @@ namespace com.espertech.esper.epl.core
                 {
                     return new AggregatorAvgDecimalFilter(_engineImportService.DefaultMathContext);
                 }
+                if ((type == typeof(BigInteger?)) || (type == typeof(BigInteger)))
+                {
+                    return new AggregatorAvgBigIntegerFilter();
+                }
                 return new AggregatorAvgFilter();
             }
             if ((type == typeof(decimal?)) || (type == typeof(decimal)))
             {
                 return new AggregatorAvgDecimal(_engineImportService.DefaultMathContext);
             }
+	        if ((type == typeof (BigInteger?)) || (type == typeof (BigInteger)))
+	        {
+	            return new AggregatorAvgBigInteger();
+	        }
             return new AggregatorAvg();
         }
 
 	    public Type GetAvgAggregatorType(Type type)
 	    {
-            return (type == typeof(decimal?)) || (type == typeof(decimal))
-                          ? typeof(decimal?)
-                          : typeof(double?);
+	        if ((type == typeof (decimal?)) || (type == typeof (decimal)))
+	            return typeof (decimal?);
+	        if ((type == typeof (BigInteger?)) || (type == typeof (BigInteger)))
+	            return typeof (BigInteger?);
 
+	        return typeof (double?);
 	    }
 
 	    public AggregationMethod MakeAvedevAggregator(int agentInstanceId, int groupId, int aggregationId, bool hasFilter)
@@ -237,12 +260,14 @@ namespace com.espertech.esper.epl.core
 	        }
 	    }
 
-	    public AggregationMethod MakeMedianAggregator(int agentInstanceId, int groupId, int aggregationId, bool hasFilter)
+        public AggregationMethod MakeMedianAggregator(int agentInstanceId, int groupId, int aggregationId, bool hasFilter, Type childType)
 	    {
-	        if (!hasFilter) {
+	        if (!hasFilter)
+	        {
 	            return new AggregatorMedian();
 	        }
-	        return new AggregatorMedianFilter();
+
+            return new AggregatorMedianFilter();
 	    }
 
 	    public AggregationMethod MakeMinMaxAggregator(int agentInstanceId, int groupId, int aggregationId, MinMaxTypeEnum minMaxTypeEnum, Type targetType, bool isHasDataWindows, bool hasFilter)

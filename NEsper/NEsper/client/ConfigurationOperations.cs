@@ -167,8 +167,9 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
+        /// <param name="importNamespace"></param>
         /// <typeparam name="T"></typeparam>
-        void AddAnnotationImport<T>();
+        void AddAnnotationImport<T>(bool importNamespace = false);
 
         /// <summary>
         /// Adds an import for the namespace associated with the given type.

@@ -166,7 +166,7 @@ namespace com.espertech.esper.regression.resultset
             Assert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
 	        for (var i = 0; i < expectedCSV.Length; i++) {
 	            var receivedCSV = ToCSV(received[i]);
-	            Assert.AreEqual("Failed at row " + i, expectedCSV[i], receivedCSV);
+                Assert.AreEqual(expectedCSV[i], receivedCSV, "Failed at row " + i);
 	        }
 	    }
 

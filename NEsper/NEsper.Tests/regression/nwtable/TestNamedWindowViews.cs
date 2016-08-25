@@ -82,7 +82,7 @@ namespace com.espertech.esper.regression.nwtable
             _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(
                     "create window MyWindow.win:length(2).std:unique(intPrimitive) as SupportBean;\n" +
                             "insert into MyWindow select * from SupportBean;\n" +
-                            "@name('out') select irstream * from MyWindow");
+                            "@Name('out') select irstream * from MyWindow");
 
             String[] fields = "theString".SplitCsv();
             SupportUpdateListener listener = new SupportUpdateListener();

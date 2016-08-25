@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
@@ -74,9 +75,9 @@ namespace com.espertech.esper.regression.expr
         {
 	        _epService.EPAdministrator.Configuration.AddEventType(typeof(TestEvent));
 
-	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.myInstanceMethodAlwaysTrue()) as s0", new bool[]{true, true, true});
-	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.myInstanceMethodEventBean(s0, 'x', 1)) as s0", new bool[]{false, true, false});
-	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.myInstanceMethodEventBean(*, 'x', 1)) as s0", new bool[]{false, true, false});
+	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.MyInstanceMethodAlwaysTrue()) as s0", new bool[]{true, true, true});
+	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.MyInstanceMethodEventBean(s0, 'x', 1)) as s0", new bool[]{false, true, false});
+	        RunAssertionFilterInstanceMethod("select * from TestEvent(s0.MyInstanceMethodEventBean(*, 'x', 1)) as s0", new bool[]{false, true, false});
 	    }
 
 	    private void RunAssertionFilterInstanceMethod(string epl, bool[] expected)
@@ -181,7 +182,7 @@ namespace com.espertech.esper.regression.expr
 
 	    private void RunAssertionRewriteWhereNamedWindow() {
 	        var stmtWindow = _epService.EPAdministrator.CreateEPL("create window NamedWindowA.win:length(1) as SupportBean");
-	        var stmtWithMethod = _epService.EPAdministrator.CreateEPL("select * from NamedWindowA mywindow WHERE (mywindow.TheString.trim() is 'abc')");
+	        var stmtWithMethod = _epService.EPAdministrator.CreateEPL("select * from NamedWindowA mywindow WHERE (mywindow.TheString.Trim() is 'abc')");
 	        stmtWindow.Dispose();
 	        stmtWithMethod.Dispose();
 	    }
@@ -236,7 +237,7 @@ namespace com.espertech.esper.regression.expr
 	    public void TestConstant()
 	    {
 	        var text = "select * from pattern [" +
-	            typeof(SupportBean).FullName + "(IntPrimitive=" + typeof(ISupportA).FullName + ".VALUE_1)]";
+	            typeof(SupportBean).FullName + "(IntPrimitive=" + typeof(ISupportAConst).FullName + ".VALUE_1)]";
 	        var stmt = _epService.EPAdministrator.CreateEPL(text);
 	        stmt.AddListener(_listener);
 
@@ -253,7 +254,7 @@ namespace com.espertech.esper.regression.expr
 	    public void TestEnumSyntaxOne()
 	    {
 	        var text = "select * from pattern [" +
-	            typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnum).FullName + ".valueOf('ENUM_VALUE_1'))]";
+                typeof(SupportBeanWithEnum).FullName + "(supportEnum=" + typeof(SupportEnumHelper).FullName + ".GetEnumFor('ENUM_VALUE_1'))]";
 	        var stmt = _epService.EPAdministrator.CreateEPL(text);
 	        stmt.AddListener(_listener);
 
@@ -732,15 +733,15 @@ namespace com.espertech.esper.regression.expr
 	                    new bool[] {false, false, false, false, false, false});
 
 	        text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-	                typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".minusOne(a.DoubleBoxed))]";
+	                typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.DoubleBoxed))]";
 	        TryPattern(text, new int?[] {0, 0, 0}, new double?[] {10d, 10d, 10d},
 	                         new int?[] {0, 0, 0}, new double?[] {9d, 10d, 11d
 	                         },
 	                    new bool[] {true, false, false});
 
 	        text = "select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
-	                typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".minusOne(a.DoubleBoxed) or " +
-	                    "DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".minusOne(a.IntBoxed))]";
+	                typeof(SupportBean).FullName + "(DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.DoubleBoxed) or " +
+                        "DoubleBoxed = " + typeof(SupportStaticMethodLib).FullName + ".MinusOne(a.IntBoxed))]";
 	        TryPattern(text, new int?[] {0, 0, 12}, new double?[] {10d, 10d, 10d},
 	                         new int?[] {0, 0, 0}, new double?[] {9d, 10d, 11d
 	                         },
@@ -811,7 +812,7 @@ namespace com.espertech.esper.regression.expr
 	        Try3Fields(text, new int[]{1, 1, 1}, new int?[]{0, 1, 0}, new double?[]{2d, 2d, 1d}, new bool[]{false, true, true});
 
 	        text = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive in (IntBoxed, " +
-	            typeof(SupportStaticMethodLib).FullName + ".minusOne(DoubleBoxed)))";
+	            typeof(SupportStaticMethodLib).FullName + ".MinusOne(DoubleBoxed)))";
 	        Try3Fields(text, new int[]{1, 1, 1}, new int?[]{0, 1, 0}, new double?[]{2d, 2d, 1d}, new bool[]{true, true, false});
 
 	        text = "select * from " + typeof(SupportBean).FullName + "(IntPrimitive not in (IntBoxed, DoubleBoxed))";
@@ -839,15 +840,15 @@ namespace com.espertech.esper.regression.expr
 	        string text;
 
 	        text = "select * from " + typeof(SupportBean).FullName + "(" +
-	                typeof(SupportStaticMethodLib).FullName + ".isStringEquals('b', TheString))";
+	                typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('b', TheString))";
 	        TryFilter(text, true);
 
 	        text = "select * from " + typeof(SupportBean).FullName + "(" +
-	                typeof(SupportStaticMethodLib).FullName + ".isStringEquals('bx', TheString || 'x'))";
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
 	        TryFilter(text, true);
 
 	        text = "select * from " + typeof(SupportBean).FullName + "('b'=TheString," +
-	                typeof(SupportStaticMethodLib).FullName + ".isStringEquals('bx', TheString || 'x'))";
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
 	        TryFilter(text, true);
 
 	        text = "select * from " + typeof(SupportBean).FullName + "('b'=TheString, TheString='b', TheString != 'a')";
@@ -863,7 +864,7 @@ namespace com.espertech.esper.regression.expr
 	        TryFilter(text, true);
 
 	        text = "select * from " + typeof(SupportBean).FullName + "(TheString = 'a' and TheString = 'c' and " +
-	                typeof(SupportStaticMethodLib).FullName + ".isStringEquals('bx', TheString || 'x'))";
+                    typeof(SupportStaticMethodLib).FullName + ".IsStringEquals('bx', TheString || 'x'))";
 	        TryFilter(text, false);
 	    }
 
@@ -1005,7 +1006,7 @@ namespace com.espertech.esper.regression.expr
 	        // test priority of equals and boolean
 	        _epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib));
 	        _epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 1 or IntPrimitive = 2)");
-	        _epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.alwaysTrue({}))");
+	        _epService.EPAdministrator.CreateEPL("select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.AlwaysTrue({}))");
 
 	        SupportStaticMethodLib.Invocations.Clear();
 	        _epService.EPRuntime.SendEvent(new SupportBean("E1", 1));
@@ -1072,14 +1073,14 @@ namespace com.espertech.esper.regression.expr
 	                "Filter expression not returning a boolean value: '5-10' [select * from com.espertech.esper.support.bean.SupportBean(5 - 10)]");
 
 	        TryInvalid("select * from " + typeof(SupportBeanWithEnum).FullName + "(TheString=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_1)",
-	                "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(TheString=com.espertech.esper.support.bean.SupportEnum.ENUM_VALUE_1)]");
+	                "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '" + Name.Of<SupportEnum>() + "' to 'System.String' is not allowed [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(TheString=com.espertech.esper.support.bean.SupportEnum.ENUM_VALUE_1)]");
 
 	        TryInvalid("select * from " + typeof(SupportBeanWithEnum).FullName + "(supportEnum=A.b)",
 	                "Failed to validate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
 
 	        TryInvalid("select * from pattern [a=" + typeof(SupportBean).FullName + " -> b=" +
 	                typeof(SupportBean).FullName + "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
-	                "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]]");
+	                "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.I...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]]");
 
 	        TryInvalid("select * from pattern [a=" + typeof(SupportBean).FullName
 	                + " -> b=" + typeof(SupportBean).FullName + "(cluedo.IntPrimitive=a.IntPrimitive)"

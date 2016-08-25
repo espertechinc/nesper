@@ -43,7 +43,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestCountPlusStar()
 	    {
 	        // Test for ESPER-118
-	        var statementText = "select *, count(*) as cnt from " + typeof(SupportMarketDataBean).Name;
+            var statementText = "select *, count(*) as cnt from " + typeof(SupportMarketDataBean).FullName;
 	        _selectTestView = _epService.EPAdministrator.CreateEPL(statementText);
 	        _selectTestView.AddListener(_listener);
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void TestCountMain()
 	    {
-	    	var statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).Name + ".win:time(1)";
+	    	var statementText = "select count(*) as cnt from " + typeof(SupportMarketDataBean).FullName + ".win:time(1)";
 	        _selectTestView = _epService.EPAdministrator.CreateEPL(statementText);
 	        _selectTestView.AddListener(_listener);
 
@@ -89,14 +89,14 @@ namespace com.espertech.esper.regression.resultset
 	        Assert.AreEqual(3L, _listener.LastNewData[0].Get("cnt"));
 
 	        // test invalid distinct
-	        SupportMessageAssertUtil.TryInvalid(_epService, "select count(distinct *) from " + typeof(SupportMarketDataBean).Name,
+            SupportMessageAssertUtil.TryInvalid(_epService, "select count(distinct *) from " + typeof(SupportMarketDataBean).FullName,
 	                "Error starting statement: Failed to validate select-clause expression 'count(distinct *)': Invalid use of the 'distinct' keyword with count and wildcard");
 	    }
 
         [Test]
 	    public void TestCountHaving()
 	    {
-	        var theEvent = typeof(SupportBean).Name;
+	        var theEvent = typeof(SupportBean).FullName;
 	        var statementText = "select irstream sum(intPrimitive) as mysum from " + theEvent + " having sum(intPrimitive) = 2";
 	        _selectTestView = _epService.EPAdministrator.CreateEPL(statementText);
 	        _selectTestView.AddListener(_listener);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void TestSumHaving()
 	    {
-	        var theEvent = typeof(SupportBean).Name;
+            var theEvent = typeof(SupportBean).FullName;
 	        var statementText = "select irstream count(*) as mysum from " + theEvent + " having count(*) = 2";
 	        _selectTestView = _epService.EPAdministrator.CreateEPL(statementText);
 	        _selectTestView.AddListener(_listener);

@@ -36,9 +36,9 @@ namespace com.espertech.esper.regression.resultset
 	        _epService.Initialize();
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), this.GetType().FullName);}
 
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(BlackWhiteEvent));
+	        _epService.EPAdministrator.Configuration.AddEventType<BlackWhiteEvent>();
 	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-	        _epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBeanNumeric));
+	        _epService.EPAdministrator.Configuration.AddEventType<SupportBeanNumeric>();
 	    }
 
         [TearDown]
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestInvalid()
         {
 	        TryInvalid("select count(*, IntPrimitive) from SupportBean",
-	                "Error starting statement: Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns int [select count(*, IntPrimitive) from SupportBean]");
+	                "Error starting statement: Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns " + Name.Of<int>() + " [select count(*, IntPrimitive) from SupportBean]");
 
 	        TryInvalid("select fmin(IntPrimitive) from SupportBean",
 	                "Error starting statement: Failed to validate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
@@ -352,10 +352,10 @@ namespace com.espertech.esper.regression.resultset
         {
 	        public BlackWhiteEvent(bool black)
             {
-	            this.IsBlack = black;
+	            Black = black;
 	        }
 
-	        public bool IsBlack { get; private set; }
+	        public bool Black { get; private set; }
         }
 	}
 } // end of namespace

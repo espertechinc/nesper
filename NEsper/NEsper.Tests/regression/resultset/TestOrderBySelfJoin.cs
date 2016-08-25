@@ -13,6 +13,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.client;
+using com.espertech.esper.util;
 
 using NUnit.Framework;
 
@@ -47,9 +48,9 @@ namespace com.espertech.esper.regression.resultset
 	        var statementString = "select c1.event_criteria_id as ecid, " +
 	                    "c1.priority as priority, " +
 	                    "c2.priority as prio, cast(count(*), int) as cnt from " +
-	    	            typeof(SupportHierarchyEvent).FullName + ".std:lastevent() as c1, " +
-	    	            typeof(SupportHierarchyEvent).FullName + ".std:groupwin(event_criteria_id).std:lastevent() as c2, " +
-	    	            typeof(SupportHierarchyEvent).FullName + ".std:groupwin(event_criteria_id).std:lastevent() as p " +
+	    	            TypeHelper.MaskTypeName<SupportHierarchyEvent>() + ".std:lastevent() as c1, " +
+                        TypeHelper.MaskTypeName<SupportHierarchyEvent>() + ".std:groupwin(event_criteria_id).std:lastevent() as c2, " +
+                        TypeHelper.MaskTypeName<SupportHierarchyEvent>() + ".std:groupwin(event_criteria_id).std:lastevent() as p " +
 	                    "where c2.event_criteria_id in (c1.event_criteria_id,2,1) " +
 	                    "and p.event_criteria_id in (c1.parent_event_criteria_id, c1.event_criteria_id) " +
 	                    "order by c2.priority asc";

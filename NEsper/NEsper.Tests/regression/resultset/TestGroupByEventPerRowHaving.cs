@@ -77,7 +77,7 @@ namespace com.espertech.esper.regression.resultset
 	    {
 	        // Every event generates a new row, this time we sum the Price by Symbol and output Volume
 	        string viewExpr = "select irstream Symbol, Volume, sum(Price) as mySum " +
-	                          "from " + typeof(SupportMarketDataBean).Name + ".win:length(3) " +
+                              "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " +
 	                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
 	                          "group by Symbol " +
 	                          "having sum(Price) >= 50";
@@ -93,8 +93,8 @@ namespace com.espertech.esper.regression.resultset
 	    {
 	        // Every event generates a new row, this time we sum the Price by Symbol and output Volume
 	        string viewExpr = "select irstream Symbol, Volume, sum(Price) as mySum " +
-	                          "from " + typeof(SupportBeanString).Name + ".win:length(100) as one, " +
-	                                    typeof(SupportMarketDataBean).Name + ".win:length(3) as two " +
+                              "from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
+                                        typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " +
 	                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
 	                          "  and one.TheString = two.Symbol " +
 	                          "group by Symbol " +

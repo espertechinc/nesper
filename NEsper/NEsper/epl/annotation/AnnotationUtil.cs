@@ -127,7 +127,7 @@ namespace com.espertech.esper.epl.annotation
             // resolve attribute type
             try
             {
-                return engineImportService.ResolveType(attributeTypeNameForCLR, true);
+                return engineImportService.ResolveAnnotation(attributeTypeNameForCLR);
             }
             catch (EngineImportException e)
             {
@@ -242,8 +242,11 @@ namespace com.espertech.esper.epl.annotation
                     }
                 }
             }
-
-            HintEnumExtensions.ValidateGetListed(attributeInstance);
+            
+            if (attributeInstance is HintAttribute)
+            {
+                HintEnumExtensions.ValidateGetListed(attributeInstance);
+            }
 
             return attributeInstance;
         }
@@ -263,6 +266,10 @@ namespace com.espertech.esper.epl.annotation
                 if (propertyValue == null)
                 {
                     isTypeMismatch = true;
+                }
+                else if (magicPropertyType.IsEnum && (propertyValue is string))
+                {
+                    return Enum.Parse(magicPropertyType, (string) propertyValue, true);
                 }
                 else if (!propertyValue.GetType().IsAssignableFrom(magicPropertyType))
                 {

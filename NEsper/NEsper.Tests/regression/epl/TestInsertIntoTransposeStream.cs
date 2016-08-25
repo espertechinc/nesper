@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.epl
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtTextTwo);
             stmt.Events += _listener.Update;
             EventType type = stmt.EventType;
-            Assert.AreEqual(typeof(Pair<string, object>), type.UnderlyingType);
+            Assert.AreEqual(typeof(Pair<object, DataMap>), type.UnderlyingType);
 
             _epService.EPRuntime.SendEvent(new SupportBean("I1", 1));
             EventBean result = _listener.AssertOneGetNewAndReset();

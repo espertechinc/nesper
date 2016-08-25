@@ -9,7 +9,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.util
@@ -22,27 +24,29 @@ namespace com.espertech.esper.util
         {
             CoercerTable = new Dictionary<Type, Coercer>();
             CoercerTable[typeof (decimal?)] =
-                (itemToCoerce => Convert.ToDecimal(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsDecimal());
             CoercerTable[typeof (double?)] =
-                (itemToCoerce => Convert.ToDouble(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsDouble());
             CoercerTable[typeof (ulong?)] =
                 (itemToCoerce => Convert.ToUInt64(itemToCoerce));
             CoercerTable[typeof (long?)] =
-                (itemToCoerce => Convert.ToInt64(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsLong());
             CoercerTable[typeof (float?)] =
-                (itemToCoerce => Convert.ToSingle(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsFloat());
             CoercerTable[typeof (uint?)] =
                 (itemToCoerce => Convert.ToUInt32(itemToCoerce));
             CoercerTable[typeof (int?)] =
-                (itemToCoerce => Convert.ToInt32(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsInt());
             CoercerTable[typeof (ushort?)] =
                 (itemToCoerce => Convert.ToUInt16(itemToCoerce));
             CoercerTable[typeof (short?)] =
-                (itemToCoerce => Convert.ToInt16(itemToCoerce));
+                (itemToCoerce => itemToCoerce.AsShort());
             CoercerTable[typeof (byte?)] =
                 (itemToCoerce => Convert.ToByte(itemToCoerce));
             CoercerTable[typeof (sbyte?)] =
                 (itemToCoerce => Convert.ToSByte(itemToCoerce));
+            CoercerTable[typeof (BigInteger?)] =
+                (itemToCoerce => itemToCoerce.AsBigInteger());
         }
 
         /// <summary>

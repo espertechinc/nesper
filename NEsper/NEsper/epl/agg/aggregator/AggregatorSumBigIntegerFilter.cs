@@ -12,12 +12,14 @@ using com.espertech.esper.epl.agg.service;
 
 namespace com.espertech.esper.epl.agg.aggregator
 {
-    /// <summary>Median aggregation. </summary>
-    public class AggregatorMedianFilter : AggregatorMedian
+    /// <summary>
+    /// Sum for big integer values.
+    /// </summary>
+    public class AggregatorSumBigIntegerFilter : AggregatorSumBigInteger
     {
         public override void Enter(Object parameters)
         {
-            var paramArray = (Object[])parameters;
+            var paramArray = (Object[]) parameters;
             if (!AggregatorUtil.CheckFilter(paramArray))
             {
                 return;
@@ -27,7 +29,7 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         public override void Leave(Object parameters)
         {
-            var paramArray = (Object[])parameters;
+            var paramArray = (Object[]) parameters;
             if (!AggregatorUtil.CheckFilter(paramArray))
             {
                 return;

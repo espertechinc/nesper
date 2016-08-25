@@ -322,7 +322,19 @@ namespace com.espertech.esper.compat.threading
                 }
             }
 
-            return (int) Interlocked.Increment(ref _typeInstanceId);
+            // indexes in the above range have already been allocated to the
+            // table space, so it not necessary to worry about them... however,
+            // down here we may be seeing table growth.
+
+            var index = (int) Interlocked.Increment(ref _typeInstanceId);
+            if (index >= _threadData.Table.Length)
+            {
+                var tempTable = new T[_threadData.Table.Length << 1];
+                Array.Copy(_threadData.Table, 0, tempTable, 0, _threadData.Table.Length);
+                _threadData.Table = tempTable;
+            }
+
+            return index;
         }
 
         /// <summary>

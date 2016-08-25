@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Reflection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.util;
@@ -149,6 +150,8 @@ namespace com.espertech.esper.compat
                 return (long)value;
             if (value is int)
                 return (int)value;
+            if (value is BigInteger)
+                return (float) ((BigInteger)value);
 
             return Convert.ToSingle(value);
         }
@@ -170,6 +173,8 @@ namespace com.espertech.esper.compat
                 return (long) value;
             if (value is int)
                 return (int) value;
+            if (value is BigInteger)
+                return (double) ((BigInteger) value);
 
             return Convert.ToDouble(value);
         }
@@ -203,8 +208,34 @@ namespace com.espertech.esper.compat
                 return (long)value;
             if (value is int)
                 return (int)value;
+            if (value is BigInteger)
+                return (decimal) ((BigInteger)value);
 
             return Convert.ToDecimal(value);
+        }
+
+        public static BigInteger AsBigInteger(this object value)
+        {
+            if (value is BigInteger)
+                return (BigInteger) value;
+            if (value is decimal)
+                return new BigInteger((decimal) value);
+            if (value is double)
+                return new BigInteger((double) value);
+            if (value is float)
+                return new BigInteger((float) value);
+            if (value is long)
+                return new BigInteger((long) value);
+            if (value is int)
+                return new BigInteger((int) value);
+            if (value is uint)
+                return new BigInteger((uint) value);
+            if (value is ulong)
+                return new BigInteger((ulong) value);
+            if (value is byte)
+                return new BigInteger((byte) value);
+
+            throw new ArgumentException("invalid value for BigInteger", "value");
         }
 
         public static bool AsBoolean(this object value)
@@ -276,6 +307,17 @@ namespace com.espertech.esper.compat
             }
 
             return (value is int);
+        }
+
+        /// <summary>
+        /// Determines whether the value specified is a big integer.
+        /// </summary>
+        /// <param name="asType">As type.</param>
+        /// <returns></returns>
+        public static bool IsBigInteger(this Type asType)
+        {
+            asType = asType.GetBoxedType();
+            return asType == typeof (BigInteger?);
         }
 
         /// <summary>

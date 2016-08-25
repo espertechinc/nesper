@@ -6,8 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
+using System.Numerics;
 
 namespace com.espertech.esper.compat
 {
@@ -23,7 +23,10 @@ namespace com.espertech.esper.compat
         public static GenericTypeCaster<T> GetCastConverter<T>()
         {
             TypeCaster typeCaster = GetCastConverter(typeof(T));
-            return o => (T)typeCaster.Invoke(o);
+            return o =>
+            {
+                return (T) typeCaster.Invoke(o);
+            };
         }
 
         /// <summary>
@@ -79,6 +82,10 @@ namespace com.espertech.esper.compat
             if (t == typeof(Decimal))
             {
                 return PrimitiveCastDecimal;
+            }
+            if (t == typeof (BigInteger))
+            {
+                return PrimitiveCastBigInteger;
             }
             if (t == typeof(UInt32))
             {
@@ -1782,132 +1789,20 @@ namespace com.espertech.esper.compat
         public static Object PrimitiveCastDecimal(Object sourceObj)
         {
             if (sourceObj == null)
-            {
                 return null;
-            }
+            return sourceObj.AsDecimal();
+        }
 
-            Type sourceObjType = sourceObj.GetType();
-            if (sourceObjType == typeof(SByte))
-            {
-                return (Decimal)((SByte)sourceObj);
-            }
+        /// <summary>
+        /// Casts the object to the System.Numerics.BigInteger
+        /// </summary>
+        /// <param name="sourceObj">The source object</param>
 
-            if (sourceObjType == typeof(SByte?))
-            {
-                return (Decimal)((SByte?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Byte))
-            {
-                return (Decimal)((Byte)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Byte?))
-            {
-                return (Decimal)((Byte?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Char))
-            {
-                return (Decimal)((Char)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Char?))
-            {
-                return (Decimal)((Char?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Int16))
-            {
-                return (Decimal)((Int16)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Int16?))
-            {
-                return (Decimal)((Int16?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Int32))
-            {
-                return (Decimal)((Int32)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Int32?))
-            {
-                return (Decimal)((Int32?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Int64))
-            {
-                return (Decimal)((Int64)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Int64?))
-            {
-                return (Decimal)((Int64?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(UInt16))
-            {
-                return (Decimal)((UInt16)sourceObj);
-            }
-
-            if (sourceObjType == typeof(UInt16?))
-            {
-                return (Decimal)((UInt16?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(UInt32))
-            {
-                return (Decimal)((UInt32)sourceObj);
-            }
-
-            if (sourceObjType == typeof(UInt32?))
-            {
-                return (Decimal)((UInt32?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(UInt64))
-            {
-                return (Decimal)((UInt64)sourceObj);
-            }
-
-            if (sourceObjType == typeof(UInt64?))
-            {
-                return (Decimal)((UInt64?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Single))
-            {
-                return (Decimal)((Single)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Single?))
-            {
-                return (Decimal)((Single?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Double))
-            {
-                return (Decimal)((Double)sourceObj);
-            }
-
-            if (sourceObjType == typeof(Double?))
-            {
-                return (Decimal)((Double?)sourceObj).Value;
-            }
-
-            if (sourceObjType == typeof(Decimal))
-            {
-                return (Decimal)sourceObj;
-            }
-
-            if (sourceObjType == typeof(Decimal?))
-            {
-                return ((Decimal?)sourceObj).Value;
-            }
-
-            return null;
+        public static Object PrimitiveCastBigInteger(Object sourceObj)
+        {
+            if (sourceObj == null)
+                return null;
+            return sourceObj.AsBigInteger();
         }
     }
 }

@@ -13,26 +13,29 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.collection
 {
-    public class SortedDoubleVector
+    public class SortedVector<T> where T : IComparable
     {
-        private readonly List<Double> _values;
+        private readonly List<T> _values;
+        private readonly IComparer<T> _comparer;
 
         /// <summary>
         /// Constructor.
         /// </summary>
 
-        public SortedDoubleVector()
+        public SortedVector()
         {
-            _values = new List<Double>();
+            _values = new List<T>();
+            _comparer = new DefaultComparer();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortedDoubleVector"/> class.
+        /// Initializes a new instance of the <see cref="SortedVector{T}"/> class.
         /// </summary>
         /// <param name="values">The values.</param>
-        public SortedDoubleVector(List<Double> values)
+        public SortedVector(List<T> values)
         {
             _values = values;
+            _comparer = new DefaultComparer();
         }
 
         /// <summary> Returns the number of items in the collection.</summary>
@@ -48,7 +51,7 @@ namespace com.espertech.esper.collection
         /// </param>
         /// <returns> value at index
         /// </returns>
-        public virtual double this[int index]
+        public virtual T this[int index]
         {
             get { return _values[index]; }
         }
@@ -56,12 +59,8 @@ namespace com.espertech.esper.collection
         /// <summary> Add a value to the collection.</summary>
         /// <param name="val">is the double-type value to add
         /// </param>
-        public virtual void Add(double val)
+        public virtual void Add(T val)
         {
-            if (Double.IsNaN(val)) {
-                return;
-            }
-
             int index = FindInsertIndex(val);
 
             if (index == -1)
@@ -79,20 +78,16 @@ namespace com.espertech.esper.collection
         /// </param>
         /// <throws>  IllegalStateException if the value has not been added </throws>
 
-        public virtual void Remove(double val)
+        public virtual void Remove(T val)
         {
-            if (Double.IsNaN(val))
-            {
-                return;
-            }
-
             int index = FindInsertIndex(val);
             if (index == -1)
             {
                 throw new IllegalStateException("Value not found in collection");
             }
-            double? valueAtIndex = _values[index];
-            if ((valueAtIndex != null) && (valueAtIndex != val))
+
+            T valueAtIndex = _values[index];
+            if (IsEQ(valueAtIndex, val))
             {
                 throw new IllegalStateException("Value not found in collection");
             }
@@ -112,9 +107,34 @@ namespace com.espertech.esper.collection
         /// </summary>
         /// <returns>vector with double values</returns>
 
-        public IList<Double> Values
+        public IList<T> Values
         {
             get { return _values; }
+        }
+
+        private bool IsLT(T x, T y)
+        {
+            return _comparer.Compare(x, y) < 0;
+        }
+
+        private bool IsLTE(T x, T y)
+        {
+            return _comparer.Compare(x, y) <= 0;
+        }
+
+        private bool IsGT(T x, T y)
+        {
+            return _comparer.Compare(x, y) > 0;
+        }
+
+        private bool IsGTE(T x, T y)
+        {
+            return _comparer.Compare(x, y) >= 0;
+        }
+
+        private bool IsEQ(T x, T y)
+        {
+            return _comparer.Compare(x, y) == 0;
         }
 
         /// <summary> Returns the index into which to insert to.
@@ -124,20 +144,20 @@ namespace com.espertech.esper.collection
         /// </param>
         /// <returns> position to insert the value to, or -1 to indicate to add to the end.
         /// </returns>
-        public virtual int FindInsertIndex(double val)
+        public virtual int FindInsertIndex(T val)
         {
             if (_values.Count > 2)
             {
-                int startIndex = _values.Count >> 1;
-                double startValue = _values[startIndex];
-                int insertAt = -1;
+                var startIndex = _values.Count >> 1;
+                var startValue = _values[startIndex];
+                var insertAt = -1;
 
-                if (val < startValue)
+                if (IsLT(val, startValue))
                 {
                     // find in lower half
                     insertAt = FindInsertIndex(0, startIndex - 1, val);
                 }
-                else if (val > startValue)
+                else if (IsGT(val, startValue))
                 {
                     // find in upper half
                     insertAt = FindInsertIndex(startIndex + 1, _values.Count - 1, val);
@@ -157,11 +177,11 @@ namespace com.espertech.esper.collection
 
             if (_values.Count == 2)
             {
-                if (val > _values[1])
+                if (IsGT(val, _values[1]))
                 {
                     return -1;
                 }
-                else if (val <= _values[0])
+                else if (IsLTE(val, _values[0]))
                 {
                     return 0;
                 }
@@ -173,7 +193,7 @@ namespace com.espertech.esper.collection
 
             if (_values.Count == 1)
             {
-                if (val > _values[0])
+                if (IsGT(val, _values[0]))
                 {
                     return -1;
                 }
@@ -186,14 +206,14 @@ namespace com.espertech.esper.collection
             return -1;
         }
 
-        private int FindInsertIndex(int lowerBound, int upperBound, double val)
+        private int FindInsertIndex(int lowerBound, int upperBound, T val)
         {
             while (true)
             {
                 if (upperBound == lowerBound)
                 {
-                    double valueLowerBound = _values[lowerBound];
-                    if (val <= valueLowerBound)
+                    T valueLowerBound = _values[lowerBound];
+                    if (IsLTE(val, valueLowerBound))
                     {
                         return lowerBound;
                     }
@@ -205,14 +225,14 @@ namespace com.espertech.esper.collection
 
                 if (upperBound - lowerBound == 1)
                 {
-                    double valueLowerBound = _values[lowerBound];
-                    if (val <= valueLowerBound)
+                    T valueLowerBound = _values[lowerBound];
+                    if (IsLTE(val, valueLowerBound))
                     {
                         return lowerBound;
                     }
 
-                    double valueUpperBound = _values[upperBound];
-                    if (val > valueUpperBound)
+                    T valueUpperBound = _values[upperBound];
+                    if (IsGT(val, valueUpperBound))
                     {
                         return upperBound + 1;
                     }
@@ -221,14 +241,14 @@ namespace com.espertech.esper.collection
                 }
 
                 int nextMiddle = lowerBound + ((upperBound - lowerBound) >> 1);
-                double valueAtMiddle = _values[nextMiddle];
+                T valueAtMiddle = _values[nextMiddle];
 
-                if (val < valueAtMiddle)
+                if (IsLT(val, valueAtMiddle))
                 {
                     // find in lower half
                     upperBound = nextMiddle - 1;
                 }
-                else if (val > valueAtMiddle)
+                else if (IsGT(val, valueAtMiddle))
                 {
                     // find in upper half
                     lowerBound = nextMiddle;
@@ -238,6 +258,18 @@ namespace com.espertech.esper.collection
                     return nextMiddle;
                 }
             }
+        }
+
+        internal class DefaultComparer : Comparer<T>
+        {
+            #region Overrides of Comparer<T>
+
+            public override int Compare(T x, T y)
+            {
+                return ((IComparable)x).CompareTo(y);
+            }
+
+            #endregion
         }
     }
 }

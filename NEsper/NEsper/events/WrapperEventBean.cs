@@ -101,7 +101,7 @@ namespace com.espertech.esper.events
         {
             get
             {
-                // If wrapper is simply for the underlyingg with no additional properties, then return the underlying type
+                // If wrapper is simply for the underlying with no additional properties, then return the underlying type
                 if (_map.Count == 0)
                 {
                     return _theEvent.Underlying;

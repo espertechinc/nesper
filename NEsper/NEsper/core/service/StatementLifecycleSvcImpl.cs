@@ -1219,7 +1219,7 @@ namespace com.espertech.esper.core.service
 	        {
 	            const string text = "Unexpected error compiling statement";
 	            Log.Error(text, ex);
-	            throw new EPStatementException(text + ": " + ex.GetType().Name + ":" + ex.Message, eplStatement);
+	            throw new EPStatementException(text + ": " + ex.GetType().Name + ":" + ex.Message, eplStatement, ex);
 	        }
 
 	        // for create window statements, we switch the filter to a new event type

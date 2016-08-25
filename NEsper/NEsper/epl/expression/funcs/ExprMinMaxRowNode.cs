@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Numerics;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
@@ -76,11 +77,17 @@ namespace com.espertech.esper.epl.expression.funcs
                 _resultType = _resultType.GetArithmaticCoercionType(_evaluators[i].ReturnType);
             }
     
-            if (_resultType == typeof (decimal))
+            if (_resultType == typeof (decimal) || _resultType == typeof(decimal?))
             {
                 _computer = Equals(_minMaxTypeEnum, MinMaxTypeEnum.MAX)
                     ? MinMaxTypeEnumExtensions.CreateMaxDecimalComputer(_evaluators)
                     : MinMaxTypeEnumExtensions.CreateMinDecimalComputer(_evaluators);
+            }
+            else if (_resultType == typeof (BigInteger) || _resultType == typeof(BigInteger?))
+            {
+                _computer = Equals(_minMaxTypeEnum, MinMaxTypeEnum.MAX)
+                    ? MinMaxTypeEnumExtensions.CreateMaxBigIntComputer(_evaluators)
+                    : MinMaxTypeEnumExtensions.CreateMinBigIntComputer(_evaluators);
             }
             else
             {

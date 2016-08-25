@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -63,7 +64,8 @@ namespace com.espertech.esper.util
             var floatWrappers = InitWrappingConversions<float, float?>();
             var doubleWrappers = InitWrappingConversions<double, double?>();
             var decimalWrappers = InitWrappingConversions<decimal, decimal?>();
-    
+            var bigIntWrappers = InitWrappingConversions<BigInteger, BigInteger?>();
+
     		// Initialize the map of widening conversions
             var wideningConversions = new HashSet<Type>(byteWrappers);
     		WideningConversions.Put(typeof(short), new HashSet<Type>(wideningConversions));

@@ -641,10 +641,18 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Adds the annotation import.
         /// </summary>
+        /// <param name="importNamespace"></param>
         /// <typeparam name="T"></typeparam>
-        public void AddAnnotationImport<T>()
+        public void AddAnnotationImport<T>(bool importNamespace = false)
         {
-            AddAnnotationImport(typeof (T).FullName, typeof (T).Assembly.FullName);
+            if (importNamespace)
+            {
+                AddAnnotationImport(typeof(T).Namespace, typeof(T).Assembly.FullName);
+            }
+            else
+            {
+                AddAnnotationImport(typeof(T).FullName, typeof (T).Assembly.FullName);
+            }
         }
 
         /// <summary>

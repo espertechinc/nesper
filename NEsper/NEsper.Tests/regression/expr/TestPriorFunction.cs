@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("priorSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("priorPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("priorPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(_listener.IsInvoked);
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("priorSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("priorPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("priorPrice"));
 
 	        SendMarketEvent("D1", 1, 0);
 	        AssertNewEvents("D1", null, null);
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("priorSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("priorPrice"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("priorPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(_listener.IsInvoked);
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("priorSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("priorPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("priorPrice"));
 
 	        SendMarketEvent("A", 1);
 	        AssertNewEvents("A", null, null);
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prior0Symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prior0Price"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prior0Price"));
 
 	        SendMarketEvent("A", 1);
 	        AssertNewEvents("A", "A", 1d, null, null, null, null, null, null);
@@ -557,7 +557,7 @@ namespace com.espertech.esper.regression.expr
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("priorSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("priorPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("priorPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(_listener.IsInvoked);

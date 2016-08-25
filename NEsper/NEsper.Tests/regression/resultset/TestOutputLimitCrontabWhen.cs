@@ -12,6 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -454,7 +455,7 @@ namespace com.espertech.esper.regression.resultset
 	                   "Error validating expression: The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from MarketData output when myvardummy]");
 
 	        TryInvalid("select * from MarketData output when true then set myvardummy = 'b'",
-	                   "Error starting statement: Error in the output rate limiting clause: Variable 'myvardummy' of declared type java.lang.Integer cannot be assigned a value of type java.lang.String [select * from MarketData output when true then set myvardummy = 'b']");
+	                   "Error starting statement: Error in the output rate limiting clause: Variable 'myvardummy' of declared type " + Name.Of<int>() + " cannot be assigned a value of type " + Name.Of<string>() + " [select * from MarketData output when true then set myvardummy = 'b']");
 
 	        TryInvalid("select * from MarketData output when true then set myvardummy = sum(myvardummy)",
 	                   "Error validating expression: An aggregate function may not appear in a OUTPUT LIMIT clause [select * from MarketData output when true then set myvardummy = sum(myvardummy)]");

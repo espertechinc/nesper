@@ -64,7 +64,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\v4.0\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40;X86</DefineConstants>
     <DocumentationFile>bin\x86\Debug\v4.0\NEsper.xml</DocumentationFile>
     <NoWarn>0162,0168,1591</NoWarn>
     <DebugType>full</DebugType>
@@ -74,7 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\x86\Release\v4.0\</OutputPath>
-    <DefineConstants>TRACE;NET40</DefineConstants>
+    <DefineConstants>TRACE;NET40;X86</DefineConstants>
     <DocumentationFile>bin\x86\Release\v4.0\NEsper.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <NoWarn>0162,0168,1591</NoWarn>
@@ -85,7 +85,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\v4.0\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40;X64</DefineConstants>
     <DocumentationFile>bin\x64\Debug\v4.0\NEsper.xml</DocumentationFile>
     <NoWarn>0162,0168,1591</NoWarn>
     <DebugType>full</DebugType>
@@ -95,7 +95,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\x64\Release\v4.0\</OutputPath>
-    <DefineConstants>TRACE;NET40</DefineConstants>
+    <DefineConstants>TRACE;NET40;X64</DefineConstants>
     <DocumentationFile>bin\x64\Release\v4.0\NEsper.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <NoWarn>0162,0168,1591</NoWarn>
@@ -372,6 +372,7 @@
     <Compile Include="client\scopetest\SupportUpdateListener.cs" />
     <Compile Include="client\soda\MatchRecognizePatternElementType.cs" />
     <Compile Include="collection\SkipList.cs" />
+    <Compile Include="collection\SortedVector.cs" />
     <Compile Include="compat\collections\EmptyList.cs" />
     <Compile Include="compat\DateTimeConstants.cs" />
     <Compile Include="compat\DateTimeEx.cs" />
@@ -1153,8 +1154,10 @@
     <Compile Include="epl\agg\aggregator\AggregationMethod.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvedev.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvedevFilter.cs" />
+    <Compile Include="epl\agg\aggregator\AggregatorAvgBigInteger.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvg.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvgDecimal.cs" />
+    <Compile Include="epl\agg\aggregator\AggregatorAvgBigIntegerFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvgDecimalFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorAvgFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorCount.cs" />
@@ -1193,7 +1196,9 @@
     <Compile Include="epl\agg\aggregator\AggregatorSumIntegerFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumLong.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumLongFilter.cs" />
+    <Compile Include="epl\agg\aggregator\AggregatorSumBigInteger.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumNumInteger.cs" />
+    <Compile Include="epl\agg\aggregator\AggregatorSumBigIntegerFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumNumIntegerFilter.cs" />
     <Compile Include="epl\agg\rollup\GroupByExpressionHelper.cs" />
     <Compile Include="epl\agg\rollup\GroupByRollupDuplicateException.cs" />

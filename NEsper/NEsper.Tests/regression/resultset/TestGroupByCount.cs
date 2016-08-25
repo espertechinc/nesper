@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.resultset
 	                                  "count(*) as countAll, " +
 	                                  "count(distinct volume) as countDistVol, " +
 	                                  "count(volume) as countVol" +
-	                          " from " + typeof(SupportMarketDataBean).Name + ".win:length(3) " +
+                              " from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " +
 	                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
 	                          "group by Symbol";
 	        Assert.AreEqual(viewExpr, model.ToEPL());
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestGroupByCountNestedAggregationAvg()
 	    {
 	        // test for ESPER-328
-	        var viewExpr = "select Symbol, count(*) as cnt, avg(count(*)) as val from " + typeof(SupportMarketDataBean).Name + ".win:length(3)" +
+            var viewExpr = "select Symbol, count(*) as cnt, avg(count(*)) as val from " + typeof(SupportMarketDataBean).FullName + ".win:length(3)" +
 	                          "group by Symbol order by Symbol asc";
 	        var stmt = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        stmt.AddListener(_testListener);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regression.resultset
 	                                  "count(*) as countAll, " +
 	                                  "count(distinct volume) as countDistVol, " +
 	                                  "count(volume) as countVol" +
-	                          " from " + typeof(SupportMarketDataBean).Name + ".win:length(3) " +
+                              " from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " +
 	                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
 	                          "group by Symbol";
 	        var model = _epService.EPAdministrator.CompileEPL(viewExpr);
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regression.resultset
 	                                  "count(*) as countAll," +
 	                                  "count(distinct volume) as countDistVol," +
 	                                  "count(all volume) as countVol" +
-	                          " from " + typeof(SupportMarketDataBean).Name + ".win:length(3) " +
+                              " from " + typeof(SupportMarketDataBean).FullName + ".win:length(3) " +
 	                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
 	                          "group by Symbol";
 
@@ -149,8 +149,8 @@ namespace com.espertech.esper.regression.resultset
 	                                  "count(*) as countAll," +
 	                                  "count(distinct volume) as countDistVol," +
 	                                  "count(volume) as countVol " +
-	                          " from " + typeof(SupportBeanString).Name + ".win:length(100) as one, " +
-	                                    typeof(SupportMarketDataBean).Name + ".win:length(3) as two " +
+                              " from " + typeof(SupportBeanString).FullName + ".win:length(100) as one, " +
+                                        typeof(SupportMarketDataBean).FullName + ".win:length(3) as two " +
 	                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
 	                          "  and one.TheString = two.Symbol " +
 	                          "group by Symbol";

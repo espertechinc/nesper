@@ -57,8 +57,8 @@ namespace com.espertech.esper.regression.expr
         [Test]
 	    public void TestOptimizablePerf()
         {
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libSplit", typeof(MyLib).FullName, "libSplit", FilterOptimizable.ENABLED);
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libE1True", typeof(MyLib).FullName, "libE1True", FilterOptimizable.ENABLED);
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libSplit", typeof(MyLib).FullName, "LibSplit", FilterOptimizable.ENABLED);
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libE1True", typeof(MyLib).FullName, "LibE1True", FilterOptimizable.ENABLED);
 
 	        // create listeners
 	        var count = 10;
@@ -90,19 +90,19 @@ namespace com.espertech.esper.regression.expr
 
 	        string epl;
 
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcOne", typeof(MyLib).FullName, "libSplit",FilterOptimizable.DISABLED);
+            _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcOne", typeof(MyLib).FullName, "LibSplit", FilterOptimizable.DISABLED);
 	        epl = "select * from SupportBean(funcOne(TheString) = 0)";
 	        AssertFilterSingle(epl, FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION);
 
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcOneWDefault", typeof(MyLib).FullName, "libSplit");
+            _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcOneWDefault", typeof(MyLib).FullName, "LibSplit");
 	        epl = "select * from SupportBean(funcOneWDefault(TheString) = 0)";
 	        AssertFilterSingle(epl, "funcOneWDefault(TheString)", FilterOperator.EQUAL);
 
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcTwo", typeof(MyLib).FullName, "libSplit",FilterOptimizable.ENABLED);
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("funcTwo", typeof(MyLib).FullName, "LibSplit",FilterOptimizable.ENABLED);
 	        epl = "select * from SupportBean(funcTwo(TheString) = 0)";
 	        AssertFilterSingle(epl, "funcTwo(TheString)", FilterOperator.EQUAL);
 
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libE1True", typeof(MyLib).FullName, "libE1True",FilterOptimizable.ENABLED);
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("libE1True", typeof(MyLib).FullName, "LibE1True",FilterOptimizable.ENABLED);
 	        epl = "select * from SupportBean(libE1True(TheString))";
 	        AssertFilterSingle(epl, "libE1True(TheString)", FilterOperator.EQUAL);
 
@@ -133,10 +133,9 @@ namespace com.espertech.esper.regression.expr
         [Test]
 	    public void TestPatternUDFFilterOptimizable()
         {
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myCustomDecimalEquals",
-	                GetType().FullName, "MyCustomDecimalEquals");
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myCustomDecimalEquals", GetType().FullName, "MyCustomDecimalEquals");
 
-	        var epl = "select * from pattern[a=SupportBean() -> b=SupportBean(myCustomDecimalEquals(a.bigDecimal, b.bigDecimal))]";
+	        var epl = "select * from pattern[a=SupportBean() -> b=SupportBean(myCustomDecimalEquals(a.DecimalBoxed, b.DecimalBoxed))]";
 	        _epService.EPAdministrator.CreateEPL(epl).AddListener(_listener);
 
 	        var beanOne = new SupportBean("E1", 0);

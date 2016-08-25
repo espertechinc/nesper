@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
@@ -166,6 +167,11 @@ namespace com.espertech.esper.type
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), RelationalOpEnum.GE }), GEDecimalComputer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), RelationalOpEnum.LT }), LTDecimalComputer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), RelationalOpEnum.LE }), LEDecimalComputer);
+
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), RelationalOpEnum.GT }), GTBigIntegerComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), RelationalOpEnum.GE }), GEBigIntegerComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), RelationalOpEnum.LT }), LTBigIntegerComputer);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), RelationalOpEnum.LE }), LEBigIntegerComputer);
 
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(IComparable), RelationalOpEnum.GT }), GTComparableComputer);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(IComparable), RelationalOpEnum.GE }), GEComparableComputer);
@@ -867,6 +873,60 @@ namespace com.espertech.esper.type
             DateTimeOffset s1 = objOne.AsDateTimeOffset();
             DateTimeOffset s2 = objTwo.AsDateTimeOffset();
             return s1 <= s2;
+        }
+        #endregion
+
+        #region BigInteger
+        /// <summary>
+        /// Greater than BigInteger computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool GTBigIntegerComputer(Object objOne, Object objTwo)
+        {
+            var s1 = objOne.AsBigInteger();
+            var s2 = objTwo.AsBigInteger();
+            return s1 > s2;
+        }
+
+        /// <summary>
+        /// Greater-than or equal to BigInteger computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool GEBigIntegerComputer(Object objOne, Object objTwo)
+        {
+            var s1 = objOne.AsBigInteger();
+            var s2 = objTwo.AsBigInteger();
+            return s1 >= s2;
+        }
+
+        /// <summary>
+        /// Less-than or equal to BigInteger computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool LEBigIntegerComputer(Object objOne, Object objTwo)
+        {
+            var s1 = objOne.AsBigInteger();
+            var s2 = objTwo.AsBigInteger();
+            return s1 <= s2;
+        }
+
+        /// <summary>
+        /// Less-than BigInteger computer.
+        /// </summary>
+        /// <param name="objOne">The obj one.</param>
+        /// <param name="objTwo">The obj two.</param>
+        /// <returns></returns>
+        public static bool LTBigIntegerComputer(Object objOne, Object objTwo)
+        {
+            var s1 = objOne.AsBigInteger();
+            var s2 = objTwo.AsBigInteger();
+            return s1 < s2;
         }
         #endregion
 

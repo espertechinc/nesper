@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
@@ -51,6 +52,7 @@ namespace com.espertech.esper.type
         static MathArithTypeEnumExtensions()
         {
             Computers = new Dictionary<MultiKeyUntyped, Computer>();
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.ADD }), AddBigInteger);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.ADD }), AddDecimal);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.ADD }), AddDouble);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.ADD }), AddSingle);
@@ -58,6 +60,7 @@ namespace com.espertech.esper.type
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.ADD }), AddInt32);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.ADD }), AddUInt64);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.ADD }), AddUInt32);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.SUBTRACT }), SubtractBigInteger);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.SUBTRACT }), SubtractDecimal);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.SUBTRACT }), SubtractDouble);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.SUBTRACT }), SubtractSingle);
@@ -65,6 +68,7 @@ namespace com.espertech.esper.type
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.SUBTRACT }), SubtractInt32);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.SUBTRACT }), SubtractUInt64);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.SUBTRACT }), SubtractUInt32);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.MULTIPLY }), MultiplyBigInteger);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.MULTIPLY }), MultiplyDecimal);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.MULTIPLY }), MultiplyDouble);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.MULTIPLY }), MultiplySingle);
@@ -72,6 +76,7 @@ namespace com.espertech.esper.type
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(int), MathArithTypeEnum.MULTIPLY }), MultiplyInt32);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(ulong), MathArithTypeEnum.MULTIPLY }), MultiplyUInt64);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(uint), MathArithTypeEnum.MULTIPLY }), MultiplyUInt32);
+            Computers.Add(new MultiKeyUntyped(new Object[] { typeof(BigInteger), MathArithTypeEnum.MODULO }), ModuloBigInteger);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(decimal), MathArithTypeEnum.MODULO }), ModuloDecimal);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(double), MathArithTypeEnum.MODULO }), ModuloDouble);
             Computers.Add(new MultiKeyUntyped(new Object[] { typeof(float), MathArithTypeEnum.MODULO }), ModuloSingle);
@@ -157,13 +162,13 @@ namespace com.espertech.esper.type
             if (t != null)
                 coercedType = t;
 
-            if ((coercedType != typeof (decimal)) &&
+            if ((coercedType != typeof (BigInteger)) && 
+                (coercedType != typeof (decimal)) &&
                 (coercedType != typeof (double)) &&
                 (coercedType != typeof (float)) &&
                 (coercedType != typeof (long)) &&
                 (coercedType != typeof (int))) {
-                throw new ArgumentException("Expected base numeric type for computation result but got type " +
-                                            coercedType);
+                throw new ArgumentException("Expected base numeric type for computation result but got type " + coercedType);
             }
 
             if (value != MathArithTypeEnum.DIVIDE) {
@@ -182,6 +187,8 @@ namespace com.espertech.esper.type
                 return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked;
             }
 
+            if (coercedType == typeof (BigInteger))
+                return DivideBigInteger;
             if (coercedType == typeof (double))
                 return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked; 
             if (coercedType == typeof (float))
@@ -194,6 +201,19 @@ namespace com.espertech.esper.type
                 return isDivisionByZeroReturnsNull ? (Computer) DivideDecimalChecked : DivideDecimalUnchecked;
 
             throw new ArgumentException("Could not determine process or type " + value + " type " + coercedType);
+        }
+
+        /// <summary>
+        /// Adds big integers.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
+        public static Object AddBigInteger(Object d1, Object d2)
+        {
+            var nd1 = d1.AsBigInteger();
+            var nd2 = d2.AsBigInteger();
+            return nd1 + nd2;
         }
 
         /// <summary>
@@ -274,6 +294,19 @@ namespace com.espertech.esper.type
         }
 
         /// <summary>
+        /// Subtracts big integers.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
+        public static Object SubtractBigInteger(Object d1, Object d2)
+        {
+            var nd1 = d1.AsBigInteger();
+            var nd2 = d2.AsBigInteger();
+            return nd1 - nd2;
+        }
+
+        /// <summary>
         /// Subtracts decimals.
         /// </summary>
         /// <param name="d1">The d1.</param>
@@ -348,6 +381,20 @@ namespace com.espertech.esper.type
         public static Object SubtractUInt32(Object d1, Object d2)
         {
             return Convert.ToUInt32(d1) - Convert.ToUInt32(d2);
+        }
+
+        /// <summary>
+        /// Divides big integers.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
+        public static Object DivideBigInteger(Object d1, Object d2)
+        {
+            var nd1 = d1.AsBigInteger();
+            var nd2 = d2.AsBigInteger();
+            if (nd2 == 0) return null;
+            return nd1 / nd2;
         }
 
         /// <summary>
@@ -476,6 +523,19 @@ namespace com.espertech.esper.type
         }
 
         /// <summary>
+        /// Multiplies big integers.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
+        public static Object MultiplyBigInteger(Object d1, Object d2)
+        {
+            var nd1 = d1.AsBigInteger();
+            var nd2 = d2.AsBigInteger();
+            return nd1 * nd2;
+        }
+
+        /// <summary>
         /// Multiplies decimals.
         /// </summary>
         /// <param name="d1">The d1.</param>
@@ -550,6 +610,19 @@ namespace com.espertech.esper.type
         public static Object MultiplyUInt32(Object d1, Object d2)
         {
             return Convert.ToUInt32(d1) * Convert.ToUInt32(d2);
+        }
+
+        /// <summary>
+        /// Moduloes big integers.
+        /// </summary>
+        /// <param name="d1">The d1.</param>
+        /// <param name="d2">The d2.</param>
+        /// <returns></returns>
+        public static Object ModuloBigInteger(Object d1, Object d2)
+        {
+            var nd1 = d1.AsBigInteger();
+            var nd2 = d2.AsBigInteger();
+            return nd1 % nd2;
         }
 
         /// <summary>

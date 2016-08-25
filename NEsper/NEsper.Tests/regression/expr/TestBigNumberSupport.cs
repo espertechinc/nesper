@@ -202,11 +202,11 @@ namespace com.espertech.esper.regression.expr
 	        stmt.AddListener(_listener);
 	        _listener.Reset();
 
-	        Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v1"));
-	        Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v2"));
-	        Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v3"));
-	        Assert.AreEqual(typeof(BigInteger), stmt.EventType.GetPropertyType("v4"));
-	        Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("v5"));
+	        Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v1"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v2"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v3"));
+            Assert.AreEqual(typeof(BigInteger?), stmt.EventType.GetPropertyType("v4"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("v5"));
 
 	        SendBigNumEvent(1, 2);
 	        var theEvent = _listener.AssertOneGetNewAndReset();
@@ -216,10 +216,10 @@ namespace com.espertech.esper.regression.expr
 	        // test aggregation-sum, multiplication and division all together; test for ESPER-340
 	        stmt.Dispose();
 	        stmt = _epService.EPAdministrator.CreateEPL(
-	                "select (sum(DecimalOneTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric");
+	                "select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric");
 	        stmt.AddListener(_listener);
 	        _listener.Reset();
-	        Assert.AreEqual(typeof(decimal), stmt.EventType.GetPropertyType("avgRate"));
+            Assert.AreEqual(typeof(decimal?), stmt.EventType.GetPropertyType("avgRate"));
 	        SendBigNumEvent(0, 5);
 	        var avgRate = _listener.AssertOneGetNewAndReset().Get("avgRate");
 	        Assert.IsTrue(avgRate is decimal);
@@ -243,14 +243,15 @@ namespace com.espertech.esper.regression.expr
 	        var fieldList = fields.Split(',');
 	        SendBigNumEvent(1, 2);
 	        var theEvent = _listener.AssertOneGetNewAndReset();
-	        EPAssertionUtil.AssertProps(theEvent, fieldList,
-	                new object[]{new BigInteger(1), 2m,        // sum
-	                        1m, 2m,               // avg
-	                        1d, 2d,               // median
-	                        null, null,
-	                        0.0, 0.0,
-	                        new BigInteger(1), 2m,
-	                });
+	        EPAssertionUtil.AssertProps(theEvent, fieldList, new object[]
+            {
+                new BigInteger(1), 2m,        // sum
+	            new BigInteger(1), 2m,               // avg
+	            1d, 2d,               // median
+	            null, null,
+	            0.0, 0.0,
+	            new BigInteger(1), 2m,
+	        });
 	    }
 
         [Test]
@@ -335,7 +336,7 @@ namespace com.espertech.esper.regression.expr
 	    {
 	        _epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib).FullName);
 	        var stmt = _epService.EPAdministrator.CreateEPL(
-	                "select SupportStaticMethodLib.myBigIntFunc(cast(2, BigInteger)) as v1, SupportStaticMethodLib.myBigDecFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric");
+                    "select SupportStaticMethodLib.MyBigIntFunc(cast(2, BigInteger)) as v1, SupportStaticMethodLib.MyDecimalFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric");
 	        stmt.AddListener(_listener);
 
 	        var fieldList = "v1,v2".Split(',');

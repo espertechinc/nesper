@@ -32,9 +32,12 @@ namespace com.espertech.esper.multithread
 	    private void RunAssertion(bool useDefault, bool? preserve, ConfigurationEngineDefaults.Threading.Locking? locking)
         {
 	        var config = SupportConfigFactory.GetConfiguration();
-	        if (!useDefault) {
-	            config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder = preserve.Value;
-	            config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking = locking.Value;
+	        if (!useDefault)
+	        {
+	            if (preserve != null)
+	                config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder = preserve.Value;
+	            if (locking != null)
+	                config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking = locking.Value;
 	        }
 
 	        var epService = EPServiceProviderManager.GetDefaultProvider(config);
@@ -47,7 +50,7 @@ namespace com.espertech.esper.multithread
 	                "insert into EventOneWindow select * from EventOne;\n" +
 	                "create window EventTwoWindow.std:unique(key) as EventTwo;\n" +
 	                "insert into EventTwoWindow select * from EventTwo;\n" +
-	                "@name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.key = e2.key";
+	                "@Name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.key = e2.key";
 	        epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
 
 	        var listener = new SupportMTUpdateListener();

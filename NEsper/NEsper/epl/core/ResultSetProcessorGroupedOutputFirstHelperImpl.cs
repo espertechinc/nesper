@@ -16,14 +16,17 @@ using com.espertech.esper.epl.view;
 
 namespace com.espertech.esper.epl.core
 {
-	public class ResultSetProcessorGroupedOutputFirstHelperImpl : ResultSetProcessorGroupedOutputFirstHelper {
-	    private readonly IDictionary<object, OutputConditionPolled> outputState = new Dictionary<object, OutputConditionPolled>();
+	public class ResultSetProcessorGroupedOutputFirstHelperImpl : ResultSetProcessorGroupedOutputFirstHelper
+	{
+	    private readonly IDictionary<object, OutputConditionPolled> outputState =
+	        new Dictionary<object, OutputConditionPolled>().WithNullSupport();
 
 	    public void Remove(object key) {
 	        outputState.Remove(key);
 	    }
 
-	    public OutputConditionPolled GetOrAllocate(object mk, AgentInstanceContext agentInstanceContext, OutputConditionPolledFactory factory) {
+	    public OutputConditionPolled GetOrAllocate(object mk, AgentInstanceContext agentInstanceContext, OutputConditionPolledFactory factory)
+	    {
 	        OutputConditionPolled outputStateGroup = outputState.Get(mk);
 	        if (outputStateGroup == null) {
 	            outputStateGroup = factory.MakeNew(agentInstanceContext);

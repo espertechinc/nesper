@@ -300,7 +300,7 @@ namespace com.espertech.esper.regression.resultset
 	        var epl =
 	                "create window MyWindow.win:keepall() as SupportBean_S0;\n" +
 	                "insert into MyWindow select * from SupportBean_S0;\n" +
-	                "@name('join') select myWindow.id as c0, s1.id as c1\n" +
+                    "@Name('join') select myWindow.id as c0, s1.id as c1\n" +
 	                "from SupportBean_S1 as s1 unidirectional, MyWindow as myWindow\n" +
 	                "where myWindow.p00 = s1.p10\n" +
 	                "output first every 1 minutes;";

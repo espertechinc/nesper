@@ -160,10 +160,10 @@ namespace com.espertech.esper.regression.resultset
 
 	    private void RunNoAggregationJoin(string filterClause)
 	    {
-	        var viewExpr = "select irstream a.Price as aPrice, b.Price as bPrice, Math.max(a.Price, b.Price) - Math.min(a.Price, b.Price) as spread " +
+	        var viewExpr = "select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + "(Symbol='SYM1').win:length(1) as a, " +
 	                                    typeof(SupportMarketDataBean).FullName + "(Symbol='SYM2').win:length(1) as b " +
-	                          filterClause + " Math.max(a.Price, b.Price) - Math.min(a.Price, b.Price) >= 1.4";
+	                          filterClause + " Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) >= 1.4";
 
 	        var selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        selectTestView.AddListener(_listener);
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regression.resultset
 	    {
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("Symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("Price"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("Price"));
 	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("avgPrice"));
 
 	        SendEvent(SYMBOL_DELL, 10);

@@ -283,7 +283,7 @@ namespace com.espertech.esper.regression.resultset
 	    {
 	        var fields = new string[] {"Symbol", "msg"};
 	        var stmtText = "insert into Cutoff " +
-	                          "select Symbol, (String.valueOf(count(*)) || 'x1000.0') as msg " +
+	                          "select Symbol, (Convert.ToString(count(*)) || 'x1000.0') as msg " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupwin(Symbol).win:length(1) " +
 	                          "where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
 	        var stmt = _epService.EPAdministrator.CreateEPL(stmtText);

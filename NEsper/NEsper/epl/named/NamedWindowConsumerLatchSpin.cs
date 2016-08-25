@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.named
 	    {
 	        var thread = Thread.CurrentThread;
 	        if (_earlier._isCompleted) {
-	            _currentThread = thread;
+                _currentThread = thread;
 	            return;
 	        }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.epl.named
 	            return;
 	        }
 
-	        long spinStartTime = _factory.TimeSourceService.GetTimeMillis();
+            long spinStartTime = _factory.TimeSourceService.GetTimeMillis();
 	        while(!_earlier._isCompleted) {
 	            Thread.Yield();
 	            long spinDelta = _factory.TimeSourceService.GetTimeMillis() - spinStartTime;
@@ -90,7 +90,7 @@ namespace com.espertech.esper.epl.named
 	                break;
 	            }
 	        }
-	    }
+        }
 
 	    public override Thread CurrentThread
 	    {
@@ -104,6 +104,6 @@ namespace com.espertech.esper.epl.named
 	    {
 	        _isCompleted = true;
 	        _earlier = null;
-	    }
+        }
 	}
 } // end of namespace

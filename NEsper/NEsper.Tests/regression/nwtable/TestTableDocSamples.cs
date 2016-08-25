@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.nwtable
                     "create schema ValueEvent(value long);\n" +
                     "create schema ResetEvent(startThreshold long);\n" +
                     "create table CurrentMaxTable(currentThreshold long);\n" +
-                    "@name('trigger') insert into ThresholdTriggered select * from ValueEvent(value >= CurrentMaxTable.currentThreshold);\n" +
+                    "@Name('trigger') insert into ThresholdTriggered select * from ValueEvent(value >= CurrentMaxTable.currentThreshold);\n" +
                     "on ResetEvent merge CurrentMaxTable when matched then update set currentThreshold = startThreshold when not matched then insert select startThreshold as currentThreshold;\n" +
                     "on ThresholdTriggered update CurrentMaxTable set currentThreshold = value + 100;\n";
             epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);

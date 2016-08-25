@@ -12,9 +12,16 @@ using com.espertech.esper.epl.agg.service;
 
 namespace com.espertech.esper.epl.agg.aggregator
 {
-    /// <summary>Median aggregation. </summary>
-    public class AggregatorMedianFilter : AggregatorMedian
+    /// <summary>
+    /// Average that generates a BigDecimal numbers.
+    /// </summary>
+    public class AggregatorAvgBigIntegerFilter : AggregatorAvgBigInteger
     {
+        public AggregatorAvgBigIntegerFilter()
+            : base()
+        {
+        }
+
         public override void Enter(Object parameters)
         {
             var paramArray = (Object[])parameters;

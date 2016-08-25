@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumOneView()
 	    {
 	        var viewExpr = "select irstream sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBean).Name + ".win:time(10 sec)";
+                              "from " + typeof(SupportBean).FullName + ".win:time(10 sec)";
 
 	        SendTimerEvent(0);
 	        _selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
@@ -60,8 +60,8 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumJoin()
 	    {
 	        var viewExpr = "select irstream sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBeanString).Name + ".win:keepall() as one, " +
-	                                    typeof(SupportBean).Name + ".win:time(10 sec) as two " +
+                              "from " + typeof(SupportBeanString).FullName + ".win:keepall() as one, " +
+                                        typeof(SupportBean).FullName + ".win:time(10 sec) as two " +
 	                          "where one.theString = two.theString";
 
 	        SendTimerEvent(0);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestAvgPerSym()
 	    {
 	        var stmt = _epService.EPAdministrator.CreateEPL(
-	                "select irstream avg(price) as avgp, sym from " + typeof(SupportPriceEvent).Name + ".std:groupwin(sym).win:length(2)"
+	                "select irstream avg(price) as avgp, sym from " + typeof(SupportPriceEvent).FullName + ".std:groupwin(sym).win:length(2)"
 	        );
 	        var listener = new SupportUpdateListener();
 	        stmt.AddListener(listener);
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regression.resultset
 
         [Test]
 	    public void TestSelectStarStdGroupBy() {
-	        var stmtText = "select istream * from "+ typeof(SupportMarketDataBean).Name
+            var stmtText = "select istream * from " + typeof(SupportMarketDataBean).FullName
 	                +".std:groupwin(symbol).win:length(2)";
 	        var statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.resultset
 
         [Test]
 	    public void TestSelectExprStdGroupBy() {
-	        var stmtText = "select istream price from "+ typeof(SupportMarketDataBean).Name
+            var stmtText = "select istream price from " + typeof(SupportMarketDataBean).FullName
 	                +".std:groupwin(symbol).win:length(2)";
 	        var statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regression.resultset
 
         [Test]
 	    public void TestSelectAvgExprStdGroupBy() {
-	        var stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).Name
+            var stmtText = "select istream avg(price) as aprice from " + typeof(SupportMarketDataBean).FullName
 	                +".std:groupwin(symbol).win:length(2)";
 	        var statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regression.resultset
 
         [Test]
 	    public void TestSelectAvgStdGroupByUni() {
-	        var stmtText = "select istream average as aprice from "+ typeof(SupportMarketDataBean).Name
+            var stmtText = "select istream average as aprice from " + typeof(SupportMarketDataBean).FullName
 	                +".std:groupwin(symbol).win:length(2).stat:uni(price)";
 	        var statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regression.resultset
 
         [Test]
 	    public void TestSelectAvgExprGroupBy() {
-	        var stmtText = "select istream avg(price) as aprice, symbol from "+ typeof(SupportMarketDataBean).Name
+            var stmtText = "select istream avg(price) as aprice, symbol from " + typeof(SupportMarketDataBean).FullName
 	                +".win:length(2) group by symbol";
 	        var statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);
@@ -235,10 +235,10 @@ namespace com.espertech.esper.regression.resultset
 	        SendEvent("B", 5);
 	        // there is NOW a A->null entry
             Assert.IsTrue(_listener.GetAndClearIsInvoked());
-	        Assert.AreEqual(2, _listener.LastNewData.Length);
-	        Assert.AreEqual(null, _listener.LastNewData[0].Get("aprice"));
-	        Assert.AreEqual(4.0, _listener.LastNewData[1].Get("aprice"));
-	        Assert.AreEqual("B", _listener.LastNewData[1].Get("symbol"));
+            Assert.That(_listener.LastNewData.Length, Is.EqualTo(2));
+            Assert.AreEqual(null, _listener.LastNewData[1].Get("aprice"));
+	        Assert.AreEqual(4.0, _listener.LastNewData[0].Get("aprice"));
+	        Assert.AreEqual("B", _listener.LastNewData[0].Get("symbol"));
 	        SendEvent("A", 10);
 	        SendEvent("A", 20);
 	        Assert.IsTrue(_listener.GetAndClearIsInvoked());

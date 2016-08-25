@@ -574,7 +574,7 @@ namespace com.espertech.esper.regression.context
 
         [Test]
 	    public void TestNWSameContextOnExpr() {
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", this.GetType().Name, "singleRowPluginMakeBean");
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("makeBean", this.GetType().FullName, "SingleRowPluginMakeBean");
 	        SendTimeEvent("2002-05-1T8:00:00.000");
 	        _epService.EPAdministrator.CreateEPL("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)");
 
@@ -587,8 +587,8 @@ namespace com.espertech.esper.regression.context
 	        _epService.EPAdministrator.CreateEPL("context NineToFive insert into MyWindow select * from SupportBean");
 
 	        _epService.EPAdministrator.CreateEPL("context NineToFive " +
-	                "on SupportBean_S0 s0 merge MyWindow mw where mw.theString = s0.p00 " +
-	                "when matched then update set intPrimitive = s0.id " +
+	                "on SupportBean_S0 s0 merge MyWindow mw where mw.TheString = s0.p00 " +
+	                "when matched then update set IntPrimitive = s0.id " +
 	                "when not matched then insert select makeBean(id, p00)");
 
 	        _epService.EPRuntime.SendEvent(new SupportBean_S0(1, "E1"));
@@ -729,8 +729,8 @@ namespace com.espertech.esper.regression.context
 	        _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
 	        var theEvent = listener.AssertOneGetNewAndReset();
 	        Assert.AreEqual("NineToFive", theEvent.Get("c1"));
-	        Assert.AreEqual("2002-05-03T16:59:59.000", DateTimeHelper.Print(theEvent.Get("c2").AsDateTime()));
-	        Assert.AreEqual("2002-05-03T17:00:00.000", DateTimeHelper.Print(theEvent.Get("c3").AsDateTime()));
+	        Assert.AreEqual("2002-05-03 16:59:59.000", DateTimeHelper.Print(theEvent.Get("c2").AsDateTime()));
+	        Assert.AreEqual("2002-05-03 17:00:00.000", DateTimeHelper.Print(theEvent.Get("c3").AsDateTime()));
 	        Assert.AreEqual("E1", theEvent.Get("c4"));
 	    }
 

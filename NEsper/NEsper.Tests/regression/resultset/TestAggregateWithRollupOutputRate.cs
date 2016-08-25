@@ -318,15 +318,15 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void Test5OutputLimitFirst()
 	    {
-	        var stmtText = "select symbol, sum(price) " +
+	        var stmtText = "select Symbol, sum(Price) " +
 	                "from MarketData.win:time(5.5 sec)" +
-	                "group by rollup(symbol)" +
+	                "group by rollup(Symbol)" +
 	                "output first every 1 seconds";
 	        SendTimer(0);
 	        var stmt = _epService.EPAdministrator.CreateEPL(stmtText);
 	        stmt.AddListener(_listener);
 
-	        var fields = new string[] {"symbol", "sum(price)"};
+            var fields = new string[] { "Symbol", "sum(Price)" };
 	        var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
 	        expected.AddResultInsRem(200, 1, new object[][] {new object[] {"IBM", 25d}, new object[] {null, 25d}}, new object[][] {new object[] {"IBM", null}, new object[] {null, null}});
 	        expected.AddResultInsRem(800, 1, new object[][] {new object[] {"MSFT", 9d}}, new object[][] {new object[] {"MSFT", null}});

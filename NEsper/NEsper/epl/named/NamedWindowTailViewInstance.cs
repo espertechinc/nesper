@@ -35,6 +35,7 @@ namespace com.espertech.esper.epl.named
 	    private readonly NamedWindowTailView _tailView;
         private readonly NamedWindowProcessor _namedWindowProcessor;
 	    private readonly AgentInstanceContext _agentInstanceContext;
+	    private readonly NamedWindowConsumerLatchFactory _latchFactory;
 
 	    private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersInContext;  // handles as copy-on-write
 	    private long _numberOfEvents;
@@ -46,6 +47,12 @@ namespace com.espertech.esper.epl.named
             _namedWindowProcessor = namedWindowProcessor;
 	        _agentInstanceContext = agentInstanceContext;
 	        _consumersInContext = NamedWindowUtil.CreateConsumerMap(tailView.IsPrioritized);
+            _latchFactory = new NamedWindowConsumerLatchFactory(
+                namedWindowProcessor.NamedWindowType.Name,
+                tailView.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
+                tailView.ThreadingConfig.NamedWindowConsumerDispatchTimeout,
+                tailView.ThreadingConfig.NamedWindowConsumerDispatchLocking,
+                tailView.TimeSourceService);
 	    }
 
 	    public override void Update(EventBean[] newData, EventBean[] oldData)
@@ -73,7 +80,7 @@ namespace com.espertech.esper.epl.named
 	        }
 
             var delta = new NamedWindowDeltaData(newData, oldData);
-            _tailView.AddDispatches(_consumersInContext, delta, _agentInstanceContext);
+            _tailView.AddDispatches(_latchFactory, _consumersInContext, delta, _agentInstanceContext);
         }
 
         /// <summary>

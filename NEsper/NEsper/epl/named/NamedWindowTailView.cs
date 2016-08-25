@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.epl.named
         private readonly bool _isPrioritized;
         private readonly bool _isParentBatchWindow;
         private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersNonContext;  // handles as copy-on-write
-        private readonly NamedWindowConsumerLatchFactory _latchFactory;
+        private readonly TimeSourceService _timeSourceService;
+        private readonly ConfigurationEngineDefaults.Threading _threadingConfig;
 
         public NamedWindowTailView(
             EventType eventType,
@@ -57,12 +59,8 @@ namespace com.espertech.esper.epl.named
             _isPrioritized = prioritized;
             _isParentBatchWindow = parentBatchWindow;
             _consumersNonContext = NamedWindowUtil.CreateConsumerMap(_isPrioritized);
-            _latchFactory = new NamedWindowConsumerLatchFactory(
-                eventType.Name,
-                threadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
-                threadingConfig.NamedWindowConsumerDispatchTimeout,
-                threadingConfig.NamedWindowConsumerDispatchLocking,
-                timeSourceService);
+            _threadingConfig = threadingConfig;
+            _timeSourceService = timeSourceService;
         }
 
         /// <summary>Returns true to indicate that the data window view is a batch view. </summary>
@@ -105,6 +103,16 @@ namespace com.espertech.esper.epl.named
         public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> ConsumersNonContext
         {
             get { return _consumersNonContext; }
+        }
+
+        public TimeSourceService TimeSourceService
+        {
+            get { return _timeSourceService; }
+        }
+
+        public ConfigurationEngineDefaults.Threading ThreadingConfig
+        {
+            get { return _threadingConfig; }
         }
 
         public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc)
@@ -171,15 +179,19 @@ namespace com.espertech.esper.epl.named
             }
         }
 
-        public void AddDispatches(IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext, NamedWindowDeltaData delta, AgentInstanceContext agentInstanceContext)
+        public void AddDispatches(
+            NamedWindowConsumerLatchFactory latchFactory,
+            IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersInContext,
+            NamedWindowDeltaData delta,
+            AgentInstanceContext agentInstanceContext)
         {
             if (!consumersInContext.IsEmpty())
             {
-                _namedWindowDispatchService.AddDispatch(_latchFactory, delta, consumersInContext);
+                _namedWindowDispatchService.AddDispatch(latchFactory, delta, consumersInContext);
             }
             if (!_consumersNonContext.IsEmpty())
             {
-                _namedWindowDispatchService.AddDispatch(_latchFactory, delta, _consumersNonContext);
+                _namedWindowDispatchService.AddDispatch(latchFactory, delta, _consumersNonContext);
             }
         }
     }

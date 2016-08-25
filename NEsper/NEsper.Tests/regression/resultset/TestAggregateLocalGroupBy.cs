@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.resultset
     [TestFixture]
 	public class TestAggregateLocalGroupBy 
 	{
-	    public string PLAN_CALLBACK_HOOK = "@Hook(type=" + typeof(HookType).FullName + ".INTERNAL_AGGLOCALLEVEL,hook='" + typeof(SupportAggLevelPlanHook).FullName + "')";
+	    public string PLAN_CALLBACK_HOOK = "@Hook(Type=" + typeof(HookType).FullName + ".INTERNAL_AGGLOCALLEVEL,Hook='" + typeof(SupportAggLevelPlanHook).FullName + "')";
 
 	    private EPServiceProvider _epService;
 	    private SupportUpdateListener _listener;
@@ -74,12 +74,12 @@ namespace com.espertech.esper.regression.resultset
 
 	        // invalid group-by expression
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select sum(IntPrimitive, group_by:sum(IntPrimitive)) from SupportBean",
-	                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(intPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
+	                "Error starting statement: Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(IntPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
 
 	        // other functions don't accept this named parameter
 	        SupportMessageAssertUtil.TryInvalid(_epService, "select coalesce(0, 1, group_by:TheString) from SupportBean",
 	                "Incorrect syntax near ':' at line 1 column 30");
-	        SupportMessageAssertUtil.TryInvalid(_epService, "select " + typeof(SupportStaticMethodLib).Name + ".staticMethod(group_by:IntPrimitive) from SupportBean",
+	        SupportMessageAssertUtil.TryInvalid(_epService, "select " + typeof(SupportStaticMethodLib).FullName + ".staticMethod(group_by:IntPrimitive) from SupportBean",
 	                "Error starting statement: Failed to validate select-clause expression 'com.espertech.esper.support.epl.Sup...(90 chars)': Named parameters are not allowed");
 
 	        // not allowed in combination with roll-up
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.resultset
 	                     "insert into MyWindow select * from SupportBean;\n" +
 	                     "on SupportBean_S0 delete from MyWindow where p00 = TheString and id = IntPrimitive;\n" +
 	                     "on SupportBean_S1 delete from MyWindow;\n" +
-	                     "@name('out') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
+                         "@Name('out') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
 	                     "  sum(LongPrimitive, group_by:TheString) as c1 from MyWindow;\n";
 	        var result = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
 	        _epService.EPAdministrator.GetStatement("out").AddListener(_listener);
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regression.resultset
 	                "insert into MyWindow select * from SupportBean;\n" +
 	                "on SupportBean_S0 delete from MyWindow where p00 = TheString and id = IntPrimitive;\n" +
 	                "on SupportBean_S1 delete from MyWindow;\n" +
-	                "@name('out') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
+                    "@Name('out') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
 	                "  sum(LongPrimitive, group_by:TheString) as c1 " +
 	                "  from MyWindow group by TheString, IntPrimitive;\n";
 	        var result = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
@@ -404,7 +404,7 @@ namespace com.espertech.esper.regression.resultset
 
 	    private void RunAssertionAggAndFullyAgg(string selected, MyAssertion assertion) {
 	        var epl = "create context StartS0EndS1 start SupportBean_S0 end SupportBean_S1;" +
-	                     "@name('out') context StartS0EndS1 " +
+                         "@Name('out') context StartS0EndS1 " +
 	                      selected +
 	                     " output snapshot when terminated;";
 	        var deployed = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
@@ -464,8 +464,8 @@ namespace com.espertech.esper.regression.resultset
 	                " countever(*, IntPrimitive>0, group_by:()) as c1," +
 	                " countever(*, group_by:(TheString)) as c2," +
 	                " countever(*, group_by:()) as c3," +
-	                " concatstring(Integer.toString(IntPrimitive), group_by:(TheString)) as c4," +
-	                " concatstring(Integer.toString(IntPrimitive), group_by:()) as c5," +
+	                " concatstring(Convert.ToString(IntPrimitive), group_by:(TheString)) as c4," +
+                    " concatstring(Convert.ToString(IntPrimitive), group_by:()) as c5," +
 	                " sc(IntPrimitive, group_by:(TheString)) as c6," +
 	                " sc(IntPrimitive, group_by:()) as c7," +
 	                " leaving(group_by:(TheString)) as c8," +
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regression.resultset
 
 	        // plug-in aggregation function can also take other parameters
 	        _epService.EPAdministrator.CreateEPL("select sc(IntPrimitive, dummy:1)," +
-	                "concatstring(Integer.toString(IntPrimitive), dummy2:(1,2,3)) from SupportBean");
+                    "concatstring(Convert.ToString(IntPrimitive), dummy2:(1,2,3)) from SupportBean");
 
 	        _epService.EPAdministrator.DestroyAllStatements();
 	    }
@@ -569,26 +569,26 @@ namespace com.espertech.esper.regression.resultset
 	                "minever(IntPrimitive, group_by:(TheString)) as minever0," +
 	                "fminever(IntPrimitive, IntPrimitive>0, group_by:(TheString)) as fminever0," +
 	                "median(IntPrimitive, group_by:(TheString)) as median0," +
-	                "Math.round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
+	                "Math.Round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
 	                " from SupportBean.win:keepall()";
 	        var stmt = _epService.EPAdministrator.CreateEPL(epl);
 	        stmt.AddListener(_listener);
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));
 	        EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[]{10, 10, 10,
-	                0.0d, 10d, 10, 10, 10, 10, 10, 10, 10, 10, 10.0, 0L});
+	                0.0d, 10d, 10, 10, 10, 10, 10, 10, 10, 10, 10.0, 0.0});
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("E2", 20));
 	        EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[]{20, 10 + 20, 20,
-	                0.0d, 20d, 20, 20, 20, 20, 20, 20, 20, 20, 20.0, 0L});
+	                0.0d, 20d, 20, 20, 20, 20, 20, 20, 20, 20, 20.0, 0.0});
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("E1", 30));
 	        EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[]{30, 10 + 20 + 30, 10 + 30,
-	                10.0d, 20d, 30, 30, 10, 10, 30, 30, 10, 10, 20.0, 14L});
+	                10.0d, 20d, 30, 30, 10, 10, 30, 30, 10, 10, 20.0, 14.0});
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("E2", 40));
 	        var expected = new object[] {40, 10+20+30+40, 20+40,
-	                10.0d, 30d, 40, 40, 20, 20, 40, 40, 20, 20, 30.0, 14L};
+	                10.0d, 30d, 40, 40, 20, 20, 40, 40, 20, 20, 30.0, 14.0};
 	        EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, expected);
 
 	        _epService.EPAdministrator.DestroyAllStatements();
@@ -681,7 +681,7 @@ namespace com.espertech.esper.regression.resultset
 	    private void RunAssertionUngroupedOrderBy()
         {
 	        var epl = "create context StartS0EndS1 start SupportBean_S0 end SupportBean_S1;" +
-	                "@name('out') context StartS0EndS1 select TheString, sum(IntPrimitive, group_by:TheString) as c0 " +
+                    "@Name('out') context StartS0EndS1 select TheString, sum(IntPrimitive, group_by:TheString) as c0 " +
 	                " from SupportBean.win:keepall() " +
 	                " output snapshot when terminated" +
 	                " order by sum(IntPrimitive, group_by:TheString)" +
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regression.resultset
 	    private void RunAssertionGroupedOnSelect() {
 	        var epl = "create window MyWindow.win:keepall() as SupportBean;" +
 	                "insert into MyWindow select * from SupportBean;" +
-	                "@name('out') on SupportBean_S0 select TheString, sum(IntPrimitive) as c0, sum(IntPrimitive, group_by:()) as c1" +
+                    "@Name('out') on SupportBean_S0 select TheString, sum(IntPrimitive) as c0, sum(IntPrimitive, group_by:()) as c1" +
 	                " from MyWindow group by TheString;";
 	        var deployed = _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
 	        _epService.EPAdministrator.GetStatement("out").AddListener(_listener);

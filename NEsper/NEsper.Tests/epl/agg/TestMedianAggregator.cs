@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.aggregator;
 
 using NUnit.Framework;

@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.resultset
 	                "TheString, " +
 	                "nth(IntPrimitive,0) as int1, " +  // current
                     "nth(IntPrimitive,1) as int2 " +   // one before
-                    "from SupportBean.win:keepall() group by theString output last every 3 events order by TheString";
+                    "from SupportBean.win:keepall() group by TheString output last every 3 events order by TheString";
 	        EPStatement stmt = _epService.EPAdministrator.CreateEPL(epl);
 	        stmt.AddListener(_listener);
 
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regression.resultset
 	    }
 
 	    private void RunAssertion() {
-	        string[] fields = "theString,int1,int2".Split(',');
+	        string[] fields = "TheString,int1,int2".Split(',');
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("G1", 10));
 	        _epService.EPRuntime.SendEvent(new SupportBean("G2", 11));

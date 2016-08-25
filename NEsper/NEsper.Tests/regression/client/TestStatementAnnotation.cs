@@ -59,7 +59,7 @@ namespace com.espertech.esper.regression.client
 
         private void TryAssertionNoClassNameRequired(EPServiceProvider epService, SupportEnum expected, String text)
         {
-            var stmt = epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(supportEnum = " + text + ") select * from SupportBean");
+            var stmt = epService.EPAdministrator.CreateEPL("@MyAnnotationValueEnum(SupportEnum = " + text + ") select * from SupportBean");
             var anno = (MyAnnotationValueEnumAttribute) stmt.Annotations.First();
             Assert.That(expected, Is.EqualTo(anno.SupportEnum));
         }
@@ -68,11 +68,11 @@ namespace com.espertech.esper.regression.client
         {
             // init-time import
             epService.EPAdministrator.CreateEPL(
-                "@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_1) " +
+                "@MyAnnotationValueEnum(SupportEnum = SupportEnum.ENUM_VALUE_1) " +
                 "select * from SupportBean");
 
             // try invalid annotation not yet imported
-            String epl = "@MyAnnotationValueEnumTwoAttribute(supportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
+            String epl = "@MyAnnotationValueEnumTwo(SupportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
             SupportMessageAssertUtil.TryInvalid(epService, epl, "Failed to process statement annotations: Failed to resolve @-annotation");
 
             // runtime import
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regression.client
             TryInvalid("@MyAnnotationValue(Value='a', Value='a') select * from Bean", false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'Value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
             TryInvalid("@ABC select * from Bean", false,
-                    "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load class by name 'ABCAttribute', please check imports [@ABC select * from Bean]");
+                    "Failed to process statement annotations: Failed to resolve @-annotation class: Could not load annotation class by name 'ABCAttribute', please check imports [@ABC select * from Bean]");
 
             TryInvalid("@MyAnnotationSimple(5) select * from Bean", false,
                     "Failed to process statement annotations: Failed to find property Value in annotation type MyAnnotationSimple [@MyAnnotationSimple(5) select * from Bean]");

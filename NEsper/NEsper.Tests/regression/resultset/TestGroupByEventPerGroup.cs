@@ -48,7 +48,7 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void TestCriteriaByDotMethod() {
 	        _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
-	        var epl = "select sb.getTheString() as c0, sum(IntPrimitive) as c1 from SupportBean.win:length_batch(2) as sb group by sb.getTheString()";
+	        var epl = "select sb.get_TheString() as c0, sum(IntPrimitive) as c1 from SupportBean.win:length_batch(2) as sb group by sb.get_TheString()";
 	        _epService.EPAdministrator.CreateEPL(epl).AddListener(_listener);
 
 	        _epService.EPRuntime.SendEvent(new SupportBean("E1", 10));

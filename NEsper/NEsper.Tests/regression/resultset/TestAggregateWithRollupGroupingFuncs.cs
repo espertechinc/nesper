@@ -127,7 +127,7 @@ namespace com.espertech.esper.regression.resultset
 	        _epService.EPAdministrator.Configuration.AddEventType(typeof(CarEvent));
 
 	        // test uncorrelated subquery and expression-declaration and single-row func
-	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myfunc", typeof(GroupingSupportFunc).Name, "myfunc");
+	        _epService.EPAdministrator.Configuration.AddPlugInSingleRowFunction("myfunc", typeof(GroupingSupportFunc).FullName, "Myfunc");
 	        _epService.EPAdministrator.CreateEPL("create expression myExpr {x=> '|' || x.name || '|'}");
 	        _epService.EPAdministrator.Configuration.AddEventType(typeof(CarInfoEvent));
 	        var epl = "select myfunc(" +

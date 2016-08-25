@@ -102,7 +102,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumOneView()
 	    {
 	        var viewExpr = "select irstream longPrimitive, sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBean).Name + ".win:length(3)";
+                              "from " + typeof(SupportBean).FullName + ".win:length(3)";
 	        var selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        selectTestView.AddListener(_testListener);
 
@@ -113,8 +113,8 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumJoin()
 	    {
 	        var viewExpr = "select irstream longPrimitive, sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBeanString).Name + ".win:length(3) as one, " +
-	                                    typeof(SupportBean).Name + ".win:length(3) as two " +
+                              "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
+                                        typeof(SupportBean).FullName + ".win:length(3) as two " +
 	                          "where one.theString = two.theString";
 
 	        var selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumAvgWithWhere()
 	    {
 	        var viewExpr = "select 'IBM stats' as title, volume, avg(volume) as myAvg, sum(volume) as mySum " +
-	                          "from " + typeof(SupportMarketDataBean).Name + ".win:length(3)" +
+                              "from " + typeof(SupportMarketDataBean).FullName + ".win:length(3)" +
 	                          "where symbol='IBM'";
 	        var selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        selectTestView.AddListener(_testListener);

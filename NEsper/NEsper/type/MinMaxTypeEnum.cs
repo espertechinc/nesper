@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Numerics;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
@@ -172,6 +174,70 @@ namespace com.espertech.esper.type
 
                        return valueResult;
                    };
+        }
+
+        /// <summary>
+        /// Determines minimum using a conversion to normalize type.
+        /// </summary>
+        public static Computer CreateMinBigIntComputer(ExprEvaluator[] childNodes)
+        {
+            var typeCaster = CastHelper.GetCastConverter<BigInteger>();
+
+            return delegate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            {
+                Object valueResult = null;
+                BigInteger? typedResult = null;
+
+                for (int ii = 0; ii < childNodes.Length; ii++)
+                {
+                    var valueChild = childNodes[ii].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                    if (valueChild == null)
+                    {
+                        return null;
+                    }
+
+                    var typedChild = typeCaster.Invoke(valueChild);
+                    if ((typedResult == null) || (typedChild < typedResult.Value))
+                    {
+                        valueResult = valueChild;
+                        typedResult = typedChild;
+                    }
+                }
+
+                return valueResult;
+            };
+        }
+
+        /// <summary>
+        /// Determines maximum using a conversion to normalize type.
+        /// </summary>
+        public static Computer CreateMaxBigIntComputer(ExprEvaluator[] childNodes)
+        {
+            var typeCaster = CastHelper.GetCastConverter<BigInteger>();
+
+            return delegate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+            {
+                Object valueResult = null;
+                BigInteger? typedResult = null;
+
+                for (int ii = 0; ii < childNodes.Length; ii++)
+                {
+                    var valueChild = childNodes[ii].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                    if (valueChild == null)
+                    {
+                        return null;
+                    }
+
+                    var typedChild = typeCaster(valueChild);
+                    if ((typedResult == null) || (typedChild > typedResult.Value))
+                    {
+                        valueResult = valueChild;
+                        typedResult = typedChild;
+                    }
+                }
+
+                return valueResult;
+            };
         }
     }
 }

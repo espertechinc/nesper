@@ -262,8 +262,8 @@ namespace com.espertech.esper.regression.epl
             properties["MyInt"] = 0;
             AssertProperties(properties, _listener);
 
-            Assert.AreEqual(typeof(Pair<string, object>), _listener.LastNewData[0].EventType.UnderlyingType);
-            Assert.That(_listener.LastNewData[0].Underlying, Is.InstanceOf<Pair<object, IDictionary<string,object>>>());
+            Assert.AreEqual(typeof(Pair<object, Map>), _listener.LastNewData[0].EventType.UnderlyingType);
+            Assert.That(_listener.LastNewData[0].Underlying, Is.InstanceOf<Pair<object, Map>>());
             var pair = (Pair<object, IDictionary<string, object>>)_listener.LastNewData[0].Underlying;
             Assert.AreEqual(theEvent, pair.First);
             Assert.AreEqual("stringstring", pair.Second.Get("concat"));

@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumOneView()
 	    {
 	        string viewExpr = "select irstream sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBean).Name + ".win:time(10 seconds) " +
+                              "from " + typeof(SupportBean).FullName + ".win:time(10 seconds) " +
 	                          "having sum(longBoxed) > 10";
 	        EPStatement selectTestView = _epService.EPAdministrator.CreateEPL(viewExpr);
 	        selectTestView.AddListener(_listener);
@@ -57,8 +57,8 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestSumJoin()
 	    {
 	        string viewExpr = "select irstream sum(longBoxed) as mySum " +
-	                          "from " + typeof(SupportBeanString).Name + ".win:time(10 seconds) as one, " +
-	                                    typeof(SupportBean).Name + ".win:time(10 seconds) as two " +
+                              "from " + typeof(SupportBeanString).FullName + ".win:time(10 seconds) as one, " +
+                                        typeof(SupportBean).FullName + ".win:time(10 seconds) as two " +
 	                          "where one.theString = two.theString " +
 	                          "having sum(longBoxed) > 10";
 
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regression.resultset
 	    {
 	        //String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
 	        //        +".std:groupwin(symbol).win:length(1) having avg(price) <= 0";
-	        string stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).Name
+            string stmtText = "select istream avg(price) as aprice from " + typeof(SupportMarketDataBean).FullName
 	                +".std:unique(symbol) having avg(price) <= 0";
 	        EPStatement statement = _epService.EPAdministrator.CreateEPL(stmtText);
 	        statement.AddListener(_listener);

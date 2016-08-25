@@ -128,7 +128,7 @@ namespace com.espertech.esper.regression.epl
 
 	        var stmt = _epService.EPAdministrator.CreateEPL("@Name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
 	        Assert.AreEqual("A\'B", stmt.Name);
-	        var desc = (DescriptionAttribute) stmt.Annotations.First();
+	        var desc = stmt.Annotations.OfType<DescriptionAttribute>().First();
 	        Assert.AreEqual("A\"B", desc.Value);
 	        stmt.Dispose();
 

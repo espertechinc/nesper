@@ -52,8 +52,8 @@ namespace com.espertech.esper.regression.resultset
 
 	    private void RunAssertionOutputWhenTerminated(string outputLimit, bool hinted) {
 	        var hint = hinted ? "@Hint('enable_outputlimit_opt') " : "";
-	        _epService.EPAdministrator.CreateEPL("@name('s0') create context MyContext start SupportBean_S0(id=1) end SupportBean_S0(id=0)");
-	        _epService.EPAdministrator.CreateEPL(hint + "@name('s1') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
+            _epService.EPAdministrator.CreateEPL("@Name('s0') create context MyContext start SupportBean_S0(id=1) end SupportBean_S0(id=0)");
+            _epService.EPAdministrator.CreateEPL(hint + "@Name('s1') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
 	                "from SupportBean group by rollup(TheString) output " + outputLimit + " when terminated");
 	        _epService.EPAdministrator.GetStatement("s1").AddListener(_listener);
 
@@ -974,19 +974,19 @@ namespace com.espertech.esper.regression.resultset
 	    public void TestNonBoxedTypeWithRollup() {
 	        var stmtOne = _epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(shortPrimitive) " +
 	                "from SupportBean group by IntPrimitive, rollup(DoublePrimitive, LongPrimitive)");
-	        AssertTypesC0C1C2(stmtOne, typeof(int), typeof(double?), typeof(long?));
+	        AssertTypesC0C1C2(stmtOne, typeof(int?), typeof(double?), typeof(long?));
 
 	        var stmtTwo = _epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(shortPrimitive) " +
 	                "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive))");
-	        AssertTypesC0C1C2(stmtTwo, typeof(int), typeof(double), typeof(long));
+            AssertTypesC0C1C2(stmtTwo, typeof(int?), typeof(double?), typeof(long?));
 
 	        var stmtThree = _epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(shortPrimitive) " +
 	                "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive), (IntPrimitive, DoublePrimitive))");
-	        AssertTypesC0C1C2(stmtThree, typeof(int), typeof(double), typeof(long?));
+            AssertTypesC0C1C2(stmtThree, typeof(int?), typeof(double?), typeof(long?));
 
 	        var stmtFour = _epService.EPAdministrator.CreateEPL("select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(shortPrimitive) " +
 	                "from SupportBean group by grouping sets ((DoublePrimitive, IntPrimitive), (LongPrimitive, IntPrimitive))");
-	        AssertTypesC0C1C2(stmtFour, typeof(int), typeof(double?), typeof(long?));
+            AssertTypesC0C1C2(stmtFour, typeof(int?), typeof(double?), typeof(long?));
 	    }
 
         [Test]

@@ -16,6 +16,8 @@ using com.espertech.esper.events.map;
 
 namespace com.espertech.esper.events
 {
+    using DataMap = IDictionary<string, object>;
+
     /// <summary>
     /// An event type that adds zero or more fields to an existing event type. 
     /// <para>
@@ -347,7 +349,7 @@ namespace com.espertech.esper.events
                 }
                 else
                 {
-                    return typeof (Pair<string,object>);
+                    return typeof (Pair<object, DataMap>);
                 }
             }
         }

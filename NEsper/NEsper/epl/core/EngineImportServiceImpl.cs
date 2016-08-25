@@ -742,6 +742,25 @@ namespace com.espertech.esper.epl.core
                         }
                     }
 
+                    if (importDesc.TypeOrNamespace.EndsWith("." + typeName) ||
+                        importDesc.TypeOrNamespace.EndsWith("+" + typeName) ||
+                        importDesc.TypeOrNamespace.Equals(typeName))
+                    {
+                        try
+                        {
+                            var type = TypeHelper.ResolveType(importDesc.TypeOrNamespace, importDesc.AssemblyNameOrFile);
+                            if (type != null)
+                            {
+                                return type;
+                            }
+
+                            Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                        }
+                        catch (TypeLoadException)
+                        {
+                        }
+                    }
+
                     // Import is a namespace
                     var prefixedClassName = importDesc.TypeOrNamespace + '.' + typeName;
 
@@ -774,6 +793,8 @@ namespace com.espertech.esper.epl.core
                     catch (TypeLoadException)
                     {
                     }
+
+                    // Import is a type
                 }
             }
 

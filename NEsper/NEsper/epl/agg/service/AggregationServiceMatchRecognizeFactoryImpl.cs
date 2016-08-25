@@ -27,32 +27,38 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="countStreams">number of streams/variables</param>
         /// <param name="aggregatorsPerStream">aggregation methods per stream</param>
         /// <param name="evaluatorsPerStream">evaluation functions per stream</param>
-        public AggregationServiceMatchRecognizeFactoryImpl(int countStreams, IDictionary<int, AggregationMethodFactory[]> aggregatorsPerStream, IDictionary<int, ExprEvaluator[]> evaluatorsPerStream) {
+        public AggregationServiceMatchRecognizeFactoryImpl(int countStreams, IDictionary<int, AggregationMethodFactory[]> aggregatorsPerStream, IDictionary<int, ExprEvaluator[]> evaluatorsPerStream)
+        {
             _evaluatorsEachStream = new ExprEvaluator[countStreams][];
             _factoryEachStream = new AggregationMethodFactory[countStreams][];
     
-            foreach (KeyValuePair<int, AggregationMethodFactory[]> agg in aggregatorsPerStream)
+            foreach (var agg in aggregatorsPerStream)
             {
                 _factoryEachStream[agg.Key] = agg.Value;
             }
     
-            foreach (KeyValuePair<int, ExprEvaluator[]> eval in evaluatorsPerStream)
+            foreach (var eval in evaluatorsPerStream)
             {
                 _evaluatorsEachStream[eval.Key] = eval.Value;
             }
         }
     
-        public AggregationServiceMatchRecognize MakeService(AgentInstanceContext agentInstanceContext) {
-    
+        public AggregationServiceMatchRecognize MakeService(AgentInstanceContext agentInstanceContext)
+        {
             var aggregatorsEachStream = new AggregationMethod[_factoryEachStream.Length][];
     
             int count = 0;
-            for (int stream = 0; stream < _factoryEachStream.Length; stream++) {
+            for (int stream = 0; stream < _factoryEachStream.Length; stream++)
+            {
                 AggregationMethodFactory[] thatStream = _factoryEachStream[stream];
                 if (thatStream != null) {
                     aggregatorsEachStream[stream] = new AggregationMethod[thatStream.Length];
-                    for (int aggId = 0; aggId < thatStream.Length; aggId++) {
-                        aggregatorsEachStream[stream][aggId] = _factoryEachStream[stream][aggId].Make(agentInstanceContext.StatementContext.MethodResolutionService, agentInstanceContext.AgentInstanceId, 0, aggId);
+                    for (int aggId = 0; aggId < thatStream.Length; aggId++)
+                    {
+                        aggregatorsEachStream[stream][aggId] =
+                            _factoryEachStream[stream][aggId].Make(
+                                agentInstanceContext.StatementContext.MethodResolutionService,
+                                agentInstanceContext.AgentInstanceId, 0, aggId);
                         count++;
                     }
                 }

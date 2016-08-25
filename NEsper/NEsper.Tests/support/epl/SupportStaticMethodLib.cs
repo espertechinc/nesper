@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using System.Threading;
 
 using com.espertech.esper.client;
@@ -512,7 +513,12 @@ namespace com.espertech.esper.support.epl
             var volume = bean.Get("volume").AsLong();
             return volume > 0;
         }
-    
+
+        public static BigInteger MyBigIntFunc(BigInteger val)
+        {
+            return val;
+        }
+
         public static decimal MyDecimalFunc(decimal val)
         {
             return val;

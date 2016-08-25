@@ -198,7 +198,7 @@ namespace com.espertech.esper.epl.core
 	    /// <param name="groupId"></param>
 	    /// <param name="aggregationId"></param>
 	    /// <param name="hasFilter"></param>
-	    AggregationMethod MakeMedianAggregator(int agentInstanceId, int groupId, int aggregationId, bool hasFilter);
+	    AggregationMethod MakeMedianAggregator(int agentInstanceId, int groupId, int aggregationId, bool hasFilter, Type childType);
 
 	    /// <summary>
 	    /// Makes a new min-max-aggregator.

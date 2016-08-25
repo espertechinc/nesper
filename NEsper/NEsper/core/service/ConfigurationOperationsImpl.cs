@@ -230,9 +230,16 @@ namespace com.espertech.esper.core.service
             AddAnnotationImport(autoImport.FullName, autoImport.AssemblyQualifiedName);
         }
 
-        public void AddAnnotationImport<T>()
+        public void AddAnnotationImport<T>(bool importNamespace)
         {
-            AddAnnotationImport(typeof(T));
+            if (importNamespace)
+            {
+                AddAnnotationImport(typeof(T).Namespace, typeof(T).Assembly.FullName);
+            }
+            else
+            {
+                AddAnnotationImport(typeof(T).FullName, typeof(T).Assembly.FullName);
+            }
         }
 
         public void AddImport(string importName, string assemblyNameOrFile)

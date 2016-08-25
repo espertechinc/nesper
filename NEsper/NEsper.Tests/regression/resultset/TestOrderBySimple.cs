@@ -869,7 +869,7 @@ namespace com.espertech.esper.regression.resultset
 			AssertValues(_symbols, "Symbol");
 			AssertValues(_prices, "Price");
 			AssertValues(_volumes, "Volume");
-		   	AssertOnlyProperties(new string[] {"Symbol", "id", "Volume", "Price", "feed"});
+		   	AssertOnlyProperties(new string[] {"Symbol", "Id", "Volume", "Price", "Feed"});
 			ClearValues();
 
 			statementString = "select * from " +
@@ -881,7 +881,7 @@ namespace com.espertech.esper.regression.resultset
 			AssertValues(_symbols, "Symbol");
 			AssertValues(_prices, "Price");
 			AssertValues(_volumes, "Volume");
-		   	AssertOnlyProperties(new string[] {"Symbol", "Volume", "Price", "feed", "id"});
+            AssertOnlyProperties(new string[] { "Symbol", "Volume", "Price", "Feed", "Id" });
 			ClearValues();
 		}
 

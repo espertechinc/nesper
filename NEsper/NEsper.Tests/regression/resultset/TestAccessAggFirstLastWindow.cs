@@ -47,7 +47,7 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void TestNoParamChainedAndProperty() {
 	        _epService.EPAdministrator.Configuration.AddEventType("ChainEvent", typeof(ChainEvent));
-	        EPStatement stmt = _epService.EPAdministrator.CreateEPL("select first().property as val0, first().myMethod() as val1, window() as val2 from ChainEvent.std:lastevent()");
+	        EPStatement stmt = _epService.EPAdministrator.CreateEPL("select first().property as val0, first().MyMethod() as val1, window() as val2 from ChainEvent.std:lastevent()");
 	        stmt.AddListener(_listener);
 
 	        _epService.EPRuntime.SendEvent(new ChainEvent("p1"));
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regression.resultset
 	        stmt.Dispose();
 
 	        // test as part of function
-	        _epService.EPAdministrator.CreateEPL("select Math.abs(last(IntPrimitive)) from SupportBean");
+	        _epService.EPAdministrator.CreateEPL("select Math.Abs(last(IntPrimitive)) from SupportBean");
 	    }
 
 	    private void RunAssertionFirstLastIndexed() {
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regression.resultset
 	                   "Error starting statement: Failed to validate select-clause expression 'window(x.IntPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
 
 	        TryInvalid("select first(x.*, 10d) from SupportBean.std:lastevent() as x",
-	                   "Error starting statement: Failed to validate select-clause expression 'first(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean.std:lastevent() as x]");
+	                   "Error starting statement: Failed to validate select-clause expression 'first(x.*,10.0d)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean.std:lastevent() as x]");
 	    }
 
         [Test]
@@ -293,8 +293,9 @@ namespace com.espertech.esper.regression.resultset
 	    }
 
         [Test]
-	    public void TestTypeAndColNameAndEquivalency() {
-	        _epService.EPAdministrator.Configuration.AddImport(typeof(SupportStaticMethodLib).Name);
+	    public void TestTypeAndColNameAndEquivalency()
+        {
+            _epService.EPAdministrator.Configuration.AddImport<SupportStaticMethodLib>();
 
 	        string epl = "select " +
 	                "first(sa.DoublePrimitive + sa.IntPrimitive), " +
@@ -306,7 +307,7 @@ namespace com.espertech.esper.regression.resultset
 
 	        object[][] rows = new object[][] {
 	                new object[]{"first(sa.DoublePrimitive+sa.IntPrimitive)", typeof(double?)},
-	                new object[]{"first(sa.IntPrimitive)", typeof(int)},
+	                new object[]{"first(sa.IntPrimitive)", typeof(int?)},
 	                new object[]{"window(sa.*)", typeof(SupportBean[])},
 	                new object[]{"last(*)", typeof(SupportBean)},
 	                };
@@ -336,7 +337,7 @@ namespace com.espertech.esper.regression.resultset
 	                "window(sa.*) as w1, " +
 	                "last(*) as l1 " +
 	                "from SupportBean.win:length(2) as sa " +
-	                "having SupportStaticMethodLib.alwaysTrue({first(sa.DoublePrimitive + sa.IntPrimitive), " +
+	                "having SupportStaticMethodLib.AlwaysTrue({first(sa.DoublePrimitive + sa.IntPrimitive), " +
 	                "first(sa.IntPrimitive), window(sa.*), last(*)})";
 	        stmt = _epService.EPAdministrator.CreateEPL(epl);
 	        stmt.AddListener(_listener);

@@ -129,8 +129,8 @@ namespace com.espertech.esper.epl.named
 	        NamedWindowDeltaData delta,
 	        IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers)
 	    {
-	        var latch = latchFactory.NewLatch(delta, consumers);
-	        _threadLocal.GetOrCreate().Add(latch);
+	        _threadLocal.GetOrCreate().Add(
+	            latchFactory.NewLatch(delta, consumers));
 	    }
 
 	    public bool Dispatch()
@@ -209,8 +209,9 @@ namespace com.espertech.esper.epl.named
 	        // Most likely all dispatches go to different statements since most statements are not joins of
 	        // named windows that produce results at the same time. Therefore sort by statement handle.
 	        var dispatchesPerStmt = _dispatchesPerStmtTl.GetOrCreate();
-	        foreach (var latch in dispatches)
+	        for (int ii = 0; ii < dispatches.Length; ii++)
 	        {
+	            var latch = dispatches[ii];
 	            latch.Await();
 	            foreach (var entry in latch.DispatchTo)
 	            {
@@ -225,7 +226,7 @@ namespace com.espertech.esper.epl.named
 	                    var list = (IList<NamedWindowConsumerLatch>) perStmtObj;
 	                    list.Add(latch);
 	                }
-	                else    // convert from object to list
+	                else // convert from object to list
 	                {
 	                    var unitObj = (NamedWindowConsumerLatch) perStmtObj;
 	                    IList<NamedWindowConsumerLatch> list = new List<NamedWindowConsumerLatch>();
@@ -270,9 +271,11 @@ namespace com.espertech.esper.epl.named
 	                }
 	            }
 	        }
-	        finally {
-	            foreach (var latch in dispatches) {
-	                latch.Done();
+	        finally
+            {
+	            for (int ii = 0; ii < dispatches.Length; ii++)
+	            {
+	                dispatches[ii].Done();
 	            }
 	        }
 

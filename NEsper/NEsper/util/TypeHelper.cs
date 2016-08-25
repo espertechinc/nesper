@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -574,7 +575,8 @@ namespace com.espertech.esper.util
                 type == typeof(long) ||
                 type == typeof(double) ||
                 type == typeof(float) ||
-                type == typeof(decimal))
+                type == typeof(decimal) ||
+                type == typeof(BigInteger))
                 return true;
 
             if (type.IsGenericType)
@@ -589,7 +591,8 @@ namespace com.espertech.esper.util
                     (type == typeof(uint?)) ||
                     (type == typeof(ulong?)) ||
                     (type == typeof(sbyte?)) ||
-                    (type == typeof(byte?));
+                    (type == typeof(byte?)) ||
+                    (type == typeof(BigInteger?));
 
             return
                 (type == typeof(short)) ||
@@ -641,6 +644,17 @@ namespace com.espertech.esper.util
             {
                 return typeof(decimal?);
             }
+            if (((boxedOne == typeof(BigInteger?) && IsFloatingPointClass(boxedTwo)) ||
+                ((boxedTwo == typeof(BigInteger?) && IsFloatingPointClass(boxedOne)))))
+            {
+                return typeof(decimal?);
+            }
+            if ((boxedOne == typeof(BigInteger?)) ||
+                (boxedTwo == typeof(BigInteger?)))
+            {
+                return typeof(BigInteger?);
+            }
+
             if ((boxedOne == typeof(double?)) ||
                 (boxedTwo == typeof(double?)))
             {
@@ -849,6 +863,20 @@ namespace com.espertech.esper.util
                         (boxedFrom == typeof(short?)) ||
                         (boxedFrom == typeof(ushort?)) ||
                         (boxedFrom == typeof(int?)));
+            }
+            else if (boxedTo == typeof (BigInteger?))
+            {
+                return ((boxedFrom == typeof(byte?)) ||
+                        (boxedFrom == typeof(sbyte?)) ||
+                        (boxedFrom == typeof(short?)) ||
+                        (boxedFrom == typeof(ushort?)) ||
+                        (boxedFrom == typeof(int?)) ||
+                        (boxedFrom == typeof(uint?)) ||
+                        (boxedFrom == typeof(long?)) ||
+                        (boxedFrom == typeof(ulong?)) ||
+                        (boxedFrom == typeof(float?)) ||
+                        (boxedFrom == typeof(double?)) ||
+                        (boxedFrom == typeof(decimal?)));
             }
             else
             {
@@ -1116,6 +1144,8 @@ namespace com.espertech.esper.util
                 return "decimal";
             if (type == typeof(Guid?))
                 return "guid";
+            if (type == typeof (BigInteger))
+                return "bigint";
             return type.FullName;
         }
 
@@ -1150,6 +1180,8 @@ namespace com.espertech.esper.util
                 return "decimal";
             if (type == typeof(Guid?))
                 return "guid";
+            if (type == typeof(BigInteger))
+                return "bigint";
             return type.FullName;
         }
 
@@ -1240,6 +1272,11 @@ namespace com.espertech.esper.util
                     return boxed
                         ? typeof (DateTime?)
                         : typeof (DateTime);
+                case "bigint":
+                case "biginteger":
+                    return boxed
+                        ? typeof (BigInteger?)
+                        : typeof (BigInteger);
             }
 
             var type = ResolveType(typeName.Trim(), false);
@@ -1298,6 +1335,9 @@ namespace com.espertech.esper.util
             }
             if (boxed == typeof(Guid?)) {
                 return "guid";
+            }
+            if (boxed == typeof (BigInteger?)) {
+                return "bigint";
             }
             return clazz.Name;
         }
@@ -1368,6 +1408,9 @@ namespace com.espertech.esper.util
                 case "datetimeoffset":
                 case "system.datetimeoffset":
                     return typeof(DateTimeOffset);
+                case "bigint":
+                case "biginteger":
+                    return typeof(BigInteger?);
                 default:
                     return null;
             }
@@ -2736,6 +2779,20 @@ namespace com.espertech.esper.util
         public static bool IsDelegate(this Type type)
         {
             return typeof (Delegate).IsAssignableFrom(type.BaseType);
+        }
+
+        /// <summary>
+        /// Returns the esper name for a type.  These names should be used when
+        /// refering to a type in a stream.  Normally, this is just the standard
+        /// type name.  However, for nested classes, we convert the '+' which is
+        /// embedded in the name into a '$' - this prevents the parser from being
+        /// unable to determine the difference between A+B which is an additive
+        /// function and A+B where B is a nested class of A.
+        /// </summary>
+        /// <returns></returns>
+        public static string MaskTypeName<T>()
+        {
+            return MaskTypeName(typeof (T));
         }
 
         /// <summary>
