@@ -18,3 +18,16 @@ Changes in version 5.3.0
 
 Bug fixes and other improvements
 	* Fixed issue Github#2 System.String not handled by TypeHelper
+	
+Changes in version 5.4.2
+-------------------------------
+
+    * Added support for System.Numeric.BigInteger
+	
+Bug fixes and other improvements
+	* Fixed Annotation imports - which were previously using the normal import facility
+	* Added additional annotation import methods to simply importing from generic types.
+	* Fixed a deadlock issue related to latches on named window views
+	* Fixed long standing 100-thread issue with FastThreadLocal, now resizes
+	* Fixed incorrect return type in WrapperEventType
+	
