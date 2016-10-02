@@ -409,6 +409,13 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public static bool DeepEquals<T>( this IList<T> pthis, IList<T> pthat )
         {
+            if (pthis == null && pthat == null)
+                return true;
+            if (pthis == null)
+                return pthat.Count == 0;
+            if (pthat == null)
+                return pthis.Count == 0;
+
             if (pthis.Count != pthat.Count)
             {
                 return false;
