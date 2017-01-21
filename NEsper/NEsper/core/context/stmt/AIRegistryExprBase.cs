@@ -34,7 +34,7 @@ namespace com.espertech.esper.core.context.stmt
             _priors = new Dictionary<ExprPriorNode, AIRegistryPrior>();
             _previous = new Dictionary<ExprPreviousNode, AIRegistryPrevious>();
             _matchRecognizePrevious = AllocateAIRegistryMatchRecognizePrevious();
-            _tableAccess = new HashMap<ExprTableAccessNode, AIRegistryTableAccess>();
+            _tableAccess = new NullableDictionary<ExprTableAccessNode, AIRegistryTableAccess>();
         }
     
         public abstract AIRegistrySubselect AllocateAIRegistrySubselect();

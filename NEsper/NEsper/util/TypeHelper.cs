@@ -33,6 +33,7 @@ using com.espertech.esper.type;
 namespace com.espertech.esper.util
 {
     using DataMap = IDictionary<string, object>;
+    using TypeParser = Func<string, object>;
 
     /// <summary>
     /// Helper for questions about types.
@@ -42,8 +43,6 @@ namespace com.espertech.esper.util
     public static class TypeHelper
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public delegate Object TypeParser(String text);
 
         private static readonly IDictionary<Type, Type> BoxedTable;
         private static readonly IDictionary<Type, TypeParser> ParserTable;
@@ -1427,6 +1426,30 @@ namespace com.espertech.esper.util
                 default:
                     return null;
             }
+        }
+
+        public static TypeParser GetParser(Type clazz)
+        {
+            Type classBoxed = GetBoxedType(clazz);
+            TypeParser typeParser = ParserTable[classBoxed];
+            return typeParser;
+        }
+
+        public static TypeParser GetParser<T>()
+        {
+            Type classBoxed = GetBoxedType(typeof(T));
+            TypeParser typeParser = ParserTable[classBoxed];
+            return typeParser;
+        }
+
+        public static object Parse<T>(string text)
+        {
+            Type classBoxed = GetBoxedType(typeof(T));
+            TypeParser typeParser = ParserTable[classBoxed];
+            return
+                (typeParser != null) ?
+                (typeParser.Invoke(text)) :
+                (null);
         }
 
         /// <summary>Parse the String using the given built-in class for parsing.</summary>

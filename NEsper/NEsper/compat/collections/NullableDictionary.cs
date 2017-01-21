@@ -12,6 +12,7 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
+    [Serializable]
     public class NullableDictionary<K,V> : IDictionary<K,V>
         where K : class
     {
@@ -33,6 +34,13 @@ namespace com.espertech.esper.compat.collections
         {
             get { return _baseDictionary; }
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NullableDictionary{K, V}"/> class.
+        /// </summary>
+        public NullableDictionary() : this(new Dictionary<K, V>())
+        {
+        } 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NullableDictionary&lt;K, V&gt;"/> class.

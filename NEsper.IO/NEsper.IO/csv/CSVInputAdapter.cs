@@ -291,7 +291,7 @@ namespace com.espertech.esperio.csv
 
         private static IDictionary<String, ObjectFactory<String>> CreatePropertyConstructors(IDictionary<String, Type> propertyTypes)
         {
-            var factories = new HashMap<String, ObjectFactory<String>>();
+            var factories = new NullableDictionary<String, ObjectFactory<String>>();
             
             foreach( var entry in propertyTypes )
             {

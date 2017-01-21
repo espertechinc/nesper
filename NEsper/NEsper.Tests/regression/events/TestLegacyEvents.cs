@@ -41,6 +41,48 @@ namespace com.espertech.esper.regression.events
         }
 
         [Test]
+        public void TestAddTypeAssemblyQualified()
+        {
+            var legacyDef = new ConfigurationEventTypeLegacy();
+            legacyDef.AccessorStyle = AccessorStyleEnum.PUBLIC;
+            legacyDef.CodeGeneration = CodeGenerationEnum.DISABLED;
+
+            var config = SupportConfigFactory.GetConfiguration();
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
+            _epService.Initialize();
+            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof (SupportLegacyBean).AssemblyQualifiedName, legacyDef);
+
+            Assert.IsTrue(_epService.EPAdministrator.Configuration.IsEventTypeExists("MyLegacyEvent"));
+            Assert.That(_epService.EPAdministrator.Configuration.GetEventType("MyLegacyEvent"), Is.Not.Null);
+            Assert.That(_epService.EPAdministrator.Configuration.GetEventTypeNameUsedBy("MyLegacyEvent"), Is.Empty);
+
+            using (_epService.EPAdministrator.CreateEPL("select * from MyLegacyEvent"))
+            {
+            }
+        }
+
+        [Test]
+        public void TestAddTypeFullName()
+        {
+            var legacyDef = new ConfigurationEventTypeLegacy();
+            legacyDef.AccessorStyle = AccessorStyleEnum.PUBLIC;
+            legacyDef.CodeGeneration = CodeGenerationEnum.DISABLED;
+
+            var config = SupportConfigFactory.GetConfiguration();
+            _epService = EPServiceProviderManager.GetDefaultProvider(config);
+            _epService.Initialize();
+            _epService.EPAdministrator.Configuration.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean).FullName, legacyDef);
+
+            Assert.IsTrue(_epService.EPAdministrator.Configuration.IsEventTypeExists("MyLegacyEvent"));
+            Assert.That(_epService.EPAdministrator.Configuration.GetEventType("MyLegacyEvent"), Is.Not.Null);
+            Assert.That(_epService.EPAdministrator.Configuration.GetEventTypeNameUsedBy("MyLegacyEvent"), Is.Empty);
+
+            using (_epService.EPAdministrator.CreateEPL("select * from MyLegacyEvent"))
+            {
+            }
+        }
+
+        [Test]
         public void TestAddRemoveType()
         {
             var config = SupportConfigFactory.GetConfiguration();

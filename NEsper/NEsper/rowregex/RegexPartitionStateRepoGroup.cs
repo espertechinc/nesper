@@ -46,7 +46,7 @@ namespace com.espertech.esper.rowregex
         {
             _getter = getter;
             _meta = meta;
-            _states = new HashMap<Object, RegexPartitionStateImpl>();
+            _states = new NullableDictionary<Object, RegexPartitionStateImpl>();
             _optionalIntervalSchedules = keepScheduleState ? new RegexPartitionStateRepoScheduleStateImpl(terminationStateCompare) : null;
         }
 

@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.join.plan
             _numStreams = numStreams;
             _optionalHint = optionalHint;
             _nToZeroAnalysis = nToZeroAnalysis;
-            _streamJoinMap = new HashMap<QueryGraphKey, QueryGraphValue>();
+            _streamJoinMap = new NullableDictionary<QueryGraphKey, QueryGraphValue>();
         }
 
         /// <summary>Returns the number of streams. </summary>

@@ -213,7 +213,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override bool IsConstantResult
         {
-            get { return _isConstant; }
+            get { return _isConstant && ChildNodes[0].IsConstantResult; }
         }
 
         public Type TargetType

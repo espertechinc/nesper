@@ -143,7 +143,7 @@ namespace com.espertech.esper.epl.core
 	    {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessGroupedRowPerGroup();}
 	        // Generate group-by keys for all events, collect all keys in a set for later event generation
-	        IDictionary<object, EventBean[]> keysAndEvents = new Dictionary<object, EventBean[]>();
+            IDictionary<object, EventBean[]> keysAndEvents = new NullableDictionary<object, EventBean[]>();
 	        var newDataMultiKey = GenerateGroupKeys(newEvents, keysAndEvents, true);
 	        var oldDataMultiKey = GenerateGroupKeys(oldEvents, keysAndEvents, false);
 
@@ -197,7 +197,7 @@ namespace com.espertech.esper.epl.core
 	    {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QResultSetProcessGroupedRowPerGroup();}
 	        // Generate group-by keys for all events, collect all keys in a set for later event generation
-	        IDictionary<object, EventBean> keysAndEvents = new Dictionary<object, EventBean>();
+            IDictionary<object, EventBean> keysAndEvents = new NullableDictionary<object, EventBean>();
 
 	        var newDataMultiKey = GenerateGroupKeys(newData, keysAndEvents, true);
 	        var oldDataMultiKey = GenerateGroupKeys(oldData, keysAndEvents, false);
@@ -628,7 +628,7 @@ namespace com.espertech.esper.epl.core
 
 	    public IEnumerator<EventBean> GetEnumerator(ISet<MultiKey<EventBean>> joinSet)
 	    {
-	        IDictionary<object, EventBean[]> keysAndEvents = new Dictionary<object, EventBean[]>();
+            IDictionary<object, EventBean[]> keysAndEvents = new NullableDictionary<object, EventBean[]>();
 	        GenerateGroupKeys(joinSet, keysAndEvents, true);
 	        var selectNewEvents = GenerateOutputEventsJoin(keysAndEvents, true, true) ?? EMPTY_EVENT_BEAN_LIST;
 	        return selectNewEvents.GetEnumerator();
@@ -1220,7 +1220,7 @@ namespace com.espertech.esper.epl.core
 	            }
 	        }
 
-	        IDictionary<object, EventBean[]> keysAndEvents = new Dictionary<object, EventBean[]>();
+            IDictionary<object, EventBean[]> keysAndEvents = new NullableDictionary<object, EventBean[]>();
 
 	        foreach (var pair in joinEventsSet)
 	        {
@@ -1701,7 +1701,7 @@ namespace com.espertech.esper.epl.core
 	            }
 	        }
 
-	        IDictionary<object, EventBean> keysAndEvents = new Dictionary<object, EventBean>();
+            IDictionary<object, EventBean> keysAndEvents = new NullableDictionary<object, EventBean>();
 
 	        foreach (var pair in viewEventsList)
 	        {

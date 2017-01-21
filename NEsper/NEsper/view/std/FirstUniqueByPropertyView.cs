@@ -31,7 +31,7 @@ namespace com.espertech.esper.view.std
 	    private readonly FirstUniqueByPropertyViewFactory _viewFactory;
 	    private readonly ExprEvaluator[] _uniqueCriteriaEval;
 	    private readonly EventBean[] _eventsPerStream = new EventBean[1];
-        private readonly IDictionary<object, EventBean> _firstEvents = new Dictionary<object, EventBean>();
+        private readonly IDictionary<object, EventBean> _firstEvents = new NullableDictionary<object, EventBean>();
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
 
 	    /// <summary>

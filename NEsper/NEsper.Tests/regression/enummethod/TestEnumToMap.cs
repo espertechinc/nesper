@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.enummethod
         public static IDictionary<string, object> ToDataMap(object value)
         {
             IDictionary<object, object> rawMap = (IDictionary<object, object>)value;
-            IDictionary<string, object> outMap = new HashMap<string, object>();
+            IDictionary<string, object> outMap = new NullableDictionary<string, object>();
             foreach (var entry in rawMap)
             {
                 outMap.Put((string)entry.Key, entry.Value);

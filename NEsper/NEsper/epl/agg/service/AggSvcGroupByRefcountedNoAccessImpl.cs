@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.agg.service
         public AggSvcGroupByRefcountedNoAccessImpl(ExprEvaluator[] evaluators, AggregationMethodFactory[] prototypes)
             : base(evaluators, prototypes)
         {
-            _aggregatorsPerGroup = new Dictionary<Object, AggregationMethodRow>();
+            _aggregatorsPerGroup = new NullableDictionary<Object, AggregationMethodRow>();
             _removedKeys = new List<Object>();
         }
     

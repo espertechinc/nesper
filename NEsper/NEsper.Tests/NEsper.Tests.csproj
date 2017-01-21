@@ -982,6 +982,7 @@
     <Compile Include="regression\resultset\TestAggregateWithRollupPlanningAndSODA.cs" />
     <Compile Include="regression\resultset\TestCount.cs" />
     <Compile Include="regression\resultset\TestFirstEverLastEverAgg.cs" />
+    <Compile Include="regression\resultset\TestGroupByWithNull.cs" />
     <Compile Include="regression\resultset\TestGroupByCount.cs" />
     <Compile Include="regression\resultset\TestGroupByEventPerGroup.cs" />
     <Compile Include="regression\resultset\TestGroupByEventPerGroupHaving.cs" />

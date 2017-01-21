@@ -85,7 +85,7 @@ namespace com.espertech.esperio.csv
 
         private static IDictionary<String, Func<string, object>> CreatePropertyFactories(IDictionary<String, Object> propertyTypes)
         {
-            var factories = new HashMap<String, Func<string, object>>();
+            var factories = new NullableDictionary<String, Func<string, object>>();
 
             foreach (var property in propertyTypes.Keys)
             {

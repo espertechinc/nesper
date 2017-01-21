@@ -52,8 +52,8 @@ namespace com.espertech.esper.epl.join.@base
             queryStrategies[1] = new ExecNodeQueryStrategy(1, 2, lookupRight);
 
             var indexes = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
-            indexes[0] = new HashMap<TableLookupIndexReqKey, EventTable>();
-            indexes[1] = new HashMap<TableLookupIndexReqKey, EventTable>();
+            indexes[0] = new NullableDictionary<TableLookupIndexReqKey, EventTable>();
+            indexes[1] = new NullableDictionary<TableLookupIndexReqKey, EventTable>();
             indexes[0].Put(new TableLookupIndexReqKey("idxLeft"), _indexLeft);
             indexes[1].Put(new TableLookupIndexReqKey("idxLeft"), _indexRight);
     

@@ -1379,7 +1379,7 @@ namespace com.espertech.esper.client
             _revisionEventTypes = new Dictionary<String, ConfigurationRevisionEventType>();
             _variantStreams = new Dictionary<String, ConfigurationVariantStream>();
             _mapTypeConfigurations = new Dictionary<String, ConfigurationEventTypeMap>();
-            _objectArrayTypeConfigurations = new HashMap<String, ConfigurationEventTypeObjectArray>();
+            _objectArrayTypeConfigurations = new NullableDictionary<String, ConfigurationEventTypeObjectArray>();
         }
 
         /// <summary>

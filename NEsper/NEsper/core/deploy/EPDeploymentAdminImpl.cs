@@ -456,7 +456,7 @@ namespace com.espertech.esper.core.deploy
                     usesSet.AddAll(proposedModule.Uses);
                 }
 
-                var proposedModuleNames = new HashMap<String, SortedSet<int>>();
+                var proposedModuleNames = new NullableDictionary<String, SortedSet<int>>();
                 var count = 0;
                 foreach (var proposedModule in proposedModules)
                 {

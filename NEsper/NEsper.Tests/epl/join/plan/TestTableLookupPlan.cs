@@ -27,7 +27,7 @@ namespace com.espertech.esper.epl.join.plan
         public void TestMakeExec()
         {
             var indexesPerStream = new IDictionary<TableLookupIndexReqKey, EventTable>[2];
-            indexesPerStream[1] = new HashMap<TableLookupIndexReqKey, EventTable>();
+            indexesPerStream[1] = new NullableDictionary<TableLookupIndexReqKey, EventTable>();
             indexesPerStream[1].Put(new TableLookupIndexReqKey("idx1"), new UnindexedEventTableImpl(0));
 
             var spec = new TableLookupNode(new FullTableScanLookupPlan(0, 1, new TableLookupIndexReqKey("idx1")));

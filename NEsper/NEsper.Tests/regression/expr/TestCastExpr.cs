@@ -506,7 +506,31 @@ namespace com.espertech.esper.regression.expr
             Assert.AreEqual(10L, row.Get("longOne"));
             Assert.AreEqual(11L, row.Get("longTwo"));
         }
-    
+
+        [Test]
+        public void TestDoubleCastWithProperties()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBeanRendererOne>();
+
+            var stmtText = "select cast(cast(StringObjectMap('value'), string), int) as t0 " +
+                           " from " + typeof(SupportBeanRendererOne).FullName;
+
+            using (var stmt = _epService.EPAdministrator.CreateEPL(stmtText))
+            {
+                stmt.Events += _listener.Update;
+
+                Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("t0"));
+
+                var bean = new SupportBeanRendererOne();
+                bean.StringObjectMap = new NullableDictionary<string, object>();
+                bean.StringObjectMap["value"] = "10";
+                _epService.EPRuntime.SendEvent(bean);
+
+                var theEvent = _listener.AssertOneGetNewAndReset();
+                AssertResults(theEvent, new Object[] { 10 });
+            }
+        }
+
         private void AssertResults(EventBean theEvent, Object[] result)
         {
             for (var i = 0; i < result.Length; i++)

@@ -11,6 +11,7 @@ using System.IO;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.support.bean;
 
 using NUnit.Framework;
 
@@ -63,7 +64,7 @@ namespace com.espertech.esper.client
             Assert.AreEqual("BClassName", _config.EventTypeNames.Get("AEventType"));
             AssertDefaultConfig();
         }
-    
+
         private void AssertDefaultConfig()
         {
             Assert.AreEqual(5, _config.Imports.Count);

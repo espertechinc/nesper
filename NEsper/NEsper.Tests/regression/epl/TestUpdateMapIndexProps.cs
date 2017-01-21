@@ -207,7 +207,7 @@ namespace com.espertech.esper.regression.epl
         {
             public MyMapPropEvent()
             {
-                Props = new HashMap<string, object>();
+                Props = new NullableDictionary<string, object>();
                 Array = new Object[10];
             }
 

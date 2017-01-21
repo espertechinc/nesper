@@ -52,7 +52,7 @@ namespace com.espertech.esperio.csv
 			get { return _propertyTypes; }
             set
             {
-                var tempDict = new HashMap<string, object>();
+                var tempDict = new NullableDictionary<string, object>();
                 foreach( var entry in value )
                 {
                     tempDict[entry.Key] = ((Type) entry.Value).GetBoxedType();

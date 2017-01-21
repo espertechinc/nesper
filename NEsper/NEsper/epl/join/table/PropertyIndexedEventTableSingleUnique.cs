@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.join.table
 	    public PropertyIndexedEventTableSingleUnique(EventPropertyGetter propertyGetter, EventTableOrganization organization)
 	        : base(propertyGetter, organization)
 	    {
-	        _propertyIndex = new Dictionary<object, EventBean>().WithNullSupport();
+            _propertyIndex = new NullableDictionary<object, EventBean>();
 	        _canClear = true;
 	    }
 

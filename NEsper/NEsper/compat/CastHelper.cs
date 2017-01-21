@@ -9,8 +9,12 @@
 using System;
 using System.Numerics;
 
+using com.espertech.esper.util;
+
 namespace com.espertech.esper.compat
 {
+    using TypeParser = Func<string, object>;
+
     /// <summary>
     /// Provides efficient cast methods for converting from object to
     /// primitive types.  The cast method provided here-in is consistent
@@ -20,9 +24,22 @@ namespace com.espertech.esper.compat
 
     public class CastHelper
     {
+        private static TypeParser _parseSingle = TypeHelper.GetParser<Single>();
+        private static TypeParser _parseDouble = TypeHelper.GetParser<Double>();
+        private static TypeParser _parseDecimal = TypeHelper.GetParser<Decimal>();
+        private static TypeParser _parseByte = TypeHelper.GetParser<Byte>();
+        private static TypeParser _parseSByte = TypeHelper.GetParser<SByte>();
+        private static TypeParser _parseInt16 = TypeHelper.GetParser<Int16>();
+        private static TypeParser _parseInt32 = TypeHelper.GetParser<Int32>();
+        private static TypeParser _parseInt64 = TypeHelper.GetParser<Int64>();
+        private static TypeParser _parseUInt16 = TypeHelper.GetParser<UInt16>();
+        private static TypeParser _parseUInt32 = TypeHelper.GetParser<UInt32>();
+        private static TypeParser _parseUInt64 = TypeHelper.GetParser<UInt64>();
+        private static TypeParser _parseBigInteger = TypeHelper.GetParser<BigInteger>();
+
         public static GenericTypeCaster<T> GetCastConverter<T>()
         {
-            TypeCaster typeCaster = GetCastConverter(typeof(T));
+            var typeCaster = GetCastConverter(typeof(T));
             return o =>
             {
                 return (T) typeCaster.Invoke(o);
@@ -49,7 +66,7 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public static TypeCaster GetCastConverter(Type t)
         {
-            Type baseT = Nullable.GetUnderlyingType(t);
+            var baseT = Nullable.GetUnderlyingType(t);
             if (baseT != null)
             {
                 t = baseT;
@@ -107,13 +124,14 @@ namespace com.espertech.esper.compat
             {
                 return PrimitiveCastByte;
             }
-            if (t.IsEnum) {
+            if (t.IsEnum)
+            {
                 return sourceObj => PrimitiveCastEnum(t, sourceObj);
             }
 
             return delegate(Object sourceObj)
             {
-                Type sourceObjType = sourceObj.GetType();
+                var sourceObjType = sourceObj.GetType();
                 if (t.IsAssignableFrom(sourceObjType))
                 {
                     return sourceObj;
@@ -137,7 +155,7 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
             if (sourceObjType == enumType)
             {
                 return sourceObj;
@@ -282,7 +300,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof (string))
+            {
+                return _parseSByte((string) sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (SByte)sourceObj;
@@ -423,7 +446,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseByte((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Byte)((SByte)sourceObj);
@@ -564,7 +592,7 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
             if (sourceObjType == typeof(SByte))
             {
                 return (Char)((SByte)sourceObj);
@@ -705,7 +733,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseInt16((string) sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Int16)((SByte)sourceObj);
@@ -841,7 +874,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof (string))
+            {
+                return _parseInt32((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Int32)((SByte)sourceObj);
@@ -977,7 +1015,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseInt64((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Int64)((SByte)sourceObj);
@@ -1113,7 +1156,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseUInt16((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (UInt16)((SByte)sourceObj);
@@ -1249,7 +1297,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseUInt32((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (UInt32)((SByte)sourceObj);
@@ -1385,7 +1438,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseUInt64((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (UInt64)((SByte)sourceObj);
@@ -1521,7 +1579,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseSingle((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Single)((SByte)sourceObj);
@@ -1645,6 +1708,8 @@ namespace com.espertech.esper.compat
             return null;
         }
 
+        internal static readonly Func<string, object> _doubleParser = TypeHelper.GetParser(typeof (double));
+
         /// <summary>
         /// Casts the object to the System.Double
         /// </summary>
@@ -1657,7 +1722,12 @@ namespace com.espertech.esper.compat
                 return null;
             }
 
-            Type sourceObjType = sourceObj.GetType();
+            var sourceObjType = sourceObj.GetType();
+            if (sourceObjType == typeof(string))
+            {
+                return _parseDouble((string)sourceObj);
+            }
+
             if (sourceObjType == typeof(SByte))
             {
                 return (Double)((SByte)sourceObj);
@@ -1790,6 +1860,11 @@ namespace com.espertech.esper.compat
         {
             if (sourceObj == null)
                 return null;
+            
+            var stringValue = sourceObj as string;
+            if (stringValue != null)
+                return _parseDecimal(stringValue);
+
             return sourceObj.AsDecimal();
         }
 
@@ -1802,6 +1877,11 @@ namespace com.espertech.esper.compat
         {
             if (sourceObj == null)
                 return null;
+            
+            var stringValue = sourceObj as string;
+            if (stringValue != null)
+                return _parseBigInteger(stringValue);
+
             return sourceObj.AsBigInteger();
         }
     }
