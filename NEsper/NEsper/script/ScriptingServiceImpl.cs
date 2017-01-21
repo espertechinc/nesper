@@ -52,7 +52,17 @@ namespace com.espertech.esper.script
         /// <param name="isEngine">The is engine.</param>
         public void DiscoverEngines(Assembly assembly, Predicate<Type> isEngine)
         {
-            foreach (var type in assembly.GetTypes())
+            Type[] types;
+            try
+            {
+                types = assembly.GetTypes();
+            }
+            catch
+            {
+                // ignore assemblies that cannot be loaded
+                return;
+            }
+            foreach (var type in types)
             {
                 if (type.IsInterface || type.IsAbstract)
                     continue;
