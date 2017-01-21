@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,7 @@ namespace com.espertech.esper.view.std
     [TestFixture]
     public class TestAddPropertyValueView 
     {
-        private AddPropertyValueView _myView;
+        private AddPropertyValueOptionalView _myView;
         private SupportMapView _parentView;
         private SupportSchemaNeutralView _childView;
         private EventType _parentEventType;
@@ -43,8 +43,8 @@ namespace com.espertech.esper.view.std
                 "test", _parentEventType, addProps);
     
             // Set up length window view and a test child view
-            _myView = new AddPropertyValueView(
-                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), 
+            _myView = new AddPropertyValueOptionalView(
+                SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(),
                 new String[] { "Symbol" }, "IBM", mergeEventType);
     
             _parentView = new SupportMapView(schema);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCopyView()
         {
-            AddPropertyValueView copied = (AddPropertyValueView) _myView.CloneView();
+            AddPropertyValueOptionalView copied = (AddPropertyValueOptionalView)_myView.CloneView();
             Assert.AreEqual(_myView.PropertyNames, copied.PropertyNames);
             Assert.AreEqual(_myView.PropertyValues, copied.PropertyValues);
         }
@@ -107,7 +107,7 @@ namespace com.espertech.esper.view.std
             IDictionary<String, Object> addProps = new Dictionary<String, Object>();
             addProps["test"] = typeof(int);
             EventType newEventType = SupportEventAdapterService.Service.CreateAnonymousWrapperType("test", _parentEventType, addProps);
-            EventBean newBean = AddPropertyValueView.AddProperty(
+            EventBean newBean = AddPropertyValueOptionalView.AddProperty(
                 eventBean, 
                 new String[] { "test" }, 
                 new MultiKeyUntyped(new Object[] { 2 }), 

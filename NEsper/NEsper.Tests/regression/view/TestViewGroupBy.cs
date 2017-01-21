@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
@@ -164,6 +165,19 @@ namespace com.espertech.esper.regression.view
             stmt.Events += listener.Update;
 
             SendEvent("IBM", 100);
+        }
+
+        [Test]
+        public void TestExpressionGrouped()
+        {
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBeanTimestamp>();
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL("select irstream * from SupportBeanTimestamp.std:groupwin(timestamp.getDayOfWeek()).win:length(2)");
+            stmt.AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBeanTimestamp("E1", DateTimeParser.ParseDefaultMSec("2002-01-01T9:0:00.000")));
+            _epService.EPRuntime.SendEvent(new SupportBeanTimestamp("E2", DateTimeParser.ParseDefaultMSec("2002-01-08T9:0:00.000")));
+            _epService.EPRuntime.SendEvent(new SupportBeanTimestamp("E3", DateTimeParser.ParseDefaultMSec("2002-01-015T9:0:00.000")));
+            Assert.AreEqual(1, _listener.GetDataListsFlattened().Second.Length);
         }
 
         [Test]

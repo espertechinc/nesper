@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -103,20 +103,22 @@ namespace com.espertech.esper.regression.events
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(text);
             stmt.Events += _updateListener.Update;
 
-            SupportXML.SendEvent(_epService.EPRuntime,
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                            "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
-                            "<url>page1</url>" +
-                            "</event-page-visit>");
+            SupportXML.SendEvent(
+                _epService.EPRuntime,
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
+                "<url>page1</url>" +
+                "</event-page-visit>");
             EventBean theEvent = _updateListener.LastNewData[0];
             Assert.AreEqual("page1", theEvent.Get("sesja"));
             _updateListener.Reset();
 
-            SupportXML.SendEvent(_epService.EPRuntime,
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                            "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
-                            "<url>page2</url>" +
-                            "</event-page-visit>");
+            SupportXML.SendEvent(
+                _epService.EPRuntime,
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<event-page-visit xmlns=\"samples:schemas:simpleSchemaWithAll\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"samples:schemas:simpleSchemaWithAll simpleSchemaWithAll.xsd\">\n" +
+                "<url>page2</url>" +
+                "</event-page-visit>");
             Assert.IsFalse(_updateListener.IsInvoked);
 
             EventType type = _epService.EPAdministrator.CreateEPL("select * from PageVisitEvent").EventType;

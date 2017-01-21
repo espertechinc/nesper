@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -100,7 +100,7 @@ namespace com.espertech.esper.epl.expression.dot
 	            if (chainElement.Name.IsEnumerationMethod() && (!matchingMethod || methodTarget.IsArray || methodTarget.IsImplementsInterface(typeof(ICollection<object>))))
                 {
 	                var enumerationMethod = EnumMethodEnumExtensions.FromName(chainElement.Name);
-                    var eval = TypeHelper.Instantiate<ExprDotEvalEnumMethod>(enumerationMethod.GetImplementation().FullName);
+                    var eval = TypeHelper.Instantiate<ExprDotEvalEnumMethod>(enumerationMethod.GetImplementation());
 	                eval.Init(streamOfProviderIfApplicable, enumerationMethod, chainElement.Name, currentInputType, chainElement.Parameters, validationContext);
 	                currentInputType = eval.TypeInfo;
 	                if (currentInputType == null) {
@@ -115,7 +115,10 @@ namespace com.espertech.esper.epl.expression.dot
 	            if (chainElement.Name.IsDateTimeMethod() && (!matchingMethod  || methodTarget == typeof(DateTimeOffset?)))
                 {
 	                var datetimeMethod = DatetimeMethodEnumExtensions.FromName(chainElement.Name);
-                    var datetimeImpl = ExprDotEvalDTFactory.ValidateMake(validationContext.StreamTypeService, chainSpecStack, datetimeMethod, chainElement.Name, currentInputType, chainElement.Parameters, inputDesc, validationContext.MethodResolutionService.EngineImportService.TimeZone);
+                    var datetimeImpl = ExprDotEvalDTFactory.ValidateMake(
+                        validationContext.StreamTypeService, chainSpecStack, datetimeMethod, chainElement.Name,
+                        currentInputType, chainElement.Parameters, inputDesc,
+                        validationContext.EngineImportService.TimeZone);
 	                currentInputType = datetimeImpl.ReturnType;
 	                if (currentInputType == null) {
 	                    throw new IllegalStateException("Date-time method '" + chainElement.Name + "' has not returned type information");
@@ -171,7 +174,7 @@ namespace com.espertech.esper.epl.expression.dot
 	                        throw new ExprValidationException(e.Message, e);
 	                    }
 	                    else {
-	                        var duck = new ExprDotMethodEvalDuck(validationContext.StatementName, validationContext.MethodResolutionService, chainElement.Name, paramTypes, paramEvals);
+	                        var duck = new ExprDotMethodEvalDuck(validationContext.StatementName, validationContext.EngineImportService, chainElement.Name, paramTypes, paramEvals);
 	                        methodEvals.Add(duck);
 	                        currentInputType = duck.TypeInfo;
 	                    }
@@ -412,7 +415,10 @@ namespace com.espertech.esper.epl.expression.dot
 	            },
 	        };
 	        var wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1 ? null : validationContext.StreamTypeService.EventTypes[0];
-	        return ExprNodeUtility.ResolveMethodAllowWildcardAndStream(methodTarget.Name, methodTarget, methodName, parameters, validationContext.MethodResolutionService, validationContext.EventAdapterService, validationContext.StatementId, wildcardType != null, wildcardType, exceptionHandler, methodName, validationContext.TableService);
-	    }
+	        return ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
+	            methodTarget.Name, methodTarget, methodName, parameters, validationContext.EngineImportService,
+	            validationContext.EventAdapterService, validationContext.StatementId, wildcardType != null, wildcardType,
+	            exceptionHandler, methodName, validationContext.TableService);
+        }
 	}
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -159,7 +159,7 @@ namespace com.espertech.esper.core.context.mgr
 	            Pair<Type, EngineImportSingleRowDesc> hashSingleRowFunction = null;
 	            if (hashFunction == null) {
 	                try {
-	                    hashSingleRowFunction = _factoryContext.AgentInstanceContextCreate.StatementContext.MethodResolutionService.ResolveSingleRow(hashFuncName);
+	                    hashSingleRowFunction = _factoryContext.AgentInstanceContextCreate.StatementContext.EngineImportService.ResolveSingleRow(hashFuncName);
 	                }
 	                catch (Exception e) {
 	                    // expected
@@ -198,7 +198,7 @@ namespace com.espertech.esper.core.context.mgr
 	            else if (hashSingleRowFunction != null) {
 	                getter = new ContextControllerHashedGetterSingleRow(
                         _factoryContext.AgentInstanceContextCreate.StatementContext.StatementName, hashFuncName, hashSingleRowFunction, item.Function.Parameters, _hashedSpec.Granularity,
-	                    _factoryContext.AgentInstanceContextCreate.StatementContext.MethodResolutionService,
+                        _factoryContext.AgentInstanceContextCreate.StatementContext.EngineImportService,
 	                    item.FilterSpecCompiled.FilterForEventType,
 	                    _factoryContext.AgentInstanceContextCreate.StatementContext.EventAdapterService,
 	                    _factoryContext.AgentInstanceContextCreate.StatementId,

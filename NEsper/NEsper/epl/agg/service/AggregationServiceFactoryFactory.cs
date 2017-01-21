@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -120,71 +120,46 @@ namespace com.espertech.esper.epl.agg.service
 	        return new AggregationServiceMatchRecognizeFactoryDesc(factory, allExpressions);
 	    }
 
-        /// <summary>
-        /// Returns an instance to handle the aggregation required by the aggregation expression nodes, depending on
-        /// whether there are any group-by nodes.
-        /// </summary>
-        /// <param name="selectAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
-        /// <param name="selectClauseNamedNodes">The select clause named nodes.</param>
-        /// <param name="declaredExpressions">The declared expressions.</param>
-        /// <param name="groupByNodes">The group by nodes.</param>
-        /// <param name="havingAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
-        /// <param name="orderByAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
-        /// <param name="groupKeyExpressions">The group key expressions.</param>
-        /// <param name="hasGroupByClause">indicator on whethere there is group-by required, or group-all</param>
-        /// <param name="annotations">statement annotations</param>
-        /// <param name="variableService">variable</param>
-        /// <param name="isJoin">true for joins</param>
-        /// <param name="isDisallowNoReclaim">if set to <c>true</c> [is disallow no reclaim].</param>
-        /// <param name="whereClause">the where-clause function if any</param>
-        /// <param name="havingClause">the having-clause function if any</param>
-        /// <param name="factoryService">The factory service.</param>
-        /// <param name="typesPerStream">The types per stream.</param>
-        /// <param name="methodResolutionService">The method resolution service.</param>
-        /// <param name="groupByRollupDesc">The group by rollup desc.</param>
-        /// <param name="optionalContextName">Name of the optional context.</param>
-        /// <param name="intoTableSpec">The into table spec.</param>
-        /// <param name="tableService">The table service.</param>
-        /// <param name="isUnidirectional">if set to <c>true</c> [is unidirectional].</param>
-        /// <param name="isFireAndForget">if set to <c>true</c> [is fire and forget].</param>
-        /// <param name="isOnSelect">if set to <c>true</c> [is on select].</param>
-        /// <returns>
-        /// instance for aggregation handling
-        /// </returns>
-        /// <exception cref="ExprValidationException">
-        /// Into-table requires at least one aggregation function
-        /// or
-        /// The ' + funcname + ' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead
-        /// or
-        /// Invalid into-table clause: Failed to find table by name ' + intoTableSpec.Name + '
-        /// </exception>
-        /// <exception cref="EPException">Failed to obtain hook for  + HookType.INTERNAL_AGGLOCALLEVEL</exception>
-        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if validation fails</throws>
-	    public static AggregationServiceFactoryDesc GetService(
-	        IList<ExprAggregateNode> selectAggregateExprNodes,
-	        IDictionary<ExprNode, string> selectClauseNamedNodes,
-	        IList<ExprDeclaredNode> declaredExpressions,
-	        ExprNode[] groupByNodes,
-	        IList<ExprAggregateNode> havingAggregateExprNodes,
-	        IList<ExprAggregateNode> orderByAggregateExprNodes,
-	        IList<ExprAggregateNodeGroupKey> groupKeyExpressions,
-	        bool hasGroupByClause,
-	        Attribute[] annotations,
-	        VariableService variableService,
-	        bool isJoin,
-	        bool isDisallowNoReclaim,
-	        ExprNode whereClause,
-	        ExprNode havingClause,
-	        AggregationServiceFactoryService factoryService,
-	        EventType[] typesPerStream,
-	        MethodResolutionService methodResolutionService,
-	        AggregationGroupByRollupDesc groupByRollupDesc,
-	        string optionalContextName,
-	        IntoTableSpec intoTableSpec,
-	        TableService tableService,
-	        bool isUnidirectional,
-	        bool isFireAndForget,
-	        bool isOnSelect)
+	    /// <summary>
+	    /// Returns an instance to handle the aggregation required by the aggregation expression nodes, depending on
+	    /// whether there are any group-by nodes.
+	    /// </summary>
+	    /// <param name="selectAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
+	    /// <param name="selectClauseNamedNodes">The select clause named nodes.</param>
+	    /// <param name="declaredExpressions">The declared expressions.</param>
+	    /// <param name="groupByNodes">The group by nodes.</param>
+	    /// <param name="havingAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
+	    /// <param name="orderByAggregateExprNodes">aggregation nodes extracted out of the select expression</param>
+	    /// <param name="groupKeyExpressions">The group key expressions.</param>
+	    /// <param name="hasGroupByClause">indicator on whethere there is group-by required, or group-all</param>
+	    /// <param name="annotations">statement annotations</param>
+	    /// <param name="variableService">variable</param>
+	    /// <param name="isJoin">true for joins</param>
+	    /// <param name="isDisallowNoReclaim">if set to <c>true</c> [is disallow no reclaim].</param>
+	    /// <param name="whereClause">the where-clause function if any</param>
+	    /// <param name="havingClause">the having-clause function if any</param>
+	    /// <param name="factoryService">The factory service.</param>
+	    /// <param name="typesPerStream">The types per stream.</param>
+	    /// <param name="groupByRollupDesc">The group by rollup desc.</param>
+	    /// <param name="optionalContextName">Name of the optional context.</param>
+	    /// <param name="intoTableSpec">The into table spec.</param>
+	    /// <param name="tableService">The table service.</param>
+	    /// <param name="isUnidirectional">if set to <c>true</c> [is unidirectional].</param>
+	    /// <param name="isFireAndForget">if set to <c>true</c> [is fire and forget].</param>
+	    /// <param name="isOnSelect">if set to <c>true</c> [is on select].</param>
+	    /// <returns>
+	    /// instance for aggregation handling
+	    /// </returns>
+	    /// <exception cref="ExprValidationException">
+	    /// Into-table requires at least one aggregation function
+	    /// or
+	    /// The ' + funcname + ' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead
+	    /// or
+	    /// Invalid into-table clause: Failed to find table by name ' + intoTableSpec.Name + '
+	    /// </exception>
+	    /// <exception cref="EPException">Failed to obtain hook for  + HookType.INTERNAL_AGGLOCALLEVEL</exception>
+	    /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if validation fails</throws>
+	    public static AggregationServiceFactoryDesc GetService(IList<ExprAggregateNode> selectAggregateExprNodes, IDictionary<ExprNode, string> selectClauseNamedNodes, IList<ExprDeclaredNode> declaredExpressions, ExprNode[] groupByNodes, IList<ExprAggregateNode> havingAggregateExprNodes, IList<ExprAggregateNode> orderByAggregateExprNodes, IList<ExprAggregateNodeGroupKey> groupKeyExpressions, bool hasGroupByClause, Attribute[] annotations, VariableService variableService, bool isJoin, bool isDisallowNoReclaim, ExprNode whereClause, ExprNode havingClause, AggregationServiceFactoryService factoryService, EventType[] typesPerStream, AggregationGroupByRollupDesc groupByRollupDesc, string optionalContextName, IntoTableSpec intoTableSpec, TableService tableService, bool isUnidirectional, bool isFireAndForget, bool isOnSelect)
 	    {
 	        // No aggregates used, we do not need this service
 	        if ((selectAggregateExprNodes.IsEmpty()) && (havingAggregateExprNodes.IsEmpty()))
@@ -328,8 +303,7 @@ namespace com.espertech.esper.epl.agg.service
 	        // Handle without a group-by clause: we group all into the same pot
 	        if (!hasGroupByClause) {
                 if (localGroupByPlan != null) {
-                    var groupKeyBinding = methodResolutionService.GetGroupKeyBinding(localGroupByPlan);
-                    serviceFactory = factoryService.GetNoGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                    serviceFactory = factoryService.GetNoGroupLocalGroupBy(isJoin, localGroupByPlan, isUnidirectional, isFireAndForget, isOnSelect);
                 }
 	            else if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0)) {
                     serviceFactory = factoryService.GetNoGroupNoAccess(methodAggEvaluators, methodAggFactories, isUnidirectional, isFireAndForget, isOnSelect);
@@ -346,12 +320,10 @@ namespace com.espertech.esper.epl.agg.service
 	            var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
 	            var reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
                 if (localGroupByPlan != null) {
-                    var groupKeyBinding = methodResolutionService.GetGroupKeyBinding(localGroupByPlan);
-                    serviceFactory = factoryService.GetGroupLocalGroupBy(isJoin, localGroupByPlan, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                    serviceFactory = factoryService.GetGroupLocalGroupBy(isJoin, localGroupByPlan, isUnidirectional, isFireAndForget, isOnSelect);
                 }
                 else
                 {
-                    var groupKeyBinding = methodResolutionService.GetGroupKeyBinding(groupByNodes, groupByRollupDesc);
                     if (!isDisallowNoReclaim && hasNoReclaim)
                     {
                         if (groupByRollupDesc != null)
@@ -360,15 +332,15 @@ namespace com.espertech.esper.epl.agg.service
                         }
                         if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0))
                         {
-                            serviceFactory = factoryService.GetGroupedNoReclaimNoAccess(methodAggEvaluators, methodAggFactories, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                            serviceFactory = factoryService.GetGroupedNoReclaimNoAccess(groupByNodes, methodAggEvaluators, methodAggFactories, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else if ((methodAggEvaluators.Length == 0) && (accessorPairs.Length > 0))
                         {
-                            serviceFactory = factoryService.GetGroupNoReclaimAccessOnly(accessorPairs, accessAggregations, groupKeyBinding, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
+                            serviceFactory = factoryService.GetGroupNoReclaimAccessOnly(groupByNodes, accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else
                         {
-                            serviceFactory = factoryService.GetGroupNoReclaimMixed(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                            serviceFactory = factoryService.GetGroupNoReclaimMixed(groupByNodes, methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                     }
                     else if (!isDisallowNoReclaim && reclaimGroupAged != null)
@@ -377,21 +349,21 @@ namespace com.espertech.esper.epl.agg.service
                         {
                             throw GetRollupReclaimEx();
                         }
-                        serviceFactory = factoryService.GetGroupReclaimAged(methodAggEvaluators, methodAggFactories, reclaimGroupAged, reclaimGroupFrequency, variableService, accessorPairs, accessAggregations, isJoin, groupKeyBinding, optionalContextName, isUnidirectional, isFireAndForget, isOnSelect);
+                        serviceFactory = factoryService.GetGroupReclaimAged(groupByNodes, methodAggEvaluators, methodAggFactories, reclaimGroupAged, reclaimGroupFrequency, variableService, accessorPairs, accessAggregations, isJoin, optionalContextName, isUnidirectional, isFireAndForget, isOnSelect);
                     }
                     else if (groupByRollupDesc != null)
                     {
-                        serviceFactory = factoryService.GetGroupReclaimMixableRollup(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, groupByRollupDesc, isUnidirectional, isFireAndForget, isOnSelect);
+                        serviceFactory = factoryService.GetGroupReclaimMixableRollup(groupByNodes, groupByRollupDesc, methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupByRollupDesc, isUnidirectional, isFireAndForget, isOnSelect);
                     }
                     else
                     {
                         if ((methodAggEvaluators.Length > 0) && (accessorPairs.Length == 0))
                         {
-                            serviceFactory = factoryService.GetGroupReclaimNoAccess(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                            serviceFactory = factoryService.GetGroupReclaimNoAccess(groupByNodes, methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                         else
                         {
-                            serviceFactory = factoryService.GetGroupReclaimMixable(methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, groupKeyBinding, isUnidirectional, isFireAndForget, isOnSelect);
+                            serviceFactory = factoryService.GetGroupReclaimMixable(groupByNodes, methodAggEvaluators, methodAggFactories, accessorPairs, accessAggregations, isJoin, isUnidirectional, isFireAndForget, isOnSelect);
                         }
                     }
                 }

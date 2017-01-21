@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -310,17 +310,6 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
-        /// Determines whether the value specified is a big integer.
-        /// </summary>
-        /// <param name="asType">As type.</param>
-        /// <returns></returns>
-        public static bool IsBigInteger(this Type asType)
-        {
-            asType = asType.GetBoxedType();
-            return asType == typeof (BigInteger?);
-        }
-
-        /// <summary>
         /// Determines whether [is date time] [the specified value].
         /// </summary>
         /// <param name="value">The value.</param>
@@ -405,7 +394,18 @@ namespace com.espertech.esper.compat
                 return false;
             }
 
-            return parameters[parameters.Length - 1].GetCustomAttributes(typeof (ParamArrayAttribute), false).Length > 1;
+            return parameters[parameters.Length - 1].GetCustomAttributes(typeof (ParamArrayAttribute), false).Length >= 1;
+        }
+
+        public static bool IsVarArgs(this ConstructorInfo constructorInfo)
+        {
+            var parameters = constructorInfo.GetParameters();
+            if (parameters.Length == 0)
+            {
+                return false;
+            }
+
+            return parameters[parameters.Length - 1].GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 1;
         }
     }
 }

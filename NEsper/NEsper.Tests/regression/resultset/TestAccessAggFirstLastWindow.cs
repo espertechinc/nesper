@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -345,8 +345,10 @@ namespace com.espertech.esper.regression.resultset
 	        RunAssertionType(true);
 	    }
 
-	    private void RunAssertionType(bool isCheckStatic) {
+	    private void RunAssertionType(bool isCheckStatic)
+        {
 	        string[] fields = "f1,f2,w1,l1".Split(',');
+            SupportStaticMethodLib.Invocations.Clear();
 
 	        SupportBean beanOne = SendEvent(_epService, "E1", 10d, 100);
 	        object[] expected = new object[] {110d, 100, new object[] {beanOne}, beanOne};

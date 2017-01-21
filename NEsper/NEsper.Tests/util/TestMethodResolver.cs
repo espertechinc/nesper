@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,10 @@
 
 using System;
 
+using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.core; 
+using com.espertech.esper.regression.client;
 
 using NUnit.Framework;
 
@@ -70,7 +72,7 @@ namespace com.espertech.esper.util
             expected = typeof(String).GetMethod(methodName, args);
             Assert.AreEqual(expected, MethodResolver.ResolveMethod(declClass, methodName, args, true, null, null));
         }
-    
+
         [Test]
     	public void TestResolveMethodNotFound()
     	{
@@ -125,5 +127,29 @@ namespace com.espertech.esper.util
     			// Expected
     		}
     	}
+
+        [Test]
+        public void TestResolveExtensionMethod()
+        {
+            var methodResolver = new EngineImportServiceImpl(
+                false,
+                false,
+                false,
+                false,
+                MathContext.DECIMAL32,
+                TimeZoneInfo.Local,
+                new ConfigurationEngineDefaults.ThreadingProfile(), 
+                null);
+
+            var targetType = typeof(SupportAggMFFunc);
+            var targetMethod = "GetName";
+            var args = new Type[0];
+
+            var method = methodResolver.ResolveMethod(targetType, targetMethod, args, null, null);
+            Assert.That(method, Is.Not.Null);
+            Assert.That(method.DeclaringType, Is.EqualTo(typeof(SupportAggMFFuncExtensions)));
+            Assert.That(method.Name, Is.EqualTo(targetMethod));
+            Assert.That(method.IsExtensionMethod(), Is.True);
+        }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,8 +25,6 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupByReclaimAgedFactory : AggregationServiceFactoryBase
     {
-        private const long DEFAULT_MAX_AGE_MSEC = 60000L;
-    
         protected readonly AggregationAccessorSlotPair[] Accessors;
         protected readonly AggregationStateFactory[] AccessAggregations;
         protected readonly bool IsJoin;
@@ -39,7 +37,6 @@ namespace com.espertech.esper.epl.agg.service
         /// </summary>
         /// <param name="evaluators">evaluate the sub-expression within the aggregate function (ie. sum(4*myNum))</param>
         /// <param name="prototypes">collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregationsaggregation states for each group</param>
-        /// <param name="groupKeyBinding">The group key binding.</param>
         /// <param name="reclaimGroupAged">hint to reclaim</param>
         /// <param name="reclaimGroupFrequency">hint to reclaim</param>
         /// <param name="variableService">variables</param>
@@ -49,22 +46,12 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="optionalContextName">Name of the optional context.</param>
         /// <exception cref="ExprValidationException">Required hint value for hint ' + HintEnum.RECLAIM_GROUP_AGED + ' has not been provided</exception>
         /// <throws><seealso cref="ExprValidationException" /> when validation fails</throws>
-        public AggSvcGroupByReclaimAgedFactory(
-            ExprEvaluator[] evaluators,
-            AggregationMethodFactory[] prototypes,
-            Object groupKeyBinding,
-            HintAttribute reclaimGroupAged,
-            HintAttribute reclaimGroupFrequency,
-            VariableService variableService,
-            AggregationAccessorSlotPair[] accessors,
-            AggregationStateFactory[] accessAggregations,
-            bool isJoin,
-            String optionalContextName)
-            : base(evaluators, prototypes, groupKeyBinding)
+        public AggSvcGroupByReclaimAgedFactory(ExprEvaluator[] evaluators, AggregationMethodFactory[] prototypes, HintAttribute reclaimGroupAged, HintAttribute reclaimGroupFrequency, VariableService variableService, AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggregations, bool isJoin, string optionalContextName)
+            : base(evaluators, prototypes)
         {
-            this.Accessors = accessors;
-            this.AccessAggregations = accessAggregations;
-            this.IsJoin = isJoin;
+            Accessors = accessors;
+            AccessAggregations = accessAggregations;
+            IsJoin = isJoin;
     
             String hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(reclaimGroupAged);
             if (hintValueMaxAge == null)
@@ -84,15 +71,11 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
 
-        public override AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService,
-            bool isSubquery,
-            int? subqueryNumber)
+        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
         {
             AggSvcGroupByReclaimAgedEvalFunc max = EvaluationFunctionMaxAge.Make(agentInstanceContext);
             AggSvcGroupByReclaimAgedEvalFunc freq = EvaluationFunctionFrequency.Make(agentInstanceContext);
-            return new AggSvcGroupByReclaimAgedImpl(Evaluators, Aggregators, GroupKeyBinding, Accessors, AccessAggregations, IsJoin, max, freq, methodResolutionService);
+            return new AggSvcGroupByReclaimAgedImpl(Evaluators, Aggregators, Accessors, AccessAggregations, IsJoin, max, freq);
         }
     
         private AggSvcGroupByReclaimAgedEvalFuncFactory GetEvaluationFunction(VariableService variableService, String hintValue, String optionalContextName)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,8 @@ namespace com.espertech.esper.util
         public static bool IsOpaque(Uri uri)
         {
             return false;
-        }
+        }
+
 
         /// <summary>
         /// Given a child URI and a map of factory URIs, inspect the child URI against the factory 
@@ -39,12 +40,14 @@ namespace com.espertech.esper.util
         /// <param name="child">is the child URI to match against factory URIs</param>
         /// <param name="uris">is a map of factory URI and an object</param>
         /// <returns>matching factory URIs, if any</returns>
-        public static ICollection<KeyValuePair<Uri, V>> FilterSort<V>(Uri child, IDictionary<Uri, V> uris)        {
+        public static ICollection<KeyValuePair<Uri, V>> FilterSort<V>(Uri child, IDictionary<Uri, V> uris)
+        {
             var childPathIsOpaque = IsOpaque(child);
             var childPathIsRelative = !child.IsAbsoluteUri;
             var childPathElements = ParsePathElements(child);
 
-            var result = new OrderedDictionary<int, KeyValuePair<Uri, V>>();            foreach (var entry in uris)
+            var result = new OrderedDictionary<int, KeyValuePair<Uri, V>>();
+            foreach (var entry in uris)
             {
                 var factoryUri = entry.Key;
     
@@ -100,7 +103,8 @@ namespace com.espertech.esper.util
             {
                 return uri.OriginalString;
             }
-        }    
+        }
+    
         public static String[] ParsePathElements(Uri uri)
         {
             var path = GetPath(uri);

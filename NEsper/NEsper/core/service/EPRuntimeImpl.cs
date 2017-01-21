@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -1905,6 +1905,9 @@ namespace com.espertech.esper.core.service
                     return new EPPreparedExecuteIUDInsertInto(compiledSpec, _services, statementContext);
                 }
                 else if (compiledSpec.FireAndForgetSpec == null) {   // null indicates a select-statement, same as continuous query
+                    if (compiledSpec.UpdateSpec != null) {
+                        throw new EPStatementException("Provided EPL expression is a continuous query expression (not an on-demand query), please use the administrator createEPL API instead", epl);
+                    }
                     return new EPPreparedExecuteMethodQuery(compiledSpec, _services, statementContext);
                 }
                 else if (compiledSpec.FireAndForgetSpec is FireAndForgetSpecDelete) {

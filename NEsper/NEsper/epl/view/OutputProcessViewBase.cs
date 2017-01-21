@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,6 @@ namespace com.espertech.esper.epl.view
         , OutputProcessViewTerminable
         , StopCallback
     {
-        protected readonly ResultSetProcessor ResultSetProcessor;
         protected UpdateDispatchView ChildView;
         protected Viewable ParentView;
 
@@ -45,9 +44,14 @@ namespace com.espertech.esper.epl.view
             set { ParentView = value; }
         }
 
+        public ResultSetProcessor ResultSetProcessor { get; protected set; }
+
         public abstract int NumChangesetRows { get; }
 
         public abstract void Update(EventBean[] newData, EventBean[] oldData);
+
+        public abstract OutputProcessViewConditionDeltaSet OptionalDeltaSet { get; }
+        public abstract OutputProcessViewAfterState OptionalAfterConditionState { get; }
 
         public View AddView(View view)
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
@@ -32,7 +33,7 @@ namespace com.espertech.esper.filter
         public readonly EventAdapterService EventAdapterService;
         public readonly FilterBooleanExpressionFactory FilterBooleanExpressionFactory;
         public readonly ExprEvaluatorContext ExprEvaluatorContext;
-        public readonly MethodResolutionService MethodResolutionService;
+        public readonly EngineImportService EngineImportService;
         public readonly ScriptingService ScriptingService;
         public readonly int StatementId;
         public readonly string StatementName;
@@ -41,8 +42,26 @@ namespace com.espertech.esper.filter
         public readonly IDictionary<string, Pair<EventType, string>> TaggedEventTypes;
         public readonly TimeProvider TimeProvider;
         public readonly VariableService VariableService;
+        public readonly StatementExtensionSvcContext StatementExtensionSvcContext;
 
-        public FilterSpecCompilerArgs(IDictionary<string, Pair<EventType, string>> taggedEventTypes, IDictionary<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName, int statementId, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, TableService tableService, EventAdapterService eventAdapterService, FilterBooleanExpressionFactory filterBooleanExpressionFactory, ScriptingService scriptingService, Attribute[] annotations, ContextDescriptor contextDescriptor, ConfigurationInformation configurationInformation)
+        public FilterSpecCompilerArgs(
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName,
+            int statementId,
+            StreamTypeService streamTypeService,
+            EngineImportService engineImportService,
+            TimeProvider timeProvider,
+            VariableService variableService,
+            TableService tableService,
+            EventAdapterService eventAdapterService,
+            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
+            ScriptingService scriptingService,
+            Attribute[] annotations,
+            ContextDescriptor contextDescriptor,
+            ConfigurationInformation configurationInformation,
+            StatementExtensionSvcContext statementExtensionSvcContext)
         {
             TaggedEventTypes = taggedEventTypes;
             ArrayEventTypes = arrayEventTypes;
@@ -50,7 +69,7 @@ namespace com.espertech.esper.filter
             StatementName = statementName;
             StatementId = statementId;
             StreamTypeService = streamTypeService;
-            MethodResolutionService = methodResolutionService;
+            EngineImportService = engineImportService;
             TimeProvider = timeProvider;
             VariableService = variableService;
             TableService = tableService;
@@ -60,6 +79,7 @@ namespace com.espertech.esper.filter
             Annotations = annotations;
             ContextDescriptor = contextDescriptor;
             ConfigurationInformation = configurationInformation;
+            StatementExtensionSvcContext = statementExtensionSvcContext;
         }
     }
 } // end of namespace

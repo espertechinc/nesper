@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,8 +33,8 @@ namespace com.espertech.esper.epl.expression.methodagg
             {
                 throw MakeExceptionExpectedParamNum(0, 0);
             }
-    
-            return new ExprLeavingAggNodeFactory(this);
+
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeLeaving(validationContext.StatementExtensionSvcContext, this);
         }
 
         public override string AggregationFunctionName

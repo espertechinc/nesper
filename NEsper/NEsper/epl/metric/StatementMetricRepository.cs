@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -96,7 +96,7 @@ namespace com.espertech.esper.epl.metric
         /// <param name="stmtName">to remove</param>
         public void RemoveStatement(String stmtName)
         {
-            int? group = _statementGroups.Pluck(stmtName);
+            int? group = _statementGroups.Delete(stmtName);
             if (group != null)
             {
                 _groupMetrics[group.Value].RemoveStatement(stmtName);

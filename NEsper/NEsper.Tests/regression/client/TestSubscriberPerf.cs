@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,11 +20,13 @@ using NUnit.Framework;
 namespace com.espertech.esper.regression.client
 {
     [TestFixture]
-    public class TestSubscriberPerf  {
+    public class TestSubscriberPerf
+    {
         private EPServiceProvider _epService;
     
         [SetUp]
-        public void SetUp() {
+        public void SetUp()
+        {
             Configuration config = SupportConfigFactory.GetConfiguration();
             String pkg = typeof(SupportBean).Namespace;
             config.AddEventTypeAutoName(pkg);
@@ -33,12 +35,14 @@ namespace com.espertech.esper.regression.client
         }
     
         [Test]
-        public void TestPerformanceSyntheticUndelivered() {
+        public void TestPerformanceSyntheticUndelivered()
+        {
             int NUM_LOOP = 100000;
             _epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
     
             long start = Environment.TickCount;
-            for (int i = 0; i < NUM_LOOP; i++) {
+            for (int i = 0; i < NUM_LOOP; i++)
+            {
                 _epService.EPRuntime.SendEvent(new SupportBean("E1", 1000 + i));
             }
             long end = Environment.TickCount;
@@ -46,7 +50,8 @@ namespace com.espertech.esper.regression.client
         }
     
         [Test]
-        public void TestPerformanceSynthetic() {
+        public void TestPerformanceSynthetic() 
+        {
             const int NUM_LOOP = 100000;
             var stmt = _epService.EPAdministrator.CreateEPL("select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
             var results = new List<Object[]>();
@@ -59,13 +64,15 @@ namespace com.espertech.esper.regression.client
             };
     
             long start = Environment.TickCount;
-            for (int i = 0; i < NUM_LOOP; i++) {
+            for (int i = 0; i < NUM_LOOP; i++)
+            {
                 _epService.EPRuntime.SendEvent(new SupportBean("E1", 1000 + i));
             }
             long end = Environment.TickCount;
     
             Assert.AreEqual(NUM_LOOP, results.Count);
-            for (int i = 0; i < NUM_LOOP; i++) {
+            for (int i = 0; i < NUM_LOOP; i++)
+            {
                 EPAssertionUtil.AssertEqualsAnyOrder(results[i], new Object[]{"E1", 1000 + i});
             }
             // Console.WriteLine("delta=" + (end - start));

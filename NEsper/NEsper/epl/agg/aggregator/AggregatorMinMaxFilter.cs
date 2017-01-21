@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,8 +16,8 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// <summary>Min/max aggregator for all values. </summary>
     public class AggregatorMinMaxFilter : AggregatorMinMax
     {
-        public AggregatorMinMaxFilter(MinMaxTypeEnum minMaxTypeEnum, Type returnType)
-            : base(minMaxTypeEnum, returnType)
+        public AggregatorMinMaxFilter(MinMaxTypeEnum minMaxTypeEnum)
+            : base(minMaxTypeEnum)
         {
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.events
@@ -30,7 +29,7 @@ namespace com.espertech.esper.events
     {
         public static EventBean[] AllocatePerStreamShift(EventBean[] eventsPerStream)
         {
-            EventBean[] evalEvents = new EventBean[eventsPerStream.Length + 1];
+            var evalEvents = new EventBean[eventsPerStream.Length + 1];
             Array.Copy(eventsPerStream, 0, evalEvents, 1, eventsPerStream.Length);
             return evalEvents;
         }
@@ -1030,6 +1029,29 @@ namespace com.espertech.esper.events
                 return null;
             }
             return new EventBean[] { optionalEvent };
+        }
+
+        public static bool CompareEventReferences(EventBean[] firstNonNull, EventBean[] secondNonNull)
+        {
+            if (firstNonNull.Length != secondNonNull.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < firstNonNull.Length; i++)
+            {
+                if (firstNonNull[i] != secondNonNull[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static T[] CopyArray<T>(T[] events)
+        {
+            T[] copy = new T[events.Length];
+            Array.Copy(events, 0, copy, 0, copy.Length);
+            return copy;
         }
 
         private static bool FindEvent<T>(T theEvent, T[][] eventsPerView)

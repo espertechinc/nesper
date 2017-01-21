@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,16 +29,7 @@ namespace com.espertech.esper.epl.named
     /// </summary>
     public class NamedWindowTailView
     {
-        private readonly EventType _eventType;
-        private readonly NamedWindowMgmtService _namedWindowMgmtService;
-        private readonly NamedWindowDispatchService _namedWindowDispatchService;
-        private readonly StatementResultService _statementResultService;
-        private readonly ValueAddEventProcessor _revisionProcessor;
-        private readonly bool _isPrioritized;
-        private readonly bool _isParentBatchWindow;
         private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersNonContext;  // handles as copy-on-write
-        private readonly TimeSourceService _timeSourceService;
-        private readonly ConfigurationEngineDefaults.Threading _threadingConfig;
 
         public NamedWindowTailView(
             EventType eventType,
@@ -51,69 +42,43 @@ namespace com.espertech.esper.epl.named
             TimeSourceService timeSourceService,
             ConfigurationEngineDefaults.Threading threadingConfig)
         {
-            _eventType = eventType;
-            _namedWindowMgmtService = namedWindowMgmtService;
-            _namedWindowDispatchService = namedWindowDispatchService;
-            _statementResultService = statementResultService;
-            _revisionProcessor = revisionProcessor;
-            _isPrioritized = prioritized;
-            _isParentBatchWindow = parentBatchWindow;
-            _consumersNonContext = NamedWindowUtil.CreateConsumerMap(_isPrioritized);
-            _threadingConfig = threadingConfig;
-            _timeSourceService = timeSourceService;
+            EventType = eventType;
+            NamedWindowMgmtService = namedWindowMgmtService;
+            NamedWindowDispatchService = namedWindowDispatchService;
+            StatementResultService = statementResultService;
+            RevisionProcessor = revisionProcessor;
+            IsPrioritized = prioritized;
+            IsParentBatchWindow = parentBatchWindow;
+            _consumersNonContext = NamedWindowUtil.CreateConsumerMap(IsPrioritized);
+            ThreadingConfig = threadingConfig;
+            TimeSourceService = timeSourceService;
         }
 
         /// <summary>Returns true to indicate that the data window view is a batch view. </summary>
         /// <value>true if batch view</value>
-        public bool IsParentBatchWindow
-        {
-            get { return _isParentBatchWindow; }
-        }
+        public bool IsParentBatchWindow { get; protected internal set; }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType { get; protected internal set; }
 
-        public StatementResultService StatementResultService
-        {
-            get { return _statementResultService; }
-        }
+        public StatementResultService StatementResultService { get; protected internal set; }
 
-        public NamedWindowMgmtService NamedWindowMgmtService
-        {
-            get { return _namedWindowMgmtService; }
-        }
+        public NamedWindowMgmtService NamedWindowMgmtService { get; protected internal set; }
 
-        public NamedWindowDispatchService NamedWindowDispatchService
-        {
-            get { return _namedWindowDispatchService; }
-        }
+        public NamedWindowDispatchService NamedWindowDispatchService { get; protected internal set; }
 
-        public bool IsPrioritized
-        {
-            get { return _isPrioritized; }
-        }
+        public bool IsPrioritized { get; protected internal set; }
 
-        public ValueAddEventProcessor RevisionProcessor
-        {
-            get { return _revisionProcessor; }
-        }
+        public ValueAddEventProcessor RevisionProcessor { get; protected internal set; }
 
         public IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> ConsumersNonContext
         {
             get { return _consumersNonContext; }
+            protected internal set { _consumersNonContext = value; }
         }
 
-        public TimeSourceService TimeSourceService
-        {
-            get { return _timeSourceService; }
-        }
+        public TimeSourceService TimeSourceService { get; protected internal set; }
 
-        public ConfigurationEngineDefaults.Threading ThreadingConfig
-        {
-            get { return _threadingConfig; }
-        }
+        public ConfigurationEngineDefaults.Threading ThreadingConfig { get; protected internal set; }
 
         public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc)
         {
@@ -130,7 +95,7 @@ namespace com.espertech.esper.epl.named
             var consumerView = new NamedWindowConsumerView(
                 ExprNodeUtility.GetEvaluators(consumerDesc.FilterList),
                 consumerDesc.OptPropertyEvaluator, 
-                _eventType, 
+                EventType, 
                 consumerCallback, 
                 consumerDesc.AgentInstanceContext, 
                 audit);
@@ -143,7 +108,7 @@ namespace com.espertech.esper.epl.named
     
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
                 // without the engine lock
-                var newConsumers = NamedWindowUtil.CreateConsumerMap(_isPrioritized);
+                var newConsumers = NamedWindowUtil.CreateConsumerMap(IsPrioritized);
                 newConsumers.PutAll(_consumersNonContext);
                 newConsumers.Put(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle, viewsPerStatements);
                 _consumersNonContext = newConsumers;
@@ -187,12 +152,23 @@ namespace com.espertech.esper.epl.named
         {
             if (!consumersInContext.IsEmpty())
             {
-                _namedWindowDispatchService.AddDispatch(latchFactory, delta, consumersInContext);
+                NamedWindowDispatchService.AddDispatch(latchFactory, delta, consumersInContext);
             }
             if (!_consumersNonContext.IsEmpty())
             {
-                _namedWindowDispatchService.AddDispatch(latchFactory, delta, _consumersNonContext);
+                NamedWindowDispatchService.AddDispatch(latchFactory, delta, _consumersNonContext);
             }
+        }
+
+        public NamedWindowConsumerLatchFactory MakeLatchFactory()
+        {
+            return new NamedWindowConsumerLatchFactory(
+                EventType.Name,
+                ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
+                ThreadingConfig.NamedWindowConsumerDispatchTimeout,
+                ThreadingConfig.NamedWindowConsumerDispatchLocking,
+                TimeSourceService, true
+                );
         }
     }
 }

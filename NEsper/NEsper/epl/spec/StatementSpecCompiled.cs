@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,74 +32,77 @@ namespace com.espertech.esper.epl.spec
         }
 
 	    /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="onTriggerDesc">describes on-delete statements</param>
-        /// <param name="createWindowDesc">describes create-window statements</param>
-        /// <param name="createIndexDesc">when an index get</param>
-        /// <param name="createVariableDesc">describes create-variable statements</param>
-        /// <param name="createTableDesc">The create table desc.</param>
-        /// <param name="createSchemaDesc">The create schema desc.</param>
-        /// <param name="insertIntoDesc">insert into def</param>
-        /// <param name="selectClauseStreamSelectorEnum">stream selection</param>
-        /// <param name="selectClauseSpec">select clause</param>
-        /// <param name="streamSpecs">specs for streams</param>
-        /// <param name="outerJoinDescList">outer join def</param>
-        /// <param name="filterExprRootNode">where filter expr nodes</param>
-        /// <param name="havingExprRootNode">having expression</param>
-        /// <param name="outputLimitSpec">output limit</param>
-        /// <param name="orderByList">order by</param>
-        /// <param name="subSelectExpressions">list of subqueries</param>
-        /// <param name="declaredExpressions">The declared expressions.</param>
-        /// <param name="variableReferences">variables referenced</param>
-        /// <param name="rowLimitSpec">row limit specification, or null if none supplied</param>
-        /// <param name="eventTypeReferences">event type names statically determined</param>
-        /// <param name="annotations">statement annotations</param>
-        /// <param name="updateSpec">update specification if used</param>
-        /// <param name="matchRecognizeSpec">if provided</param>
-        /// <param name="forClauseSpec">For clause spec.</param>
-        /// <param name="sqlParameters">The SQL parameters.</param>
-        /// <param name="contextDesc">The context desc.</param>
-        /// <param name="optionalContextName">Name of the optional context.</param>
-        /// <param name="createGraphDesc">The create graph desc.</param>
-        /// <param name="createExpressionDesc">The create expression desc.</param>
-        /// <param name="fireAndForgetSpec">The fire and forget spec.</param>
-        /// <param name="groupByExpressions">The group by expressions.</param>
-        /// <param name="intoTableSpec">The into table spec.</param>
-        /// <param name="tableNodes">The table nodes.</param>
-	    public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
-	                                 CreateWindowDesc createWindowDesc,
-	                                 CreateIndexDesc createIndexDesc,
-	                                 CreateVariableDesc createVariableDesc,
-	                                 CreateTableDesc createTableDesc,
-	                                 CreateSchemaDesc createSchemaDesc,
-	                                 InsertIntoDesc insertIntoDesc,
-	                                 SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
-	                                 SelectClauseSpecCompiled selectClauseSpec,
-	                                 StreamSpecCompiled[] streamSpecs,
-	                                 OuterJoinDesc[] outerJoinDescList,
-	                                 ExprNode filterExprRootNode,
-	                                 ExprNode havingExprRootNode,
-	                                 OutputLimitSpec outputLimitSpec,
-	                                 OrderByItem[] orderByList,
-	                                 ExprSubselectNode[] subSelectExpressions,
-	                                 ExprDeclaredNode[] declaredExpressions,
-	                                 ICollection<string> variableReferences,
-	                                 RowLimitSpec rowLimitSpec,
-	                                 string[] eventTypeReferences,
-	                                 Attribute[] annotations,
-	                                 UpdateDesc updateSpec,
-	                                 MatchRecognizeSpec matchRecognizeSpec,
-	                                 ForClauseSpec forClauseSpec,
-	                                 IDictionary<int, IList<ExprNode>> sqlParameters,
-	                                 CreateContextDesc contextDesc,
-	                                 string optionalContextName,
-	                                 CreateDataFlowDesc createGraphDesc,
-	                                 CreateExpressionDesc createExpressionDesc,
-	                                 FireAndForgetSpec fireAndForgetSpec,
-	                                 GroupByClauseExpressions groupByExpressions,
-	                                 IntoTableSpec intoTableSpec,
-	                                 ExprTableAccessNode[] tableNodes)
+	    /// Ctor.
+	    /// </summary>
+	    /// <param name="onTriggerDesc">describes on-delete statements</param>
+	    /// <param name="createWindowDesc">describes create-window statements</param>
+	    /// <param name="createIndexDesc">when an index get</param>
+	    /// <param name="createVariableDesc">describes create-variable statements</param>
+	    /// <param name="createTableDesc">The create table desc.</param>
+	    /// <param name="createSchemaDesc">The create schema desc.</param>
+	    /// <param name="insertIntoDesc">insert into def</param>
+	    /// <param name="selectClauseStreamSelectorEnum">stream selection</param>
+	    /// <param name="selectClauseSpec">select clause</param>
+	    /// <param name="streamSpecs">specs for streams</param>
+	    /// <param name="outerJoinDescList">outer join def</param>
+	    /// <param name="filterExprRootNode">where filter expr nodes</param>
+	    /// <param name="havingExprRootNode">having expression</param>
+	    /// <param name="outputLimitSpec">output limit</param>
+	    /// <param name="orderByList">order by</param>
+	    /// <param name="subSelectExpressions">list of subqueries</param>
+	    /// <param name="declaredExpressions">The declared expressions.</param>
+	    /// <param name="scripts"></param>
+	    /// <param name="variableReferences">variables referenced</param>
+	    /// <param name="rowLimitSpec">row limit specification, or null if none supplied</param>
+	    /// <param name="eventTypeReferences">event type names statically determined</param>
+	    /// <param name="annotations">statement annotations</param>
+	    /// <param name="updateSpec">update specification if used</param>
+	    /// <param name="matchRecognizeSpec">if provided</param>
+	    /// <param name="forClauseSpec">For clause spec.</param>
+	    /// <param name="sqlParameters">The SQL parameters.</param>
+	    /// <param name="contextDesc">The context desc.</param>
+	    /// <param name="optionalContextName">Name of the optional context.</param>
+	    /// <param name="createGraphDesc">The create graph desc.</param>
+	    /// <param name="createExpressionDesc">The create expression desc.</param>
+	    /// <param name="fireAndForgetSpec">The fire and forget spec.</param>
+	    /// <param name="groupByExpressions">The group by expressions.</param>
+	    /// <param name="intoTableSpec">The into table spec.</param>
+	    /// <param name="tableNodes">The table nodes.</param>
+	    public StatementSpecCompiled(
+	        OnTriggerDesc onTriggerDesc,
+	        CreateWindowDesc createWindowDesc,
+	        CreateIndexDesc createIndexDesc,
+	        CreateVariableDesc createVariableDesc,
+	        CreateTableDesc createTableDesc,
+	        CreateSchemaDesc createSchemaDesc,
+	        InsertIntoDesc insertIntoDesc,
+	        SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
+	        SelectClauseSpecCompiled selectClauseSpec,
+	        StreamSpecCompiled[] streamSpecs,
+	        OuterJoinDesc[] outerJoinDescList,
+	        ExprNode filterExprRootNode,
+	        ExprNode havingExprRootNode,
+	        OutputLimitSpec outputLimitSpec,
+	        OrderByItem[] orderByList,
+	        ExprSubselectNode[] subSelectExpressions,
+	        ExprDeclaredNode[] declaredExpressions,
+	        ExpressionScriptProvided[] scripts,
+	        ICollection<string> variableReferences,
+	        RowLimitSpec rowLimitSpec,
+	        string[] eventTypeReferences,
+	        Attribute[] annotations,
+	        UpdateDesc updateSpec,
+	        MatchRecognizeSpec matchRecognizeSpec,
+	        ForClauseSpec forClauseSpec,
+	        IDictionary<int, IList<ExprNode>> sqlParameters,
+	        CreateContextDesc contextDesc,
+	        string optionalContextName,
+	        CreateDataFlowDesc createGraphDesc,
+	        CreateExpressionDesc createExpressionDesc,
+	        FireAndForgetSpec fireAndForgetSpec,
+	        GroupByClauseExpressions groupByExpressions,
+	        IntoTableSpec intoTableSpec,
+	        ExprTableAccessNode[] tableNodes)
 	    {
 	        OnTriggerDesc = onTriggerDesc;
 	        CreateWindowDesc = createWindowDesc;
@@ -116,8 +119,9 @@ namespace com.espertech.esper.epl.spec
 	        HavingExprRootNode = havingExprRootNode;
 	        OutputLimitSpec = outputLimitSpec;
 	        OrderByList = orderByList;
-	        this.SubSelectExpressions = subSelectExpressions;
+	        SubSelectExpressions = subSelectExpressions;
 	        DeclaredExpressions = declaredExpressions;
+	        Scripts = scripts;
 	        VariableReferences = variableReferences;
 	        RowLimitSpec = rowLimitSpec;
 	        EventTypeReferences = eventTypeReferences;
@@ -158,7 +162,8 @@ namespace com.espertech.esper.epl.spec
 	        OrderByList = OrderByItem.EMPTY_ORDERBY_ARRAY;
 	        SubSelectExpressions = ExprSubselectNode.EMPTY_SUBSELECT_ARRAY;
 	        DeclaredExpressions = ExprNodeUtility.EMPTY_DECLARED_ARR;
-	        VariableReferences = new HashSet<string>();
+            Scripts = ExprNodeUtility.EMPTY_SCRIPTS; 
+            VariableReferences = new HashSet<string>();
 	        RowLimitSpec = null;
 	        EventTypeReferences = new string[0];
 	        Annotations = new Attribute[0];
@@ -330,6 +335,8 @@ namespace com.espertech.esper.epl.spec
 	    public IDictionary<int, IList<ExprNode>> SqlParameters { get; private set; }
 
 	    public ExprDeclaredNode[] DeclaredExpressions { get; private set; }
+
+        public ExpressionScriptProvided[] Scripts { get; private set; }
 
 	    public CreateContextDesc ContextDesc { get; private set; }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,10 +9,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Data.Odbc;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.support.epl;
 
 using NUnit.Framework;
@@ -33,11 +31,8 @@ namespace com.espertech.esper.epl.db
             TryAndCloseConnectionWithFactory(
                 () =>
                 {
-                    var properties = new Properties();
+                    var properties = SupportDatabaseService.DefaultProperties;
                     var config = new ConfigurationDBRef();
-                    properties["Server"] = "localhost"; // System.Net.Dns.GetHostName();
-                    properties["Uid"] = "esper";
-                    properties["Pwd"] = "3sp3rP@ssw0rd";
                     config.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative, properties);
                     config.ConnectionCatalog = "test";
                     config.ConnectionAutoCommit = false; // not supported yet
@@ -47,7 +42,9 @@ namespace com.espertech.esper.epl.db
 
             TryAndCloseConnection(SupportDatabaseService.DbDriverFactoryNative);
 
-#if TEST_ODBC
+#if X64
+            // ODBC drivers are sensitive to which platform they are installed on; we only test them when performing
+            // tests with X64 since we usually do not install the 32-bit drivers.
             TryAndCloseConnection(SupportDatabaseService.DbDriverFactoryODBC);
 #endif
         }

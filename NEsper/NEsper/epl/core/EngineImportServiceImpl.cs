@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.access;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.approx;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.core;
@@ -47,6 +48,7 @@ namespace com.espertech.esper.epl.core
         private readonly MathContext _optionalDefaultMathContext;
         private readonly TimeZoneInfo _timeZone;
         private readonly ConfigurationEngineDefaults.ThreadingProfile _threadingProfile;
+        private readonly AggregationFactoryFactory _aggregationFactoryFactory;
 
         /// <summary>
         /// Ctor
@@ -56,6 +58,9 @@ namespace com.espertech.esper.epl.core
         /// <param name="isDuckType">if set to <c>true</c> [is duck type].</param>
         /// <param name="sortUsingCollator">if set to <c>true</c> [sort using collator].</param>
         /// <param name="optionalDefaultMathContext">The optional default math context.</param>
+        /// <param name="timeZone"></param>
+        /// <param name="threadingProfile"></param>
+        /// <param name="aggregationFactoryFactory"></param>
         public EngineImportServiceImpl(
             bool allowExtendedAggregationFunc,
             bool isUdfCache,
@@ -63,7 +68,8 @@ namespace com.espertech.esper.epl.core
             bool sortUsingCollator,
             MathContext optionalDefaultMathContext,
             TimeZoneInfo timeZone,
-            ConfigurationEngineDefaults.ThreadingProfile threadingProfile)
+            ConfigurationEngineDefaults.ThreadingProfile threadingProfile,
+            AggregationFactoryFactory aggregationFactoryFactory)
         {
             _imports = new List<AutoImportDesc>();
             _annotationImports = new List<AutoImportDesc>();
@@ -78,6 +84,7 @@ namespace com.espertech.esper.epl.core
             _optionalDefaultMathContext = optionalDefaultMathContext;
             _timeZone = timeZone;
             _threadingProfile = threadingProfile;
+            _aggregationFactoryFactory = aggregationFactoryFactory;
         }
 
         public bool IsUdfCache { get; private set; }
@@ -611,6 +618,11 @@ namespace com.espertech.esper.epl.core
         public bool IsSortUsingCollator
         {
             get { return _sortUsingCollator; }
+        }
+
+        public AggregationFactoryFactory AggregationFactoryFactory
+        {
+            get { return _aggregationFactoryFactory; }
         }
 
         /// <summary>

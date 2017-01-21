@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,6 +27,7 @@ namespace com.espertech.esper.core.context.util
     public class AgentInstanceContext : ExprEvaluatorContext
     {
         private readonly MappedEventBean _agentInstanceProperties;
+        private StatementContextCPPair _statementContextCPPair;
         private Object _terminationCallbacks;
 
         public AgentInstanceContext(
@@ -163,6 +164,19 @@ namespace com.espertech.esper.core.context.util
             else if (ReferenceEquals(_terminationCallbacks, callback))
             {
                 _terminationCallbacks = null;
+            }
+        }
+
+        public StatementContextCPPair StatementContextCPPair
+        {
+            get
+            {
+                if (_statementContextCPPair == null)
+                {
+                    _statementContextCPPair = new StatementContextCPPair(
+                        StatementContext.StatementId, AgentInstanceId, StatementContext);
+                }
+                return _statementContextCPPair;
             }
         }
     }

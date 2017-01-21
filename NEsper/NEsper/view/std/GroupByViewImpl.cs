@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -380,18 +380,29 @@ namespace com.espertech.esper.view.std
                     var mergeView = (MergeViewMarker) subView;
                     if (ExprNodeUtility.DeepEquals(mergeView.GroupFieldNames, criteriaExpressions))
                     {
-                        // We found our merge view - install a new data merge view on top of it
-                        var mergeDataView = new AddPropertyValueView(agentInstanceContext, propertyNames, groupByValues, mergeView.EventType);
-    
-                        // Add to the copied parent subview the view merge data view
-                        copyView.AddView(mergeDataView);
-    
-                        // Add to the new merge data view the actual single merge view instance that clients may attached to
-                        mergeDataView.AddView(mergeView);
-    
-                        // Add a parent view to the single merge view instance
-                        mergeView.AddParentView(mergeDataView);
-    
+                        if (mergeView.EventType != copyView.EventType)
+                        {
+                            // We found our merge view - install a new data merge view on top of it
+                            var addPropertyView = new AddPropertyValueOptionalView(agentInstanceContext, propertyNames, groupByValues, mergeView.EventType);
+
+                            // Add to the copied parent subview the view merge data view
+                            copyView.AddView(addPropertyView);
+
+                            // Add to the new merge data view the actual single merge view instance that clients may attached to
+                            addPropertyView.AddView(mergeView);
+
+                            // Add a parent view to the single merge view instance
+                            mergeView.AddParentView(addPropertyView);
+                        }
+                        else
+                        {
+                            // Add to the copied parent subview the view merge data view
+                            copyView.AddView(mergeView);
+
+                            // Add a parent view to the single merge view instance
+                            mergeView.AddParentView(copyView);
+                        }
+
                         continue;
                     }
                 }

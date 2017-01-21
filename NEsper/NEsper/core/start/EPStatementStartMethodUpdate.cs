@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -94,8 +94,8 @@ namespace com.espertech.esper.core.start
                 null);
 
 	        var validationContext = new ExprValidationContext(
-	            typeService, statementContext.MethodResolutionService, null, statementContext.SchedulingService,
-	            statementContext.VariableService, statementContext.TableService, evaluatorContextStmt,
+	            typeService, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext, null,
+                statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService, evaluatorContextStmt,
 	            statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
 	            statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService, false,
 	            false, false, false, null, false);

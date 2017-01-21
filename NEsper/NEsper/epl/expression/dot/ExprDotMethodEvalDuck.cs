@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,17 +28,17 @@ namespace com.espertech.esper.epl.expression.dot
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly String _statementName;
-        private readonly MethodResolutionService _methodResolutionService;
+        private readonly EngineImportService _engineImportService;
         private readonly String _methodName;
         private readonly Type[] _parameterTypes;
         private readonly ExprEvaluator[] _parameters;
     
         private readonly IDictionary<Type, FastMethod> _cache;
     
-        public ExprDotMethodEvalDuck(String statementName, MethodResolutionService methodResolutionService, String methodName, Type[] parameterTypes, ExprEvaluator[] parameters)
+        public ExprDotMethodEvalDuck(string statementName, EngineImportService engineImportService, string methodName, Type[] parameterTypes, ExprEvaluator[] parameters)
         {
             _statementName = statementName;
-            _methodResolutionService = methodResolutionService;
+            _engineImportService = engineImportService;
             _methodName = methodName;
             _parameterTypes = parameterTypes;
             _parameters = parameters;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.epl.expression.dot
         {
             try
             {
-                MethodInfo method = _methodResolutionService.ResolveMethod(clazz, _methodName, _parameterTypes, new bool[_parameterTypes.Length], new bool[_parameterTypes.Length]);
+                MethodInfo method = _engineImportService.ResolveMethod(clazz, _methodName, _parameterTypes, new bool[_parameterTypes.Length], new bool[_parameterTypes.Length]);
                 FastClass declaringClass = FastClass.Create(method.DeclaringType);
                 return declaringClass.GetMethod(method);
             }

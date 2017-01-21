@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -229,11 +229,11 @@ namespace com.espertech.esper.support.epl
 	        return mathNode;
 	    }
 
-	    public static ExprNode MakeMathNode(MathArithTypeEnum operator_, object valueLeft_, object valueRight_)
+	    public static ExprNode MakeMathNode(MathArithTypeEnum @operator, object valueLeft, object valueRight)
 	    {
-	        var mathNode = new ExprMathNode(operator_, false, false);
-	        mathNode.AddChildNode(new SupportExprNode(valueLeft_));
-	        mathNode.AddChildNode(new SupportExprNode(valueRight_));
+	        var mathNode = new ExprMathNode(@operator, false, false);
+	        mathNode.AddChildNode(new SupportExprNode(valueLeft));
+	        mathNode.AddChildNode(new SupportExprNode(valueRight));
 	        Validate3Stream(mathNode);
 	        return mathNode;
 	    }
@@ -276,29 +276,29 @@ namespace com.espertech.esper.support.epl
 	        return countNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum operator_, object valueLeft_, Type typeLeft_, object valueRight_, Type typeRight_)
+	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, object valueLeft, Type typeLeft, object valueRight, Type typeRight)
 	    {
-	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
-	        opNode.AddChildNode(new SupportExprNode(valueLeft_, typeLeft_));
-	        opNode.AddChildNode(new SupportExprNode(valueRight_, typeRight_));
+	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
+	        opNode.AddChildNode(new SupportExprNode(valueLeft, typeLeft));
+	        opNode.AddChildNode(new SupportExprNode(valueRight, typeRight));
 	        Validate3Stream(opNode);
 	        return opNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum operator_, Type typeLeft_, Type typeRight_)
+	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, Type typeLeft, Type typeRight)
 	    {
-	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
-	        opNode.AddChildNode(new SupportExprNode(typeLeft_));
-	        opNode.AddChildNode(new SupportExprNode(typeRight_));
+	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
+	        opNode.AddChildNode(new SupportExprNode(typeLeft));
+	        opNode.AddChildNode(new SupportExprNode(typeRight));
 	        Validate3Stream(opNode);
 	        return opNode;
 	    }
 
-	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum operator_, ExprNode nodeLeft_, ExprNode nodeRight_)
+	    public static ExprNode MakeRelationalOpNode(RelationalOpEnum @operator, ExprNode nodeLeft, ExprNode nodeRight)
 	    {
-	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(operator_);
-	        opNode.AddChildNode(nodeLeft_);
-	        opNode.AddChildNode(nodeRight_);
+	        ExprRelationalOpNode opNode = new ExprRelationalOpNodeImpl(@operator);
+	        opNode.AddChildNode(nodeLeft);
+	        opNode.AddChildNode(nodeRight);
 	        Validate3Stream(opNode);
 	        return opNode;
 	    }
@@ -415,7 +415,8 @@ namespace com.espertech.esper.support.epl
 
 	        ExprNodeUtility.GetValidatedSubtree(
 	            ExprNodeOrigin.SELECT, topNode, new ExprValidationContext(
-	                streamTypeService, MethodResService, viewResources,
+	                streamTypeService, SupportEngineImportServiceFactory.Make(), 
+                    null, viewResources,
                     null, variableService, null,
 	                new SupportExprEvaluatorContext(null),
 	                null, null, 1, null, null, null,
@@ -434,11 +435,6 @@ namespace com.espertech.esper.support.epl
 	        var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 	        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
 	        ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, ExprValidationContextFactory.Make(streamTypeService));
-	    }
-
-	    public static MethodResolutionService MethodResService
-	    {
-            get { return new MethodResolutionServiceImpl(SupportEngineImportServiceFactory.Make(), null); }
 	    }
 	}
 } // end of namespace

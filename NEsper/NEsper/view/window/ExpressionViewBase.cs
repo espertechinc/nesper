@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.view.window
         protected readonly EventBean[] EventsPerStream;
         protected readonly ISet<String> VariableNames;
         protected readonly AgentInstanceViewFactoryChainContext AgentInstanceContext;
-        protected readonly ScheduleSlot ScheduleSlot;
+        protected readonly long ScheduleSlot;
         protected readonly EPStatementHandleCallback ScheduleHandle;
         protected readonly IList<AggregationServiceAggExpressionDesc> AggregateNodes;
     
@@ -89,12 +89,15 @@ namespace com.espertech.esper.view.window
                 agentInstanceContext.AddTerminationCallback(this);
             }
             else {
-                ScheduleSlot = null;
+                ScheduleSlot = -1;
                 ScheduleHandle = null;
             }
     
-            if (aggregationServiceFactoryDesc != null) {
-                AggregationService = aggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(agentInstanceContext.AgentInstanceContext, agentInstanceContext.AgentInstanceContext.StatementContext.MethodResolutionService, false, null);
+            if (aggregationServiceFactoryDesc != null)
+            {
+                AggregationService = aggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(
+                    agentInstanceContext.AgentInstanceContext,
+                    agentInstanceContext.AgentInstanceContext.StatementContext.EngineImportService, false, null);
                 AggregateNodes = aggregationServiceFactoryDesc.Expressions;
             }
             else {

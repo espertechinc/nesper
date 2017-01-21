@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -122,7 +122,8 @@ namespace com.espertech.esper.events.xml
                 navigator = xnode.CreateNavigator();
             }
 
-    	    try {
+    	    try
+    	    {
                 var result = navigator.Evaluate(_expression);
                 if (result == null) {
                     return null;
@@ -164,14 +165,32 @@ namespace com.espertech.esper.events.xml
                     return CastToArray(result);
                 }
     
-                if ( result is XPathNodeIterator ) {
+                if ( result is XPathNodeIterator )
+                {
                     var nodeIterator = result as XPathNodeIterator;
                     if (nodeIterator.Count == 0) return null;
-                    if (nodeIterator.Count == 1) {
+                    if (nodeIterator.Count == 1)
+                    {
                         nodeIterator.MoveNext();
                         result = nodeIterator.Current.TypedValue;
-                    } else {
-                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        if (_simpleTypeParser == null)
+                        {
+                            var resultList = new List<object>();
+                            while (nodeIterator.MoveNext())
+                            {
+                                result = nodeIterator.Current.TypedValue;
+                                resultList.Add(result);
+                            }
+
+                            return resultList.ToArray();
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
                 }
 
@@ -204,7 +223,7 @@ namespace com.espertech.esper.events.xml
                 }
     
                 // check bool type
-                if (result is bool?)
+                if (result is Boolean)
                 {
                     if (_optionalCastToType != typeof(bool?))
                     {

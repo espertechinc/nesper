@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -144,12 +144,12 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        }
 	        var stateKey = new AggregationStateKeyWStream(streamNum, _containedType, type, criteriaExpressions.First);
 
-	        var stateFactoryFactory = new
-	                SortedAggregationStateFactoryFactory(validationContext.MethodResolutionService,
-	                ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
-	                criteriaExpressions.Second, _ever, streamNum, this);
+            var stateFactoryFactory = new SortedAggregationStateFactoryFactory(
+                validationContext.EngineImportService, validationContext.StatementExtensionSvcContext,
+                ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
+                criteriaExpressions.Second, _ever, streamNum, this);
 
-	        return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, _containedType, stateKey, stateFactoryFactory, AggregationAgentDefault.INSTANCE);
+            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, _containedType, stateKey, stateFactoryFactory, AggregationAgentDefault.INSTANCE);
 	    }
 
 	    private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleIntoTable(ExprValidationContext validationContext)
@@ -221,10 +221,12 @@ namespace com.espertech.esper.epl.expression.accessagg
 	            accessor = new AggregationAccessorSortedNonTable(_max, componentType);
 	            accessorResultType = TypeHelper.GetArrayType(accessorResultType);
 	        }
-	        var stateFactoryFactory = new
-	                SortedAggregationStateFactoryFactory(validationContext.MethodResolutionService,
-	                    ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
-	                    criteriaExpressions.Second, _ever, 0, this);
+
+            var stateFactoryFactory = new SortedAggregationStateFactoryFactory(
+                validationContext.EngineImportService,
+                validationContext.StatementExtensionSvcContext,
+                ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
+                criteriaExpressions.Second, _ever, 0, this);
 	        return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, containedType, null, stateFactoryFactory, null);
 	    }
 

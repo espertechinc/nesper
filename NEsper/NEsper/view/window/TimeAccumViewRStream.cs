@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,7 +39,7 @@ namespace com.espertech.esper.view.window
         private readonly TimeAccumViewFactory _factory;
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
 
         // Current running parameters
         private readonly LinkedHashMap<EventBean, long> _currentBatch = new LinkedHashMap<EventBean, long>();

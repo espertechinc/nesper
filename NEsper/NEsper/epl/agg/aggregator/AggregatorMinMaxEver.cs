@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,15 +21,14 @@ namespace com.espertech.esper.epl.agg.aggregator
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
-        private readonly Type _returnType;
 
-        /// <summary>Ctor.  </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="minMaxTypeEnum">enum indicating to return minimum or maximum values</param>
-        /// <param name="returnType">is the value type returned by aggregator</param>
-        public AggregatorMinMaxEver(MinMaxTypeEnum minMaxTypeEnum, Type returnType)
+        public AggregatorMinMaxEver(MinMaxTypeEnum minMaxTypeEnum)
         {
             _minMaxTypeEnum = minMaxTypeEnum;
-            _returnType = returnType;
         }
     
         public virtual void Clear()
@@ -68,11 +67,6 @@ namespace com.espertech.esper.epl.agg.aggregator
         public object Value
         {
             get { return CurrentMinMax; }
-        }
-
-        public Type ValueType
-        {
-            get { return _returnType; }
         }
 
         public IComparable CurrentMinMax { get; set; }

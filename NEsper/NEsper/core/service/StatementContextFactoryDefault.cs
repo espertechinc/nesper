@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -95,8 +95,11 @@ namespace com.espertech.esper.core.service
                 services.EventTableIndexService,
                 services.PatternNodeFactory,
                 services.FilterBooleanExpressionFactory,
-                services.TimeSource
-                );
+                services.TimeSource,
+                services.EngineImportService,
+                services.AggregationFactoryFactory,
+                services.SchedulingService
+            );
         }
 
         public StatementContext MakeContext(
@@ -176,9 +179,6 @@ namespace com.espertech.esper.core.service
                 annotationData.IsPremptive,
                 hasTableAccess,
                 engineServices.MultiMatchHandlerFactory.GetDefaultHandler());
-
-            var methodResolutionService =
-                new MethodResolutionServiceImpl(engineServices.EngineImportService, engineServices.SchedulingService);
 
             var patternContextFactory = new PatternContextFactoryDefault();
 
@@ -266,7 +266,6 @@ namespace com.espertech.esper.core.service
                 patternResolutionService,
                 extensionSvcContext,
                 new StatementStopServiceImpl(),
-                methodResolutionService,
                 patternContextFactory,
                 filterService,
                 new StatementResultServiceImpl(

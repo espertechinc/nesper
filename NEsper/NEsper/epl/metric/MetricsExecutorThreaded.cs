@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,8 @@ namespace com.espertech.esper.epl.metric
         /// <param name="engineURI">engine URI</param>
         public MetricsExecutorThreaded(String engineURI)
         {
-            _threadPool = new DedicatedExecutorService("Metrics", 5);        }
+            _threadPool = new DedicatedExecutorService("Metrics", 5);
+        }
     
         public void Execute(MetricExec execution, MetricExecutionContext executionContext)
         {

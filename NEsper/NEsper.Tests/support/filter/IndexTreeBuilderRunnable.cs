@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,7 +24,7 @@ namespace com.espertech.esper.support.filter
 {
     public class IndexTreeBuilderRunnable
     {
-        protected static Random Random = new Random(Environment.TickCount);
+        protected internal static Random Random = new Random(Environment.TickCount);
     
         private readonly FilterHandleSetNode _topNode;
         private readonly List<FilterSpecCompiled> _testFilterSpecs;

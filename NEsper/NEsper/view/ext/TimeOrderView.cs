@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
@@ -49,7 +48,7 @@ namespace com.espertech.esper.view.ext
         private readonly ExprEvaluator _timestampEvaluator;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
         private readonly IStreamSortRankRandomAccess _optionalSortedRandomAccess;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private readonly EPStatementHandleCallback _handle;
 
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
@@ -325,7 +324,7 @@ namespace com.espertech.esper.view.ext
                     break;
                 }
 
-                var released = _sortedEvents.Pluck(oldestKey);
+                var released = _sortedEvents.Delete(oldestKey);
                 if (released != null)
                 {
                     if (released is IList<EventBean>)

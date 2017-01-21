@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,14 +18,14 @@ namespace com.espertech.esperio
     public abstract class AbstractSendableEvent : SendableEvent
     {
         private readonly long timestamp;
-        private readonly ScheduleSlot scheduleSlot;
+        private readonly long scheduleSlot;
 
         /// <summary>Ctor. </summary>
         /// <param name="timestamp">to send</param>
         /// <param name="scheduleSlot">the schedule slot assigned by scheduling service</param>
-        protected AbstractSendableEvent(long timestamp, ScheduleSlot scheduleSlot)
+        protected AbstractSendableEvent(long timestamp, long scheduleSlot)
         {
-            if (scheduleSlot == null)
+            if (scheduleSlot == -1)
             {
                 throw new ArgumentNullException("scheduleSlot");
             }
@@ -36,7 +36,7 @@ namespace com.espertech.esperio
 
         public abstract void Send(AbstractSender runtime);
 
-        public ScheduleSlot ScheduleSlot
+        public long ScheduleSlot
         {
             get { return scheduleSlot; }
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,7 +28,7 @@ namespace com.espertech.esperio
     	/// <param name="eventTypeName">the event type alias for the map event</param>
     	/// <param name="timestamp">the timestamp for this event</param>
     	/// <param name="scheduleSlot">the schedule slot for the entity that created this event</param>
-    	public SendableBeanEvent(IEnumerable<KeyValuePair<string, object>> mapToSend, Type beanType, String eventTypeName, long timestamp, ScheduleSlot scheduleSlot)
+    	public SendableBeanEvent(IEnumerable<KeyValuePair<string, object>> mapToSend, Type beanType, String eventTypeName, long timestamp, long scheduleSlot)
     		: base(timestamp, scheduleSlot)
     	{
     	    MagicType magicType = MagicType.GetCachedType(beanType);

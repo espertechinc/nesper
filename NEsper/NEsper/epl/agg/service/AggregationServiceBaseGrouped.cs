@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,19 +28,15 @@ namespace com.espertech.esper.epl.agg.service
         /// <summary>Aggregation states and factories. </summary>
         protected internal AggregationMethodFactory[] Aggregators;
 
-        protected internal Object GroupKeyBinding;
-
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="evaluators">are the child node of each aggregation function used for computing the value to be aggregated</param>
         /// <param name="aggregators">aggregation states/factories</param>
-        /// <param name="groupKeyBinding">The group key binding.</param>
-        protected AggregationServiceBaseGrouped(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators, Object groupKeyBinding)
+        protected AggregationServiceBaseGrouped(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators)
         {
             Evaluators = evaluators;
             Aggregators = aggregators;
-            GroupKeyBinding = groupKeyBinding;
     
             if (evaluators.Length != aggregators.Length)
             {

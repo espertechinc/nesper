@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -549,11 +549,12 @@ namespace com.espertech.esper.core.start
 
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
-                subselectTypeService, statementContext.MethodResolutionService, viewResourceDelegateSubselect,
-                statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-                evaluatorContextStmt, statementContext.EventAdapterService, statementContext.StatementName,
-                statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
-                statementContext.ScriptingService, false, false, true, false, null, false);
+                subselectTypeService, statementContext.EngineImportService, 
+                statementContext.StatementExtensionServicesContext, viewResourceDelegateSubselect,
+                statementContext.SchedulingService, statementContext.VariableService,
+                statementContext.TableService, evaluatorContextStmt, statementContext.EventAdapterService, 
+                statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
+                statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, true, false, null, false);
             for (int i = 0; i < selectClauseSpec.SelectExprList.Length; i++) {
                 SelectClauseElementCompiled element = selectClauseSpec.SelectExprList[i];
 
@@ -706,7 +707,14 @@ namespace com.espertech.esper.core.start
 
                 IList<ExprAggregateNode> havingAgg = Collections.GetEmptyList<ExprAggregateNode>();
                 IList<ExprAggregateNode> orderByAgg = Collections.GetEmptyList<ExprAggregateNode>();
-                aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(aggExprNodes, Collections.GetEmptyMap<ExprNode, String>(), Collections.GetEmptyList<ExprDeclaredNode>(), groupByExpressions, havingAgg, orderByAgg, groupKeyExpressions, hasGroupBy, annotations, statementContext.VariableService, false, true, statementSpec.FilterRootNode, statementSpec.HavingExprRootNode, statementContext.AggregationServiceFactoryService, subselectTypeService.EventTypes, statementContext.MethodResolutionService, null, statementSpec.OptionalContextName, null, null, false, false, false);
+                aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(
+                    aggExprNodes, Collections.GetEmptyMap<ExprNode, String>(),
+                    Collections.GetEmptyList<ExprDeclaredNode>(), groupByExpressions, havingAgg, orderByAgg,
+                    groupKeyExpressions, hasGroupBy, annotations, statementContext.VariableService, false, true,
+                    statementSpec.FilterRootNode, statementSpec.HavingExprRootNode,
+                    statementContext.AggregationServiceFactoryService, subselectTypeService.EventTypes,
+                    null, statementSpec.OptionalContextName, null, null, false,
+                    false, false);
 
                 // assign select-clause
                 if (!selectExpressions.IsEmpty()) {

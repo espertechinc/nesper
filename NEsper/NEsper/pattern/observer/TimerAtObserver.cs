@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,7 @@ namespace com.espertech.esper.pattern.observer
     public class TimerAtObserver : EventObserver, ScheduleHandleCallback
     {
         private readonly ScheduleSpec _scheduleSpec;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private readonly MatchedEventMap _beginState;
         private readonly ObserverEventEvaluator _observerEventEvaluator;
     
@@ -63,7 +63,7 @@ namespace com.espertech.esper.pattern.observer
     
             _scheduleHandle = new EPStatementHandleCallback(_observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
             SchedulingService schedulingService = _observerEventEvaluator.Context.PatternContext.SchedulingService;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_scheduleSpec, schedulingService.Time, _observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
+            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_scheduleSpec, schedulingService.Time, _observerEventEvaluator.Context.StatementContext.EngineImportService.TimeZone);
             schedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
             _isTimerActive = true;
         }

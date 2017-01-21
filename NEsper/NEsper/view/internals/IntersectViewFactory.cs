@@ -1,20 +1,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.view.internals
 {
@@ -27,41 +27,58 @@ namespace com.espertech.esper.view.internals
         , DataWindowViewFactoryUniqueCandidate
         , ViewFactoryContainer
     {
-        /// <summary>The event type. </summary>
         private EventType _parentEventType;
-
-        /// <summary>The view factories. </summary>
         private IList<ViewFactory> _viewFactories;
+        private int _batchViewIndex;
+        private bool _isAsymmetric;
+        private IThreadLocal<IntersectBatchViewLocalState> _batchViewLocalState;
+        private IThreadLocal<IntersectDefaultViewLocalState> _defaultViewLocalState;
+        private IThreadLocal<IntersectAsymetricViewLocalState> _asymetricViewLocalState;
 
-        /// <summary>Ctor. </summary>
-        public IntersectViewFactory()
-        {
-        }
-
-        /// <summary>Sets the parent event type. </summary>
-        /// <value>type</value>
-        public EventType ParentEventType
-        {
-            get { return _parentEventType; }
-            set { _parentEventType = value; }
-        }
-
-        /// <summary>Sets the view factories. </summary>
+        /// <summary>
+        /// Sets the view factories.
+        /// </summary>
         /// <value>factories</value>
         public IList<ViewFactory> ViewFactories
         {
-            get { return _viewFactories; }
             set
             {
                 _viewFactories = value;
-                int batchCount = 0;
-                foreach (ViewFactory viewFactory in value)
+
+                var batchCount = 0;
+                for (var i = 0; i < value.Count; i++)
                 {
-                    batchCount += viewFactory is DataWindowBatchingViewFactory ? 1 : 0;
+                    ViewFactory viewFactory = value[i];
+                    _isAsymmetric |= viewFactory is AsymetricDataWindowViewFactory;
+                    if (viewFactory is DataWindowBatchingViewFactory)
+                    {
+                        batchCount++;
+                        _batchViewIndex = i;
+                    }
                 }
                 if (batchCount > 1)
                 {
                     throw new ViewProcessingException("Cannot combined multiple batch data windows into an intersection");
+                }
+
+                if (batchCount == 1)
+                {
+                    _batchViewLocalState = ThreadLocalManager.Create(
+                        () => new IntersectBatchViewLocalState(
+                            new EventBean[value.Count][],
+                            new EventBean[value.Count][]));
+                }
+                else if (_isAsymmetric)
+                {
+                    _asymetricViewLocalState = ThreadLocalManager.Create(
+                        () => new IntersectAsymetricViewLocalState(
+                            new EventBean[value.Count][]));
+                }
+                else
+                {
+                    _defaultViewLocalState = ThreadLocalManager.Create(
+                        () => new IntersectDefaultViewLocalState(
+                            new EventBean[value.Count][]));
                 }
             }
         }
@@ -81,25 +98,22 @@ namespace com.espertech.esper.view.internals
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IList<View> views = new List<View>();
-            bool hasAsymetric = false;
-            bool hasBatch = false;
-            foreach (ViewFactory viewFactory in _viewFactories)
+            var hasBatch = false;
+            foreach (var viewFactory in _viewFactories)
             {
                 agentInstanceViewFactoryContext.IsRemoveStream = true;
                 views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
-                hasAsymetric |= viewFactory is AsymetricDataWindowViewFactory;
                 hasBatch |= viewFactory is DataWindowBatchingViewFactory;
             }
             if (hasBatch)
             {
-                return new IntersectBatchView(
-                    agentInstanceViewFactoryContext, this, _parentEventType, views, _viewFactories, hasAsymetric);
+                return new IntersectBatchView(agentInstanceViewFactoryContext, this, views);
             }
-            else if (hasAsymetric)
+            else if (_isAsymmetric)
             {
-                return new IntersectAsymetricView(agentInstanceViewFactoryContext, this, _parentEventType, views);
+                return new IntersectAsymetricView(agentInstanceViewFactoryContext, this, views);
             }
-            return new IntersectView(agentInstanceViewFactoryContext, this, _parentEventType, views);
+            return new IntersectDefaultView(agentInstanceViewFactoryContext, this, views);
         }
 
         public EventType EventType
@@ -112,28 +126,14 @@ namespace com.espertech.esper.view.internals
             return false;
         }
 
-        public ICollection<ViewFactory> ViewFactoriesContained
-        {
-            get { return _viewFactories; }
-        }
-
         public ICollection<string> UniquenessCandidatePropertyNames
         {
             get
             {
-                foreach (ViewFactory viewFactory in _viewFactories)
-                {
-                    if (viewFactory is DataWindowViewFactoryUniqueCandidate)
-                    {
-                        var unique = (DataWindowViewFactoryUniqueCandidate) viewFactory;
-                        var props = unique.UniquenessCandidatePropertyNames;
-                        if (props != null)
-                        {
-                            return props;
-                        }
-                    }
-                }
-                return null;
+                return _viewFactories
+                    .OfType<DataWindowViewFactoryUniqueCandidate>()
+                    .Select(unique => unique.UniquenessCandidatePropertyNames)
+                    .FirstOrDefault(props => props != null);
             }
         }
 
@@ -142,7 +142,12 @@ namespace com.espertech.esper.view.internals
             get { return GetViewNameUnionIntersect(true, _viewFactories); }
         }
 
-        internal static String GetViewNameUnionIntersect(bool intersect, ICollection<ViewFactory> factories)
+        public ICollection<ViewFactory> ViewFactoriesContained
+        {
+            get { return _viewFactories; }
+        }
+
+        internal static string GetViewNameUnionIntersect(bool intersect, ICollection<ViewFactory> factories)
         {
             var buf = new StringBuilder();
             buf.Append(intersect ? "Intersection" : "Union");
@@ -151,9 +156,10 @@ namespace com.espertech.esper.view.internals
             {
                 return buf.ToString();
             }
+
             buf.Append(" of ");
-            String delimiter = "";
-            foreach (ViewFactory factory in factories)
+            var delimiter = "";
+            foreach (var factory in factories)
             {
                 buf.Append(delimiter);
                 buf.Append(factory.ViewName);
@@ -162,5 +168,40 @@ namespace com.espertech.esper.view.internals
 
             return buf.ToString();
         }
+
+        /// <summary>
+        /// Sets the parent event type.
+        /// </summary>
+        /// <value>type</value>
+        public EventType ParentEventType
+        {
+            get { return _parentEventType; }
+            set { _parentEventType = value; }
+        }
+
+        public int BatchViewIndex
+        {
+            get { return _batchViewIndex; }
+        }
+
+        public bool IsAsymmetric()
+        {
+            return _isAsymmetric;
+        }
+
+        public IntersectBatchViewLocalState GetBatchViewLocalStatePerThread()
+        {
+            return _batchViewLocalState.GetOrCreate();
+        }
+
+        public IntersectDefaultViewLocalState GetDefaultViewLocalStatePerThread()
+        {
+            return _defaultViewLocalState.GetOrCreate();
+        }
+
+        public IntersectAsymetricViewLocalState GetAsymetricViewLocalStatePerThread()
+        {
+            return _asymetricViewLocalState.GetOrCreate();
+        }
     }
-}
+} // end of namespace

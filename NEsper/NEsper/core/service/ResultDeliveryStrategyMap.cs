@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,28 +29,27 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly String _statementName;
-        private readonly Object _subscriber;
-        private readonly FastMethod _fastMethod;
-        private readonly String[] _columnNames;
+        internal readonly EPStatement _statement;
+        internal readonly Object _subscriber;
+        internal readonly FastMethod _fastMethod;
+        internal readonly String[] _columnNames;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="statement">The statement.</param>
         /// <param name="subscriber">the object to deliver to</param>
         /// <param name="method">the delivery method</param>
         /// <param name="columnNames">the column names for the map</param>
-        public ResultDeliveryStrategyMap(String statementName, Object subscriber, MethodInfo method, String[] columnNames)
+        public ResultDeliveryStrategyMap(EPStatement statement, object subscriber, MethodInfo method, string[] columnNames)
         {
-            _statementName = statementName;
+            _statement = statement;
             _subscriber = subscriber;
-            FastClass fastClass = FastClass.Create(subscriber.GetType());
-            _fastMethod = fastClass.GetMethod(method);
+            _fastMethod = FastClass.CreateMethod(method);
             _columnNames = columnNames;
         }
     
-        public void Execute(UniformPair<EventBean[]> result)
+        public virtual void Execute(UniformPair<EventBean[]> result)
         {
             DataMap[] newData;
             DataMap[] oldData;
@@ -69,11 +68,11 @@ namespace com.espertech.esper.core.service
                 _fastMethod.Invoke(_subscriber, paramList);
             }
             catch (TargetInvocationException e) {
-                ResultDeliveryStrategyImpl.Handle(_statementName, Log, e, paramList, _subscriber, _fastMethod);
+                ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
         }
     
-        private DataMap[] Convert(EventBean[] events)
+        internal DataMap[] Convert(EventBean[] events)
         {
             if ((events == null) || (events.Length == 0))
             {

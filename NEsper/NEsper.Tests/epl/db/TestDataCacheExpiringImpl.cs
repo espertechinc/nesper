@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.db
         public void TestPurgeInterval()
         {
             var scheduler = new SchedulingServiceImpl(new TimeSourceServiceImpl());
-            _cache = new DataCacheExpiringImpl(10, 20, ConfigurationCacheReferenceType.HARD, scheduler, new ScheduleSlot(1, 2), null);   // age 10 sec, purge 1000 seconds
+            _cache = new DataCacheExpiringImpl(10, 20, ConfigurationCacheReferenceType.HARD, scheduler, 1, null);   // age 10 sec, purge 1000 seconds
     
             // test single entry in cache
             scheduler.Time = 5000;
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.db
         public void TestGet()
         {
             _scheduler = new SupportSchedulingServiceImpl();
-            _cache = new DataCacheExpiringImpl(10, 1000, ConfigurationCacheReferenceType.HARD, _scheduler, null, null);   // age 10 sec, purge 1000 seconds
+            _cache = new DataCacheExpiringImpl(10, 1000, ConfigurationCacheReferenceType.HARD, _scheduler, 1, null);   // age 10 sec, purge 1000 seconds
     
             Assert.IsNull(_cache.GetCached(Make("a")));
     

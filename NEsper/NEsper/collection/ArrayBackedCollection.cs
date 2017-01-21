@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,12 @@ namespace com.espertech.esper.collection
             _handles = new T[currentSize];
         }
     
-        /// <summary>        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.        /// </summary>        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
+
         public void Add(T item)
         {
             if (_currentIndex <= _lastIndex)
@@ -96,7 +101,8 @@ namespace com.espertech.esper.collection
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
-        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>        public bool IsEmpty
+        /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
+        public bool IsEmpty
         {
             get { throw new UnsupportedOperationException(); }
         }
@@ -118,7 +124,8 @@ namespace com.espertech.esper.collection
         /// </summary>
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
-        /// </returns>        public IEnumerator<T> GetEnumerator()
+        /// </returns>
+        public IEnumerator<T> GetEnumerator()
         {
             for (int ii = 0; ii < _currentIndex; ii++ )
             {
@@ -131,12 +138,21 @@ namespace com.espertech.esper.collection
         /// </summary>
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-        /// </returns>        IEnumerator IEnumerable.GetEnumerator()
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.        /// </summary>        /// <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>        /// <exception cref="T:System.ArgumentNullException">array is null.</exception>        /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>        public void CopyTo(T[] array, int arrayIndex)
+        /// <summary>
+        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"></see> to an <see cref="T:System.Array"></see>, starting at a particular <see cref="T:System.Array"></see> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array"></see> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"></see>. The <see cref="T:System.Array"></see> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
+        /// <exception cref="T:System.ArgumentNullException">array is null.</exception>
+        /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>
+        public void CopyTo(T[] array, int arrayIndex)
         {
             throw new UnsupportedOperationException();
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,7 +13,6 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
-
 
 namespace com.espertech.esper.epl.agg.service
 {
@@ -34,7 +33,7 @@ namespace com.espertech.esper.epl.agg.service
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupAllNoAccessFactory(evaluatorsArr, aggregatorsArr, null);
+            return new AggSvcGroupAllNoAccessFactory(evaluatorsArr, aggregatorsArr);
         }
 
         public AggregationServiceFactory GetNoGroupAccessOnly(
@@ -59,48 +58,49 @@ namespace com.espertech.esper.epl.agg.service
             bool isOnSelect)
         {
             return new AggSvcGroupAllMixedAccessFactory(
-                evaluatorsArr, aggregatorsArr, null, pairs, accessAggregations, join);
+                evaluatorsArr, aggregatorsArr, pairs, accessAggregations, join);
         }
 
         public AggregationServiceFactory GetGroupedNoReclaimNoAccess(
+            ExprNode[] groupByNodes,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
-            object groupKeyBinding,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupByNoAccessFactory(evaluatorsArr, aggregatorsArr, groupKeyBinding);
+            return new AggSvcGroupByNoAccessFactory(evaluatorsArr, aggregatorsArr);
         }
 
         public AggregationServiceFactory GetGroupNoReclaimAccessOnly(
+            ExprNode[] groupByNodes,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggSpecs,
-            object groupKeyBinding,
-            bool join,
+            bool @join,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupByAccessOnlyFactory(pairs, accessAggSpecs, groupKeyBinding, join);
+            return new AggSvcGroupByAccessOnlyFactory(pairs, accessAggSpecs, join);
         }
 
         public AggregationServiceFactory GetGroupNoReclaimMixed(
+            ExprNode[] groupByNodes,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
-            bool join,
-            object groupKeyBinding,
+            bool @join,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
             return new AggSvcGroupByMixedAccessFactory(
-                evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join);
+                evaluatorsArr, aggregatorsArr, pairs, accessAggregations, join);
         }
 
         public AggregationServiceFactory GetGroupReclaimAged(
+            ExprNode[] groupByNodes,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
             HintAttribute reclaimGroupAged,
@@ -108,61 +108,61 @@ namespace com.espertech.esper.epl.agg.service
             VariableService variableService,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
-            bool join,
-            object groupKeyBinding,
+            bool @join,
             string optionalContextName,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
             return new AggSvcGroupByReclaimAgedFactory(
-                evaluatorsArr, aggregatorsArr, groupKeyBinding, reclaimGroupAged, reclaimGroupFrequency, variableService,
+                evaluatorsArr, aggregatorsArr, reclaimGroupAged, reclaimGroupFrequency, variableService,
                 pairs, accessAggregations, join, optionalContextName);
         }
 
         public AggregationServiceFactory GetGroupReclaimNoAccess(
+            ExprNode[] groupByNodes,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
-            bool join,
-            object groupKeyBinding,
+            bool @join,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupByRefcountedNoAccessFactory(evaluatorsArr, aggregatorsArr, groupKeyBinding);
+            return new AggSvcGroupByRefcountedNoAccessFactory(evaluatorsArr, aggregatorsArr);
         }
 
         public AggregationServiceFactory GetGroupReclaimMixable(
+            ExprNode[] groupByNodes,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
-            bool join,
-            object groupKeyBinding,
+            bool @join,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
             return new AggSvcGroupByRefcountedWAccessFactory(
-                evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join);
+                evaluatorsArr, aggregatorsArr, pairs, accessAggregations, join);
         }
 
         public AggregationServiceFactory GetGroupReclaimMixableRollup(
+            ExprNode[] groupByNodes,
+            AggregationGroupByRollupDesc byRollupDesc,
             ExprEvaluator[] evaluatorsArr,
             AggregationMethodFactory[] aggregatorsArr,
             AggregationAccessorSlotPair[] pairs,
             AggregationStateFactory[] accessAggregations,
             bool join,
-            object groupKeyBinding,
             AggregationGroupByRollupDesc groupByRollupDesc,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
             return new AggSvcGroupByRefcountedWAccessRollupFactory(
-                evaluatorsArr, aggregatorsArr, groupKeyBinding, pairs, accessAggregations, join, groupByRollupDesc);
+                evaluatorsArr, aggregatorsArr, pairs, accessAggregations, join, groupByRollupDesc);
         }
 
         public AggregationServiceFactory GetGroupWBinding(
@@ -195,25 +195,23 @@ namespace com.espertech.esper.epl.agg.service
         }
 
         public AggregationServiceFactory GetNoGroupLocalGroupBy(
-            bool join,
+            bool @join,
             AggregationLocalGroupByPlan localGroupByPlan,
-            object groupKeyBinding,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupAllLocalGroupByFactory(join, localGroupByPlan, groupKeyBinding);
+            return new AggSvcGroupAllLocalGroupByFactory(join, localGroupByPlan);
         }
 
         public AggregationServiceFactory GetGroupLocalGroupBy(
-            bool join,
+            bool @join,
             AggregationLocalGroupByPlan localGroupByPlan,
-            object groupKeyBinding,
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect)
         {
-            return new AggSvcGroupByLocalGroupByFactory(join, localGroupByPlan, groupKeyBinding);
+            return new AggSvcGroupByLocalGroupByFactory(join, localGroupByPlan);
         }
     }
 } // end of namespace

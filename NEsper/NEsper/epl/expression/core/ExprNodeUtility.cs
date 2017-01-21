@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,7 +20,6 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.start;
@@ -48,8 +47,11 @@ namespace com.espertech.esper.epl.expression.core
 {
 	public static class ExprNodeUtility
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 	    public static readonly ExprNode[] EMPTY_EXPR_ARRAY = new ExprNode[0];
 	    public static readonly ExprDeclaredNode[] EMPTY_DECLARED_ARR = new ExprDeclaredNode[0];
+        public static readonly ExpressionScriptProvided[] EMPTY_SCRIPTS = new ExpressionScriptProvided[0];
 
         public static bool DeepEqualsIsSubset(ExprNode[] subset, ExprNode[] superset)
         {
@@ -453,10 +455,12 @@ namespace com.espertech.esper.epl.expression.core
 	        return exprStream;
 	    }
 
-	    // Since static method calls such as "Class.method('a')" and mapped properties "Stream.property('key')"
-	    // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
-	    // this method tries to resolve the mapped property as a static method.
-	    // Assumes that this is an ExprIdentNode.
+        /// <summary>
+	    /// Since static method calls such as "Class.method('a')" and mapped properties "Stream.property('key')"
+	    /// look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
+	    /// this method tries to resolve the mapped property as a static method.
+	    /// Assumes that this is an ExprIdentNode.
+        /// </summary>
 	    private static ExprNode ResolveStaticMethodOrField(ExprIdentNode identNode, ExprValidationException propertyException, ExprValidationContext validationContext)
 	    {
 	        // Reconstruct the original string
@@ -470,7 +474,7 @@ namespace com.espertech.esper.epl.expression.core
 	        var parse = ParseMappedProperty(mappedProperty.ToString());
 	        if (parse == null)
 	        {
-	            var constNode = ResolveIdentAsEnumConst(mappedProperty.ToString(), validationContext.MethodResolutionService);
+	            var constNode = ResolveIdentAsEnumConst(mappedProperty.ToString(), validationContext.EngineImportService);
 	            if (constNode == null)
 	            {
 	                throw propertyException;
@@ -488,7 +492,7 @@ namespace com.espertech.esper.epl.expression.core
 	            IList<ExprChainedSpec> chain = new List<ExprChainedSpec>();
                 chain.Add(new ExprChainedSpec(parse.ClassName, Collections.GetEmptyList<ExprNode>(), false));
 	            chain.Add(new ExprChainedSpec(parse.MethodName, parameters, false));
-	            ExprNode result = new ExprDotNode(chain, validationContext.MethodResolutionService.IsDuckType, validationContext.MethodResolutionService.IsUdfCache);
+                ExprNode result = new ExprDotNode(chain, validationContext.EngineImportService.IsDuckType, validationContext.EngineImportService.IsUdfCache);
 
 	            // Validate
 	            try
@@ -507,7 +511,7 @@ namespace com.espertech.esper.epl.expression.core
 	        var functionName = parse.MethodName;
 	        try
 	        {
-	            var classMethodPair = validationContext.MethodResolutionService.ResolveSingleRow(functionName);
+                var classMethodPair = validationContext.EngineImportService.ResolveSingleRow(functionName);
 	            var parameters = Collections.SingletonList((ExprNode) new ExprConstantNodeImpl(parse.ArgString));
 	            var chain = Collections.SingletonList(new ExprChainedSpec(classMethodPair.Second.MethodName, parameters, false));
 	            ExprNode result = new ExprPlugInSingleRowNode(functionName, classMethodPair.First, chain, classMethodPair.Second);
@@ -536,8 +540,8 @@ namespace com.espertech.esper.epl.expression.core
 	        // Try an aggregation function factory
 	        try
 	        {
-	            var aggregationFactory = validationContext.MethodResolutionService.ResolveAggregationFactory(parse.MethodName);
-	            ExprNode result = new ExprPlugInAggFunctionFactoryNode(false, aggregationFactory, parse.MethodName);
+                var aggregationFactory = validationContext.EngineImportService.ResolveAggregationFactory(parse.MethodName);
+                ExprNode result = new ExprPlugInAggNode(false, aggregationFactory, parse.MethodName);
 	            result.AddChildNode(new ExprConstantNodeImpl(parse.ArgString));
 
 	            // Validate
@@ -565,9 +569,9 @@ namespace com.espertech.esper.epl.expression.core
 	        throw propertyException;
 	    }
 
-	    private static ExprConstantNode ResolveIdentAsEnumConst(string constant, MethodResolutionService methodResolutionService)
+	    private static ExprConstantNode ResolveIdentAsEnumConst(string constant, EngineImportService engineImportService)
 	    {
-	        var enumValue = TypeHelper.ResolveIdentAsEnumConst(constant, methodResolutionService, null, false);
+	        var enumValue = TypeHelper.ResolveIdentAsEnumConst(constant, engineImportService, false);
 	        if (enumValue != null)
 	        {
 	            return new ExprConstantNodeImpl(enumValue);
@@ -729,7 +733,7 @@ namespace com.espertech.esper.epl.expression.core
 	        Type optionalClass,
 	        string methodName,
 	        IList<ExprNode> parameters,
-	        MethodResolutionService methodResolutionService,
+	        EngineImportService engineImportService,
 	        EventAdapterService eventAdapterService,
 	        int statementId,
 	        bool allowWildcard,
@@ -815,10 +819,10 @@ namespace com.espertech.esper.epl.expression.core
 	        try
 	        {
 	            if (optionalClass != null) {
-	                method = methodResolutionService.ResolveMethod(optionalClass, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
+	                method = engineImportService.ResolveMethod(optionalClass, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
 	            }
 	            else {
-	                method = methodResolutionService.ResolveMethod(className, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
+	                method = engineImportService.ResolveMethod(className, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
 	            }
 	            staticMethod = FastClass.CreateMethod(method);
 	        }
@@ -827,10 +831,11 @@ namespace com.espertech.esper.epl.expression.core
 	            throw exceptionHandler.Handle(e);
 	        }
 
+            var parameterTypes = method.GetParameterTypes();
 	        var methodParameterTypes =
 	            method.IsExtensionMethod()
-	                ? method.GetParameterTypes().Skip(1).ToArray()
-	                : method.GetParameterTypes();
+	                ? parameterTypes.Skip(1).ToArray()
+	                : parameterTypes;
 
 	        // rewrite those evaluator that should return the event itself
 	        if (CollectionUtil.IsAnySet(allowEventBeanType)) {
@@ -856,7 +861,22 @@ namespace com.espertech.esper.epl.expression.core
 	            childEvals = (ExprEvaluator[]) CollectionUtil.ArrayExpandAddSingle(childEvals, new ExprNodeUtilExprEvalMethodContext(functionName));
 	        }
 
-	        return new ExprNodeUtilMethodDesc(allConstants, paramTypes, childEvals, method, staticMethod);
+            // handle varargs
+            if (method.IsVarArgs() ) {
+                // handle context parameter
+                int numMethodParams = parameterTypes.Length;
+                if (numMethodParams > 1 && parameterTypes[numMethodParams - 2] == typeof(EPLMethodInvocationContext)) {
+                    var rewritten = new ExprEvaluator[childEvals.Length + 1];
+                    Array.Copy(childEvals, 0, rewritten, 0, numMethodParams - 2);
+                    rewritten[numMethodParams - 2] = new ExprNodeUtilExprEvalMethodContext(functionName);
+                    Array.Copy(childEvals, numMethodParams - 2, rewritten, numMethodParams - 1, childEvals.Length - (numMethodParams - 2));
+                    childEvals = rewritten;
+                }
+
+                childEvals = MakeVarargArrayEval(method, childEvals);
+            }
+	        
+            return new ExprNodeUtilMethodDesc(allConstants, paramTypes, childEvals, method, staticMethod);
 	    }
 
 	    public static void ValidatePlainExpression(ExprNodeOrigin origin, string expressionTextualName, ExprNode expression)
@@ -883,7 +903,8 @@ namespace com.espertech.esper.epl.expression.core
 
 	        var validationContext = new ExprValidationContext(
 	            streamTypes, 
-                statementContext.MethodResolutionService, null,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null,
                 statementContext.SchedulingService,
 	            statementContext.VariableService, 
                 statementContext.TableService,
@@ -1610,10 +1631,20 @@ namespace com.espertech.esper.epl.expression.core
 	        foreach (var parameters in scheduleSpecExpressionList)
 	        {
 	            var validationContext = new ExprValidationContext(
-	                new StreamTypeServiceImpl(context.EngineURI, false), context.MethodResolutionService, null,
-	                context.SchedulingService, context.VariableService, context.TableService, evaluatorContextStmt,
-	                context.EventAdapterService, context.StatementName, context.StatementId, context.Annotations,
-	                context.ContextDescriptor, context.ScriptingService, false, false, allowBindingConsumption, false, null,
+	                new StreamTypeServiceImpl(context.EngineURI, false), 
+                    context.EngineImportService, 
+                    context.StatementExtensionServicesContext, null, 
+                    context.SchedulingService, 
+                    context.VariableService, 
+                    context.TableService,
+                    evaluatorContextStmt,
+	                context.EventAdapterService, 
+                    context.StatementName, 
+                    context.StatementId, 
+                    context.Annotations,
+	                context.ContextDescriptor, 
+                    context.ScriptingService, 
+                    false, false, allowBindingConsumption, false, null,
 	                false);
 	            var node = ExprNodeUtility.GetValidatedSubtree(origin, parameters, validationContext);
 	            expressions[count++] = node.ExprEvaluator;
@@ -1653,7 +1684,8 @@ namespace com.espertech.esper.epl.expression.core
 	        return results;
 	    }
 
-	    public static ExprNode[] ToArray(ICollection<ExprNode> expressions)
+        [Obsolete]
+        public static ExprNode[] ToArray(ICollection<ExprNode> expressions)
         {
 	        if (expressions.IsEmpty()) {
 	            return EMPTY_EXPR_ARRAY;
@@ -1661,6 +1693,7 @@ namespace com.espertech.esper.epl.expression.core
 	        return expressions.ToArray();
 	    }
 
+        [Obsolete]
 	    public static ExprDeclaredNode[] ToArray(IList<ExprDeclaredNode> declaredNodes)
         {
 	        if (declaredNodes.IsEmpty()) {
@@ -1692,6 +1725,125 @@ namespace com.espertech.esper.epl.expression.core
 	        return propertiesGroupBy;
 	    }
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static ExprEvaluator[] MakeVarargArrayEval(MethodInfo method, ExprEvaluator[] childEvals)
+        {
+            var methodParameterTypes = method.GetParameterTypes();
+            var evals = new ExprEvaluator[methodParameterTypes.Length];
+            var varargClass = methodParameterTypes[methodParameterTypes.Length - 1].GetElementType();
+            var varargClassBoxed = varargClass.GetBoxedType();
+            if (methodParameterTypes.Length > 1)
+            {
+                Array.Copy(childEvals, 0, evals, 0, evals.Length - 1);
+            }
+            int varargArrayLength = childEvals.Length - methodParameterTypes.Length + 1;
+
+            // handle passing array along
+            if (varargArrayLength == 1) {
+                var last = childEvals[methodParameterTypes.Length - 1];
+                var lastReturns = last.ReturnType;
+                if (lastReturns != null && lastReturns.IsArray)
+                {
+                    evals[methodParameterTypes.Length - 1] = last;
+                    return evals;
+                }
+            }
+
+            // handle parameter conversion to vararg parameter
+            var varargEvals = new ExprEvaluator[varargArrayLength];
+            var coercers = new Coercer[varargEvals.Length];
+            var needCoercion = false;
+            for (int i = 0; i < varargArrayLength; i++)
+            {
+                var childEvalIndex = i + methodParameterTypes.Length - 1;
+                var resultType = childEvals[childEvalIndex].ReturnType;
+                varargEvals[i] = childEvals[childEvalIndex];
+
+                if (TypeHelper.IsSubclassOrImplementsInterface(resultType, varargClass))
+                {
+                    // no need to coerce
+                    continue;
+                }
+
+                if (resultType.GetBoxedType() != varargClassBoxed)
+                {
+                    needCoercion = true;
+                    coercers[i] = CoercerFactory.GetCoercer(resultType, varargClassBoxed);
+                }
+            }
+
+            ExprEvaluator varargEval;
+            if (!needCoercion)
+            {
+                varargEval = new VarargOnlyArrayEvalNoCoerce(varargEvals, varargClass);
+            }
+            else
+            {
+                varargEval = new VarargOnlyArrayEvalWithCoerce(varargEvals, varargClass, coercers);
+            }
+            evals[methodParameterTypes.Length - 1] = varargEval;
+            return evals;
+        }
+
+        private class VarargOnlyArrayEvalNoCoerce : ExprEvaluator
+        {
+            private readonly ExprEvaluator[] _evals;
+            private readonly Type _varargClass;
+
+            public VarargOnlyArrayEvalNoCoerce(ExprEvaluator[] evals, Type varargClass)
+            {
+                _evals = evals;
+                _varargClass = varargClass;
+            }
+
+            public object Evaluate(EvaluateParams evaluateParams)
+            {
+                Array array = Array.CreateInstance(_varargClass, _evals.Length);
+                for (int i = 0; i < _evals.Length; i++)
+                {
+                    var value = _evals[i].Evaluate(evaluateParams);
+                    array.SetValue(value, i);
+                }
+                return array;
+            }
+
+            public Type ReturnType
+            {
+                get { return TypeHelper.GetArrayType(_varargClass); }
+            }
+        }
+
+        private class VarargOnlyArrayEvalWithCoerce : ExprEvaluator
+        {
+            private readonly ExprEvaluator[] _evals;
+            private readonly Type _varargClass;
+            private readonly Coercer[] _coercers;
+
+            public VarargOnlyArrayEvalWithCoerce(ExprEvaluator[] evals, Type varargClass, Coercer[] coercers)
+            {
+                _evals = evals;
+                _varargClass = varargClass;
+                _coercers = coercers;
+            }
+
+            public object Evaluate(EvaluateParams evaluateParams)
+            {
+                Array array = Array.CreateInstance(_varargClass, _evals.Length);
+                for (int i = 0; i < _evals.Length; i++)
+                {
+                    var value = _evals[i].Evaluate(evaluateParams);
+                    if (_coercers[i] != null)
+                    {
+                        value = _coercers[i].Invoke(value);
+                    }
+                    array.SetValue(value, i);
+                }
+                return array;
+            }
+
+            public Type ReturnType
+            {
+                get { return TypeHelper.GetArrayType(_varargClass); }
+            }
+        }
 	}
 } // end of namespace

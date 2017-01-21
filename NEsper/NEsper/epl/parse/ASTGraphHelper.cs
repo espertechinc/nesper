@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,7 +61,7 @@ namespace com.espertech.esper.epl.parse
                 var cfgctxs = ctx.gopDetail().gopConfig();
                 foreach (var cfgctx in cfgctxs) {
                     String name;
-                    Object value = astGraphNodeMap.Pluck(cfgctx);
+                    Object value = astGraphNodeMap.Delete(cfgctx);
                     if (cfgctx.n != null) {
                         name = cfgctx.n.Text;
                     }

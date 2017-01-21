@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dataflow.core;
 using com.espertech.esper.dispatch;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.db;
 using com.espertech.esper.epl.declexpr;
@@ -104,6 +105,7 @@ namespace com.espertech.esper.core.service
         /// <param name="dataCacheFactory">The data cache factory.</param>
         /// <param name="multiMatchHandlerFactory">The multi match handler factory.</param>
         /// <param name="namedWindowConsumerMgmtService">The named window consumer MGMT service.</param>
+        /// <param name="aggregationFactoryFactory"></param>
         /// <param name="scriptingService">The scripting service.</param>
         public EPServicesContext(
             string engineURI,
@@ -160,6 +162,7 @@ namespace com.espertech.esper.core.service
             DataCacheFactory dataCacheFactory,
             MultiMatchHandlerFactory multiMatchHandlerFactory,
             NamedWindowConsumerMgmtService namedWindowConsumerMgmtService,
+            AggregationFactoryFactory aggregationFactoryFactory,
             ScriptingService scriptingService)
         {
             EngineURI = engineURI;
@@ -204,7 +207,8 @@ namespace com.espertech.esper.core.service
             MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
             ExprDeclaredService = exprDeclaredService;
-            ExpressionResultCacheSharable = new ExpressionResultCacheServiceThreadlocal();
+            ExpressionResultCacheSharable = new ExpressionResultCacheService(
+                configSnapshot.EngineDefaults.ExecutionConfig.DeclaredExprValueCacheSize);
             ContextControllerFactoryFactorySvc = contextControllerFactoryFactorySvc;
             ContextManagerFactoryService = contextManagerFactoryService;
             EpStatementFactory = epStatementFactory;
@@ -219,6 +223,7 @@ namespace com.espertech.esper.core.service
             DataCacheFactory = dataCacheFactory;
             MultiMatchHandlerFactory = multiMatchHandlerFactory;
             NamedWindowConsumerMgmtService = namedWindowConsumerMgmtService;
+            AggregationFactoryFactory = aggregationFactoryFactory;
             ScriptingService = scriptingService;
         }
 
@@ -407,6 +412,8 @@ namespace com.espertech.esper.core.service
         public MultiMatchHandlerFactory MultiMatchHandlerFactory { get; private set; }
 
         public NamedWindowConsumerMgmtService NamedWindowConsumerMgmtService { get; private set; }
+
+        public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
         
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>

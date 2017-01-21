@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -39,19 +39,26 @@ namespace com.espertech.esper.epl.core
 	/// <summary>
 	/// Factory for output processors. Output processors process the result set of a join or of a view
 	/// and apply aggregation/grouping, having and some output limiting logic.
-	/// <para />The instance produced by the factory depends on the presence of aggregation functions in the select list,
+	/// <para />
+	/// The instance produced by the factory depends on the presence of aggregation functions in the select list,
 	/// the presence and nature of the group-by clause.
-	/// <para />In case (1) and (2) there are no aggregation functions in the select clause.
-	/// <para />Case (3) is without group-by and with aggregation functions and without non-aggregated properties
+	/// <para />
+	/// In case (1) and (2) there are no aggregation functions in the select clause.
+	/// <para />
+	/// Case (3) is without group-by and with aggregation functions and without non-aggregated properties
 	/// in the select list: <pre>select sum(volume) </pre>.
 	/// Always produces one row for new and old data, aggregates without grouping.
-	/// <para />Case (4) is without group-by and with aggregation functions but with non-aggregated properties
+	/// <para />
+	/// Case (4) is without group-by and with aggregation functions but with non-aggregated properties
 	/// in the select list: <pre>select price, sum(volume) </pre>.
 	/// Produces a row for each event, aggregates without grouping.
-	/// <para />Case (5) is with group-by and with aggregation functions and all selected properties are grouped-by.
+	/// <para />
+	/// Case (5) is with group-by and with aggregation functions and all selected properties are grouped-by.
 	/// in the select list: <pre>select customerId, sum(volume) group by customerId</pre>.
 	/// Produces a old and new data row for each group changed, aggregates with grouping, see
-	/// <seealso cref="ResultSetProcessorRowPerGroup" /><para />Case (6) is with group-by and with aggregation functions and only some selected properties are grouped-by.
+	/// <seealso cref="ResultSetProcessorRowPerGroup" />
+	/// <para />
+	/// Case (6) is with group-by and with aggregation functions and only some selected properties are grouped-by.
 	/// in the select list: <pre>select customerId, supplierId, sum(volume) group by customerId</pre>.
 	/// Produces row for each event, aggregates with grouping.
 	/// </summary>
@@ -122,7 +129,11 @@ namespace com.espertech.esper.epl.core
 	        var resettableAggs = isUnidirectional || statementSpec.OnTriggerDesc != null;
 	        var intoTableName = statementSpec.IntoTableSpec == null ? null : statementSpec.IntoTableSpec.Name;
 	        var validationContext = new ExprValidationContext(
-	            typeService, stmtContext.MethodResolutionService, viewResourceDelegate, stmtContext.SchedulingService,
+	            typeService,
+                stmtContext.EngineImportService,
+                stmtContext.StatementExtensionServicesContext, 
+                viewResourceDelegate, 
+                stmtContext.SchedulingService,
 	            stmtContext.VariableService, 
                 stmtContext.TableService, 
                 evaluatorContextStmt,
@@ -306,7 +317,7 @@ namespace com.espertech.esper.epl.core
 	            hasGroupBy, statementSpec.Annotations, stmtContext.VariableService, typeService.EventTypes.Length > 1,
 	            false,
 	            statementSpec.FilterRootNode, statementSpec.HavingExprRootNode,
-	            stmtContext.AggregationServiceFactoryService, typeService.EventTypes, stmtContext.MethodResolutionService,
+	            stmtContext.AggregationServiceFactoryService, typeService.EventTypes,
 	            groupByRollupDesc,
 	            statementSpec.OptionalContextName, statementSpec.IntoTableSpec, stmtContext.TableService, isUnidirectional,
 	            isFireAndForget, isOnSelect);
@@ -334,7 +345,7 @@ namespace com.espertech.esper.epl.core
 	                stmtContext.StatementResultService, 
                     stmtContext.ValueAddEventService, 
                     selectExprEventTypeRegistry,
-	                stmtContext.MethodResolutionService,
+	                stmtContext.EngineImportService,
                     evaluatorContextStmt,
 	                stmtContext.VariableService,
                     stmtContext.ScriptingService,
@@ -349,7 +360,8 @@ namespace com.espertech.esper.epl.core
                     selectExprProcessorCallback,
 	                stmtContext.NamedWindowMgmtService,
                     statementSpec.IntoTableSpec,
-                    groupByRollupInfo);
+                    groupByRollupInfo,
+                    stmtContext.StatementExtensionServicesContext);
 
 	        // Get a list of event properties being aggregated in the select clause, if any
 	        var propertiesGroupBy = ExprNodeUtility.GetGroupByPropertiesValidateHasOne(groupByNodesValidated);
@@ -522,11 +534,20 @@ namespace com.espertech.esper.epl.core
 	        }
 	        var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
 	        var validationContext = new ExprValidationContext(
-	            new StreamTypeServiceImpl(statementContext.EngineURI, false), statementContext.MethodResolutionService,
-	            null, statementContext.TimeProvider, statementContext.VariableService, statementContext.TableService,
-	            evaluatorContextStmt, statementContext.EventAdapterService, statementContext.StatementName,
-	            statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
-	            statementContext.ScriptingService, false, false, false, false, null, false);
+                new StreamTypeServiceImpl(statementContext.EngineURI, false),
+                statementContext.EngineImportService, 
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.TimeProvider, 
+                statementContext.VariableService, 
+                statementContext.TableService,
+	            evaluatorContextStmt, 
+                statementContext.EventAdapterService, 
+                statementContext.StatementName,
+	            statementContext.StatementId, 
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+	            statementContext.ScriptingService, 
+                false, false, false, false, null, false);
 	        if (outputLimitSpec.AfterTimePeriodExpr != null) {
 	            var timePeriodExpr = (ExprTimePeriod) ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.OUTPUTLIMIT, outputLimitSpec.AfterTimePeriodExpr, validationContext);
 	            outputLimitSpec.AfterTimePeriodExpr = timePeriodExpr;
@@ -640,8 +661,30 @@ namespace com.espertech.esper.epl.core
 
 	            var selectClauseLevel = groupByExpressions.SelectClausePerLevel[i];
 	            var selectClause = GetRollUpSelectClause(statementSpec.SelectClauseSpec, selectClauseLevel, level, rolledupProps, groupByNodesValidated, validationContext);
-	            processors[i] = SelectExprProcessorFactory.GetProcessor(Collections.GetEmptyList<int>(), selectClause, false, insertIntoDesc, null, statementSpec.ForClauseSpec, typeService, stmtContext.EventAdapterService, stmtContext.StatementResultService, stmtContext.ValueAddEventService, selectExprEventTypeRegistry, stmtContext.MethodResolutionService, evaluatorContextStmt,
-	                    stmtContext.VariableService, stmtContext.ScriptingService, stmtContext.TableService, stmtContext.TimeProvider, stmtContext.EngineURI, stmtContext.StatementId, stmtContext.StatementName, stmtContext.Annotations, stmtContext.ContextDescriptor, stmtContext.ConfigSnapshot, null, stmtContext.NamedWindowMgmtService, statementSpec.IntoTableSpec, groupByRollupInfo);
+	            processors[i] = SelectExprProcessorFactory.GetProcessor(
+	                Collections.GetEmptyList<int>(), selectClause, false, insertIntoDesc, null, 
+                    statementSpec.ForClauseSpec,
+	                typeService, 
+                    stmtContext.EventAdapterService, 
+                    stmtContext.StatementResultService,
+	                stmtContext.ValueAddEventService, 
+                    selectExprEventTypeRegistry, 
+                    stmtContext.EngineImportService,
+	                evaluatorContextStmt,
+	                stmtContext.VariableService, 
+                    stmtContext.ScriptingService, 
+                    stmtContext.TableService,
+	                stmtContext.TimeProvider, 
+                    stmtContext.EngineURI, 
+                    stmtContext.StatementId, 
+                    stmtContext.StatementName,
+	                stmtContext.Annotations, 
+                    stmtContext.ContextDescriptor, 
+                    stmtContext.ConfigSnapshot, null,
+	                stmtContext.NamedWindowMgmtService, 
+                    statementSpec.IntoTableSpec,
+                    groupByRollupInfo,
+                    stmtContext.StatementExtensionServicesContext);
 
 	            if (havingClauses != null) {
 	                havingClauses[i] = RewriteRollupValidateExpression(ExprNodeOrigin.HAVING, groupByExpressions.OptHavingNodePerLevel[i], validationContext, rolledupProps, groupByNodesValidated, level).ExprEvaluator;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -247,7 +247,7 @@ namespace com.espertech.esper.client
             DbDriverFactoryConnection dsDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
 
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverMySQL", dsDef.Driver.GetType().FullName);
-            Assert.AreEqual("Server=localhost;Database=tempdb;Uid=esper;Pwd=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
+            Assert.AreEqual("Server=mysql-server;Database=tempdb;Uid=esper;Pwd=3sp3rP@ssw0rd;", dsDef.Driver.ConnectionString);
             Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycle);
 
             Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
@@ -268,7 +268,7 @@ namespace com.espertech.esper.client
             DbDriverFactoryConnection dmDef = (DbDriverFactoryConnection)configDBRef.ConnectionFactoryDesc;
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverODBC", dmDef.Driver.GetType().FullName);
             Assert.AreEqual(
-               "Driver={MySQL ODBC 5.3 Unicode Driver};Server=localhost;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3",
+               "Driver={MySQL ODBC 5.3 Unicode Driver};Server=mysql-server;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3",
                dmDef.Driver.ConnectionString);
 
             Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycle);

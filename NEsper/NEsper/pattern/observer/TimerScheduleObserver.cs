@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ namespace com.espertech.esper.pattern.observer
 	/// </summary>
 	public class TimerScheduleObserver : EventObserver, ScheduleHandleCallback
 	{
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private readonly MatchedEventMap _beginState;
         private readonly ObserverEventEvaluator _observerEventEvaluator;
 	    private readonly TimerScheduleSpec _spec;
@@ -94,8 +94,8 @@ namespace com.espertech.esper.pattern.observer
 	            if (_spec.OptionalDate == null)
 	            {
 	                _anchorTime = new DateTimeEx(
-	                    schedulingService.Time.TimeFromMillis(_observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone),
-	                    _observerEventEvaluator.Context.StatementContext.MethodResolutionService.EngineImportService.TimeZone
+	                    schedulingService.Time.TimeFromMillis(_observerEventEvaluator.Context.StatementContext.EngineImportService.TimeZone),
+	                    _observerEventEvaluator.Context.StatementContext.EngineImportService.TimeZone
                     );
 	            }
 	            else {

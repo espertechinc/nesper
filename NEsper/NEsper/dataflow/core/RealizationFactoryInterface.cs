@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,17 +24,19 @@ namespace com.espertech.esper.dataflow.core
 {
     public class RealizationFactoryInterface
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static DataflowStartDesc Realize(String dataFlowName,
-                                             IDictionary<int, Object> operators,
-                                             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
-                                             ICollection<int> operatorBuildOrder,
-                                             IList<LogicalChannelBinding> bindings,
-                                             DataFlowSignalManager dataFlowSignalManager,
-                                             EPDataFlowInstantiationOptions options,
-                                             EPServicesContext services,
-                                             StatementContext statementContext)
+        public static DataflowStartDesc Realize(
+            String dataFlowName,
+            IDictionary<int, Object> operators,
+            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
+            ICollection<int> operatorBuildOrder,
+            IList<LogicalChannelBinding> bindings,
+            DataFlowSignalManager dataFlowSignalManager,
+            EPDataFlowInstantiationOptions options,
+            EPServicesContext services,
+            StatementContext statementContext)
         {
             // First pass: inject runtime context
             IDictionary<int, EPDataFlowEmitter> runtimeContexts = new Dictionary<int, EPDataFlowEmitter>();
@@ -113,7 +115,12 @@ namespace com.espertech.esper.dataflow.core
             return new DataflowStartDesc(statisticsProvider);
         }
 
-        private static IList<ObjectBindingPair>[] GetOperatorConsumersPerStream(int numOutputStreams, int producingOperator, IDictionary<int, Object> operators, IDictionary<int, OperatorMetadataDescriptor> operatorMetadata, IList<LogicalChannelBinding> bindings)
+        private static IList<ObjectBindingPair>[] GetOperatorConsumersPerStream(
+            int numOutputStreams,
+            int producingOperator,
+            IDictionary<int, Object> operators,
+            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
+            IList<LogicalChannelBinding> bindings)
         {
             var channelsForProducer = LogicalChannelUtil.GetBindingsConsuming(producingOperator, bindings);
             if (channelsForProducer.IsEmpty())
@@ -139,7 +146,10 @@ namespace com.espertech.esper.dataflow.core
             return submitTargets;
         }
 
-        private static SignalHandler GetSignalHandler(int producerNum, Object target, LogicalChannelBindingMethodDesc consumingSignalBindingDesc)
+        private static SignalHandler GetSignalHandler(
+            int producerNum,
+            Object target,
+            LogicalChannelBindingMethodDesc consumingSignalBindingDesc)
         {
             if (consumingSignalBindingDesc == null)
             {
@@ -166,40 +176,60 @@ namespace com.espertech.esper.dataflow.core
             }
         }
 
-        private static SubmitHandler GetSubmitHandler(String engineURI, String statementName, bool audit, String dataflowName, int producerOpNum, String operatorPrettyPrint, DataFlowSignalManager dataFlowSignalManager, ObjectBindingPair target, EPDataFlowExceptionHandler optionalExceptionHandler)
+        private static SubmitHandler GetSubmitHandler(
+            String engineURI,
+            String statementName,
+            bool audit,
+            String dataflowName,
+            int producerOpNum,
+            String operatorPrettyPrint,
+            DataFlowSignalManager dataFlowSignalManager,
+            ObjectBindingPair target,
+            EPDataFlowExceptionHandler optionalExceptionHandler)
         {
-            var signalHandler = GetSignalHandler(producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc);
-    
+            var signalHandler = GetSignalHandler(
+                producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc);
+
             var receivingOpNum = target.Binding.LogicalChannel.ConsumingOpNum;
             var receivingOpPretty = target.Binding.LogicalChannel.ConsumingOpPrettyPrint;
             var receivingOpName = target.Binding.LogicalChannel.ConsumingOpName;
-            var exceptionHandler = new EPDataFlowEmitterExceptionHandler(engineURI, statementName, audit, dataflowName, receivingOpName, receivingOpNum, receivingOpPretty, optionalExceptionHandler);
+            var exceptionHandler = new EPDataFlowEmitterExceptionHandler(
+                engineURI, statementName, audit, dataflowName, receivingOpName, receivingOpNum, receivingOpPretty,
+                optionalExceptionHandler);
 
             var bindingType = target.Binding.ConsumingBindingDesc.BindingType;
-            if (bindingType is LogicalChannelBindingTypePassAlong) {
-                return new EPDataFlowEmitter1Stream1TargetPassAlong(producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
+            if (bindingType is LogicalChannelBindingTypePassAlong)
+            {
+                return new EPDataFlowEmitter1Stream1TargetPassAlong(
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
             }
-            else if (bindingType is LogicalChannelBindingTypePassAlongWStream) {
-                var type = (LogicalChannelBindingTypePassAlongWStream)bindingType;
-                return new EPDataFlowEmitter1Stream1TargetPassAlongWStream(producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, type.StreamNum);
+            else if (bindingType is LogicalChannelBindingTypePassAlongWStream)
+            {
+                var type = (LogicalChannelBindingTypePassAlongWStream) bindingType;
+                return new EPDataFlowEmitter1Stream1TargetPassAlongWStream(
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, type.StreamNum);
             }
-            else if (bindingType is LogicalChannelBindingTypeUnwind) {
-                return new EPDataFlowEmitter1Stream1TargetUnwind(producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
+            else if (bindingType is LogicalChannelBindingTypeUnwind)
+            {
+                return new EPDataFlowEmitter1Stream1TargetUnwind(
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
             }
-            else {
-                throw new UnsupportedOperationException("TODO");
+            else
+            {
+                throw new UnsupportedOperationException(string.Format("Unsupported binding type '{0}'", bindingType));
             }
         }
 
-        private static EPDataFlowEmitter GenerateRuntimeContext(String engineURI,
-                                                                String statementName,
-                                                                bool audit,
-                                                                String dataflowName,
-                                                                int producerOpNum,
-                                                                String operatorPrettyPrint,
-                                                                DataFlowSignalManager dataFlowSignalManager,
-                                                                IList<ObjectBindingPair>[] targetsPerStream,
-                                                                EPDataFlowInstantiationOptions options)
+        private static EPDataFlowEmitter GenerateRuntimeContext(
+            String engineURI,
+            String statementName,
+            bool audit,
+            String dataflowName,
+            int producerOpNum,
+            String operatorPrettyPrint,
+            DataFlowSignalManager dataFlowSignalManager,
+            IList<ObjectBindingPair>[] targetsPerStream,
+            EPDataFlowInstantiationOptions options)
         {
             // handle no targets
             if (targetsPerStream == null)

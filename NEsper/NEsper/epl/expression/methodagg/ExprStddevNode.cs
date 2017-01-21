@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,8 +34,8 @@ namespace com.espertech.esper.epl.expression.methodagg
         public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             _hasFilter = PositionalParams.Length > 1;
-            Type childType = ValidateNumericChildAllowFilter(_hasFilter);
-            return new ExprStddevNodeFactory(this, childType);
+            var childType = ValidateNumericChildAllowFilter(_hasFilter);
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeStddev(validationContext.StatementExtensionSvcContext, this, childType);
         }
 
         public bool HasFilter

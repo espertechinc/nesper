@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,9 +30,10 @@ namespace com.espertech.esper.view.window
     public abstract class ExpressionViewFactoryBase : DataWindowViewFactory, DataWindowViewWithPrevious
     {
         private EventType _eventType;
-        protected ExprNode ExpiryExpression;
-        protected ISet<String> VariableNames;
-        protected AggregationServiceFactoryDesc AggregationServiceFactoryDesc;
+        private ExprNode _expiryExpression;
+        private ISet<String> _variableNames;
+        private AggregationServiceFactoryDesc _aggregationServiceFactoryDesc;
+        private ExprEvaluator _expiryExpressionEvaluator;
         private EventType _builtinMapType;
     
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
@@ -47,30 +48,31 @@ namespace com.espertech.esper.view.window
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] { _eventType, _builtinMapType }, new String[2], new bool[2], statementContext.EngineURI, false);
     
             // validate expression
-            ExpiryExpression = ViewFactorySupport.ValidateExpr(ViewName, statementContext, ExpiryExpression, streamTypeService, 0);
+            _expiryExpression = ViewFactorySupport.ValidateExpr(ViewName, statementContext, _expiryExpression, streamTypeService, 0);
+            _expiryExpressionEvaluator = _expiryExpression.ExprEvaluator;
     
             var summaryVisitor = new ExprNodeSummaryVisitor();
-            ExpiryExpression.Accept(summaryVisitor);
+            _expiryExpression.Accept(summaryVisitor);
             if (summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect || summaryVisitor.HasPreviousPrior) {
                 throw new ViewParameterException("Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context");
             }
     
-            var returnType = ExpiryExpression.ExprEvaluator.ReturnType;
+            var returnType = _expiryExpressionEvaluator.ReturnType;
             if (returnType.GetBoxedType() != typeof(bool?)) {
                 throw new ViewParameterException("Invalid return value for expiry expression, expected a bool return value but received " + returnType.GetParameterAsString());
             }
     
             // determine variables used, if any
             var visitor = new ExprNodeVariableVisitor();
-            ExpiryExpression.Accept(visitor);
-            VariableNames = visitor.VariableNames;
+            _expiryExpression.Accept(visitor);
+            _variableNames = visitor.VariableNames;
     
             // determine aggregation nodes, if any
             var aggregateNodes = new List<ExprAggregateNode>();
-            ExprAggregateNodeUtil.GetAggregatesBottomUp(ExpiryExpression, aggregateNodes);
+            ExprAggregateNodeUtil.GetAggregatesBottomUp(_expiryExpression, aggregateNodes);
             if (aggregateNodes.IsNotEmpty()) {
                 try {
-                    AggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(
+                    _aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(
                         Collections.GetEmptyList<ExprAggregateNode>(),
                         Collections.GetEmptyMap<ExprNode, String>(),
                         Collections.GetEmptyList<ExprDeclaredNode>(),
@@ -80,8 +82,7 @@ namespace com.espertech.esper.view.window
                         statementContext.Annotations, 
                         statementContext.VariableService, false, false, null, null, 
                         statementContext.AggregationServiceFactoryService, 
-                        streamTypeService.EventTypes, 
-                        statementContext.MethodResolutionService, null,
+                        streamTypeService.EventTypes, null,
                         statementContext.ContextName,
                         null, null, false, false, false);
                 }
@@ -104,6 +105,33 @@ namespace com.espertech.esper.view.window
         public EventType BuiltinMapType
         {
             get { return _builtinMapType; }
+        }
+
+        public ExprNode ExpiryExpression
+        {
+            get { return _expiryExpression; }
+            set
+            {
+                _expiryExpression = value;
+                _expiryExpressionEvaluator = value != null
+                    ? value.ExprEvaluator
+                    : null;
+            }
+        }
+
+        public ISet<string> VariableNames
+        {
+            get { return _variableNames; }
+        }
+
+        public AggregationServiceFactoryDesc AggregationServiceFactoryDesc
+        {
+            get { return _aggregationServiceFactoryDesc; }
+        }
+
+        public ExprEvaluator ExpiryExpressionEvaluator
+        {
+            get { return _expiryExpressionEvaluator; }
         }
 
         public abstract void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters);

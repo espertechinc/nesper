@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,30 +13,35 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
     using DataMap = IDictionary<string, object>;
-
+    
     /// <summary>
-    /// Factory for creating a dispatch strategy based on the subscriber object and the columns produced by a select-clause.
+    /// Factory for creating a dispatch strategy based on the subscriber object
+    /// and the columns produced by a select-clause.
     /// </summary>
     public class ResultDeliveryStrategyFactory
     {
         /// <summary>
-        /// Creates a strategy implementation that indicates to subscribers the statement results based on the select-clause columns.
+        /// Creates a strategy implementation that indicates to subscribers
+        /// the statement results based on the select-clause columns.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="statement">The statement.</param>
         /// <param name="subscriber">to indicate to</param>
         /// <param name="selectClauseTypes">are the types of each column in the select clause</param>
         /// <param name="selectClauseColumns">the names of each column in the select clause</param>
-        /// <returns>strategy for dispatching naturals</returns>
+        /// <returns>
+        /// strategy for dispatching naturals
+        /// </returns>
+        /// <exception cref="EPSubscriberException">
+        /// </exception>
         /// <throws>EPSubscriberException if the subscriber is invalid</throws>
         public static ResultDeliveryStrategy Create(
-            string statementName,
+            EPStatement statement,
             EPSubscriber subscriber,
             Type[] selectClauseTypes,
             string[] selectClauseColumns)
@@ -47,7 +52,7 @@ namespace com.espertech.esper.core.service
             if (selectClauseTypes == null)
             {
                 selectClauseTypes = new Type[0];
-                selectClauseColumns = new String[0];
+                selectClauseColumns = new string[0];
             }
 
             var subscriberType = subscriberObject.GetType();
@@ -65,37 +70,37 @@ namespace com.espertech.esper.core.service
 
             // Locate Update methods
             MethodInfo subscriptionMethod = null;
-            List<MethodInfo> updateMethods;
-            
-            updateMethods = subscriberType
+
+            var updateMethods = subscriberType
                 .GetMethods()
                 .Where(method => (method.Name == subscriberMethod) && (method.IsPublic))
-                .ToList();
+                .OrderBy(method => IsFirstParameterEPStatement(method) ? 0 : 1)
+                .ToDictionary(method => method, GetMethodParameterTypesWithoutEPStatement);
 
             // none found
             if (updateMethods.Count == 0)
             {
-                String message = "EPSubscriber object does not provide a public method by name '" + subscriberMethod + "'";
+                var message = "Subscriber object does not provide a public method by name '" + subscriberMethod + "'";
                 throw new EPSubscriberException(message);
             }
 
             // match to parameters
-            bool isMapArrayDelivery = false;
-            bool isObjectArrayDelivery = false;
-            bool isSingleRowMap = false;
-            bool isSingleRowObjectArr = false;
-            bool isTypeArrayDelivery = false;
+            var isMapArrayDelivery = false;
+            var isObjectArrayDelivery = false;
+            var isSingleRowMap = false;
+            var isSingleRowObjectArr = false;
+            var isTypeArrayDelivery = false;
 
             // find an exact-matching method: no conversions and not even unboxing/boxing
-            foreach (MethodInfo method in updateMethods)
+            foreach (var methodNormParameterEntry in updateMethods)
             {
-                Type[] parameters = method.GetParameterTypes();
-                if (parameters.Length == selectClauseTypes.Length)
+                var normalized = methodNormParameterEntry.Value;
+                if (normalized.Length == selectClauseTypes.Length)
                 {
-                    bool fits = true;
-                    for (int i = 0; i < parameters.Length; i++)
+                    var fits = true;
+                    for (var i = 0; i < normalized.Length; i++)
                     {
-                        if ((selectClauseTypes[i] != null) && (selectClauseTypes[i] != parameters[i]))
+                        if ((selectClauseTypes[i] != null) && (selectClauseTypes[i] != normalized[i]))
                         {
                             fits = false;
                             break;
@@ -103,7 +108,7 @@ namespace com.espertech.esper.core.service
                     }
                     if (fits)
                     {
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                         break;
                     }
                 }
@@ -112,16 +117,16 @@ namespace com.espertech.esper.core.service
             // when not yet resolved, find an exact-matching method with boxing/unboxing
             if (subscriptionMethod == null)
             {
-                foreach (MethodInfo method in updateMethods)
+                foreach (var methodNormParameterEntry in updateMethods)
                 {
-                    Type[] parameters = method.GetParameterTypes();
-                    if (parameters.Length == selectClauseTypes.Length)
+                    var normalized = methodNormParameterEntry.Value;
+                    if (normalized.Length == selectClauseTypes.Length)
                     {
-                        bool fits = true;
-                        for (int i = 0; i < parameters.Length; i++)
+                        var fits = true;
+                        for (var i = 0; i < normalized.Length; i++)
                         {
-                            Type boxedExpressionType = selectClauseTypes[i].GetBoxedType();
-                            Type boxedParameterType = parameters[i].GetBoxedType();
+                            var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
+                            var boxedParameterType = normalized[i].GetBoxedType();
                             if ((boxedExpressionType != null) && (boxedExpressionType != boxedParameterType))
                             {
                                 fits = false;
@@ -130,7 +135,7 @@ namespace com.espertech.esper.core.service
                         }
                         if (fits)
                         {
-                            subscriptionMethod = method;
+                            subscriptionMethod = methodNormParameterEntry.Key;
                             break;
                         }
                     }
@@ -138,19 +143,19 @@ namespace com.espertech.esper.core.service
             }
 
             // when not yet resolved, find assignment-compatible methods that may require widening (including Integer to Long etc.)
-            bool checkWidening = false;
+            var checkWidening = false;
             if (subscriptionMethod == null)
             {
-                foreach (MethodInfo method in updateMethods)
+                foreach (var methodNormParameterEntry in updateMethods)
                 {
-                    Type[] parameters = method.GetParameterTypes();
-                    if (parameters.Length == selectClauseTypes.Length)
+                    var normalized = methodNormParameterEntry.Value;
+                    if (normalized.Length == selectClauseTypes.Length)
                     {
-                        bool fits = true;
-                        for (int i = 0; i < parameters.Length; i++)
+                        var fits = true;
+                        for (var i = 0; i < normalized.Length; i++)
                         {
-                            Type boxedExpressionType = selectClauseTypes[i].GetBoxedType();
-                            Type boxedParameterType = parameters[i].GetBoxedType();
+                            var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
+                            var boxedParameterType = normalized[i].GetBoxedType();
                             if ((boxedExpressionType != null) &&
                                 (!boxedExpressionType.IsAssignmentCompatible(boxedParameterType)))
                             {
@@ -160,7 +165,7 @@ namespace com.espertech.esper.core.service
                         }
                         if (fits)
                         {
-                            subscriptionMethod = method;
+                            subscriptionMethod = methodNormParameterEntry.Key;
                             checkWidening = true;
                             break;
                         }
@@ -171,52 +176,52 @@ namespace com.espertech.esper.core.service
             // when not yet resolved, find first-fit wildcard method
             if (subscriptionMethod == null)
             {
-                foreach (MethodInfo method in updateMethods)
+                foreach (var methodNormParameterEntry in updateMethods)
                 {
-                    Type[] parameters = method.GetParameterTypes();
-                    if ((parameters.Length == 1) && (parameters[0] == typeof (DataMap)))
+                    var normalized = methodNormParameterEntry.Value;
+                    if ((normalized.Length == 1) && (normalized[0] == typeof (DataMap)))
                     {
                         isSingleRowMap = true;
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                         break;
                     }
-                    if ((parameters.Length == 1) && (parameters[0] == typeof (Object[])))
+                    if ((normalized.Length == 1) && (normalized[0] == typeof (object[])))
                     {
                         isSingleRowObjectArr = true;
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                         break;
                     }
 
-                    if ((parameters.Length == 2) && (parameters[0] == typeof (DataMap[])) &&
-                        (parameters[1] == typeof (DataMap[])))
+                    if ((normalized.Length == 2) && (normalized[0] == typeof (DataMap[])) &&
+                        (normalized[1] == typeof (DataMap[])))
                     {
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                         isMapArrayDelivery = true;
                         break;
                     }
-                    if ((parameters.Length == 2) && (parameters[0] == typeof (Object[][])) &&
-                        (parameters[1] == typeof (Object[][])))
+                    if ((normalized.Length == 2) && (normalized[0] == typeof (object[][])) &&
+                        (normalized[1] == typeof (object[][])))
                     {
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                         isObjectArrayDelivery = true;
                         break;
                     }
                     // Handle uniform underlying or column type array dispatch
-                    if ((parameters.Length == 2) && (parameters[0].Equals(parameters[1])) && (parameters[0].IsArray)
+                    if ((normalized.Length == 2) && (normalized[0].Equals(normalized[1])) && (normalized[0].IsArray)
                         && (selectClauseTypes.Length == 1))
                     {
-                        Type componentType = parameters[0].GetElementType();
+                        var componentType = normalized[0].GetElementType();
                         if (selectClauseTypes[0].IsAssignmentCompatible(componentType))
                         {
-                            subscriptionMethod = method;
+                            subscriptionMethod = methodNormParameterEntry.Key;
                             isTypeArrayDelivery = true;
                             break;
                         }
                     }
 
-                    if ((parameters.Length == 0) && (selectClauseTypes.Length == 1) && (selectClauseTypes[0] == null))
+                    if ((normalized.Length == 0) && (selectClauseTypes.Length == 1) && (selectClauseTypes[0] == null))
                     {
-                        subscriptionMethod = method;
+                        subscriptionMethod = methodNormParameterEntry.Key;
                     }
                 }
             }
@@ -225,108 +230,155 @@ namespace com.espertech.esper.core.service
             {
                 if (updateMethods.Count > 1)
                 {
-                    String parametersDesc = TypeHelper.GetParameterAsString(selectClauseTypes);
-                    String message =
+                    var parametersDesc = TypeHelper.GetParameterAsString(selectClauseTypes);
+                    var message =
                         "No suitable subscriber method named 'Update' found, expecting a method that takes " +
                         selectClauseTypes.Length + " parameter of type " + parametersDesc;
                     throw new EPSubscriberException(message);
                 }
                 else
                 {
-                    Type[] parameters = updateMethods[0].GetParameterTypes();
-                    String parametersDesc = TypeHelper.GetParameterAsString(selectClauseTypes);
-                    if (parameters.Length != selectClauseTypes.Length)
+                    var firstUpdateMethod = updateMethods.First();
+                    var parametersNormalized = firstUpdateMethod.Value;
+                    var parametersDescNormalized = TypeHelper.GetParameterAsString(selectClauseTypes);
+                    if (parametersNormalized.Length != selectClauseTypes.Length)
                     {
                         if (selectClauseTypes.Length > 0)
                         {
-                            String message =
+                            var message =
                                 "No suitable subscriber method named 'Update' found, expecting a method that takes " +
-                                selectClauseTypes.Length + " parameter of type " + parametersDesc;
+                                selectClauseTypes.Length + " parameter of type " + parametersDescNormalized;
                             throw new EPSubscriberException(message);
                         }
                         else
                         {
-                            String message =
+                            var message =
                                 "No suitable subscriber method named 'Update' found, expecting a method that takes no parameters";
                             throw new EPSubscriberException(message);
                         }
                     }
-                    for (int i = 0; i < parameters.Length; i++)
+                    for (var i = 0; i < parametersNormalized.Length; i++)
                     {
-                        Type boxedExpressionType = selectClauseTypes[i].GetBoxedType();
-                        Type boxedParameterType = parameters[i].GetBoxedType();
+                        var boxedExpressionType = selectClauseTypes[i].GetBoxedType();
+                        var boxedParameterType = parametersNormalized[i].GetBoxedType();
                         if ((boxedExpressionType != null) &&
                             (!boxedExpressionType.IsAssignmentCompatible(boxedParameterType)))
                         {
-                            String message = "EPSubscriber method named 'Update' for parameter number " + (i + 1) +
+                            var message = "Subscriber method named 'Update' for parameter number " + (i + 1) +
                                              " is not assignable, " +
                                              "expecting type '" + selectClauseTypes[i].GetParameterAsString() +
                                              "' but found type '"
-                                             + parameters[i].GetParameterAsString() + "'";
+                                             + parametersNormalized[i].GetParameterAsString() + "'";
                             throw new EPSubscriberException(message);
                         }
                     }
                 }
             }
 
+            var parameterTypes = subscriptionMethod.GetParameterTypes();
+
+            // Invalid if there is a another footprint for the subscription method that does not include EPStatement if present
+            var firstParameterIsEPStatement = IsFirstParameterEPStatement(subscriptionMethod);
             if (isMapArrayDelivery)
             {
-                return new ResultDeliveryStrategyMap(statementName, subscriberObject, subscriptionMethod, selectClauseColumns);
+                return firstParameterIsEPStatement
+                    ? new ResultDeliveryStrategyMapWStmt(statement, subscriberObject, subscriptionMethod, selectClauseColumns)
+                    : new ResultDeliveryStrategyMap(statement, subscriberObject, subscriptionMethod, selectClauseColumns);
             }
             else if (isObjectArrayDelivery)
             {
-                return new ResultDeliveryStrategyObjectArr(statementName, subscriberObject, subscriptionMethod);
+                return firstParameterIsEPStatement
+                    ? new ResultDeliveryStrategyObjectArrWStmt(statement, subscriberObject, subscriptionMethod)
+                    : new ResultDeliveryStrategyObjectArr(statement, subscriberObject, subscriptionMethod);
             }
             else if (isTypeArrayDelivery)
             {
-                return new ResultDeliveryStrategyTypeArr(statementName, subscriberObject, subscriptionMethod);
+                return firstParameterIsEPStatement
+                    ? new ResultDeliveryStrategyTypeArrWStmt(statement, subscriberObject, subscriptionMethod, parameterTypes[1].GetElementType())
+                    : new ResultDeliveryStrategyTypeArr(statement, subscriberObject, subscriptionMethod, parameterTypes[0].GetElementType());
             }
 
             // Try to find the "start", "end" and "updateRStream" methods
-            MethodInfo startMethod = subscriberObject.GetType().GetMethod(
-                "UpdateStart", new Type[]
+            MethodInfo startMethod = null;
+            MethodInfo endMethod = null;
+            MethodInfo rStreamMethod = null;
+
+            startMethod = subscriberObject.GetType().GetMethod("UpdateStart", new Type[] { typeof(EPStatement), typeof(int), typeof(int) });
+            if (startMethod == null)
+            {
+                startMethod = subscriberObject.GetType().GetMethod("UpdateStart", new Type[] { typeof(int), typeof(int) });
+            }
+
+            endMethod = subscriberObject.GetType().GetMethod("UpdateEnd", new Type[] { typeof(EPStatement) });
+            if (endMethod == null)
+            {
+                endMethod = subscriberObject.GetType().GetMethod("UpdateEnd");
+            }
+
+            // must be exactly the same footprint (may include EPStatement), since delivery convertor used for both
+            rStreamMethod = subscriberObject.GetType().GetMethod("UpdateRStream", parameterTypes);
+            if (rStreamMethod == null)
+            {
+                // we don't have an "updateRStream" expected, make sure there isn't one with/without EPStatement
+                if (IsFirstParameterEPStatement(subscriptionMethod))
                 {
-                    typeof (int), typeof (int)
-                });
-            MethodInfo endMethod = subscriberObject.GetType().GetMethod(
-                "UpdateEnd");
-            MethodInfo rStreamMethod = subscriberObject.GetType().GetMethod(
-                "UpdateRStream", subscriptionMethod.GetParameterTypes());
+                    var classes = updateMethods.Get(subscriptionMethod);
+                    ValidateNonMatchUpdateRStream(subscriberObject, classes);
+                }
+                else
+                {
+                    var classes = new Type[parameterTypes.Length + 1];
+                    classes[0] = typeof (EPStatement);
+                    Array.Copy(parameterTypes, 0, classes, 1, parameterTypes.Length);
+                    ValidateNonMatchUpdateRStream(subscriberObject, classes);
+                }
+            }
 
             DeliveryConvertor convertor;
             if (isSingleRowMap)
             {
-                convertor = new DeliveryConvertorMap(selectClauseColumns);
+                convertor = firstParameterIsEPStatement
+                    ? (DeliveryConvertor) new DeliveryConvertorMapWStatement(selectClauseColumns, statement)
+                    : (DeliveryConvertor) new DeliveryConvertorMap(selectClauseColumns);
             }
             else if (isSingleRowObjectArr)
             {
-                convertor = new DeliveryConvertorObjectArr();
+                convertor = firstParameterIsEPStatement
+                    ? (DeliveryConvertor) new DeliveryConvertorObjectArrWStatement(statement)
+                    : (DeliveryConvertor) DeliveryConvertorObjectArr.INSTANCE;
             }
             else
             {
                 if (checkWidening)
                 {
+                    var normalizedParameters = updateMethods.Get(subscriptionMethod);
                     convertor = DetermineWideningDeliveryConvertor(
-                        selectClauseTypes, subscriptionMethod.GetParameterTypes(), subscriptionMethod);
+                        firstParameterIsEPStatement, statement, selectClauseTypes, normalizedParameters,
+                        subscriptionMethod);
                 }
                 else
                 {
-                    convertor = DeliveryConvertorNull.INSTANCE;
+                    convertor = firstParameterIsEPStatement
+                        ? (DeliveryConvertor) new DeliveryConvertorNullWStatement(statement)
+                        : (DeliveryConvertor) DeliveryConvertorNull.INSTANCE;
                 }
             }
 
             return new ResultDeliveryStrategyImpl(
-                statementName, subscriberObject, convertor, subscriptionMethod, startMethod, endMethod, rStreamMethod);
+                statement, subscriberObject, convertor, subscriptionMethod, startMethod, endMethod, rStreamMethod);
         }
 
-        private static DeliveryConvertor DetermineWideningDeliveryConvertor(Type[] selectClauseTypes,
-                                                                            Type[] parameterTypes,
-                                                                            MethodInfo method)
+        private static DeliveryConvertor DetermineWideningDeliveryConvertor(
+            bool firstParameterIsEPStatement,
+            EPStatement statement,
+            Type[] selectClauseTypes,
+            Type[] parameterTypes,
+            MethodInfo method)
         {
-            bool needWidener = false;
-            for (int i = 0; i < selectClauseTypes.Length; i++)
+            var needWidener = false;
+            for (var i = 0; i < selectClauseTypes.Length; i++)
             {
-                TypeWidener optionalWidener = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method);
+                var optionalWidener = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method);
                 if (optionalWidener != null)
                 {
                     needWidener = true;
@@ -335,20 +387,25 @@ namespace com.espertech.esper.core.service
             }
             if (!needWidener)
             {
-                return DeliveryConvertorNull.INSTANCE;
+                return firstParameterIsEPStatement
+                    ? (DeliveryConvertor) new DeliveryConvertorNullWStatement(statement)
+                    : (DeliveryConvertor) DeliveryConvertorNull.INSTANCE;
             }
             var wideners = new TypeWidener[selectClauseTypes.Length];
-            for (int i = 0; i < selectClauseTypes.Length; i++)
+            for (var i = 0; i < selectClauseTypes.Length; i++)
             {
                 wideners[i] = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method);
             }
-            return new DeliveryConvertorWidener(wideners);
+            return firstParameterIsEPStatement
+                ? (DeliveryConvertor) new DeliveryConvertorWidenerWStatement(wideners, statement)
+                : (DeliveryConvertor) new DeliveryConvertorWidener(wideners);
         }
 
-        private static TypeWidener GetWidener(int columnNum,
-                                              Type selectClauseType,
-                                              Type parameterType,
-                                              MethodInfo method)
+        private static TypeWidener GetWidener(
+            int columnNum,
+            Type selectClauseType,
+            Type parameterType,
+            MethodInfo method)
         {
             if (selectClauseType == null || parameterType == null)
             {
@@ -371,5 +428,33 @@ namespace com.espertech.esper.core.service
                     e.Message, e);
             }
         }
+
+        private static void ValidateNonMatchUpdateRStream(object subscriber, Type[] classes)
+        {
+            var m = subscriber.GetType().GetMethod("UpdateRStream", classes);
+            if (m != null)
+            {
+                throw new EPSubscriberException(
+                    "Subscriber 'updateRStream' method footprint must match 'update' method footprint");
+            }
+        }
+
+        private static Type[] GetMethodParameterTypesWithoutEPStatement(MethodInfo method)
+        {
+            var parameterTypes = method.GetParameterTypes();
+            if (parameterTypes.Length == 0 || parameterTypes[0] != typeof (EPStatement))
+            {
+                return parameterTypes;
+            }
+            var normalized = new Type[parameterTypes.Length - 1];
+            Array.Copy(parameterTypes, 1, normalized, 0, parameterTypes.Length - 1);
+            return normalized;
+        }
+
+        private static bool IsFirstParameterEPStatement(MethodInfo method)
+        {
+            var parameterTypes = method.GetParameterTypes();
+            return parameterTypes.Length > 0 && parameterTypes[0] == typeof (EPStatement);
+        }
     }
-}
+} // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -60,7 +62,7 @@ namespace com.espertech.esper.core.start
             StreamTypeService typeService,
             ViewResourceDelegateUnverified viewResourceDelegate)
         {
-            var methodResolutionService = statementContext.MethodResolutionService;
+            var engineImportService = statementContext.EngineImportService;
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var intoTableName = statementSpec.IntoTableSpec == null ? null : statementSpec.IntoTableSpec.Name;
     
@@ -73,7 +75,8 @@ namespace com.espertech.esper.core.start
                 {
                     var validationContext = new ExprValidationContext(
                         typeService,
-                        methodResolutionService, 
+                        engineImportService, 
+                        statementContext.StatementExtensionServicesContext,
                         viewResourceDelegate,
                         statementContext.SchedulingService,
                         statementContext.VariableService,
@@ -117,7 +120,8 @@ namespace com.espertech.esper.core.start
                     StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, new bool[] {true}, statementContext.EngineURI, false);
                     var validationContext = new ExprValidationContext(
                         typeServiceOutputWhen, 
-                        methodResolutionService, null,
+                        engineImportService,
+                        statementContext.StatementExtensionServicesContext, null,
                         statementContext.SchedulingService, 
                         statementContext.VariableService,
                         statementContext.TableService, 
@@ -238,7 +242,9 @@ namespace com.espertech.esper.core.start
             {
                 var validationContext = new ExprValidationContext(
                     typeService, 
-                    statementContext.MethodResolutionService, viewResourceDelegate, 
+                    statementContext.EngineImportService, 
+                    statementContext.StatementExtensionServicesContext,
+                    viewResourceDelegate, 
                     statementContext.SchedulingService, 
                     statementContext.VariableService,
                     statementContext.TableService,
@@ -308,7 +314,9 @@ namespace com.espertech.esper.core.start
         {
             var validationContext = new ExprValidationContext(
                 streamTypeService,
-                statementContext.MethodResolutionService, null,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext,
+                null,
                 statementContext.SchedulingService,
                 statementContext.VariableService,
                 statementContext.TableService,

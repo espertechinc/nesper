@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -205,7 +205,7 @@ namespace com.espertech.esper.epl.parse
 	        // try plug-in aggregation function
 	        var aggregationNode = ASTAggregationHelper.TryResolveAsAggregation(engineImportService, distinct, firstFunction, plugInAggregations, engineURI);
 	        if (aggregationNode != null) {
-	            var firstSpec = chain.Pluck(0);
+	            var firstSpec = chain.Delete(0);
 	            aggregationNode.AddChildNodes(firstSpec.Parameters);
 	            ExprNode exprNode;
 	            if (chain.IsEmpty()) {

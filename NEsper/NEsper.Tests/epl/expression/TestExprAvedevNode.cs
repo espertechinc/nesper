@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,10 +50,8 @@ namespace com.espertech.esper.epl.expression
         public void TestAggregateFunction()
         {
             AggregationMethodFactory aggFactory = ValidatedNodeToTest.Factory;
-            AggregationMethod agg = aggFactory.Make(SupportExprNodeFactory.MethodResService, -1, 1, 1);
+            AggregationMethod agg = aggFactory.Make();
 
-            Assert.AreEqual(typeof(double?), agg.ValueType);
-    
             Assert.IsNull(agg.Value);
     
             agg.Enter(82);

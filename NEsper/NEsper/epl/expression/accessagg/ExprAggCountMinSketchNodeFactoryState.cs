@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.approx;
 using com.espertech.esper.epl.expression.core;
@@ -21,9 +22,9 @@ namespace com.espertech.esper.epl.expression.accessagg
 {
     public class ExprAggCountMinSketchNodeFactoryState : ExprAggCountMinSketchNodeFactoryBase
     {
-        private readonly CountMinSketchAggStateFactory _stateFactory;
-    
-        public ExprAggCountMinSketchNodeFactoryState(CountMinSketchAggStateFactory stateFactory)
+        private readonly AggregationStateFactoryCountMinSketch _stateFactory;
+
+        public ExprAggCountMinSketchNodeFactoryState(AggregationStateFactoryCountMinSketch stateFactory)
             : base(stateFactory.Parent)
         {
             _stateFactory = stateFactory;

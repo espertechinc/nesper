@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,7 +25,7 @@ namespace com.espertech.esper.view.window
     public class LengthBatchViewFactory : DataWindowViewFactory, DataWindowViewWithPrevious, DataWindowBatchingViewFactory
     {
         /// <summary>The length window size. </summary>
-        protected int Size;
+        private int _size;
     
         private EventType _eventType;
     
@@ -49,8 +49,8 @@ namespace com.espertech.esper.view.window
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            Size = numParam.AsInt();
-            if (Size <= 0)
+            _size = numParam.AsInt();
+            if (_size <= 0)
             {
                 throw new ViewParameterException(ViewName + " view requires a positive number");
             }
@@ -71,11 +71,11 @@ namespace com.espertech.esper.view.window
             var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext); 
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
-                return new LengthBatchViewRStream(agentInstanceViewFactoryContext, this, Size);
+                return new LengthBatchViewRStream(agentInstanceViewFactoryContext, this, _size);
             }
             else
             {
-                return new LengthBatchView(agentInstanceViewFactoryContext, this, Size, viewUpdatedCollection);
+                return new LengthBatchView(agentInstanceViewFactoryContext, this, _size, viewUpdatedCollection);
             }
         }
 
@@ -86,13 +86,12 @@ namespace com.espertech.esper.view.window
 
         public bool CanReuse(View view)
         {
-            if (!(view is LengthBatchView))
+            var myView = view as LengthBatchView;
+            if (myView == null)
             {
                 return false;
             }
-    
-            var myView = (LengthBatchView) view;
-            if (myView.Size != Size)
+            if (myView.Size != _size)
             {
                 return false;
             }
@@ -108,6 +107,11 @@ namespace com.espertech.esper.view.window
         private string ViewParamMessage
         {
             get { return ViewName + " view requires a single integer-type parameter"; }
+        }
+
+        public int Size
+        {
+            get { return _size; }
         }
     }
 }

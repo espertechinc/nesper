@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -324,9 +324,7 @@ namespace com.espertech.esper.regression.events
         [Test]
         public void TestUnique()
         {
-            _stmtCreateWin =
-                _epService.EPAdministrator.CreateEPL(
-                    "create window RevQuote.std:unique(P1) as select * from RevisableQuote");
+            _stmtCreateWin = _epService.EPAdministrator.CreateEPL("create window RevQuote.std:unique(P1) as select * from RevisableQuote");
             _epService.EPAdministrator.CreateEPL("insert into RevQuote select * from FullEvent");
             _epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D1");
             _epService.EPAdministrator.CreateEPL("insert into RevQuote select * from D5");
@@ -335,8 +333,7 @@ namespace com.espertech.esper.regression.events
             consumerOne.Events += _listenerOne.Update;
 
             _epService.EPRuntime.SendEvent(new SupportRevisionFull("a", "a10", "a50"));
-            EPAssertionUtil.AssertProps(_listenerOne.AssertOneGetNewAndReset(), _fields,
-                                        new Object[] {"a", "a10", "a50"});
+            EPAssertionUtil.AssertProps(_listenerOne.AssertOneGetNewAndReset(), _fields, new Object[] {"a", "a10", "a50"});
             EPAssertionUtil.AssertProps(_stmtCreateWin.First(), _fields, new Object[] {"a", "a10", "a50"});
 
             _epService.EPRuntime.SendEvent(new SupportDeltaFive("a", "a11", "a51"));
@@ -347,11 +344,12 @@ namespace com.espertech.esper.regression.events
 
             _epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "b10", "b50"));
             _epService.EPRuntime.SendEvent(new SupportRevisionFull("b", "b10", "b50"));
-            EPAssertionUtil.AssertProps(_listenerOne.AssertOneGetNewAndReset(), _fields,
-                                        new Object[] {"b", "b10", "b50"});
-            EPAssertionUtil.AssertPropsPerRow(_stmtCreateWin.GetEnumerator(), _fields,
-                                              new Object[][]
-                                              {new Object[] {"a", "a11", "a51"}, new Object[] {"b", "b10", "b50"}});
+            EPAssertionUtil.AssertProps(_listenerOne.AssertOneGetNewAndReset(), _fields, new Object[] {"b", "b10", "b50"});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(_stmtCreateWin.GetEnumerator(), _fields, new Object[][]
+            {
+                new Object[] {"a", "a11", "a51"}, 
+                new Object[] {"b", "b10", "b50"}
+            });
 
             _epService.EPRuntime.SendEvent(new SupportDeltaFive("b", "a11", "b51"));
             EPAssertionUtil.AssertProps(_listenerOne.LastNewData[0], _fields, new Object[] {"b", "a11", "b51"});

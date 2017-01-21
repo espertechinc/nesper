@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,12 +29,17 @@ namespace com.espertech.esper.events.xml
         /// <param name="children">the child complex elements or empty if none</param>
         /// <param name="simpleElements">the simple elements or empty if none</param>
         /// <param name="isArray">if unbound or max&gt;1</param>
-        public SchemaElementComplex(String name,
-                                    String @namespace,
-                                    IList<SchemaItemAttribute> attributes,
-                                    IList<SchemaElementComplex> children,
-                                    IList<SchemaElementSimple> simpleElements,
-                                    bool isArray)
+        /// <param name="optionalSimpleType">if the element does itself have a type</param>
+        /// <param name="optionalSimpleTypeName">if the element does itself have a type</param>
+        public SchemaElementComplex(
+            String name,
+            String @namespace,
+            IList<SchemaItemAttribute> attributes,
+            IList<SchemaElementComplex> children,
+            IList<SchemaElementSimple> simpleElements,
+            bool isArray,
+            XmlSchemaSimpleType optionalSimpleType,
+            XmlQualifiedName optionalSimpleTypeName)
         {
             Name = name;
             Namespace = @namespace;
@@ -42,6 +47,8 @@ namespace com.espertech.esper.events.xml
             ComplexElements = children;
             SimpleElements = simpleElements;
             IsArray = isArray;
+            OptionalSimpleType = optionalSimpleType;
+            OptionalSimpleTypeName = optionalSimpleTypeName;
         }
 
         /// <summary>
@@ -67,7 +74,7 @@ namespace com.espertech.esper.events.xml
         /// simple child elements
         /// </returns>
         public IList<SchemaElementSimple> SimpleElements { get; private set; }
-
+        
         #region SchemaElement Members
 
         /// <summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -90,7 +90,8 @@ namespace com.espertech.esper.epl.script
                 return ((Array)result).Cast<object>().ToList();
             }
 
-            throw new ArgumentException("invalid result type returned from evaluate; expected array");        }
+            throw new ArgumentException("invalid result type returned from evaluate; expected array");
+        }
     
         public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
@@ -102,5 +103,6 @@ namespace com.espertech.esper.epl.script
             return null;
         }
 
-        public abstract object Evaluate(EvaluateParams evaluateParams);    }
+        public abstract object Evaluate(EvaluateParams evaluateParams);
+    }
 }

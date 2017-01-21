@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -410,6 +410,21 @@ namespace com.espertech.esper.epl.core
 	        // (outputLimitLimitType == OutputLimitLimitType.LAST) {
 	        return HandleOutputLimitLastView(viewEventsList, generateSynthetic);
 	    }
+
+        public void AcceptHelperVisitor(ResultSetProcessorOutputHelperVisitor visitor)
+        {
+            if (_outputLastHelper != null) {
+                visitor.Visit(_outputLastHelper);
+            }
+            if (_outputAllHelper != null) {
+                visitor.Visit(_outputAllHelper);
+            }
+            if (_outputFirstHelpers != null) {
+                foreach (ResultSetProcessorGroupedOutputFirstHelper helper in _outputFirstHelpers) {
+                    visitor.Visit(helper);
+                }
+            }
+        }
 
 	    private UniformPair<EventBean[]> HandleOutputLimitFirstView(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic) {
 

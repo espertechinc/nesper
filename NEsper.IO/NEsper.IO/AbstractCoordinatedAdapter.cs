@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------------- /
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.schedule;
 using com.espertech.esper.util;
 
@@ -198,7 +197,7 @@ namespace com.espertech.esperio
 	    /// Gets or sets the schedule slot.
 	    /// </summary>
 	    /// <value>The schedule slot.</value>
-	    public ScheduleSlot ScheduleSlot { get; set; }
+        public long ScheduleSlot { get; set; }
 
 	    /// <summary>
         /// Sets the service.
@@ -367,7 +366,7 @@ namespace com.espertech.esperio
             var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, lockImpl, -1, new StatementAgentInstanceFilterVersion(), null);
             var scheduleCSVHandle = new EPStatementHandleCallback(agentInstanceHandle, nextScheduleCallback);
 
-	        ScheduleSlot nextScheduleSlot;
+	        long nextScheduleSlot;
 
 			if(EventsToSend.IsEmpty())
 			{
@@ -375,7 +374,7 @@ namespace com.espertech.esperio
                 {
                     Log.Debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
                 }
-                nextScheduleSlot = new ScheduleSlot(0, 0);
+			    nextScheduleSlot = 0L;
                 _schedulingService.Add(100, scheduleCSVHandle, nextScheduleSlot);
 			}
 			else

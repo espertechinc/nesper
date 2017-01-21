@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -1195,7 +1195,7 @@ namespace com.espertech.esper.epl.spec
                 var timePeriod = (ExprTimePeriod)MapExpressionDeep(clause.IntervalClause.Expression, mapContext);
                 try
                 {
-                    timePeriod.Validate(new ExprValidationContext(null, null, null, null, null, null, null, null, null, -1, null, null, null, false, false, false, false, null, false));
+                    timePeriod.Validate(new ExprValidationContext(null, null, null, null, null, null, null, null, null, null, -1, null, null, null, false, false, false, false, null, false));
                 }
                 catch (ExprValidationException e)
                 {
@@ -2846,9 +2846,9 @@ namespace com.espertech.esper.epl.spec
                 var node = (ExprStddevNode)expr;
                 return new StddevProjectionExpression(node.IsDistinct);
             }
-            else if (expr is ExprPlugInAggFunctionFactoryNode)
+            else if (expr is ExprPlugInAggNode)
             {
-                var node = (ExprPlugInAggFunctionFactoryNode)expr;
+                var node = (ExprPlugInAggNode)expr;
                 return new PlugInProjectionExpression(node.AggregationFunctionName, node.IsDistinct);
             }
             else if (expr is ExprPlugInAggMultiFunctionNode)

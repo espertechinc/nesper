@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -68,7 +68,7 @@ namespace com.espertech.esper.filter
 
         public void RemoveNode(ExprNode node)
         {
-            var param = _exprNodes.Pluck(node);
+            var param = _exprNodes.Delete(node);
             if (param != null)
             {
                 _specParams.Remove(param);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,14 +22,14 @@ namespace com.espertech.esper.core.context.mgr
     public class ContextControllerConditionCrontab : ContextControllerCondition
     {
         private readonly StatementContext _statementContext;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private readonly ContextDetailConditionCrontab _spec;
         private readonly ContextControllerConditionCallback _callback;
         private readonly ContextInternalFilterAddendum _filterAddendum;
 
         private EPStatementHandleCallback _scheduleHandle;
 
-        public ContextControllerConditionCrontab(StatementContext statementContext, ScheduleSlot scheduleSlot, ContextDetailConditionCrontab spec, ContextControllerConditionCallback callback, ContextInternalFilterAddendum filterAddendum)
+        public ContextControllerConditionCrontab(StatementContext statementContext, long scheduleSlot, ContextDetailConditionCrontab spec, ContextControllerConditionCallback callback, ContextInternalFilterAddendum filterAddendum)
         {
             _statementContext = statementContext;
             _scheduleSlot = scheduleSlot;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.core.context.mgr
             var agentHandle = new EPStatementAgentInstanceHandle(_statementContext.EpStatementHandle, _statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion(), _statementContext.FilterFaultHandlerFactory);
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
             var schedulingService = _statementContext.SchedulingService;
-            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, _statementContext.MethodResolutionService.EngineImportService.TimeZone);
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, _statementContext.EngineImportService.TimeZone);
             _statementContext.SchedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
         }
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public long? ExpectedEndTime
         {
-            get { return ScheduleComputeHelper.ComputeNextOccurance(_spec.Schedule, _statementContext.TimeProvider.Time, _statementContext.MethodResolutionService.EngineImportService.TimeZone); }
+            get { return ScheduleComputeHelper.ComputeNextOccurance(_spec.Schedule, _statementContext.TimeProvider.Time, _statementContext.EngineImportService.TimeZone); }
         }
 
         public bool IsImmediate

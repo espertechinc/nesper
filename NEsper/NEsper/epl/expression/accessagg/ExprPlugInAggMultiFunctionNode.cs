@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -75,7 +75,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                 validationContext, _config, optionalTableColumn, ChildNodes);
 
 	        var handlerPlugin = _pluginAggregationMultiFunctionFactory.ValidateGetHandler(ctx);
-	        _factory = new ExprPlugInAggMultiFunctionNodeFactory(this, handlerPlugin);
+            _factory = new ExprPlugInAggMultiFunctionNodeFactory(this, handlerPlugin, validationContext.EngineImportService.AggregationFactoryFactory, validationContext.StatementExtensionSvcContext);
 	        return _factory;
 	    }
 

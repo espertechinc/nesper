@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -52,7 +52,7 @@ namespace com.espertech.esper.epl.core
 	    /// <param name="statementResultService">handles listeners/subscriptions awareness to reduce output result generation</param>
 	    /// <param name="valueAddEventService">service that handles update events and variant events</param>
 	    /// <param name="selectExprEventTypeRegistry">registry for event type to statements</param>
-	    /// <param name="methodResolutionService">for resolving write methods</param>
+	    /// <param name="engineImportService"></param>
 	    /// <param name="exprEvaluatorContext">context for expression evalauation</param>
 	    /// <param name="variableService">The variable service.</param>
 	    /// <param name="scriptingService">The scripting service.</param>
@@ -67,6 +67,8 @@ namespace com.espertech.esper.epl.core
 	    /// <param name="selectExprProcessorCallback">The select expr processor callback.</param>
 	    /// <param name="namedWindowMgmtService">The named window service.</param>
 	    /// <param name="intoTableClause">The into table clause.</param>
+	    /// <param name="groupByRollupInfo"></param>
+	    /// <param name="statementExtensionSvcContext"></param>
 	    /// <returns>
 	    /// select-clause expression processor
 	    /// </returns>
@@ -80,34 +82,7 @@ namespace com.espertech.esper.epl.core
 	    /// or
 	    /// Expected any of the  + Arrays.ToString(ForClauseKeyword.Values()).ToLowerCase() +  for-clause keywords after reserved keyword 'for'</exception>
 	    /// <throws>ExprValidationException to indicate the select expression cannot be validated</throws>
-	    public static SelectExprProcessor GetProcessor(
-	        ICollection<int> assignedTypeNumberStack,
-	        SelectClauseElementCompiled[] selectionList,
-	        bool isUsingWildcard,
-	        InsertIntoDesc insertIntoDesc,
-	        EventType optionalInsertIntoEventType,
-	        ForClauseSpec forClauseSpec,
-	        StreamTypeService typeService,
-	        EventAdapterService eventAdapterService,
-	        StatementResultService statementResultService,
-	        ValueAddEventService valueAddEventService,
-	        SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-	        MethodResolutionService methodResolutionService,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        VariableService variableService,
-	        ScriptingService scriptingService,
-	        TableService tableService,
-	        TimeProvider timeProvider,
-	        string engineURI,
-	        int statementId,
-	        string statementName,
-	        Attribute[] annotations,
-	        ContextDescriptor contextDescriptor,
-	        ConfigurationInformation configuration,
-	        SelectExprProcessorDeliveryCallback selectExprProcessorCallback,
-	        NamedWindowMgmtService namedWindowMgmtService,
-	        IntoTableSpec intoTableClause,
-	        GroupByRollupInfo groupByRollupInfo)
+	    public static SelectExprProcessor GetProcessor(ICollection<int> assignedTypeNumberStack, SelectClauseElementCompiled[] selectionList, bool isUsingWildcard, InsertIntoDesc insertIntoDesc, EventType optionalInsertIntoEventType, ForClauseSpec forClauseSpec, StreamTypeService typeService, EventAdapterService eventAdapterService, StatementResultService statementResultService, ValueAddEventService valueAddEventService, SelectExprEventTypeRegistry selectExprEventTypeRegistry, EngineImportService engineImportService, ExprEvaluatorContext exprEvaluatorContext, VariableService variableService, ScriptingService scriptingService, TableService tableService, TimeProvider timeProvider, string engineURI, int statementId, string statementName, Attribute[] annotations, ContextDescriptor contextDescriptor, ConfigurationInformation configuration, SelectExprProcessorDeliveryCallback selectExprProcessorCallback, NamedWindowMgmtService namedWindowMgmtService, IntoTableSpec intoTableClause, GroupByRollupInfo groupByRollupInfo, StatementExtensionSvcContext statementExtensionSvcContext)
 	    {
 	        if (selectExprProcessorCallback != null) {
 	            var bindProcessor = new BindProcessor(selectionList, typeService.EventTypes, typeService.StreamNames, tableService);
@@ -122,7 +97,7 @@ namespace com.espertech.esper.epl.core
 	        var synthetic = GetProcessorInternal(
 	            assignedTypeNumberStack, selectionList, isUsingWildcard, insertIntoDesc, optionalInsertIntoEventType,
 	            typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry,
-	            methodResolutionService, statementId, annotations, configuration, namedWindowMgmtService, tableService,
+	            engineImportService, statementId, annotations, configuration, namedWindowMgmtService, tableService,
 	            groupByRollupInfo);
 
 	        // Handle table as an optional service
@@ -169,7 +144,7 @@ namespace com.espertech.esper.epl.core
 
 	                    StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false, engineURI);
 	                    groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
-	                    var validationContext = new ExprValidationContext(type, methodResolutionService, null, timeProvider, variableService, tableService, exprEvaluatorContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService, false, false, true, false, intoTableClause == null ? null : intoTableClause.Name, false);  // no context descriptor available
+	                    var validationContext = new ExprValidationContext(type, engineImportService, statementExtensionSvcContext, null, timeProvider, variableService, tableService, exprEvaluatorContext, eventAdapterService, statementName, statementId, annotations, null, scriptingService, false, false, true, false, intoTableClause == null ? null : intoTableClause.Name, false);  // no context descriptor available
 	                    for (var i = 0; i < item.Expressions.Count; i++) {
 	                        groupedDeliveryExpr[i] = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.FORCLAUSE, item.Expressions[i], validationContext);
 	                    }
@@ -185,23 +160,7 @@ namespace com.espertech.esper.epl.core
 	        return synthetic;
 	    }
 
-	    private static SelectExprProcessor GetProcessorInternal(
-	        ICollection<int> assignedTypeNumberStack,
-	        SelectClauseElementCompiled[] selectionList,
-	        bool isUsingWildcard,
-	        InsertIntoDesc insertIntoDesc,
-	        EventType optionalInsertIntoEventType,
-	        StreamTypeService typeService,
-	        EventAdapterService eventAdapterService,
-	        ValueAddEventService valueAddEventService,
-	        SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-	        MethodResolutionService methodResolutionService,
-	        int statementId,
-	        Attribute[] annotations,
-	        ConfigurationInformation configuration,
-	        NamedWindowMgmtService namedWindowMgmtService,
-            TableService tableService,
-            GroupByRollupInfo groupByRollupInfo)
+	    private static SelectExprProcessor GetProcessorInternal(ICollection<int> assignedTypeNumberStack, SelectClauseElementCompiled[] selectionList, bool isUsingWildcard, InsertIntoDesc insertIntoDesc, EventType optionalInsertIntoEventType, StreamTypeService typeService, EventAdapterService eventAdapterService, ValueAddEventService valueAddEventService, SelectExprEventTypeRegistry selectExprEventTypeRegistry, EngineImportService engineImportService, int statementId, Attribute[] annotations, ConfigurationInformation configuration, NamedWindowMgmtService namedWindowMgmtService, TableService tableService, GroupByRollupInfo groupByRollupInfo)
 	    {
 	        // Wildcard not allowed when insert into specifies column order
 	    	if(isUsingWildcard && insertIntoDesc != null && !insertIntoDesc.ColumnNames.IsEmpty())
@@ -218,7 +177,7 @@ namespace com.espertech.esper.epl.core
 	                Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");
 	                return SelectExprJoinWildcardProcessorFactory.Create(
 	                    assignedTypeNumberStack, statementId, typeService.StreamNames, typeService.EventTypes,
-	                    eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, methodResolutionService,
+	                    eventAdapterService, insertIntoDesc, selectExprEventTypeRegistry, engineImportService,
 	                    annotations, configuration, tableService);
 	            }
 	            // Single-table selects with no insert-into
@@ -245,7 +204,7 @@ namespace com.espertech.esper.epl.core
 	        var factory = new SelectExprProcessorHelper(
 	            assignedTypeNumberStack, buckets.Expressions, buckets.SelectedStreams, insertIntoDesc,
 	            optionalInsertIntoEventType, isUsingWildcard, typeService, eventAdapterService, valueAddEventService,
-	            selectExprEventTypeRegistry, methodResolutionService, statementId, annotations, configuration,
+	            selectExprEventTypeRegistry, engineImportService, statementId, annotations, configuration,
 	            namedWindowMgmtService, tableService, groupByRollupInfo);
 	        SelectExprProcessor processor = factory.Evaluator;
 

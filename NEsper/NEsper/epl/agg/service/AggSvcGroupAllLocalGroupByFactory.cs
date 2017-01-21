@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,26 +18,17 @@ namespace com.espertech.esper.epl.agg.service
     public class AggSvcGroupAllLocalGroupByFactory : AggregationServiceFactory
     {
         protected internal readonly bool IsJoin;
-        private readonly object _groupKeyBinding;
         private readonly AggregationLocalGroupByPlan _localGroupByPlan;
 
-        public AggSvcGroupAllLocalGroupByFactory(
-            bool join,
-            AggregationLocalGroupByPlan localGroupByPlan,
-            object groupKeyBinding)
+        public AggSvcGroupAllLocalGroupByFactory(bool @join, AggregationLocalGroupByPlan localGroupByPlan)
         {
             IsJoin = join;
             _localGroupByPlan = localGroupByPlan;
-            _groupKeyBinding = groupKeyBinding;
         }
 
-        public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService,
-            bool isSubquery,
-            int? subqueryNumber)
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
         {
-            return new AggSvcGroupAllLocalGroupBy(methodResolutionService, IsJoin, _localGroupByPlan, _groupKeyBinding);
+            return new AggSvcGroupAllLocalGroupBy(IsJoin, _localGroupByPlan);
         }
     }
 } // end of namespace

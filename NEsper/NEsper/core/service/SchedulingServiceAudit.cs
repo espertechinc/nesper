@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -54,7 +54,7 @@ namespace com.espertech.esper.core.service
             _spi.VisitSchedules(visitor);
         }
     
-        public void Add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
+        public void Add(long afterMSec, ScheduleHandle handle, long slot)
         {
             if (AuditPath.IsInfoEnabled) {
                 StringWriter message = new StringWriter();
@@ -69,8 +69,8 @@ namespace com.espertech.esper.core.service
             }
             _spi.Add(afterMSec, handle, slot);
         }
-    
-        public void Remove(ScheduleHandle handle, ScheduleSlot slot)
+
+        public void Remove(ScheduleHandle handle, long scheduleSlot)
         {
             if (AuditPath.IsInfoEnabled) {
                 StringWriter message = new StringWriter();
@@ -79,7 +79,7 @@ namespace com.espertech.esper.core.service
     
                 AuditPath.AuditLog(_engineUri, _statementName, AuditEnum.SCHEDULE, message.ToString());
             }
-            _spi.Remove(handle, slot);
+            _spi.Remove(handle, scheduleSlot);
         }
 
         public long Time

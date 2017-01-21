@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,18 +16,16 @@ namespace com.espertech.esper.epl.agg.service
     {
 	    protected internal readonly bool Join;
         protected internal readonly AggregationLocalGroupByPlan LocalGroupByPlan;
-        protected internal readonly object GroupKeyBinding;
 
-	    public AggSvcGroupByLocalGroupByFactory(bool join, AggregationLocalGroupByPlan localGroupByPlan, object groupKeyBinding)
+	    public AggSvcGroupByLocalGroupByFactory(bool @join, AggregationLocalGroupByPlan localGroupByPlan)
         {
 	        Join = join;
 	        LocalGroupByPlan = localGroupByPlan;
-	        GroupKeyBinding = groupKeyBinding;
 	    }
 
-        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, MethodResolutionService methodResolutionService, bool isSubquery, int? subqueryNumber)
+        public AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
         {
-	        return new AggSvcGroupByLocalGroupBy(methodResolutionService, Join, LocalGroupByPlan, GroupKeyBinding);
+	        return new AggSvcGroupByLocalGroupBy(Join, LocalGroupByPlan);
 	    }
 	}
 } // end of namespace

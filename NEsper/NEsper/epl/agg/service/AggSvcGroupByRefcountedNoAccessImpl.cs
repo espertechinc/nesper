@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,8 +32,6 @@ namespace com.espertech.esper.epl.agg.service
         private AggregationMethod[] _currentAggregatorRow;
         private Object _currentGroupKey;
     
-        private readonly MethodResolutionService _methodResolutionService;
-    
         private readonly IList<Object> _removedKeys;
 
         /// <summary>
@@ -41,15 +39,9 @@ namespace com.espertech.esper.epl.agg.service
         /// </summary>
         /// <param name="evaluators">evaluate the sub-expression within the aggregate function (ie. Sum(4*myNum))</param>
         /// <param name="prototypes">collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregationsaggregation states for each group</param>
-        /// <param name="groupKeyBinding">The group key binding.</param>
-        /// <param name="methodResolutionService">factory for creating additional aggregation method instances per group key</param>
-        public AggSvcGroupByRefcountedNoAccessImpl(ExprEvaluator[] evaluators,
-                                           AggregationMethodFactory[] prototypes,
-                                           Object groupKeyBinding,
-                                           MethodResolutionService methodResolutionService)
-            : base(evaluators, prototypes, groupKeyBinding)
+        public AggSvcGroupByRefcountedNoAccessImpl(ExprEvaluator[] evaluators, AggregationMethodFactory[] prototypes)
+            : base(evaluators, prototypes)
         {
-            _methodResolutionService = methodResolutionService;
             _aggregatorsPerGroup = new Dictionary<Object, AggregationMethodRow>();
             _removedKeys = new List<Object>();
         }
@@ -69,8 +61,8 @@ namespace com.espertech.esper.epl.agg.service
             AggregationMethod[] groupAggregators;
             if (!_aggregatorsPerGroup.TryGetValue(groupByKey, out row))
             {
-                groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                row = new AggregationMethodRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
+                groupAggregators = AggSvcGroupByUtil.NewAggregators(Aggregators);
+                row = new AggregationMethodRow(1, groupAggregators);
                 _aggregatorsPerGroup[groupByKey] = row;
             }
             else
@@ -108,8 +100,8 @@ namespace com.espertech.esper.epl.agg.service
             }
             else
             {
-                groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                row = new AggregationMethodRow(_methodResolutionService.GetCurrentRowCount(groupAggregators, null) + 1, groupAggregators);
+                groupAggregators = AggSvcGroupByUtil.NewAggregators(Aggregators);
+                row = new AggregationMethodRow(1, groupAggregators);
                 _aggregatorsPerGroup[groupByKey] = row;
             }
 
@@ -131,7 +123,6 @@ namespace com.espertech.esper.epl.agg.service
             if (row.Refcount <= 0)
             {
                 _removedKeys.Add(groupByKey);
-                _methodResolutionService.RemoveAggregators(exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);  // allow persistence to remove keys already
             }
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false);}
         }
@@ -148,7 +139,7 @@ namespace com.espertech.esper.epl.agg.service
             }
     
             if (_currentAggregatorRow == null) {
-                _currentAggregatorRow = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, null);
+                _currentAggregatorRow = AggSvcGroupByUtil.NewAggregators(Aggregators);
             }
             _currentGroupKey = groupByKey;
         }

@@ -1,20 +1,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.view.internals
 {
-    /// <summary>A view that retains the last Update. </summary>
-    public sealed class LastPostObserverView : ViewSupport, CloneableView
+    /// <summary>
+    /// A view that retains the last Update.
+    /// </summary>
+    public sealed class LastPostObserverView 
+        : View
+        , CloneableView
     {
+        private Viewable _parent;
         private readonly int _streamId;
         private LastPostObserver _observer;
 
@@ -37,17 +44,53 @@ namespace com.espertech.esper.view.internals
             return new LastPostObserverView(_streamId);
         }
 
-        public override EventType EventType
+        public EventType EventType
         {
-            get { return Parent.EventType; }
+            get { return _parent.EventType; }
         }
 
-        public override IEnumerator<EventBean> GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return Parent.GetEnumerator();
+            return GetEnumerator();
         }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
+        public IEnumerator<EventBean> GetEnumerator()
+        {
+            return _parent.GetEnumerator();
+        }
+
+        public Viewable Parent
+        {
+            get { return _parent; }
+            set { _parent = value; }
+        }
+
+        public View AddView(View view)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public View[] Views
+        {
+            get { return new View[0]; }
+        }
+
+        public bool RemoveView(View view)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public void RemoveAllViews()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public bool HasViews
+        {
+            get { return false; }
+        }
+
+        public void Update(EventBean[] newData, EventBean[] oldData)
         {
             if (_observer != null)
             {

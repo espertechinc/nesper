@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -444,7 +444,6 @@ namespace com.espertech.esper.regression.context
 	                "initiated by SupportBean_S0 as sb " +
 	                "terminated after 10 days 5 hours 2 minutes 1 sec 11 milliseconds");
 
-#if false
             TryOperator("context.sb.id = IntBoxed", new object[][] { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
             TryOperator("IntBoxed = context.sb.id", new object[][] { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
 
@@ -472,7 +471,6 @@ namespace com.espertech.esper.regression.context
 
             TryOperator("context.sb.id is not IntBoxed", new object[][] { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, true } });
             TryOperator("IntBoxed is not context.sb.id", new object[][] { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, true } });
-#endif
 
 	        // try coercion
             TryOperator("context.sb.id = shortBoxed", new object[][] { new object[] { (short)10, true }, new object[] { (short)9, false }, new object[] { null, false } });

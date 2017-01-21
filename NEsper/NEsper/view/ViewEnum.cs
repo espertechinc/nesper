@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -81,6 +81,8 @@ namespace com.espertech.esper.view
         EXPRESSION_WINDOW,
         /// <summary>Expression batch window.</summary>
         EXPRESSION_BATCH_WINDOW,
+        /// <summary>No-op window.</summary>
+        NOOP_WINDOW
     }
 
     public static class ViewEnumExtensions
@@ -126,6 +128,7 @@ namespace com.espertech.esper.view
                 case ViewEnum.INTERNAL_UNION:
                 case ViewEnum.INTERNAL_INTERSECT:
                 case ViewEnum.INTERNAL_MATCH_RECOG:
+                case ViewEnum.NOOP_WINDOW:
                     return "internal";
                 case ViewEnum.EXPRESSION_WINDOW:
                 case ViewEnum.EXPRESSION_BATCH_WINDOW:
@@ -204,6 +207,8 @@ namespace com.espertech.esper.view
                     return "expr";
                 case ViewEnum.EXPRESSION_BATCH_WINDOW:
                     return "expr_batch";
+                case ViewEnum.NOOP_WINDOW:
+                    return "noop";
             }
 
             throw new ArgumentException("invalid value", "viewEnum");
@@ -279,6 +284,8 @@ namespace com.espertech.esper.view
                     return typeof(ExpressionWindowViewFactory);
                 case ViewEnum.EXPRESSION_BATCH_WINDOW:
                     return typeof(ExpressionBatchViewFactory);
+                case ViewEnum.NOOP_WINDOW:
+                    return typeof (NoopViewFactory);
             }
 
             throw new ArgumentException("invalid value", "viewEnum");
@@ -324,6 +331,7 @@ namespace com.espertech.esper.view
                 case ViewEnum.INTERNAL_MATCH_RECOG:
                 case ViewEnum.EXPRESSION_WINDOW:
                 case ViewEnum.EXPRESSION_BATCH_WINDOW:
+                case ViewEnum.NOOP_WINDOW:
                     return null;
             }
 

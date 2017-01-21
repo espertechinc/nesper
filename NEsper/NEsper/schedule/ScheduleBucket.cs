@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,25 +33,28 @@ namespace com.espertech.esper.schedule
             _bucketNum = bucketNum;
             _lastSlot = 0;
         }
-    
-        /// <summary>Restart bucket slot numbering wuch as when a statement is restarted and new slots are allocated. </summary>
-        public void Restart()
+
+        /// <summary>
+        /// Returns a new slot in the bucket.
+        /// </summary>
+        /// <returns>
+        /// slot
+        /// </returns>
+        public long AllocateSlot()
         {
-            _lastSlot = 0;
+            return ToLong(_bucketNum, _lastSlot++);
         }
     
-        /// <summary>Returns a new slot in the bucket. </summary>
+        /// <summary>Returns a given slot in the bucket, given a slot number </summary>
         /// <returns>slot</returns>
-        public ScheduleSlot AllocateSlot()
+        public long AllocateSlot(int slotNumber)
         {
-            return new ScheduleSlot(_bucketNum, _lastSlot++);
+            return ToLong(_bucketNum, slotNumber);
         }
-    
-        /// <summary>Returns a new slot in the bucket, given a slot number </summary>
-        /// <returns>slot</returns>
-        public ScheduleSlot AllocateSlot(int slotNumber)
+
+        public static long ToLong(int bucket, int slot)
         {
-            return new ScheduleSlot(_bucketNum, slotNumber);
+            return ((long) bucket << 32) | slot & 0xFFFFFFFFL;
         }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,15 +19,83 @@ using NUnit.Framework;
 namespace com.espertech.esper.events.xml
 {
     [TestFixture]
-    public class TestXSDSchemaMapper 
+    public class TestXSDSchemaMapper
     {
+        private XmlSchemaType _schemaTypeId;
+        private XmlSchemaType _schemaTypeString;
+        private XmlSchemaType _schemaTypeBoolean;
+        private XmlSchemaType _schemaTypeDecimal;
+        private XmlSchemaType _schemaTypeInt;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _schemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
+            _schemaTypeString = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
+            _schemaTypeBoolean = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
+            _schemaTypeDecimal = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
+            _schemaTypeInt = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
+        }
+
+        [Test]
+        public void TestMap()
+        {
+            Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+            String schemaUri = uri.ToString();
+
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
+            Assert.That(model.Components.Count, Is.EqualTo(1));
+
+            SchemaElementComplex simpleEvent = model.Components[0];
+            VerifyComplexElement(simpleEvent, "simpleEvent", false);
+            VerifySizes(simpleEvent, 0, 0, 3);
+
+            SchemaElementComplex nested1 = simpleEvent.ComplexElements[0];
+            VerifyComplexElement(nested1, "nested1", false);
+            VerifySizes(nested1, 1, 2, 1);
+            Assert.AreEqual("attr1", nested1.Attributes[0].Name);
+            Assert.AreEqual(string.Empty, nested1.Attributes[0].Namespace);
+            Assert.AreEqual(_schemaTypeString, nested1.Attributes[0].SimpleType);
+            Assert.AreEqual("prop1", nested1.SimpleElements[0].Name);
+            Assert.AreEqual(_schemaTypeString, nested1.SimpleElements[0].SimpleType);
+            Assert.AreEqual("prop2", nested1.SimpleElements[1].Name);
+            Assert.AreEqual(_schemaTypeBoolean, nested1.SimpleElements[1].SimpleType);
+
+            SchemaElementComplex nested2 = nested1.ComplexElements[0];
+            VerifyComplexElement(nested2, "nested2", false);
+            VerifySizes(nested2, 0, 1, 0);
+            VerifySimpleElement(nested2.SimpleElements[0], "prop3", _schemaTypeInt);
+
+            SchemaElementComplex prop4 = simpleEvent.ComplexElements[1];
+            VerifyElement(prop4, "prop4");
+            VerifySizes(prop4, 1, 0, 0);
+            Assert.AreEqual("attr2", prop4.Attributes[0].Name);
+            Assert.AreEqual(_schemaTypeBoolean, prop4.Attributes[0].SimpleType);
+            Assert.AreEqual(_schemaTypeString, prop4.OptionalSimpleType);
+
+            SchemaElementComplex nested3 = simpleEvent.ComplexElements[2];
+            VerifyComplexElement(nested3, "nested3", false);
+            VerifySizes(nested3, 0, 0, 1);
+
+            SchemaElementComplex nested4 = nested3.ComplexElements[0];
+            VerifyComplexElement(nested4, "nested4", true);
+            VerifySizes(nested4, 1, 4, 0);
+            Assert.AreEqual("id", nested4.Attributes[0].Name);
+            Assert.AreEqual(_schemaTypeId, nested4.Attributes[0].SimpleType);
+            VerifySimpleElement(nested4.SimpleElements[0], "prop5", _schemaTypeString);
+            VerifySimpleElement(nested4.SimpleElements[1], "prop6", _schemaTypeString);
+            VerifySimpleElement(nested4.SimpleElements[2], "prop7", _schemaTypeString);
+            VerifySimpleElement(nested4.SimpleElements[3], "prop8", _schemaTypeString);
+        }
+
+#if DEPRECATED
         [Test]
         public void TestMap()
         {
             Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
             String schemaUri = uri.ToString();
     
-            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, 2);
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
             Assert.AreEqual(1, model.Components.Count);
     
             SchemaElementComplex component = model.Components[0];
@@ -113,6 +181,7 @@ namespace com.espertech.esper.events.xml
             Assert.AreEqual(schemaTypeString, prop5Element.SimpleType);
             Assert.IsTrue(prop5Element.IsArray);
         }
+#endif
     
         [Test]
         public void TestEvent()
@@ -141,6 +210,73 @@ namespace com.espertech.esper.events.xml
             }
 
             Console.WriteLine(firstElementType);
+        }
+
+        [Test]
+        public void TestExtendedElements()
+        {
+            Uri uri = ResourceManager.ResolveResourceURL("regression/schemaWithExtensions.xsd");
+            String schemaUri = uri.ToString();
+
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
+
+            SchemaElementComplex complexEvent = model.Components[0];
+            VerifyComplexElement(complexEvent, "complexEvent", false);
+            VerifySizes(complexEvent, 0, 0, 1);
+        
+            SchemaElementComplex mainElement = complexEvent.ComplexElements[0];
+            VerifyComplexElement(mainElement, "mainElement", false);
+            VerifySizes(mainElement, 0, 0, 4);
+        
+            SchemaElementComplex baseType4 = mainElement.ComplexElements[0];
+            VerifyComplexElement(baseType4, "baseType4", false);
+            VerifySizes(baseType4, 0, 0, 0);
+        
+            SchemaElementComplex aType2 = mainElement.ComplexElements[1];
+            VerifyComplexElement(aType2, "aType2", false);
+            VerifySizes(aType2, 0, 2, 1);
+        
+            SchemaElementComplex aType3 = mainElement.ComplexElements[2];
+            VerifyComplexElement(aType3, "aType3", false);
+            VerifySizes(aType3, 0, 1, 2);
+        
+            SchemaElementComplex aType3baseType4 = aType3.ComplexElements[0];
+            VerifyComplexElement(aType3baseType4, "baseType4", false);
+            VerifySizes(aType3baseType4, 0, 0, 0);
+        
+            SchemaElementComplex aType3type2 = aType3.ComplexElements[1];
+            VerifyComplexElement(aType3type2, "aType2", false);
+            VerifySizes(aType3type2, 0, 2, 1);
+
+            SchemaElementComplex aType4 = mainElement.ComplexElements[3];
+            VerifyComplexElement(aType4, "aType4", false);
+            VerifySizes(aType4, 0, 0, 1);
+         }
+
+        private static void VerifySimpleElement(SchemaElementSimple element, String name, XmlSchemaType type)
+        {
+            Assert.That(type, Is.EqualTo(element.SimpleType));
+            VerifyElement(element, name);
+        }
+
+        private static void VerifyComplexElement(SchemaElementComplex element, string name, bool isArray)
+        {
+            Assert.That(element.OptionalSimpleType, Is.Null);
+            Assert.That(element.IsArray, Is.EqualTo(isArray));
+            VerifyElement(element, name);
+        }
+
+        private static void VerifyElement(SchemaElement element, String name)
+        {
+            Assert.That(element.Name, Is.EqualTo(name));
+            Assert.That(element.Namespace, Is.EqualTo("samples:schemas:simpleSchema"));
+        }
+
+        private static void VerifySizes(SchemaElementComplex element, int expectedNumberOfAttributes, int expectedNumberOfSimpleElements, int expectedNumberOfChildren)
+        {
+            Assert.That(element.Attributes.Count, Is.EqualTo(expectedNumberOfAttributes));
+            Assert.That(element.SimpleElements.Count, Is.EqualTo(expectedNumberOfSimpleElements));
+            Assert.That(element.ComplexElements.Count, Is.EqualTo(expectedNumberOfChildren));
         }
     }
 }

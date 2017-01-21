@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.access
 {
@@ -33,6 +32,6 @@ namespace com.espertech.esper.epl.agg.access
 
         public IComparer<object> Comparator { get; private set; }
 
-        public object CriteriaKeyBinding { get; private set; }
+        public object CriteriaKeyBinding { get; set; }
     }
 }

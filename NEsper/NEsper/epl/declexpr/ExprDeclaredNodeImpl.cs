@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -221,6 +221,7 @@ namespace com.espertech.esper.epl.declexpr
             _expressionBodyCopy.Accept(summaryVisitor);
 
             var isCache = !(summaryVisitor.HasAggregation || summaryVisitor.HasPreviousPrior);
+            isCache &= validationContext.ExprEvaluatorContext.ExpressionResultCacheService.IsDeclaredExprCacheEnabled;
     
             // determine a suitable evaluation
             if (_expressionBodyCopy.IsConstantResult) {

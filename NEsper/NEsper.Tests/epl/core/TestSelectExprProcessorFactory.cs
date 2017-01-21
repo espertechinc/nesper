@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -50,7 +50,7 @@ namespace com.espertech.esper.epl.core
 	            SelectExprProcessorFactory.GetProcessor(
 	                Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
 	                new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, null, null,
-	                1, null, null, null, new Configuration(), null, null, null, null);
+	                1, null, null, null, new Configuration(), null, null, null, null, null);
 	            Assert.Fail();
 	        }
 	        catch (ExprValidationException)
@@ -67,7 +67,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
                 new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null,
                 _selectExprEventTypeRegistry, null, null, null, null,
-                new TableServiceImpl(), null, null, 1, null, null, null, new Configuration(), null, null, null, null);
+                new TableServiceImpl(), null, null, 1, null, null, null, new Configuration(), null, null, null, null, null);
 	        Assert.IsTrue(processor is SelectExprResultProcessor);
 	    }
 
@@ -82,8 +82,8 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), selectionList, false, null, null, null,
                 new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.Service, _statementResultService, null,
                 _selectExprEventTypeRegistry,
-                statementContext.MethodResolutionService, null, null, null, null, null, null, 1, null, null, null,
-                new Configuration(), null, null, null, null);
+                statementContext.EngineImportService, null, null, null, null, null, null, 1, null, null, null,
+                new Configuration(), null, null, null, null, null);
 	        Assert.IsTrue(processor != null);
 	    }
 

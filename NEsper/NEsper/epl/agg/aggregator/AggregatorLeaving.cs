@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,6 @@ namespace com.espertech.esper.epl.agg.aggregator
     
         public virtual void Leave(Object value) {
             _leaving = true;
-        }
-
-        public virtual Type ValueType
-        {
-            get { return typeof (bool?); }
         }
 
         public virtual object Value

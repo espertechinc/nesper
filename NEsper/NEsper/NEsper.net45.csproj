@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Antlr4.4.3.0\build\Antlr4.props" Condition="Exists('..\..\packages\Antlr4.4.3.0\build\Antlr4.props')" />
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\Antlr4.4.5.3\build\Antlr4.props" Condition="Exists('..\..\packages\Antlr4.4.5.3\build\Antlr4.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -17,7 +17,7 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj\net45\</BaseIntermediateOutputPath>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -36,7 +36,7 @@
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>b27f9f3b</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>c334cd43</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,8 +110,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.net45">
-      <HintPath>..\..\packages\Antlr4.Runtime.4.3.0\lib\net45\Antlr4.Runtime.net45.dll</HintPath>
+    <Reference Include="Antlr4.Runtime">
+      <HintPath>..\..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Core">
       <HintPath>..\..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
@@ -160,7 +160,7 @@
     <Compile Include="adapter\InputAdapter.cs" />
     <Compile Include="adapter\OutputAdapter.cs" />
     <Compile Include="adapter\Subscription.cs" />
-    <Compile Include="client\annotation\AppliesToAttribute.cs" />
+    <Compile Include="client\annotation\AppliesTo.cs" />
     <Compile Include="client\annotation\AuditAttribute.cs" />
     <Compile Include="client\annotation\AuditEnum.cs" />
     <Compile Include="client\annotation\BuiltinAnnotation.cs" />
@@ -377,7 +377,7 @@
     <Compile Include="client\scopetest\SupportSubscriberMRD.cs" />
     <Compile Include="client\scopetest\SupportUpdateListener.cs" />
     <Compile Include="client\soda\MatchRecognizePatternElementType.cs" />
-    <Compile Include="collection\SkipList.cs" />
+    <Compile Include="collection\RollingTwoValueBuffer.cs" />
     <Compile Include="collection\SortedVector.cs" />
     <Compile Include="compat\collections\EmptyList.cs" />
     <Compile Include="compat\DateTimeConstants.cs" />
@@ -586,6 +586,7 @@
     <Compile Include="compat\Name.cs" />
     <Compile Include="compat\NoCache.cs" />
     <Compile Include="compat\Prime.cs" />
+    <Compile Include="compat\SoftReference.cs" />
     <Compile Include="compat\StringBuilderExtensions.cs" />
     <Compile Include="compat\threading\CommonReadLock.cs" />
     <Compile Include="compat\threading\CommonWriteLock.cs" />
@@ -861,9 +862,13 @@
     <Compile Include="core\service\ConfiguratorContext.cs" />
     <Compile Include="core\service\DeliveryConvertor.cs" />
     <Compile Include="core\service\DeliveryConvertorMap.cs" />
+    <Compile Include="core\service\DeliveryConvertorMapWStatement.cs" />
     <Compile Include="core\service\DeliveryConvertorNull.cs" />
+    <Compile Include="core\service\DeliveryConvertorNullWStatement.cs" />
     <Compile Include="core\service\DeliveryConvertorObjectArr.cs" />
+    <Compile Include="core\service\DeliveryConvertorObjectArrWStatement.cs" />
     <Compile Include="core\service\DeliveryConvertorWidener.cs" />
+    <Compile Include="core\service\DeliveryConvertorWidenerWStatement.cs" />
     <Compile Include="core\service\EngineLevelExtensionServicesContext.cs" />
     <Compile Include="core\service\EPAdministratorContext.cs" />
     <Compile Include="core\service\EPAdministratorHelper.cs" />
@@ -901,9 +906,18 @@
     <Compile Include="core\service\EPStatementSPI.cs" />
     <Compile Include="core\service\ExceptionHandlingService.cs" />
     <Compile Include="core\service\ExpressionResultCacheEntry.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastColl.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastCollImpl.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastValue.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastValueMulti.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastValueNone.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForDeclaredExprLastValueSingle.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForEnumerationMethod.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForEnumerationMethodImpl.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForPropUnwrap.cs" />
+    <Compile Include="core\service\ExpressionResultCacheForPropUnwrapImpl.cs" />
     <Compile Include="core\service\ExpressionResultCacheService.cs" />
-    <Compile Include="core\service\ExpressionResultCacheServiceAgentInstance.cs" />
-    <Compile Include="core\service\ExpressionResultCacheServiceThreadlocal.cs" />
+    <Compile Include="core\service\ExpressionResultCacheServiceHolder.cs" />
     <Compile Include="core\service\ExpressionResultCacheStackEntry.cs" />
     <Compile Include="core\service\ExprEvaluatorContextStatement.cs" />
     <Compile Include="core\service\ExprEvaluatorContextWTableAccess.cs" />
@@ -936,11 +950,15 @@
     <Compile Include="core\service\ResultDeliveryStrategyFactory.cs" />
     <Compile Include="core\service\ResultDeliveryStrategyImpl.cs" />
     <Compile Include="core\service\ResultDeliveryStrategyMap.cs" />
+    <Compile Include="core\service\ResultDeliveryStrategyMapWStmt.cs" />
     <Compile Include="core\service\ResultDeliveryStrategyObjectArr.cs" />
+    <Compile Include="core\service\ResultDeliveryStrategyObjectArrWStmt.cs" />
     <Compile Include="core\service\ResultDeliveryStrategyTypeArr.cs" />
+    <Compile Include="core\service\ResultDeliveryStrategyTypeArrWStmt.cs" />
     <Compile Include="core\service\SchedulingServiceAudit.cs" />
     <Compile Include="core\service\StatementAgentInstanceFilterVersion.cs" />
     <Compile Include="core\service\StatementContext.cs" />
+    <Compile Include="core\service\StatementContextCPPair.cs" />
     <Compile Include="core\service\StatementContextEngineServices.cs" />
     <Compile Include="core\service\StatementContextFactory.cs" />
     <Compile Include="core\service\StatementContextFactoryDefault.cs" />
@@ -1204,6 +1222,28 @@
     <Compile Include="epl\agg\aggregator\AggregatorSumLongFilter.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumNumInteger.cs" />
     <Compile Include="epl\agg\aggregator\AggregatorSumNumIntegerFilter.cs" />
+    <Compile Include="epl\agg\factory\AggregationFactoryFactory.cs" />
+    <Compile Include="epl\agg\factory\AggregationFactoryFactoryDefault.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryAvedev.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryAvg.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryCount.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryCountEver.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryFirstEver.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryLastEver.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryLeaving.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryMedian.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryMinMax.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryNth.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryPlugIn.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryRate.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryStddev.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactorySum.cs" />
+    <Compile Include="epl\agg\factory\AggregationMethodFactoryUtil.cs" />
+    <Compile Include="epl\agg\factory\AggregationStateFactoryCountMinSketch.cs" />
+    <Compile Include="epl\agg\factory\AggregationStateFactoryLinear.cs" />
+    <Compile Include="epl\agg\factory\AggregationStateFactoryMinMaxByEver.cs" />
+    <Compile Include="epl\agg\factory\AggregationStateFactoryPlugin.cs" />
+    <Compile Include="epl\agg\factory\AggregationStateFactorySorted.cs" />
     <Compile Include="epl\agg\rollup\GroupByExpressionHelper.cs" />
     <Compile Include="epl\agg\rollup\GroupByRollupDuplicateException.cs" />
     <Compile Include="epl\agg\rollup\GroupByRollupEvalContext.cs" />
@@ -1281,6 +1321,7 @@
     <Compile Include="epl\agg\service\AggSvcGroupByRefcountedWAccessImpl.cs" />
     <Compile Include="epl\agg\service\AggSvcGroupByRefcountedWAccessRollupFactory.cs" />
     <Compile Include="epl\agg\service\AggSvcGroupByRefcountedWAccessRollupImpl.cs" />
+    <Compile Include="epl\agg\service\AggSvcGroupByUtil.cs" />
     <Compile Include="epl\agg\service\AggSvcGroupByWTableBase.cs" />
     <Compile Include="epl\agg\service\AggSvcGroupByWTableFactory.cs" />
     <Compile Include="epl\agg\service\AggSvcGroupByWTableImpl.cs" />
@@ -1301,7 +1342,6 @@
     <Compile Include="epl\approx\CountMinSketchAggAccessorTopk.cs" />
     <Compile Include="epl\approx\CountMinSketchAggAgentAdd.cs" />
     <Compile Include="epl\approx\CountMinSketchAggState.cs" />
-    <Compile Include="epl\approx\CountMinSketchAggStateFactory.cs" />
     <Compile Include="epl\approx\CountMinSketchAggType.cs" />
     <Compile Include="epl\approx\CountMinSketchSpec.cs" />
     <Compile Include="epl\approx\CountMinSketchSpecHashes.cs" />
@@ -1391,8 +1431,6 @@
     <Compile Include="epl\core\MethodPollingExecStrategyPOCOPlain.cs" />
     <Compile Include="epl\core\MethodPollingViewable.cs" />
     <Compile Include="epl\core\MethodPollingViewableFactory.cs" />
-    <Compile Include="epl\core\MethodResolutionService.cs" />
-    <Compile Include="epl\core\MethodResolutionServiceImpl.cs" />
     <Compile Include="epl\core\OrderByElement.cs" />
     <Compile Include="epl\core\OrderByProcessor.cs" />
     <Compile Include="epl\core\OrderByProcessorFactory.cs" />
@@ -1432,6 +1470,8 @@
     <Compile Include="epl\core\ResultSetProcessorHandThroughFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorHelperFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorHelperFactoryImpl.cs" />
+    <Compile Include="epl\core\ResultSetProcessorOutputHelper.cs" />
+    <Compile Include="epl\core\ResultSetProcessorOutputHelperVisitor.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowForAll.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowForAllFactory.cs" />
     <Compile Include="epl\core\ResultSetProcessorRowForAllOutputAllHelper.cs" />
@@ -1726,7 +1766,6 @@
     <Compile Include="epl\expression\accessagg\ExprPlugInAggMultiFunctionNode.cs" />
     <Compile Include="epl\expression\accessagg\ExprPlugInAggMultiFunctionNodeFactory.cs" />
     <Compile Include="epl\expression\accessagg\LinearAggregationFactoryDesc.cs" />
-    <Compile Include="epl\expression\accessagg\SortedAggregationStateFactory.cs" />
     <Compile Include="epl\expression\accessagg\SortedAggregationStateFactoryFactory.cs" />
     <Compile Include="epl\expression\baseagg\ExprAggregateLocalGroupByDesc.cs" />
     <Compile Include="epl\expression\baseagg\ExprAggregateNode.cs" />
@@ -1849,34 +1888,20 @@
     <Compile Include="epl\expression\funcs\ExprPropertyExistsNode.cs" />
     <Compile Include="epl\expression\funcs\ExprTypeofNode.cs" />
     <Compile Include="epl\expression\methodagg\ExprAvedevNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprAvedevNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprAvgNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprAvgNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprCountEverNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprCountEverNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprCountNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprCountNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprFirstEverNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprFirstEverNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprLastEverNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprLastEverNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprLeavingAggNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprLeavingAggNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprMedianNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprMedianNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprMethodAggUtil.cs" />
     <Compile Include="epl\expression\methodagg\ExprMinMaxAggrNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprMinMaxAggrNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprNthAggNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprNthAggNodeFactory.cs" />
-    <Compile Include="epl\expression\methodagg\ExprPlugInAggFunctionFactory.cs" />
-    <Compile Include="epl\expression\methodagg\ExprPlugInAggFunctionFactoryNode.cs" />
+    <Compile Include="epl\expression\methodagg\ExprPlugInAggNode.cs" />
     <Compile Include="epl\expression\methodagg\ExprRateAggNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprRateAggNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprStddevNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprStddevNodeFactory.cs" />
     <Compile Include="epl\expression\methodagg\ExprSumNode.cs" />
-    <Compile Include="epl\expression\methodagg\ExprSumNodeFactory.cs" />
     <Compile Include="epl\expression\ops\ExprAndNode.cs" />
     <Compile Include="epl\expression\ops\ExprAndNodeImpl.cs" />
     <Compile Include="epl\expression\ops\ExprArrayNode.cs" />
@@ -2480,6 +2505,7 @@
     <Compile Include="events\bean\InstanceManufacturerFactory.cs" />
     <Compile Include="events\bean\InstanceManufacturerFastCtor.cs" />
     <Compile Include="events\bean\InstanceManufacturerUtil.cs" />
+    <Compile Include="events\xml\ElementPathNode.cs" />
     <Compile Include="filter\FilterBooleanExpressionFactory.cs" />
     <Compile Include="filter\FilterBooleanExpressionFactoryImpl.cs" />
     <Compile Include="filter\FilterFaultHandlerFactory.cs" />
@@ -3359,7 +3385,6 @@
     <Compile Include="schedule\ScheduleServiceException.cs" />
     <Compile Include="schedule\ScheduleSet.cs" />
     <Compile Include="schedule\ScheduleSetEntry.cs" />
-    <Compile Include="schedule\ScheduleSlot.cs" />
     <Compile Include="schedule\ScheduleSpec.cs" />
     <Compile Include="schedule\ScheduleSpecUtil.cs" />
     <Compile Include="schedule\SchedulingMgmtService.cs" />
@@ -3676,12 +3701,17 @@
     <Compile Include="view\internals\BufferObserver.cs" />
     <Compile Include="view\internals\BufferView.cs" />
     <Compile Include="view\internals\IntersectAsymetricView.cs" />
+    <Compile Include="view\internals\IntersectAsymetricViewLocalState.cs" />
     <Compile Include="view\internals\IntersectBatchView.cs" />
-    <Compile Include="view\internals\IntersectView.cs" />
+    <Compile Include="view\internals\IntersectBatchViewLocalState.cs" />
+    <Compile Include="view\internals\IntersectDefaultView.cs" />
+    <Compile Include="view\internals\IntersectDefaultViewLocalState.cs" />
     <Compile Include="view\internals\IntersectViewFactory.cs" />
     <Compile Include="view\internals\IntersectViewMarker.cs" />
     <Compile Include="view\internals\LastPostObserver.cs" />
     <Compile Include="view\internals\LastPostObserverView.cs" />
+    <Compile Include="view\internals\NoopView.cs" />
+    <Compile Include="view\internals\NoopViewFactory.cs" />
     <Compile Include="view\internals\PatternRemoveDispatchView.cs" />
     <Compile Include="view\internals\PriorEventBufferChangeCaptureMulti.cs" />
     <Compile Include="view\internals\PriorEventBufferChangeCaptureSingle.cs" />
@@ -3716,7 +3746,7 @@
     <Compile Include="view\stat\UnivariateStatisticsViewFactory.cs" />
     <Compile Include="view\stat\WeightedAverageView.cs" />
     <Compile Include="view\stat\WeightedAverageViewFactory.cs" />
-    <Compile Include="view\std\AddPropertyValueView.cs" />
+    <Compile Include="view\std\AddPropertyValueOptionalView.cs" />
     <Compile Include="view\std\FirstElementView.cs" />
     <Compile Include="view\std\FirstElementViewFactory.cs" />
     <Compile Include="view\std\FirstUniqueByPropertyView.cs" />
@@ -3868,7 +3898,6 @@
     <Compile Include="epl\agg\service\AggregationMultiFunctionAnalysisHelper.cs" />
     <Compile Include="epl\agg\service\AggregationMultiFunctionAnalysisResult.cs" />
     <Compile Include="epl\agg\service\AggregationStateFactory.cs" />
-    <Compile Include="epl\agg\service\AggregationStateFactoryPlugin.cs" />
     <Compile Include="epl\agg\service\AggregationStateKeyWStream.cs" />
     <Compile Include="epl\agg\service\AggregationStateTypeWStream.cs" />
     <Compile Include="epl\core\eval\EvalSelectStreamWUndRecastMapFactory.cs" />
@@ -3948,12 +3977,15 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <Error Condition="!Exists('..\..\packages\Antlr4.4.3.0\build\Antlr4.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Antlr4.4.3.0\build\Antlr4.props'))" />
-    <Error Condition="!Exists('..\..\packages\Antlr4.4.3.0\build\Antlr4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Antlr4.4.3.0\build\Antlr4.targets'))" />
-  </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="..\..\packages\Antlr4.4.3.0\build\Antlr4.targets" Condition="Exists('..\..\packages\Antlr4.4.3.0\build\Antlr4.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Antlr4.4.5.3\build\Antlr4.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Antlr4.4.5.3\build\Antlr4.props'))" />
+    <Error Condition="!Exists('..\..\packages\Antlr4.4.5.3\build\Antlr4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Antlr4.4.5.3\build\Antlr4.targets'))" />
+  </Target>
+  <Import Project="..\..\packages\Antlr4.4.5.3\build\Antlr4.targets" Condition="Exists('..\..\packages\Antlr4.4.5.3\build\Antlr4.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

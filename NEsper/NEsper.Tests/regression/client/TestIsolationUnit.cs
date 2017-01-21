@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -60,6 +61,19 @@ namespace com.espertech.esper.regression.client
         private void SendTimerIso(long millis, EPServiceProviderIsolated unit)
         {
             unit.EPRuntime.SendEvent(new CurrentTimeEvent(millis));
+        }
+
+        [Test]
+        public void TestMovePattern()
+        {
+            EPServiceProviderIsolated isolatedService = _epService.GetEPServiceIsolated("Isolated");
+            EPStatement stmt = isolatedService.EPAdministrator.CreateEPL("select * from pattern [every (a=SupportBean -> b=SupportBean(theString=a.theString)) where timer:within(1 day)]", "TestStatement", null);
+            isolatedService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeHelper.CurrentTimeMillis + 1000));
+            isolatedService.EPRuntime.SendEvent(new SupportBean("E1", 1));
+            stmt.AddListener(_listener);
+            isolatedService.EPAdministrator.RemoveStatement(stmt);
+            _epService.EPRuntime.SendEvent(new SupportBean("E1", 2));
+            Assert.IsTrue(_listener.IsInvokedAndReset());
         }
 
         [Test]
@@ -1200,58 +1214,40 @@ namespace com.espertech.esper.regression.client
             _epService.EPRuntime.SendEvent(new SupportBean());
             EPAssertionUtil.AssertProps(
                 _listener.AssertOneGetNewAndReset(), fields,
-                new Object[]
-                {
-                    "X"
-                }
-                );
+                new Object[] { "X" });
 
             EPServiceProviderIsolated unit = _epService.GetEPServiceIsolated("i1");
 
             unit.EPAdministrator.AddStatement(new EPStatement[]
             {
                 stmtSelect
-            }
-                );
+            });
 
             unit.EPRuntime.SendEvent(new SupportBean());
             Assert.IsFalse(_listener.IsInvoked);
 
-            /// <summary>Update statements apply to a stream even if the statement is not isolated. </summary>
+            // Update statements apply to a stream even if the statement is not isolated.
             unit.EPAdministrator.AddStatement(new EPStatement[]
             {
                 stmtInsert
-            }
-                );
+            });
             unit.EPRuntime.SendEvent(new SupportBean("E1", 0));
             EPAssertionUtil.AssertProps(
                 _listener.AssertOneGetNewAndReset(), fields,
-                new Object[]
-                {
-                    "X"
-                }
-                );
+                new Object[] { "X" });
 
             unit.EPAdministrator.AddStatement(stmtUpd);
             unit.EPRuntime.SendEvent(new SupportBean("E2", 0));
             EPAssertionUtil.AssertProps(
                 _listener.AssertOneGetNewAndReset(), fields,
-                new Object[]
-                {
-                    "X"
-                }
-                );
+                new Object[] { "X" });
 
             stmtUpd.Stop();
 
             unit.EPRuntime.SendEvent(new SupportBean("E3", 0));
             EPAssertionUtil.AssertProps(
                 _listener.AssertOneGetNewAndReset(), fields,
-                new Object[]
-                {
-                    "E3"
-                }
-                );
+                new Object[] { "E3" });
 
             _epService.EPAdministrator.DestroyAllStatements();
         }

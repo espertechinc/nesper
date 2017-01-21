@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.db
         private readonly IDictionary<Object, Item> _cache;
         private readonly EPStatementAgentInstanceHandle _epStatementAgentInstanceHandle;
         private readonly SchedulingService _schedulingService;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
     
         private bool _isScheduled;
     
@@ -48,7 +48,7 @@ namespace com.espertech.esper.epl.db
                                      double purgeIntervalSec,
                                      ConfigurationCacheReferenceType cacheReferenceType,
                                      SchedulingService schedulingService,
-                                     ScheduleSlot scheduleSlot,
+                                     long scheduleSlot,
                                      EPStatementAgentInstanceHandle epStatementAgentInstanceHandle)
         {
             MaxAgeMSec = (long) maxAgeSec * 1000;
@@ -134,11 +134,20 @@ namespace com.espertech.esper.epl.db
 
             _cache.Where(entry => MaxAgeMSec < (now - entry.Value.Time))
                 .Select(entry => entry.Key)
-                .ToList()                .ForEach(key => _cache.Remove(key));
+                .ToList()
+                .ForEach(key => _cache.Remove(key));
+
             _isScheduled = false;
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHistoricalScheduledEval();}
         }
-    
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+        }
+
         private class Item
         {
             public EventTable[] Data { get; private set; }

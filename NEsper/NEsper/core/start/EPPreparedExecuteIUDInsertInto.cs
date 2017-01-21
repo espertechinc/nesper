@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -42,7 +42,9 @@ namespace com.espertech.esper.core.start
     
             // assign names
             var validationContext = new ExprValidationContext(
-                streamTypeService, StatementContext.MethodResolutionService,
+                streamTypeService,
+                StatementContext.EngineImportService,
+                StatementContext.StatementExtensionServicesContext,
                 null, StatementContext.TimeProvider, 
                 StatementContext.VariableService, 
                 StatementContext.TableService,
@@ -97,7 +99,7 @@ namespace com.espertech.esper.core.start
                 StatementContext.EventAdapterService, 
                 StatementContext.StatementResultService, 
                 StatementContext.ValueAddEventService, selectExprEventTypeRegistry,
-                StatementContext.MethodResolutionService, exprEvaluatorContextStatement, 
+                StatementContext.EngineImportService, exprEvaluatorContextStatement, 
                 StatementContext.VariableService,
                 StatementContext.ScriptingService,
                 StatementContext.TableService, 
@@ -108,7 +110,8 @@ namespace com.espertech.esper.core.start
                 StatementContext.Annotations, 
                 StatementContext.ContextDescriptor,
                 StatementContext.ConfigSnapshot, null, 
-                StatementContext.NamedWindowMgmtService, null, null);
+                StatementContext.NamedWindowMgmtService, null, null, 
+                StatementContext.StatementExtensionServicesContext);
     
             return new EPPreparedExecuteIUDSingleStreamExecInsert(exprEvaluatorContextStatement, insertHelper, StatementSpec.TableNodes, Services);
         }

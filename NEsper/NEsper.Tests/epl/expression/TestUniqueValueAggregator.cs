@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,12 +61,6 @@ namespace com.espertech.esper.epl.expression
     
             _agg.Leave(2);
             Assert.AreEqual(0, _agg.Value);
-        }
-    
-        [Test]
-        public void TestGetType()
-        {
-            Assert.AreEqual(typeof(int?), _agg.ValueType);
         }
     }
 }

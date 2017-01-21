@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -154,7 +154,7 @@ namespace com.espertech.esper.dataflow.ops
             var streamSpecArray = streamSpecCompileds.ToArray();
             var compiled = new StatementSpecCompiled(null, null, null, null, null, null, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
                     selectClauseCompiled, streamSpecArray, outerJoinArray, select.FilterExprRootNode, select.HavingExprRootNode, outputLimitSpec,
-                    orderByArray, ExprSubselectNode.EMPTY_SUBSELECT_ARRAY, ExprNodeUtility.EMPTY_DECLARED_ARR, select.ReferencedVariables,
+                    orderByArray, ExprSubselectNode.EMPTY_SUBSELECT_ARRAY, ExprNodeUtility.EMPTY_DECLARED_ARR, ExprNodeUtility.EMPTY_SCRIPTS, select.ReferencedVariables,
                     select.RowLimitSpec, CollectionUtil.EMPTY_STRING_ARRAY, mergedAnnotations, null, null, null, null, null, null, null, null, null, groupByExpressions, null, null);
     
             // create viewable per port

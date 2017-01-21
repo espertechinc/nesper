@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,7 +19,7 @@ namespace com.espertech.esper.epl.agg
         [Test]
         public void TestAggregatorMax()
         {
-            AggregatorMinMax agg = new AggregatorMinMax(MinMaxTypeEnum.MAX, typeof(int));
+            AggregatorMinMax agg = new AggregatorMinMax(MinMaxTypeEnum.MAX);
             Assert.AreEqual(null, agg.Value);
             agg.Enter(10);
             Assert.AreEqual(10, agg.Value);
@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.agg
         [Test]
         public void TestAggregatorMin()
         {
-            AggregatorMinMax agg = new AggregatorMinMax(MinMaxTypeEnum.MIN, typeof(int));
+            AggregatorMinMax agg = new AggregatorMinMax(MinMaxTypeEnum.MIN);
             Assert.AreEqual(null, agg.Value);
             agg.Enter(10);
             Assert.AreEqual(10, agg.Value);

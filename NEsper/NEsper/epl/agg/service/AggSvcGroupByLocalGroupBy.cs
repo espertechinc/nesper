@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,8 +24,8 @@ namespace com.espertech.esper.epl.agg.service
 	    private AggregationMethod[] _currentAggregatorMethods;
 	    private AggregationState[] _currentAggregatorStates;
 
-	    public AggSvcGroupByLocalGroupBy(MethodResolutionService methodResolutionService, bool isJoin, AggregationLocalGroupByPlan localGroupByPlan, object groupKeyBinding)
-	        : base (methodResolutionService, isJoin, localGroupByPlan, groupKeyBinding)
+	    public AggSvcGroupByLocalGroupBy(bool isJoin, AggregationLocalGroupByPlan localGroupByPlan)
+	        : base (isJoin, localGroupByPlan)
         {
 	    }
 
@@ -52,8 +52,8 @@ namespace com.espertech.esper.epl.agg.service
 	        }
 
 	        if (_currentAggregatorMethods == null) {
-	            _currentAggregatorMethods = MethodResolutionService.NewAggregators(LocalGroupByPlan.AllLevels[0].MethodFactories, agentInstanceId, groupByKey, null, null);
-	            _currentAggregatorStates = MethodResolutionService.NewAccesses(agentInstanceId, IsJoin, LocalGroupByPlan.AllLevels[0].StateFactories, groupByKey, null, null, null);
+                _currentAggregatorMethods = AggSvcGroupByUtil.NewAggregators(LocalGroupByPlan.AllLevels[0].MethodFactories);
+                _currentAggregatorStates = AggSvcGroupByUtil.NewAccesses(agentInstanceId, IsJoin, LocalGroupByPlan.AllLevels[0].StateFactories, groupByKey, null);
 	        }
 	    }
 

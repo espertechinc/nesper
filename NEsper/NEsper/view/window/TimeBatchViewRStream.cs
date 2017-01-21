@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -36,7 +36,7 @@ namespace com.espertech.esper.view.window
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
         private readonly long? _initialReferencePoint;
-        protected readonly ScheduleSlot ScheduleSlot;
+        protected readonly long ScheduleSlot;
         private readonly bool _isForceOutput;
         private readonly bool _isStartEager;
         protected EPStatementHandleCallback Handle;

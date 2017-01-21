@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -445,7 +445,7 @@ namespace com.espertech.esper.core.service
             {
                 try
                 {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText, 2);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText);
                 }
                 catch (Exception ex)
                 {
@@ -559,7 +559,7 @@ namespace com.espertech.esper.core.service
             {
                 try
                 {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText, 2);
+                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText);
                 }
                 catch (Exception ex)
                 {

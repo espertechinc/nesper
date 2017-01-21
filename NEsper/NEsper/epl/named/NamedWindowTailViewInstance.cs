@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -47,13 +47,8 @@ namespace com.espertech.esper.epl.named
             _namedWindowProcessor = namedWindowProcessor;
 	        _agentInstanceContext = agentInstanceContext;
 	        _consumersInContext = NamedWindowUtil.CreateConsumerMap(tailView.IsPrioritized);
-            _latchFactory = new NamedWindowConsumerLatchFactory(
-                namedWindowProcessor.NamedWindowType.Name,
-                tailView.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
-                tailView.ThreadingConfig.NamedWindowConsumerDispatchTimeout,
-                tailView.ThreadingConfig.NamedWindowConsumerDispatchLocking,
-                tailView.TimeSourceService);
-	    }
+            _latchFactory = tailView.MakeLatchFactory();
+        }
 
 	    public override void Update(EventBean[] newData, EventBean[] oldData)
 	    {

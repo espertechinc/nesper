@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -126,11 +126,11 @@ namespace com.espertech.esper.epl.expression.funcs
                             _typeCaster = StringToDateTimeWStaticISOFormatComputer();
                         }
                         else {
-                            _typeCaster = StringToDateTimeWStaticFormatComputer(staticDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
+                            _typeCaster = StringToDateTimeWStaticFormatComputer(staticDateFormat, validationContext.EngineImportService.TimeZone);
                         }
                     }
                     else {
-                        _typeCaster = StringToDateTimeWDynamicFormatComputer(dynamicDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
+                        _typeCaster = StringToDateTimeWDynamicFormatComputer(dynamicDateFormat, validationContext.EngineImportService.TimeZone);
                         _isConstant = false;
                     }
                 }
@@ -141,11 +141,11 @@ namespace com.espertech.esper.epl.expression.funcs
                             _typeCaster = StringToLongWStaticISOFormatComputer();
                         }
                         else {
-                            _typeCaster = StringToLongWStaticFormatComputer(staticDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
+                            _typeCaster = StringToLongWStaticFormatComputer(staticDateFormat, validationContext.EngineImportService.TimeZone);
                         }
                     }
                     else {
-                        _typeCaster = StringToLongWDynamicFormatComputer(dynamicDateFormat, validationContext.MethodResolutionService.EngineImportService.TimeZone);
+                        _typeCaster = StringToLongWDynamicFormatComputer(dynamicDateFormat, validationContext.EngineImportService.TimeZone);
                         _isConstant = false;
                     }
                 }

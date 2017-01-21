@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -151,6 +151,7 @@ namespace com.espertech.esper.epl.db
         public virtual void Stop()
         {
             _pollExecStrategy.Dispose();
+            _dataCache.Dispose();
         }
 
         /// <summary>
@@ -158,7 +159,6 @@ namespace com.espertech.esper.epl.db
         /// </summary>
         /// <param name="engineImportService">The engine import service.</param>
         /// <param name="streamTypeService">supplies the types of streams against which to validate</param>
-        /// <param name="methodResolutionService">for resolving imports and classes and methods</param>
         /// <param name="timeProvider">for providing current time</param>
         /// <param name="variableService">for access to variables</param>
         /// <param name="tableService"></param>
@@ -171,7 +171,7 @@ namespace com.espertech.esper.epl.db
         /// <param name="eventAdapterService">The event adapter service.</param>
         /// <param name="statementContext">The statement context</param>
         /// <throws>  ExprValidationException is thrown to indicate an exception in validating the view </throws>
-        public void Validate(EngineImportService engineImportService, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, TableService tableService, ScriptingService scriptingService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot, SchedulingService schedulingService, string engineURI, IDictionary<int, IList<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, StatementContext statementContext)
+        public void Validate(EngineImportService engineImportService, StreamTypeService streamTypeService, TimeProvider timeProvider, VariableService variableService, TableService tableService, ScriptingService scriptingService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot, SchedulingService schedulingService, string engineURI, IDictionary<int, IList<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, StatementContext statementContext)
         {
             _statementContext = statementContext;
             _evaluators = new ExprEvaluator[_inputParameters.Count];
@@ -180,7 +180,9 @@ namespace com.espertech.esper.epl.db
 
             var count = 0;
             var validationContext = new ExprValidationContext(
-                streamTypeService, methodResolutionService, null, timeProvider, variableService, tableService,
+                streamTypeService, engineImportService, 
+                statementContext.StatementExtensionServicesContext, null,
+                timeProvider, variableService, tableService,
                 exprEvaluatorContext, eventAdapterService,
                 statementContext.StatementName, 
                 statementContext.StatementId, 

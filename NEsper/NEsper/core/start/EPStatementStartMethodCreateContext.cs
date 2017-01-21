@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -116,7 +116,10 @@ namespace com.espertech.esper.core.start
 	                // validate parameters
 	                var streamTypes = new StreamTypeServiceImpl(result.FilterSpec.FilterForEventType, null, true, statementContext.EngineURI);
 	                var validationContext = new ExprValidationContext(
-	                    streamTypes, statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+	                    streamTypes,
+                        statementContext.EngineImportService, 
+                        statementContext.StatementExtensionServicesContext, null,
+                        statementContext.SchedulingService,
 	                    statementContext.VariableService, statementContext.TableService,
 	                    GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
 	                    statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
@@ -146,7 +149,10 @@ namespace com.espertech.esper.core.start
 	                }
 	                var types = new StreamTypeServiceImpl(filter.FilterSpecCompiled.FilterForEventType, filter.OptionalFilterAsName, true, servicesContext.EngineURI);
 	                var validationContext = new ExprValidationContext(
-	                    types, statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+	                    types,
+                        statementContext.EngineImportService,
+                        statementContext.StatementExtensionServicesContext, null,
+                        statementContext.SchedulingService,
 	                    statementContext.VariableService, statementContext.TableService,
 	                    GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
 	                    statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
@@ -196,7 +202,9 @@ namespace com.espertech.esper.core.start
 	            var validationContext =
 	                new ExprValidationContext(
 	                    new StreamTypeServiceImpl(servicesContext.EngineURI, false),
-	                    statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+                        statementContext.EngineImportService,
+                        statementContext.StatementExtensionServicesContext, null,
+                        statementContext.SchedulingService,
 	                    statementContext.VariableService, statementContext.TableService,
 	                    GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
 	                    statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,

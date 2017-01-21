@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
@@ -34,8 +35,7 @@ namespace com.espertech.esper.regression.enummethod
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
 
-            config.AddEventType("SupportBean_ST0_Container",
-                                typeof (SupportBean_ST0_Container));
+            config.AddEventType("SupportBean_ST0_Container", typeof (SupportBean_ST0_Container));
             config.AddEventType("SupportBean_ST0", typeof (SupportBean_ST0));
             config.AddEventType("SupportBean", typeof (SupportBean));
             config.AddEventType("SupportCollection", typeof (SupportCollection));
@@ -126,6 +126,22 @@ namespace com.espertech.esper.regression.enummethod
 
             map.Put(key2, value2);
             return map;
+        }
+
+        [Test]
+        public void TestStringArrayIntersection() 
+        {
+            String epl =
+                "create objectarray schema Event(meta1 string[], meta2 string[]);\n" +
+                "@Name('Out') select * from Event(meta1.intersect(meta2).countOf() > 0);\n";
+            _epService.EPAdministrator.DeploymentAdmin.ParseDeploy(epl);
+            _epService.EPAdministrator.GetStatement("Out").AddListener(_listener);
+
+            SendAndAssert("a,b", "a,b", true);
+            SendAndAssert("c,d", "a,b", false);
+            SendAndAssert("c,d", "a,d", true);
+            SendAndAssert("a,d,a,a", "b,c", false);
+            SendAndAssert("a,d,a,a", "b,d", true);
         }
 
         [Test]
@@ -330,6 +346,12 @@ namespace com.espertech.esper.regression.enummethod
                 SupportBean_ST0_Container.Make2Value());
             LambdaAssertionUtil.AssertST0Id(_listener, "val0", "");
             _listener.Reset();
+        }
+
+        private void SendAndAssert(String metaOne, String metaTwo, bool expected)
+        {
+            _epService.EPRuntime.SendEvent(new Object[] { metaOne.SplitCsv(), metaTwo.SplitCsv() }, "Event");
+            Assert.AreEqual(expected, _listener.IsInvokedAndReset());
         }
     }
 }

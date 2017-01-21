@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -64,7 +64,7 @@ namespace com.espertech.esper.events.xml
         {
             get
             {
-                EventPropertyGetter getter = EventType.GetGetter(property);
+                var getter = EventType.GetGetter(property);
                 if (getter == null)
                 {
                     throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
@@ -84,7 +84,13 @@ namespace com.espertech.esper.events.xml
         /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
         public Object Get(String property)
         {
-            return this[property];
+            var getter = EventType.GetGetter(property);
+            if (getter == null)
+            {
+                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
+            }
+
+            return getter.Get(this);
         }
 
         public Object GetFragment(String propertyExpression)

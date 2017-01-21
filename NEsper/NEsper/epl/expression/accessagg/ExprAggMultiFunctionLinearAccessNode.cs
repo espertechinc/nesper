@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -194,20 +194,8 @@ namespace com.espertech.esper.epl.expression.accessagg
 
 	        var stateKey = new AggregationStateKeyWStream(streamNum, containedType, AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR, new ExprNode[0]);
 
-	        ExprNode me = this;
-	        var theStreamNum = streamNum;
-	        AggregationStateFactory stateFactory =  new ProxyAggregationStateFactory
-	        {
-                ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
-                {
-	                if (join) {
-	                    return methodResolutionService.MakeAccessAggLinearJoin(agentInstanceId, groupId, aggregationId, theStreamNum, passThru);
-	                }
-                    return methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, theStreamNum, passThru);
-	            },
-
-                ProcAggregationExpression = () => me
-	        };
+            AggregationStateFactory stateFactory = validationContext.EngineImportService.AggregationFactoryFactory.MakeLinear(
+                validationContext.StatementExtensionSvcContext, this, streamNum);
 
 	        var factory = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, accessorResultType, containedType,
 	                stateKey, stateFactory, AggregationAgentDefault.INSTANCE);
@@ -230,14 +218,8 @@ namespace com.espertech.esper.epl.expression.accessagg
 	        var containedType = validationContext.StreamTypeService.EventTypes[0];
 	        var componentType = containedType.UnderlyingType;
 	        AggregationAccessor accessor = new AggregationAccessorWindowNoEval(componentType);
-	        ExprNode me = this;
-	        AggregationStateFactory stateFactory = new ProxyAggregationStateFactory
-            {
-                ProcCreateAccess = (methodResolutionService, agentInstanceId, groupId, aggregationId, join, groupKey, passThru) =>
-                    methodResolutionService.MakeAccessAggLinearNonJoin(agentInstanceId, groupId, aggregationId, 0, passThru),
-	            ProcAggregationExpression = () => me,
-	        };
-	        var factory = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, TypeHelper.GetArrayType(componentType), containedType, null, stateFactory, null);
+            AggregationStateFactory stateFactory = validationContext.EngineImportService.AggregationFactoryFactory.MakeLinear(validationContext.StatementExtensionSvcContext, this, 0);
+            var factory = new ExprAggMultiFunctionLinearAccessNodeFactoryAccess(this, accessor, TypeHelper.GetArrayType(componentType), containedType, null, stateFactory, null);
 	        return new LinearAggregationFactoryDesc(factory, factory.ContainedEventType, null);
 	    }
 

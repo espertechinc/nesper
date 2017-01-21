@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,7 +31,7 @@ namespace com.espertech.esper.core.service.resource
         {
             if (partitioned)
             {
-                ResourcesPartitioned = new OrderedDictionary<int, StatementResourceHolder>();
+                ResourcesPartitioned = new Dictionary<int, StatementResourceHolder>();
             }
         }
 
@@ -61,14 +61,16 @@ namespace com.espertech.esper.core.service.resource
             ResourcesPartitioned.Put(agentInstanceId, statementResourceHolder);
         }
 
-        public void DeallocatePartitioned(int agentInstanceId)
+        public StatementResourceHolder DeallocatePartitioned(int agentInstanceId)
         {
-            ResourcesPartitioned.Remove(agentInstanceId);
+            return ResourcesPartitioned.Delete(agentInstanceId);
         }
 
-        public void DeallocateUnpartitioned()
+        public StatementResourceHolder DeallocateUnpartitioned()
         {
+            StatementResourceHolder unpartitioned = ResourcesUnpartitioned;
             ResourcesUnpartitioned = null;
+            return unpartitioned;
         }
 
         private void RemoveContextPattern(bool startEndpoint, ContextStatePathKey path)

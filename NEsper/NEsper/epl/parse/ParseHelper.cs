@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -297,29 +297,48 @@ namespace com.espertech.esper.epl.parse
     
         private static int FindEndTokenScript(int startIndex, CommonTokenStream tokens, int tokenTypeSearch, ISet<int> afterScriptTokens, bool requireAfterScriptToken)
         {
-            var found = -1;
-            for (var i = startIndex; i < tokens.Size; i++) {
-                if (tokens.Get(i).Type == tokenTypeSearch) {
-                    if (!requireAfterScriptToken) {
-                        return i;
-                    }
-                    // The next non-comment token must be among the afterScriptTokens, i.e. SELECT/INSERT/ON/DELETE/UPDATE
-                    // Find next non-comment token.
-                    for (var j = i + 1; j < tokens.Size; j++) {
-                        var next = tokens.Get(j);
-                        if (next.Channel == 0) {
-                            if (afterScriptTokens.Contains(next.Type)) {
-                                found = i;
+
+            // The next non-comment token must be among the afterScriptTokens, i.e. SELECT/INSERT/ON/DELETE/UPDATE
+            // Find next non-comment token.
+            if (requireAfterScriptToken)
+            {
+                int found = -1;
+                for (int i = startIndex; i < tokens.Size; i++)
+                {
+                    if (tokens.Get(i).Type == tokenTypeSearch)
+                    {
+                        for (int j = i + 1; j < tokens.Size; j++)
+                        {
+                            var next = tokens.Get(j);
+                            if (next.Channel == 0)
+                            {
+                                if (afterScriptTokens.Contains(next.Type))
+                                {
+                                    found = i;
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
+                    if (found != -1)
+                    {
+                        break;
+                    }
                 }
-                if (found != -1) {
-                    break;
+                return found;
+            }
+
+            // Find the last token
+            int indexLast = -1;
+            for (int i = startIndex; i < tokens.Size; i++)
+            {
+                if (tokens.Get(i).Type == tokenTypeSearch)
+                {
+                    indexLast = i;
                 }
             }
-            return found;
+
+            return indexLast;
         }
     
         private static bool IsContainsScriptExpression(CommonTokenStream tokens) {

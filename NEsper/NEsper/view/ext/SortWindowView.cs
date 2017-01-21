@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -162,7 +162,7 @@ namespace com.espertech.esper.view.ext
                     var lastEntry = _sortedEvents.Get(lastKey);
                     if (lastEntry is IList<EventBean>) {
                         var events = (IList<EventBean>) lastEntry;
-                        var theEvent = events.Pluck(events.Count - 1);  // remove oldest event, newest events are first in list
+                        var theEvent = events.Delete(events.Count - 1);  // remove oldest event, newest events are first in list
                         _eventCount--;
                         if (events.IsEmpty()) {
                             _sortedEvents.Remove(lastKey);

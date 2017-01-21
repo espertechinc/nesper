@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -122,12 +122,40 @@ namespace com.espertech.esper.util
             return newArray;
         }
 
-        public static object ArrayExpandAddElements<T>(object array, T[] elementsToAdd)        {            var cl = array.GetType();            if (!cl.IsArray) return null;            return ArrayExpandAddElements((Array) array, elementsToAdd);        }    
-        public static object ArrayShrinkRemoveSingle(Array array, int index)        {            var length = array.Length;            var newLength = length - 1;            var componentType = array.GetType().GetElementType();            var newArray = Array.CreateInstance(componentType, newLength);
-            if (index > 0)            {                Array.Copy(array, 0, newArray, 0, index);            }
-            if (index < newLength)            {                Array.Copy(array, index + 1, newArray, index, newLength - index);            }
-            return newArray;        }
-        public static object ArrayShrinkRemoveSingle(object array, int index)        {            Type cl = array.GetType();            if (!cl.IsArray) return null;            return ArrayShrinkRemoveSingle((Array) array, index);        }
+        public static object ArrayExpandAddElements<T>(object array, T[] elementsToAdd)
+        {
+            var cl = array.GetType();
+            if (!cl.IsArray) return null;
+            return ArrayExpandAddElements((Array) array, elementsToAdd);
+        }
+    
+        public static object ArrayShrinkRemoveSingle(Array array, int index)
+        {
+            var length = array.Length;
+            var newLength = length - 1;
+            var componentType = array.GetType().GetElementType();
+            var newArray = Array.CreateInstance(componentType, newLength);
+
+            if (index > 0)
+            {
+                Array.Copy(array, 0, newArray, 0, index);
+            }
+
+            if (index < newLength)
+            {
+                Array.Copy(array, index + 1, newArray, index, newLength - index);
+            }
+
+            return newArray;
+        }
+
+        public static object ArrayShrinkRemoveSingle(object array, int index)
+        {
+            Type cl = array.GetType();
+            if (!cl.IsArray) return null;
+            return ArrayShrinkRemoveSingle((Array) array, index);
+        }
+
             public static object ArrayExpandAddElements<T>(Array array, ICollection<T> elementsToAdd)
         {
             var length = array.Length;
@@ -341,10 +369,27 @@ namespace com.espertech.esper.util
 
         public static object AddArrays(object first, object second)
         {
-            var firstAsArray = first as Array;            var secondAsArray = second as Array;
-            if ((first != null) && (firstAsArray == null))                throw new ArgumentException("Parameter is not an array: " + first);            if ((second != null) && (secondAsArray == null))                throw new ArgumentException("Parameter is not an array: " + second);            if (firstAsArray == null)                return secondAsArray;            if (secondAsArray == null)                return firstAsArray;
-            var firstType = firstAsArray.GetType().GetElementType();            var firstLength = firstAsArray.Length;            var secondLength = secondAsArray.Length;            var total = firstLength + secondLength;            var dest = Array.CreateInstance(firstType, total);
-            Array.Copy(firstAsArray, 0, dest, 0, firstLength);            Array.Copy(secondAsArray, 0, dest, firstLength, secondLength);
+            var firstAsArray = first as Array;
+            var secondAsArray = second as Array;
+
+            if ((first != null) && (firstAsArray == null))
+                throw new ArgumentException("Parameter is not an array: " + first);
+            if ((second != null) && (secondAsArray == null))
+                throw new ArgumentException("Parameter is not an array: " + second);
+            if (firstAsArray == null)
+                return secondAsArray;
+            if (secondAsArray == null)
+                return firstAsArray;
+
+            var firstType = firstAsArray.GetType().GetElementType();
+            var firstLength = firstAsArray.Length;
+            var secondLength = secondAsArray.Length;
+            var total = firstLength + secondLength;
+            var dest = Array.CreateInstance(firstType, total);
+
+            Array.Copy(firstAsArray, 0, dest, 0, firstLength);
+            Array.Copy(secondAsArray, 0, dest, firstLength, secondLength);
+
             return dest;
         }
     

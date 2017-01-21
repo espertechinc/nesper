@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,6 @@ namespace com.espertech.esper.epl.agg.service
     
         private readonly AggSvcGroupByReclaimAgedEvalFunc _evaluationFunctionMaxAge;
         private readonly AggSvcGroupByReclaimAgedEvalFunc _evaluationFunctionFrequency;
-        private readonly MethodResolutionService _methodResolutionService;
     
         // maintain for each group a row of aggregator states that the expression node can pull the data from via index
         private readonly IDictionary<Object, AggregationMethodRowAged> _aggregatorsPerGroup;
@@ -55,15 +54,14 @@ namespace com.espertech.esper.epl.agg.service
         private long _currentMaxAge = DEFAULT_MAX_AGE_MSEC;
         private long _currentReclaimFrequency = DEFAULT_MAX_AGE_MSEC;
     
-        public AggSvcGroupByReclaimAgedImpl(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators, Object groupKeyBinding, AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggregations, bool join, AggSvcGroupByReclaimAgedEvalFunc evaluationFunctionMaxAge, AggSvcGroupByReclaimAgedEvalFunc evaluationFunctionFrequency, MethodResolutionService methodResolutionService)
-            : base(evaluators, aggregators, groupKeyBinding)
+        public AggSvcGroupByReclaimAgedImpl(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators, AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggregations, bool @join, AggSvcGroupByReclaimAgedEvalFunc evaluationFunctionMaxAge, AggSvcGroupByReclaimAgedEvalFunc evaluationFunctionFrequency)
+            : base(evaluators, aggregators)
         {
             _accessors = accessors;
             _accessAggregations = accessAggregations;
             _isJoin = join;
             _evaluationFunctionMaxAge = evaluationFunctionMaxAge;
             _evaluationFunctionFrequency = evaluationFunctionFrequency;
-            _methodResolutionService = methodResolutionService;
             _aggregatorsPerGroup = new Dictionary<Object, AggregationMethodRowAged>();
             _removedKeys = new List<Object>();
         }
@@ -98,9 +96,9 @@ namespace com.espertech.esper.epl.agg.service
             AggregationState[] groupStates;
             if (row == null)
             {
-                groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
-                row = new AggregationMethodRowAged(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, currentTime, groupAggregators, groupStates);
+                groupAggregators = AggSvcGroupByUtil.NewAggregators(Aggregators);
+                groupStates = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, null);
+                row = new AggregationMethodRowAged(1, currentTime, groupAggregators, groupStates);
                 _aggregatorsPerGroup.Put(groupByKey, row);
             }
             else
@@ -189,9 +187,9 @@ namespace com.espertech.esper.epl.agg.service
             }
             else
             {
-                groupAggregators = _methodResolutionService.NewAggregators(Aggregators, exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);
-                groupStates = _methodResolutionService.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
-                row = new AggregationMethodRowAged(_methodResolutionService.GetCurrentRowCount(groupAggregators, groupStates) + 1, currentTime, groupAggregators, groupStates);
+                groupAggregators = AggSvcGroupByUtil.NewAggregators(Aggregators);
+                groupStates = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, _isJoin, _accessAggregations, groupByKey, null);
+                row = new AggregationMethodRowAged(1, currentTime, groupAggregators, groupStates);
                 _aggregatorsPerGroup.Put(groupByKey, row);
             }
     
@@ -218,7 +216,6 @@ namespace com.espertech.esper.epl.agg.service
             if (row.Refcount <= 0)
             {
                 _removedKeys.Add(groupByKey);
-                _methodResolutionService.RemoveAggregators(exprEvaluatorContext.AgentInstanceId, groupByKey, GroupKeyBinding, null);  // allow persistence to remove keys already
             }
             InternalHandleUpdated(groupByKey, row);
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false); }
@@ -237,8 +234,8 @@ namespace com.espertech.esper.epl.agg.service
             }
     
             if (_currentAggregatorMethods == null) {
-                _currentAggregatorMethods = _methodResolutionService.NewAggregators(Aggregators, agentInstanceId, groupByKey, GroupKeyBinding, null);
-                _currentAggregatorStates = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, GroupKeyBinding, null, null);
+                _currentAggregatorMethods = AggSvcGroupByUtil.NewAggregators(Aggregators);
+                _currentAggregatorStates = AggSvcGroupByUtil.NewAccesses(agentInstanceId, _isJoin, _accessAggregations, groupByKey, null);
             }
     
             _currentGroupKey = groupByKey;

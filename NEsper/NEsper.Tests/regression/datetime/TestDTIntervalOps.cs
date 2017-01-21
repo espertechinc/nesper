@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -157,6 +157,7 @@ namespace com.espertech.esper.regression.datetime
             object[][] expected = {
                     new object[] {"2999-01-01T9:00:00.001", 0, true} // sending in A
             };
+#if false
             AssertExpression(seedTime, 0, "a.withDate(2001, 1, 1).before(b)", expected, null);
     
             expected = new object[][] {
@@ -174,7 +175,7 @@ namespace com.espertech.esper.regression.datetime
                     new object[] {"2002-05-30T8:59:59.000", 2000, false}
             };
             AssertExpression(seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
-    
+#endif
             // Test end-timestamp preserved when using calendar ops
             expected = new object[][] {
                     new object[] {"2002-05-30T9:00:01.000", 0, false},

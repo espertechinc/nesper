@@ -1,5 +1,4 @@
 using com.espertech.esper.client;
-using com.espertech.esper.schedule;
 
 namespace com.espertech.esperio
 {
@@ -35,7 +34,7 @@ namespace com.espertech.esperio
 		/// <summary>
 		/// Set the scheduleSlot for thisAdapter.
 		/// </summary>
-        ScheduleSlot ScheduleSlot { set; }
+        long ScheduleSlot { set; }
 
 		/// <summary>
 		/// Set the epService

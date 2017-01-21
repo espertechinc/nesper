@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -119,7 +119,7 @@ namespace com.espertech.esper.epl.named
                 statementContext.StatementResultService, 
                 statementContext.ValueAddEventService, 
                 selectExprEventTypeRegistry,
-	            statementContext.MethodResolutionService, 
+	            statementContext.EngineImportService, 
                 exprEvaluatorContext, 
                 statementContext.VariableService,
                 statementContext.ScriptingService, 
@@ -131,7 +131,7 @@ namespace com.espertech.esper.epl.named
                 statementContext.Annotations, 
                 statementContext.ContextDescriptor, 
                 statementContext.ConfigSnapshot, null, 
-                statementContext.NamedWindowMgmtService, null, null);
+                statementContext.NamedWindowMgmtService, null, null, null);
 	        var filterEval = desc.OptionalWhereClause == null ? null : desc.OptionalWhereClause.ExprEvaluator;
 
 	        var routerToUser = streamName.Equals(namedWindowName) ? null : internalEventRouter;

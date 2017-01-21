@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -179,7 +179,10 @@ namespace com.espertech.esper.core.start
 
 	        var streamTypeService = new StreamTypeServiceImpl(types, streamNames, istreamOnly, services.EngineURI, false);
 	        var validationContext = new ExprValidationContext(
-	            streamTypeService, statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+	            streamTypeService,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.SchedulingService,
 	            statementContext.VariableService, statementContext.TableService,
 	            new ExprEvaluatorContextStatement(statementContext, false), statementContext.EventAdapterService,
 	            statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
@@ -284,7 +287,7 @@ namespace com.espertech.esper.core.start
 	        var annos = AnnotationUtil.MapByNameLowerCase(annotations);
 
 	        // check annotations used
-	        var typeAnnos = annos.Pluck("type");
+	        var typeAnnos = annos.Delete("type");
 	        if (!annos.IsEmpty()) {
 	            throw new ExprValidationException(msgprefix + " unrecognized annotation '" + annos.Keys.First() + "'");
 	        }
@@ -412,7 +415,8 @@ namespace com.espertech.esper.core.start
 
 	        // create state factory
 	        var groupKeyIndexesArr = CollectionUtil.IntArray(groupKeyIndexes);
-	        var stateRowFactory = new TableStateRowFactory(internalEventType, statementContext.MethodResolutionService, methodFactories, stateFactories, groupKeyIndexesArr, services.EventAdapterService);
+	        var stateRowFactory = new TableStateRowFactory(
+                internalEventType, statementContext.EngineImportService, methodFactories, stateFactories, groupKeyIndexesArr, services.EventAdapterService);
 
 	        // create public event provision
 	        var eventToPublic = new TableMetadataInternalEventToPublic(publicEventType,

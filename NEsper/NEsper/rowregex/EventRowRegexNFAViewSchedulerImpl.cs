@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,7 +16,7 @@ namespace com.espertech.esper.rowregex
 	public class EventRowRegexNFAViewSchedulerImpl : EventRowRegexNFAViewScheduler
 	{
 	    private AgentInstanceContext agentInstanceContext;
-	    private ScheduleSlot scheduleSlot;
+	    private long scheduleSlot;
 	    private EPStatementHandleCallback handle;
 
 	    public void SetScheduleCallback(AgentInstanceContext agentInstanceContext, EventRowRegexNFAViewScheduleCallback scheduleCallback) {

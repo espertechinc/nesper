@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,21 +29,19 @@ namespace com.espertech.esper.core.support
 
 	    public void EvaluateLock()
 	    {
-	        //To change body of implemented methods use File | Settings | File Templates.
 	    }
 
 	    public void EvaluateUnLock()
 	    {
-	        //To change body of implemented methods use File | Settings | File Templates.
 	    }
 
-	    public void Add(long afterMSec, ScheduleHandle callback, ScheduleSlot slot)
+	    public void Add(long afterMSec, ScheduleHandle callback, long slot)
 	    {
 	        Log.Debug(".add Not implemented, afterMSec=" + afterMSec + " callback=" + callback.GetType().Name);
 	        _added.Put(afterMSec, callback);
 	    }
 
-	    public void Remove(ScheduleHandle callback, ScheduleSlot slot)
+	    public void Remove(ScheduleHandle callback, long scheduleSlot)
 	    {
 	        Log.Debug(".remove Not implemented, callback=" + callback.GetType().Name);
 	    }
@@ -113,7 +111,7 @@ namespace com.espertech.esper.core.support
 
 	    public bool IsScheduled(ScheduleHandle scheduleHandle)
 	    {
-	        return false;  //To change body of implemented methods use File | Settings | File Templates.
+	        return false;
 	    }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

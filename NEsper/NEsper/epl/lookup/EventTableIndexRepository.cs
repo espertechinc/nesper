@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -185,7 +185,7 @@ namespace com.espertech.esper.epl.lookup
 
 	    public void RemoveIndex(IndexMultiKey index)
         {
-	        var entry = _tableIndexesRefCount.Pluck(index);
+	        var entry = _tableIndexesRefCount.Delete(index);
 	        if (entry != null) {
 	            _tables.Remove(entry.Table);
 	            if (entry.OptionalIndexName != null) {
@@ -209,7 +209,7 @@ namespace com.espertech.esper.epl.lookup
 
 	    public void RemoveExplicitIndex(string indexName)
         {
-            var eventTable = _explicitIndexes.Pluck(indexName);
+            var eventTable = _explicitIndexes.Delete(indexName);
 	        if (eventTable != null) {
 	            eventTable.Destroy();
 	        }

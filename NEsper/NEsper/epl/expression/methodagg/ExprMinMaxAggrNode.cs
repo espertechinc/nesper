@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -71,7 +71,7 @@ namespace com.espertech.esper.epl.expression.methodagg
 	            }
                 base.ValidateFilter(PositionalParams[1].ExprEvaluator);
 	        }
-	        return new ExprMinMaxAggrNodeFactory(this, child.ExprEvaluator.ReturnType, hasDataWindows);
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeMinMax(validationContext.StatementExtensionSvcContext, this, child.ExprEvaluator.ReturnType, hasDataWindows);
 	    }
 
 	    protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

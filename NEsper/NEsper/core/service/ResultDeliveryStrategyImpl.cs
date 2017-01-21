@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,9 @@
 
 using System;
 using System.Reflection;
+
 using XLR8.CGLib;
+
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
@@ -25,51 +27,71 @@ namespace com.espertech.esper.core.service
     public class ResultDeliveryStrategyImpl : ResultDeliveryStrategy
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly DeliveryConvertor _deliveryConvertor;
-        private readonly FastMethod _endFastMethod;
-        private readonly FastMethod _startFastMethod;
 
-        private readonly String _statementName;
+        private readonly EPStatement _statement;
         private readonly Object _subscriber;
-        private readonly FastMethod _updateFastMethod;
-        private readonly FastMethod _updateRStreamFastMethod;
+        private readonly FastMethod _updateMethodFast;
+        private readonly FastMethod _startMethodFast;
+        private readonly bool _startMethodHasEPStatement;
+        private readonly FastMethod _endMethodFast;
+        private readonly bool _endMethodHasEPStatement;
+        private readonly FastMethod _updateRStreamMethodFast;
+        private readonly DeliveryConvertor _deliveryConvertor;
 
         /// <summary>
-        /// Ctor.
+        /// Initializes a new instance of the <see cref="ResultDeliveryStrategyImpl"/> class.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
-        /// <param name="subscriber">is the subscriber receiving method invocations</param>
-        /// <param name="deliveryConvertor">for converting individual rows</param>
-        /// <param name="method">to deliver the insert stream to</param>
-        /// <param name="startMethod">to call to indicate when delivery starts, or null if no such indication is required</param>
-        /// <param name="endMethod">to call to indicate when delivery ends, or null if no such indication is required</param>
-        /// <param name="rStreamMethod">to deliver the remove stream to, or null if no such indication is required</param>
-        public ResultDeliveryStrategyImpl(String statementName,
-                                          Object subscriber,
-                                          DeliveryConvertor deliveryConvertor,
-                                          MethodInfo method,
-                                          MethodInfo startMethod,
-                                          MethodInfo endMethod,
-                                          MethodInfo rStreamMethod)
+        /// <param name="statement">The statement.</param>
+        /// <param name="subscriber">The subscriber.</param>
+        /// <param name="deliveryConvertor">The delivery convertor.</param>
+        /// <param name="method">The method.</param>
+        /// <param name="startMethod">The start method.</param>
+        /// <param name="endMethod">The end method.</param>
+        /// <param name="rStreamMethod">The r stream method.</param>
+        public ResultDeliveryStrategyImpl(
+            EPStatement statement,
+            Object subscriber,
+            DeliveryConvertor deliveryConvertor,
+            MethodInfo method,
+            MethodInfo startMethod,
+            MethodInfo endMethod,
+            MethodInfo rStreamMethod)
         {
-            _statementName = statementName;
+            _statement = statement;
             _subscriber = subscriber;
             _deliveryConvertor = deliveryConvertor;
-            FastClass fastClass = FastClass.Create(subscriber.GetType());
-            _updateFastMethod = fastClass.GetMethod(method);
+            _updateMethodFast = FastClass.CreateMethod(method);
 
-            _startFastMethod = startMethod != null ? fastClass.GetMethod(startMethod) : null;
+            if (startMethod != null)
+            {
+                _startMethodFast = FastClass.CreateMethod(startMethod);
+                _startMethodHasEPStatement = IsMethodAcceptsStatement(startMethod);
+            }
+            else
+            {
+                _startMethodFast = null;
+                _startMethodHasEPStatement = false;
+            }
 
-            _endFastMethod = endMethod != null ? fastClass.GetMethod(endMethod) : null;
+            if (endMethod != null)
+            {
+                _endMethodFast = FastClass.CreateMethod(endMethod);
+                _endMethodHasEPStatement = IsMethodAcceptsStatement(endMethod);
+            }
+            else
+            {
+                _endMethodFast = null;
+                _endMethodHasEPStatement = false;
+            }
 
-            _updateRStreamFastMethod = rStreamMethod != null ? fastClass.GetMethod(rStreamMethod) : null;
+            _updateRStreamMethodFast = rStreamMethod != null ? FastClass.CreateMethod(rStreamMethod) : null;
         }
 
         #region ResultDeliveryStrategy Members
 
         public void Execute(UniformPair<EventBean[]> result)
         {
-            if (_startFastMethod != null)
+            if (_startMethodFast != null)
             {
                 int countNew = 0;
                 int countOld = 0;
@@ -79,18 +101,27 @@ namespace com.espertech.esper.core.service
                     countOld = Count(result.Second);
                 }
 
-                var paramList = new Object[] {countNew, countOld};
+                Object[] paramList;
+                if (!_startMethodHasEPStatement)
+                {
+                    paramList = new Object[] { countNew, countOld };
+                }
+                else
+                {
+                    paramList = new Object[] { _statement, countNew, countOld };
+                }
+
                 try
                 {
-                    _startFastMethod.Invoke(_subscriber, paramList);
+                    _startMethodFast.Invoke(_subscriber, paramList);
                 }
                 catch (TargetInvocationException e)
                 {
-                    Handle(_statementName, Log, e, paramList, _subscriber, _startFastMethod);
+                    Handle(_statement.Name, Log, e, paramList, _subscriber, _startMethodFast);
                 }
                 catch (Exception e)
                 {
-                    HandleThrowable(Log, e, null, _subscriber, _startFastMethod);
+                    HandleThrowable(Log, e, null, _subscriber, _startMethodFast);
                 }
             }
 
@@ -113,21 +144,21 @@ namespace com.espertech.esper.core.service
                         Object[] paramList = _deliveryConvertor.ConvertRow(natural.Natural);
                         try
                         {
-                            _updateFastMethod.Invoke(_subscriber, paramList);
+                            _updateMethodFast.Invoke(_subscriber, paramList);
                         }
                         catch (TargetInvocationException e)
                         {
-                            Handle(_statementName, Log, e, paramList, _subscriber, _updateFastMethod);
+                            Handle(_statement.Name, Log, e, paramList, _subscriber, _updateMethodFast);
                         }
                         catch (Exception e)
                         {
-                            HandleThrowable(Log, e, paramList, _subscriber, _updateFastMethod);
+                            HandleThrowable(Log, e, paramList, _subscriber, _updateMethodFast);
                         }
                     }
                 }
             }
 
-            if ((_updateRStreamFastMethod != null) && (oldData != null) && (oldData.Length > 0))
+            if ((_updateRStreamMethodFast != null) && (oldData != null) && (oldData.Length > 0))
             {
                 for (int i = 0; i < oldData.Length; i++)
                 {
@@ -135,36 +166,37 @@ namespace com.espertech.esper.core.service
                     if (theEvent is NaturalEventBean)
                     {
                         var natural = (NaturalEventBean) theEvent;
-                        Object[] paramList = _deliveryConvertor.ConvertRow(natural.Natural);
+                        var paramList = _deliveryConvertor.ConvertRow(natural.Natural);
                         try
                         {
-                            _updateRStreamFastMethod.Invoke(_subscriber, paramList);
+                            _updateRStreamMethodFast.Invoke(_subscriber, paramList);
                         }
                         catch (TargetInvocationException e)
                         {
-                            Handle(_statementName, Log, e, paramList, _subscriber, _updateRStreamFastMethod);
+                            Handle(_statement.Name, Log, e, paramList, _subscriber, _updateRStreamMethodFast);
                         }
                         catch (Exception e)
                         {
-                            HandleThrowable(Log, e, paramList, _subscriber, _updateRStreamFastMethod);
+                            HandleThrowable(Log, e, paramList, _subscriber, _updateRStreamMethodFast);
                         }
                     }
                 }
             }
 
-            if (_endFastMethod != null)
+            if (_endMethodFast != null)
             {
+                var paramList = _endMethodHasEPStatement ? new object[] { _statement } : new object[] { };
                 try
                 {
-                    _endFastMethod.Invoke(_subscriber, null);
+                    _endMethodFast.Invoke(_subscriber, paramList);
                 }
                 catch (TargetInvocationException e)
                 {
-                    Handle(_statementName, Log, e, null, _subscriber, _endFastMethod);
+                    Handle(_statement.Name, Log, e, null, _subscriber, _endMethodFast);
                 }
                 catch (Exception e)
                 {
-                    HandleThrowable(Log, e, null, _subscriber, _endFastMethod);
+                    HandleThrowable(Log, e, null, _subscriber, _endMethodFast);
                 }
             }
         }
@@ -230,6 +262,11 @@ namespace com.espertech.esper.core.service
                 }
             }
             return count;
+        }
+
+        private static bool IsMethodAcceptsStatement(MethodInfo method)
+        {
+            return method.GetParameterTypes().Length > 0 && method.GetParameterTypes()[0] == typeof(EPStatement);
         }
     }
 }

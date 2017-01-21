@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -35,7 +35,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
             _hasFilter = PositionalParams.Length > 1;
             var childType = base.ValidateNumericChildAllowFilter(_hasFilter);
-            return new ExprAvgNodeFactory(this, childType, validationContext.MethodResolutionService);
+            return validationContext.EngineImportService.AggregationFactoryFactory.MakeAvg(validationContext.StatementExtensionSvcContext, this, childType, validationContext.EngineImportService.DefaultMathContext);
         }
 
         public override string AggregationFunctionName

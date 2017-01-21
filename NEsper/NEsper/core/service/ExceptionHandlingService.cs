@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,7 +33,8 @@ namespace com.espertech.esper.core.service
             _engineURI = engineURI;
             foreach (var handler in exceptionHandlers) UnhandledException += handler;
             foreach (var handler in conditionHandlers) UnhandledCondition += handler;
-        }    
+        }
+    
         public void HandleCondition(BaseCondition condition, EPStatementHandle handle)
         {
             if (UnhandledCondition == null)

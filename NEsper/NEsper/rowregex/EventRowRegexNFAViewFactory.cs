@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -162,7 +162,8 @@ namespace com.espertech.esper.rowregex
 	            var exprNodeResult = HandlePreviousFunctions(defineItem.Expression);
 	            var validationContext = new ExprValidationContext(
 	                typeServiceDefines,
-                    statementContext.MethodResolutionService, null, 
+                    statementContext.EngineImportService, 
+                    statementContext.StatementExtensionServicesContext, null, 
                     statementContext.SchedulingService,
 	                statementContext.VariableService, 
                     statementContext.TableService, exprEvaluatorContext,
@@ -259,7 +260,8 @@ namespace com.espertech.esper.rowregex
 
 	                var validationContext = new ExprValidationContext(
 	                    typeServiceAggregateMeasure,
-                        statementContext.MethodResolutionService, null,
+                        statementContext.EngineImportService, 
+                        statementContext.StatementExtensionServicesContext, null,
 	                    statementContext.SchedulingService,
                         statementContext.VariableService,
                         statementContext.TableService,
@@ -278,7 +280,9 @@ namespace com.espertech.esper.rowregex
 	                    aggregateNode.SetChildNode(count++, new ExprNodeValidated(validated));
 	                }
 	                validationContext = new ExprValidationContext(
-	                    typeServiceMeasure, statementContext.MethodResolutionService, null,
+	                    typeServiceMeasure,
+                        statementContext.EngineImportService,
+                        statementContext.StatementExtensionServicesContext, null,
 	                    statementContext.SchedulingService,
                         statementContext.VariableService,
                         statementContext.TableService,
@@ -388,7 +392,9 @@ namespace com.espertech.esper.rowregex
 	            var typeServicePartition = new StreamTypeServiceImpl(parentViewType, "MATCH_RECOGNIZE_PARTITION", true, statementContext.EngineURI);
 	            var validated = new List<ExprNode>();
 	            var validationContext = new ExprValidationContext(
-	                typeServicePartition, statementContext.MethodResolutionService, null,
+	                typeServicePartition,
+                    statementContext.EngineImportService,
+                    statementContext.StatementExtensionServicesContext, null,
 	                statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
 	                exprEvaluatorContext, statementContext.EventAdapterService, statementContext.StatementName,
 	                statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
@@ -407,7 +413,9 @@ namespace com.espertech.esper.rowregex
 	            var validationContext =
 	                new ExprValidationContext(
 	                    new StreamTypeServiceImpl(statementContext.EngineURI, false),
-	                    statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+                        statementContext.EngineImportService,
+                        statementContext.StatementExtensionServicesContext, null,
+                        statementContext.SchedulingService,
 	                    statementContext.VariableService, statementContext.TableService, exprEvaluatorContext,
 	                    statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
 	                    statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
@@ -416,14 +424,21 @@ namespace com.espertech.esper.rowregex
 	        }
 	    }
 
-	    private ExprNode ValidateMeasureClause(ExprNode measureNode, StreamTypeService typeServiceMeasure, ISet<string> variablesMultiple, ISet<string> variablesSingle, StatementContext statementContext)
-
+	    private ExprNode ValidateMeasureClause(
+	        ExprNode measureNode,
+	        StreamTypeService typeServiceMeasure,
+	        ISet<string> variablesMultiple,
+	        ISet<string> variablesSingle,
+	        StatementContext statementContext)
 	    {
 	        try
 	        {
 	            var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
 	            var validationContext = new ExprValidationContext(
-	                typeServiceMeasure, statementContext.MethodResolutionService, null, statementContext.SchedulingService,
+	                typeServiceMeasure,
+                    statementContext.EngineImportService,
+                    statementContext.StatementExtensionServicesContext, null,
+                    statementContext.SchedulingService,
 	                statementContext.VariableService, statementContext.TableService, exprEvaluatorContext,
 	                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
 	                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,

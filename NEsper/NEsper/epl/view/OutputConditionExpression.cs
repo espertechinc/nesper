@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.view
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly OutputConditionExpressionFactory _parent;
 
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private bool _isCallbackScheduled;
         private bool _ignoreVariableCallbacks;
         private readonly ObjectArrayEventBean _builtinProperties;

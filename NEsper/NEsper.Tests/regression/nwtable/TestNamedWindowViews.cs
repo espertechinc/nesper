@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,6 +21,7 @@ using com.espertech.esper.events.bean;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
+using com.espertech.esper.support.util;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
@@ -1545,7 +1546,7 @@ namespace com.espertech.esper.regression.nwtable
             EPAssertionUtil.AssertProps(_listenerStmtOne.LastNewData[0], fields, new object[]{"G2", 20L});
             Assert.IsNull(_listenerStmtOne.LastOldData);
             _listenerStmtOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 20L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 20L } });
     
             // delete G2
             SendMarketBean("G2");
@@ -1563,13 +1564,13 @@ namespace com.espertech.esper.regression.nwtable
             EPAssertionUtil.AssertProps(_listenerStmtOne.LastNewData[0], fields, new object[]{"G2", 21L});
             Assert.IsNull(_listenerStmtOne.LastOldData);
             _listenerStmtOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 2L }, new object[] { "G2", 21L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 2L }, new object[] { "G2", 21L } });
     
             SendSupportBean("G2", 22L);
             EPAssertionUtil.AssertProps(_listenerStmtOne.LastNewData[0], fields, new object[]{"G2", 22L});
             EPAssertionUtil.AssertProps(_listenerStmtOne.LastOldData[0], fields, new object[]{"G2", 21L});
             _listenerStmtOne.Reset();
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 2L }, new object[] { "G2", 22L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 2L }, new object[] { "G2", 22L } });
     
             SendMarketBean("G1");
             EPAssertionUtil.AssertProps(_listenerStmtOne.LastOldData[0], fields, new object[]{"G1", 2L});
@@ -1607,7 +1608,7 @@ namespace com.espertech.esper.regression.nwtable
     
             SendSupportBean("G2", 20L);
             EPAssertionUtil.AssertProps(_listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"G2", 20L});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 20L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 20L } });
     
             // delete G2
             SendMarketBean("G2");
@@ -1620,11 +1621,11 @@ namespace com.espertech.esper.regression.nwtable
     
             SendSupportBean("G2", 21L);
             EPAssertionUtil.AssertProps(_listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"G2", 21L});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 21L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 21L } });
     
             SendSupportBean("G2", 22L); // ignored
             Assert.IsFalse(_listenerStmtOne.IsInvoked);
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 21L } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 1L }, new object[] { "G2", 21L } });
     
             SendMarketBean("G1");
             EPAssertionUtil.AssertProps(_listenerStmtOne.AssertOneGetOldAndReset(), fields, new object[]{"G1", 1L});
@@ -1671,7 +1672,7 @@ namespace com.espertech.esper.regression.nwtable
             SendSupportBeanInt("G2", 8);
             EPAssertionUtil.AssertProps(_listenerStmtOne.AssertOneGetNewAndReset(), fields, new object[]{"G2", 8});
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"G2", 8});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 15 }, new object[] { "G2", 8 } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 15 }, new object[] { "G2", 8 } });
             EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fields, new object[][] { new object[] { "G2", 8 } });
     
             // delete G2
@@ -1683,7 +1684,7 @@ namespace com.espertech.esper.regression.nwtable
             SendSupportBeanInt("G3", -1);
             Assert.IsFalse(_listenerStmtOne.IsInvoked);
             EPAssertionUtil.AssertProps(_listenerWindow.AssertOneGetNewAndReset(), fields, new object[]{"G3", -1});
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 15 }, new object[] { "G3", -1 } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), fields, new object[][] { new object[] { "G1", 15 }, new object[] { "G3", -1 } });
             EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fields, null);
     
             // delete G2
@@ -1693,7 +1694,7 @@ namespace com.espertech.esper.regression.nwtable
     
             SendSupportBeanInt("G1", 6);
             SendSupportBeanInt("G2", 7);
-            EPAssertionUtil.AssertPropsPerRow(stmtSelectOne.GetEnumerator(), fields, new object[][] { new object[] { "G1", 6 }, new object[] { "G2", 7 } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtSelectOne.GetEnumerator(), fields, new object[][] { new object[] { "G1", 6 }, new object[] { "G2", 7 } });
     
             stmtSelectOne.Dispose();
             stmtDelete.Dispose();
@@ -1880,14 +1881,23 @@ namespace com.espertech.esper.regression.nwtable
         [Test]
         public void TestInvalid()
         {
-            Assert.AreEqual("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap]",
-                         TryInvalid("create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap"));
-    
-            Assert.AreEqual("Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
-                         TryInvalid("create window MyWindow as MyMap"));
-    
-            Assert.AreEqual("Named window or table 'dummy' has not been declared [on MyMap delete from dummy]",
-                         TryInvalid("on MyMap delete from dummy"));
+            Assert.AreEqual(
+                "Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap]",
+                TryInvalid("create window MyWindow.std:groupwin(value).stat:uni(value) as MyMap"));
+
+            Assert.AreEqual(
+                "Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
+                TryInvalid("create window MyWindow as MyMap"));
+
+            Assert.AreEqual(
+                "Named window or table 'dummy' has not been declared [on MyMap delete from dummy]",
+                TryInvalid("on MyMap delete from dummy"));
+
+            _epService.EPAdministrator.CreateEPL("create window SomeWindow.win:keepall() as (a int)");
+            SupportMessageAssertUtil.TryInvalid(_epService, "update SomeWindow set a = 'a' where a = 'b'",
+                    "Provided EPL expression is an on-demand query expression (not a continuous query), please use the runtime executeQuery API instead");
+            SupportMessageAssertUtil.TryInvalidExecuteQuery(_epService, "update istream SomeWindow set a = 'a' where a = 'b'",
+                    "Provided EPL expression is a continuous query expression (not an on-demand query), please use the administrator createEPL API instead");
     
             // test model-after with no field
             IDictionary<String, object> innerType = new Dictionary<string, object>();

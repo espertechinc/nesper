@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,10 +40,6 @@ namespace com.espertech.esper.epl.agg.aggregator
         /// <summary>Returns the current value held. </summary>
         /// <value>current value</value>
         object Value { get; }
-
-        /// <summary>Returns the type of the current value. </summary>
-        /// <value>type of values held</value>
-        Type ValueType { get; }
 
         /// <summary>Clear out the collection. </summary>
         void Clear();

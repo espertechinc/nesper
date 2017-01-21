@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,19 +18,16 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// </summary>
     public class AggregatorNth : AggregationMethod
     {
-        private readonly Type _returnType;
         private readonly int _sizeBuf;
 
         private Object[] _circularBuffer;
         private int _currentBufferElementPointer;
         private long _numDataPoints;
-    
+
         /// <summary>Ctor. </summary>
-        /// <param name="returnType">return type</param>
         /// <param name="sizeBuf">size</param>
-        public AggregatorNth(Type returnType, int sizeBuf)
+        public AggregatorNth(int sizeBuf)
         {
-            _returnType = returnType;
             _sizeBuf = sizeBuf;
         }
     
@@ -54,11 +51,6 @@ namespace com.espertech.esper.epl.agg.aggregator
                 _circularBuffer[(_currentBufferElementPointer + diff - 1) % _sizeBuf] = null;
             }
             _numDataPoints--;
-        }
-
-        public Type ValueType
-        {
-            get { return _returnType; }
         }
 
         public object Value

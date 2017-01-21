@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Xml;
 using System.Xml.Schema;
@@ -18,7 +19,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
-
 namespace com.espertech.esper.events.xml
 {
     /// <summary>
@@ -27,6 +27,8 @@ namespace com.espertech.esper.events.xml
     public class XSDSchemaMapper
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public const int DEFAULT_MAX_RECURSIVE_DEPTH = 10;
 
         /// <summary>
         /// Loads a schema from the provided Uri.
@@ -65,7 +67,7 @@ namespace com.espertech.esper.events.xml
         /// <param name="schemaText">The schema text.</param>
         /// <param name="maxRecusiveDepth">depth of maximal recursive element</param>
         /// <returns>model</returns>
-        public static SchemaModel LoadAndMap(String schemaResource, String schemaText, int maxRecusiveDepth)
+        public static SchemaModel LoadAndMap(String schemaResource, String schemaText, int maxRecusiveDepth = DEFAULT_MAX_RECURSIVE_DEPTH)
         {
             // Load schema
             try {
@@ -94,7 +96,7 @@ namespace com.espertech.esper.events.xml
         /// <summary>
         /// Namespace list
         /// </summary>
-        private readonly IList<string> _namesspaceList =
+        private readonly IList<string> _namespaceList =
             new List<string>();
         /// <summary>
         /// Component list
@@ -157,7 +159,7 @@ namespace com.espertech.esper.events.xml
         private static SchemaModel Map(XmlSchema xsModel, Uri schemaLocation, int maxRecursiveDepth)
         {
             XSDSchemaMapper mapper = new XSDSchemaMapper();
-            mapper.Import(xsModel, schemaLocation, maxRecursiveDepth);
+            mapper.Import(xsModel, schemaLocation);
             return mapper.CreateModel();
         }
 
@@ -167,63 +169,125 @@ namespace com.espertech.esper.events.xml
         /// <returns></returns>
         private SchemaModel CreateModel()
         {
-            return new SchemaModel(_components, _namesspaceList);
+            return new SchemaModel(_components, _namespaceList);
         }
 
-        /// <summary>
-        /// Imports the specified schema.
-        /// </summary>
-        /// <param name="xsModel">The xs model.</param>
-        /// <param name="schemaLocation">The schema location.</param>
-        /// <param name="maxRecursiveDepth">The max recursive depth.</param>
-        private void Import(XmlSchema xsModel, Uri schemaLocation, int maxRecursiveDepth)
+        private void Import(XmlSchema xsModel, Uri schemaLocation)
         {
-            // get namespaces
-            var namespaces = xsModel.Namespaces;
-            var namespacesArray = namespaces.ToArray();
+            ImportNamespaces(xsModel);
+            ImportIncludes(xsModel, schemaLocation, Import);
 
-            for (int i = 0; i < namespacesArray.Length; i++)
+            BuildElementDictionary(xsModel);
+            BuildTypeDictionary(xsModel);
+
+            // get top-level complex elements
+            foreach (var schemaElement in xsModel.Items.OfType<XmlSchemaElement>())
             {
-                var @namespace = namespacesArray[i];
-                if (! _namesspaceList.Contains(@namespace.Namespace)) {
-                    _namesspaceList.Add(@namespace.Namespace);
+                var schemaType = schemaElement.SchemaType;
+                if (schemaType == null)
+                {
+                    var schemaTypeName = schemaElement.SchemaTypeName;
+                    if (!Equals(schemaTypeName, XmlQualifiedName.Empty))
+                    {
+                        schemaType = ResolveSchemaType(xsModel, schemaTypeName);
+                    }
+                }
+
+                var complexElementType = schemaType as XmlSchemaComplexType;
+                if (complexElementType != null)
+                {
+                    var complexActualName = schemaElement.QualifiedName;
+                    if (Equals(complexActualName, XmlQualifiedName.Empty))
+                        complexActualName = new XmlQualifiedName(
+                            schemaElement.Name, xsModel.TargetNamespace);
+
+                    var rootNode = new ElementPathNode(null, complexActualName);
+
+                    if (Log.IsDebugEnabled)
+                    {
+                        Log.Debug(string.Format("Processing component {0}", complexActualName));
+                    }
+
+                    SchemaElementComplex complexElement = Process(
+                        xsModel, complexActualName, complexElementType, false, rootNode);
+
+                    if (Log.IsDebugEnabled)
+                    {
+                        Log.Debug("Adding component {0}", complexActualName);
+                    }
+
+                    _components.Add(complexElement);
                 }
             }
+        }
 
-            foreach (var include in xsModel.Includes) {
+        private void ImportIncludes(XmlSchema xsModel, Uri schemaLocation, Action<XmlSchema, Uri> importAction)
+        {
+            foreach (var include in xsModel.Includes)
+            {
                 var asImport = include as XmlSchemaImport;
-                if (asImport != null) {
-                    try {
+                if (asImport != null)
+                {
+                    try
+                    {
                         String importLocation = asImport.SchemaLocation;
                         Uri importSchemaLocation;
-                        if (Uri.IsWellFormedUriString(importLocation, UriKind.Absolute)) {
+                        if (Uri.IsWellFormedUriString(importLocation, UriKind.Absolute))
+                        {
                             importSchemaLocation = new Uri(importLocation, UriKind.RelativeOrAbsolute);
                         }
-                        else {
+                        else
+                        {
                             importSchemaLocation = new Uri(schemaLocation, importLocation);
                         }
 
                         var importSchema = LoadSchema(importSchemaLocation, null);
-                        Import(importSchema,
-                               importSchemaLocation,
-                               maxRecursiveDepth - 1);
+                        importAction(importSchema, importSchemaLocation);
                     }
-                    catch (ConfigurationException) {
+                    catch (ConfigurationException)
+                    {
                         throw;
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         throw new ConfigurationException(
                             "Failed to read schema '" + asImport.SchemaLocation + "' : " + ex.Message, ex);
                     }
                 }
             }
+        }
 
+        private void BuildTypeDictionary(XmlSchema xsModel)
+        {
+            // get top-level complex elements
+            foreach (var oelement in xsModel.Items)
+            {
+                var complexType = oelement as XmlSchemaComplexType;
+                if (complexType != null)
+                {
+                    var qualifiedName = complexType.QualifiedName;
+                    if (Equals(qualifiedName, XmlQualifiedName.Empty))
+                    {
+                        qualifiedName = new XmlQualifiedName(
+                            complexType.Name, xsModel.TargetNamespace);
+                    }
+
+                    _schemaTypeDictionary[qualifiedName] = complexType;
+                }
+            }
+        }
+
+        private void BuildElementDictionary(XmlSchema xsModel)
+        {
             // Organize all of the elements
-            foreach (var oelement in xsModel.Items) {
+            foreach (var oelement in xsModel.Items)
+            {
                 var element = oelement as XmlSchemaElement;
-                if (element != null) {
+                if (element != null)
+                {
                     XmlQualifiedName elementName = element.QualifiedName;
-                    if (Equals(elementName, XmlQualifiedName.Empty)) {
+                    if (Equals(elementName, XmlQualifiedName.Empty))
+                    {
                         elementName = new XmlQualifiedName(
                             element.Name,
                             xsModel.TargetNamespace);
@@ -232,312 +296,406 @@ namespace com.espertech.esper.events.xml
                     _schemaElementDictionary[elementName] = element;
                 }
             }
+        }
 
-            // get top-level complex elements
-            foreach (var oelement in xsModel.Items) {
-                var complexType = oelement as XmlSchemaComplexType;
-                if (complexType != null) {
-                    var qualifiedName = complexType.QualifiedName;
-                    if (Equals(qualifiedName, XmlQualifiedName.Empty)) {
-                        qualifiedName = new XmlQualifiedName(
-                            complexType.Name, xsModel.TargetNamespace);                        
-                    }
-
-                    _schemaTypeDictionary[qualifiedName] = complexType;
+        /// <summary>
+        /// Imports the namespaces.
+        /// </summary>
+        /// <param name="namespaces">The namespaces.</param>
+        private void ImportNamespaces(IEnumerable<XmlQualifiedName> namespaces)
+        {
+            foreach (var @namespace in namespaces)
+            {
+                if (!_namespaceList.Contains(@namespace.Namespace))
+                {
+                    _namespaceList.Add(@namespace.Namespace);
                 }
-            }
-
-            foreach (var oelement in xsModel.Items) {
-                var element = oelement as XmlSchemaElement;
-                if (element == null)
-                    continue;
-
-                var schemaType = element.SchemaType;
-                if (schemaType == null) {
-                    var schemaTypeName = element.SchemaTypeName;
-                    if (!Equals(schemaTypeName, XmlQualifiedName.Empty)) {
-                        schemaType = ResolveSchemaType(xsModel, schemaTypeName);
-                    }
-                }
-
-                if (!(schemaType is XmlSchemaComplexType)) {
-                    continue;
-                }
-
-                var name = element.Name;
-                var nameNamespaceStack = new Stack<NamespaceNamePair>();
-                var namespaceArray = element.Namespaces.ToArray();
-                var @namespace = namespaceArray.Length > 0 ? namespaceArray[0].Namespace : xsModel.TargetNamespace;
-                var nameNamespace = new NamespaceNamePair(@namespace, name);
-                nameNamespaceStack.Push(nameNamespace);
-
-                if (Log.IsDebugEnabled) {
-                    Log.Debug("Processing component " + @namespace + " " + name);
-                }
-
-                var complexElement = ProcessComplexElement(
-                    xsModel,
-                    name,
-                    @namespace,
-                    element,
-                    (XmlSchemaComplexType) schemaType,
-                    false,
-                    nameNamespaceStack,
-                    maxRecursiveDepth);
-
-                if (Log.IsDebugEnabled) {
-                    Log.Debug("Adding component " + @namespace + " " + name);
-                }
-
-                _components.Add(complexElement);
             }
         }
 
         /// <summary>
-        /// Processes the complex element.
+        /// Imports the namespaces.
         /// </summary>
-        /// <param name="xsModel">The schema model.</param>
-        /// <param name="complexElementName">Name of the complex element.</param>
-        /// <param name="complexElementNamespace">The complex element namespace.</param>
-        /// <param name="complexActualElement">The complex actual element.</param>
-        /// <param name="complexType">Type of the complex.</param>
-        /// <param name="isArray">if set to <c>true</c> [is array].</param>
-        /// <param name="nameNamespaceStack">The name namespace stack.</param>
-        /// <param name="maxRecursiveDepth">The max recursive depth.</param>
-        /// <returns></returns>
-        private SchemaElementComplex ProcessComplexElement(XmlSchema xsModel,
-                                                           String complexElementName,
-                                                           String complexElementNamespace,
-                                                           XmlSchemaElement complexActualElement,
-                                                           XmlSchemaComplexType complexType,
-                                                           bool isArray,
-                                                           Stack<NamespaceNamePair> nameNamespaceStack,
-                                                           int maxRecursiveDepth)
+        /// <param name="xsModel">The xs model.</param>
+        private void ImportNamespaces(XmlSchema xsModel)
+        {
+            ImportNamespaces(xsModel.Namespaces.ToArray());
+        }
+
+        private void DetermineOptionalSimpleType(
+            XmlSchema xsModel,
+            XmlSchemaComplexType complexActualElement,
+            out XmlSchemaSimpleType optionalSimpleType,
+            out XmlQualifiedName optionalSimpleTypeName)
+        {
+            optionalSimpleType = null;
+            optionalSimpleTypeName = null;
+
+            // For complex types, the simple type information can be embedded as an extension
+            // of the complex type.
+            if (complexActualElement != null)
+            {
+                var contentModel = complexActualElement.ContentModel;
+                if (contentModel is XmlSchemaSimpleContent)
+                {
+                    var simpleContentModel = (XmlSchemaSimpleContent)contentModel;
+                    var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
+                    if (simpleContentExtension != null)
+                    {
+                        var simpleContentBaseTypeName = simpleContentExtension.BaseTypeName;
+                        if (!simpleContentBaseTypeName.IsEmpty)
+                        {
+                            var simpleType = ResolveSchemaType(xsModel, simpleContentBaseTypeName) as XmlSchemaSimpleType;
+                            if (simpleType != null)
+                            {
+                                optionalSimpleType = simpleType;
+                                optionalSimpleTypeName = simpleType.QualifiedName;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private SchemaElementComplex Process(
+            XmlSchema xsModel,
+            XmlQualifiedName complexElementName,
+            XmlSchemaComplexType complexActualElement,
+            bool isArray,
+            ElementPathNode node)
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug("Processing complex {0} {1} stack {2}",
-                    complexElementNamespace,
-                    complexElementName,
-                    nameNamespaceStack);
+                Log.Debug(
+                    "Processing complex {0} {1} stack {2}", 
+                    complexElementName.Namespace, 
+                    complexElementName.Name, 
+                    node);
             }
 
-            // Obtain the actual complex schema type
-            //var complexType = (XmlSchemaComplexType)complexActualElement.SchemaType;
-            // Represents the mapping of element attributes
             var attributes = new List<SchemaItemAttribute>();
-            // Represents the mapping of child elements that are simple
             var simpleElements = new List<SchemaElementSimple>();
-            // Represents the mapping of child elements that are complex
             var complexElements = new List<SchemaElementComplex>();
-            // Represents the complex element - the above are encapsulated in the structure
+
+            XmlSchemaSimpleType optionalSimpleType = null;
+            XmlQualifiedName optionalSimpleTypeName = null;
+
+            DetermineOptionalSimpleType(
+                xsModel,
+                complexActualElement,
+                out optionalSimpleType,
+                out optionalSimpleTypeName
+                );
+
             var complexElement = new SchemaElementComplex(
-                complexElementName,
-                complexElementNamespace,
-                attributes,
-                complexElements,
-                simpleElements,
-                isArray);
+                complexElementName.Name, 
+                complexElementName.Namespace, 
+                attributes, 
+                complexElements, 
+                simpleElements, 
+                isArray, 
+                optionalSimpleType, 
+                optionalSimpleTypeName);
 
-            // Map the schema attributes into internal form
-            if (complexType != null) {
-                var attrs = complexType.Attributes;
-                foreach (var uattr in attrs) {
-                    var attr = (XmlSchemaAttribute) uattr;
-                    var name = attr.QualifiedName;
-                    if (Equals(name, XmlQualifiedName.Empty))
-                    {
-                        name = new XmlQualifiedName(attr.Name, null);
-                    }
+            // add attributes
+            attributes.AddRange(GetAttributes(xsModel, complexActualElement));
 
-                    var schemaType = ResolveSchemaType(xsModel, attr.SchemaTypeName);
+            var complexParticles = GetContentModelParticles(
+                xsModel, complexActualElement);
+            complexElement = ProcessModelGroup(
+                xsModel, complexParticles, simpleElements, complexElements, node,
+                complexActualElement, complexElement);
 
-                    var itemAttribute = new SchemaItemAttribute(
-                        name.Namespace,
-                        name.Name,
-                        schemaType as XmlSchemaSimpleType,
-                        attr.SchemaTypeName.Name);
-                    attributes.Add(itemAttribute);
-                }
+            return complexElement;
+        }
+
+        internal static readonly SchemaItemAttribute[] EMPTY_SCHEMA_ATTRIBUTES = new SchemaItemAttribute[0];
+
+        /// <summary>
+        /// Gets the attributes from the complex type.  Searches embedded and extended
+        /// content for additional attributes.
+        /// </summary>
+        /// <param name="xsModel">The xs model.</param>
+        /// <param name="complexType">Type of the complex.</param>
+        /// <returns></returns>
+        internal IEnumerable<SchemaItemAttribute> GetAttributes(
+            XmlSchema xsModel,
+            XmlSchemaComplexType complexType)
+        {
+            if (complexType != null)
+            {
+                var attributes = GetAttributes(xsModel, complexType.Attributes);
 
                 var contentModel = complexType.ContentModel;
                 if (contentModel is XmlSchemaSimpleContent)
                 {
-                    XmlSchemaSimpleContent simpleContent = (XmlSchemaSimpleContent)contentModel;
-                    if (simpleContent.Content is XmlSchemaSimpleContentExtension)
+                    var simpleContentModel = (XmlSchemaSimpleContent)contentModel;
+                    var simpleContentExtension = simpleContentModel.Content as XmlSchemaSimpleContentExtension;
+                    if (simpleContentExtension != null)
                     {
-                        XmlSchemaSimpleContentExtension extension = (XmlSchemaSimpleContentExtension)simpleContent.Content;
-                        foreach (var eattr in extension.Attributes)
-                        {
-                            if (eattr is XmlSchemaAttribute)
-                            {
-                                XmlSchemaAttribute sattr = (XmlSchemaAttribute)eattr;
-                                XmlQualifiedName sqname = sattr.QualifiedName;
-                                if (Equals(sqname, XmlQualifiedName.Empty)) {
-                                    sqname = new XmlQualifiedName(sattr.Name, xsModel.TargetNamespace);
-                                }
-
-                                XmlSchemaSimpleType simpleType = ResolveSchemaType(xsModel, sattr.SchemaTypeName) as XmlSchemaSimpleType;
-                                SchemaItemAttribute itemAttribute = new SchemaItemAttribute(
-                                    sqname.Namespace, 
-                                    sqname.Name,
-                                    simpleType,
-                                    sattr.SchemaTypeName.Name);
-                                attributes.Add(itemAttribute);
-                            }
-                            else if (eattr is XmlSchemaAttributeGroupRef)
-                            {
-                            }
-                        }
-
-                        XmlQualifiedName optionalSimpleTypeName = extension.BaseTypeName;
-                        if (!Equals(optionalSimpleTypeName, XmlQualifiedName.Empty))
-                        {
-                            XmlSchemaSimpleType optionalSimpleType = XmlSchemaSimpleType.GetBuiltInSimpleType(optionalSimpleTypeName);
-                            complexElement.OptionalSimpleType = optionalSimpleType;
-                            complexElement.OptionalSimpleTypeName = optionalSimpleTypeName;
-                        }
+                        attributes = attributes.Concat(
+                            GetAttributes(xsModel, simpleContentExtension.Attributes));
                     }
                 }
 
-                var complexParticle = complexType.Particle;
-                if (complexParticle is XmlSchemaGroupBase)
+                return attributes;
+            }
+
+            return EMPTY_SCHEMA_ATTRIBUTES;
+        }
+
+        /// <summary>
+        /// Returns the attributes within a collection.  Most of the time, this will
+        /// simply normalize the name and convert the structure into the resultant
+        /// output type.
+        /// </summary>
+        /// <param name="xsModel">The xs model.</param>
+        /// <param name="attributes">The attributes.</param>
+        /// <returns></returns>
+        internal IEnumerable<SchemaItemAttribute> GetAttributes(
+            XmlSchema xsModel, 
+            XmlSchemaObjectCollection attributes)
+        {
+            foreach (var attr in attributes.Cast<XmlSchemaAttribute>())
+            {
+                var name = attr.QualifiedName;
+                if (name.IsEmpty)
                 {
-                    XmlSchemaGroupBase particleGroup = (XmlSchemaGroupBase) complexParticle;
-                    foreach (var artifact in particleGroup.Items) {
-                        XmlSchemaElement myComplexElement = null;
-                        XmlQualifiedName myComplexElementName = null;
-
-                        if (artifact is XmlSchemaElement) {
-                            var schemaElement = (XmlSchemaElement) artifact;
-                            var isArrayFlag = IsArray(schemaElement);
-                            var refName = schemaElement.RefName;
-
-                            // Resolve complex elements that are a child of the sequence.  Complex
-                            // elements come in one of two forms... the first is through reference
-                            // the second is a direct child.  Of course you can have simple types
-                            // too.
-
-                            if (Equals(refName, XmlQualifiedName.Empty)) {
-                                var schemaTypeName = schemaElement.SchemaTypeName;
-                                if (!Equals(schemaTypeName, XmlQualifiedName.Empty))
-                                {
-                                    var schemaType = ResolveSchemaType(xsModel, schemaTypeName);
-                                    if (schemaType is XmlSchemaSimpleType)
-                                    {
-                                        var simpleElementName = schemaElement.QualifiedName;
-                                        if (Equals(simpleElementName, XmlQualifiedName.Empty))
-                                            simpleElementName = new XmlQualifiedName(schemaElement.Name, xsModel.TargetNamespace);
-
-                                        var fractionDigits = GetFractionRestriction((XmlSchemaSimpleType) schemaType);
-                                        var simpleElement = new SchemaElementSimple(
-                                            simpleElementName.Name,
-                                            simpleElementName.Namespace,
-                                            (XmlSchemaSimpleType) schemaType,
-                                            schemaTypeName.Name,
-                                            isArrayFlag,
-                                            fractionDigits);
-                                        simpleElements.Add(simpleElement);
-                                    } else {
-                                        myComplexElement = schemaElement;
-                                        myComplexElement.SchemaType = schemaType;
-                                        myComplexElementName = schemaElement.QualifiedName;
-                                        if (Equals(myComplexElementName, XmlQualifiedName.Empty))
-                                        {
-                                            myComplexElementName = new XmlQualifiedName(
-                                                myComplexElement.Name, xsModel.TargetNamespace);
-                                        }
-                                    }
-                                } else {
-                                    myComplexElement = schemaElement;
-                                    myComplexElementName =
-                                        !Equals(schemaElement.QualifiedName, XmlQualifiedName.Empty)
-                                            ? schemaElement.QualifiedName
-                                            : new XmlQualifiedName(schemaElement.Name, xsModel.TargetNamespace);
-                                }
-                            } else {
-                                myComplexElement = ResolveElement(refName);
-                                myComplexElementName = refName;
-                                if (myComplexElementName.Namespace == null) {
-                                    myComplexElementName = new XmlQualifiedName(refName.Name, xsModel.TargetNamespace);
-                                }
-                            }
-
-                            if (myComplexElement != null)
-                            {
-                                if (myComplexElement.SchemaType == null) {
-                                    if (!Equals(myComplexElement.SchemaTypeName, XmlQualifiedName.Empty)) {
-                                        myComplexElement.SchemaType = ResolveSchemaType(xsModel, myComplexElement.SchemaTypeName);
-                                    }
-                                }
-
-                                if (myComplexElement.SchemaType is XmlSchemaSimpleType)
-                                {
-                                    XmlSchemaSimpleType simpleSchemaType = (XmlSchemaSimpleType) myComplexElement.SchemaType;
-                                    SchemaElementSimple innerSimple =
-                                        new SchemaElementSimple(
-                                            myComplexElementName.Name,
-                                            myComplexElementName.Namespace,
-                                            simpleSchemaType,
-                                            simpleSchemaType.Name,
-                                            isArrayFlag,
-                                            GetFractionRestriction(simpleSchemaType));
-
-                                    if (Log.IsDebugEnabled)
-                                    {
-                                        Log.Debug("Adding simple " + innerSimple);
-                                    }
-
-                                    simpleElements.Add(innerSimple);
-                                }
-                                else
-                                {
-                                    // Reference to complex type
-                                    NamespaceNamePair nameNamespace = new NamespaceNamePair(
-                                        myComplexElementName.Namespace,
-                                        myComplexElementName.Name);
-                                    nameNamespaceStack.Push(nameNamespace);
-
-                                    // if the stack contains
-                                    if (maxRecursiveDepth != Int32.MaxValue) {
-                                        int containsCount = 0;
-                                        foreach (NamespaceNamePair pair in nameNamespaceStack) {
-                                            if (Equals(nameNamespace, pair)) {
-                                                containsCount++;
-                                            }
-                                        }
-
-                                        if (containsCount >= maxRecursiveDepth) {
-                                            continue;
-                                        }
-                                    }
-
-                                    SchemaElementComplex innerComplex = ProcessComplexElement(
-                                        xsModel,
-                                        myComplexElementName.Name,
-                                        myComplexElementName.Namespace,
-                                        myComplexElement,
-                                        (XmlSchemaComplexType) myComplexElement.SchemaType,
-                                        isArrayFlag,
-                                        nameNamespaceStack,
-                                        maxRecursiveDepth);
-
-                                    nameNamespaceStack.Pop();
-
-                                    if (Log.IsDebugEnabled)
-                                    {
-                                        Log.Debug("Adding complex " + complexElement);
-                                    }
-
-                                    complexElements.Add(innerComplex);
-                                }
-                            }
-                        }
+                    if (attr.Form == XmlSchemaForm.Qualified)
+                    {
+                        name = new XmlQualifiedName(attr.Name, xsModel.TargetNamespace);
+                    }
+                    else
+                    {
+                        name = new XmlQualifiedName(attr.Name, null);
                     }
                 }
-                else if (complexParticle is XmlSchemaGroupRef) {
-                    var groupRefParticle = (XmlSchemaGroupRef) complexParticle;
+
+                var schemaType = ResolveSchemaType(xsModel, attr.SchemaTypeName);
+                var itemAttribute = new SchemaItemAttribute(
+                    name.Namespace,
+                    name.Name,
+                    schemaType as XmlSchemaSimpleType,
+                    attr.SchemaTypeName.Name);
+
+                yield return itemAttribute;
+            }
+        }
+
+        internal static readonly XmlSchemaObject[] EMPTY_SCHEMA_OBJECTS = new XmlSchemaObject[0];
+
+        /// <summary>
+        /// Gets the content model particles.
+        /// </summary>
+        /// <param name="xsModel">The xs model.</param>
+        /// <param name="complexType">Type of the complex.</param>
+        /// <returns></returns>
+        internal IEnumerable<XmlSchemaObject> GetContentModelParticles(
+            XmlSchema xsModel,
+            XmlSchemaComplexType complexType)
+        {
+            if (complexType != null)
+            {
+                var complexGroupBase = complexType.Particle as XmlSchemaGroupBase;
+                var contentModel = complexType.ContentModel;
+                if (contentModel is XmlSchemaComplexContent)
+                {
+                    var complexContentExtension = contentModel.Content as XmlSchemaComplexContentExtension;
+                    if (complexContentExtension != null)
+                    {
+                        return GetContentExtensionParticles(xsModel, complexContentExtension);
+                    }
                 }
+
+                if (complexGroupBase != null)
+                {
+                    return complexGroupBase.Items.Cast<XmlSchemaObject>();
+                }
+            }
+
+            return EMPTY_SCHEMA_OBJECTS;
+        }
+        
+        /// <summary>
+        /// Gets the content model particles associated with a content extension element.  These
+        /// objects can be a little difficult because of the nesting of base types that occurs
+        /// within them.  We use a cofunction to build an iterator that recursively up through
+        /// the hierarchy.
+        /// </summary>
+        /// <param name="xsModel">The xs model.</param>
+        /// <param name="contentExtension">The content extension.</param>
+        /// <returns></returns>
+        internal IEnumerable<XmlSchemaObject> GetContentExtensionParticles(
+            XmlSchema xsModel,
+            XmlSchemaComplexContentExtension contentExtension)
+        {
+            IEnumerable<XmlSchemaObject> result = EMPTY_SCHEMA_OBJECTS;
+
+            var baseTypeName = contentExtension.BaseTypeName;
+            if (baseTypeName.IsEmpty == false)
+            {
+                var baseType = ResolveSchemaType(xsModel, baseTypeName) as XmlSchemaComplexType;
+                if (baseType != null)
+                {
+                    result = GetContentModelParticles(xsModel, baseType);
+                }
+            }
+
+            var complexParticleGroup = contentExtension.Particle as XmlSchemaGroupBase;
+            if (complexParticleGroup != null)
+            {
+                result = result.Concat(complexParticleGroup.Items.Cast<XmlSchemaObject>());
+            }
+
+            return result;
+        } 
+
+        /// <summary>
+        /// Processes the model group.
+        /// </summary>
+        /// <param name="xsModel">The schema model.</param>
+        /// <param name="childParticles">The schema objects in this model group.</param>
+        /// <param name="simpleElements">The simple elements.</param>
+        /// <param name="complexElements">The complex elements.</param>
+        /// <param name="node">The node.</param>
+        /// <param name="complexActualElement">The complex actual element.</param>
+        /// <param name="complexElement">The complex element.</param>
+        /// <returns></returns>
+        private SchemaElementComplex ProcessModelGroup(
+            XmlSchema xsModel,
+            IEnumerable<XmlSchemaObject> childParticles,
+            IList<SchemaElementSimple> simpleElements,
+            IList<SchemaElementComplex> complexElements,
+            ElementPathNode node,
+            XmlSchemaComplexType complexActualElement,
+            SchemaElementComplex complexElement)
+        {
+            foreach (var childParticle in childParticles)
+            {
+                if (childParticle is XmlSchemaElement)
+                {
+                    var schemaElement = (XmlSchemaElement)childParticle;
+                    var isArrayFlag = IsArray(schemaElement);
+
+                    // the name for this element
+                    XmlQualifiedName elementName;
+                    // the type for this element ... this may take different paths
+                    // depending upon how the type is provided to us.
+                    XmlSchemaType schemaType;
+                    XmlQualifiedName schemaTypeName;
+
+                    if (schemaElement.RefName.IsEmpty)
+                    {
+                        elementName = schemaElement.QualifiedName;
+                        if (Equals(elementName, XmlQualifiedName.Empty))
+                            elementName = new XmlQualifiedName(
+                                schemaElement.Name, xsModel.TargetNamespace);
+
+                        schemaType = schemaElement.SchemaType;
+                        schemaTypeName = schemaElement.SchemaTypeName;
+                        if ((schemaType == null) && (!schemaTypeName.IsEmpty))
+                        {
+                            schemaType = ResolveSchemaType(xsModel, schemaTypeName);
+                        }
+                    }
+                    else
+                    {
+                        // this element contains a reference to another element... the element will
+                        // share the name of the reference and the type of the reference.  the reference
+                        // type should be a complex type.
+                        var referenceElement = ResolveElement(schemaElement.RefName);
+                        var referenceElementType = referenceElement.SchemaType;
+
+                        var elementNamespace = string.IsNullOrEmpty(schemaElement.RefName.Namespace)
+                            ? xsModel.TargetNamespace
+                            : schemaElement.RefName.Namespace;
+                        elementName = new XmlQualifiedName(
+                            schemaElement.RefName.Name, elementNamespace);
+
+                        schemaType = referenceElementType;
+                        schemaTypeName = referenceElement.SchemaTypeName;
+                        // TODO
+                    }
+
+                    var simpleType = schemaType as XmlSchemaSimpleType;
+                    if (simpleType != null)
+                    {
+                        var fractionDigits = GetFractionRestriction(simpleType);
+                        var simpleElement = new SchemaElementSimple(
+                            elementName.Name,
+                            elementName.Namespace,
+                            simpleType,
+                            schemaTypeName.Name,
+                            isArrayFlag,
+                            fractionDigits);
+                        simpleElements.Add(simpleElement);
+                    }
+                    else
+                    {
+                        var complexType = schemaType as XmlSchemaComplexType;
+                        var newChild = node.AddChild(elementName);
+                        if (newChild.DoesNameAlreadyExistInHierarchy())
+                        {
+                            continue;
+                        }
+
+                        complexActualElement = complexType;
+
+                        SchemaElementComplex innerComplex = Process(
+                            xsModel,
+                            elementName,
+                            complexActualElement,
+                            isArrayFlag,
+                            newChild
+                        );
+
+                        if (Log.IsDebugEnabled)
+                        {
+                            Log.Debug("Adding complex {0}", complexElement);
+                        }
+                        complexElements.Add(innerComplex);
+                    }
+                }
+
+                ProcessModelGroup(
+                    xsModel, childParticle, simpleElements, complexElements, node, complexActualElement,
+                    complexElement);
+            }
+
+            return complexElement;
+        }
+
+        /// <summary>
+        /// Processes the model group.
+        /// </summary>
+        /// <param name="xsModel">The schema model.</param>
+        /// <param name="xsObject">The schema that represents the model group.</param>
+        /// <param name="simpleElements">The simple elements.</param>
+        /// <param name="complexElements">The complex elements.</param>
+        /// <param name="node">The node.</param>
+        /// <param name="complexActualElement">The complex actual element.</param>
+        /// <param name="complexElement">The complex element.</param>
+        /// <returns></returns>
+        private SchemaElementComplex ProcessModelGroup(
+            XmlSchema xsModel,
+            XmlSchemaObject xsObject,
+            IList<SchemaElementSimple> simpleElements,
+            IList<SchemaElementComplex> complexElements,
+            ElementPathNode node,
+            XmlSchemaComplexType complexActualElement,
+            SchemaElementComplex complexElement)
+        {
+            var xsGroup = xsObject as XmlSchemaGroupBase;
+            if (xsGroup != null)
+            {
+                return ProcessModelGroup(
+                    xsModel,
+                    xsGroup.Items.Cast<XmlSchemaObject>(),
+                    simpleElements,
+                    complexElements,
+                    node,
+                    complexActualElement,
+                    complexElement);
             }
 
             return complexElement;
@@ -548,14 +706,19 @@ namespace com.espertech.esper.events.xml
             return element.MaxOccursString == "unbounded" || element.MaxOccurs > 1;
         }
 
-        private static bool IsArray(XmlSchemaParticle particle)
-        {
-            return particle.MaxOccursString == "unbounded" || particle.MaxOccurs > 1; 
-        }
-
         private static int? GetFractionRestriction(XmlSchemaSimpleType simpleType)
         {
+            var simpleTypeRestriction = simpleType.Content as XmlSchemaSimpleTypeRestriction;
+            if (simpleTypeRestriction != null)
+            {
+                foreach (XmlSchemaObject facet in simpleTypeRestriction.Facets)
+                {
+                    Console.WriteLine(facet);
+                }
+            }
 #if false
+
+
             if ((simpleType.getDefinedFacets() & XSSimpleType.FACET_FRACTIONDIGITS) != 0)
             {
                 XSObjectList facets = simpleType.getFacets();

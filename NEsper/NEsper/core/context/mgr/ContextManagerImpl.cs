@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -201,7 +201,7 @@ namespace com.espertech.esper.core.context.mgr
         {
             using(_uLock.Acquire()) {
                 var handle = (ContextNestedHandleImpl) contextNestedHandle;
-                var entry = _agentInstances.Pluck(handle.ContextPartitionOrPathId);
+                var entry = _agentInstances.Delete(handle.ContextPartitionOrPathId);
                 if (entry != null) {
                     StatementAgentInstanceUtil.StopAgentInstances(entry.AgentInstances, terminationProperties, _servicesContext, false, leaveLocksAcquired);
                     if (agentInstancesCollected != null)
@@ -367,7 +367,7 @@ namespace com.espertech.esper.core.context.mgr
                 var agentInstanceId = entry.Value.OptionalContextPartitionId.Value;
                 var descriptor = states.ContextPartitionInformation.Get(agentInstanceId);
                 _rootContext.DeletePath(descriptor.Identifier);
-                var list = _agentInstances.Pluck(agentInstanceId);
+                var list = _agentInstances.Delete(agentInstanceId);
                 StatementAgentInstanceUtil.StopAgentInstances(list.AgentInstances, null, _servicesContext, false, false);
                 list.ClearAgentInstances();
                 _rootContext.Factory.FactoryContext.StateCache.RemoveContextPath(_contextName, entry.Key.Level, entry.Key.ParentPath, entry.Key.SubPath);

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,12 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using Castle.Core.Internal;
-
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.magic;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -61,6 +58,16 @@ namespace com.espertech.esper.compat.collections
             return new ReadOnlyList<T>(enumerable);
         }
 
+        public static T[] MaterializeArray<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+            {
+                return new T[0];
+            }
+
+            return enumerable.ToArray();
+        }
+
         public static T[] ToArrayOrNull<T>(this IEnumerable<T> enumerable)
         {
             if (enumerable == null) {
@@ -69,6 +76,22 @@ namespace com.espertech.esper.compat.collections
 
             var tempArray = enumerable.ToArray();
             if (tempArray.Length == 0) {
+                return null;
+            }
+
+            return tempArray;
+        }
+
+        public static T[] ToListOrNull<T>(this IEnumerable<T> enumerable, bool nullWhenEmpty = true)
+        {
+            if (enumerable == null)
+            {
+                return null;
+            }
+
+            var tempArray = enumerable.ToArray();
+            if (tempArray.Length == 0 && nullWhenEmpty)
+            {
                 return null;
             }
 
@@ -156,11 +179,16 @@ namespace com.espertech.esper.compat.collections
             return new LinkedList<T>(enumerable);
         } 
 
-        public static IList<T> AsList<T>( this IEnumerable<T> enumerable )
+        public static IList<T> AsList<T>(this IEnumerable<T> enumerable)
         {
             if ( enumerable is IList<T> )
                 return (IList<T>) enumerable;
             return new List<T>(enumerable);
+        }
+
+        public static IList<T> AsList<T>(params T[] array)
+        {
+            return array;
         }
 
         public static IList<T> AsMutableList<T>( this IEnumerable<T> enumerable )
@@ -763,7 +791,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="index">The index.</param>
         /// <returns></returns>
 
-        public static V Pluck<V>(this IList<V> list, int index)
+        public static V Delete<V>(this IList<V> list, int index)
         {
             V tempItem = list[index];
             list.RemoveAt(index);

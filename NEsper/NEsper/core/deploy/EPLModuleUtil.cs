@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -239,7 +239,8 @@ namespace com.espertech.esper.core.deploy
                 if (t.Type == EsperEPL2GrammarParser.Eof)
                 {
                     break;
-                } 
+                } 
+
                 if ((t.Type != EsperEPL2GrammarParser.IDENT) &&
                     (t.Type != EsperEPL2GrammarParser.DOT) &&
                     (t.Type != EsperEPL2GrammarParser.STAR) &&
@@ -357,7 +358,8 @@ namespace com.espertech.esper.core.deploy
             var skippedSemicolonIndexes = GetSkippedSemicolons(tokenList);
             int index = -1;
 
-            foreach (var token in tokenList.TakeWhile(t => t.Type != EsperEPL2GrammarParser.Eof))            {
+            foreach (var token in tokenList.TakeWhile(t => t.Type != EsperEPL2GrammarParser.Eof))
+            {
                 index++;
                 var t = token;
                 bool semi = t.Type == EsperEPL2GrammarParser.SEMI && !skippedSemicolonIndexes.Contains(index);
@@ -405,7 +407,8 @@ namespace com.espertech.esper.core.deploy
         public static Module ReadResource(String resource)
         {
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-            var stream = ResourceManager.GetResourceAsStream(stripped);            if (stream == null)
+            var stream = ResourceManager.GetResourceAsStream(stripped);
+            if (stream == null)
             {
                 throw new IOException("Failed to find resource '" + resource + "' in classpath");
             }

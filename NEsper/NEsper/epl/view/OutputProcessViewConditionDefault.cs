@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -58,6 +58,16 @@ namespace com.espertech.esper.epl.view
 	    public override OutputCondition OptionalOutputCondition
 	    {
 	        get { return _outputCondition; }
+	    }
+
+	    public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
+	    {
+	        get { return _deltaSet; }
+	    }
+
+	    public override OutputProcessViewAfterState OptionalAfterConditionState
+	    {
+	        get { return null; }
 	    }
 
 	    /// <summary>
@@ -305,7 +315,7 @@ namespace com.espertech.esper.epl.view
 	    public override IEnumerator<EventBean> GetEnumerator() 
         {
 	        return OutputStrategyUtil.GetEnumerator(
-                JoinExecutionStrategy, ResultSetProcessor, ParentView, _parent.IsDistinct);
+                JoinExecutionStrategy, ResultSetProcessor, Parent, _parent.IsDistinct);
 	    }
 
 	    public override void Terminated()

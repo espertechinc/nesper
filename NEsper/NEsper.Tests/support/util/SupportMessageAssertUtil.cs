@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,6 +25,19 @@ namespace com.espertech.esper.support.util
             try
             {
                 engine.EPAdministrator.CreateEPL(epl);
+                Assert.Fail();
+            }
+            catch (EPStatementException ex)
+            {
+                AssertMessage(ex, message);
+            }
+        }
+
+        public static void TryInvalidExecuteQuery(EPServiceProvider engine, String epl, String message)
+        {
+            try
+            {
+                engine.EPRuntime.ExecuteQuery(epl);
                 Assert.Fail();
             }
             catch (EPStatementException ex)

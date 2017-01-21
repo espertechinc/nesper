@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,33 +22,30 @@ namespace com.espertech.esper.schedule
 
     public interface SchedulingService : TimeProvider, IDisposable
     {
-        /// <summary> Add a callback for after the given milliseconds from the current time.
+        /// <summary>
+        /// Add a callback for after the given milliseconds from the current time.
         /// If the same callback (equals) was already added before, the method will not add a new
         /// callback or change the existing callback to a new time, but throw an exception.
         /// </summary>
-        /// <param name="afterMSec">number of millisec to get a callback
-        /// </param>
-        /// <param name="handle">to add
-        /// </param>
-        /// <param name="slot">allows ordering of concurrent callbacks
-        /// </param>
+        /// <param name="afterMSec">number of millisec to get a callback</param>
+        /// <param name="handle">to add</param>
+        /// <param name="slot">allows ordering of concurrent callbacks</param>
         /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
+	    void Add(long afterMSec, ScheduleHandle handle, long slot);
 
-        void Add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot);
-
-        /// <summary> Remove a callback.
+        /// <summary>
+        /// Remove a callback.
         /// If the callback to be removed was not found an exception is thrown.
         /// </summary>
-        /// <param name="handle">to remove
-        /// </param>
-        /// <param name="slot">for which the callback was added
-        /// </param>
+        /// <param name="handle">to remove</param>
+        /// <param name="scheduleSlot">for which the callback was added</param>
         /// <throws>  ScheduleServiceException thrown if the callback was not located </throws>
+	    void Remove(ScheduleHandle handle, long scheduleSlot);
 
-        void Remove(ScheduleHandle handle, ScheduleSlot slot);
-
-        /// <summary> Evaluate the current time and perform any callbacks.</summary>
-
+        /// <summary>
+        /// Evaluate the current time and perform any callbacks.
+        /// </summary>
+        /// <param name="handles">The handles.</param>
         void Evaluate(ICollection<ScheduleHandle> handles);
 
         /// <summary>Returns time handle count.</summary>

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -58,7 +58,6 @@ namespace com.espertech.esper.core.service
         /// <param name="patternResolutionService">is the service that resolves pattern objects for the statement</param>
         /// <param name="statementExtensionSvcContext">provide extension points for custom statement resources</param>
         /// <param name="statementStopService">for registering a callback invoked when a statement is stopped</param>
-        /// <param name="methodResolutionService">is a service for resolving static methods and aggregation functions</param>
         /// <param name="patternContextFactory">is the pattern-level services and context information factory</param>
         /// <param name="filterService">is the filtering service</param>
         /// <param name="statementResultService">handles awareness of listeners/subscriptions for a statement customizing output produced</param>
@@ -78,35 +77,7 @@ namespace com.espertech.esper.core.service
         /// <param name="statementUserObject">The statement user object.</param>
         /// <param name="statementSemiAnonymousTypeRegistry">The statement semi anonymous type registry.</param>
         /// <param name="priority">The priority.</param>
-        public StatementContext(
-            StatementContextEngineServices stmtEngineServices,
-            SchedulingService schedulingService,
-            ScheduleBucket scheduleBucket,
-            EPStatementHandle epStatementHandle,
-            ViewResolutionService viewResultionService,
-            PatternObjectResolutionService patternResolutionService,
-            StatementExtensionSvcContext statementExtensionSvcContext,
-            StatementStopService statementStopService,
-            MethodResolutionService methodResolutionService,
-            PatternContextFactory patternContextFactory,
-            FilterService filterService,
-            StatementResultService statementResultService,
-            InternalEventRouteDest internalEventEngineRouteDest,
-            Attribute[] annotations,
-            StatementAIResourceRegistry statementAgentInstanceRegistry,
-            IReaderWriterLock defaultAgentInstanceLock,
-            ContextDescriptor contextDescriptor,
-            PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc,
-            MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc,
-            bool statelessSelect,
-            ContextControllerFactoryService contextControllerFactoryService,
-            AgentInstanceScriptContext defaultAgentInstanceScriptContext,
-            AggregationServiceFactoryService aggregationServiceFactoryService,
-            ScriptingService scriptingService,
-            bool writesToTables,
-            object statementUserObject,
-            StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry,
-            int priority)
+        public StatementContext(StatementContextEngineServices stmtEngineServices, SchedulingService schedulingService, ScheduleBucket scheduleBucket, EPStatementHandle epStatementHandle, ViewResolutionService viewResultionService, PatternObjectResolutionService patternResolutionService, StatementExtensionSvcContext statementExtensionSvcContext, StatementStopService statementStopService, PatternContextFactory patternContextFactory, FilterService filterService, StatementResultService statementResultService, InternalEventRouteDest internalEventEngineRouteDest, Attribute[] annotations, StatementAIResourceRegistry statementAgentInstanceRegistry, IReaderWriterLock defaultAgentInstanceLock, ContextDescriptor contextDescriptor, PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc, MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc, bool statelessSelect, ContextControllerFactoryService contextControllerFactoryService, AgentInstanceScriptContext defaultAgentInstanceScriptContext, AggregationServiceFactoryService aggregationServiceFactoryService, ScriptingService scriptingService, bool writesToTables, object statementUserObject, StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry, int priority)
         {
             _stmtEngineServices = stmtEngineServices;
             SchedulingService = schedulingService;
@@ -116,7 +87,6 @@ namespace com.espertech.esper.core.service
             PatternResolutionService = patternResolutionService;
             StatementExtensionServicesContext = statementExtensionSvcContext;
             StatementStopService = statementStopService;
-            MethodResolutionService = methodResolutionService;
             PatternContextFactory = patternContextFactory;
             FilterService = filterService;
             _statementResultService = statementResultService;
@@ -190,10 +160,6 @@ namespace com.espertech.esper.core.service
         /// <summary>Returns statement stop subscription taker. </summary>
         /// <value>stop service</value>
         public StatementStopService StatementStopService { get; private set; }
-
-        /// <summary>Returns service to look up static and aggregation methods or functions. </summary>
-        /// <value>method resolution</value>
-        public MethodResolutionService MethodResolutionService { get; private set; }
 
         /// <summary>Returns the pattern context factory for the statement. </summary>
         /// <value>pattern context factory</value>
@@ -402,6 +368,11 @@ namespace com.espertech.esper.core.service
             get { return _stmtEngineServices.TimeSourceService; }
         }
 
+        public EngineImportService EngineImportService
+        {
+            get { return _stmtEngineServices.EngineImportService; }
+        }
+        
         public StatementEventTypeRef StatementEventTypeRef
         {
             get { return _stmtEngineServices.StatementEventTypeRef; }

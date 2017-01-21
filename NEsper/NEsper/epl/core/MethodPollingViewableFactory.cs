@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,6 @@ namespace com.espertech.esper.epl.core
 	    /// <param name="methodStreamSpec">defines the class and method to call</param>
 	    /// <param name="eventAdapterService">for creating event types and events</param>
 	    /// <param name="epStatementAgentInstanceHandle">for time-based callbacks</param>
-	    /// <param name="methodResolutionService">for resolving classes and imports</param>
 	    /// <param name="engineImportService">for resolving configurations</param>
 	    /// <param name="schedulingService">for scheduling callbacks in expiry-time based caches</param>
 	    /// <param name="scheduleBucket">for schedules within the statement</param>
@@ -60,20 +59,7 @@ namespace com.espertech.esper.epl.core
 	    /// </exception>
 	    /// <throws>ExprValidationException if the expressions cannot be validated or the method descriptorhas incorrect class and method names, or parameter number and types don't match
 	    /// </throws>
-	    public static HistoricalEventViewable CreatePollMethodView(
-	        int streamNumber,
-	        MethodStreamSpec methodStreamSpec,
-	        EventAdapterService eventAdapterService,
-	        EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
-	        MethodResolutionService methodResolutionService,
-	        EngineImportService engineImportService,
-	        SchedulingService schedulingService,
-	        ScheduleBucket scheduleBucket,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        VariableService variableService,
-	        string contextName,
-	        DataCacheFactory dataCacheFactory,
-	        StatementContext statementContext)
+	    public static HistoricalEventViewable CreatePollMethodView(int streamNumber, MethodStreamSpec methodStreamSpec, EventAdapterService eventAdapterService, EPStatementAgentInstanceHandle epStatementAgentInstanceHandle, EngineImportService engineImportService, SchedulingService schedulingService, ScheduleBucket scheduleBucket, ExprEvaluatorContext exprEvaluatorContext, VariableService variableService, string contextName, DataCacheFactory dataCacheFactory, StatementContext statementContext)
 	    {
 	        var variableMetaData = variableService.GetVariableMetaData(methodStreamSpec.ClassName);
 	        MethodPollingExecStrategyEnum strategy;
@@ -121,12 +107,12 @@ namespace com.espertech.esper.epl.core
 			                strategy = MethodPollingExecStrategyEnum.TARGET_VAR;
 			            }
 			        }
-			        methodReflection = methodResolutionService.ResolveNonStaticMethod(
+                    methodReflection = engineImportService.ResolveNonStaticMethod(
 			            variableMetaData.VariableType, methodStreamSpec.MethodName);
 			    }
 			    else
 			    {
-			        methodReflection = methodResolutionService.ResolveMethod(
+                    methodReflection = engineImportService.ResolveMethod(
 			            methodStreamSpec.ClassName, methodStreamSpec.MethodName);
 			        invocationTarget = null;
 			        variableReader = null;
@@ -202,8 +188,8 @@ namespace com.espertech.esper.epl.core
             {
                 var metadata =
                     (variableMetaData != null) ?
-                    (GetCheckMetadataVariable(methodStreamSpec.MethodName, variableMetaData, variableReader, methodResolutionService, typeof(IDictionary<string, object>))) :
-                    (GetCheckMetadataNonVariable(methodStreamSpec.MethodName, methodStreamSpec.ClassName, methodResolutionService, typeof(IDictionary<string, object>)));
+                    (GetCheckMetadataVariable(methodStreamSpec.MethodName, variableMetaData, variableReader, engineImportService, typeof(IDictionary<string, object>))) :
+                    (GetCheckMetadataNonVariable(methodStreamSpec.MethodName, methodStreamSpec.ClassName, engineImportService, typeof(IDictionary<string, object>)));
                 mapTypeName = metadata.TypeName;
                 mapType = (IDictionary<string, object>)metadata.TypeMetadata;
             }
@@ -221,8 +207,8 @@ namespace com.espertech.esper.epl.core
             {
                 var metadata =
                     (variableMetaData != null) ?
-                    (GetCheckMetadataVariable(methodStreamSpec.MethodName, variableMetaData, variableReader, methodResolutionService, typeof(IDictionary<string, object>))) :
-                    (GetCheckMetadataNonVariable(methodStreamSpec.MethodName, methodStreamSpec.ClassName, methodResolutionService, typeof(IDictionary<string, object>)));
+                    (GetCheckMetadataVariable(methodStreamSpec.MethodName, variableMetaData, variableReader, engineImportService, typeof(IDictionary<string, object>))) :
+                    (GetCheckMetadataNonVariable(methodStreamSpec.MethodName, methodStreamSpec.ClassName, engineImportService, typeof(IDictionary<string, object>)));
                 oaTypeName = metadata.TypeName;
                 oaType = (IDictionary<String, Object>)metadata.TypeMetadata;
             }
@@ -312,9 +298,9 @@ namespace com.espertech.esper.epl.core
 	        return new MethodPollingViewable(variableMetaData == null, methodReflection.DeclaringType, methodStreamSpec, streamNumber, methodStreamSpec.Expressions, methodPollStrategy, dataCache, eventType, exprEvaluatorContext);
 	    }
 
-	    private static MethodMetadataDesc GetCheckMetadataVariable(string methodName, VariableMetaData variableMetaData, VariableReader variableReader, MethodResolutionService methodResolutionService, Type metadataClass)
+        private static MethodMetadataDesc GetCheckMetadataVariable(string methodName, VariableMetaData variableMetaData, VariableReader variableReader, EngineImportService engineImportService, Type metadataClass)
 	    {
-	        var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(methodName, null, variableMetaData.VariableType, methodResolutionService, metadataClass);
+            var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(methodName, null, variableMetaData.VariableType, engineImportService, metadataClass);
 	        if (typeGetterMethod.IsStatic) {
 	            return InvokeMetadataMethod(null, variableMetaData.GetType().FullName, typeGetterMethod);
 	        }
@@ -336,22 +322,22 @@ namespace com.espertech.esper.epl.core
 	        return InvokeMetadataMethod(value, variableMetaData.GetType().FullName, typeGetterMethod);
 	    }
 
-	    private static MethodMetadataDesc GetCheckMetadataNonVariable(string methodName, string className, MethodResolutionService methodResolutionService, Type metadataClass)
+        private static MethodMetadataDesc GetCheckMetadataNonVariable(string methodName, string className, EngineImportService engineImportService, Type metadataClass)
         {
-	        var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(methodName, className, null, methodResolutionService, metadataClass);
+            var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(methodName, className, null, engineImportService, metadataClass);
 	        return InvokeMetadataMethod(null, className, typeGetterMethod);
 	    }
 
-	    private static MethodInfo GetRequiredTypeGetterMethodCanNonStatic(string methodName, string classNameWhenNoClass, Type clazzWhenAvailable, MethodResolutionService methodResolutionService, Type metadataClass)
+        private static MethodInfo GetRequiredTypeGetterMethodCanNonStatic(string methodName, string classNameWhenNoClass, Type clazzWhenAvailable, EngineImportService engineImportService, Type metadataClass)
 	    {
 	        MethodInfo typeGetterMethod;
 	        var getterMethodName = methodName + "Metadata";
 	        try {
 	            if (clazzWhenAvailable != null) {
-	                typeGetterMethod = methodResolutionService.ResolveMethod(clazzWhenAvailable, getterMethodName, new Type[0], new bool[0], new bool[0]);
+                    typeGetterMethod = engineImportService.ResolveMethod(clazzWhenAvailable, getterMethodName, new Type[0], new bool[0], new bool[0]);
 	            }
 	            else {
-	                typeGetterMethod = methodResolutionService.ResolveMethod(classNameWhenNoClass, getterMethodName, new Type[0], new bool[0], new bool[0]);
+                    typeGetterMethod = engineImportService.ResolveMethod(classNameWhenNoClass, getterMethodName, new Type[0], new bool[0], new bool[0]);
 	            }
 	        }
 	        catch(Exception e) {

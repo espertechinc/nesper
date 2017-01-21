@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -79,6 +79,17 @@ namespace com.espertech.esper.rowregex
         // state
         private RegexPartitionStateRepo _regexPartitionStateRepo;
         private readonly LinkedHashSet<EventBean> _windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition) 
+
+        /// <summary>
+        /// Gets the regex partition state repo.
+        /// </summary>
+        /// <value>
+        /// The regex partition state repo.
+        /// </value>
+        protected internal RegexPartitionStateRepo RegexPartitionStateRepo
+        {
+            get { return _regexPartitionStateRepo; }
+        }
 
         /// <summary>
         /// Ctor.
@@ -834,7 +845,7 @@ namespace com.espertech.esper.rowregex
             var keys = keyset.ToArray();
             foreach (var key in keys)
             {
-                var value = endStatesPerBeginEvent.Pluck(key);
+                var value = endStatesPerBeginEvent.Delete(key);
                 if (value == null)
                 {
                     continue;

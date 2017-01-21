@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,17 +18,15 @@ namespace com.espertech.esper.epl.agg.aggregator
     public class AggregatorMinMax : AggregationMethod
     {
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
-        private readonly Type _returnType;
     
         private readonly SortedRefCountedSet<Object> _refSet;
     
         /// <summary>Ctor.  </summary>
         /// <param name="minMaxTypeEnum">enum indicating to return minimum or maximum values</param>
         /// <param name="returnType">is the value type returned by aggregator</param>
-        public AggregatorMinMax(MinMaxTypeEnum minMaxTypeEnum, Type returnType)
+        public AggregatorMinMax(MinMaxTypeEnum minMaxTypeEnum)
         {
             _minMaxTypeEnum = minMaxTypeEnum;
-            _returnType = returnType;
             _refSet = new SortedRefCountedSet<Object>();
         }
     
@@ -68,11 +66,6 @@ namespace com.espertech.esper.epl.agg.aggregator
                     return _refSet.MinValue;
                 }
             }
-        }
-
-        public virtual Type ValueType
-        {
-            get { return _returnType; }
         }
 
         public SortedRefCountedSet<object> RefSet

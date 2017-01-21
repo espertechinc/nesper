@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Configuration;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.db;
@@ -72,5 +73,29 @@ namespace com.espertech.esper.support.epl
 
 			return new DatabaseConfigServiceImpl( configs, new SupportSchedulingServiceImpl(), null );
 		}
+
+        public static Properties DefaultProperties
+        {
+            get
+            {
+                var serverHost = Environment.GetEnvironmentVariable("ESPER_MYSQL_HOST");
+                var serverUser = Environment.GetEnvironmentVariable("ESPER_MYSQL_USER");
+                var serverPass = Environment.GetEnvironmentVariable("ESPER_MYSQL_PASSWORD");
+
+                if (serverHost == null)
+                    serverHost = "mysql-server";
+                if (serverUser == null)
+                    serverUser = "esper";
+                if (serverPass == null)
+                    serverPass = "3sp3rP@ssw0rd";
+
+                var properties = new Properties();
+                properties["Server"] = serverHost;
+                properties["Uid"] = serverUser;
+                properties["Pwd"] = serverPass;
+
+                return properties;
+            }
+        }
 	}
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,7 +23,7 @@ namespace com.espertech.esper.pattern.guard
         private readonly long _msec;
         private readonly int _numCountTo;
         private readonly Quitable _quitable;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
     
         private int _counter;
         private bool _isTimerActive;
@@ -33,15 +33,18 @@ namespace com.espertech.esper.pattern.guard
         /// <param name="msec">number of millisecond to guard expiration</param>
         /// <param name="numCountTo">max number of counts</param>
         /// <param name="quitable">to use to indicate that the gaurd quitted</param>
-        public TimerWithinOrMaxCountGuard(long msec, int numCountTo, Quitable quitable) {
-            this._msec = msec;
-            this._numCountTo = numCountTo;
-            this._quitable = quitable;
-            this._scheduleSlot = quitable.Context.PatternContext.ScheduleBucket.AllocateSlot();
+        public TimerWithinOrMaxCountGuard(long msec, int numCountTo, Quitable quitable)
+        {
+            _msec = msec;
+            _numCountTo = numCountTo;
+            _quitable = quitable;
+            _scheduleSlot = quitable.Context.PatternContext.ScheduleBucket.AllocateSlot();
         }
     
-        public void StartGuard() {
-            if (_isTimerActive) {
+        public void StartGuard()
+        {
+            if (_isTimerActive)
+            {
                 throw new IllegalStateException("Timer already active");
             }
     
@@ -51,9 +54,11 @@ namespace com.espertech.esper.pattern.guard
             _counter = 0;
         }
     
-        public bool Inspect(MatchedEventMap matchEvent) {
+        public bool Inspect(MatchedEventMap matchEvent)
+        {
             _counter++;
-            if (_counter > _numCountTo) {
+            if (_counter > _numCountTo)
+            {
                 _quitable.GuardQuit();
                 DeactivateTimer();
                 return false;
@@ -61,13 +66,16 @@ namespace com.espertech.esper.pattern.guard
             return true;
         }
     
-        public void StopGuard() {
-            if (_isTimerActive) {
+        public void StopGuard()
+        {
+            if (_isTimerActive)
+            {
                 DeactivateTimer();
             }
         }
     
-        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext) {
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
+        {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardScheduledEval();}
             // Timer callback is automatically removed when triggering
             _isTimerActive = false;
@@ -75,12 +83,15 @@ namespace com.espertech.esper.pattern.guard
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardScheduledEval();}
         }
     
-        public void Accept(EventGuardVisitor visitor) {
+        public void Accept(EventGuardVisitor visitor)
+        {
             visitor.VisitGuard(20, _scheduleSlot);
         }
     
-        private void DeactivateTimer() {
-            if (_scheduleHandle != null) {
+        private void DeactivateTimer()
+        {
+            if (_scheduleHandle != null)
+            {
                 _quitable.Context.PatternContext.SchedulingService.Remove(_scheduleHandle, _scheduleSlot);
             }
             _scheduleHandle = null;

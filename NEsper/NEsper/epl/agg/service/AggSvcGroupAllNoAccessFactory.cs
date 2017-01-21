@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,23 +26,15 @@ namespace com.espertech.esper.epl.agg.service
         /// </summary>
         /// <param name="evaluators">are the child node of each aggregation function used for computing the value to be aggregated</param>
         /// <param name="aggregators">aggregation states/factories</param>
-        /// <param name="groupKeyBinding">The group key binding.</param>
-        public AggSvcGroupAllNoAccessFactory(
-            ExprEvaluator[] evaluators,
-            AggregationMethodFactory[] aggregators,
-            Object groupKeyBinding)
-            : base(evaluators, aggregators, groupKeyBinding)
+        public AggSvcGroupAllNoAccessFactory(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators)
+            : base(evaluators, aggregators)
         {
         }
 
-        public override AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            MethodResolutionService methodResolutionService,
-            bool isSubquery,
-            int? subqueryNumber)
+        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
         {
-            AggregationMethod[] aggregatorsAgentInstance = methodResolutionService.NewAggregators(
-                base.Aggregators, agentInstanceContext.AgentInstanceId);
+            AggregationMethod[] aggregatorsAgentInstance = AggSvcGroupByUtil.NewAggregators(
+                base.Aggregators);
             return new AggSvcGroupAllNoAccessImpl(Evaluators, aggregatorsAgentInstance, Aggregators);
         }
     }

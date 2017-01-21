@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -79,7 +79,7 @@ namespace com.espertech.esper.collection
             // are different.
 
             Assert.IsTrue(_pair1A.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
-            Console.WriteLine("test-start");
+
             Assert.IsTrue(_pair2A.GetHashCode() == "a".GetHashCode());
             Assert.IsTrue(_pair3A.GetHashCode() == "b".GetHashCode());
             Assert.IsTrue(_pair4A.GetHashCode() == 0);

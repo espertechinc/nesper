@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,10 +31,10 @@ namespace com.espertech.esper.schedule
 
             // 2-by-2 table of buckets and slots
             var buckets = new ScheduleBucket[3];
-            _slots = new ScheduleSlot[buckets.Length][];
+            _slots = new long[buckets.Length][];
             for (int i = 0; i < buckets.Length; i++) {
                 buckets[i] = _mgmtService.AllocateBucket();
-                _slots[i] = new ScheduleSlot[2];
+                _slots[i] = new long[2];
                 for (int j = 0; j < _slots[i].Length; j++) {
                     _slots[i][j] = buckets[i].AllocateSlot();
                 }
@@ -51,7 +51,7 @@ namespace com.espertech.esper.schedule
         private SchedulingServiceImpl _service;
         private SchedulingMgmtServiceImpl _mgmtService;
 
-        private ScheduleSlot[][] _slots;
+        private long[][] _slots;
         private SupportScheduleCallback[] _callbacks;
 
         private void CheckCallbacks(SupportScheduleCallback[] callbacks, int[] results)
@@ -90,7 +90,7 @@ namespace com.espertech.esper.schedule
         {
             var evaluator = new SchedulingServiceImpl(new TimeSourceServiceImpl());
             var callback = new SupportScheduleCallback();
-            evaluator.Remove(callback, null);
+            evaluator.Remove(callback, 0);
         }
 
         [Test]

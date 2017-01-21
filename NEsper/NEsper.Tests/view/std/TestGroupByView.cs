@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -178,9 +178,9 @@ namespace com.espertech.esper.view.std
     
             var firstEleView = (FirstElementView) subViews;
             Assert.AreEqual(1, firstEleView.Views.Length);
-            Assert.IsTrue(firstEleView.Views[0] is AddPropertyValueView);
-    
-            var md = (AddPropertyValueView) firstEleView.Views[0];
+            Assert.IsTrue(firstEleView.Views[0] is AddPropertyValueOptionalView);
+
+            var md = (AddPropertyValueOptionalView)firstEleView.Views[0];
             Assert.AreEqual(1, md.Views.Length);
             Assert.IsTrue(md.Views[0] == mergeViewOne);
         }

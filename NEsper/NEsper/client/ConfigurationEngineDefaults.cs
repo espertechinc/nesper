@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -588,7 +588,12 @@ namespace com.espertech.esper.client
                 ThreadingProfile = ThreadingProfile.NORMAL;
                 IsPrioritized = false;
                 FilterServiceMaxFilterWidth = 16;
+                DeclaredExprValueCacheSize = 1;
             }
+
+            /// <summary>Gets or sets the cache size for declared expression values</summary>
+            /// <value>The size of the declared expr value cache.</value>
+            public int DeclaredExprValueCacheSize { get; set; }
 
             /// <summary>Returns false (the default) if the engine does not consider statement priority and preemptive instructions, or true to enable priority-based statement execution order. </summary>
             /// <value>false by default to indicate unprioritized statement execution</value>

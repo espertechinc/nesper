@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,10 +31,10 @@ namespace com.espertech.esper.schedule
         private readonly ILockable _uLock;
 
         // Map of time and handle
-        private readonly IDictionary<long, IDictionary<ScheduleSlot, ScheduleHandle>> _timeHandleMap;
+        private readonly IDictionary<long, IDictionary<long, ScheduleHandle>> _timeHandleMap;
     
         // Map of handle and handle list for faster removal
-        private readonly IDictionary<ScheduleHandle, IDictionary<ScheduleSlot, ScheduleHandle>> _handleSetMap;
+        private readonly IDictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>> _handleSetMap;
     
         // Current time - used for evaluation as well as for adding new handles
         private long _currentTime;
@@ -46,8 +46,8 @@ namespace com.espertech.esper.schedule
         public SchedulingServiceImpl(TimeSourceService timeSourceService)
         {
             _uLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-            _timeHandleMap = new SortedList<long, IDictionary<ScheduleSlot, ScheduleHandle>>();
-            _handleSetMap = new Dictionary<ScheduleHandle, IDictionary<ScheduleSlot, ScheduleHandle>>();
+            _timeHandleMap = new SortedList<long, IDictionary<long, ScheduleHandle>>();
+            _handleSetMap = new Dictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>>();
             // initialize time to just before now as there is a check for duplicate external time events
             _currentTime = timeSourceService.GetTimeMillis() - 1;
         }
@@ -70,8 +70,7 @@ namespace com.espertech.esper.schedule
             }
         }
 
-
-        public void Add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
+        public void Add(long afterMSec, ScheduleHandle handle, long slot)
         {
             using (Instrument.With(
                 i => i.QScheduleAdd(_currentTime, afterMSec, handle, slot),
@@ -91,10 +90,10 @@ namespace com.espertech.esper.schedule
             }
         }
     
-        public void Remove(ScheduleHandle handle, ScheduleSlot slot)
+        public void Remove(ScheduleHandle handle, long scheduleSlot)
         {
             using (Instrument.With(
-                i => i.QScheduleRemove(handle, slot),
+                i => i.QScheduleRemove(handle, scheduleSlot),
                 i => i.AScheduleRemove()))
             {
                 using (_uLock.Acquire())
@@ -106,7 +105,7 @@ namespace com.espertech.esper.schedule
                         // Such could be the case when 2 timers fireStatementStopped at the same time, and one stops the other
                         return;
                     }
-                    handleSet.Remove(slot);
+                    handleSet.Remove(scheduleSlot);
                     _handleSetMap.Remove(handle);
                 }
             }
@@ -203,13 +202,14 @@ namespace com.espertech.esper.schedule
             // no action required
         }
 
-        private void AddTrigger(ScheduleSlot slot, ScheduleHandle handle, long triggerTime)
+        private void AddTrigger(long slot, ScheduleHandle handle, long triggerTime)
         {
             var handleSet = _timeHandleMap.Get(triggerTime);
             if (handleSet == null)
             {
-                handleSet = new NullableDictionary<ScheduleSlot, ScheduleHandle>(
-                    new OrderedDictionary<ScheduleSlot, ScheduleHandle>());
+                //handleSet = new NullableDictionary<long, ScheduleHandle>(
+                //    new OrderedDictionary<long, ScheduleHandle>());
+                handleSet = new OrderedDictionary<long, ScheduleHandle>();
                 _timeHandleMap.Put(triggerTime, handleSet);
             }
 

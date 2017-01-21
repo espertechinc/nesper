@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -154,7 +154,7 @@ namespace com.espertech.esper.core.start
             {
                 aggregationService =
                     resultSetProcessorPrototype.AggregationServiceFactoryDesc.AggregationServiceFactory.MakeService(
-                        agentInstanceContext, agentInstanceContext.StatementContext.MethodResolutionService, isSubquery,
+                        agentInstanceContext, agentInstanceContext.StatementContext.EngineImportService, isSubquery,
                         subqueryNumber);
             }
 

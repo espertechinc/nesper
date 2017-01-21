@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -71,7 +71,7 @@ namespace com.espertech.esper.filter
             var keys = (MultiKeyUntyped) filterConstant;
 
             // remove the mapping of value set to evaluator
-            var eval = _filterValueEvaluators.Pluck(keys);
+            var eval = _filterValueEvaluators.Delete(keys);
             _evaluatorsSet.Remove(eval);
             var isRemoved = eval != null;
 

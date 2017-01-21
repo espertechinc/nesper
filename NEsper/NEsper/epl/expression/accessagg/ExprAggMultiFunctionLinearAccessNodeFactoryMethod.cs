@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,8 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
+
+using AggregationMethodFactoryUtil = com.espertech.esper.epl.agg.factory.AggregationMethodFactoryUtil;
 
 namespace com.espertech.esper.epl.expression.accessagg
 {
@@ -61,13 +63,13 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { throw new UnsupportedOperationException(); }
         }
 
-        public AggregationMethod Make(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId)
+        public AggregationMethod Make()
         {
             if (_parent.StateType == AggregationStateType.FIRST) {
-                return methodResolutionService.MakeFirstEverValueAggregator(agentInstanceId, groupId, aggregationId, _resultType, false);
+                return AggregationMethodFactoryUtil.MakeFirstEver(false);
             }
             else if (_parent.StateType == AggregationStateType.LAST) {
-                return methodResolutionService.MakeLastEverValueAggregator(agentInstanceId, groupId, aggregationId, _resultType, false);
+                return AggregationMethodFactoryUtil.MakeLastEver(false);
             }
             throw new EPRuntimeException("Window aggregation function is not available");
         }
@@ -79,14 +81,18 @@ namespace com.espertech.esper.epl.expression.accessagg
 
         public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-            AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
+            agg.service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
             var that = (ExprAggMultiFunctionLinearAccessNodeFactoryMethod) intoTableAgg;
-            AggregationMethodFactoryUtil.ValidateStreamNumZero(that._streamNum);
-            if (_collectionEventType != null) {
-                AggregationMethodFactoryUtil.ValidateEventType(_collectionEventType, that._collectionEventType);
+            agg.service.AggregationMethodFactoryUtil.ValidateStreamNumZero(that._streamNum);
+            if (_collectionEventType != null)
+            {
+                agg.service.AggregationMethodFactoryUtil.ValidateEventType(
+                    _collectionEventType, that._collectionEventType);
             }
-            else {
-                AggregationMethodFactoryUtil.ValidateAggregationInputType(_resultType, that._resultType);
+            else
+            {
+                agg.service.AggregationMethodFactoryUtil.ValidateAggregationInputType(
+                    _resultType, that._resultType);
             }
         }
 

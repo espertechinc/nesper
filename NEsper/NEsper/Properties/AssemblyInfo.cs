@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.4.3")]
-[assembly: AssemblyFileVersion("5.4.3")]
+[assembly: AssemblyVersion("5.5.0")]
+[assembly: AssemblyFileVersion("5.5.0")]
 
 [assembly: InternalsVisibleTo("NEsper.Tests")]

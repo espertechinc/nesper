@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.core
 {
 	/// <summary>
 	/// Polling-data provider that calls a static method on a class and passed parameters, and wraps the
-	/// results as POJO events.
+	/// results as events.
 	/// </summary>
 	public class MethodPollingViewable : HistoricalEventViewable
 	{
@@ -101,6 +101,7 @@ namespace com.espertech.esper.epl.core
 	    public void Stop()
 	    {
 	        _pollExecStrategy.Dispose();
+	        _dataCache.Dispose();
 	    }
 
 	    public IThreadLocal<DataCache> DataCacheThreadLocal
@@ -113,27 +114,14 @@ namespace com.espertech.esper.epl.core
 	        get { return _dataCache; }
 	    }
 
-	    public void Validate(
-	        EngineImportService engineImportService,
-	        StreamTypeService streamTypeService,
-	        MethodResolutionService methodResolutionService,
-	        TimeProvider timeProvider,
-	        VariableService variableService,
-	        TableService tableService,
-	        ScriptingService scriptingService,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        ConfigurationInformation configSnapshot,
-	        SchedulingService schedulingService,
-	        string engineURI,
-	        IDictionary<int, IList<ExprNode>> sqlParameters,
-	        EventAdapterService eventAdapterService,
-	        StatementContext statementContext)
+	    public void Validate(EngineImportService engineImportService, StreamTypeService streamTypeService, TimeProvider timeProvider, VariableService variableService, TableService tableService, ScriptingService scriptingService, ExprEvaluatorContext exprEvaluatorContext, ConfigurationInformation configSnapshot, SchedulingService schedulingService, string engineURI, IDictionary<int, IList<ExprNode>> sqlParameters, EventAdapterService eventAdapterService, StatementContext statementContext)
         {
 	        _statementContext = statementContext;
 
 	        // validate and visit
 	        var validationContext = new ExprValidationContext(
-	            streamTypeService, methodResolutionService, null, 
+	            streamTypeService, engineImportService,
+                statementContext.StatementExtensionServicesContext, null, 
                 timeProvider, variableService, tableService,
 	            exprEvaluatorContext, eventAdapterService, 
                 statementContext.StatementName, 
@@ -170,7 +158,7 @@ namespace com.espertech.esper.epl.core
 
 	        var desc = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
 	            _methodProviderClass.FullName, _isStaticMethod ? null : _methodProviderClass,
-	            _methodStreamSpec.MethodName, validatedInputParameters, methodResolutionService, eventAdapterService,
+	            _methodStreamSpec.MethodName, validatedInputParameters, engineImportService, eventAdapterService,
 	            statementContext.StatementId,
 	            false, null, handler, _methodStreamSpec.MethodName, tableService);
 	        _validatedExprNodes = desc.ChildEvals;

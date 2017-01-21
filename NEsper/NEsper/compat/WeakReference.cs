@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.compat
 	    }
 
         /// <summary>
-        /// Gets or sets the object (the target) referenced by the current <see cref="T:System.WeakReference"></see> object.
+        /// Gets the object (the target) referenced by the current <see cref="T:System.WeakReference"></see> object.
         /// </summary>
         /// <value></value>
         /// <returns>null if the object referenced by the current <see cref="T:System.WeakReference"></see> object has been garbage collected; otherwise, a reference to the object referenced by the current <see cref="T:System.WeakReference"></see> object.</returns>
@@ -43,6 +43,14 @@ namespace com.espertech.esper.compat
 		{
 			get { return (T) base.Target; }
 		}
+
+        /// <summary>
+        /// Gets the object (the target) referenced by the current <see cref="T:System.WeakReference"></see> object.
+        /// </summary>
+	    public T Get()
+	    {
+	        return (T) base.Target;
+	    }
 
         /// <summary>
         /// Serves as a hash function for a particular type. <see cref="M:System.Object.GetHashCode"></see> is suitable for use in hashing algorithms and data structures like a hash table.

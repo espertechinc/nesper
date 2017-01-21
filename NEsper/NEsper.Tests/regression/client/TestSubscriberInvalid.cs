@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,7 +14,6 @@ using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
 
 using NUnit.Framework;
-
 
 namespace com.espertech.esper.regression.client
 {
@@ -37,7 +36,8 @@ namespace com.espertech.esper.regression.client
         }
     
         [TearDown]
-        public void TearDown() {
+        public void TearDown()
+        {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _epAdmin = null;
         }
@@ -45,12 +45,17 @@ namespace com.espertech.esper.regression.client
         [Test]
         public void TestBindWildcardJoin()
         {
-            EPStatement stmt = _epAdmin.CreateEPL("select * from SupportBean");
-            TryInvalid(this, stmt, "EPSubscriber object does not provide a public method by name 'Update'");
-            TryInvalid(new DummySubscriberEmptyUpd(), stmt, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.support.bean.SupportBean");
-            TryInvalid(new DummySubscriberMultipleUpdate(), stmt, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.support.bean.SupportBean");
-            TryInvalid(new DummySubscriberUpdate(), stmt, "EPSubscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'com.espertech.esper.support.bean.SupportBean' but found type 'com.espertech.esper.support.bean.SupportMarketDataBean'");
-            TryInvalid(new DummySubscriberPrivateUpd(), stmt, "EPSubscriber object does not provide a public method by name 'Update'");
+            EPStatement stmtOne = _epAdmin.CreateEPL("select * from SupportBean");
+            TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'Update'");
+            TryInvalid(new DummySubscriberEmptyUpd(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.support.bean.SupportBean");
+            TryInvalid(new DummySubscriberMultipleUpdate(), stmtOne, "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.support.bean.SupportBean");
+            TryInvalid(new DummySubscriberUpdate(), stmtOne, "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'com.espertech.esper.support.bean.SupportBean' but found type 'com.espertech.esper.support.bean.SupportMarketDataBean'");
+            TryInvalid(new DummySubscriberPrivateUpd(), stmtOne, "Subscriber object does not provide a public method by name 'Update'");
+
+            EPStatement stmtTwo = _epAdmin.CreateEPL("select intPrimitive from SupportBean");
+            String message = "Subscriber 'updateRStream' method footprint must match 'update' method footprint";
+            TryInvalid(new DummySubscriberMismatchUpdateRStreamOne(), stmtTwo, message);
+            TryInvalid(new DummySubscriberMismatchUpdateRStreamTwo(), stmtTwo, message);
         }
     
         [Test]
@@ -83,7 +88,8 @@ namespace com.espertech.esper.regression.client
     
         public class DummySubscriberException
         {
-            public void Update(SupportMarketDataBean bean) {
+            public void Update(SupportMarketDataBean bean)
+            {
                 throw new ApplicationException("DummySubscriberException-generated");
             }
         }
@@ -107,6 +113,18 @@ namespace com.espertech.esper.regression.client
         {
             public void Update(long x) {}
             public void Update(int x) {}
+        }
+
+        public class DummySubscriberMismatchUpdateRStreamOne
+        {
+            public void Update(int value) { }
+            public void UpdateRStream(EPStatement stmt, int value) { }
+        }
+
+        public class DummySubscriberMismatchUpdateRStreamTwo
+        {
+            public void Update(EPStatement stmt, int value) { }
+            public void UpdateRStream(int value) { }
         }
     }
 }

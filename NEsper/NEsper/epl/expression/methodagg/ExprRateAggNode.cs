@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -57,10 +57,11 @@ namespace com.espertech.esper.epl.expression.methodagg
                 else {
                     throw new ExprValidationException(message);
                 }
-    
-                return new ExprRateAggNodeFactory(this, true, intervalMSec);
+
+                return validationContext.EngineImportService.AggregationFactoryFactory.MakeRate(validationContext.StatementExtensionSvcContext, this, true, intervalMSec, validationContext.TimeProvider);
             }
-            else {
+            else
+            {
                 const string message = "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
                 var boxedParamOne = first.ExprEvaluator.ReturnType.GetBoxedType();
                 if (boxedParamOne != typeof(long?)) {
@@ -81,7 +82,8 @@ namespace com.espertech.esper.epl.expression.methodagg
                 if (!hasDataWindows) {
                     throw new ExprValidationException("The rate aggregation function in the timestamp-property notation requires data windows");
                 }
-                return new ExprRateAggNodeFactory(this, false, -1);
+
+                return validationContext.EngineImportService.AggregationFactoryFactory.MakeRate(validationContext.StatementExtensionSvcContext, this, false, -1, validationContext.TimeProvider);
             }
         }
 

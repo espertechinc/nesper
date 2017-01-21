@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,16 +19,16 @@ namespace com.espertech.esper.epl.table.mgmt
     public class TableStateRowFactory
     {
         private readonly ObjectArrayEventType _objectArrayEventType;
-        private readonly MethodResolutionService _methodResolutionService;
+        private readonly EngineImportService _engineImportService;
         private readonly AggregationMethodFactory[] _methodFactories;
         private readonly AggregationStateFactory[] _stateFactories;
         private readonly int[] _groupKeyIndexes;
         private readonly EventAdapterService _eventAdapterService;
     
-        public TableStateRowFactory(ObjectArrayEventType objectArrayEventType, MethodResolutionService methodResolutionService, AggregationMethodFactory[] methodFactories, AggregationStateFactory[] stateFactories, int[] groupKeyIndexes, EventAdapterService eventAdapterService)
+        public TableStateRowFactory(ObjectArrayEventType objectArrayEventType, EngineImportService engineImportService, AggregationMethodFactory[] methodFactories, AggregationStateFactory[] stateFactories, int[] groupKeyIndexes, EventAdapterService eventAdapterService)
         {
             _objectArrayEventType = objectArrayEventType;
-            _methodResolutionService = methodResolutionService;
+            _engineImportService = engineImportService;
             _methodFactories = methodFactories;
             _stateFactories = stateFactories;
             _groupKeyIndexes = groupKeyIndexes;
@@ -58,8 +58,8 @@ namespace com.espertech.esper.epl.table.mgmt
 
         public AggregationRowPair MakeAggs(int agentInstanceId, object groupByKey, object groupKeyBinding, AggregationServicePassThru passThru)
         {
-            AggregationMethod[] methods = _methodResolutionService.NewAggregators(_methodFactories, agentInstanceId, groupByKey, groupKeyBinding, null);
-            AggregationState[] states = _methodResolutionService.NewAccesses(agentInstanceId, false, _stateFactories, groupByKey, groupKeyBinding, null, passThru);
+            AggregationMethod[] methods = AggSvcGroupByUtil.NewAggregators(_methodFactories);
+            AggregationState[] states = AggSvcGroupByUtil.NewAccesses(agentInstanceId, false, _stateFactories, groupByKey, passThru);
             return new AggregationRowPair(methods, states);
         }
     }

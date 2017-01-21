@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.enummethod.dot
 
         public abstract EventType[] GetAddStreamTypes(string enumMethodUsedName, IList<string> goesToNames, EventType inputEventType, Type collectionComponentType, IList<ExprDotEvalParam> bodiesAndParameters, EventAdapterService eventAdapterService);
 
-        public abstract EnumEval GetEnumEval(MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache);
+        public abstract EnumEval GetEnumEval(EngineImportService engineImportService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache);
 
         public EnumMethodEnum EnumMethodEnum
         {
@@ -127,7 +127,8 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
 
             // manage context of this lambda-expression in regards to outer lambda-expression that may call this one.
-            validationContext.ExprEvaluatorContext.ExpressionResultCacheService.PushStack(this);
+            ExpressionResultCacheForEnumerationMethod enumerationMethodCache = validationContext.ExprEvaluatorContext.ExpressionResultCacheService.AllocateEnumerationMethod;
+            enumerationMethodCache.PushStack(this);
 
             var bodiesAndParameters = new List<ExprDotEvalParam>();
             var count = 0;
@@ -141,7 +142,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
 
             _enumEval = GetEnumEval(
-                validationContext.MethodResolutionService, validationContext.EventAdapterService,
+                validationContext.EngineImportService, validationContext.EventAdapterService,
                 validationContext.StreamTypeService, validationContext.StatementId, enumMethodUsedName,
                 bodiesAndParameters, inputEventType, collectionComponentType, _streamCountIncoming,
                 validationContext.IsDisablePropertyExpressionEventCollCache);
@@ -164,15 +165,15 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
 
             // We turn on caching if the stack is not empty (we are an inner lambda) and the dependency does not include the stream.
-            var isInner = !validationContext.ExprEvaluatorContext.ExpressionResultCacheService.PopLambda();
+            var isInner = !enumerationMethodCache.PopLambda();
             if (isInner)
             {
                 // If none of the properties that the current lambda uses comes from the ultimate Parent(s) or subsequent streams, then cache.
-                var parents = validationContext.ExprEvaluatorContext.ExpressionResultCacheService.Stack;
+                var parents = enumerationMethodCache.GetStack();
                 var found = false;
                 foreach (var req in streamsRequired)
                 {
-                    var first = (ExprDotEvalEnumMethodBase) parents.First.Value;
+                    var first = (ExprDotEvalEnumMethodBase) parents.First;
                     var parentIncoming = first._streamCountIncoming - 1;
                     var selfAdded = _streamCountIncoming; // the one we use ourselfs
                     if (req > parentIncoming && req < selfAdded)
@@ -200,10 +201,11 @@ namespace com.espertech.esper.epl.enummethod.dot
             {
                 target = Collections.SingletonList((EventBean) target);
             }
+
+            var enumerationMethodCache = exprEvaluatorContext.ExpressionResultCacheService.AllocateEnumerationMethod;
             if (_cache)
             {
-                var cacheValue =
-                    exprEvaluatorContext.ExpressionResultCacheService.GetEnumerationMethodLastValue(this);
+                var cacheValue = enumerationMethodCache.GetEnumerationMethodLastValue(this);
                 if (cacheValue != null)
                 {
                     return cacheValue.Result;
@@ -215,14 +217,14 @@ namespace com.espertech.esper.epl.enummethod.dot
                 }
                 var eventsLambda = AllocateCopyEventLambda(eventsPerStream);
                 var result = _enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
-                exprEvaluatorContext.ExpressionResultCacheService.SaveEnumerationMethodLastValue(this, result);
+                enumerationMethodCache.SaveEnumerationMethodLastValue(this, result);
                 return result;
             }
 
             _contextNumber++;
             try
             {
-                exprEvaluatorContext.ExpressionResultCacheService.PushContext(_contextNumber);
+                enumerationMethodCache.PushContext(_contextNumber);
                 var coll = target.Unwrap<object>();
                 if (coll == null)
                 {
@@ -233,7 +235,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
             finally
             {
-                exprEvaluatorContext.ExpressionResultCacheService.PopContext();
+                enumerationMethodCache.PopContext();
             }
         }
 

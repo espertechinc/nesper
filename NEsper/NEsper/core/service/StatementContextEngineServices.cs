@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.mgr;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
@@ -22,6 +23,7 @@ using com.espertech.esper.events.vaevent;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.rowregex;
+using com.espertech.esper.schedule;
 using com.espertech.esper.timer;
 using com.espertech.esper.view;
 
@@ -52,7 +54,10 @@ namespace com.espertech.esper.core.service
             EventTableIndexService eventTableIndexService,
             PatternNodeFactory patternNodeFactory,
             FilterBooleanExpressionFactory filterBooleanExpressionFactory,
-            TimeSourceService timeSourceService)
+            TimeSourceService timeSourceService,
+            EngineImportService engineImportService,
+            AggregationFactoryFactory aggregationFactoryFactory,
+            SchedulingService schedulingService)
         {
             EngineURI = engineURI;
             EventAdapterService = eventAdapterService;
@@ -77,6 +82,9 @@ namespace com.espertech.esper.core.service
             PatternNodeFactory = patternNodeFactory;
             FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
             TimeSourceService = timeSourceService;
+            EngineImportService = engineImportService;
+            AggregationFactoryFactory = aggregationFactoryFactory;
+            SchedulingService = schedulingService;
         }
 
         public string EngineURI { get; private set; }
@@ -129,5 +137,11 @@ namespace com.espertech.esper.core.service
         public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; private set; }
 
         public TimeSourceService TimeSourceService { get; private set; }
+
+        public EngineImportService EngineImportService { get; private set; }
+
+        public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
+
+        public SchedulingService SchedulingService { get; private set; }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 using com.espertech.esper.client;
@@ -97,6 +98,7 @@ namespace com.espertech.esper.util
             BoxedTable[typeof(ushort)] = typeof(ushort?);
             BoxedTable[typeof(uint)] = typeof(uint?);
             BoxedTable[typeof(ulong)] = typeof(ulong?);
+            BoxedTable[typeof(BigInteger)] = typeof (BigInteger?);
 
             IntegralTable = new Dictionary<Type, int>();
             for (int ii = 0; ii < IntegralTypes.Length; ii++)
@@ -124,26 +126,19 @@ namespace com.espertech.esper.util
             ParserTable[typeof(int?)] = s => IntValue.ParseString(s.Trim());
             ParserTable[typeof(long?)] = s => LongValue.ParseString(s.Trim());
 
-            ParserTable[typeof(ushort?)] = delegate(string s)
-                                                  {
-                                                      s = s.Trim();
-                                                      return UInt16.Parse(s);
-                                                  };
-            ParserTable[typeof(uint?)] = delegate(string s)
-                                                {
-                                                    s = s.Trim();
-                                                    return UInt32.Parse(s);
-                                                };
-            ParserTable[typeof(ulong?)] = delegate(string s)
-                                                 {
-                                                     s = s.Trim();
-                                                     if ((s.EndsWith("L")) || ((s.EndsWith("l"))))
-                                                     {
-                                                         s = s.Substring(0, s.Length - 1);
-                                                     }
-                                                     return UInt64.Parse(s);
-                                                 };
+            ParserTable[typeof(ushort?)] = s => UInt16.Parse(s.Trim());
+            ParserTable[typeof(uint?)] = s => UInt32.Parse(s.Trim());
+            ParserTable[typeof(ulong?)] = s => 
+            {
+                s = s.Trim();
+                if ((s.EndsWith("L")) || ((s.EndsWith("l"))))
+                {
+                    s = s.Substring(0, s.Length - 1);
+                }
+                return UInt64.Parse(s);
+            };
 
+            ParserTable[typeof(BigInteger?)] = s => BigInteger.Parse(s.Trim());
         }
 
         /// <summary>
@@ -282,6 +277,7 @@ namespace com.espertech.esper.util
             if (type == typeof(double) || type == typeof(double?)) return typeof(double?);
             if (type == typeof(decimal) || type == typeof(decimal?)) return typeof(decimal?);
             if (type == typeof(float) || type == typeof(float?)) return typeof(float?);
+            if (type == typeof(BigInteger) || type == typeof(BigInteger)) return typeof (BigInteger?);
 
             Type boxed;
             if (BoxedTable.TryGetValue(type, out boxed))
@@ -441,6 +437,11 @@ namespace com.espertech.esper.util
                 (typeName == "bool"))
             {
                 return typeof(bool?).FullName;
+            }
+            if ((typeName == typeof(BigInteger).FullName) ||
+                (typeName == "bigint"))
+            {
+                return typeof(BigInteger?).FullName;
             }
             if (String.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase))
             {
@@ -618,6 +619,18 @@ namespace com.espertech.esper.util
         public static bool IsNumber(this Object value)
         {
             return (value != null) && (IsNumeric(value.GetType()));
+        }
+
+        public static bool IsDecimal(this Type type)
+        {
+            return (type == typeof (decimal)) ||
+                   (type == typeof (decimal?));
+        }
+
+        public static bool IsBigInteger(this Type type)
+        {
+            return (type == typeof(BigInteger)) ||
+                   (type == typeof(BigInteger?));
         }
 
         /// <summary>
@@ -1731,6 +1744,54 @@ namespace com.espertech.esper.util
         /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
+        /// <param name="type">of the class to load, check type and instantiate</param>
+        /// <returns>instance of given class, via newInstance</returns>
+        public static T Instantiate<T>(Type type) where T : class
+        {
+            var implementedOrExtendedType = typeof(T);
+            var typeName = type.FullName;
+
+            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
+            {
+                if (implementedOrExtendedType.IsInterface)
+                {
+                    throw new TypeInstantiationException("Class '" + typeName + "' does not implement interface '" +
+                                                         implementedOrExtendedType.FullName + "'");
+                }
+                throw new TypeInstantiationException("Class '" + typeName + "' does not extend '" +
+                                                     implementedOrExtendedType.FullName + "'");
+            }
+
+            try
+            {
+                return (T) Activator.CreateInstance(type);
+            }
+            catch (TypeInstantiationException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Unable to instantiate from class '" + typeName + "' via default constructor", ex);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Invocation exception when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+            catch (MethodAccessException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Method access when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+            catch (MemberAccessException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Member access when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+        }
+
+        /// <summary>
+        /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
+        /// </summary>
+        /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="typeName">of the class to load, check type and instantiate</param>
         /// <returns>instance of given class, via newInstance</returns>
         public static T Instantiate<T>(String typeName) where T : class
@@ -1785,6 +1846,24 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>
+        /// Applies a visitor pattern to the base interfaces for the provided type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="visitor">The visitor.</param>
+        public static void VisitBaseInterfaces(this Type type, Action<Type> visitor)
+        {
+            if (type != null)
+            {
+                var interfaces = type.GetInterfaces();
+                for (int ii = 0; ii < interfaces.Length; ii++)
+                {
+                    visitor.Invoke(interfaces[ii]);
+                    VisitBaseInterfaces(interfaces[ii], visitor);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the base interfaces for the provided type and store them
         /// in the result set.
         /// </summary>
@@ -1792,12 +1871,23 @@ namespace com.espertech.esper.util
         /// <param name="result">The result.</param>
         public static void GetBaseInterfaces(Type type, ICollection<Type> result)
         {
-            Type[] interfaces = type.GetInterfaces();
+            VisitBaseInterfaces(type, result.Add);
+        }
 
-            for (int i = 0; i < interfaces.Length; i++)
+        /// <summary>
+        /// Visits the base classes for the provided type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        public static void VisitBaseClasses(this Type type, Action<Type> visitor)
+        {
+            if (type != null)
             {
-                result.Add(interfaces[i]);
-                GetBaseInterfaces(interfaces[i], result);
+                var baseType = type.BaseType;
+                if (baseType != null)
+                {
+                    visitor.Invoke(baseType);
+                    VisitBaseClasses(baseType, visitor);
+                }
             }
         }
 
@@ -1809,14 +1899,18 @@ namespace com.espertech.esper.util
         /// <param name="result">The result.</param>
         public static void GetBaseClasses(Type type, ICollection<Type> result)
         {
-            Type baseType = type.BaseType;
-            if (baseType == null)
-            {
-                return;
-            }
+            VisitBaseClasses(type, result.Add);
+        }
 
-            result.Add(baseType);
-            GetBase(baseType, result);
+        /// <summary>
+        /// Visits the base class and all interfaces.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="visitor">The visitor.</param>
+        public static void VisitBase(this Type type, Action<Type> visitor)
+        {
+            VisitBaseInterfaces(type, visitor);
+            VisitBaseClasses(type, visitor);
         }
 
         /// <summary>
@@ -1828,6 +1922,20 @@ namespace com.espertech.esper.util
         {
             GetBaseInterfaces(type, result);
             GetBaseClasses(type, result);
+        }
+
+        /// <summary>
+        /// Visits the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="visitor">The visitor.</param>
+        public static void Visit(this Type type, Action<Type> visitor)
+        {
+            if (type != null)
+            {
+                visitor.Invoke(type);
+                VisitBase(type, visitor);
+            }
         }
 
         public static bool IsSimpleNameFullyQualfied(String simpleTypeName, String fullyQualifiedTypename)
@@ -2161,24 +2269,15 @@ namespace com.espertech.esper.util
         /// Resolves the ident as enum const.
         /// </summary>
         /// <param name="constant">The constant.</param>
-        /// <param name="methodResolutionService">The method resolution service.</param>
         /// <param name="engineImportService">The engine import service.</param>
         /// <returns></returns>
-        public static Object ResolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService, EngineImportService engineImportService, bool isAnnotation)
+        public static Object ResolveIdentAsEnumConst(String constant, EngineImportService engineImportService, bool isAnnotation)
         {
-            Func<string, bool, Type> methodResolution = null;
-            if (methodResolutionService != null)
-                methodResolution = methodResolutionService.ResolveType;
-
             Func<string, bool, Type> engineResolution = null;
             if (engineImportService != null)
                 engineResolution = engineImportService.ResolveType;
 
-            return ResolveIdentAsEnumConst(
-                constant,
-                methodResolution,
-                engineResolution,
-                isAnnotation);
+            return ResolveIdentAsEnumConst(constant, engineResolution, isAnnotation);
         }
 
         /// <summary>
@@ -2186,13 +2285,11 @@ namespace com.espertech.esper.util
         /// resolved.
         /// </summary>
         /// <param name="constant">to resolve</param>
-        /// <param name="methodResolutionService">for statement-level use to resolve enums, can be null</param>
         /// <param name="engineImportService">for engine-level use to resolve enums, can be null</param>
         /// <returns>null or enumeration value</returns>
         /// <throws>ExprValidationException if there is an error accessing the enum</throws>
         public static Object ResolveIdentAsEnumConst(
             string constant,
-            Func<string, bool, Type> methodResolutionService,
             Func<string, bool, Type> engineImportService,
             bool isAnnotation)
         {
@@ -2212,11 +2309,9 @@ namespace com.espertech.esper.util
             Type clazz;
             try
             {
-                clazz = engineImportService != null
-                    ? engineImportService.Invoke(className, isAnnotation)
-                    : methodResolutionService.Invoke(className, isAnnotation);
+                clazz = engineImportService.Invoke(className, isAnnotation);
             }
-            catch (EngineImportException e)
+            catch (EngineImportException)
             {
                 return null;
             }
@@ -2230,7 +2325,7 @@ namespace com.espertech.esper.util
                     return null;
                 }
             }
-            catch (MissingFieldException e)
+            catch (MissingFieldException)
             {
                 return null;
             }
@@ -2257,10 +2352,10 @@ namespace com.espertech.esper.util
             {
                 return Assembly.Load(assemblyNameOrFile);
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
             }
-            catch (FileLoadException e1)
+            catch (FileLoadException)
             {
             }
 
@@ -2272,7 +2367,7 @@ namespace com.espertech.esper.util
                     return Assembly.LoadFile(fileInfo.FullName);
                 }
             }
-            catch (FileLoadException e2)
+            catch (FileLoadException)
             {
             }
 
@@ -2328,10 +2423,10 @@ namespace com.espertech.esper.util
         /// <param name="annotations">to search</param>
         /// <param name="hookType">type to look for</param>
         /// <param name="interfaceExpected">interface required</param>
-        /// <param name="resolution">for resolving references, optional, if not provided then using ResolveType</param>
+        /// <param name="optionalResolver">for resolving references, optional, if not provided then using ResolveType</param>
         /// <returns>hook instance</returns>
         /// <throws>ExprValidationException if instantiation failed</throws>
-        public static Object GetAnnotationHook(Attribute[] annotations, HookType hookType, Type interfaceExpected, MethodResolutionService resolution)
+        public static Object GetAnnotationHook(Attribute[] annotations, HookType hookType, Type interfaceExpected, EngineImportService optionalResolver)
         {
             if (annotations == null)
             {
@@ -2361,13 +2456,13 @@ namespace com.espertech.esper.util
             Type clazz;
             try
             {
-                if (resolution == null)
+                if (optionalResolver == null)
                 {
                     clazz = ResolveType(hookClass);
                 }
                 else
                 {
-                    clazz = resolution.ResolveType(hookClass, true);
+                    clazz = optionalResolver.ResolveType(hookClass, true);
                 }
             }
             catch (Exception e)

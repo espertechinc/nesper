@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -138,7 +138,7 @@ namespace com.espertech.esper.dataflow.ops
                 {
                     if (theEvent.Statement.IsStopped || theEvent.Statement.IsDisposed)
                     {
-                        var listener = _listeners.Pluck(stmt);
+                        var listener = _listeners.Delete(stmt);
                         if (listener != null)
                         {
                             stmt.Events -= listener;

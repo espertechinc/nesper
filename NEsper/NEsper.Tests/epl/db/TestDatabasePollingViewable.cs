@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.db
     
             var sqlParameters = new Dictionary<int, IList<ExprNode>>();
             sqlParameters.Put(1, ((ExprNode) new ExprIdentNodeImpl("IntPrimitive", "s0")).AsSingleton());
-            _pollingViewable.Validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, null, sqlParameters, null, SupportStatementContextFactory.MakeContext());
+            _pollingViewable.Validate(null, new SupportStreamTypeSvc3Stream(), null, null, null, null, null, null, null, null, sqlParameters, null, SupportStatementContextFactory.MakeContext());
     
             _indexingStrategy = new ProxyPollResultIndexingStrategy
             {

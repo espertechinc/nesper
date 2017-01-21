@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
@@ -56,14 +57,14 @@ namespace com.espertech.esper.view.std
             tradeBeans[1] = MakeTradeBean("IBM", 75);
             tradeBeans[2] = MakeTradeBean("CSCO", 100);
             stream.Insert(new EventBean[] { tradeBeans[1], tradeBeans[2] });
-            EPAssertionUtil.AssertEqualsExactOrder(new EventBean[] { tradeBeans[1], tradeBeans[2] }, _myView.GetEnumerator());
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventBean[] { tradeBeans[1], tradeBeans[2] }, _myView.ToArray());
             SupportViewDataChecker.CheckOldData(_childView, new EventBean[] { tradeBeans[0] });
             SupportViewDataChecker.CheckNewData(_childView, new EventBean[] { tradeBeans[1], tradeBeans[2] });
 
             // And 1 more events
             tradeBeans[3] = MakeTradeBean("CSCO", 99);
             stream.Insert(new EventBean[] { tradeBeans[3] });
-            EPAssertionUtil.AssertEqualsExactOrder(new EventBean[] { tradeBeans[1], tradeBeans[3] }, _myView.GetEnumerator());
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventBean[] { tradeBeans[1], tradeBeans[3] }, _myView.ToArray());
             SupportViewDataChecker.CheckOldData(_childView, new EventBean[] { tradeBeans[2] });
             SupportViewDataChecker.CheckNewData(_childView, new EventBean[] { tradeBeans[3] });
 
@@ -72,13 +73,13 @@ namespace com.espertech.esper.view.std
             tradeBeans[5] = MakeTradeBean("IBM", 77);
             tradeBeans[6] = MakeTradeBean("IBM", 78);
             stream.Insert(new EventBean[] { tradeBeans[4], tradeBeans[5], tradeBeans[6] });
-            EPAssertionUtil.AssertEqualsExactOrder(new EventBean[] { tradeBeans[6], tradeBeans[4] }, _myView.GetEnumerator());
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventBean[] { tradeBeans[6], tradeBeans[4] }, _myView.ToArray());
             SupportViewDataChecker.CheckOldData(_childView, new EventBean[] { tradeBeans[1], tradeBeans[5], tradeBeans[3] });
             SupportViewDataChecker.CheckNewData(_childView, new EventBean[] { tradeBeans[4], tradeBeans[5], tradeBeans[6] });  // Yes the event is both in old and new data
 
             // Post as old data an event --> unique event is thrown away and posted as old data
             _myView.Update(null, new EventBean[] { tradeBeans[6] });
-            EPAssertionUtil.AssertEqualsExactOrder(new EventBean[] { tradeBeans[4] }, _myView.GetEnumerator());
+            EPAssertionUtil.AssertEqualsAnyOrder(new EventBean[] { tradeBeans[4] }, _myView.ToArray());
             SupportViewDataChecker.CheckOldData(_childView, new EventBean[] { tradeBeans[6] });
             SupportViewDataChecker.CheckNewData(_childView, null);
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,6 +13,7 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.core.thread;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
@@ -85,6 +86,7 @@ namespace com.espertech.esper.core.support
 	        Configuration config = new Configuration();
 	        config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies = true;
 
+            TimeSourceServiceImpl timeSourceService = new TimeSourceServiceImpl();
 	        StatementContextEngineServices stmtEngineServices = new StatementContextEngineServices(
 	            "engURI",
 	            SupportEventAdapterService.GetService(),
@@ -97,8 +99,10 @@ namespace com.espertech.esper.core.support
 	            null,
 	            null,
 	            null,
-	            new StatementEventTypeRefImpl(), null, null, null, null, null, new ViewServicePreviousFactoryImpl(), null,
-	            new PatternNodeFactoryImpl(), new FilterBooleanExpressionFactoryImpl(), new TimeSourceServiceImpl());
+                new StatementEventTypeRefImpl(), null, null, null, null, null, new ViewServicePreviousFactoryImpl(), null,
+                new PatternNodeFactoryImpl(), new FilterBooleanExpressionFactoryImpl(), timeSourceService,
+                SupportEngineImportServiceFactory.Make(), AggregationFactoryFactoryDefault.INSTANCE, 
+                new SchedulingServiceImpl(timeSourceService));
 
 	        return new StatementContext(
                 stmtEngineServices,
@@ -109,7 +113,6 @@ namespace com.espertech.esper.core.support
 	            new PatternObjectResolutionServiceImpl(null),
 	            null,
 	            null,
-	            new MethodResolutionServiceImpl(SupportEngineImportServiceFactory.Make(), null),
 	            null,
 	            null,
 	            new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc

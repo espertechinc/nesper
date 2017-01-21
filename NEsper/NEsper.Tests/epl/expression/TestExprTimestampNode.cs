@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.expression
                 _node.Validate(ExprValidationContextFactory.MakeEmpty());
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.expression
             };
 
             _context = new SupportExprEvaluatorContext(provider);
-            _node.Validate(new ExprValidationContext(null, null, null, provider, null, null, null, null, null, 1, null, null, null, false, false, false, false, null, false));
+            _node.Validate(new ExprValidationContext(null, null, null, null, provider, null, null, null, null, null, 1, null, null, null, false, false, false, false, null, false));
 
             Assert.AreEqual(99L, _node.Evaluate(new EvaluateParams(null, false, _context)));
         }

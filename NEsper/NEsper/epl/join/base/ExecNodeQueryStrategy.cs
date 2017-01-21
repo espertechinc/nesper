@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,7 +21,7 @@ namespace com.espertech.esper.epl.join.@base
 /// <summary>
 /// Query strategy for building a join tuple set by using an execution node tree.
 /// </summary>
-[EsperVersion("5.4.3.*")]
+[EsperVersion("5.5.0.*")]
 public sealed class ExecNodeQueryStrategy : QueryStrategy
 {
 /// <summary>CTor. </summary>

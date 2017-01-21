@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,14 +15,6 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// </summary>
     public class AggregatorFirstEver : AggregationMethod
     {
-        private readonly Type _type;
-
-        /// <summary>Ctor. </summary>
-        /// <param name="type">type of value returned</param>
-        public AggregatorFirstEver(Type type) {
-            _type = type;
-        }
-    
         public virtual void Clear()
         {
             FirstValue = null;
@@ -45,11 +37,6 @@ namespace com.espertech.esper.epl.agg.aggregator
         public object Value
         {
             get { return FirstValue; }
-        }
-
-        public Type ValueType
-        {
-            get { return _type; }
         }
 
         public bool IsSet { get; set; }

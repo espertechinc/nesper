@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -65,7 +65,14 @@ namespace com.espertech.esper.epl.db
             }
         }
 
-        /// <summary> Returns the maximum cache size.</summary>
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+	    public void Dispose()
+	    {
+	    }
+
+	    /// <summary> Returns the maximum cache size.</summary>
         /// <returns> maximum cache size
         /// </returns>
         public int CacheSize

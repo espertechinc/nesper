@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.enummethod.eval
         }
 
 
-        public override EnumEval GetEnumEval(MethodResolutionService methodResolutionService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache)
+        public override EnumEval GetEnumEval(EngineImportService engineImportService, EventAdapterService eventAdapterService, StreamTypeService streamTypeService, int statementId, string enumMethodUsedName, IList<ExprDotEvalParam> bodiesAndParameters, EventType inputEventType, Type collectionComponentType, int numStreamsIncoming, bool disablePropertyExpressionEventCollCache)
         {
             if (bodiesAndParameters.IsEmpty())
             {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.enummethod.eval
                 {
                     TypeInfo = EPTypeHelper.SingleValue(typeof(decimal?));
                     return new EnumEvalAverageDecimalScalar(
-                        numStreamsIncoming, methodResolutionService.EngineImportService.DefaultMathContext);
+                        numStreamsIncoming, engineImportService.DefaultMathContext);
                 }
                 TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
                 return new EnumEvalAverageScalar(numStreamsIncoming);
@@ -63,11 +63,11 @@ namespace com.espertech.esper.epl.enummethod.eval
                     return new EnumEvalAverageDecimalScalarLambda(
                         first.BodyEvaluator, first.StreamCountIncoming,
                         (ObjectArrayEventType) first.GoesToTypes[0],
-                        methodResolutionService.EngineImportService.DefaultMathContext);
+                        engineImportService.DefaultMathContext);
                 }
                 return new EnumEvalAverageDecimalEvents(
                     first.BodyEvaluator, first.StreamCountIncoming,
-                    methodResolutionService.EngineImportService.DefaultMathContext);
+                    engineImportService.DefaultMathContext);
             }
             TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
             if (inputEventType == null)

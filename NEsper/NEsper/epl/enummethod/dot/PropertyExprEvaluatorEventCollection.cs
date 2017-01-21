@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,9 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 
@@ -66,28 +64,22 @@ namespace com.espertech.esper.epl.enummethod.dot
 
         private ICollection<EventBean> EvaluateInternal(EventBean eventInQuestion, ExprEvaluatorContext context)
         {
-
-            if (!_disablePropertyExpressionEventCollCache)
+            if (_disablePropertyExpressionEventCollCache)
             {
-                var cacheEntry = context.ExpressionResultCacheService.GetPropertyColl(
-                    _propertyNameCache, eventInQuestion);
-                if (cacheEntry != null)
-                {
-                    return cacheEntry.Result;
-                }
+                var eventsX = (EventBean[]) _getter.GetFragment(eventInQuestion);
+                return (ICollection<EventBean>) eventsX;
+            }
+
+            var cache = context.ExpressionResultCacheService.AllocateUnwrapProp;
+            var cacheEntry = cache.GetPropertyColl(_propertyNameCache, eventInQuestion);
+            if (cacheEntry != null)
+            {
+                return cacheEntry.Result;
             }
 
             var events = (EventBean[]) _getter.GetFragment(eventInQuestion);
-            ICollection<EventBean> coll = events ?? null;
-            if (!_disablePropertyExpressionEventCollCache)
-            {
-                context.ExpressionResultCacheService.SavePropertyColl(_propertyNameCache, eventInQuestion, coll);
-            }
-            if (coll == null)
-            {
-                return null;
-            }
-
+            var coll = (ICollection<EventBean>) events;
+            cache.SavePropertyColl(_propertyNameCache, eventInQuestion, coll);
             return coll;
         }
 

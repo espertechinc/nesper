@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.nwtable
             oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
             EPAssertionUtil.AssertPropsPerRow(oldevents, "TheString,IntPrimitive".Split(','), new object[][] { new object[] { "E2", 3 } });
 
-            EPAssertionUtil.AssertPropsPerRow(stmtCreate.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][] { new object[] { "E1", 2 }, new object[] { "E2", 300 } });
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmtCreate.GetEnumerator(), "TheString,IntPrimitive".Split(','), new object[][] { new object[] { "E1", 2 }, new object[] { "E2", 300 } });
         }
         
         private void CreateSendEvent(EPServiceProvider engine, string typeName, string company, double value, double total)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -260,7 +260,7 @@ namespace com.espertech.esper.epl.parse
 	            exprNode = new ExprInNodeImpl(isNot);
 	        }
 	        else if (ctx.inSubSelectQuery() != null) {
-	            StatementSpecRaw currentSpec = _astStatementSpecMap.Pluck(ctx.inSubSelectQuery().subQueryExpr());
+	            StatementSpecRaw currentSpec = _astStatementSpecMap.Delete(ctx.inSubSelectQuery().subQueryExpr());
 	            exprNode = new ExprSubselectInNode(currentSpec, isNot);
 	        }
 	        else if (ctx.between != null) {
@@ -294,7 +294,7 @@ namespace com.espertech.esper.epl.parse
 	            if (isAll || isAny)
                 {
 	                if (ctx.subSelectGroupExpression() != null && ctx.subSelectGroupExpression().Length > 0) {
-	                    StatementSpecRaw currentSpec = _astStatementSpecMap.Pluck(ctx.subSelectGroupExpression()[0].subQueryExpr());
+	                    StatementSpecRaw currentSpec = _astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
 	                    exprNode = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
 	                }
 	                else {
@@ -729,7 +729,7 @@ namespace com.espertech.esper.epl.parse
 	            var isAll = ctx.a.Type == EsperEPL2GrammarLexer.ALL;
 	            IList<EsperEPL2GrammarParser.SubSelectGroupExpressionContext> subselect = ctx.subSelectGroupExpression();
 	            if (subselect != null && !subselect.IsEmpty()) {
-	                StatementSpecRaw currentSpec = _astStatementSpecMap.Pluck(ctx.subSelectGroupExpression()[0].subQueryExpr());
+	                StatementSpecRaw currentSpec = _astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
 	                exprNode = new ExprSubselectAllSomeAnyNode(currentSpec, isNot, isAll, null);
 	            }
 	            else {
@@ -871,7 +871,7 @@ namespace com.espertech.esper.epl.parse
 	        if (ctx.chainedFunction() == null) {
 	            return;
 	        }
-	        var substitutionNode = (ExprSubstitutionNode) _astExprNodeMap.Pluck(ctx.substitution());
+	        var substitutionNode = (ExprSubstitutionNode) _astExprNodeMap.Delete(ctx.substitution());
 	        var chainSpec = ASTLibFunctionHelper.GetLibFuncChain(ctx.chainedFunction().libFunctionNoClass(), _astExprNodeMap);
 	        var exprNode = new ExprDotNode(chainSpec, _engineImportService.IsDuckType, _engineImportService.IsUdfCache);
 	        exprNode.AddChildNode(substitutionNode);
@@ -1238,7 +1238,7 @@ namespace com.espertech.esper.epl.parse
 	    }
 
 	    public void ExitRowSubSelectExpression(EsperEPL2GrammarParser.RowSubSelectExpressionContext ctx) {
-	        StatementSpecRaw statementSpec = _astStatementSpecMap.Pluck(ctx.subQueryExpr());
+	        StatementSpecRaw statementSpec = _astStatementSpecMap.Delete(ctx.subQueryExpr());
 	        var subselectNode = new ExprSubselectRowNode(statementSpec);
 	        if (ctx.chainedFunction() != null) {
 	            HandleChainedFunction(ctx, ctx.chainedFunction(), subselectNode);
@@ -1649,7 +1649,7 @@ namespace com.espertech.esper.epl.parse
 	    }
 
 	    public void ExitExistsSubSelectExpression(EsperEPL2GrammarParser.ExistsSubSelectExpressionContext ctx) {
-	        StatementSpecRaw currentSpec = _astStatementSpecMap.Pluck(ctx.subQueryExpr());
+	        StatementSpecRaw currentSpec = _astStatementSpecMap.Delete(ctx.subQueryExpr());
 	        ExprSubselectNode subselectNode = new ExprSubselectExistsNode(currentSpec);
 	        ASTExprHelper.ExprCollectAddSubNodesAddParentNode(subselectNode, ctx, _astExprNodeMap);
 	    }
@@ -2531,5 +2531,7 @@ namespace com.espertech.esper.epl.parse
         public void EnterExpressionNamedParameterWithTime(EsperEPL2GrammarParser.ExpressionNamedParameterWithTimeContext ctx) {}
         public void EnterExpressionListWithNamedWithTime(EsperEPL2GrammarParser.ExpressionListWithNamedWithTimeContext ctx) {}
         public void ExitExpressionListWithNamedWithTime(EsperEPL2GrammarParser.ExpressionListWithNamedWithTimeContext ctx) {}
-    }
+	    public void EnterBuiltinFunc(EsperEPL2GrammarParser.BuiltinFuncContext ctx) {}
+	    public void ExitBuiltinFunc(EsperEPL2GrammarParser.BuiltinFuncContext ctx) {}
+	}
 } // end of namespace

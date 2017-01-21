@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,7 +25,7 @@ namespace com.espertech.esper.view.window
     public class FirstLengthWindowViewFactory : AsymetricDataWindowViewFactory
     {
         /// <summary>Count of length first window. </summary>
-        protected int Size;
+        private int _size;
     
         private EventType _eventType;
     
@@ -43,14 +43,14 @@ namespace com.espertech.esper.view.window
                 throw new ViewParameterException(ViewParamMessage);
             }
             var numParam = parameter;
-            if ( (numParam.IsFloatingPointNumber()) ||
-                 (numParam.IsLongNumber()))
+            if ((numParam.IsFloatingPointNumber()) ||
+                (numParam.IsLongNumber()))
             {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            Size = numParam.AsInt();
-            if (Size <= 0)
+            _size = numParam.AsInt();
+            if (_size <= 0)
             {
                 throw new ViewParameterException(ViewName + " view requires a positive number");
             }
@@ -63,7 +63,7 @@ namespace com.espertech.esper.view.window
     
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, Size);
+            return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, _size);
         }
 
         public EventType EventType
@@ -79,7 +79,7 @@ namespace com.espertech.esper.view.window
             }
     
             var myView = (FirstLengthWindowView) view;
-            if (myView.Size != Size)
+            if (myView.Size != _size)
             {
                 return false;
             }
@@ -95,6 +95,11 @@ namespace com.espertech.esper.view.window
         private string ViewParamMessage
         {
             get { return ViewName + " view requires an integer-type size parameter"; }
+        }
+
+        public int Size
+        {
+            get { return _size; }
         }
     }
 }

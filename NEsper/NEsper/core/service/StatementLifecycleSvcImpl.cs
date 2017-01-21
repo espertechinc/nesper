@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -113,7 +113,15 @@ namespace com.espertech.esper.core.service
 	        get { return StmtNameToStmtMap; }
 	    }
 
-	    public EPStatement CreateAndStart(StatementSpecRaw statementSpec, string expression, bool isPattern, string optStatementName, object userObject, EPIsolationUnitServices isolationUnitServices, int? optionalStatementId, EPStatementObjectModel optionalModel)
+	    public EPStatement CreateAndStart(
+	        StatementSpecRaw statementSpec,
+	        string expression,
+	        bool isPattern,
+	        string optStatementName,
+	        object userObject,
+	        EPIsolationUnitServices isolationUnitServices,
+	        int? optionalStatementId,
+	        EPStatementObjectModel optionalModel)
 	    {
 	        using (_lock.Acquire())
 	        {
@@ -189,6 +197,11 @@ namespace com.espertech.esper.core.service
 	                statementName = GetUniqueStatementName(optStatementName, statementId);
 	                nameProvided = true;
 	            }
+
+                if (statementSpec.FireAndForgetSpec != null)
+                {
+                    throw new EPStatementException("Provided EPL expression is an on-demand query expression (not a continuous query), please use the runtime executeQuery API instead", expression);
+                }
 
 	            return CreateStopped(statementSpec, annotations, expression, isPattern, statementName, nameProvided, statementId, optAdditionalContext, userObject, isolationUnitServices, false, optionalModel);
     	    }
@@ -484,25 +497,30 @@ namespace com.espertech.esper.core.service
 	        }
 	    }
 
-	    private void ValidateScript(ExpressionScriptProvided script) {
+	    private void ValidateScript(ExpressionScriptProvided script)
+	    {
 	        var dialect = script.OptionalDialect ?? Services.ConfigSnapshot.EngineDefaults.ScriptsConfig.DefaultDialect;
 	        if (dialect == null)
-            {
-	            throw new ExprValidationException(string.Format("Failed to determine script dialect for script '{0}', please configure a default dialect or provide a dialect explicitly", script.Name));
+	        {
+	            throw new ExprValidationException(
+	                string.Format("Failed to determine script dialect for script '{0}', please configure a default dialect or provide a dialect explicitly", script.Name));
 	        }
 
-            // NOTE: we have to do something here
-            Services.ScriptingService.VerifyScript(dialect, script);
-            //JSR223Helper.VerifyCompileScript(script, dialect);
+	        // NOTE: we have to do something here
+	        Services.ScriptingService.VerifyScript(dialect, script);
+	        //JSR223Helper.VerifyCompileScript(script, dialect);
 
 	        if (!script.ParameterNames.IsEmpty())
-            {
+	        {
 	            var parameters = new HashSet<string>();
 	            foreach (var param in script.ParameterNames)
-                {
+	            {
 	                if (parameters.Contains(param))
-                    {
-	                    throw new ExprValidationException(string.Format("Invalid script parameters for script '{0}', parameter '{1}' is defined more then once", script.Name, param));
+	                {
+	                    throw new ExprValidationException(
+	                        string.Format(
+	                            "Invalid script parameters for script '{0}', parameter '{1}' is defined more then once",
+	                            script.Name, param));
 	                }
 	                parameters.Add(param);
 	            }
@@ -901,9 +919,11 @@ namespace com.espertech.esper.core.service
 	        return statementDesc.EpStatement;
 	    }
 
-	    public StatementContext GetStatementContextById(int statementId) {
+	    public StatementContext GetStatementContextById(int statementId)
+        {
 	        var statementDesc = StmtIdToDescMap.Get(statementId);
-	        if (statementDesc == null) {
+	        if (statementDesc == null)
+            {
 	            return null;
 	        }
 	        return statementDesc.EpStatement.StatementContext;
@@ -1208,11 +1228,11 @@ namespace com.espertech.esper.core.service
 	            Log.Info("Failed to compile statement: " + ex.Message, ex);
 	            if (ex.Message == null)
 	            {
-	                throw new EPStatementException("Unexpected exception compiling statement, please consult the log file and report the exception", eplStatement);
+	                throw new EPStatementException("Unexpected exception compiling statement, please consult the log file and report the exception", eplStatement, ex);
 	            }
 	            else
 	            {
-	                throw new EPStatementException(ex.Message, eplStatement);
+	                throw new EPStatementException(ex.Message, eplStatement, ex);
 	            }
 	        }
 	        catch (Exception ex)
@@ -1259,7 +1279,8 @@ namespace com.espertech.esper.core.service
 	                        var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
 	                        var validationContext = new ExprValidationContext(
                                 streamTypeService, 
-                                statementContext.MethodResolutionService, null,
+                                statementContext.EngineImportService,
+                                statementContext.StatementExtensionServicesContext, null,
                                 statementContext.SchedulingService, 
                                 statementContext.VariableService, 
                                 statementContext.TableService, 
@@ -1322,6 +1343,7 @@ namespace com.espertech.esper.core.service
                     OrderByItem.ToArray(spec.OrderByList),
                     ExprSubselectNode.ToArray(subselectNodes),
                     ExprNodeUtility.ToArray(declaredNodes),
+                    spec.ScriptExpressions.MaterializeArray(),
 	                spec.ReferencedVariables,
 	                spec.RowLimitSpec,
                     CollectionUtil.ToArray(eventTypeReferences),
@@ -1337,7 +1359,7 @@ namespace com.espertech.esper.core.service
 	                spec.FireAndForgetSpec,
 	                groupByRollupExpressions,
 	                spec.IntoTableSpec,
-	                tableAccessNodes == null ? null : tableAccessNodes.ToArray());
+	                tableAccessNodes.ToArrayOrNull());
 	    }
 
 	    private static bool DetermineStatelessSelect(StatementType type, StatementSpecRaw spec, bool hasSubselects, bool isPattern)
@@ -1405,7 +1427,7 @@ namespace com.espertech.esper.core.service
 	            var filter = new FilterSpecRaw(proposedWindow, Collections.GetEmptyList<ExprNode>(), null);
 	            raw.StreamSpecs.Add(new FilterStreamSpecRaw(filter, ViewSpec.EMPTY_VIEWSPEC_ARRAY, proposedWindow, new StreamSpecOptions()));
 
-	            var firstChain = dotNode.ChainSpec.Pluck(0);
+	            var firstChain = dotNode.ChainSpec.Delete(0);
 	            if (!firstChain.Parameters.IsEmpty()) {
 	                if (firstChain.Parameters.Count == 1) {
 	                    raw.FilterExprRootNode = firstChain.Parameters[0];
@@ -1491,11 +1513,12 @@ namespace com.espertech.esper.core.service
 	            selectFromTypeName,
 	            statementContext.EngineURI,
 	            evaluatorContextStmt,
-	            statementContext.MethodResolutionService,
+	            statementContext.EngineImportService,
 	            statementContext.EventAdapterService,
 	            statementContext.StatementName,
 	            statementContext.StatementId,
-	            statementContext.Annotations);
+	            statementContext.Annotations,
+                statementContext.StatementExtensionServicesContext);
 
 	        // Create Map or Wrapper event type from the select clause of the window.
 	        // If no columns selected, simply create a wrapper type
@@ -1507,7 +1530,7 @@ namespace com.espertech.esper.core.service
 	        {
 	            properties = EventTypeUtility.BuildType(
 	                columns, statementContext.EventAdapterService, null,
-	                statementContext.MethodResolutionService.EngineImportService);
+	                statementContext.EngineImportService);
 	            hasProperties = true;
 	        }
 	        else
@@ -1607,11 +1630,12 @@ namespace com.espertech.esper.core.service
 	        string selectFromTypeName,
 	        string engineURI,
 	        ExprEvaluatorContext exprEvaluatorContext,
-	        MethodResolutionService methodResolutionService,
+            EngineImportService engineImportService,
 	        EventAdapterService eventAdapterService,
 	        string statementName,
 	        int statementId,
-	        Attribute[] annotations)
+	        Attribute[] annotations,
+            StatementExtensionSvcContext statementExtensionSvcContext)
 	    {
 	        var selectProps = new List<NamedWindowSelectedProps>();
 	        var streams = new StreamTypeServiceImpl(
@@ -1621,8 +1645,13 @@ namespace com.espertech.esper.core.service
                 engineURI, false);
 
 	        var validationContext = new ExprValidationContext(
-	            streams, methodResolutionService, null, null, null, null, exprEvaluatorContext, eventAdapterService,
-	            statementName, statementId, annotations, null, null, false, false, false, false, null, false);
+	            streams, engineImportService, 
+                statementExtensionSvcContext, 
+                null, null, null, null, 
+                exprEvaluatorContext,
+	            eventAdapterService,
+	            statementName, statementId, annotations, 
+                null, null, false, false, false, false, null, false);
 
 	        foreach (var raw in spec.SelectExprList)
 	        {

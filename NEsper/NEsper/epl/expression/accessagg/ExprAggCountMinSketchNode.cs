@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -127,8 +127,9 @@ namespace com.espertech.esper.epl.expression.accessagg
                 if (context.ExprEvaluatorContext.StatementType != StatementType.CREATE_TABLE) {
                     throw new ExprValidationException(MessagePrefix + "can only be used in create-table statements");
                 }
-                var specification = ValidateSpecification(context.ExprEvaluatorContext, context.MethodResolutionService.EngineImportService);
-                return new ExprAggCountMinSketchNodeFactoryState(new CountMinSketchAggStateFactory(this, specification));
+                var specification = ValidateSpecification(context.ExprEvaluatorContext, context.EngineImportService);
+                var stateFactory = context.EngineImportService.AggregationFactoryFactory.MakeCountMinSketch(context.StatementExtensionSvcContext, this, specification);
+                return new ExprAggCountMinSketchNodeFactoryState(stateFactory);
             }
     
             // validate number of parameters
@@ -203,7 +204,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                             CountMinSketchAgent transform;
                             try {
                                 var transformClass = engineImportService.ResolveType((string) vv, false);
-                                transform = TypeHelper.Instantiate<CountMinSketchAgent>(transformClass.FullName);
+                                transform = TypeHelper.Instantiate<CountMinSketchAgent>(transformClass);
                             }
                             catch (Exception e) {
                                 throw new ExprValidationException("Failed to instantiate agent provider: " + e.Message, e);

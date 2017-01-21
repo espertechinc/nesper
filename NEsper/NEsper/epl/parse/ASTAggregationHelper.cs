@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.parse
             try
             {
                 AggregationFunctionFactory aggregationFactory = engineImportService.ResolveAggregationFactory(functionName);
-                return new ExprPlugInAggFunctionFactoryNode(distinct, aggregationFactory, functionName);
+                return new ExprPlugInAggNode(distinct, aggregationFactory, functionName);
             }
             catch (EngineImportUndefinedException)
             {

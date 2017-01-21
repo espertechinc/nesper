@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.core.context.mgr
 
         private readonly String _contextName;
         private readonly AgentInstanceContext _agentInstanceContext;
-        private readonly ScheduleSlot _scheduleSlot;
+        private readonly long _scheduleSlot;
         private readonly ContextDetailConditionTimePeriod _spec;
         private readonly ContextControllerConditionCallback _callback;
         private readonly ContextInternalFilterAddendum _filterAddendum;
@@ -37,7 +37,7 @@ namespace com.espertech.esper.core.context.mgr
         public ContextControllerConditionTimePeriod(
             String contextName,
             AgentInstanceContext agentInstanceContext,
-            ScheduleSlot scheduleSlot,
+            long scheduleSlot,
             ContextDetailConditionTimePeriod spec,
             ContextControllerConditionCallback callback,
             ContextInternalFilterAddendum filterAddendum)

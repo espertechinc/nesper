@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,14 +41,14 @@ namespace com.espertech.esper.epl.expression.ops
         {
             try
             {
-                _targetClass = validationContext.MethodResolutionService.ResolveType(_classIdent, false);
+                _targetClass = validationContext.EngineImportService.ResolveType(_classIdent, false);
             }
             catch (EngineImportException e)
             {
                 throw new ExprValidationException("Failed to resolve new-operator class name '" + _classIdent + "'");
             }
             _manufacturer = InstanceManufacturerFactory.GetManufacturer(
-                _targetClass, validationContext.MethodResolutionService.EngineImportService, this.ChildNodes);
+                _targetClass, validationContext.EngineImportService, this.ChildNodes);
             return null;
         }
 

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,15 +16,14 @@ using com.espertech.esper.core.context.util;
 
 namespace com.espertech.esper.view.internals
 {
-    /// <summary>
-    /// A view that represents an intersection of multiple data windows. 
-    /// <para/>
-    /// The view is parameterized by two or more data windows. From an external viewpoint, 
-    /// the view retains all events that is in all of the data windows at the same time 
-    /// (an intersection) and removes all events that leave any of the data windows.
-    /// </summary>
-    public class IntersectAsymetricView
-        : ViewSupport
+	/// <summary>
+	/// A view that represents an intersection of multiple data windows.
+	/// <para />The view is parameterized by two or more data windows. From an external viewpoint, the
+	/// view retains all events that is in all of the data windows at the same time (an intersection)
+	/// and removes all events that leave any of the data windows.
+	/// </summary>
+	public class IntersectAsymetricView 
+        : ViewSupport 
         , LastPostObserver
         , CloneableView
         , StoppableView
@@ -32,289 +31,278 @@ namespace com.espertech.esper.view.internals
         , IntersectViewMarker
         , ViewDataVisitableContainer
         , ViewContainer
-    {
-        private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
-        private readonly IntersectViewFactory _intersectViewFactory;
-        private readonly EventType _eventType;
-        private readonly View[] _views;
-        private readonly EventBean[][] _oldEventsPerView;
-        private readonly ICollection<EventBean> _removalEvents = new HashSet<EventBean>();
-        private readonly ArrayDeque<EventBean> _newEvents = new ArrayDeque<EventBean>();
-
-        private EventBean[] _newDataChildView;
-        private bool _isHasRemovestreamData;
-        private bool _isRetainObserverEvents;
-        private bool _isDiscardObserverEvents;
-        private readonly ICollection<EventBean> _oldEvents = new HashSet<EventBean>();
+	{
+	    private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
+	    private readonly IntersectViewFactory _factory;
+	    private readonly View[] _views;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="agentInstanceViewFactoryContext">The agent instance view factory context.</param>
         /// <param name="factory">the view factory</param>
-        /// <param name="eventType">the parent event type</param>
         /// <param name="viewList">the list of data window views</param>
-        public IntersectAsymetricView(
-            AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
-            IntersectViewFactory factory,
-            EventType eventType,
-            IList<View> viewList)
-        {
-            _agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
-            _intersectViewFactory = factory;
-            _eventType = eventType;
-            _views = viewList.ToArray();
-            _oldEventsPerView = new EventBean[viewList.Count][];
+	    public IntersectAsymetricView(
+	        AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
+	        IntersectViewFactory factory,
+	        IList<View> viewList)
+	    {
+	        _agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
+	        _factory = factory;
+	        _views = viewList.ToArray();
 
-            for (int i = 0; i < viewList.Count; i++)
-            {
-                var view = new LastPostObserverView(i);
-                _views[i].RemoveAllViews();
-                _views[i].AddView(view);
-                view.Observer = this;
-            }
-        }
+	        for (int i = 0; i < viewList.Count; i++)
+	        {
+	            var view = new LastPostObserverView(i);
+	            _views[i].RemoveAllViews();
+	            _views[i].AddView(view);
+	            view.Observer = this;
+	        }
+	    }
 
-        public View[] ViewContained
-        {
-            get { return Views; }
-        }
+	    public View[] ViewContained
+	    {
+	        get { return _views; }
+	    }
 
-        public View CloneView()
-        {
-            return _intersectViewFactory.MakeView(_agentInstanceViewFactoryContext);
-        }
+	    public View CloneView()
+	    {
+	        return _factory.MakeView(_agentInstanceViewFactoryContext);
+	    }
 
-        public override void Update(EventBean[] newData, EventBean[] oldData)
-        {
-            _oldEvents.Clear();
-            EventBean[] newDataPosted = null;
+	    public override void Update(EventBean[] newData, EventBean[] oldData)
+	    {
+            IntersectAsymetricViewLocalState localState = _factory.GetAsymetricViewLocalStatePerThread();
 
-            // handle remove stream
-            if (oldData != null)
-            {
-                _isDiscardObserverEvents = true; // disable reaction logic in observer
-                try
-                {
-                    foreach (View view in _views)
-                    {
-                        view.Update(null, oldData);
-                    }
-                }
-                finally
-                {
-                    _isDiscardObserverEvents = false;
-                }
+	        localState.OldEvents.Clear();
+	        EventBean[] newDataPosted = null;
 
-                for (int i = 0; i < oldData.Length; i++)
-                {
-                    _oldEvents.Add(oldData[i]);
-                }
-            }
+	        // handle remove stream
+	        if (oldData != null)
+	        {
+	            localState.IsDiscardObserverEvents = true; // disable reaction logic in observer
+	            try
+	            {
+	                foreach (View view in _views)
+	                {
+	                    view.Update(null, oldData);
+	                }
+	            }
+	            finally
+	            {
+	                localState.IsDiscardObserverEvents = false;
+	            }
 
-            if (newData != null)
-            {
-                _removalEvents.Clear();
+	            for (int i = 0; i < oldData.Length; i++)
+	            {
+	                localState.OldEvents.Add(oldData[i]);
+	            }
+	        }
 
-                // new events must go to all views
-                // old events, such as when removing from a named window, get removed from all views
-                _isHasRemovestreamData = false; // changed by observer logic to indicate new data
-                _isRetainObserverEvents = true; // enable retain logic in observer
-                try
-                {
-                    foreach (View view in _views)
-                    {
-                        _newDataChildView = null;
-                        view.Update(newData, oldData);
+	        if (newData != null)
+	        {
+	            localState.RemovalEvents.Clear();
 
-                        // first-X asymetric view post no insert stream for events that get dropped, remove these
-                        if (_newDataChildView != null)
-                        {
-                            for (int i = 0; i < newData.Length; i++)
-                            {
-                                bool found = false;
-                                for (int j = 0; j < _newDataChildView.Length; j++)
-                                {
-                                    if (_newDataChildView[i] == newData[i])
-                                    {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found)
-                                {
-                                    _removalEvents.Add(newData[i]);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < newData.Length; i++)
-                            {
-                                _removalEvents.Add(newData[i]);
-                            }
-                        }
-                    }
-                }
-                finally
-                {
-                    _isRetainObserverEvents = false;
-                }
+	            // new events must go to all views
+	            // old events, such as when removing from a named window, get removed from all views
+	            localState.HasRemovestreamData = false; // changed by observer logic to indicate new data
+	            localState.IsRetainObserverEvents = true; // enable retain logic in observer
+	            try
+	            {
+	                foreach (View view in _views)
+	                {
+	                    localState.NewDataChildView = null;
+	                    view.Update(newData, oldData);
 
-                if (_removalEvents.IsNotEmpty())
-                {
-                    _isDiscardObserverEvents = true;
-                    EventBean[] viewOldData = _removalEvents.ToArray();
-                    try
-                    {
-                        for (int j = 0; j < _views.Length; j++)
-                        {
-                            _views[j].Update(null, viewOldData);
-                        }
-                    }
-                    finally
-                    {
-                        _isDiscardObserverEvents = false;
-                    }
-                }
+	                    // first-X asymetric view post no insert stream for events that get dropped, remove these
+	                    if (localState.NewDataChildView != null)
+	                    {
+	                        for (int i = 0; i < newData.Length; i++)
+	                        {
+	                            bool found = false;
+	                            for (int j = 0; j < localState.NewDataChildView.Length; j++)
+	                            {
+	                                if (localState.NewDataChildView[i] == newData[i])
+	                                {
+	                                    found = true;
+	                                    break;
+	                                }
+	                            }
+	                            if (!found)
+	                            {
+	                                localState.RemovalEvents.Add(newData[i]);
+	                            }
+	                        }
+	                    }
+	                    else
+	                    {
+	                        for (int i = 0; i < newData.Length; i++)
+	                        {
+	                            localState.RemovalEvents.Add(newData[i]);
+	                        }
+	                    }
+	                }
+	            }
+	            finally
+	            {
+	                localState.IsRetainObserverEvents = false;
+	            }
 
-                // see if any child view has removed any events.
-                // if there was an insert stream, handle pushed-out events
-                if (_isHasRemovestreamData)
-                {
-                    // process each buffer
-                    for (int i = 0; i < _oldEventsPerView.Length; i++)
-                    {
-                        if (_oldEventsPerView[i] == null)
-                        {
-                            continue;
-                        }
+	            if (!localState.RemovalEvents.IsEmpty())
+	            {
+	                localState.IsDiscardObserverEvents = true;
+	                EventBean[] viewOldData = localState.RemovalEvents.ToArray();
+	                try
+	                {
+	                    for (int j = 0; j < _views.Length; j++)
+	                    {
+	                        _views[j].Update(null, viewOldData);
+	                    }
+	                }
+	                finally
+	                {
+	                    localState.IsDiscardObserverEvents = false;
+	                }
+	            }
 
-                        EventBean[] viewOldData = _oldEventsPerView[i];
-                        _oldEventsPerView[i] = null; // clear entry
+	            // see if any child view has removed any events.
+	            // if there was an insert stream, handle pushed-out events
+	            if (localState.HasRemovestreamData)
+	            {
+	                // process each buffer
+	                for (int i = 0; i < localState.OldEventsPerView.Length; i++)
+	                {
+	                    if (localState.OldEventsPerView[i] == null)
+	                    {
+	                        continue;
+	                    }
 
-                        // add each event to the set of events removed
-                        foreach (EventBean oldEvent in viewOldData)
-                        {
-                            _removalEvents.Add(oldEvent);
-                        }
+	                    EventBean[] viewOldData = localState.OldEventsPerView[i];
+	                    localState.OldEventsPerView[i] = null; // clear entry
 
-                        _isDiscardObserverEvents = true;
-                        try
-                        {
-                            for (int j = 0; j < _views.Length; j++)
-                            {
-                                if (i != j)
-                                {
-                                    _views[j].Update(null, viewOldData);
-                                }
-                            }
-                        }
-                        finally
-                        {
-                            _isDiscardObserverEvents = false;
-                        }
-                    }
+	                    // add each event to the set of events removed
+	                    foreach (EventBean oldEvent in viewOldData)
+	                    {
+	                        localState.RemovalEvents.Add(oldEvent);
+	                    }
 
-                    _oldEvents.AddAll(_removalEvents);
-                }
+	                    localState.IsDiscardObserverEvents = true;
+	                    try
+	                    {
+	                        for (int j = 0; j < _views.Length; j++)
+	                        {
+	                            if (i != j)
+	                            {
+	                                _views[j].Update(null, viewOldData);
+	                            }
+	                        }
+	                    }
+	                    finally
+	                    {
+	                        localState.IsDiscardObserverEvents = false;
+	                    }
+	                }
 
-                _newEvents.Clear();
-                for (int i = 0; i < newData.Length; i++)
-                {
-                    if (!_removalEvents.Contains(newData[i]))
-                    {
-                        _newEvents.Add(newData[i]);
-                    }
-                }
+	                localState.OldEvents.AddAll(localState.RemovalEvents);
+	            }
 
-                if (_newEvents.IsNotEmpty())
-                {
-                    newDataPosted = _newEvents.ToArray();
-                }
+	            localState.NewEvents.Clear();
+	            for (int i = 0; i < newData.Length; i++)
+	            {
+	                if (!localState.RemovalEvents.Contains(newData[i]))
+	                {
+	                    localState.NewEvents.Add(newData[i]);
+	                }
+	            }
 
-            }
+	            if (!localState.NewEvents.IsEmpty())
+	            {
+	                newDataPosted = localState.NewEvents.ToArray();
+	            }
 
-            // indicate new and, possibly, old data
-            EventBean[] oldDataPosted = null;
-            if (_oldEvents.IsNotEmpty())
-            {
-                oldDataPosted = _oldEvents.ToArray();
-            }
-            if ((newDataPosted != null) || (oldDataPosted != null))
-            {
-                UpdateChildren(newDataPosted, oldDataPosted);
-            }
-            _oldEvents.Clear();
-        }
+	        }
 
-        public override EventType EventType
-        {
-            get { return _eventType; }
-        }
+	        // indicate new and, possibly, old data
+	        EventBean[] oldDataPosted = null;
+	        if (!localState.OldEvents.IsEmpty())
+	        {
+	            oldDataPosted = localState.OldEvents.ToArray();
+	        }
+	        if ((newDataPosted != null) || (oldDataPosted != null))
+	        {
+	            UpdateChildren(newDataPosted, oldDataPosted);
+	        }
+	        localState.OldEvents.Clear();
+	    }
 
-        public override IEnumerator<EventBean> GetEnumerator()
-        {
+	    public override EventType EventType
+	    {
+	        get { return _factory.EventType; }
+	    }
+
+	    public override IEnumerator<EventBean> GetEnumerator()
+	    {
             return _views[0].GetEnumerator();
-        }
+	    }
 
-        public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
-        {
-            _newDataChildView = newEvents;
+	    public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
+	    {
+	        IntersectAsymetricViewLocalState localState = _factory.GetAsymetricViewLocalStatePerThread();
+	        localState.NewDataChildView = newEvents;
 
-            if ((oldEvents == null) || (_isDiscardObserverEvents))
-            {
-                return;
-            }
+	        if ((oldEvents == null) || (localState.IsDiscardObserverEvents))
+	        {
+	            return;
+	        }
 
-            if (_isRetainObserverEvents)
-            {
-                _oldEventsPerView[streamId] = oldEvents;
-                _isHasRemovestreamData = true;
-                return;
-            }
+	        if (localState.IsRetainObserverEvents)
+	        {
+	            localState.OldEventsPerView[streamId] = oldEvents;
+	            localState.HasRemovestreamData = true;
+	            return;
+	        }
 
-            // remove old data from all other views
-            _isDiscardObserverEvents = true;
-            try
-            {
-                for (int i = 0; i < _views.Length; i++)
-                {
-                    if (i != streamId)
-                    {
-                        _views[i].Update(null, oldEvents);
-                    }
-                }
-            }
-            finally
-            {
-                _isDiscardObserverEvents = false;
-            }
+	        // remove old data from all other views
+	        localState.IsDiscardObserverEvents = true;
+	        try
+	        {
+	            for (int i = 0; i < _views.Length; i++)
+	            {
+	                if (i != streamId)
+	                {
+	                    _views[i].Update(null, oldEvents);
+	                }
+	            }
+	        }
+	        finally
+	        {
+	            localState.IsDiscardObserverEvents = false;
+	        }
 
-            UpdateChildren(null, oldEvents);
-        }
+	        UpdateChildren(null, oldEvents);
+	    }
 
-        public void Stop()
-        {
-            foreach (var view in _views.OfType<StoppableView>())
-            {
+	    public void Stop()
+	    {
+	        foreach (var view in _views.OfType<StoppableView>())
+	        {
                 view.Stop();
-            }
-        }
+	        }
+	    }
 
-        public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
-        {
-            IntersectView.VisitViewContained(viewDataVisitor, _intersectViewFactory, _views);
-        }
+	    public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
+	    {
+	        IntersectDefaultView.VisitViewContained(viewDataVisitor, _factory, _views);
+	    }
 
-        public void VisitView(ViewDataVisitor viewDataVisitor)
-        {
-            throw new UnsupportedOperationException();
-        }
+	    public void VisitView(ViewDataVisitor viewDataVisitor)
+	    {
+	        throw new UnsupportedOperationException();
+	    }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _intersectViewFactory; }
-        }
-    }
-}
+	    public ViewFactory ViewFactory
+	    {
+	        get { return _factory; }
+	    }
+	}
+} // end of namespace

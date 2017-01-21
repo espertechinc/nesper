@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,9 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.service.resource;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
 using com.espertech.esper.schedule;
@@ -98,9 +100,8 @@ namespace com.espertech.esper.core.service
 
                         if (aStmt.ServiceIsolated != null)
                         {
-                            throw new EPServiceIsolationException("Statement named '" + aStmt.Name +
-                                                                  "' already in service isolation under '" +
-                                                                  stmtSpi.ServiceIsolated + "'");
+                            throw new EPServiceIsolationException(
+                                string.Format("Statement named '{0}' already in service isolation under '{1}'", aStmt.Name, stmtSpi.ServiceIsolated));
                         }
                     }
 
@@ -123,6 +124,7 @@ namespace com.espertech.esper.core.service
                         stmtSpi.StatementContext.ScheduleAdjustmentService.Adjust(delta);
                         _statementNames.Add(stmtSpi.Name);
                         stmtSpi.ServiceIsolated = _isolatedServiceName;
+                        ApplyFilterVersion(stmtSpi, _services.FilterService.FiltersVersion);
                     }
 
                     // commit txn
@@ -174,14 +176,13 @@ namespace com.espertech.esper.core.service
 
                         if (aStmt.ServiceIsolated == null)
                         {
-                            throw new EPServiceIsolationException("Statement named '" + aStmt.Name +
-                                                                  "' is not currently in service isolation");
+                            throw new EPServiceIsolationException(
+                                string.Format("Statement named '{0}' is not currently in service isolation", aStmt.Name));
                         }
                         if (!aStmt.ServiceIsolated.Equals(_isolatedServiceName))
                         {
-                            throw new EPServiceIsolationException("Statement named '" + aStmt.Name +
-                                                                  "' not in this service isolation but under service isolation '" +
-                                                                  aStmt.Name + "'");
+                            throw new EPServiceIsolationException(
+                                string.Format("Statement named '{0}' not in this service isolation but under service isolation '{0}'", aStmt.Name));
                         }
                     }
 
@@ -207,6 +208,7 @@ namespace com.espertech.esper.core.service
                         stmtSpi.StatementContext.ScheduleAdjustmentService.Adjust(delta);
                         _statementNames.Remove(stmtSpi.Name);
                         stmtSpi.ServiceIsolated = null;
+                        ApplyFilterVersion(stmtSpi, _unisolatedServices.FilterService.FiltersVersion);
                     }
 
                     // commit txn
@@ -238,14 +240,13 @@ namespace com.espertech.esper.core.service
                 EPStatement stmt = _unisolatedServices.StatementLifecycleSvc.GetStatementByName(stmtName);
                 if (stmt == null)
                 {
-                    Log.Debug("Statement '" + stmtName + "', the statement could not be found");
+                    Log.Debug("Statement '{0}', the statement could not be found", stmtName);
                     continue;
                 }
     
                 if (stmt.ServiceIsolated != null && (!stmt.ServiceIsolated.Equals(_isolatedServiceName)))
                 {
-                    Log.Error("Error returning statement '" + stmtName + "', the internal isolation information is incorrect, isolated service for statement is currently '" +
-                            stmt.ServiceIsolated + "' and mismatches this isolated services named '" + _isolatedServiceName + "'");
+                    Log.Error("Error returning statement '{0}', the internal isolation information is incorrect, isolated service for statement is currently '{1}' and mismatches this isolated services named '{2}'", stmtName, stmt.ServiceIsolated, _isolatedServiceName);
                     continue;
                 }
     
@@ -253,6 +254,27 @@ namespace com.espertech.esper.core.service
             }
     
             RemoveStatement(statements.ToArray());
+        }
+
+        private void ApplyFilterVersion(EPStatementSPI stmtSpi, long filtersVersion)
+        {
+            var resources = stmtSpi.StatementContext.StatementExtensionServicesContext.StmtResources;
+            if (resources.Unpartitioned != null)
+            {
+                ApplyFilterVersion(resources.Unpartitioned, filtersVersion);
+            }
+            else
+            {
+                foreach (var entry in resources.ResourcesPartitioned)
+                {
+                    ApplyFilterVersion(entry.Value, filtersVersion);
+                }
+            }
+        }
+
+        private void ApplyFilterVersion(StatementResourceHolder holder, long filtersVersion)
+        {
+            holder.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
     }
 }

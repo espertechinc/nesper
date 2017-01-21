@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -112,7 +112,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get
             {
                 var eval = (ExprDotEvalStaticMethod) _evaluator;
-                return new FilterSpecLookupable(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this), eval, _evaluator.ReturnType, true);
+                return new FilterSpecLookupable(this.ToExpressionStringMinPrecedenceSafe(), eval, _evaluator.ReturnType, true);
             }
         }
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.epl.expression.funcs
     
             // get first chain item
             var chainList = new List<ExprChainedSpec>(_chainSpec);
-    	    var firstItem = chainList.Pluck(0);
+    	    var firstItem = chainList.Delete(0);
     
     		// Get the types of the parameters for the first invocation
             var allowWildcard = validationContext.StreamTypeService.EventTypes.Length == 1;
@@ -160,7 +160,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 streamZeroType = validationContext.StreamTypeService.EventTypes[0];
             }
     	    var staticMethodDesc = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
-    	        _clazz.FullName, null, firstItem.Name, firstItem.Parameters, validationContext.MethodResolutionService,
+    	        _clazz.FullName, null, firstItem.Name, firstItem.Parameters, validationContext.EngineImportService,
     	        validationContext.EventAdapterService, validationContext.StatementId, allowWildcard, streamZeroType,
     	        new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name, true), _functionName,
     	        validationContext.TableService);
@@ -173,8 +173,8 @@ namespace com.espertech.esper.epl.expression.funcs
                     allowValueCache = false;
                     break;
                 case ValueCache.CONFIGURED:
-                    _isReturnsConstantResult = validationContext.MethodResolutionService.IsUdfCache && staticMethodDesc.IsAllConstants && chainList.IsEmpty();
-                    allowValueCache = validationContext.MethodResolutionService.IsUdfCache;
+                    _isReturnsConstantResult = validationContext.EngineImportService.IsUdfCache && staticMethodDesc.IsAllConstants && chainList.IsEmpty();
+                    allowValueCache = validationContext.EngineImportService.IsUdfCache;
                     break;
                 case ValueCache.ENABLED:
                     _isReturnsConstantResult = staticMethodDesc.IsAllConstants && chainList.IsEmpty();

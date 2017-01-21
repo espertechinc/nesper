@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -37,6 +37,7 @@ namespace com.espertech.esper.regression.script
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
             _epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
+            _epService.EPAdministrator.Configuration.AddEventType<SupportBean_S0>();
             _listener = new SupportUpdateListener();
         }
     
@@ -123,7 +124,7 @@ namespace com.espertech.esper.regression.script
         }
     
         [Test]
-        [Ignore] // javascript cannot validate with any of the known engines
+        [Ignore("javascript cannot validate with any of the known engines")] // javascript cannot validate with any of the known engines
         public void TestInvalidScriptJS()
         {
             TryInvalidContains("expression js:abc[dummy abc = 1;] select * from SupportBean",
@@ -236,6 +237,24 @@ namespace com.espertech.esper.regression.script
             TryAggregation();
 
             TryDeployArrayInScript();
+
+            TryCreateExpressionWArrayAllocate();
+        }
+
+        private void TryCreateExpressionWArrayAllocate()
+        {
+            String epl = "@Name('first') create expression double js:test(bar) [\n" +
+                    "test(bar);\n" +
+                    "function test(bar) {\n" +
+                    "  var test=[];\n" +
+                    "  return -1.0;\n" +
+                    "}]\n";
+            _epService.EPAdministrator.CreateEPL(epl);
+
+            _epService.EPAdministrator.CreateEPL("select test('a') as c0 from SupportBean_S0").AddListener(_listener);
+            _listener.Reset();
+            _epService.EPRuntime.SendEvent(new SupportBean_S0(0));
+            EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), "c0".SplitCsv(), new Object[] { -1d });
         }
 
         private void TryDeployArrayInScript()

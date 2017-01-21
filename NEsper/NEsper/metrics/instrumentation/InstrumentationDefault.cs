@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -541,7 +541,7 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QScheduleAdd(long currentTime, long afterMSec, ScheduleHandle handle, ScheduleSlot slot) {
+	    public void QScheduleAdd(long currentTime, long afterMSec, ScheduleHandle handle, long slot) {
 
 	    }
 
@@ -549,7 +549,7 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QScheduleRemove(ScheduleHandle handle, ScheduleSlot slot) {
+	    public void QScheduleRemove(ScheduleHandle handle, long slot) {
 
 	    }
 

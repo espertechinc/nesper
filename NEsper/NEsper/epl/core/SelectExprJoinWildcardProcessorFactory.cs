@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,41 +19,29 @@ using com.espertech.esper.events;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.util;
 
-
 namespace com.espertech.esper.epl.core
 {
 	public class SelectExprJoinWildcardProcessorFactory
 	{
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
-        /// <param name="statementId">The statement identifier.</param>
-        /// <param name="streamNames">name of each stream</param>
-        /// <param name="streamTypes">type of each stream</param>
-        /// <param name="eventAdapterService">service for generating events and handling event types</param>
-        /// <param name="insertIntoDesc">describes the insert-into clause</param>
-        /// <param name="selectExprEventTypeRegistry">registry for event type to statements</param>
-        /// <param name="methodResolutionService">for resolving writable properties</param>
-        /// <param name="annotations">The annotations.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="tableService">The table service.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentException">Stream names and types parameter length is invalid, expected use of this class is for join statements</exception>
-        /// <exception cref="ExprValidationException"></exception>
-        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the expression validation failed</throws>
-	    public static SelectExprProcessor Create(
-	        ICollection<int> assignedTypeNumberStack,
-	        int statementId,
-	        string[] streamNames,
-	        EventType[] streamTypes,
-	        EventAdapterService eventAdapterService,
-	        InsertIntoDesc insertIntoDesc,
-	        SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-	        MethodResolutionService methodResolutionService,
-	        Attribute[] annotations,
-	        ConfigurationInformation configuration,
-	        TableService tableService)
+	    /// <summary>
+	    /// Ctor.
+	    /// </summary>
+	    /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
+	    /// <param name="statementId">The statement identifier.</param>
+	    /// <param name="streamNames">name of each stream</param>
+	    /// <param name="streamTypes">type of each stream</param>
+	    /// <param name="eventAdapterService">service for generating events and handling event types</param>
+	    /// <param name="insertIntoDesc">describes the insert-into clause</param>
+	    /// <param name="selectExprEventTypeRegistry">registry for event type to statements</param>
+	    /// <param name="engineImportService"></param>
+	    /// <param name="annotations">The annotations.</param>
+	    /// <param name="configuration">The configuration.</param>
+	    /// <param name="tableService">The table service.</param>
+	    /// <returns></returns>
+	    /// <exception cref="System.ArgumentException">Stream names and types parameter length is invalid, expected use of this class is for join statements</exception>
+	    /// <exception cref="ExprValidationException"></exception>
+	    /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the expression validation failed</throws>
+	    public static SelectExprProcessor Create(ICollection<int> assignedTypeNumberStack, int statementId, string[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService, InsertIntoDesc insertIntoDesc, SelectExprEventTypeRegistry selectExprEventTypeRegistry, EngineImportService engineImportService, Attribute[] annotations, ConfigurationInformation configuration, TableService tableService)
 	{
 	    if ((streamNames.Length < 2) || (streamTypes.Length < 2) || (streamNames.Length != streamTypes.Length))
 	    {
@@ -89,7 +77,7 @@ namespace com.espertech.esper.epl.core
 	        {
 	            processor = SelectExprInsertEventBeanFactory.GetInsertUnderlyingJoinWildcard(
 	                eventAdapterService, existingType, streamNames, streamTypesWTables,
-	                methodResolutionService.EngineImportService);
+	                engineImportService);
 	        }
 	    }
 

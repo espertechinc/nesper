@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.core
 	    private readonly EventAdapterService _eventAdapterService;
 	    private readonly ValueAddEventService _valueAddEventService;
 	    private readonly SelectExprEventTypeRegistry _selectExprEventTypeRegistry;
-	    private readonly MethodResolutionService _methodResolutionService;
+        private readonly EngineImportService _engineImportService;
 	    private readonly int _statementId;
 	    private readonly Attribute[] _annotations;
 	    private readonly ConfigurationInformation _configuration;
@@ -57,45 +57,28 @@ namespace com.espertech.esper.epl.core
 	    private readonly TableService _tableService;
 	    private readonly GroupByRollupInfo _groupByRollupInfo;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
-        /// <param name="selectionList">list of select-clause items</param>
-        /// <param name="selectedStreams">The selected streams.</param>
-        /// <param name="insertIntoDesc">descriptor for insert-into clause contains column names overriding select clause names</param>
-        /// <param name="optionalInsertIntoOverrideType">Type of the optional insert into override.</param>
-        /// <param name="isUsingWildcard">true if the wildcard (*) appears in the select clause</param>
-        /// <param name="typeService">service for information about streams</param>
-        /// <param name="eventAdapterService">service for generating events and handling event types</param>
-        /// <param name="valueAddEventService">service that handles update events</param>
-        /// <param name="selectExprEventTypeRegistry">service for statement to type registry</param>
-        /// <param name="methodResolutionService">for resolving methods</param>
-        /// <param name="statementId">The statement identifier.</param>
-        /// <param name="annotations">The annotations.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="namedWindowMgmtService">The named window MGMT service.</param>
-        /// <param name="tableService">The table service.</param>
-        /// <param name="groupByRollupInfo">The group by rollup information.</param>
-        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException thrown if any of the expressions don't validate</throws>
-	    public SelectExprProcessorHelper(
-	        ICollection<int> assignedTypeNumberStack,
-	        IList<SelectClauseExprCompiledSpec> selectionList,
-	        IList<SelectExprStreamDesc> selectedStreams,
-	        InsertIntoDesc insertIntoDesc,
-	        EventType optionalInsertIntoOverrideType,
-	        bool isUsingWildcard,
-	        StreamTypeService typeService,
-	        EventAdapterService eventAdapterService,
-	        ValueAddEventService valueAddEventService,
-	        SelectExprEventTypeRegistry selectExprEventTypeRegistry,
-	        MethodResolutionService methodResolutionService,
-	        int statementId,
-	        Attribute[] annotations,
-	        ConfigurationInformation configuration,
-	        NamedWindowMgmtService namedWindowMgmtService,
-	        TableService tableService,
-	        GroupByRollupInfo groupByRollupInfo)
+	    /// <summary>
+	    /// Ctor.
+	    /// </summary>
+	    /// <param name="assignedTypeNumberStack">The assigned type number stack.</param>
+	    /// <param name="selectionList">list of select-clause items</param>
+	    /// <param name="selectedStreams">The selected streams.</param>
+	    /// <param name="insertIntoDesc">descriptor for insert-into clause contains column names overriding select clause names</param>
+	    /// <param name="optionalInsertIntoOverrideType">Type of the optional insert into override.</param>
+	    /// <param name="isUsingWildcard">true if the wildcard (*) appears in the select clause</param>
+	    /// <param name="typeService">service for information about streams</param>
+	    /// <param name="eventAdapterService">service for generating events and handling event types</param>
+	    /// <param name="valueAddEventService">service that handles update events</param>
+	    /// <param name="selectExprEventTypeRegistry">service for statement to type registry</param>
+	    /// <param name="engineImportService"></param>
+	    /// <param name="statementId">The statement identifier.</param>
+	    /// <param name="annotations">The annotations.</param>
+	    /// <param name="configuration">The configuration.</param>
+	    /// <param name="namedWindowMgmtService">The named window MGMT service.</param>
+	    /// <param name="tableService">The table service.</param>
+	    /// <param name="groupByRollupInfo">The group by rollup information.</param>
+	    /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException thrown if any of the expressions don't validate</throws>
+	    public SelectExprProcessorHelper(ICollection<int> assignedTypeNumberStack, IList<SelectClauseExprCompiledSpec> selectionList, IList<SelectExprStreamDesc> selectedStreams, InsertIntoDesc insertIntoDesc, EventType optionalInsertIntoOverrideType, bool isUsingWildcard, StreamTypeService typeService, EventAdapterService eventAdapterService, ValueAddEventService valueAddEventService, SelectExprEventTypeRegistry selectExprEventTypeRegistry, EngineImportService engineImportService, int statementId, Attribute[] annotations, ConfigurationInformation configuration, NamedWindowMgmtService namedWindowMgmtService, TableService tableService, GroupByRollupInfo groupByRollupInfo)
 	    {
 	        _assignedTypeNumberStack = assignedTypeNumberStack;
 	        _selectionList = selectionList;
@@ -107,7 +90,7 @@ namespace com.espertech.esper.epl.core
 	        _typeService = typeService;
 	        _valueAddEventService = valueAddEventService;
 	        _selectExprEventTypeRegistry = selectExprEventTypeRegistry;
-	        _methodResolutionService = methodResolutionService;
+	        _engineImportService = engineImportService;
 	        _statementId = statementId;
 	        _annotations = annotations;
 	        _configuration = configuration;
@@ -174,7 +157,7 @@ namespace com.espertech.esper.epl.core
 	            {
 	                joinWildcardProcessor = SelectExprJoinWildcardProcessorFactory.Create(
 	                    _assignedTypeNumberStack, _statementId, _typeService.StreamNames, _typeService.EventTypes,
-	                    _eventAdapterService, null, _selectExprEventTypeRegistry, _methodResolutionService, _annotations,
+	                    _eventAdapterService, null, _selectExprEventTypeRegistry, _engineImportService, _annotations,
 	                    _configuration, _tableService);
 	            }
 
@@ -237,7 +220,7 @@ namespace com.espertech.esper.epl.core
 	                    // handle insert-into, with well-defined target event-typed column, and enumeration
 	                    var pairX = HandleInsertIntoEnumeration(
 	                        spec.ProvidedName, insertIntoTargetsPerCol[i], evaluator,
-	                        _methodResolutionService.EngineImportService);
+                            _engineImportService);
 	                    if (pairX != null)
 	                    {
 	                        expressionReturnTypes[i] = pairX.Type;
@@ -247,7 +230,7 @@ namespace com.espertech.esper.epl.core
 
 	                    // handle insert-into with well-defined target event-typed column, and typable expression
 	                    pairX = HandleInsertIntoTypableExpression(
-	                        insertIntoTargetsPerCol[i], evaluator, _methodResolutionService.EngineImportService);
+                            insertIntoTargetsPerCol[i], evaluator, _engineImportService);
 	                    if (pairX != null)
 	                    {
 	                        expressionReturnTypes[i] = pairX.Type;
@@ -778,7 +761,7 @@ namespace com.espertech.esper.epl.core
 	                        {
 	                            return EvalSelectStreamWUndRecastMapFactory.Make(
 	                                _typeService.EventTypes, selectExprContext, _selectedStreams[0].StreamSelected.StreamNumber,
-	                                insertIntoTargetType, exprNodes, _methodResolutionService.EngineImportService);
+	                                insertIntoTargetType, exprNodes, _engineImportService);
 	                        }
 
 	                        // recast as a Object-array-type
@@ -786,7 +769,7 @@ namespace com.espertech.esper.epl.core
 	                        {
 	                            return EvalSelectStreamWUndRecastObjectArrayFactory.Make(
 	                                _typeService.EventTypes, selectExprContext, _selectedStreams[0].StreamSelected.StreamNumber,
-	                                insertIntoTargetType, exprNodes, _methodResolutionService.EngineImportService);
+	                                insertIntoTargetType, exprNodes, _engineImportService);
 	                        }
 
 	                        // recast as a Bean-type
@@ -910,7 +893,7 @@ namespace com.espertech.esper.epl.core
 	                                SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
 	                                    _eventAdapterService, insertIntoTargetType, _isUsingWildcard, _typeService,
 	                                    exprEvaluators, columnNames, expressionReturnTypes,
-	                                    _methodResolutionService.EngineImportService, _insertIntoDesc, columnNamesAsProvided,
+	                                    _engineImportService, _insertIntoDesc, columnNamesAsProvided,
 	                                    true);
 	                            if (existingTypeProcessor != null)
 	                            {
@@ -1103,7 +1086,7 @@ namespace com.espertech.esper.epl.core
 	                            Type clazz = null;
 	                            try
 	                            {
-	                                clazz = _methodResolutionService.ResolveType(_insertIntoDesc.EventTypeName, false);
+                                    clazz = _engineImportService.ResolveType(_insertIntoDesc.EventTypeName, false);
 	                            }
 	                            catch (EngineImportException e)
 	                            {
@@ -1123,7 +1106,7 @@ namespace com.espertech.esper.epl.core
 	                            selectExprInsertEventBean =
 	                                SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
 	                                    _eventAdapterService, existingType, _isUsingWildcard, _typeService, exprEvaluators,
-	                                    columnNames, expressionReturnTypes, _methodResolutionService.EngineImportService,
+                                        columnNames, expressionReturnTypes, _engineImportService,
 	                                    _insertIntoDesc, columnNamesAsProvided, false);
 	                        }
 	                        if (selectExprInsertEventBean != null)

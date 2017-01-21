@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -106,7 +106,7 @@ namespace com.espertech.esper.filter
                     stmtContext.StatementName, 
                     stmtContext.Annotations, 
                     stmtContext.ContextDescriptor,
-	                stmtContext.MethodResolutionService, 
+	                stmtContext.EngineImportService, 
                     stmtContext.EventAdapterService,
                     stmtContext.FilterBooleanExpressionFactory,
                     stmtContext.TimeProvider, 
@@ -114,7 +114,8 @@ namespace com.espertech.esper.filter
                     stmtContext.ScriptingService,
                     stmtContext.TableService, 
                     stmtContext.ConfigSnapshot, 
-                    stmtContext.NamedWindowMgmtService);
+                    stmtContext.NamedWindowMgmtService,
+                    stmtContext.StatementExtensionServicesContext);
 	    }
 
 	    public static FilterSpecCompiled BuildNoStmtCtx(
@@ -122,8 +123,8 @@ namespace com.espertech.esper.filter
 	        EventType eventType,
 	        string eventTypeName,
 	        PropertyEvalSpec optionalPropertyEvalSpec,
-            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
-            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+	        IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+	        IDictionary<string, Pair<EventType, string>> arrayEventTypes,
 	        StreamTypeService streamTypeService,
 	        string optionalStreamName,
 	        ICollection<int> assignedTypeNumberStack,
@@ -132,15 +133,16 @@ namespace com.espertech.esper.filter
 	        string statementName,
 	        Attribute[] annotations,
 	        ContextDescriptor contextDescriptor,
-	        MethodResolutionService methodResolutionService,
+	        EngineImportService engineImportService,
 	        EventAdapterService eventAdapterService,
-            FilterBooleanExpressionFactory filterBooleanExpressionFactory,
+	        FilterBooleanExpressionFactory filterBooleanExpressionFactory,
 	        TimeProvider timeProvider,
 	        VariableService variableService,
-            ScriptingService scriptingService,
+	        ScriptingService scriptingService,
 	        TableService tableService,
 	        ConfigurationInformation configurationInformation,
-	        NamedWindowMgmtService namedWindowMgmtService)
+	        NamedWindowMgmtService namedWindowMgmtService,
+	        StatementExtensionSvcContext statementExtensionSvcContext)
         {
             var args = new FilterSpecCompilerArgs(
                 taggedEventTypes, 
@@ -149,7 +151,7 @@ namespace com.espertech.esper.filter
                 statementName, 
                 statementId, 
                 streamTypeService, 
-                methodResolutionService,
+                engineImportService,
                 timeProvider, 
                 variableService, 
                 tableService, 
@@ -158,7 +160,8 @@ namespace com.espertech.esper.filter
                 scriptingService,
                 annotations, 
                 contextDescriptor, 
-                configurationInformation);
+                configurationInformation,
+                statementExtensionSvcContext);
             var parameters = FilterSpecCompilerPlanner.PlanFilterParameters(validatedFilterNodes, args);
 
             PropertyEvaluator optionalPropertyEvaluator = null;
@@ -168,7 +171,7 @@ namespace com.espertech.esper.filter
                     eventType, 
                     optionalStreamName,
                     eventAdapterService, 
-                    methodResolutionService, 
+                    engineImportService, 
                     timeProvider, 
                     variableService, 
                     scriptingService,
@@ -178,8 +181,9 @@ namespace com.espertech.esper.filter
                     statementName, 
                     annotations, 
                     assignedTypeNumberStack, 
-                    configurationInformation, 
-                    namedWindowMgmtService);
+                    configurationInformation,
+                    namedWindowMgmtService, 
+                    statementExtensionSvcContext);
             }
 
             var spec = new FilterSpecCompiled(eventType, eventTypeName, parameters, optionalPropertyEvaluator);
@@ -221,7 +225,10 @@ namespace com.espertech.esper.filter
 
 	        var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
-                streamTypeService, statementContext.MethodResolutionService, null, statementContext.TimeProvider,
+                streamTypeService,
+                statementContext.EngineImportService, 
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.TimeProvider,
                 statementContext.VariableService, 
                 statementContext.TableService, 
                 evaluatorContextStmt,
@@ -366,10 +373,19 @@ namespace com.espertech.esper.filter
 	                var selectExpression = compiled.SelectExpression;
 	                var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
 	                var validationContext = new ExprValidationContext(
-	                    subselectTypeService, statementContext.MethodResolutionService, viewResourceDelegateSubselect,
-	                    statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-	                    evaluatorContextStmt, statementContext.EventAdapterService, statementContext.StatementName,
-	                    statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
+	                    subselectTypeService, 
+                        statementContext.EngineImportService,
+                        statementContext.StatementExtensionServicesContext, 
+                        viewResourceDelegateSubselect,
+	                    statementContext.SchedulingService, 
+                        statementContext.VariableService, 
+                        statementContext.TableService,
+	                    evaluatorContextStmt, 
+                        statementContext.EventAdapterService, 
+                        statementContext.StatementName,
+	                    statementContext.StatementId, 
+                        statementContext.Annotations, 
+                        statementContext.ContextDescriptor,
                         statementContext.ScriptingService,
                         false, false, true, false, null, false);
 	                selectExpression = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SUBQUERYSELECT, selectExpression, validationContext);

@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 using com.espertech.esper.epl.join.table;
 
@@ -15,7 +17,7 @@ namespace com.espertech.esper.epl.db
     /// via lookup keys consisting or one or more rows represented by a list of events.
     /// </summary>
 
-    public interface DataCache
+    public interface DataCache : IDisposable
     {
         /// <summary>
         /// Ask the cache if the keyed value is cached, returning a list or rows if the key

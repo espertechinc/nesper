@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -28,11 +28,19 @@ namespace com.espertech.esper.epl.view
 	    public OutputConditionPolledCrontabFactory(IList<ExprNode> scheduleSpecExpressionList, StatementContext statementContext)
 	    {
 	        var validationContext = new ExprValidationContext(
-	            new StreamTypeServiceImpl(statementContext.EngineURI, false), statementContext.MethodResolutionService,
-	            null, statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-	            new ExprEvaluatorContextStatement(statementContext, false), statementContext.EventAdapterService,
-	            statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-	            statementContext.ContextDescriptor, statementContext.ScriptingService,
+	            new StreamTypeServiceImpl(statementContext.EngineURI, false),
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.SchedulingService, 
+                statementContext.VariableService, 
+                statementContext.TableService,
+	            new ExprEvaluatorContextStatement(statementContext, false),
+                statementContext.EventAdapterService,
+	            statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations,
+	            statementContext.ContextDescriptor, 
+                statementContext.ScriptingService,
                 false, false, false, false, null, false);
 	        _expressions = new ExprEvaluator[scheduleSpecExpressionList.Count];
 	        var count = 0;

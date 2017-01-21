@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -186,6 +186,11 @@ namespace com.espertech.esper.epl.core
         public override void Stop()
         {
             // no action required
+        }
+
+        public override void AcceptHelperVisitor(ResultSetProcessorOutputHelperVisitor visitor)
+        {
+            // nothing to visit
         }
     }
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,14 +15,7 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// </summary>
     public class AggregatorLastEver : AggregationMethod
     {
-        private readonly Type _type;
         private Object _lastValue;
-    
-        /// <summary>Ctor. </summary>
-        /// <param name="type">of result</param>
-        public AggregatorLastEver(Type type) {
-            _type = type;
-        }
     
         public virtual void Clear()
         {
@@ -41,11 +34,6 @@ namespace com.espertech.esper.epl.agg.aggregator
         public object Value
         {
             get { return _lastValue; }
-        }
-
-        public Type ValueType
-        {
-            get { return _type; }
         }
     }
 }

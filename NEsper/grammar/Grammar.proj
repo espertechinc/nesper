@@ -9,7 +9,7 @@
 
 	<PropertyGroup>
 		<IntermediateOutputPath>$(MSBuildProjectDirectory)</IntermediateOutputPath>
-		<AntlrVersion>4.4.3.0</AntlrVersion>
+		<AntlrVersion>4.4.5.3</AntlrVersion>
 	</PropertyGroup>
 
 	<Import Project="..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.props" Condition="Exists('..\..\packages\Antlr$(AntlrVersion)\build\Antlr4.props')" />

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>com.espertech.esper</RootNamespace>
     <AssemblyName>NEsper.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,50 +56,55 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MYSQL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MYSQL;X64</DefineConstants>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;MYSQL</DefineConstants>
+    <DefineConstants>TRACE;MYSQL;X64</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MYSQL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MYSQL;X86</DefineConstants>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;MYSQL</DefineConstants>
+    <DefineConstants>TRACE;MYSQL;X86</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>0078,0162,0168,1591</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.net40">
-      <HintPath>..\..\packages\Antlr4.Runtime.4.3.0\lib\net40-client\Antlr4.Runtime.net40.dll</HintPath>
+    <Reference Include="Antlr4.Runtime">
+      <HintPath>..\..\packages\Antlr4.Runtime.4.5.3\lib\net45\Antlr4.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -116,9 +122,9 @@
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Sharpen, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -502,14 +508,6 @@
     <Compile Include="regression\client\MyMetricFunctions.cs" />
     <Compile Include="regression\client\MySingleRowFunction.cs" />
     <Compile Include="regression\client\MySingleRowFunctionTwo.cs" />
-    <Compile Include="regression\client\MySubscriberMultirowMap.cs" />
-    <Compile Include="regression\client\MySubscriberMultirowObjectArr.cs" />
-    <Compile Include="regression\client\MySubscriberMultirowUnderlying.cs" />
-    <Compile Include="regression\client\MySubscriberRowByRowFull.cs" />
-    <Compile Include="regression\client\MySubscriberRowByRowMap.cs" />
-    <Compile Include="regression\client\MySubscriberRowByRowObjectArr.cs" />
-    <Compile Include="regression\client\MySubscriberRowByRowSpecific.cs" />
-    <Compile Include="regression\client\MySubscriberRowByRowSpecificStatic.cs" />
     <Compile Include="regression\client\MyTrendSpotterView.cs" />
     <Compile Include="regression\client\MyTrendSpotterViewFactory.cs" />
     <Compile Include="regression\client\SupportAmbigousEventType.cs" />
@@ -544,7 +542,6 @@
     <Compile Include="regression\client\TestSubscriberBind.cs" />
     <Compile Include="regression\client\TestSubscriberInvalid.cs" />
     <Compile Include="regression\client\TestSubscriberMgmt.cs" />
-    <Compile Include="regression\client\TestSubscriberNamedMethod.cs" />
     <Compile Include="regression\client\TestSubscriberPerf.cs" />
     <Compile Include="regression\client\TestThreadedConfigInbound.cs" />
     <Compile Include="regression\client\TestThreadedConfigOutbound.cs" />
@@ -669,6 +666,7 @@
     <Compile Include="regression\enummethod\TestEnumWhere.cs" />
     <Compile Include="regression\enummethod\TestExpressionDef.cs" />
     <Compile Include="regression\enummethod\TestExpressionDefAliasFor.cs" />
+    <Compile Include="regression\enummethod\TestExpressionDefConfigurations.cs" />
     <Compile Include="regression\enummethod\TestExpressionDefLambdaLocReport.cs" />
     <Compile Include="regression\epl\Test20StreamJoin.cs" />
     <Compile Include="regression\epl\Test2StreamOuterJoin.cs" />
@@ -1340,6 +1338,38 @@
     <Compile Include="support\pattern\SupportPatternContextFactory.cs" />
     <Compile Include="support\plugin\SupportPluginLoader.cs" />
     <Compile Include="support\schedule\SupportScheduleCallback.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowMapBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowMapNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowMapWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowObjectArrayBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowObjectArrayNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowObjectArrayWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowUnderlyingBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowUnderlyingNamedMethodNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowUnderlyingNamedMethodWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowUnderlyingNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberMultirowUnderlyingWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberNoParamsBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberNoParamsBaseNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberNoParamsBaseWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowFullBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowFullNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowFullWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowMapBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowMapNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowMapWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowObjectArrayBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowObjectArrayPlainNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowObjectArrayPlainWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowObjectArrayVarargNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowObjectArrayVarargWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowSpecificBase.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowSpecificNStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowSpecificWStmt.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowStatic.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberRowByRowStaticWStatement.cs" />
+    <Compile Include="support\subscriber\SupportSubscriberUpdateBothFootprints.cs" />
     <Compile Include="support\timer\SupportDateTimeUtil.cs" />
     <Compile Include="support\timer\SupportTimerCallback.cs" />
     <Compile Include="support\util\AgentInstanceAssertionUtil.cs" />
@@ -1523,9 +1553,9 @@
       <Project>{5247fbf4-e8f5-45c7-8038-91b581b308a1}</Project>
       <Name>NEsper.Scripting.Noesis</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NEsper\NEsper.net40.csproj">
-      <Project>{8376DC7A-06AC-40F1-9338-9AC5AF788356}</Project>
-      <Name>NEsper.net40</Name>
+    <ProjectReference Include="..\NEsper\NEsper.net45.csproj">
+      <Project>{3d317245-cde5-4e0e-9590-d7cba2257d9c}</Project>
+      <Name>NEsper.net45</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

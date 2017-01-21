@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,11 +12,8 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.support.epl;
-using com.espertech.esper.support.view;
 
 using NUnit.Framework;
 
@@ -28,7 +25,6 @@ namespace com.espertech.esper.epl.agg
         private AggSvcGroupByNoAccessImpl _service;
         private MultiKeyUntyped _groupOneKey;
         private MultiKeyUntyped _groupTwoKey;
-        private MethodResolutionService _methodResolutionService;
     
         [SetUp]
         public void SetUp()
@@ -39,9 +35,8 @@ namespace com.espertech.esper.epl.agg
                 aggregators[i] = new SupportAggregatorFactory();
             }
             var evaluators = new[] { new SupportExprNode(5).ExprEvaluator, new SupportExprNode(2).ExprEvaluator };
-            _methodResolutionService = new MethodResolutionServiceImpl(null, null);
     
-            _service = new AggSvcGroupByNoAccessImpl(evaluators, aggregators, null, _methodResolutionService);
+            _service = new AggSvcGroupByNoAccessImpl(evaluators, aggregators);
     
             _groupOneKey = new MultiKeyUntyped(new Object[] {"x", "y1"});
             _groupTwoKey = new MultiKeyUntyped(new Object[] {"x", "y2"});

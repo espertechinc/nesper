@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,9 +15,10 @@ namespace com.espertech.esper.schedule
         /// <param name="time">of schedule</param>
         /// <param name="slot">slot</param>
         /// <param name="handle">handle to use</param>
-        public ScheduleSetEntry(long time,
-                                ScheduleSlot slot,
-                                ScheduleHandle handle)
+        public ScheduleSetEntry(
+            long time,
+            long slot,
+            ScheduleHandle handle)
         {
             Time = time;
             Slot = slot;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.schedule
 
         /// <summary>Returns schedule slot. </summary>
         /// <value>slot</value>
-        public ScheduleSlot Slot { get; private set; }
+        public long Slot { get; private set; }
 
         /// <summary>Returns the schedule handle. </summary>
         /// <value>handle</value>

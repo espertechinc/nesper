@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,9 +22,6 @@ namespace com.espertech.esper.epl.named
 	/// </summary>
 	public class NamedWindowConsumerLatchFactory
 	{
-	    private readonly bool _useSpin;
-	    private readonly bool _enabled;
-
 	    private NamedWindowConsumerLatchSpin _currentLatchSpin;
 	    private NamedWindowConsumerLatchWait _currentLatchWait;
 
@@ -32,23 +29,27 @@ namespace com.espertech.esper.epl.named
 	    /// Ctor.
 	    /// </summary>
 	    /// <param name="name">the factory name</param>
+	    /// <param name="enabled"></param>
 	    /// <param name="msecWait">the number of milliseconds latches will await maximually</param>
 	    /// <param name="locking">the blocking strategy to employ</param>
 	    /// <param name="timeSourceService">time source provider</param>
-	    public NamedWindowConsumerLatchFactory(string name, bool enabled, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService)
+	    /// <param name="initializenow"></param>
+	    public NamedWindowConsumerLatchFactory(string name, bool enabled, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService, bool initializenow)
 	    {
 	        Name = name;
-	        _enabled = enabled;
+	        Enabled = enabled;
 	        MsecWait = msecWait;
 	        TimeSourceService = timeSourceService;
 
-	        _useSpin = enabled && (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
+	        UseSpin = enabled && (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
 
 	        // construct a completed latch as an initial root latch
-	        if (_useSpin) {
+	        if (initializenow && UseSpin)
+            {
 	            _currentLatchSpin = new NamedWindowConsumerLatchSpin(this);
 	        }
-	        else if (enabled) {
+            else if (initializenow && enabled)
+            {
 	            _currentLatchWait = new NamedWindowConsumerLatchWait(this);
 	        }
 	    }
@@ -58,15 +59,20 @@ namespace com.espertech.esper.epl.named
 	    /// <para />Need not be synchronized as there is one per statement and execution is during statement lock.
 	    /// </summary>
 	    /// <returns>latch</returns>
-	    public NamedWindowConsumerLatch NewLatch(NamedWindowDeltaData delta, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers)
+	    public NamedWindowConsumerLatch NewLatch(
+	        NamedWindowDeltaData delta,
+	        IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers)
 	    {
-	        if (_useSpin) {
+	        if (UseSpin)
+	        {
 	            var nextLatch = new NamedWindowConsumerLatchSpin(delta, consumers, this, _currentLatchSpin);
 	            _currentLatchSpin = nextLatch;
 	            return nextLatch;
 	        }
-	        else {
-	            if (_enabled) {
+	        else
+	        {
+	            if (Enabled)
+	            {
 	                var nextLatch = new NamedWindowConsumerLatchWait(delta, consumers, this, _currentLatchWait);
 	                _currentLatchWait.Later = nextLatch;
 	                _currentLatchWait = nextLatch;
@@ -78,8 +84,12 @@ namespace com.espertech.esper.epl.named
 
 	    public TimeSourceService TimeSourceService { get; private set; }
 
-	    public string Name { get; private set; }
+        public string Name { get; protected internal set; }
 
-	    public long MsecWait { get; private set; }
+        public long MsecWait { get; protected internal set; }
+
+	    public bool UseSpin { get; protected internal set; }
+
+	    public bool Enabled { get; protected internal set; }
 	}
 } // end of namespace

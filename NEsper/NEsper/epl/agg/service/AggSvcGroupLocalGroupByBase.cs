@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,10 +26,8 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public abstract class AggSvcGroupLocalGroupByBase : AggregationService
     {
-        protected internal readonly MethodResolutionService MethodResolutionService;
         protected internal readonly bool IsJoin;
         protected internal readonly AggregationLocalGroupByPlan LocalGroupByPlan;
-        protected internal readonly object GroupKeyBinding;
 
         public abstract object GetValue(
             int column,
@@ -50,16 +48,10 @@ namespace com.espertech.esper.epl.agg.service
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext);
 
-        protected AggSvcGroupLocalGroupByBase(
-            MethodResolutionService methodResolutionService,
-            bool isJoin,
-            AggregationLocalGroupByPlan localGroupByPlan,
-            object groupKeyBinding)
+        protected AggSvcGroupLocalGroupByBase(bool isJoin, AggregationLocalGroupByPlan localGroupByPlan)
         {
-            MethodResolutionService = methodResolutionService;
             IsJoin = isJoin;
             LocalGroupByPlan = localGroupByPlan;
-            GroupKeyBinding = groupKeyBinding;
 
             AggregatorsPerLevelAndGroup = new IDictionary<object, AggregationMethodPairRow>[localGroupByPlan.AllLevels.Length];
             for (var i = 0; i < localGroupByPlan.AllLevels.Length; i++)
@@ -87,12 +79,8 @@ namespace com.espertech.esper.epl.agg.service
             {
                 if (AggregatorsTopLevel == null)
                 {
-                    AggregatorsTopLevel =
-                        MethodResolutionService.NewAggregators(
-                            LocalGroupByPlan.OptionalLevelTop.MethodFactories, exprEvaluatorContext.AgentInstanceId,
-                            null, null, null);
-                    StatesTopLevel = MethodResolutionService.NewAccesses(
-                        exprEvaluatorContext.AgentInstanceId, IsJoin, LocalGroupByPlan.OptionalLevelTop.StateFactories, null, null, null, null);
+                    AggregatorsTopLevel = AggSvcGroupByUtil.NewAggregators(LocalGroupByPlan.OptionalLevelTop.MethodFactories);
+                    StatesTopLevel = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, LocalGroupByPlan.OptionalLevelTop.StateFactories, null, null);
                 }
                 AggregateIntoEnter(
                     LocalGroupByPlan.OptionalLevelTop, AggregatorsTopLevel, StatesTopLevel, eventsPerStream,
@@ -109,15 +97,9 @@ namespace com.espertech.esper.epl.agg.service
                 var row = AggregatorsPerLevelAndGroup[levelNum].Get(groupByKey);
                 if (row == null)
                 {
-                    var rowAggregators = MethodResolutionService.NewAggregators(
-                        level.MethodFactories, exprEvaluatorContext.AgentInstanceId, groupByKey, null, null);
-                    AggregationState[] rowStates =
-                        MethodResolutionService.NewAccesses(
-                            exprEvaluatorContext.AgentInstanceId, IsJoin, level.StateFactories, groupByKey, null, null, null);
-                    row =
-                        new AggregationMethodPairRow(
-                            MethodResolutionService.GetCurrentRowCount(rowAggregators, rowStates) + 1, rowAggregators,
-                            rowStates);
+                    var rowAggregators = AggSvcGroupByUtil.NewAggregators(level.MethodFactories);
+                    AggregationState[] rowStates = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, level.StateFactories, groupByKey, null);
+                    row = new AggregationMethodPairRow(1, rowAggregators, rowStates);
                     AggregatorsPerLevelAndGroup[levelNum].Put(groupByKey, row);
                 }
                 else
@@ -142,12 +124,8 @@ namespace com.espertech.esper.epl.agg.service
             {
                 if (AggregatorsTopLevel == null)
                 {
-                    AggregatorsTopLevel =
-                        MethodResolutionService.NewAggregators(
-                            LocalGroupByPlan.OptionalLevelTop.MethodFactories, exprEvaluatorContext.AgentInstanceId,
-                            null, null, null);
-                    StatesTopLevel = MethodResolutionService.NewAccesses(
-                        exprEvaluatorContext.AgentInstanceId, IsJoin, LocalGroupByPlan.OptionalLevelTop.StateFactories, null, null, null, null);
+                    AggregatorsTopLevel = AggSvcGroupByUtil.NewAggregators(LocalGroupByPlan.OptionalLevelTop.MethodFactories);
+                    StatesTopLevel = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, LocalGroupByPlan.OptionalLevelTop.StateFactories, null, null);
                 }
                 AggregateIntoLeave(
                     LocalGroupByPlan.OptionalLevelTop, AggregatorsTopLevel, StatesTopLevel, eventsPerStream,
@@ -164,15 +142,9 @@ namespace com.espertech.esper.epl.agg.service
                 var row = AggregatorsPerLevelAndGroup[levelNum].Get(groupByKey);
                 if (row == null)
                 {
-                    var rowAggregators = MethodResolutionService.NewAggregators(
-                        level.MethodFactories, exprEvaluatorContext.AgentInstanceId, groupByKey, null, null);
-                    AggregationState[] rowStates =
-                        MethodResolutionService.NewAccesses(
-                            exprEvaluatorContext.AgentInstanceId, IsJoin, level.StateFactories, groupByKey, null, null, null);
-                    row =
-                        new AggregationMethodPairRow(
-                            MethodResolutionService.GetCurrentRowCount(rowAggregators, rowStates) + 1, rowAggregators,
-                            rowStates);
+                    var rowAggregators = AggSvcGroupByUtil.NewAggregators(level.MethodFactories);
+                    AggregationState[] rowStates = AggSvcGroupByUtil.NewAccesses(exprEvaluatorContext.AgentInstanceId, IsJoin, level.StateFactories, groupByKey, null);
+                    row = new AggregationMethodPairRow(1, rowAggregators, rowStates);
                     AggregatorsPerLevelAndGroup[levelNum].Put(groupByKey, row);
                 }
                 else

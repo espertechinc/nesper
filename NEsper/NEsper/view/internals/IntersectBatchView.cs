@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,31 +8,30 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.view.internals
 {
     /// <summary>
-    /// A view that represents an intersection of multiple data windows. 
-    /// <para/>
-    /// The view is parameterized by two or more data windows. From an external viewpoint, 
-    /// the view retains all events that is in all of the data windows at the same time 
-    /// (an intersection) and removes all events that leave any of the data windows. 
-    /// <para/>
-    /// This special batch-version has the following logic: 
-    /// - only one batching view allowed as sub-view 
-    /// - all externally-received newData events are inserted into each view 
-    /// - all externally-received oldData events are removed from each view 
-    /// - any non-batch view has its newData output ignored 
-    /// - the single batch-view has its newData posted to child views, and removed from all non-batch views 
+    /// A view that represents an intersection of multiple data windows.
+    /// <para>
+    /// The view is parameterized by two or more data windows. From an external viewpoint, the
+    /// view retains all events that is in all of the data windows at the same time (an intersection)
+    /// and removes all events that leave any of the data windows.
+    /// </para>
+    /// <para>
+    /// This special batch-version has the following logic:
+    /// - only one batching view allowed as sub-view
+    /// - all externally-received newData events are inserted into each view
+    /// - all externally-received oldData events are removed from each view
+    /// - any non-batch view has its newData output ignored
+    /// - the single batch-view has its newData posted to child views, and removed from all non-batch views
     /// - all oldData events received from all non-batch views are removed from each view
+    /// </para>
     /// </summary>
     public class IntersectBatchView
         : ViewSupport
@@ -44,59 +43,28 @@ namespace com.espertech.esper.view.internals
         , ViewDataVisitableContainer
         , ViewContainer
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
-        private readonly IntersectViewFactory _intersectViewFactory;
-        private readonly EventType _eventType;
+        private readonly IntersectViewFactory _factory;
         private readonly View[] _views;
-        private readonly int _batchViewIndex;
-        private readonly EventBean[][] _oldEventsPerView;
-        private readonly EventBean[][] _newEventsPerView;
-        private readonly ISet<EventBean> _removedEvents = new LinkedHashSet<EventBean>();
-        private readonly bool _hasAsymetric;
-    
-        private bool _captureIrNonBatch;
-        private bool _ignoreViewIrStream;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="agentInstanceViewFactoryContext">The agent instance view factory context.</param>
         /// <param name="factory">the view factory</param>
-        /// <param name="eventType">the parent event type</param>
         /// <param name="viewList">the list of data window views</param>
-        /// <param name="viewFactories">view factories</param>
-        /// <param name="hasAsymetric">if set to <c>true</c> [has asymetric].</param>
         public IntersectBatchView(
             AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext,
             IntersectViewFactory factory,
-            EventType eventType,
-            IList<View> viewList,
-            IList<ViewFactory> viewFactories,
-            bool hasAsymetric)
+            IList<View> viewList)
         {
             _agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
-            _intersectViewFactory = factory;
-            _eventType = eventType;
+            _factory = factory;
             _views = viewList.ToArray();
-            _oldEventsPerView = new EventBean[viewList.Count][];
-            _newEventsPerView = new EventBean[viewList.Count][];
-            _hasAsymetric = hasAsymetric;
-    
-            // determine index of batch view
-            _batchViewIndex = -1;
-            for (int i = 0; i < viewFactories.Count; i++) {
-                if (viewFactories[i] is DataWindowBatchingViewFactory) {
-                    _batchViewIndex = i;
-                }
-            }
-            if (_batchViewIndex == -1) {
-                throw new IllegalStateException("Failed to find batch data window view");
-            }
-    
-            for (int i = 0; i < viewList.Count; i++) {
-                var view = new LastPostObserverView(i);
+
+            for (int i = 0; i < viewList.Count; i++)
+            {
+                LastPostObserverView view = new LastPostObserverView(i);
                 _views[i].RemoveAllViews();
                 _views[i].AddView(view);
                 view.Observer = this;
@@ -110,17 +78,19 @@ namespace com.espertech.esper.view.internals
 
         public View CloneView()
         {
-            return _intersectViewFactory.MakeView(_agentInstanceViewFactoryContext);
+            return _factory.MakeView(_agentInstanceViewFactoryContext);
         }
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            // handle remove stream:post oldData to all views
+            IntersectBatchViewLocalState localState = _factory.GetBatchViewLocalStatePerThread();
+
+            // handle remove stream: post oldData to all views
             if (oldData != null && oldData.Length != 0)
             {
                 try
                 {
-                    _ignoreViewIrStream = true;
+                    localState.IsIgnoreViewIRStream = true;
                     for (int i = 0; i < _views.Length; i++)
                     {
                         _views[i].Update(newData, oldData);
@@ -128,7 +98,7 @@ namespace com.espertech.esper.view.internals
                 }
                 finally
                 {
-                    _ignoreViewIrStream = false;
+                    localState.IsIgnoreViewIRStream = false;
                 }
             }
 
@@ -137,10 +107,10 @@ namespace com.espertech.esper.view.internals
                 // post to all non-batch views first to let them decide the remove stream, if any
                 try
                 {
-                    _captureIrNonBatch = true;
+                    localState.IsCaptureIRNonBatch = true;
                     for (int i = 0; i < _views.Length; i++)
                     {
-                        if (i != _batchViewIndex)
+                        if (i != _factory.BatchViewIndex)
                         {
                             _views[i].Update(newData, oldData);
                         }
@@ -148,15 +118,15 @@ namespace com.espertech.esper.view.internals
                 }
                 finally
                 {
-                    _captureIrNonBatch = false;
+                    localState.IsCaptureIRNonBatch = false;
                 }
 
                 // if there is any data removed from non-batch views, remove from all views
                 // collect removed events
-                _removedEvents.Clear();
+                localState.RemovedEvents.Clear();
                 for (int i = 0; i < _views.Length; i++)
                 {
-                    if (_oldEventsPerView[i] != null)
+                    if (localState.OldEventsPerView[i] != null)
                     {
                         for (int j = 0; j < _views.Length; j++)
                         {
@@ -164,70 +134,73 @@ namespace com.espertech.esper.view.internals
                             {
                                 continue;
                             }
-                            _views[j].Update(null, _oldEventsPerView[i]);
+                            _views[j].Update(null, localState.OldEventsPerView[i]);
 
-                            for (int k = 0; k < _oldEventsPerView[i].Length; k++)
+                            for (int k = 0; k < localState.OldEventsPerView[i].Length; k++)
                             {
-                                _removedEvents.Add(_oldEventsPerView[i][k]);
+                                localState.RemovedEvents.Add(localState.OldEventsPerView[i][k]);
                             }
                         }
-                        _oldEventsPerView[i] = null;
+                        localState.OldEventsPerView[i] = null;
                     }
                 }
 
                 // post only new events to the batch view that have not been removed
                 EventBean[] newDataNonRemoved;
-                if (_hasAsymetric)
+                if (_factory.IsAsymmetric())
                 {
-                    newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(newData, _removedEvents, _newEventsPerView);
+                    newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(
+                        newData, localState.RemovedEvents, localState.NewEventsPerView);
                 }
                 else
                 {
-                    newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(newData, _removedEvents);
+                    newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(newData, localState.RemovedEvents);
                 }
                 if (newDataNonRemoved != null)
                 {
-                    _views[_batchViewIndex].Update(newDataNonRemoved, null);
+                    _views[_factory.BatchViewIndex].Update(newDataNonRemoved, null);
                 }
             }
         }
 
         public override EventType EventType
         {
-            get { return _eventType; }
+            get { return _factory.EventType; }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return _views[_batchViewIndex].GetEnumerator();
+            return _views[_factory.BatchViewIndex].GetEnumerator();
         }
 
         public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
         {
-            if (_ignoreViewIrStream)
+            IntersectBatchViewLocalState localState = _factory.GetBatchViewLocalStatePerThread();
+
+            if (localState.IsIgnoreViewIRStream)
             {
                 return;
             }
 
-            if (_captureIrNonBatch)
+            if (localState.IsCaptureIRNonBatch)
             {
-                _oldEventsPerView[streamId] = oldEvents;
-                if (_hasAsymetric)
+                localState.OldEventsPerView[streamId] = oldEvents;
+                if (_factory.IsAsymmetric())
                 {
-                    _newEventsPerView[streamId] = newEvents;
+                    localState.NewEventsPerView[streamId] = newEvents;
                 }
                 return;
             }
 
             // handle case where irstream originates from view, i.e. timer-based
-            if (streamId == _batchViewIndex)
+            if (streamId == _factory.BatchViewIndex)
             {
                 UpdateChildren(newEvents, oldEvents);
                 if (newEvents != null)
                 {
                     try
                     {
-                        _ignoreViewIrStream = true;
+                        localState.IsIgnoreViewIRStream = true;
                         for (int i = 0; i < _views.Length; i++)
                         {
                             if (i != streamId)
@@ -238,7 +211,7 @@ namespace com.espertech.esper.view.internals
                     }
                     finally
                     {
-                        _ignoreViewIrStream = false;
+                        localState.IsIgnoreViewIRStream = false;
                     }
                 }
             }
@@ -249,7 +222,7 @@ namespace com.espertech.esper.view.internals
                 {
                     try
                     {
-                        _ignoreViewIrStream = true;
+                        localState.IsIgnoreViewIRStream = true;
                         for (int i = 0; i < _views.Length; i++)
                         {
                             if (i != streamId)
@@ -260,7 +233,7 @@ namespace com.espertech.esper.view.internals
                     }
                     finally
                     {
-                        _ignoreViewIrStream = false;
+                        localState.IsIgnoreViewIRStream = false;
                     }
                 }
             }
@@ -276,7 +249,7 @@ namespace com.espertech.esper.view.internals
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            IntersectView.VisitViewContained(viewDataVisitor, _intersectViewFactory, _views);
+            IntersectDefaultView.VisitViewContained(viewDataVisitor, _factory, _views);
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
@@ -286,7 +259,7 @@ namespace com.espertech.esper.view.internals
 
         public ViewFactory ViewFactory
         {
-            get { return _intersectViewFactory; }
+            get { return _factory; }
         }
     }
-}
+} // end of namespace

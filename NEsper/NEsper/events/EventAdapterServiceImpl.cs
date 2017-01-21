@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -933,7 +933,7 @@ namespace com.espertech.esper.events
 
         public bool RemoveType(String name)
         {
-            var eventType = _nameToTypeMap.Pluck(name);
+            var eventType = _nameToTypeMap.Delete(name);
             if (eventType == null)
             {
                 return false;

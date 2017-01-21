@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,8 +11,10 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
@@ -20,26 +22,33 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.plugin;
 
+using AggregationMethodFactoryUtil = com.espertech.esper.epl.agg.service.AggregationMethodFactoryUtil;
+
 namespace com.espertech.esper.epl.expression.accessagg
 {
 	public class ExprPlugInAggMultiFunctionNodeFactory : AggregationMethodFactory
 	{
 	    private readonly ExprPlugInAggMultiFunctionNode _parent;
 	    private readonly PlugInAggregationMultiFunctionHandler _handlerPlugin;
+        private readonly AggregationFactoryFactory _aggregationFactoryFactory;
+        private readonly StatementExtensionSvcContext _statementExtensionSvcContext;
+
 	    private EPType _returnType;
 
-	    public ExprPlugInAggMultiFunctionNodeFactory(ExprPlugInAggMultiFunctionNode parent, PlugInAggregationMultiFunctionHandler handlerPlugin)
+        public ExprPlugInAggMultiFunctionNodeFactory(ExprPlugInAggMultiFunctionNode parent, PlugInAggregationMultiFunctionHandler handlerPlugin, AggregationFactoryFactory aggregationFactoryFactory, StatementExtensionSvcContext statementExtensionSvcContext)
         {
-	        _handlerPlugin = handlerPlugin;
-	        _parent = parent;
-	    }
+            _handlerPlugin = handlerPlugin;
+            _parent = parent;
+            _aggregationFactoryFactory = aggregationFactoryFactory;
+            _statementExtensionSvcContext = statementExtensionSvcContext;
+        }
 
 	    public bool IsAccessAggregation
 	    {
 	        get { return true; }
 	    }
 
-	    public AggregationMethod Make(MethodResolutionService methodResolutionService, int agentInstanceId, int groupId, int aggregationId)
+	    public AggregationMethod Make()
         {
 	        return null;
 	    }
@@ -51,7 +60,7 @@ namespace com.espertech.esper.epl.expression.accessagg
 
 	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        return new AggregationStateFactoryPlugin(this);
+            return _aggregationFactoryFactory.MakePlugInAccess(_statementExtensionSvcContext, this);
 	    }
 
 	    public AggregationAccessor Accessor

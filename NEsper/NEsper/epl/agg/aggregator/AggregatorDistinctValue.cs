@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -56,11 +56,6 @@ namespace com.espertech.esper.epl.agg.aggregator
         public virtual object Value
         {
             get { return _inner.Value; }
-        }
-
-        public virtual Type ValueType
-        {
-            get { return _inner.ValueType; }
         }
     }
 }

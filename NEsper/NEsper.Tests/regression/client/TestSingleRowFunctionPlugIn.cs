@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,9 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Numerics;
+using System.Text;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.collection;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
@@ -30,6 +34,8 @@ namespace com.espertech.esper.regression.client
             _listener = new SupportUpdateListener();
     
             var configuration = SupportConfigFactory.GetConfiguration();
+            configuration.AddImport(typeof (BigInteger));
+
             configuration.AddPlugInSingleRowFunction("power3", typeof(MySingleRowFunction).FullName, "ComputePower3");
             configuration.AddPlugInSingleRowFunction("chainTop", typeof(MySingleRowFunction).FullName, "GetChainTop");
             configuration.AddPlugInSingleRowFunction("surroundx", typeof(MySingleRowFunction).FullName, "Surroundx");
@@ -40,6 +46,20 @@ namespace com.espertech.esper.regression.client
             configuration.AddPlugInSingleRowFunction("isNullValue", typeof(MySingleRowFunction).FullName, "IsNullValue");
             configuration.AddPlugInSingleRowFunction("getValueAsString", typeof(MySingleRowFunction).FullName, "GetValueAsString");
             configuration.AddPlugInSingleRowFunction("eventsCheckStrings", typeof(MySingleRowFunction).FullName, "EventsCheckStrings");
+
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyInt", typeof(MySingleRowFunction).FullName, "VarargsOnlyInt");
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyString", typeof(MySingleRowFunction).FullName, "VarargsOnlyString");
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyObject", typeof(MySingleRowFunction).FullName, "VarargsOnlyObject");
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyNumber", typeof(MySingleRowFunction).FullName, "VarargsOnlyNumber");
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyISupportBaseAB", typeof(MySingleRowFunction).FullName, "VarargsOnlyISupportBaseAB");
+            configuration.AddPlugInSingleRowFunction("VarargsW1Param", typeof(MySingleRowFunction).FullName, "VarargsW1Param");
+            configuration.AddPlugInSingleRowFunction("VarargsW2Param", typeof(MySingleRowFunction).FullName, "VarargsW2Param");
+            configuration.AddPlugInSingleRowFunction("VarargsOnlyWCtx", typeof(MySingleRowFunction).FullName, "VarargsOnlyWCtx");
+            configuration.AddPlugInSingleRowFunction("VarargsW1ParamWCtx", typeof(MySingleRowFunction).FullName, "VarargsW1ParamWCtx");
+            configuration.AddPlugInSingleRowFunction("VarargsW2ParamWCtx", typeof(MySingleRowFunction).FullName, "VarargsW2ParamWCtx");
+            configuration.AddPlugInSingleRowFunction("VarargsObjectsWCtx", typeof(MySingleRowFunction).FullName, "VarargsObjectsWCtx");
+            configuration.AddPlugInSingleRowFunction("VarargsW1ParamObjectsWCtx", typeof(MySingleRowFunction).FullName, "VarargsW1ParamObjectsWCtx");
+
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
@@ -52,6 +72,78 @@ namespace com.espertech.esper.regression.client
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
             _listener = null;
+        }
+
+        [Test]
+        public void TestVarargs()
+        {
+#if false
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyInt(1, 2, 3, 4)", "1,2,3,4"),
+                    MakePair("VarargsOnlyInt(1, 2, 3)", "1,2,3"),
+                    MakePair("VarargsOnlyInt(1, 2)", "1,2"),
+                    MakePair("VarargsOnlyInt(1)", "1"),
+                    MakePair("VarargsOnlyInt()", ""));
+
+            RunVarargAssertion(
+                    MakePair("VarargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
+                    MakePair("VarargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
+                    MakePair("VarargsW1Param('abc', 1)", "abc,1.0"),
+                    MakePair("VarargsW1Param('abc')", "abc"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                    MakePair("VarargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
+                    MakePair("VarargsW2Param(1, 2.0)", "1,2.0"),
+                    MakePair("VarargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
+                    MakePair("VarargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                    MakePair("VarargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
+                    MakePair("VarargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
+                    MakePair("VarargsOnlyWCtx(1, 2)", "CTX+1,2"),
+                    MakePair("VarargsOnlyWCtx(1)", "CTX+1"),
+                    MakePair("VarargsOnlyWCtx()", "CTX+"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsW1ParamWCtx('a', 1, 2, 3)", "CTX+a,1,2,3"),
+                    MakePair("VarargsW1ParamWCtx('a', 1, 2)", "CTX+a,1,2"),
+                    MakePair("VarargsW1ParamWCtx('a', 1)", "CTX+a,1"),
+                    MakePair("VarargsW1ParamWCtx('a')", "CTX+a,"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsW2ParamWCtx('a', 'b', 1, 2, 3)", "CTX+a,b,1,2,3"),
+                    MakePair("VarargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
+                    MakePair("VarargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
+                    MakePair("VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
+                    MakePair(typeof(MySingleRowFunction).FullName + ".VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyObject('a', 1, new BigInteger(2))", "a,1,2"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyNumber(1f, 2L, 3, new BigInteger(4))", "1.0,2,3,4"));
+
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))", "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
+
+            // tests for array-passthru
+            RunVarargAssertion(
+                    MakePair("VarargsOnlyString({'a'})", "a"),
+                    MakePair("VarargsOnlyString({'a', 'b'})", "a,b"),
+                    MakePair("VarargsOnlyObject({'a', 'b'})", "a,b"),
+                    MakePair("VarargsOnlyObject({})", ""),
+                    MakePair("VarargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
+                    MakePair("VarargsW1ParamObjectsWCtx(1, {'a', 1})", "CTX+,1,a,1")
+                    );
+#endif
+
+            // try Arrays.asList
+            RunAssertionArraysAsList();
         }
     
         [Test]
@@ -292,8 +384,72 @@ namespace com.espertech.esper.regression.client
             }
         }
     
-        public static bool LocalIsNullValue(EventBean @event, String propertyName) {
+        public static bool LocalIsNullValue(EventBean @event, String propertyName)
+        {
             return @event.Get(propertyName) == null;
+        }
+
+        
+        private void RunVarargAssertion(params UniformPair<String>[] pairs)
+        {
+            var buf = new StringBuilder();
+            buf.Append("@Name('test') select ");
+            int count = 0;
+            foreach (UniformPair<String> pair in pairs)
+            {
+                buf.Append(pair.First);
+                buf.Append(" as c");
+                buf.Append(count);
+                count++;
+                buf.Append(",");
+            }
+            buf.Append("intPrimitive from SupportBean");
+
+            _epService.EPAdministrator.CreateEPL(buf.ToString()).AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean());
+            EventBean @out = _listener.AssertOneGetNewAndReset();
+
+            count = 0;
+            foreach (UniformPair<String> pair in pairs)
+            {
+                Assert.That(pair.Second, Is.EqualTo(@out.Get("c" + count)), "failed for '" + pair.First + "'");
+                count++;
+            }
+            _epService.EPAdministrator.GetStatement("test").Dispose();
+        }
+
+        private UniformPair<String> MakePair(String expression, String expected)
+        {
+            return new UniformPair<String>(expression, expected);
+        }
+
+        private void RunAssertionArraysAsList()
+        {
+            EPStatement stmt = _epService.EPAdministrator.CreateEPL(
+                "select " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList('a') as c0, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList({'a'}) as c1, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList('a', 'b') as c2, " +
+                "com.espertech.esper.compat.collections.CompatExtensions.AsList({'a', 'b'}) as c3 " +
+                "from SupportBean");
+
+            stmt.AddListener(_listener);
+
+            _epService.EPRuntime.SendEvent(new SupportBean());
+            EventBean @event = _listener.AssertOneGetNewAndReset();
+            AssertEqualsColl(@event, "c0", "a");
+            AssertEqualsColl(@event, "c1", "a");
+            AssertEqualsColl(@event, "c2", "a", "b");
+            AssertEqualsColl(@event, "c3", "a", "b");
+
+            stmt.Dispose();
+        }
+
+        private void AssertEqualsColl(EventBean @event, String property, params String[] values)
+        {
+            var data = @event.Get(property).Unwrap<string>();
+            EPAssertionUtil.AssertEqualsExactOrder(values, data);
         }
     }
 }

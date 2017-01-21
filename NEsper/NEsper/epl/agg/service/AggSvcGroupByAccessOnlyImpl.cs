@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,8 +24,6 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupByAccessOnlyImpl : AggregationService, AggregationResultFuture
     {
-        private readonly MethodResolutionService _methodResolutionService;
-        private readonly Object _groupKeyBinding;
         private readonly IDictionary<Object, AggregationState[]> _accessMap;
         private readonly AggregationAccessorSlotPair[] _accessors;
         private readonly AggregationStateFactory[] _accessAggSpecs;
@@ -37,19 +35,11 @@ namespace com.espertech.esper.epl.agg.service
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="methodResolutionService">factory service for implementations</param>
-        /// <param name="groupKeyBinding">The group key binding.</param>
         /// <param name="accessors">accessor definitions</param>
         /// <param name="accessAggSpecs">access agg specs</param>
         /// <param name="isJoin">true for join, false for single-stream</param>
-        public AggSvcGroupByAccessOnlyImpl(MethodResolutionService methodResolutionService,
-                                           Object groupKeyBinding,
-                                           AggregationAccessorSlotPair[] accessors,
-                                           AggregationStateFactory[] accessAggSpecs,
-                                           bool isJoin)
+        public AggSvcGroupByAccessOnlyImpl(AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggSpecs, bool isJoin)
         {
-            _methodResolutionService = methodResolutionService;
-            _groupKeyBinding = groupKeyBinding;
             _accessMap = new Dictionary<Object, AggregationState[]>();
             _accessors = accessors;
             _accessAggSpecs = accessAggSpecs;
@@ -119,7 +109,7 @@ namespace com.espertech.esper.epl.agg.service
                 return row;
             }
     
-            row = _methodResolutionService.NewAccesses(agentInstanceId, _isJoin, _accessAggSpecs, groupKey, _groupKeyBinding, null, null);
+            row = AggSvcGroupByUtil.NewAccesses(agentInstanceId, _isJoin, _accessAggSpecs, groupKey, null);
             _accessMap.Put(groupKey, row);
             return row;
         }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -224,7 +224,7 @@ namespace com.espertech.esper.view.std
     
             foreach (var key in removed)
             {
-                var entry = _subViewsPerKey.Pluck(key);
+                var entry = _subViewsPerKey.Delete(key);
                 var subviewHolder = entry.SubviewHolder;
                 if (subviewHolder is IList<View>)
                 {

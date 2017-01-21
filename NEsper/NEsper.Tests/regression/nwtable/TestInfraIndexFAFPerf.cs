@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -133,8 +133,8 @@ namespace com.espertech.esper.regression.nwtable
                     }
                 });
 
-            Assert.That(delta, Is.LessThan(100000));
-            //Assert.That(delta, Is.LessThan(1000));
+            //Assert.That(delta, Is.LessThan(100000));
+            Assert.That(delta, Is.LessThan(1500));
         }
     
         private void RunAssertionFAFKeyAndRangePerformance(bool namedWindow)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
@@ -21,29 +22,11 @@ namespace com.espertech.esper.epl.expression.core
 {
 	public class ExprValidationContext
 	{
-	    public ExprValidationContext(
-	        StreamTypeService streamTypeService,
-	        MethodResolutionService methodResolutionService,
-	        ViewResourceDelegateUnverified viewResourceDelegate,
-	        TimeProvider timeProvider,
-	        VariableService variableService,
-	        TableService tableService,
-	        ExprEvaluatorContext exprEvaluatorContext,
-	        EventAdapterService eventAdapterService,
-	        string statementName,
-            int statementId,
-	        Attribute[] annotations,
-	        ContextDescriptor contextDescriptor,
-            ScriptingService scriptingService,
-	        bool disablePropertyExpressionEventCollCache,
-	        bool allowRollupFunctions,
-	        bool allowBindingConsumption,
-	        bool isUnidirectionalJoin,
-	        string intoTableName,
-            bool isFilterExpression)
+	    public ExprValidationContext(StreamTypeService streamTypeService, EngineImportService engineImportService, StatementExtensionSvcContext statementExtensionSvcContext, ViewResourceDelegateUnverified viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, TableService tableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService, string statementName, int statementId, Attribute[] annotations, ContextDescriptor contextDescriptor, ScriptingService scriptingService, bool disablePropertyExpressionEventCollCache, bool allowRollupFunctions, bool allowBindingConsumption, bool isUnidirectionalJoin, string intoTableName, bool isFilterExpression)
         {
 	        StreamTypeService = streamTypeService;
-	        MethodResolutionService = methodResolutionService;
+	        EngineImportService = engineImportService;
+	        StatementExtensionSvcContext = statementExtensionSvcContext;
 	        ViewResourceDelegate = viewResourceDelegate;
 	        TimeProvider = timeProvider;
 	        VariableService = variableService;
@@ -69,7 +52,8 @@ namespace com.espertech.esper.epl.expression.core
 	    public ExprValidationContext(StreamTypeServiceImpl types, ExprValidationContext ctx)
 	        : this(
                 types,
-	            ctx.MethodResolutionService,
+	            ctx.EngineImportService,
+                ctx.StatementExtensionSvcContext,
 	            ctx.ViewResourceDelegate,
 	            ctx.TimeProvider,
 	            ctx.VariableService,
@@ -91,7 +75,9 @@ namespace com.espertech.esper.epl.expression.core
 
 	    public StreamTypeService StreamTypeService { get; private set; }
 
-	    public MethodResolutionService MethodResolutionService { get; private set; }
+        public EngineImportService EngineImportService { get; private set; }
+
+        public StatementExtensionSvcContext StatementExtensionSvcContext { get; private set; }
 
 	    public ViewResourceDelegateUnverified ViewResourceDelegate { get; private set; }
 

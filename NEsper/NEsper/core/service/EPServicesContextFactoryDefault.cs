@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,6 +23,7 @@ using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.dataflow.core;
+using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.db;
 using com.espertech.esper.epl.declexpr;
@@ -82,7 +83,7 @@ namespace com.espertech.esper.core.service
             var timeSourceService = MakeTimeSource(configSnapshot);
             var schedulingService = SchedulingServiceProvider.NewService(timeSourceService);
             var schedulingMgmtService = new SchedulingMgmtServiceImpl();
-            var engineImportService = MakeEngineImportService(configSnapshot);
+            var engineImportService = MakeEngineImportService(configSnapshot, AggregationFactoryFactoryDefault.INSTANCE);
             var engineSettingsService = new EngineSettingsService(configSnapshot.EngineDefaults, configSnapshot.PlugInEventTypeResolutionURIs);
             var databaseConfigService = MakeDatabaseRefService(configSnapshot, schedulingService, schedulingMgmtService);
     
@@ -240,8 +241,10 @@ namespace com.espertech.esper.core.service
                 new EventTableIndexServiceImpl(),
                 new EPRuntimeIsolatedFactoryImpl(),
                 new FilterBooleanExpressionFactoryImpl(), 
-                new DataCacheFactory(), new MultiMatchHandlerFactoryImpl(),
-                NamedWindowConsumerMgmtServiceImpl.INSTANCE, 
+                new DataCacheFactory(), 
+                new MultiMatchHandlerFactoryImpl(),
+                NamedWindowConsumerMgmtServiceImpl.INSTANCE,
+                AggregationFactoryFactoryDefault.INSTANCE, 
                 scriptingService);
 
             // Engine services subset available to statements
@@ -412,7 +415,7 @@ namespace com.espertech.esper.core.service
                 {
                     try
                     {
-                        schemaModel = XSDSchemaMapper.LoadAndMap(entry.Value.SchemaResource, entry.Value.SchemaText, 2);
+                        schemaModel = XSDSchemaMapper.LoadAndMap(entry.Value.SchemaResource, entry.Value.SchemaText);
                     }
                     catch (Exception ex)
                     {
@@ -587,7 +590,9 @@ namespace com.espertech.esper.core.service
         /// <summary>Constructs the auto import service. </summary>
         /// <param name="configSnapshot">config info</param>
         /// <returns>service</returns>
-        internal static EngineImportService MakeEngineImportService(ConfigurationInformation configSnapshot)
+        internal static EngineImportService MakeEngineImportService(
+            ConfigurationInformation configSnapshot,
+            AggregationFactoryFactory aggregationFactoryFactory)
         {
             var expression = configSnapshot.EngineDefaults.ExpressionConfig;
             var engineImportService = new EngineImportServiceImpl(
@@ -597,7 +602,8 @@ namespace com.espertech.esper.core.service
                 configSnapshot.EngineDefaults.LanguageConfig.IsSortUsingCollator,
                 expression.MathContext,
                 expression.TimeZone,
-                configSnapshot.EngineDefaults.ExecutionConfig.ThreadingProfile);
+                configSnapshot.EngineDefaults.ExecutionConfig.ThreadingProfile,
+                aggregationFactoryFactory);
             engineImportService.AddMethodRefs(configSnapshot.MethodInvocationReferences);
     
             // Add auto-imports
@@ -635,15 +641,16 @@ namespace com.espertech.esper.core.service
     
             return engineImportService;
         }
-    
+
         /// <summary>Creates the database config service. </summary>
         /// <param name="configSnapshot">is the config snapshot</param>
         /// <param name="schedulingService">is the timer stuff</param>
         /// <param name="schedulingMgmtService">for statement schedule management</param>
         /// <returns>database config svc</returns>
-        internal static DatabaseConfigService MakeDatabaseRefService(ConfigurationInformation configSnapshot,
-                                                              SchedulingService schedulingService,
-                                                              SchedulingMgmtService schedulingMgmtService)
+        internal static DatabaseConfigService MakeDatabaseRefService(
+            ConfigurationInformation configSnapshot,
+            SchedulingService schedulingService,
+            SchedulingMgmtService schedulingMgmtService)
         {
             DatabaseConfigService databaseConfigService;
     

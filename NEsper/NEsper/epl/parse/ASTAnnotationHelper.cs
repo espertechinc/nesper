@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.parse
             var enumValueText = ctx.GetText();
             Object enumValue;
             try {
-                enumValue = TypeHelper.ResolveIdentAsEnumConst(enumValueText, null, engineImportService, true);
+                enumValue = TypeHelper.ResolveIdentAsEnumConst(enumValueText, engineImportService, true);
             }
             catch (ExprValidationException) {
                 throw ASTWalkException.From("Annotation value '" + enumValueText + "' is not recognized as an enumeration value, please check imports or use a primitive or string type");

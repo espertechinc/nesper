@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -229,12 +229,13 @@ namespace com.espertech.esper.regression.expr
         [Test]
 	    public void TestAggregation()
 	    {
-	        var fields = "sum(BigInt),sum(DecimalOne)," +
-	                "avg(BigInt),avg(DecimalOne)," +
-	                "median(BigInt),median(DecimalOne)," +
-	                "stddev(BigInt),stddev(DecimalOne)," +
-	                "avedev(BigInt),avedev(DecimalOne)," +
-	                "min(BigInt),min(DecimalOne)";
+	        var fields =
+                "sum(BigInt),sum(DecimalOne)," +
+	            "avg(BigInt),avg(DecimalOne)," +
+	            "median(BigInt),median(DecimalOne)," +
+	            "stddev(BigInt),stddev(DecimalOne)," +
+	            "avedev(BigInt),avedev(DecimalOne)," +
+	            "min(BigInt),min(DecimalOne)";
 	        var stmt = _epService.EPAdministrator.CreateEPL(
 	                "select " + fields + " from SupportBeanNumeric");
 	        stmt.AddListener(_listener);
@@ -245,9 +246,9 @@ namespace com.espertech.esper.regression.expr
 	        var theEvent = _listener.AssertOneGetNewAndReset();
 	        EPAssertionUtil.AssertProps(theEvent, fieldList, new object[]
             {
-                new BigInteger(1), 2m,        // sum
-	            new BigInteger(1), 2m,               // avg
-	            1d, 2d,               // median
+                new BigInteger(1), 2m,    // sum
+	            1m, 2m,                   // avg
+	            1d, 2d,                   // median
 	            null, null,
 	            0.0, 0.0,
 	            new BigInteger(1), 2m,

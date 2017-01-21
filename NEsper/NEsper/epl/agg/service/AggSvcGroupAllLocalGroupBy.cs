@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,10 +19,9 @@ namespace com.espertech.esper.epl.agg.service
 	/// </summary>
 	public class AggSvcGroupAllLocalGroupBy : AggSvcGroupLocalGroupByBase
 	{
-	    public AggSvcGroupAllLocalGroupBy(MethodResolutionService methodResolutionService, bool isJoin, AggregationLocalGroupByPlan localGroupByPlan, object groupKeyBinding)
-            : base(methodResolutionService, isJoin, localGroupByPlan, groupKeyBinding)
+	    public AggSvcGroupAllLocalGroupBy(bool isJoin, AggregationLocalGroupByPlan localGroupByPlan)
+            : base(isJoin, localGroupByPlan)
         {
-	        
 	    }
 
 	    protected override object ComputeGroupKey(AggregationLocalGroupByLevel level, object groupKey, ExprEvaluator[] partitionEval, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)

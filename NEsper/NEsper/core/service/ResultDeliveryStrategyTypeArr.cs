@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,27 +26,26 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly String _statementName;
-        private readonly Object _subscriber;
-        private readonly FastMethod _fastMethod;
-        private readonly Type _componentType;
+        internal readonly EPStatement _statement;
+        internal readonly Object _subscriber;
+        internal readonly FastMethod _fastMethod;
+        internal readonly Type _componentType;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="statement">the statement.</param>
         /// <param name="subscriber">is the receiver to method invocations</param>
         /// <param name="method">is the method to deliver to</param>
-        public ResultDeliveryStrategyTypeArr(String statementName, Object subscriber, MethodInfo method)
+        public ResultDeliveryStrategyTypeArr(EPStatement statement, Object subscriber, MethodInfo method, Type componentType)
         {
-            _statementName = statementName;
+            _statement = statement;
             _subscriber = subscriber;
-            FastClass fastClass = FastClass.Create(subscriber.GetType());
-            _fastMethod = fastClass.GetMethod(method);
-            _componentType = method.GetParameters()[0].ParameterType.GetElementType();
+            _fastMethod = FastClass.CreateMethod(method);
+            _componentType = componentType;
         }
     
-        public void Execute(UniformPair<EventBean[]> result)
+        public virtual void Execute(UniformPair<EventBean[]> result)
         {
             Object newData;
             Object oldData;
@@ -65,11 +64,11 @@ namespace com.espertech.esper.core.service
                 _fastMethod.Invoke(_subscriber, paramList);
             }
             catch (TargetInvocationException e) {
-                ResultDeliveryStrategyImpl.Handle(_statementName, Log, e, paramList, _subscriber, _fastMethod);
+                ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
         }
     
-        private Object Convert(EventBean[] events)
+        internal Object Convert(EventBean[] events)
         {
             if ((events == null) || (events.Length == 0))
             {

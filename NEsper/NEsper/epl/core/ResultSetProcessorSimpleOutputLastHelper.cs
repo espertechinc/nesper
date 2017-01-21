@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.collection;
 namespace com.espertech.esper.epl.core
 {
 	public interface ResultSetProcessorSimpleOutputLastHelper
+        : ResultSetProcessorOutputHelper
 	{
 	    void ProcessView(EventBean[] newData, EventBean[] oldData);
 	    void ProcessJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);

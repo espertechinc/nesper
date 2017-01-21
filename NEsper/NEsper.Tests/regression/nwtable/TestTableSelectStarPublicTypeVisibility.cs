@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.regression.client;
 using com.espertech.esper.support.bean;
 using com.espertech.esper.support.client;
 using com.espertech.esper.support.events;
+using com.espertech.esper.support.subscriber;
 
 using NUnit.Framework;
 
@@ -30,7 +31,7 @@ namespace com.espertech.esper.regression.nwtable
     {
         private EPServiceProvider _epService;
         private SupportUpdateListener _listener;
-        private MySubscriberMultirowObjectArr _subscriber;
+        private SupportSubscriberMultirowObjectArrayNStmt _subscriber;
     
         [SetUp]
         public void SetUp()
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regression.nwtable
                 _epService.EPAdministrator.Configuration.AddEventType(clazz);
             }
             _listener = new SupportUpdateListener();
-            _subscriber = new MySubscriberMultirowObjectArr();
+            _subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}
         }
     

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -146,29 +145,35 @@ namespace com.espertech.esper.core.service
     
         public void AddPreprocessing(InternalEventRouterDesc internalEventRouterDesc, InternalRoutePreprocessView outputView, IReaderWriterLock agentInstanceLock, bool hasSubselect)
         {
-            _descriptors.Put(internalEventRouterDesc.UpdateDesc, new IRDescEntry(internalEventRouterDesc, outputView, agentInstanceLock, hasSubselect));
-    
-            // remove all preprocessors for this type as well as any known child types, forcing re-init on next use
-            RemovePreprocessors(internalEventRouterDesc.EventType);
-    
-            _hasPreprocessing = true;
+            lock (this)
+            {
+                _descriptors.Put(internalEventRouterDesc.UpdateDesc, new IRDescEntry(internalEventRouterDesc, outputView, agentInstanceLock, hasSubselect));
+
+                // remove all preprocessors for this type as well as any known child types, forcing re-init on next use
+                RemovePreprocessors(internalEventRouterDesc.EventType);
+
+                _hasPreprocessing = true;
+            }
         }
     
         public void RemovePreprocessing(EventType eventType, UpdateDesc desc)
         {
-            if (Log.IsInfoEnabled)
+            lock (this)
             {
-                Log.Info("Removing route preprocessing for type '" + eventType.Name);
-            }
+                if (Log.IsInfoEnabled)
+                {
+                    Log.Info("Removing route preprocessing for type '" + eventType.Name);
+                }
     
-            // remove all preprocessors for this type as well as any known child types
-            RemovePreprocessors(eventType);
+                // remove all preprocessors for this type as well as any known child types
+                RemovePreprocessors(eventType);
     
-            _descriptors.Remove(desc);
-            if (_descriptors.IsEmpty())
-            {
-                _hasPreprocessing = false;
-                _preprocessors.Clear();
+                _descriptors.Remove(desc);
+                if (_descriptors.IsEmpty())
+                {
+                    _hasPreprocessing = false;
+                    _preprocessors.Clear();
+                }
             }
         }
     

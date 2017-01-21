@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -780,6 +780,26 @@ namespace com.espertech.esper.epl.core
 	    {
 	        get { return _aggregationService; }
 	    }
+
+        public void AcceptHelperVisitor(ResultSetProcessorOutputHelperVisitor visitor)
+        {
+            if (_outputAllGroupReps != null)
+            {
+                visitor.Visit(_outputAllGroupReps);
+            }
+            if (_outputFirstHelper != null)
+            {
+                visitor.Visit(_outputFirstHelper);
+            }
+            if (_outputLastHelper != null)
+            {
+                visitor.Visit(_outputLastHelper);
+            }
+            if (_outputAllHelper != null)
+            {
+                visitor.Visit(_outputAllHelper);
+            }
+        }
 
 	    private UniformPair<EventBean[]> ProcessOutputLimitedJoinLast(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
         {

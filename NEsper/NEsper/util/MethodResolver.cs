@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -15,6 +16,7 @@ using System.Text;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
@@ -115,68 +117,99 @@ namespace com.espertech.esper.util
     	public static MethodInfo ResolveMethod(Type declaringClass, String methodName, Type[] paramTypes, bool allowInstance, bool[] allowEventBeanType, bool[] allowEventBeanCollType)
     	{
     		// Get all the methods for this class
-            MethodInfo[] methods = declaringClass.GetMethods();
+            MethodInfo[] methods = declaringClass.GetMethods()
+                .OrderBy(m => m.IsVarArgs() ? 1 : 0)
+                .ToArray();
 
             MethodInfo bestMatch = null;
     		var bestConversionCount = -1;
     
     		// Examine each method, checking if the signature is compatible
             MethodInfo conversionFailedMethod = null;
-            foreach (MethodInfo method in methods)
-    		{
-    			// Check the modifiers: we only want public and static, if required
-    			if(!IsPublicAndStatic(method, allowInstance))
-    			{
-    				continue;
-    			}
-    
-    			// Check the name
-    			if(method.Name != methodName)
-    			{
-    				continue;
-    			}
-    
-    			// Check the parameter list
-                int conversionCount = CompareParameterTypesAllowContext(
-                    method.GetParameters().Select(p => p.ParameterType).ToArray(),
-                    paramTypes, 
-                    allowEventBeanType, 
-                    allowEventBeanCollType,
-                    method.GetGenericArguments()
-                );
 
-    			// Parameters don't match
-    			if(conversionCount == -1)
-    			{
+            for (int mm = 0; mm < methods.Length; mm++)
+            {
+                var method = methods[mm];
+
+                // Check the modifiers: we only want public and static, if required
+                if (!IsPublicAndStatic(method, allowInstance))
+                {
+                    continue;
+                }
+
+                // Check the name
+                if (method.Name != methodName)
+                {
+                    continue;
+                }
+
+                var parameterTypes = method.GetParameters()
+                    .Select(p => p.ParameterType)
+                    .ToArray();
+
+                if (method.IsGenericMethod && method.IsVarArgs())
+                {
+                    // we need to what arguments have been supplied for the
+                    // remaining arguments since we need to coerce the remaining
+                    // arguments to the same type
+                    var commonArgs = paramTypes.Skip(paramTypes.Length - 1).ToArray();
+                    var commonType = GetCommonCoersion(commonArgs);
+                    if (commonArgs.Length == 1 && commonArgs[0].IsArray)
+                    {
+                        // this is an annoying case where the inputs are an argument array...
+                        // in this case we want to unpack the common coercion type from the
+                        // underlying common args themselves.
+                        commonType = commonArgs[0].GetElementType();
+                    }
+
+                    method = method.MakeGenericMethod(commonType);
+                    parameterTypes = method.GetParameters()
+                        .Select(p => p.ParameterType)
+                        .ToArray();
+                }
+
+                // Check the parameter list
+                int conversionCount = CompareParameterTypesAllowContext(
+                    parameterTypes,
+                    paramTypes,
+                    allowEventBeanType,
+                    allowEventBeanCollType,
+                    parameterTypes, // method.GetGenericArguments(),
+                    method.IsVarArgs()
+                    );
+
+                // Parameters don't match
+                if (conversionCount == -1)
+                {
                     conversionFailedMethod = method;
                     continue;
-    			}
-    
-    			// Parameters match exactly
-    			if(conversionCount == 0)
-    			{
-    				bestMatch = method;
-    				break;
-    			}
-    
-    			// No previous match
-    			if(bestMatch == null)
-    			{
-    				bestMatch = method;
-    				bestConversionCount = conversionCount;
-    			}
-    			else
-    			{
-    				// Current match is better
-    				if(conversionCount < bestConversionCount)
-    				{
-    					bestMatch = method;
-    					bestConversionCount = conversionCount;
-    				}
-    			}
-    		}
-    
-    		if(bestMatch != null)
+                }
+
+                // Parameters match exactly
+                if (conversionCount == 0)
+                {
+                    bestMatch = method;
+                    break;
+                }
+
+                // No previous match
+                if (bestMatch == null)
+                {
+                    bestMatch = method;
+                    bestConversionCount = conversionCount;
+                }
+                else
+                {
+                    // Current match is better
+                    if (conversionCount < bestConversionCount)
+                    {
+                        bestMatch = method;
+                        bestConversionCount = conversionCount;
+                    }
+                }
+            }
+
+            if(bestMatch != null)
     		{
                 LogWarnBoxedToPrimitiveType(declaringClass, methodName, bestMatch, paramTypes);
     			return bestMatch;
@@ -208,13 +241,16 @@ namespace com.espertech.esper.util
                 .Where(m => m.Name == methodName);
             foreach (var method in extensionMethods)
             {
+                var parameterTypes = method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray();
+
                 // Check the parameter list
                 int conversionCount = CompareParameterTypesAllowContext(
-                    method.GetParameters().Select(p => p.ParameterType).Skip(1).ToArray(),
+                    parameterTypes,
                     paramTypes,
                     allowEventBeanType,
                     allowEventBeanCollType,
-                    method.GetGenericArguments()
+                    parameterTypes, // method.GetGenericArguments(),
+                    method.IsVarArgs()
                     );
 
                 // Parameters match exactly
@@ -245,6 +281,62 @@ namespace com.espertech.esper.util
             }
         }
 
+        private static Type GetCommonCoersion(IList<Type> typeList)
+        {
+            var typeHash = new HashSet<Type>();
+
+            typeList[0].Visit(t => typeHash.Add(t));
+
+            for (int ii = 1; ii < typeList.Count; ii++)
+            {
+                var moreTypes = new HashSet<Type>();
+                typeList[ii].Visit(t => moreTypes.Add(t));
+                typeHash.IntersectWith(moreTypes);
+            }
+
+            // What we are left with is a set of coercable types.  This will include
+            // System.Object which is the defacto fallback when there are no other
+            // types that have a stronger claim.
+            var interfaces = typeHash
+                .Where(t => t.IsInterface)
+                .ToList();
+
+            var concretes = typeHash
+                .Where(t => t.IsInterface == false)
+                .ToList();
+
+            // We should never have a case where the concrete count is zero.  This would
+            // indicate that even System.Object was not found as a common class...
+            if (concretes.Count == 0)
+                throw new EPRuntimeException("Unable to find common concrete root for type");
+
+            // Concrete commonality with a count of one is going to be fairly common
+            // and almost always reflects the case where System.Object is only class
+            // that could be found.
+            concretes.Remove(typeof (object));
+            if (concretes.Count == 0)
+            {
+                // Look for an interface that might provide a better binding ... if none can
+                // be found then use System.Object as the common coercion.
+                if (interfaces.Count == 0)
+                {
+                    return typeof (object);
+                }
+
+                // Now the only thing to be concerned about with interfaces are constraints
+                // that might be set somewhere else, like the parameters.  We will revisit
+                // that bit of code should it become something we need to handle.
+                return interfaces.First();
+            }
+
+            // We have multiple concrete classes ... none of which are System.Object.  As with
+            // interfaces, what we have to concern ourselves with is a constraint that may
+            // be in play elsewhere.  We will revisit that bit of code should it become
+            // something we need to handle.
+
+            return concretes.First();
+        }
+
         private static bool IsWideningConversion(Type declarationType, Type invocationType)
         {
             return
@@ -266,18 +358,36 @@ namespace com.espertech.esper.util
             Type[] invocationParameters,
             Boolean[] optionalAllowEventBeanType,
             Boolean[] optionalAllowEventBeanCollType,
-            Type[] genericParameterTypes)
+            Type[] genericParameterTypes,
+            bool isVarArgs)
         {
-            // determine if the last parameter is EPLMethodInvocationContext
+            // determine if the last parameter is EPLMethodInvocationContext (no varargs)
             var declaredNoContext = declarationParameters;
-            if (declarationParameters.Length > 0 &&
-                declarationParameters[declarationParameters.Length - 1] == typeof(EPLMethodInvocationContext)) {
-                declaredNoContext = new Type[declarationParameters.Length - 1];
-                Array.Copy(declarationParameters, 0, declaredNoContext, 0, declaredNoContext.Length);
+            if (!isVarArgs && 
+                declarationParameters.Length > 0 &&
+                declarationParameters[declarationParameters.Length - 1] == typeof(EPLMethodInvocationContext))
+            {
+                declaredNoContext = declarationParameters.Take(declarationParameters.Length - 1).ToArray();
             }
 
-            return CompareParameterTypesNoContext(declaredNoContext, invocationParameters,
-                    optionalAllowEventBeanType, optionalAllowEventBeanCollType, genericParameterTypes);
+            // determine if the previous-to-last parameter is EPLMethodInvocationContext (varargs-only)
+            if (isVarArgs && 
+                declarationParameters.Length > 1 &&
+                declarationParameters[declarationParameters.Length - 2] == typeof(EPLMethodInvocationContext))
+            {
+                var rewritten = new Type[declarationParameters.Length - 1];
+                Array.Copy(declarationParameters, 0, rewritten, 0, declarationParameters.Length - 2);
+                rewritten[rewritten.Length - 1] = declarationParameters[declarationParameters.Length - 1];
+                declaredNoContext = rewritten;
+            }
+
+            return CompareParameterTypesNoContext(
+                declaredNoContext, 
+                invocationParameters,
+                optionalAllowEventBeanType, 
+                optionalAllowEventBeanCollType, 
+                genericParameterTypes,
+                isVarArgs);
         }
 
         // Returns -1 if the invocation parameters aren't applicable
@@ -286,57 +396,154 @@ namespace com.espertech.esper.util
         private static int CompareParameterTypesNoContext(
             Type[] declarationParameters,
             Type[] invocationParameters,
-            Boolean[] optionalAllowEventBeanType,
-            Boolean[] optionalAllowEventBeanCollType,
-            Type[] genericParameterTypes)
+            bool[] optionalAllowEventBeanType,
+            bool[] optionalAllowEventBeanCollType,
+            Type[] genericParameterTypes,
+            bool isVarArgs)
         {
-    		if(invocationParameters == null)
+            if (invocationParameters == null)
     		{
     			return declarationParameters.Length == 0 ? 0 : -1;
     		}
-    
-    		if(declarationParameters.Length != invocationParameters.Length)
-    		{
-    			return -1;
-    		}
-    
-    		int conversionCount = 0;
-    		int count = 0;
-            foreach (Type parameter in declarationParameters)
-    		{
-                if ((invocationParameters[count] == null) && !(parameter.IsPrimitive))
+
+            AtomicLong conversionCount;
+
+            // handle varargs
+            if (isVarArgs)
+            {
+                if (invocationParameters.Length < declarationParameters.Length - 1)
                 {
-                    count++;
-                    continue;
+                    return -1;
                 }
-                if (optionalAllowEventBeanType != null && parameter == typeof(EventBean) && optionalAllowEventBeanType[count])
+                if (invocationParameters.Length == 0)
                 {
-                    count++;
-                    continue;
+                    return 0;
                 }
-                if (optionalAllowEventBeanCollType != null &&
-                    parameter == typeof(ICollection<EventBean>) &&
-                    optionalAllowEventBeanCollType[count])
+
+                conversionCount = new AtomicLong();
+
+                // check declared types (non-vararg)
+                for (int i = 0; i < declarationParameters.Length - 1; i++)
                 {
-                    count++;
-                    continue;
+                    var compatible = CompareParameterTypeCompatible(
+                        invocationParameters[i],
+                        declarationParameters[i],
+                        optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
+                        optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                        genericParameterTypes[i],
+                        conversionCount
+                        );
+
+                    if (!compatible)
+                    {
+                        return -1;
+                    }
                 }
-    			if(!IsIdentityConversion(parameter, invocationParameters[count]))
-    			{
-    				conversionCount++;
-    				if(!IsWideningConversion(parameter, invocationParameters[count]))
-    				{
-    					conversionCount = -1;
-    					break;
-    				}
-    			}
-    			count++;
-    		}
-    
-    		return conversionCount;
+
+                var varargDeclarationParameter = declarationParameters[declarationParameters.Length - 1].GetElementType();
+
+                // handle array of compatible type passed into vararg
+                if (invocationParameters.Length == declarationParameters.Length)
+                {
+                    var providedType = invocationParameters[invocationParameters.Length - 1];
+                    if (providedType != null && providedType.IsArray())
+                    {
+                        if (providedType.GetElementType() == varargDeclarationParameter)
+                        {
+                            return (int) conversionCount.Get();
+                        }
+                        if (TypeHelper.IsSubclassOrImplementsInterface(providedType.GetElementType(), varargDeclarationParameter))
+                        {
+                            conversionCount.IncrementAndGet();
+                            return (int) conversionCount.Get();
+                        }
+                    }
+                }
+
+                // handle compatible types passed into vararg
+                Type varargGenericParameterTypes = genericParameterTypes[genericParameterTypes.Length - 1];
+                for (int i = declarationParameters.Length - 1; i < invocationParameters.Length; i++)
+                {
+                    var compatible = CompareParameterTypeCompatible(
+                        invocationParameters[i],
+                        varargDeclarationParameter,
+                        optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
+                        optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                        varargGenericParameterTypes,
+                        conversionCount);
+                    if (!compatible)
+                    {
+                        return -1;
+                    }
+                }
+                return (int) conversionCount.Get();
+            }
+
+            // handle non-varargs
+            if (declarationParameters.Length != invocationParameters.Length)
+            {
+                return -1;
+            }
+
+            conversionCount = new AtomicLong();
+            for (int i = 0; i < declarationParameters.Length; i++)
+            {
+                var compatible = CompareParameterTypeCompatible(
+                    invocationParameters[i],
+                    declarationParameters[i],
+                    optionalAllowEventBeanType == null ? (bool?) null : optionalAllowEventBeanType[i],
+                    optionalAllowEventBeanCollType == null ? (bool?) null : optionalAllowEventBeanCollType[i],
+                    genericParameterTypes[i],
+                    conversionCount);
+                if (!compatible)
+                {
+                    return -1;
+                }
+            }
+            return (int) conversionCount.Get();
     	}
-    
-    	// Identity conversion means no conversion, wrapper conversion,
+
+        private static bool CompareParameterTypeCompatible(
+            Type invocationParameter,
+            Type declarationParameter,
+            bool? optionalAllowEventBeanType,
+            bool? optionalAllowEventBeanCollType,
+            Type genericParameterType,
+            AtomicLong conversionCount)
+        {
+            if ((invocationParameter == null) && !(declarationParameter.IsPrimitive))
+            {
+                return true;
+            }
+
+            if (optionalAllowEventBeanType != null && 
+                declarationParameter == typeof (EventBean) &&
+                optionalAllowEventBeanType.GetValueOrDefault())
+            {
+                return true;
+            }
+
+            if (optionalAllowEventBeanCollType != null &&
+                declarationParameter == typeof (ICollection<EventBean>) &&
+                optionalAllowEventBeanCollType.GetValueOrDefault(false) &&
+                genericParameterType.GetGenericType(0) == typeof (EventBean))
+            {
+                return true;
+            }
+
+            if (!IsIdentityConversion(declarationParameter, invocationParameter))
+            {
+                conversionCount.IncrementAndGet();
+                if (!IsWideningConversion(declarationParameter, invocationParameter))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // Identity conversion means no conversion, wrapper conversion,
     	// or conversion to a supertype
         private static bool IsIdentityConversion(Type declarationType, Type invocationType)
     	{
@@ -370,10 +577,12 @@ namespace com.espertech.esper.util
                 }
     
                 // Check the parameter list
+                var constructorParameters = ctor.GetParameters().Select(p => p.ParameterType).ToArray();
                 int conversionCount = CompareParameterTypesNoContext(
-                    ctor.GetParameters().Select(p => p.ParameterType).ToArray(),
+                    constructorParameters,
                     paramTypes, null, null,
-                    new Type[0]); // ctor.GetGenericArguments());
+                    constructorParameters, // ctor.GetGenericArguments());
+                    ctor.IsVarArgs());
 
                 // MSDN
                 //

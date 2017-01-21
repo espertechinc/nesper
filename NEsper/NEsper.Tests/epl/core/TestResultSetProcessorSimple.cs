@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.core
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeNoAggregateSelectList(), 
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false,
                 new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null, 
-                selectExprEventTypeRegistry, statementContext.MethodResolutionService, 1, null,
+                selectExprEventTypeRegistry, statementContext.EngineImportService, 1, null,
                 new Configuration(), null, new TableServiceImpl(), null);
             _selectExprProcessor = factory.Evaluator;
             _orderByProcessor = null;

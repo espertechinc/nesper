@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -46,7 +46,7 @@ namespace com.espertech.esper.view.window
         {
             var builtinBean = new ObjectArrayEventBean(ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(), BuiltinMapType);
             var viewUpdatedCollection = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
-            return new ExpressionBatchView(this, viewUpdatedCollection, ExpiryExpression.ExprEvaluator, AggregationServiceFactoryDesc, builtinBean, VariableNames, agentInstanceViewFactoryContext);
+            return new ExpressionBatchView(this, viewUpdatedCollection, ExpiryExpressionEvaluator, AggregationServiceFactoryDesc, builtinBean, VariableNames, agentInstanceViewFactoryContext);
         }
     
         public override Object MakePreviousGetter()

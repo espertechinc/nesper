@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regression.view
             SendEvent("E2", -10);
             SendEvent("E3", -5);
             SendEvent("E4", 5);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), "TheString".Split(','), new Object[][]{new Object[] {"E2"}, new Object[] {"E4"}});
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(), "TheString".Split(','), new Object[][] { new Object[] { "E2" }, new Object[] { "E4" } });
         }
     
         [Test]

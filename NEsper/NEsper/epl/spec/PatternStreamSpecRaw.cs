@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -235,7 +235,7 @@ namespace com.espertech.esper.epl.spec
                             resolvedEventType,
                             filterNode.EventAsName,
                             context.EventAdapterService,
-                            context.MethodResolutionService,
+                            context.EngineImportService,
                             context.SchedulingService,
                             context.VariableService,
                             context.ScriptingService,
@@ -246,7 +246,8 @@ namespace com.espertech.esper.epl.spec
                             context.Annotations,
                             subexpressionIdStack,
                             context.ConfigSnapshot,
-                            context.NamedWindowMgmtService);
+                            context.NamedWindowMgmtService,
+                            context.StatementExtensionServicesContext);
                     finalEventType = optionalPropertyEvaluator.FragmentEventType;
                     isPropertyEvaluation = true;
                 }
@@ -368,7 +369,8 @@ namespace com.espertech.esper.epl.spec
                         tags.ArrayEventTypes, subexpressionIdStack, "observer", context);
                     var validationContext = new ExprValidationContext(
                         streamTypeService,
-                        context.MethodResolutionService, null,
+                        context.EngineImportService, 
+                        context.StatementExtensionServicesContext, null,
                         context.SchedulingService,
                         context.VariableService,
                         context.TableService, evaluatorContext,
@@ -414,7 +416,8 @@ namespace com.espertech.esper.epl.spec
                         tags.ArrayEventTypes, subexpressionIdStack, "guard", context);
                     var validationContext = new ExprValidationContext(
                         streamTypeService,
-                        context.MethodResolutionService, null,
+                        context.EngineImportService, 
+                        context.StatementExtensionServicesContext, null,
                         context.SchedulingService,
                         context.VariableService,
                         context.TableService, evaluatorContext,
@@ -455,7 +458,8 @@ namespace com.espertech.esper.epl.spec
                     subexpressionIdStack, "every-distinct", context);
                 var validationContext = new ExprValidationContext(
                     streamTypeService,
-                    context.MethodResolutionService, null,
+                    context.EngineImportService, 
+                    context.StatementExtensionServicesContext, null,
                     context.SchedulingService,
                     context.VariableService,
                     context.TableService, evaluatorContext,
@@ -553,7 +557,8 @@ namespace com.espertech.esper.epl.spec
                     "until", context);
                 var validationContext = new ExprValidationContext(
                     streamTypeService,
-                    context.MethodResolutionService, null,
+                    context.EngineImportService, 
+                    context.StatementExtensionServicesContext, null,
                     context.SchedulingService,
                     context.VariableService,
                     context.TableService, evaluatorContext,
@@ -612,9 +617,18 @@ namespace com.espertech.esper.epl.spec
                 var followedByNode = (EvalFollowedByFactoryNode) evalNode;
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(context.EngineURI, false);
                 var validationContext = new ExprValidationContext(
-                    streamTypeService, context.MethodResolutionService, null, context.SchedulingService,
-                    context.VariableService, context.TableService, evaluatorContext, context.EventAdapterService,
-                    context.StatementName, context.StatementId, context.Annotations, context.ContextDescriptor,
+                    streamTypeService, 
+                    context.EngineImportService, 
+                    context.StatementExtensionServicesContext, null,
+                    context.SchedulingService,
+                    context.VariableService, 
+                    context.TableService, 
+                    evaluatorContext, 
+                    context.EventAdapterService,
+                    context.StatementName, 
+                    context.StatementId, 
+                    context.Annotations, 
+                    context.ContextDescriptor,
                     context.ScriptingService, false, false, false, false, null, false);
 
                 if (followedByNode.OptionalMaxExpressions != null)

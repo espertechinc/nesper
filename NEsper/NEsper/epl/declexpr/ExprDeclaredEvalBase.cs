@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -98,17 +98,19 @@ namespace com.espertech.esper.epl.declexpr
                 // rewrite streams
                 var events = GetEventsPerStreamRewritten(evaluateParams.EventsPerStream);
                 var evaluateParamsX = new EvaluateParams(events, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
+                var context = evaluateParams.ExprEvaluatorContext;
 
                 if (_isCache)
                 {
                     // no the same cache as for iterator
-                    var entry = evaluateParams.ExprEvaluatorContext.ExpressionResultCacheService.GetDeclaredExpressionLastValue(_prototype, events);
+                    var cache = context.ExpressionResultCacheService.AllocateDeclaredExprLastValue;
+                    var entry = cache.GetDeclaredExpressionLastValue(_prototype, events);
                     if (entry != null)
                     {
                         return entry.Result;
                     }
                     result[0] = _innerEvaluator.Evaluate(evaluateParamsX);
-                    evaluateParams.ExprEvaluatorContext.ExpressionResultCacheService.SaveDeclaredExpressionLastValue(_prototype, events, result[0]);
+                    cache.SaveDeclaredExpressionLastValue(_prototype, events, result[0]);
                 }
                 else
                 {
@@ -127,14 +129,15 @@ namespace com.espertech.esper.epl.declexpr
             ICollection<EventBean> result;
             if (_isCache)
             {
-                var entry = context.ExpressionResultCacheService.GetDeclaredExpressionLastColl(_prototype, events);
+                var cache = context.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
+                var entry = cache.GetDeclaredExpressionLastColl(_prototype, events);
                 if (entry != null)
                 {
                     return entry.Result;
                 }
     
                 result = _innerEvaluatorLambda.EvaluateGetROCollectionEvents(events, isNewData, context);
-                context.ExpressionResultCacheService.SaveDeclaredExpressionLastColl(_prototype, events, result);
+                cache.SaveDeclaredExpressionLastColl(_prototype, events, result);
                 return result;
             }
             else
@@ -151,15 +154,17 @@ namespace com.espertech.esper.epl.declexpr
             EventBean[] events = GetEventsPerStreamRewritten(eventsPerStream);
 
             ICollection<object> result;
-            if (_isCache) {
-                var entry = context.ExpressionResultCacheService.GetDeclaredExpressionLastColl(_prototype, events);
+            if (_isCache)
+            {
+                var cache = context.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
+                var entry = cache.GetDeclaredExpressionLastColl(_prototype, events);
                 if (entry != null)
                 {
                     return entry.Result.Unwrap<object>();
                 }
     
                 result = _innerEvaluatorLambda.EvaluateGetROCollectionScalar(events, isNewData, context);
-                context.ExpressionResultCacheService.SaveDeclaredExpressionLastColl(_prototype, events, result.Unwrap<EventBean>());
+                cache.SaveDeclaredExpressionLastColl(_prototype, events, result.Unwrap<EventBean>());
                 return result;
             }
             else {

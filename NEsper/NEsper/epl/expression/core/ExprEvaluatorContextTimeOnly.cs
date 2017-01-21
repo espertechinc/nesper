@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,7 @@ using com.espertech.esper.schedule;
 namespace com.espertech.esper.epl.expression.core
 {
     /// <summary>
-    /// Represents a minimal enginel-level context for expression evaluation, not allowing for agents instances and result cache.
+    /// Represents a minimal engine-level context for expression evaluation, not allowing for agents instances and result cache.
     /// </summary>
     public class ExprEvaluatorContextTimeOnly : ExprEvaluatorContext
     {
@@ -27,7 +27,7 @@ namespace com.espertech.esper.epl.expression.core
     
         public ExprEvaluatorContextTimeOnly(TimeProvider timeProvider) {
             _timeProvider = timeProvider;
-            _expressionResultCacheService = new ExpressionResultCacheServiceThreadlocal();
+            _expressionResultCacheService = new ExpressionResultCacheService(1);
         }
     
         /// <summary>Returns the time provider. </summary>

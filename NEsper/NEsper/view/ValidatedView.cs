@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,7 +32,6 @@ namespace com.espertech.esper.view
         /// </summary>
         /// <param name="engineImportService">The engine import service.</param>
         /// <param name="streamTypeService">supplies the types of streams against which to validate</param>
-        /// <param name="methodResolutionService">for resolving imports and classes and methods</param>
         /// <param name="timeProvider">for providing current time</param>
         /// <param name="variableService">for access to variables</param>
         /// <param name="tableService"></param>
@@ -48,7 +47,6 @@ namespace com.espertech.esper.view
         void Validate(
             EngineImportService engineImportService,
             StreamTypeService streamTypeService,
-            MethodResolutionService methodResolutionService,
             TimeProvider timeProvider,
             VariableService variableService,
             TableService tableService,

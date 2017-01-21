@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -275,7 +275,7 @@ namespace com.espertech.esper.view.internals
 
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
-            IntersectView.VisitViewContained(viewDataVisitor, _unionViewFactory, _views);
+            IntersectDefaultView.VisitViewContained(viewDataVisitor, _unionViewFactory, _views);
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)

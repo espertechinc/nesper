@@ -11,17 +11,28 @@ namespace com.espertech.esperio
 	{
 		public int Compare(SendableEvent one, SendableEvent two)
 		{
-			if(one.SendTime < two.SendTime)
+			if (one.SendTime < two.SendTime)
 			{
 				return -1;
 			}
-			else if(one.SendTime > two.SendTime)
+			else if (one.SendTime > two.SendTime)
 			{
 				return 1;
 			}
 			else
 			{
-				return one.ScheduleSlot.CompareTo(two.ScheduleSlot);
+			    if (one.ScheduleSlot == two.ScheduleSlot)
+			    {
+			        return 0;
+			    }
+                else if (one.ScheduleSlot < two.ScheduleSlot)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
 			}
 		}
 	}

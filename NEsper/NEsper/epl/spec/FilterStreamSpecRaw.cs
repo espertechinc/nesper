@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -61,24 +61,25 @@ namespace com.espertech.esper.epl.spec
 
         public StreamSpecCompiled Compile(StatementContext context, ICollection<String> eventTypeReferences, bool isInsertInto, ICollection<int> assignedTypeNumberStack, bool isJoin, bool isContextDeclaration, bool isOnTrigger, String optionalStreamName)
         {
-            StreamTypeService streamTypeService;
+            StreamTypeService streamTypeService;
+
             // Determine the event type
             var eventName = _rawFilterSpec.EventTypeName;
 
             if (context.TableService != null && context.TableService.GetTableMetadata(eventName) != null)
             {
-                if (this.ViewSpecs != null && this.ViewSpecs.Length > 0)
+                if (ViewSpecs != null && ViewSpecs.Length > 0)
                 {
                     throw new ExprValidationException("Views are not supported with tables");
                 }
-                if (this.RawFilterSpec.OptionalPropertyEvalSpec != null)
+                if (RawFilterSpec.OptionalPropertyEvalSpec != null)
                 {
                     throw new ExprValidationException("Contained-event expressions are not supported with tables");
                 }
                 var tableMetadata = context.TableService.GetTableMetadata(eventName);
                 var streamTypeServiceX = new StreamTypeServiceImpl(new EventType[] { tableMetadata.InternalEventType }, new String[] { optionalStreamName }, new bool[] { true }, context.EngineURI, false);
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(ExprNodeOrigin.FILTER, _rawFilterSpec.FilterExpressions, streamTypeServiceX, context, null, null);
-                return new TableQueryStreamSpec(this.OptionalStreamName, this.ViewSpecs, this.Options, eventName, validatedNodes);
+                return new TableQueryStreamSpec(OptionalStreamName, ViewSpecs, Options, eventName, validatedNodes);
             }
     
             // Could be a named window
@@ -97,7 +98,7 @@ namespace com.espertech.esper.epl.spec
                         PropertyEvaluatorFactory.MakeEvaluator(
                             _rawFilterSpec.OptionalPropertyEvalSpec, namedWindowType, OptionalStreamName,
                             context.EventAdapterService, 
-                            context.MethodResolutionService, 
+                            context.EngineImportService, 
                             context.TimeProvider,
                             context.VariableService, 
                             context.ScriptingService,
@@ -107,7 +108,8 @@ namespace com.espertech.esper.epl.spec
                             context.StatementName, 
                             context.Annotations, assignedTypeNumberStack, 
                             context.ConfigSnapshot,
-                            context.NamedWindowMgmtService);
+                            context.NamedWindowMgmtService,
+                            context.StatementExtensionServicesContext);
                 }
                 eventTypeReferences.Add(((EventTypeSPI) namedWindowType).Metadata.PrimaryName);
                 return new NamedWindowConsumerStreamSpec(eventName, OptionalStreamName, ViewSpecs, validatedNodes, Options, optionalPropertyEvaluator);

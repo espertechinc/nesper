@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -153,8 +153,8 @@ namespace com.espertech.esper.core.start
 	            {
 	                ValidateNoViews(streamSpec, "Historical data");
 	                var sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-	                var typeConversionHook = (SQLColumnTypeConversion) TypeHelper.GetAnnotationHook(statementSpec.Annotations, HookType.SQLCOL, typeof(SQLColumnTypeConversion), statementContext.MethodResolutionService);
-	                var outputRowConversionHook = (SQLOutputRowConversion) TypeHelper.GetAnnotationHook(statementSpec.Annotations, HookType.SQLROW, typeof(SQLOutputRowConversion), statementContext.MethodResolutionService);
+	                var typeConversionHook = (SQLColumnTypeConversion) TypeHelper.GetAnnotationHook(statementSpec.Annotations, HookType.SQLCOL, typeof(SQLColumnTypeConversion), statementContext.EngineImportService);
+	                var outputRowConversionHook = (SQLOutputRowConversion) TypeHelper.GetAnnotationHook(statementSpec.Annotations, HookType.SQLROW, typeof(SQLOutputRowConversion), statementContext.EngineImportService);
 	                var epStatementAgentInstanceHandle = defaultAgentInstanceContext.EpStatementAgentInstanceHandle;
 	                var historicalEventViewable = DatabasePollingViewableFactory.CreateDBStatementView(
                         statementContext.StatementId, i, sqlStreamSpec, 
@@ -178,8 +178,7 @@ namespace com.espertech.esper.core.start
 	                var methodStreamSpec = (MethodStreamSpec) streamSpec;
 	                var epStatementAgentInstanceHandle = defaultAgentInstanceContext.EpStatementAgentInstanceHandle;
 	                var historicalEventViewable = MethodPollingViewableFactory.CreatePollMethodView(
-	                    i, methodStreamSpec, services.EventAdapterService, epStatementAgentInstanceHandle,
-	                    statementContext.MethodResolutionService, services.EngineImportService,
+	                    i, methodStreamSpec, services.EventAdapterService, epStatementAgentInstanceHandle, services.EngineImportService,
 	                    statementContext.SchedulingService, statementContext.ScheduleBucket, evaluatorContextStmt,
 	                    statementContext.VariableService, statementContext.ContextName, services.DataCacheFactory,
 	                    statementContext);
@@ -286,7 +285,6 @@ namespace com.espertech.esper.core.start
 	            historicalEventViewable.Validate(
                     services.EngineImportService,
 	                typeService,
-	                statementContext.MethodResolutionService,
 	                statementContext.TimeProvider,
 	                statementContext.VariableService, statementContext.TableService,
                     statementContext.ScriptingService, evaluatorContextStmt,

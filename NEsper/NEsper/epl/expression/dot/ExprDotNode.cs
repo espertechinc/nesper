@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -93,8 +93,10 @@ namespace com.espertech.esper.epl.expression.dot
 
 	        // determine if there are enumeration method expressions in the chain
 	        bool hasEnumerationMethod = false;
-	        foreach (ExprChainedSpec chain in _chainSpec) {
-	            if (EnumMethodEnumExtensions.IsEnumerationMethod(chain.Name)) {
+	        foreach (ExprChainedSpec chain in _chainSpec)
+            {
+	            if (chain.Name.IsEnumerationMethod())
+                {
 	                hasEnumerationMethod = true;
 	                break;
 	            }
@@ -103,8 +105,12 @@ namespace com.espertech.esper.epl.expression.dot
 	        // determine if there is an implied binding, replace first chain element with evaluation node if there is
 	        if (validationContext.StreamTypeService.HasTableTypes &&
 	            validationContext.TableService != null &&
-	            _chainSpec.Count > 1 && _chainSpec[0].IsProperty) {
-	            Pair<ExprNode,IList<ExprChainedSpec>> tableNode = validationContext.TableService.GetTableNodeChainable(validationContext.StreamTypeService, _chainSpec, validationContext.MethodResolutionService.EngineImportService);
+	            _chainSpec.Count > 1 && _chainSpec[0].IsProperty)
+	        {
+	            Pair<ExprNode, IList<ExprChainedSpec>> tableNode =
+	                validationContext.TableService.GetTableNodeChainable(
+	                    validationContext.StreamTypeService, _chainSpec,
+	                    validationContext.EngineImportService);
 	            if (tableNode != null) {
 	                ExprNode node = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.DOTNODE, tableNode.First, validationContext);
 	                if (tableNode.Second.IsEmpty()) {
@@ -261,7 +267,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        // Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.doIt(...)"
 	        //
 	        IList<ExprChainedSpec> modifiedChain = new List<ExprChainedSpec>(_chainSpec);
-	        ExprChainedSpec firstItem = modifiedChain.Pluck(0);
+	        ExprChainedSpec firstItem = modifiedChain.Delete(0);
 
 	        Pair<PropertyResolutionDescriptor, string> propertyInfoPairX = null;
 	        try {
@@ -391,7 +397,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        }
 
 	        // try resolve as enumeration class with value
-	        object enumconstant = TypeHelper.ResolveIdentAsEnumConst(firstItem.Name, validationContext.MethodResolutionService, null, false);
+	        object enumconstant = TypeHelper.ResolveIdentAsEnumConst(firstItem.Name, validationContext.EngineImportService, false);
 	        if (enumconstant != null) {
 
 	            // try resolve method
@@ -402,7 +408,12 @@ namespace com.espertech.esper.epl.expression.dot
 	                ProcHandle = ex => new ExprValidationException("Failed to resolve method '" + methodSpec.Name + "' on enumeration value '" + enumvalue + "': " + ex.Message),
 	            };
 	            EventType wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1 ? null : validationContext.StreamTypeService.EventTypes[0];
-	            ExprNodeUtilMethodDesc methodDesc = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(enumconstant.GetType().Name, enumconstant.GetType(), methodSpec.Name, methodSpec.Parameters, validationContext.MethodResolutionService, validationContext.EventAdapterService, validationContext.StatementId, wildcardType != null, wildcardType, handler, methodSpec.Name, validationContext.TableService);
+	            ExprNodeUtilMethodDesc methodDesc =
+	                ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
+	                    enumconstant.GetType().Name, enumconstant.GetType(), methodSpec.Name, methodSpec.Parameters,
+	                    validationContext.EngineImportService, validationContext.EventAdapterService,
+	                    validationContext.StatementId, wildcardType != null, wildcardType, handler, methodSpec.Name,
+	                    validationContext.TableService);
 
 	            // method resolved, hook up
 	            modifiedChain.RemoveAt(0);    // we identified this piece
@@ -421,7 +432,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        }
 
 	        // If class then resolve as class
-	        ExprChainedSpec secondItem = modifiedChain.Pluck(0);
+	        ExprChainedSpec secondItem = modifiedChain.Delete(0);
 
 	        bool allowWildcard = validationContext.StreamTypeService.EventTypes.Length == 1;
 	        EventType streamZeroType = null;
@@ -429,7 +440,11 @@ namespace com.espertech.esper.epl.expression.dot
 	            streamZeroType = validationContext.StreamTypeService.EventTypes[0];
 	        }
 
-	        ExprNodeUtilMethodDesc method = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(firstItem.Name, null, secondItem.Name, secondItem.Parameters, validationContext.MethodResolutionService, validationContext.EventAdapterService, validationContext.StatementId, allowWildcard, streamZeroType, new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name + "." + secondItem.Name, false), secondItem.Name, validationContext.TableService);
+	        ExprNodeUtilMethodDesc method = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
+	            firstItem.Name, null, secondItem.Name, secondItem.Parameters, validationContext.EngineImportService,
+	            validationContext.EventAdapterService, validationContext.StatementId, allowWildcard, streamZeroType,
+	            new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name + "." + secondItem.Name, false),
+	            secondItem.Name, validationContext.TableService);
 
 	        bool isConstantParameters = method.IsAllConstants && _isUDFCache;
 	        _isReturnsConstantResult = isConstantParameters && modifiedChain.IsEmpty();
@@ -532,7 +547,7 @@ namespace com.espertech.esper.epl.expression.dot
 	    public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
 	        if (ChildNodes.Length != 0) {
-	            writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(ChildNodes[0]));
+	            writer.Write(ChildNodes[0].ToExpressionStringMinPrecedenceSafe());
 	        }
 	        ExprNodeUtility.ToExpressionString(_chainSpec, writer, ChildNodes.Length != 0, null);
 	    }

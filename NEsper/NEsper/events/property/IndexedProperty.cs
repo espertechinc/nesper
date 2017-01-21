@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -417,11 +417,14 @@ namespace com.espertech.esper.events.property
                 if (complex.IsArray)
                 {
                     // return the complex as a non-array since an index is provided
-                    return new SchemaElementComplex(complex.Name,
-                                                    complex.Namespace,
-                                                    complex.Attributes,
-                                                    complex.ComplexElements,
-                                                    complex.SimpleElements, false);
+                    return new SchemaElementComplex(
+                        complex.Name,
+                        complex.Namespace,
+                        complex.Attributes,
+                        complex.ComplexElements,
+                        complex.SimpleElements, false,
+                        null,
+                        null);
                 }
             }
 

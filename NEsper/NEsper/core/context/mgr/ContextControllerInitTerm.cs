@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -214,7 +214,7 @@ namespace com.espertech.esper.core.context.mgr
                         }
 
                         // indicate terminate
-                        var instance = EndConditions.Pluck(originCondition);
+                        var instance = EndConditions.Delete(originCondition);
                         if (instance == null)
                         {
                             return;
@@ -362,8 +362,8 @@ namespace com.espertech.esper.core.context.mgr
                ((contextDetailInitiatedTerminated.End is ContextDetailConditionCrontab)))     {
                 var scheduleStart = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.Start).Schedule;
                 var scheduleEnd = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.End).Schedule;
-                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, _factory.TimeProvider.Time, _factory.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
-                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, _factory.TimeProvider.Time, _factory.StatementContext.MethodResolutionService.EngineImportService.TimeZone);
+                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, _factory.TimeProvider.Time, _factory.StatementContext.EngineImportService.TimeZone);
+                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, _factory.TimeProvider.Time, _factory.StatementContext.EngineImportService.TimeZone);
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
     

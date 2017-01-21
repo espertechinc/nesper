@@ -152,7 +152,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">The key.</param>
         /// <returns></returns>
 
-        public static V Pluck<K, V>(this IDictionary<K, V> dictionary, K key)
+        public static V Delete<K, V>(this IDictionary<K, V> dictionary, K key)
         {
             V tempItem;
 
