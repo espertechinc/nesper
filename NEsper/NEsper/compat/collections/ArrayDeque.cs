@@ -80,7 +80,7 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public void ForEach(Action<T> action)
+        public void Visit(Action<T> action)
         {
             if (_tail == _head)
             {

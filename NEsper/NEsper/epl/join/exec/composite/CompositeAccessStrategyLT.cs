@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.join.exec.composite
             IList<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var index = (OrderedDictionary<object, object>) parent;;
+            var index = (OrderedDictionary<object, object>) parent;
             var comparable = base.EvaluateLookup(theEvent, context);
             if (optionalKeyCollector != null)
                 optionalKeyCollector.Add(comparable);

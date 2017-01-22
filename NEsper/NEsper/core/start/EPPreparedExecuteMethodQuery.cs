@@ -209,7 +209,8 @@ namespace com.espertech.esper.core.start
                 var singleSelector = contextPartitionSelectors != null && contextPartitionSelectors.Length > 0 ? contextPartitionSelectors[0] : null;
     
                 // context partition runtime query
-                ICollection<int> agentInstanceIds = EPPreparedExecuteMethodHelper.GetAgentInstanceIds(_processors[0], singleSelector, _services.ContextManagementService, _statementSpec.OptionalContextName);
+                ICollection<int> agentInstanceIds = EPPreparedExecuteMethodHelper.GetAgentInstanceIds(
+                    _processors[0], singleSelector, _services.ContextManagementService, _statementSpec.OptionalContextName);
     
                 // collect events and agent instances
                 foreach (int agentInstanceId in agentInstanceIds) {
@@ -364,7 +365,8 @@ namespace com.espertech.esper.core.start
         private ICollection<EventBean> GetFiltered(ICollection<EventBean> snapshot, IList<ExprNode> filterExpressions)
         {
             var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count + 1, 16));
-            ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, filterExpressions, _agentInstanceContext, deque);
+            var visitable = snapshot as IVisitable<EventBean>;
+            ExprNodeUtility.ApplyFilterExpressions(snapshot, filterExpressions, _agentInstanceContext, deque);
             return deque;
         }
 

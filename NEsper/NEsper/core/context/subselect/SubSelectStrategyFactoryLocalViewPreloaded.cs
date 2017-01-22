@@ -305,7 +305,7 @@ namespace com.espertech.esper.core.context.subselect
                         var snapshot = consumerView.SnapshotNoLock(
                             filterSpecCompiled, agentInstanceContext.StatementContext.Annotations);
                         eventsInWindow = new List<EventBean>(snapshot.Count);
-                        ExprNodeUtility.ApplyFilterExpressionsIterable(
+                        ExprNodeUtility.ApplyFilterExpressions(
                             snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
                     }
                     catch (Exception ex)

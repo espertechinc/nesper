@@ -73,7 +73,7 @@ namespace com.espertech.esper.core.context.factory
                     if (_namedWindowFilters[stream] != null)
                     {
                         eventsInWindow = new List<EventBean>(snapshot.Count);
-                        ExprNodeUtility.ApplyFilterExpressionsIterable(
+                        ExprNodeUtility.ApplyFilterExpressions(
                             snapshot, _namedWindowFilters[stream], _exprEvaluatorContext, eventsInWindow);
                     }
                     else

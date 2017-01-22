@@ -182,43 +182,85 @@ namespace com.espertech.esper.epl.expression.core
 	        return null;
 	    }
 
+        public static bool ApplyFilterExpressionsEvent(ExprEvaluator[] evaluators, EvaluateParams evaluateParams)
+	    {
+            for (int ii = 0; ii < evaluators.Length; ii++)
+            {
+                var result = evaluators[ii].Evaluate(evaluateParams);
+                if (result == null || false.Equals(result))
+                {
+                    return false;
+                }
+            }
+
+	        return true;
+	    }
+
+	    public static void ApplyFilterExpressions(
+	        ICollection<EventBean> collection,
+	        IList<ExprNode> filterExpressions,
+	        ExprEvaluatorContext exprEvaluatorContext,
+	        ICollection<EventBean> eventsInWindow)
+	    {
+	        var visitable = collection as IVisitable<EventBean>;
+            if (visitable != null)
+            {
+                ExprNodeUtility.ApplyFilterExpressionsVisitable(visitable, filterExpressions, exprEvaluatorContext, eventsInWindow);
+            }
+            else
+            {
+                ExprNodeUtility.ApplyFilterExpressionsIterable(collection, filterExpressions, exprEvaluatorContext, eventsInWindow);
+            }
+	    }
+
+	    public static void ApplyFilterExpressionsVisitable(
+	        IVisitable<EventBean> visitable,
+	        IList<ExprNode> filterExpressions,
+	        ExprEvaluatorContext exprEvaluatorContext,
+	        ICollection<EventBean> eventsInWindow)
+        {
+            ExprEvaluator[] evaluators = ExprNodeUtility.GetEvaluators(filterExpressions);
+            EventBean[] events = new EventBean[1];
+            EvaluateParams evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
+
+            visitable.Visit(
+                theEvent =>
+                {
+                    events[0] = theEvent;
+
+                    if (ApplyFilterExpressionsEvent(evaluators, evaluateParams))
+                    {
+                        eventsInWindow.Add(theEvent);
+                    }
+                });
+        }
+
 	    public static void ApplyFilterExpressionsIterable(
 	        IEnumerable<EventBean> enumerable,
 	        IList<ExprNode> filterExpressions,
 	        ExprEvaluatorContext exprEvaluatorContext,
 	        ICollection<EventBean> eventsInWindow)
         {
-	        var evaluators = ExprNodeUtility.GetEvaluators(filterExpressions);
-	        var events = new EventBean[1];
-            var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
-	        var length = evaluators.Length;
+	        ExprEvaluator[] evaluators = ExprNodeUtility.GetEvaluators(filterExpressions);
+	        EventBean[] events = new EventBean[1];
+            EvaluateParams evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
 
-	        unchecked
+	        foreach (var theEvent in enumerable)
 	        {
-	            foreach (var theEvent in enumerable)
+	            events[0] = theEvent;
+
+	            if (ApplyFilterExpressionsEvent(evaluators, evaluateParams))
 	            {
-	                events[0] = theEvent;
-	                var add = true;
-
-	                for (int ii = 0; ii < length; ii++)
-	                {
-	                    var result = evaluators[ii].Evaluate(evaluateParams);
-	                    if (result == null || false.Equals(result))
-	                    {
-	                        add = false;
-	                        break;
-	                    }
-	                }
-
-	                if (add)
-	                {
-	                    eventsInWindow.Add(events[0]);
-	                }
+	                eventsInWindow.Add(theEvent);
 	            }
 	        }
         }
 
-	    public static void ApplyFilterExpressionIterable(IEnumerator<EventBean> enumerable, ExprEvaluator filterExpression, ExprEvaluatorContext exprEvaluatorContext, ICollection<EventBean> eventsInWindow)
+	    public static void ApplyFilterExpressionIterable(
+	        IEnumerator<EventBean> enumerable,
+	        ExprEvaluator filterExpression,
+	        ExprEvaluatorContext exprEvaluatorContext,
+	        ICollection<EventBean> eventsInWindow)
         {
             var events = new EventBean[1];
             var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);

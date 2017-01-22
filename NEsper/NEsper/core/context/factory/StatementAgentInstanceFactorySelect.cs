@@ -294,7 +294,7 @@ namespace com.espertech.esper.core.context.factory
 	                                    ProcExecutePreload = () =>  {
 	                                        var snapshot = consumerView.Snapshot(preloadFilterSpec, _statementContext.Annotations);
 	                                        var eventsInWindow = new List<EventBean>(snapshot.Count);
-	                                        ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
+	                                        ExprNodeUtility.ApplyFilterExpressions(snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
 	                                        EventBean[] newEvents = eventsInWindow.ToArray();
 	                                        view.Update(newEvents, null);
 	                                        if (!yesRecoveringResilient && joinPreloadMethod != null && !joinPreloadMethod.IsPreloading && agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null) {

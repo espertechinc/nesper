@@ -91,9 +91,8 @@
     <Reference Include="log4net">
       <HintPath>..\..\..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.4.6.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -114,6 +113,10 @@
     <ProjectReference Include="..\..\..\NEsper.Tests\NEsper.Tests.csproj">
       <Project>{2CCE8DFE-1ADB-43DF-A473-49330A1E2945}</Project>
       <Name>NEsper.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\NEsper\NEsper.net45.csproj">
+      <Project>{3D317245-CDE5-4E0E-9590-D7CBA2257D9C}</Project>
+      <Name>NEsper.net45</Name>
     </ProjectReference>
     <ProjectReference Include="..\stockticker\NEsper.Examples.StockTicker.csproj">
       <Project>{2A28857D-1A87-4D76-9F68-189E3BAF3860}</Project>

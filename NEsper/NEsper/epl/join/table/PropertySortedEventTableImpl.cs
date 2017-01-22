@@ -213,12 +213,17 @@ namespace com.espertech.esper.epl.join.table
 	            return;
 	        }
 
+#if true
+	        var events = _propertyIndex.TryInsert(
+	            key, () => new LinkedHashSet<EventBean>());
+#else
 	        var events = _propertyIndex.Get(key);
 	        if (events == null)
 	        {
 	            events = new LinkedHashSet<EventBean>();
 	            _propertyIndex.Put(key, events);
 	        }
+#endif
 
 	        events.Add(theEvent);
 	    }

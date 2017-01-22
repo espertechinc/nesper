@@ -9,12 +9,10 @@
 
 using System;
 using System.Diagnostics;
-
+using System.Diagnostics.Tracing;
 using System.IO;
 
-using NUnit.Core;
-using NUnit.Core.Filters;
-using NUnit.Util;
+using NUnit.Framework.Internal;
 
 using com.espertech.esper.client;
 

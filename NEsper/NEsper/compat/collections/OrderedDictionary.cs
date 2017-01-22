@@ -289,6 +289,22 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
+        public TV TryInsert(TK key, Func<TV> valueFactory)
+        {
+            var index = BinarySearch(key);
+            if (index >= 0)
+            {
+                return _valList[index];
+            }
+
+            var value = valueFactory.Invoke();
+
+            _keyList.Insert(~index, key);
+            _valList.Insert(~index, value);
+
+            return value;
+        }
+
         /// <summary>
         /// Gets or sets the value with the specified key.
         /// </summary>

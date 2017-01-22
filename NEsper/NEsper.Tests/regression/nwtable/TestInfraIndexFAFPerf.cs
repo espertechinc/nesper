@@ -134,7 +134,7 @@ namespace com.espertech.esper.regression.nwtable
                 });
 
             //Assert.That(delta, Is.LessThan(100000));
-            Assert.That(delta, Is.LessThan(1500));
+            Assert.That(delta, Is.LessThan(2000));
         }
     
         private void RunAssertionFAFKeyAndRangePerformance(bool namedWindow)

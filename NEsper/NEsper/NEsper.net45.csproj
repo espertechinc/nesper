@@ -380,6 +380,8 @@
     <Compile Include="collection\RollingTwoValueBuffer.cs" />
     <Compile Include="collection\SortedVector.cs" />
     <Compile Include="compat\collections\EmptyList.cs" />
+    <Compile Include="compat\collections\IVisitable.cs" />
+    <Compile Include="compat\collections\IVisitableCollection.cs" />
     <Compile Include="compat\DateTimeConstants.cs" />
     <Compile Include="compat\DateTimeEx.cs" />
     <Compile Include="client\soda\AccessProjectionExpressionBase.cs" />

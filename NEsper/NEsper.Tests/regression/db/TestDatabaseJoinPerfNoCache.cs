@@ -182,7 +182,7 @@ namespace com.espertech.esper.regression.db
                 Assert.AreEqual(id * 10, received.Get("myint"));
             }
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

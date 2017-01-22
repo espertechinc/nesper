@@ -25,10 +25,12 @@ using com.espertech.esper.util;
 
 using NUnit.Framework;
 
+using Assert = NUnit.Framework.Assert;
+
 namespace com.espertech.esper.regression.resultset
 {
     [TestFixture]
-	public class TestOutputLimitRowForAll 
+    public class TestOutputLimitRowForAll 
 	{
 	    private EPServiceProvider epService;
 	    private SupportUpdateListener listener;

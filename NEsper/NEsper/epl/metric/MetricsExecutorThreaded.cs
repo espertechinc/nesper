@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.metric
         /// <param name="engineURI">engine URI</param>
         public MetricsExecutorThreaded(String engineURI)
         {
-            _threadPool = new DedicatedExecutorService("Metrics", 5);
+            _threadPool = new DedicatedExecutorService("Metrics", 1);
         }
     
         public void Execute(MetricExec execution, MetricExecutionContext executionContext)
