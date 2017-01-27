@@ -289,7 +289,7 @@ namespace com.espertech.esper.core.context.mgr
                 var getter = foundPartition.FilterSpecCompiled.FilterForEventType.GetGetter(propertyName);
                 var resultType = foundPartition.FilterSpecCompiled.FilterForEventType.GetPropertyType(propertyName);
                 var lookupable = new FilterSpecLookupable(propertyName, getter, resultType, false);
-                FilterValueSetParam filter = new FilterValueSetParamImpl(lookupable, FilterOperator.EQUAL, keyValue);
+                var filter = GetFilterMayEqualOrNull(lookupable, keyValue);
                 addendumFilters.Add(filter);
             }
             else
@@ -301,7 +301,7 @@ namespace com.espertech.esper.core.context.mgr
                     var getter = foundPartition.FilterSpecCompiled.FilterForEventType.GetGetter(partitionPropertyName);
                     var resultType = foundPartition.FilterSpecCompiled.FilterForEventType.GetPropertyType(partitionPropertyName);
                     var lookupable = new FilterSpecLookupable(partitionPropertyName, getter, resultType, false);
-                    FilterValueSetParam filter = new FilterValueSetParamImpl(lookupable, FilterOperator.EQUAL, keys[i]);
+                    var filter = GetFilterMayEqualOrNull(lookupable, keys[i]);
                     addendumFilters.Add(filter);
                 }
             }
@@ -316,6 +316,15 @@ namespace com.espertech.esper.core.context.mgr
             }
 
             return addendum;
+        }
+
+        private static FilterValueSetParam GetFilterMayEqualOrNull(FilterSpecLookupable lookupable, Object keyValue)
+        {
+            if (keyValue == null)
+            {
+                return new FilterValueSetParamImpl(lookupable, FilterOperator.IS, null);
+            }
+            return new FilterValueSetParamImpl(lookupable, FilterOperator.EQUAL, keyValue);
         }
 
         private static string GetTypeValidationMessage(string contextName, string typeNameEx)
