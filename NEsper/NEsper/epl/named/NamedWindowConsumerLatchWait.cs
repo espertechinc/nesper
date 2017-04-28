@@ -80,41 +80,44 @@ namespace com.espertech.esper.epl.named
 	    {
 	        var thread = Thread.CurrentThread;
 
-	        if (_earlier._isCompleted) {
-	            _currentThread = thread;
-	            return;
-	        }
+            try
+            {
+	            if (_earlier._isCompleted) {
+	                return;
+	            }
 
-	        if (((NamedWindowConsumerLatch) _earlier).CurrentThread == thread) {
-	            _currentThread = thread;
-	            return;
-	        }
+	            if (((NamedWindowConsumerLatch) _earlier).CurrentThread == thread) {
+	                return;
+	            }
 
-	        lock(this)
-	        {
-	            if (!_earlier._isCompleted)
+	            lock(this)
 	            {
-	                try
+	                if (!_earlier._isCompleted)
 	                {
-	                    Monitor.Wait(this, (int) _factory.MsecWait);
-	                }
-	                catch (ThreadAbortException e)
-	                {
-                        Log.Error("thread aborted", e);
-                    }
-	                catch (ThreadInterruptedException e)
-	                {
-	                    Log.Error("thread interrupted", e);
+	                    try
+	                    {
+	                        Monitor.Wait(this, (int) _factory.MsecWait);
+	                    }
+	                    catch (ThreadAbortException e)
+	                    {
+                            Log.Error("thread aborted", e);
+                        }
+	                    catch (ThreadInterruptedException e)
+	                    {
+	                        Log.Error("thread interrupted", e);
+	                    }
 	                }
 	            }
-	        }
 
-	        if (!_earlier._isCompleted) {
-	            Log.Info("Wait timeout exceeded for named window '" + "' consumer dispatch with notify");
-	        }
-	    }
+	            if (!_earlier._isCompleted) {
+	                Log.Info("Wait timeout exceeded for named window '" + "' consumer dispatch with notify");
+	            }
+            } finally {
+                _currentThread = thread;
+            }
+        }
 
-	    public override Thread CurrentThread
+        public override Thread CurrentThread
 	    {
 	        get { return _currentThread; }
 	    }

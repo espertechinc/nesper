@@ -21,7 +21,7 @@ namespace com.espertech.esper.epl.join.@base
 /// <summary>
 /// Query strategy for building a join tuple set by using an execution node tree.
 /// </summary>
-[EsperVersion("5.5.0.*")]
+[EsperVersion("5.5.1.*")]
 public sealed class ExecNodeQueryStrategy : QueryStrategy
 {
 /// <summary>CTor. </summary>

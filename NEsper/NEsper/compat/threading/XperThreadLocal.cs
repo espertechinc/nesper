@@ -97,7 +97,7 @@ namespace com.espertech.esper.compat.threading
             _hashIndex = newHashIndex;
         }
 
-        private T SetValue(T value)
+        private T SetValue(T value, int thread)
         {
             // Setting values causes the _hashIndex to become unstable ... we
             // should probably avoid chaining if at all possible too so that the
@@ -105,7 +105,6 @@ namespace com.espertech.esper.compat.threading
             
             var nodeTable = _nodeTable;
             var hashIndex = _hashIndex;
-            var thread = Thread.CurrentThread.ManagedThreadId;
 
             // Look for the node in the current space
             var hashCode = thread & 0x7fffffff;
@@ -177,7 +176,7 @@ namespace com.espertech.esper.compat.threading
 
             set
             {
-                SetValue(value);
+                SetValue(value, Thread.CurrentThread.ManagedThreadId);
             }
         }
 
@@ -208,7 +207,7 @@ namespace com.espertech.esper.compat.threading
                 }
             }
 
-            return SetValue(_valueFactory.Invoke());
+            return SetValue(_valueFactory.Invoke(), thread);
         }
 
         /// <summary>

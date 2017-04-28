@@ -71,28 +71,31 @@ namespace com.espertech.esper.epl.named
 	    public override void Await()
 	    {
 	        var thread = Thread.CurrentThread;
-	        if (_earlier._isCompleted) {
-                _currentThread = thread;
-	            return;
-	        }
-
-	        if (((NamedWindowConsumerLatch) _earlier).CurrentThread == thread) {
-	            _currentThread = thread;
-	            return;
-	        }
-
-            long spinStartTime = _factory.TimeSourceService.GetTimeMillis();
-	        while(!_earlier._isCompleted) {
-	            Thread.Yield();
-	            long spinDelta = _factory.TimeSourceService.GetTimeMillis() - spinStartTime;
-	            if (spinDelta > _factory.MsecWait) {
-	                Log.Info("Spin wait timeout exceeded in named window '{0}' consumer dispatch at {1}ms for {0}, consider disabling named window consumer dispatch latching for better performance", _factory.Name, _factory.MsecWait);
-	                break;
+            try
+            { 
+	            if (_earlier._isCompleted) {
+	                return;
 	            }
-	        }
+
+	            if (((NamedWindowConsumerLatch) _earlier).CurrentThread == thread) {
+	                return;
+	            }
+
+                long spinStartTime = _factory.TimeSourceService.GetTimeMillis();
+	            while(!_earlier._isCompleted) {
+	                Thread.Yield();
+	                long spinDelta = _factory.TimeSourceService.GetTimeMillis() - spinStartTime;
+	                if (spinDelta > _factory.MsecWait) {
+	                    Log.Info("Spin wait timeout exceeded in named window '{0}' consumer dispatch at {1}ms for {0}, consider disabling named window consumer dispatch latching for better performance", _factory.Name, _factory.MsecWait);
+	                    break;
+	                }
+	            }
+            } finally {
+                _currentThread = thread;
+            }
         }
 
-	    public override Thread CurrentThread
+        public override Thread CurrentThread
 	    {
 	        get { return _currentThread; }
 	    }
