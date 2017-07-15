@@ -18,7 +18,7 @@ namespace com.espertech.esper.epl.view
     /// <summary>
     /// Output limit condition that is satisfied when either the total number of new events arrived or the total number of old events arrived is greater than a preset value.
     /// </summary>
-    public sealed class OutputConditionCount 
+    public sealed class OutputConditionCount
         : OutputConditionBase
         , OutputCondition
     {

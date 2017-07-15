@@ -8,20 +8,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
-using XLR8.CGLib;
 
 using com.espertech.esper.client;
+using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.events.avro;
 using com.espertech.esper.events;
+using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
 using com.espertech.esper.util;
+
+using XLR8.CGLib;
 
 namespace com.espertech.esper.epl.core
 {
@@ -33,38 +34,57 @@ namespace com.espertech.esper.epl.core
             bool isUsingWildcard,
             StreamTypeService typeService,
             ExprEvaluator[] expressionNodes,
-            String[] columnNames,
+            string[] columnNames,
             Object[] expressionReturnTypes,
             EngineImportService engineImportService,
             InsertIntoDesc insertIntoDesc,
-            String[] columnNamesAsProvided,
-            bool allowNestableTargetFragmentTypes)
+            string[] columnNamesAsProvided,
+            bool allowNestableTargetFragmentTypes,
+            string statementName)
         {
-            // handle single-column coercion to underlying, i.e. "insert into MapDefinedEvent select doSomethingReturnMap() from MyEvent"
+            // handle single-column coercion to underlying, i.e. "insert into MapDefinedEvent select DoSomethingReturnMap() from MyEvent"
             if (expressionReturnTypes.Length == 1 &&
-                    expressionReturnTypes[0] is Type &&
-                    eventType is BaseNestableEventType &&
-                    TypeHelper.IsSubclassOrImplementsInterface((Type) expressionReturnTypes[0], eventType.UnderlyingType) &&
-                    insertIntoDesc.ColumnNames.IsEmpty() &&
-                    columnNamesAsProvided[0] == null) {
-    
-                if (eventType is MapEventType) {
-                    return new SelectExprInsertNativeExpressionCoerceMap(eventType, expressionNodes[0], eventAdapterService);
+                expressionReturnTypes[0] is Type &&
+                (eventType is BaseNestableEventType || eventType is AvroSchemaEventType) &&
+                TypeHelper.IsSubclassOrImplementsInterface((Type) expressionReturnTypes[0], eventType.UnderlyingType) &&
+                insertIntoDesc.ColumnNames.IsEmpty() &&
+                columnNamesAsProvided[0] == null)
+            {
+
+                if (eventType is MapEventType)
+                {
+                    return new SelectExprInsertNativeExpressionCoerceMap(
+                        eventType, expressionNodes[0], eventAdapterService);
                 }
-                return new SelectExprInsertNativeExpressionCoerceObjectArray(eventType, expressionNodes[0], eventAdapterService);
+                else if (eventType is ObjectArrayEventType)
+                {
+                    return new SelectExprInsertNativeExpressionCoerceObjectArray(
+                        eventType, expressionNodes[0], eventAdapterService);
+                }
+                else if (eventType is AvroSchemaEventType)
+                {
+                    return new SelectExprInsertNativeExpressionCoerceAvro(
+                        eventType, expressionNodes[0], eventAdapterService);
+                }
+                else
+                {
+                    throw new IllegalStateException("Unrecognied event type " + eventType);
+                }
             }
 
             // handle special case where the target type has no properties and there is a single "null" value selected
             if (eventType.PropertyDescriptors.Count == 0 &&
                 columnNames.Length == 1 &&
-                columnNames[0] == "null" &&
+                columnNames[0].Equals("null") &&
                 expressionReturnTypes[0] == null &&
                 !isUsingWildcard)
             {
+
                 EventBeanManufacturer eventManufacturer;
                 try
                 {
-                    eventManufacturer = eventAdapterService.GetManufacturer(eventType, new WriteablePropertyDescriptor[0], engineImportService, true);
+                    eventManufacturer = eventAdapterService.GetManufacturer(
+                        eventType, new WriteablePropertyDescriptor[0], engineImportService, true);
                 }
                 catch (EventBeanManufactureException e)
                 {
@@ -72,27 +92,38 @@ namespace com.espertech.esper.epl.core
                 }
                 return new SelectExprInsertNativeNoEval(eventType, eventManufacturer);
             }
-    
+
             // handle writing to defined columns
             var writableProps = eventAdapterService.GetWriteableProperties(eventType, false);
             var isEligible = CheckEligible(eventType, writableProps, allowNestableTargetFragmentTypes);
-            if (!isEligible) {
+            if (!isEligible)
+            {
                 return null;
             }
-    
-            try {
-                return InitializeSetterManufactor(eventType, writableProps, isUsingWildcard, typeService, expressionNodes, columnNames, expressionReturnTypes, engineImportService, eventAdapterService);
+
+            try
+            {
+                return InitializeSetterManufactor(
+                    eventType, writableProps, isUsingWildcard, typeService, expressionNodes, columnNames,
+                    expressionReturnTypes, engineImportService, eventAdapterService, statementName);
             }
-            catch (ExprValidationException) {
-                if (!(eventType is BeanEventType)) {
+            catch (ExprValidationException)
+            {
+                if (!(eventType is BeanEventType))
+                {
                     throw;
                 }
                 // Try constructor injection
-                try {
-                    return InitializeCtorInjection((BeanEventType)eventType, expressionNodes, expressionReturnTypes, engineImportService, eventAdapterService);
+                try
+                {
+                    return InitializeCtorInjection(
+                        (BeanEventType) eventType, expressionNodes, expressionReturnTypes, engineImportService,
+                        eventAdapterService);
                 }
-                catch (ExprValidationException) {
-                    if (writableProps.IsEmpty()) {
+                catch (ExprValidationException)
+                {
+                    if (writableProps.IsEmpty())
+                    {
                         throw;
                     }
                 }
@@ -104,56 +135,80 @@ namespace com.espertech.esper.epl.core
         public static SelectExprProcessor GetInsertUnderlyingJoinWildcard(
             EventAdapterService eventAdapterService,
             EventType eventType,
-            String[] streamNames,
+            string[] streamNames,
             EventType[] streamTypes,
-            EngineImportService engineImportService)
+            EngineImportService engineImportService,
+            string statementName,
+            string engineURI)
         {
             var writableProps = eventAdapterService.GetWriteableProperties(eventType, false);
             var isEligible = CheckEligible(eventType, writableProps, false);
-            if (!isEligible) {
+            if (!isEligible)
+            {
                 return null;
             }
-    
-            try {
-                return InitializeJoinWildcardInternal(eventType, writableProps, streamNames, streamTypes, engineImportService, eventAdapterService);
+
+            try
+            {
+                return InitializeJoinWildcardInternal(
+                    eventType, writableProps, streamNames, streamTypes, engineImportService, eventAdapterService,
+                    statementName, engineURI);
             }
-            catch (ExprValidationException ex) {
-                if (!(eventType is BeanEventType)) {
+            catch (ExprValidationException)
+            {
+                if (!(eventType is BeanEventType))
+                {
                     throw;
                 }
                 // Try constructor injection
-                try {
+                try
+                {
                     var evaluators = new ExprEvaluator[streamTypes.Length];
                     var resultTypes = new Object[streamTypes.Length];
-                    for (var i = 0; i < streamTypes.Length; i++) {
+                    for (var i = 0; i < streamTypes.Length; i++)
+                    {
                         evaluators[i] = new ExprEvaluatorJoinWildcard(i, streamTypes[i].UnderlyingType);
                         resultTypes[i] = evaluators[i].ReturnType;
                     }
 
-                    return InitializeCtorInjection((BeanEventType)eventType, evaluators, resultTypes, engineImportService, eventAdapterService);
+                    return InitializeCtorInjection(
+                        (BeanEventType) eventType, evaluators, resultTypes, engineImportService, eventAdapterService);
                 }
-                catch (ExprValidationException) {
-                    if (writableProps.IsEmpty()) {
+                catch (ExprValidationException)
+                {
+                    if (writableProps.IsEmpty())
+                    {
                         throw;
                     }
-                    throw ex;
                 }
+
+                throw;
             }
         }
-    
-        private static bool CheckEligible(EventType eventType, ICollection<WriteablePropertyDescriptor> writableProps, bool allowNestableTargetFragmentTypes)
+
+        private static bool CheckEligible(
+            EventType eventType,
+            ICollection<WriteablePropertyDescriptor> writableProps,
+            bool allowNestableTargetFragmentTypes)
         {
             if (writableProps == null)
             {
-                return false;    // no writable properties, not a writable type, proceed
+                return false; // no writable properties, not a writable type, proceed
             }
-    
+
             // For map event types this class does not handle fragment inserts; all fragments are required however and must be explicit
-            if (!allowNestableTargetFragmentTypes && eventType is BaseNestableEventType)
+            if (!allowNestableTargetFragmentTypes &&
+                (eventType is BaseNestableEventType || eventType is AvroSchemaEventType))
             {
-                return eventType.PropertyDescriptors.All(prop => !prop.IsFragment);
+                foreach (var prop in eventType.PropertyDescriptors)
+                {
+                    if (prop.IsFragment)
+                    {
+                        return false;
+                    }
+                }
             }
-    
+
             return true;
         }
 
@@ -163,54 +218,62 @@ namespace com.espertech.esper.epl.core
             bool isUsingWildcard,
             StreamTypeService typeService,
             ExprEvaluator[] expressionNodes,
-            String[] columnNames,
+            string[] columnNames,
             Object[] expressionReturnTypes,
             EngineImportService engineImportService,
-            EventAdapterService eventAdapterService)
+            EventAdapterService eventAdapterService,
+            string statementName)
         {
-            IList<WriteablePropertyDescriptor> writablePropertiesList = new List<WriteablePropertyDescriptor>();
-            IList<ExprEvaluator> evaluatorsList = new List<ExprEvaluator>();
-            IList<TypeWidener> widenersList = new List<TypeWidener>();
-    
+            var typeWidenerCustomizer = eventAdapterService.GetTypeWidenerCustomizer(eventType);
+            var writablePropertiesList = new List<WriteablePropertyDescriptor>();
+            var evaluatorsList = new List<ExprEvaluator>();
+            var widenersList = new List<TypeWidener>();
+
             // loop over all columns selected, if any
             for (var i = 0; i < columnNames.Length; i++)
             {
                 WriteablePropertyDescriptor selectedWritable = null;
                 TypeWidener widener = null;
                 var evaluator = expressionNodes[i];
-    
+
                 foreach (var desc in writables)
                 {
                     if (!desc.PropertyName.Equals(columnNames[i]))
                     {
                         continue;
                     }
-    
+
                     var columnType = expressionReturnTypes[i];
                     if (columnType == null)
                     {
-                        TypeWidenerFactory.GetCheckPropertyAssignType(columnNames[i], null, desc.PropertyType, desc.PropertyName);
+                        TypeWidenerFactory.GetCheckPropertyAssignType(
+                            columnNames[i], null, desc.PropertyType, desc.PropertyName, false, typeWidenerCustomizer,
+                            statementName, typeService.EngineURIQualifier);
                     }
                     else if (columnType is EventType)
                     {
                         var columnEventType = (EventType) columnType;
                         var returnType = columnEventType.UnderlyingType;
-                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(columnNames[i], columnEventType.UnderlyingType, desc.PropertyType, desc.PropertyName);
-    
+                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                            columnNames[i], columnEventType.UnderlyingType, desc.PropertyType, desc.PropertyName, false,
+                            typeWidenerCustomizer, statementName, typeService.EngineURIQualifier);
+
                         // handle evaluator returning an event
-                        if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
+                        if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType))
+                        {
                             selectedWritable = desc;
                             widener = input =>
                             {
                                 var eventBean = input as EventBean;
-                                if (eventBean != null) {
+                                if (eventBean != null)
+                                {
                                     return eventBean.Underlying;
                                 }
                                 return input;
                             };
                             continue;
                         }
-    
+
                         // find stream
                         var streamNum = 0;
                         for (var j = 0; j < typeService.EventTypes.Length; j++)
@@ -224,38 +287,39 @@ namespace com.espertech.esper.epl.core
                         var streamNumEval = streamNum;
                         evaluator = new ProxyExprEvaluator
                         {
-                            ProcEvaluate = evaluateParams => 
+                            ProcEvaluate = evaluateParams =>
                             {
-                                var theEvent = evaluateParams.EventsPerStream[streamNumEval];
+                                EventBean theEvent = evaluateParams.EventsPerStream[streamNumEval];
                                 if (theEvent != null)
                                 {
                                     return theEvent.Underlying;
                                 }
                                 return null;
                             },
-    
-                            ProcReturnType = () => 
-                            {
-                                return returnType;
-                            },
-    
+
+                            ProcReturnType = () => returnType
                         };
                     }
-                    // handle case where the select-clause contains an fragment array
                     else if (columnType is EventType[])
                     {
+                        // handle case where the select-clause contains an fragment array
                         var columnEventType = ((EventType[]) columnType)[0];
                         var componentReturnType = columnEventType.UnderlyingType;
                         var arrayReturnType = Array.CreateInstance(componentReturnType, 0).GetType();
-    
-                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(columnNames[i], arrayReturnType, desc.PropertyType, desc.PropertyName);
+
+                        var allowObjectArrayToCollectionConversion = eventType is AvroSchemaEventType;
+                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                            columnNames[i], arrayReturnType, desc.PropertyType, desc.PropertyName,
+                            allowObjectArrayToCollectionConversion, typeWidenerCustomizer, statementName,
+                            typeService.EngineURIQualifier);
                         var inner = evaluator;
                         evaluator = new ProxyExprEvaluator
                         {
                             ProcEvaluate = evaluateParams =>
                             {
                                 var result = inner.Evaluate(evaluateParams);
-                                if (!(result is EventBean[])) {
+                                if (!(result is EventBean[]))
+                                {
                                     return null;
                                 }
                                 var events = (EventBean[]) result;
@@ -266,45 +330,43 @@ namespace com.espertech.esper.epl.core
                                 }
                                 return values;
                             },
-    
-                            ProcReturnType = () => 
-                            {
-                                return componentReturnType;
-                            },
-    
+
+                            ProcReturnType = () => componentReturnType
                         };
                     }
                     else if (!(columnType is Type))
                     {
                         var message = "Invalid assignment of column '" + columnNames[i] +
-                                "' of type '" + columnType +
-                                "' to event property '" + desc.PropertyName +
-                                "' typed as '" + desc.PropertyType.FullName +
-                                "', column and parameter types mismatch";
+                                         "' of type '" + columnType +
+                                         "' to event property '" + desc.PropertyName +
+                                         "' typed as '" + desc.PropertyType.FullName +
+                                         "', column and parameter types mismatch";
                         throw new ExprValidationException(message);
                     }
                     else
                     {
-                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(columnNames[i], (Type) columnType, desc.PropertyType, desc.PropertyName);
+                        widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                            columnNames[i], (Type) columnType, desc.PropertyType, desc.PropertyName, false,
+                            typeWidenerCustomizer, statementName, typeService.EngineURIQualifier);
                     }
-    
+
                     selectedWritable = desc;
                     break;
                 }
-    
+
                 if (selectedWritable == null)
                 {
                     var message = "Column '" + columnNames[i] +
-                            "' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?)";
+                                     "' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?)";
                     throw new ExprValidationException(message);
                 }
-    
+
                 // add
                 writablePropertiesList.Add(selectedWritable);
                 evaluatorsList.Add(evaluator);
                 widenersList.Add(widener);
             }
-    
+
             // handle wildcard
             if (isUsingWildcard)
             {
@@ -315,11 +377,11 @@ namespace com.espertech.esper.epl.core
                     {
                         continue;
                     }
-    
+
                     WriteablePropertyDescriptor selectedWritable = null;
                     TypeWidener widener = null;
                     ExprEvaluator evaluator = null;
-    
+
                     foreach (var writableDesc in writables)
                     {
                         if (!writableDesc.PropertyName.Equals(eventPropDescriptor.PropertyName))
@@ -328,62 +390,59 @@ namespace com.espertech.esper.epl.core
                         }
 
                         widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                            eventPropDescriptor.PropertyName, 
-                            eventPropDescriptor.PropertyType,
-                            writableDesc.PropertyType, 
-                            writableDesc.PropertyName);
+                            eventPropDescriptor.PropertyName, eventPropDescriptor.PropertyType, writableDesc.PropertyType,
+                            writableDesc.PropertyName, false, typeWidenerCustomizer, statementName,
+                            typeService.EngineURIQualifier);
                         selectedWritable = writableDesc;
-    
+
                         var propertyName = eventPropDescriptor.PropertyName;
                         var propertyType = eventPropDescriptor.PropertyType;
                         evaluator = new ProxyExprEvaluator
                         {
                             ProcEvaluate = evaluateParams =>
                             {
-                                var theEvent = evaluateParams.EventsPerStream[0];
+                                EventBean theEvent = evaluateParams.EventsPerStream[0];
                                 if (theEvent != null)
                                 {
                                     return theEvent.Get(propertyName);
                                 }
                                 return null;
                             },
-    
-                            ProcReturnType = () => 
-                            {
-                                return propertyType;
-                            },
+
+                            ProcReturnType = () => propertyType
                         };
                         break;
                     }
-    
+
                     if (selectedWritable == null)
                     {
                         var message = "Event property '" + eventPropDescriptor.PropertyName +
-                                "' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?)";
+                                         "' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?)";
                         throw new ExprValidationException(message);
                     }
-    
+
                     writablePropertiesList.Add(selectedWritable);
                     evaluatorsList.Add(evaluator);
                     widenersList.Add(widener);
                 }
             }
-    
+
             // assign
             var writableProperties = writablePropertiesList.ToArray();
             var exprEvaluators = evaluatorsList.ToArray();
             var wideners = widenersList.ToArray();
-    
+
             EventBeanManufacturer eventManufacturer;
             try
             {
-                eventManufacturer = eventAdapterService.GetManufacturer(eventType, writableProperties, engineImportService, false);
+                eventManufacturer = eventAdapterService.GetManufacturer(
+                    eventType, writableProperties, engineImportService, false);
             }
             catch (EventBeanManufactureException e)
             {
                 throw new ExprValidationException(e.Message, e);
             }
-    
+
             return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprEvaluators, wideners);
         }
 
@@ -394,7 +453,9 @@ namespace com.espertech.esper.epl.core
             EngineImportService engineImportService,
             EventAdapterService eventAdapterService)
         {
-            var pair = InstanceManufacturerUtil.GetManufacturer(beanEventType.UnderlyingType, engineImportService, exprEvaluators, expressionReturnTypes);
+            Pair<FastConstructor, ExprEvaluator[]> pair =
+                InstanceManufacturerUtil.GetManufacturer(
+                    beanEventType.UnderlyingType, engineImportService, exprEvaluators, expressionReturnTypes);
             var eventManufacturer = new EventBeanManufacturerCtor(pair.First, beanEventType, eventAdapterService);
             return new SelectExprInsertNativeNoWiden(beanEventType, eventManufacturer, pair.Second);
         }
@@ -402,92 +463,97 @@ namespace com.espertech.esper.epl.core
         private static SelectExprProcessor InitializeJoinWildcardInternal(
             EventType eventType,
             ICollection<WriteablePropertyDescriptor> writables,
-            String[] streamNames,
+            string[] streamNames,
             EventType[] streamTypes,
             EngineImportService engineImportService,
-            EventAdapterService eventAdapterService)
+            EventAdapterService eventAdapterService,
+            string statementName,
+            string engineURI)
         {
-            IList<WriteablePropertyDescriptor> writablePropertiesList = new List<WriteablePropertyDescriptor>();
-            IList<ExprEvaluator> evaluatorsList = new List<ExprEvaluator>();
-            IList<TypeWidener> widenersList = new List<TypeWidener>();
-    
+            var typeWidenerCustomizer = eventAdapterService.GetTypeWidenerCustomizer(eventType);
+            var writablePropertiesList = new List<WriteablePropertyDescriptor>();
+            var evaluatorsList = new List<ExprEvaluator>();
+            var widenersList = new List<TypeWidener>();
+
             // loop over all columns selected, if any
             for (var i = 0; i < streamNames.Length; i++)
             {
                 WriteablePropertyDescriptor selectedWritable = null;
                 TypeWidener widener = null;
-    
+
                 foreach (var desc in writables)
                 {
                     if (!desc.PropertyName.Equals(streamNames[i]))
                     {
                         continue;
                     }
-    
-                    widener = TypeWidenerFactory.GetCheckPropertyAssignType(streamNames[i], streamTypes[i].UnderlyingType, desc.PropertyType, desc.PropertyName);
+
+                    widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                        streamNames[i], streamTypes[i].UnderlyingType, desc.PropertyType, desc.PropertyName, false,
+                        typeWidenerCustomizer, statementName, engineURI);
                     selectedWritable = desc;
                     break;
                 }
-    
+
                 if (selectedWritable == null)
                 {
                     var message = "Stream underlying object for stream '" + streamNames[i] +
-                            "' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?)";
+                                     "' could not be assigned to any of the properties of the underlying type (missing column names, event property or setter method?)";
                     throw new ExprValidationException(message);
                 }
-    
+
                 var streamNum = i;
                 var returnType = streamTypes[streamNum].UnderlyingType;
-                ExprEvaluator evaluator = new ProxyExprEvaluator
+                var evaluator = new ProxyExprEvaluator
                 {
-                    ProcEvaluate = args => 
+                    ProcEvaluate = evaluateParams =>
                     {
-                        EventBean theEvent = args.EventsPerStream[streamNum];
+                        EventBean theEvent = evaluateParams.EventsPerStream[streamNum];
                         if (theEvent != null)
                         {
                             return theEvent.Underlying;
                         }
                         return null;
                     },
-    
-                    ProcReturnType = () => 
-                    {
-                        return returnType;
-                    },
-    
+
+                    ProcReturnType = () => returnType
                 };
-    
+
                 // add
                 writablePropertiesList.Add(selectedWritable);
                 evaluatorsList.Add(evaluator);
                 widenersList.Add(widener);
             }
-    
+
             // assign
             var writableProperties = writablePropertiesList.ToArray();
             var exprEvaluators = evaluatorsList.ToArray();
             var wideners = widenersList.ToArray();
-    
+
             EventBeanManufacturer eventManufacturer;
             try
             {
-                eventManufacturer = eventAdapterService.GetManufacturer(eventType, writableProperties, engineImportService, false);
+                eventManufacturer = eventAdapterService.GetManufacturer(
+                    eventType, writableProperties, engineImportService, false);
             }
             catch (EventBeanManufactureException e)
             {
                 throw new ExprValidationException(e.Message, e);
             }
-    
+
             return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprEvaluators, wideners);
         }
-    
+
         public abstract class SelectExprInsertNativeExpressionCoerceBase : SelectExprProcessor
         {
             protected readonly EventType EventType;
             protected readonly ExprEvaluator ExprEvaluator;
             protected readonly EventAdapterService EventAdapterService;
-    
-            protected SelectExprInsertNativeExpressionCoerceBase(EventType eventType, ExprEvaluator exprEvaluator, EventAdapterService eventAdapterService)
+
+            internal SelectExprInsertNativeExpressionCoerceBase(
+                EventType eventType,
+                ExprEvaluator exprEvaluator,
+                EventAdapterService eventAdapterService)
             {
                 EventType = eventType;
                 ExprEvaluator = exprEvaluator;
@@ -499,42 +565,80 @@ namespace com.espertech.esper.epl.core
                 get { return EventType; }
             }
 
-            abstract public EventBean Process(
+            public abstract EventBean Process(
                 EventBean[] eventsPerStream,
                 bool isNewData,
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext);
         }
 
-        internal class SelectExprInsertNativeExpressionCoerceMap : SelectExprInsertNativeExpressionCoerceBase
+        public class SelectExprInsertNativeExpressionCoerceMap : SelectExprInsertNativeExpressionCoerceBase
         {
-            internal SelectExprInsertNativeExpressionCoerceMap(EventType eventType, ExprEvaluator exprEvaluator, EventAdapterService eventAdapterService)
+            internal SelectExprInsertNativeExpressionCoerceMap(
+                EventType eventType,
+                ExprEvaluator exprEvaluator,
+                EventAdapterService eventAdapterService)
                 : base(eventType, exprEvaluator, eventAdapterService)
             {
             }
-    
-            public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-                var result = ExprEvaluator.Evaluate(evaluateParams);
-                if (result == null) {
+                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                if (result == null)
+                {
                     return null;
                 }
                 return EventAdapterService.AdapterForTypedMap((IDictionary<string, object>) result, EventType);
             }
         }
 
-        internal class SelectExprInsertNativeExpressionCoerceObjectArray : SelectExprInsertNativeExpressionCoerceBase
+        public class SelectExprInsertNativeExpressionCoerceAvro : SelectExprInsertNativeExpressionCoerceBase
         {
-            internal SelectExprInsertNativeExpressionCoerceObjectArray(EventType eventType, ExprEvaluator exprEvaluator, EventAdapterService eventAdapterService)
+            internal SelectExprInsertNativeExpressionCoerceAvro(
+                EventType eventType,
+                ExprEvaluator exprEvaluator,
+                EventAdapterService eventAdapterService)
                 : base(eventType, exprEvaluator, eventAdapterService)
             {
             }
-    
-            public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-                var result = ExprEvaluator.Evaluate(evaluateParams);
+                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                if (result == null)
+                {
+                    return null;
+                }
+                return EventAdapterService.AdapterForTypedAvro(result, EventType);
+            }
+        }
+
+        public class SelectExprInsertNativeExpressionCoerceObjectArray : SelectExprInsertNativeExpressionCoerceBase
+        {
+            internal SelectExprInsertNativeExpressionCoerceObjectArray(
+                EventType eventType,
+                ExprEvaluator exprEvaluator,
+                EventAdapterService eventAdapterService)
+                : base(eventType, exprEvaluator, eventAdapterService)
+            {
+            }
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
+            {
+                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result == null)
                 {
                     return null;
@@ -543,17 +647,23 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        internal class SelectExprInsertNativeExpressionCoerceNative : SelectExprInsertNativeExpressionCoerceBase
+        public class SelectExprInsertNativeExpressionCoerceNative : SelectExprInsertNativeExpressionCoerceBase
         {
-            internal SelectExprInsertNativeExpressionCoerceNative(EventType eventType, ExprEvaluator exprEvaluator, EventAdapterService eventAdapterService)
+            internal SelectExprInsertNativeExpressionCoerceNative(
+                EventType eventType,
+                ExprEvaluator exprEvaluator,
+                EventAdapterService eventAdapterService)
                 : base(eventType, exprEvaluator, eventAdapterService)
             {
             }
-    
-            public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-                var result = ExprEvaluator.Evaluate(evaluateParams);
+                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result == null)
                 {
                     return null;
@@ -562,13 +672,16 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        internal abstract class SelectExprInsertNativeBase : SelectExprProcessor
+        public abstract class SelectExprInsertNativeBase : SelectExprProcessor
         {
-            private readonly EventType _eventType;
             protected readonly EventBeanManufacturer EventManufacturer;
             protected readonly ExprEvaluator[] ExprEvaluators;
-    
-            protected SelectExprInsertNativeBase(EventType eventType, EventBeanManufacturer eventManufacturer, ExprEvaluator[] exprEvaluators)
+            private readonly EventType _eventType;
+
+            internal SelectExprInsertNativeBase(
+                EventType eventType,
+                EventBeanManufacturer eventManufacturer,
+                ExprEvaluator[] exprEvaluators)
             {
                 _eventType = eventType;
                 EventManufacturer = eventManufacturer;
@@ -587,70 +700,88 @@ namespace com.espertech.esper.epl.core
                 ExprEvaluatorContext exprEvaluatorContext);
         }
 
-        internal class SelectExprInsertNativeWidening : SelectExprInsertNativeBase
+        public class SelectExprInsertNativeWidening : SelectExprInsertNativeBase
         {
             private readonly TypeWidener[] _wideners;
 
-            internal SelectExprInsertNativeWidening(EventType eventType, EventBeanManufacturer eventManufacturer, ExprEvaluator[] exprEvaluators, TypeWidener[] wideners)
+            internal SelectExprInsertNativeWidening(
+                EventType eventType,
+                EventBeanManufacturer eventManufacturer,
+                ExprEvaluator[] exprEvaluators,
+                TypeWidener[] wideners)
                 : base(eventType, eventManufacturer, exprEvaluators)
             {
                 _wideners = wideners;
             }
-    
-            public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var values = new Object[ExprEvaluators.Length];
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-    
+
                 for (var i = 0; i < ExprEvaluators.Length; i++)
                 {
-                    var evalResult = ExprEvaluators[i].Evaluate(evaluateParams);
+                    var evalResult = ExprEvaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     if ((evalResult != null) && (_wideners[i] != null))
                     {
                         evalResult = _wideners[i].Invoke(evalResult);
                     }
                     values[i] = evalResult;
                 }
-    
+
                 return EventManufacturer.Make(values);
             }
         }
 
-        internal class SelectExprInsertNativeNoWiden : SelectExprInsertNativeBase
+        public class SelectExprInsertNativeNoWiden : SelectExprInsertNativeBase
         {
-            internal SelectExprInsertNativeNoWiden(EventType eventType, EventBeanManufacturer eventManufacturer, ExprEvaluator[] exprEvaluators)
+            internal SelectExprInsertNativeNoWiden(
+                EventType eventType,
+                EventBeanManufacturer eventManufacturer,
+                ExprEvaluator[] exprEvaluators)
                 : base(eventType, eventManufacturer, exprEvaluators)
             {
             }
-    
-            public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+            public override EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 var values = new Object[ExprEvaluators.Length];
-                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-    
+
                 for (var i = 0; i < ExprEvaluators.Length; i++)
                 {
-                    var evalResult = ExprEvaluators[i].Evaluate(evaluateParams);
+                    var evalResult = ExprEvaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     values[i] = evalResult;
                 }
-    
+
                 return EventManufacturer.Make(values);
             }
         }
 
-        internal class SelectExprInsertNativeNoEval : SelectExprProcessor
+        public class SelectExprInsertNativeNoEval : SelectExprProcessor
         {
-            private readonly static Object[] EMPTY_PROPS = new Object[0];
+            private static readonly Object[] EMPTY_PROPS = new Object[0];
 
             private readonly EventType _eventType;
             private readonly EventBeanManufacturer _eventManufacturer;
 
-            public SelectExprInsertNativeNoEval(EventType eventType, EventBeanManufacturer eventManufacturer) {
+            internal SelectExprInsertNativeNoEval(EventType eventType, EventBeanManufacturer eventManufacturer)
+            {
                 _eventType = eventType;
                 _eventManufacturer = eventManufacturer;
             }
 
-            public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+            public EventBean Process(
+                EventBean[] eventsPerStream,
+                bool isNewData,
+                bool isSynthesize,
+                ExprEvaluatorContext exprEvaluatorContext)
             {
                 return _eventManufacturer.Make(EMPTY_PROPS);
             }
@@ -661,7 +792,7 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        internal class ExprEvaluatorJoinWildcard : ExprEvaluator
+        public class ExprEvaluatorJoinWildcard : ExprEvaluator
         {
             private readonly int _streamNum;
             private readonly Type _returnType;
@@ -674,8 +805,18 @@ namespace com.espertech.esper.epl.core
 
             public object Evaluate(EvaluateParams evaluateParams)
             {
-                var bean = evaluateParams.EventsPerStream[_streamNum];
-                if (bean == null) {
+                return Evaluate(
+                    evaluateParams.EventsPerStream,
+                    evaluateParams.IsNewData,
+                    evaluateParams.ExprEvaluatorContext
+                    );
+            }
+
+            public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
+                var bean = eventsPerStream[_streamNum];
+                if (bean == null)
+                {
                     return null;
                 }
                 return bean.Underlying;
@@ -687,4 +828,4 @@ namespace com.espertech.esper.epl.core
             }
         }
     }
-}
+} // end of namespace

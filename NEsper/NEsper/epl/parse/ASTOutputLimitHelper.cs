@@ -47,16 +47,18 @@ namespace com.espertech.esper.epl.parse
             ExprEvaluatorContext exprEvaluatorContext)
         {
             OutputLimitLimitType displayLimit = OutputLimitLimitType.DEFAULT;
-            if (ctx.k != null) {
-                switch (ctx.k.Type) {
-                    case EsperEPL2GrammarParser.FIRST : displayLimit = OutputLimitLimitType.FIRST; break;
-                    case EsperEPL2GrammarParser.LAST  : displayLimit = OutputLimitLimitType.LAST; break;
-                    case EsperEPL2GrammarParser.SNAPSHOT : displayLimit = OutputLimitLimitType.SNAPSHOT; break;
-                    case EsperEPL2GrammarParser.ALL : displayLimit = OutputLimitLimitType.ALL; break;
+            if (ctx.k != null)
+            {
+                switch (ctx.k.Type)
+                {
+                    case EsperEPL2GrammarParser.FIRST: displayLimit = OutputLimitLimitType.FIRST; break;
+                    case EsperEPL2GrammarParser.LAST: displayLimit = OutputLimitLimitType.LAST; break;
+                    case EsperEPL2GrammarParser.SNAPSHOT: displayLimit = OutputLimitLimitType.SNAPSHOT; break;
+                    case EsperEPL2GrammarParser.ALL: displayLimit = OutputLimitLimitType.ALL; break;
                     default: throw ASTWalkException.From("Encountered unrecognized token " + ctx.k.Text, tokenStream, ctx);
                 }
             }
-    
+
             // next is a variable, or time period, or number
             String variableName = null;
             double? rate = null;
@@ -67,74 +69,92 @@ namespace com.espertech.esper.epl.parse
             OutputLimitRateType rateType;
             ExprNode andAfterTerminateExpr = null;
             IList<OnTriggerSetAssignment> andAfterTerminateSetExpressions = null;
-    
-            if (ctx.t != null) {
+
+            if (ctx.t != null)
+            {
                 rateType = OutputLimitRateType.TERM;
-                if (ctx.expression() != null) {
+                if (ctx.expression() != null)
+                {
                     andAfterTerminateExpr = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
                 }
-                if (ctx.onSetExpr() != null) {
+                if (ctx.onSetExpr() != null)
+                {
                     andAfterTerminateSetExpressions = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onSetExpr().onSetAssignmentList(), astExprNodeMap);
                 }
             }
-            else if (ctx.wh != null) {
+            else if (ctx.wh != null)
+            {
                 rateType = OutputLimitRateType.WHEN_EXPRESSION;
                 whenExpression = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
-                if (ctx.onSetExpr() != null) {
+                if (ctx.onSetExpr() != null)
+                {
                     thenExpressions = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onSetExpr().onSetAssignmentList(), astExprNodeMap);
                 }
             }
-            else if (ctx.at != null) {
+            else if (ctx.at != null)
+            {
                 rateType = OutputLimitRateType.CRONTAB;
                 crontabScheduleSpec = ASTExprHelper.ExprCollectSubNodes(ctx.crontabLimitParameterSet(), 0, astExprNodeMap);
             }
-            else {
-                if (ctx.ev != null) {
+            else
+            {
+                if (ctx.ev != null)
+                {
                     rateType = ctx.e != null ? OutputLimitRateType.EVENTS : OutputLimitRateType.TIME_PERIOD;
-                    if (ctx.i != null) {
+                    if (ctx.i != null)
+                    {
                         variableName = ctx.i.Text;
                     }
-                    else if (ctx.timePeriod() != null){
+                    else if (ctx.timePeriod() != null)
+                    {
                         timePeriodExpr = (ExprTimePeriod)ASTExprHelper.ExprCollectSubNodes(ctx.timePeriod(), 0, astExprNodeMap)[0];
                     }
-                    else {
+                    else
+                    {
                         ASTExprHelper.ExprCollectSubNodes(ctx.number(), 0, astExprNodeMap);  // remove
                         rate = Double.Parse(ctx.number().GetText());
                     }
                 }
-                else {
+                else
+                {
                     rateType = OutputLimitRateType.AFTER;
                 }
             }
-    
+
             // get the AFTER time period
             ExprTimePeriod afterTimePeriodExpr = null;
             int? afterNumberOfEvents = null;
-            if (ctx.outputLimitAfter() != null) {
-                if (ctx.outputLimitAfter().timePeriod() != null) {
+            if (ctx.outputLimitAfter() != null)
+            {
+                if (ctx.outputLimitAfter().timePeriod() != null)
+                {
                     ExprNode expression = ASTExprHelper.ExprCollectSubNodes(ctx.outputLimitAfter(), 0, astExprNodeMap)[0];
-                    afterTimePeriodExpr = (ExprTimePeriod) expression;
+                    afterTimePeriodExpr = (ExprTimePeriod)expression;
                 }
-                else {
+                else
+                {
                     Object constant = ASTConstantHelper.Parse(ctx.outputLimitAfter().number());
                     afterNumberOfEvents = constant.AsInt();
                 }
             }
-    
+
             bool andAfterTerminate = false;
-            if (ctx.outputLimitAndTerm() != null) {
+            if (ctx.outputLimitAndTerm() != null)
+            {
                 andAfterTerminate = true;
-                if (ctx.outputLimitAndTerm().expression() != null) {
+                if (ctx.outputLimitAndTerm().expression() != null)
+                {
                     andAfterTerminateExpr = ASTExprHelper.ExprCollectSubNodes(ctx.outputLimitAndTerm().expression(), 0, astExprNodeMap)[0];
                 }
-                if (ctx.outputLimitAndTerm().onSetExpr() != null) {
+                if (ctx.outputLimitAndTerm().onSetExpr() != null)
+                {
                     andAfterTerminateSetExpressions = ASTExprHelper.GetOnTriggerSetAssignments(ctx.outputLimitAndTerm().onSetExpr().onSetAssignmentList(), astExprNodeMap);
                 }
             }
-    
+
             return new OutputLimitSpec(rate, variableName, rateType, displayLimit, whenExpression, thenExpressions, crontabScheduleSpec, timePeriodExpr, afterTimePeriodExpr, afterNumberOfEvents, andAfterTerminate, andAfterTerminateExpr, andAfterTerminateSetExpressions);
         }
-    
+
         /// <summary>
         /// Builds a row limit specification.
         /// </summary>
@@ -143,46 +163,55 @@ namespace com.espertech.esper.epl.parse
         {
             Object numRows;
             Object offset;
-            if (ctx.o != null) {    // format "rows offset offsetcount"
+            if (ctx.o != null)
+            {    // format "rows offset offsetcount"
                 numRows = ParseNumOrVariableIdent(ctx.n1, ctx.i1);
                 offset = ParseNumOrVariableIdent(ctx.n2, ctx.i2);
             }
-            else if (ctx.c != null) {   // format "offsetcount, rows"
+            else if (ctx.c != null)
+            {   // format "offsetcount, rows"
                 offset = ParseNumOrVariableIdent(ctx.n1, ctx.i1);
                 numRows = ParseNumOrVariableIdent(ctx.n2, ctx.i2);
             }
-            else {
+            else
+            {
                 numRows = ParseNumOrVariableIdent(ctx.n1, ctx.i1);
                 offset = null;
             }
-    
+
             int? numRowsInt = null;
             String numRowsVariable = null;
-            if (numRows is String) {
-                numRowsVariable = (String) numRows;
+            if (numRows is String)
+            {
+                numRowsVariable = (String)numRows;
             }
-            else {
-                numRowsInt = (int?) numRows;
+            else
+            {
+                numRowsInt = (int?)numRows;
             }
-    
+
             int? offsetInt = null;
             String offsetVariable = null;
-            if (offset is String) {
-                offsetVariable = (String) offset;
+            if (offset is String)
+            {
+                offsetVariable = (String)offset;
             }
-            else {
-                offsetInt = (int?) offset;
+            else
+            {
+                offsetInt = (int?)offset;
             }
-    
+
             return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);
         }
-    
+
         private static Object ParseNumOrVariableIdent(EsperEPL2GrammarParser.NumberconstantContext num, IToken ident)
         {
-            if (ident != null) {
+            if (ident != null)
+            {
                 return ident.Text;
             }
-            else {
+            else
+            {
                 return ASTConstantHelper.Parse(num);
             }
         }

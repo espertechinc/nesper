@@ -17,95 +17,102 @@ using XLR8.CGLib;
 
 namespace com.espertech.esper.events.bean
 {
-	public class InstanceManufacturerUtil {
+    public class InstanceManufacturerUtil
+    {
 
-	    public static Pair<FastConstructor, ExprEvaluator[]> GetManufacturer(Type targetClass, EngineImportService engineImportService, ExprEvaluator[] exprEvaluators, object[] expressionReturnTypes)
+        public static Pair<FastConstructor, ExprEvaluator[]> GetManufacturer(Type targetClass, EngineImportService engineImportService, ExprEvaluator[] exprEvaluators, object[] expressionReturnTypes)
+        {
+            var ctorTypes = new Type[expressionReturnTypes.Length];
+            var evaluators = new ExprEvaluator[exprEvaluators.Length];
 
-	    {
-	        var ctorTypes = new Type[expressionReturnTypes.Length];
-	        var evaluators = new ExprEvaluator[exprEvaluators.Length];
+            for (var i = 0; i < expressionReturnTypes.Length; i++)
+            {
+                var columnType = expressionReturnTypes[i];
 
-	        for (var i = 0; i < expressionReturnTypes.Length; i++) {
-	            var columnType = expressionReturnTypes[i];
+                if (columnType is Type || columnType == null)
+                {
+                    ctorTypes[i] = (Type)expressionReturnTypes[i];
+                    evaluators[i] = exprEvaluators[i];
+                    continue;
+                }
 
-	            if (columnType is Type || columnType == null) {
-	                ctorTypes[i] = (Type) expressionReturnTypes[i];
-	                evaluators[i] = exprEvaluators[i];
-	                continue;
-	            }
-
-	            if (columnType is EventType) {
-	                var columnEventType = (EventType) columnType;
-	                var returnType = columnEventType.UnderlyingType;
-	                var inner = exprEvaluators[i];
-	                evaluators[i] = new ProxyExprEvaluator
+                if (columnType is EventType)
+                {
+                    var columnEventType = (EventType)columnType;
+                    var returnType = columnEventType.UnderlyingType;
+                    var inner = exprEvaluators[i];
+                    evaluators[i] = new ProxyExprEvaluator
                     {
-	                    ProcEvaluate = evaluateParams =>
-	                    {
-	                        var theEvent = (EventBean) inner.Evaluate(evaluateParams);
-	                        if (theEvent != null)
-	                        {
-	                            return theEvent.Underlying;
-	                        }
-	                        return null;
-	                    },
+                        ProcEvaluate = evaluateParams =>
+                        {
+                            var theEvent = (EventBean)inner.Evaluate(evaluateParams);
+                            if (theEvent != null)
+                            {
+                                return theEvent.Underlying;
+                            }
+                            return null;
+                        },
 
-	                    ProcReturnType = () =>
-	                    {
-	                        return returnType;
-	                    },
+                        ProcReturnType = () =>
+                        {
+                            return returnType;
+                        },
 
-	                };
-	                ctorTypes[i] = returnType;
-	                continue;
-	            }
+                    };
+                    ctorTypes[i] = returnType;
+                    continue;
+                }
 
-	            // handle case where the select-clause contains an fragment array
-	            if (columnType is EventType[])
-	            {
-	                var columnEventType = ((EventType[]) columnType)[0];
-	                var componentReturnType = columnEventType.UnderlyingType;
+                // handle case where the select-clause contains an fragment array
+                if (columnType is EventType[])
+                {
+                    var columnEventType = ((EventType[])columnType)[0];
+                    var componentReturnType = columnEventType.UnderlyingType;
 
-	                var inner = exprEvaluators[i];
-	                evaluators[i] = new ProxyExprEvaluator
+                    var inner = exprEvaluators[i];
+                    evaluators[i] = new ProxyExprEvaluator
                     {
-	                    ProcEvaluate = evaluateParams =>
-	                    {
+                        ProcEvaluate = evaluateParams =>
+                        {
                             var result = inner.Evaluate(evaluateParams);
-	                        if (!(result is EventBean[])) {
-	                            return null;
-	                        }
-	                        var events = (EventBean[]) result;
-	                        var values = Array.CreateInstance(componentReturnType, events.Length);
-	                        for (var jj = 0; jj < events.Length; jj++) {
-	                            values.SetValue(events[jj].Underlying, jj);
-	                        }
-	                        return values;
-	                    },
+                            if (!(result is EventBean[]))
+                            {
+                                return null;
+                            }
+                            var events = (EventBean[])result;
+                            var values = Array.CreateInstance(componentReturnType, events.Length);
+                            for (var jj = 0; jj < events.Length; jj++)
+                            {
+                                values.SetValue(events[jj].Underlying, jj);
+                            }
+                            return values;
+                        },
 
-	                    ProcReturnType = () =>
-	                    {
-	                        return componentReturnType;
-	                    },
+                        ProcReturnType = () =>
+                        {
+                            return componentReturnType;
+                        },
 
-	                };
-	                continue;
-	            }
+                    };
+                    continue;
+                }
 
-	            var message = "Invalid assignment of expression " + i + " returning type '" + columnType +
-	                    "', column and parameter types mismatch";
-	            throw new ExprValidationException(message);
-	        }
+                var message = "Invalid assignment of expression " + i + " returning type '" + columnType +
+                        "', column and parameter types mismatch";
+                throw new ExprValidationException(message);
+            }
 
-	        FastConstructor fctor;
-	        try {
-	            var ctor = engineImportService.ResolveCtor(targetClass, ctorTypes);
-	            var fastClass = FastClass.Create(targetClass);
-	            return new Pair<FastConstructor, ExprEvaluator[]>(fastClass.GetConstructor(ctor), evaluators);
-	        }
-	        catch (EngineImportException ex) {
-	            throw new ExprValidationException("Failed to find a suitable constructor for type '" + targetClass.Name + "': " + ex.Message, ex);
-	        }
-	    }
-	}
+            FastConstructor fctor;
+            try
+            {
+                var ctor = engineImportService.ResolveCtor(targetClass, ctorTypes);
+                var fastClass = FastClass.Create(targetClass);
+                return new Pair<FastConstructor, ExprEvaluator[]>(fastClass.GetConstructor(ctor), evaluators);
+            }
+            catch (EngineImportException ex)
+            {
+                throw new ExprValidationException("Failed to find a suitable constructor for type '" + targetClass.Name + "': " + ex.Message, ex);
+            }
+        }
+    }
 } // end of namespace

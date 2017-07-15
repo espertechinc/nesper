@@ -261,11 +261,11 @@ namespace com.espertech.esper.metrics.instrumentation
 
 	    }
 
-	    public void QExprTypeof() {
+	    public void QExprtypeof() {
 
 	    }
 
-	    public void AExprTypeof(string typeName) {
+	    public void AExprtypeof(string typeName) {
 
 	    }
 

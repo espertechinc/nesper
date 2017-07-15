@@ -137,7 +137,7 @@ namespace com.espertech.esper.epl.parse
         }
 
         private String toPatternText(EPLTreeWalkerListener walker) {
-            PatternStreamSpecRaw raw = (PatternStreamSpecRaw) walker.GetStatementSpec().StreamSpecs[0];
+            PatternStreamSpecRaw raw = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
             StringWriter writer = new StringWriter();
             raw.EvalFactoryNode.ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
             return writer.ToString();

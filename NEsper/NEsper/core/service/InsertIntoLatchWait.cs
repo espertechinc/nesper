@@ -6,117 +6,105 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Reflection;
-using System.Threading;
+using System;
+
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.core.service
 {
     /// <summary>
-    /// A suspend-and-notify implementation of a latch for use in guaranteeing delivery 
-    /// between a single event produced by a single statement and consumable by another 
-    /// statement.
+    /// A suspend-and-notify implementation of a latch for use in guaranteeing delivery between
+    /// a single event produced by a single statement and consumable by another statement.
     /// </summary>
-    public class InsertIntoLatchWait
-    {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+    public class InsertIntoLatchWait {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
         // The earlier latch is the latch generated before this latch
-        private InsertIntoLatchWait _earlier;
-        private readonly int _msecTimeout;
-        private readonly EventBean _payload;
-
+        private InsertIntoLatchWait earlier;
+        private long msecTimeout;
+        private EventBean payload;
+    
         // The later latch is the latch generated after this latch
-        private InsertIntoLatchWait _later;
-        private volatile bool _isCompleted;
-
+        private InsertIntoLatchWait later;
+        private volatile bool isCompleted;
+    
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="earlier">the latch before this latch that this latch should be waiting for</param>
         /// <param name="msecTimeout">the timeout after which delivery occurs</param>
         /// <param name="payload">the payload is an event to deliver</param>
-        public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, EventBean payload)
-        {
-            _earlier = earlier;
-            _msecTimeout = (int) msecTimeout;
-            _payload = payload;
+        public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, EventBean payload) {
+            this.earlier = earlier;
+            this.msecTimeout = msecTimeout;
+            this.payload = payload;
         }
-
+    
         /// <summary>
         /// Ctor - use for the first and unused latch to indicate completion.
         /// </summary>
-        /// <param name="factory">The factory.</param>
-        public InsertIntoLatchWait(InsertIntoLatchFactory factory)
-        {
-            _isCompleted = true;
-            _earlier = null;
-            _msecTimeout = 0;
+        /// <param name="factory">the latch factory</param>
+        public InsertIntoLatchWait(InsertIntoLatchFactory factory) {
+            isCompleted = true;
+            earlier = null;
+            msecTimeout = 0;
         }
-
+    
         /// <summary>
         /// Returns true if the dispatch completed for this future.
         /// </summary>
-        /// <returns>
-        /// true for completed, false if not
-        /// </returns>
-        public bool IsCompleted()
-        {
-            return _isCompleted;
+        /// <returns>true for completed, false if not</returns>
+        public bool IsCompleted() {
+            return isCompleted;
         }
-
+    
         /// <summary>
         /// Hand a later latch to use for indicating completion via notify.
         /// </summary>
         /// <param name="later">is the later latch</param>
-        public void SetLater(InsertIntoLatchWait later)
-        {
-            _later = later;
+        public void SetLater(InsertIntoLatchWait later) {
+            this.later = later;
         }
-
+    
         /// <summary>
-        /// Blocking call that returns only when the earlier latch completed.
+        /// Blcking call that returns only when the earlier latch completed.
         /// </summary>
-        /// <returns>
-        /// payload of the latch
-        /// </returns>
-        public EventBean Await()
-        {
-            if (!_earlier._isCompleted)
-            {
-                lock(this)
-                {
-                    if (!_earlier._isCompleted)
-                    {
-                        Monitor.Wait(this, _msecTimeout);
+        /// <returns>payload of the latch</returns>
+        public EventBean Await() {
+            if (!earlier.isCompleted) {
+                synchronized (this) {
+                    if (!earlier.isCompleted) {
+                        try {
+                            this.Wait(msecTimeout);
+                        } catch (InterruptedException e) {
+                            Log.Error("Interrupted: " + e.Message, e);
+                        }
                     }
                 }
             }
-
-            if (!_earlier._isCompleted)
-            {
+    
+            if (!earlier.isCompleted) {
                 Log.Info("Wait timeout exceeded for insert-into dispatch with notify");
             }
-
-            return _payload;
+    
+            return payload;
         }
-
+    
         /// <summary>
         /// Called to indicate that the latch completed and a later latch can start.
         /// </summary>
-        public void Done()
-        {
-            _isCompleted = true;
-            if (_later != null)
-            {
-                lock(_later)
-                {
-                    Monitor.Pulse(_later);
+        public void Done() {
+            isCompleted = true;
+            if (later != null) {
+                synchronized (later) {
+                    later.Notify();
                 }
             }
-            _earlier = null;
-            _later = null;
+            earlier = null;
+            later = null;
         }
     }
-}
+} // end of namespace

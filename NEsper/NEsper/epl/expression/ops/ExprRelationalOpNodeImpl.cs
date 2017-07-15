@@ -17,6 +17,8 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.expression.ops
 {
+    using RelationalComputer = Func<object, object, bool>;
+
     [Serializable]
     public class ExprRelationalOpNodeImpl 
         : ExprNodeBase
@@ -24,7 +26,7 @@ namespace com.espertech.esper.epl.expression.ops
         , ExprRelationalOpNode
     {
         private readonly RelationalOpEnum _relationalOpEnum;
-        [NonSerialized] private RelationalOpEnumExtensions.Computer _computer;
+        [NonSerialized] private RelationalComputer _computer;
         [NonSerialized] private ExprEvaluator[] _evaluators;
         /// <summary>Ctor. </summary>
         /// <param name="relationalOpEnum">type of compare, ie. lt, gt, le, ge</param>

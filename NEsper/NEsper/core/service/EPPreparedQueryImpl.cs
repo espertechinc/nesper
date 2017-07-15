@@ -21,10 +21,10 @@ namespace com.espertech.esper.core.service
     public class EPPreparedQueryImpl : EPOnDemandPreparedQuerySPI
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly EPPreparedExecuteMethod _executeMethod;
         private readonly String _epl;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="executeMethod">used at execution time to obtain query results</param>
         /// <param name="epl">is the EPL to execute</param>
@@ -33,12 +33,12 @@ namespace com.espertech.esper.core.service
             _executeMethod = executeMethod;
             _epl = epl;
         }
-    
+
         public EPOnDemandQueryResult Execute()
         {
             return ExecuteInternal(null);
         }
-    
+
         public EPOnDemandQueryResult Execute(ContextPartitionSelector[] contextPartitionSelectors)
         {
             if (contextPartitionSelectors == null)
@@ -47,7 +47,7 @@ namespace com.espertech.esper.core.service
             }
             return ExecuteInternal(contextPartitionSelectors);
         }
-    
+
         private EPOnDemandQueryResult ExecuteInternal(ContextPartitionSelector[] contextPartitionSelectors)
         {
             try

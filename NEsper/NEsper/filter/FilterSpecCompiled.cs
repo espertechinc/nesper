@@ -224,12 +224,12 @@ namespace com.espertech.esper.filter
             {
                 FilterSpecParam[] lineThis = this.Parameters[i];
                 FilterSpecParam[] lineOther = other.Parameters[i];
-                if (lineThis.Length != lineOther.Length)
+                if (linethis.Length != lineOther.Length)
                 {
                     return false;
                 }
 
-                for (int j = 0; j < lineThis.Length; j++)
+                for (int j = 0; j < linethis.Length; j++)
                 {
                     if (!Equals(lineThis[j], lineOther[j]))
                     {

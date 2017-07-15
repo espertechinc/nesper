@@ -14,7 +14,7 @@ namespace com.espertech.esper.epl.expression.time
 {
     public class ExprTimePeriodEvalDeltaConstDateTimeAdd : ExprTimePeriodEvalDeltaConst
     {
-        private DateTimeEx _dateTime;
+        private readonly DateTimeEx _dateTime;
         private readonly ExprTimePeriodImpl.TimePeriodAdder[] _adders;
         private readonly int[] _added;
 

@@ -180,9 +180,9 @@ namespace com.espertech.esper.epl.expression.ops
         public object Evaluate(EvaluateParams evaluateParams)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprEqualsAnyOrAll(this); }
-            var result = (bool?) EvaluateInternal(evaluateParams);
+            var result = (bool?)EvaluateInternal(evaluateParams);
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprEqualsAnyOrAll(result); }
-            return result; 
+            return result;
         }
 
         public object EvaluateInternal(EvaluateParams evaluateParams)

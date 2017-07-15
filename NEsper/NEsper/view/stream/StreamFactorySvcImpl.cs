@@ -156,9 +156,9 @@ namespace com.espertech.esper.view.stream
 
             // New event stream
             var resultEventType = filterSpec.ResultEventType;
-            var zeroDepthStream = isCanIterateUnbound 
-                ? (EventStream) new ZeroDepthStreamIterable(resultEventType)
-                : (EventStream) new ZeroDepthStreamNoIterate(resultEventType);
+            var zeroDepthStream = isCanIterateUnbound
+                ? (EventStream)new ZeroDepthStreamIterable(resultEventType)
+                : (EventStream)new ZeroDepthStreamNoIterate(resultEventType);
 
             // audit proxy
             var inputStream = EventStreamProxy.GetAuditProxy(

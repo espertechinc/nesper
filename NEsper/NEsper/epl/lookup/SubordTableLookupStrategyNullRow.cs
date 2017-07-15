@@ -10,30 +10,38 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.lookup
 {
     /// <summary>
-    /// Implementation for a table lookup strategy that returns exactly one row but leaves that row as an undefined value.
+    /// Implementation for a table lookup strategy that returns exactly one row
+    /// but leaves that row as an undefined value.
     /// </summary>
     public class SubordTableLookupStrategyNullRow : SubordTableLookupStrategy
     {
-        private static readonly ISet<EventBean> SingleNullRowEventSet = new HashSet<EventBean>();
+        private static readonly ISet<EventBean> SINGLE_NULL_ROW_EVENT_SET = new HashSet<EventBean>();
 
         static SubordTableLookupStrategyNullRow()
         {
-            SingleNullRowEventSet.Add(null);
+            SINGLE_NULL_ROW_EVENT_SET.Add(null);
+        }
+
+        public SubordTableLookupStrategyNullRow()
+        {
         }
 
         public ICollection<EventBean> Lookup(EventBean[] events, ExprEvaluatorContext context)
         {
-            return SingleNullRowEventSet;
+            return SINGLE_NULL_ROW_EVENT_SET;
         }
 
-        public String ToQueryPlan()
+        public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public LookupStrategyDesc StrategyDesc
@@ -41,4 +49,4 @@ namespace com.espertech.esper.epl.lookup
             get { return new LookupStrategyDesc(LookupStrategyType.NULLROWS, null); }
         }
     }
-}
+} // end of namespace

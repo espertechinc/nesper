@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.client
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableTimerDebug = true;
+            config.EngineDefaults.Logging.IsEnableTimerDebug = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
         }

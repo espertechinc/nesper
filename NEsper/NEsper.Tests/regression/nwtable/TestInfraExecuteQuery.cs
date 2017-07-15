@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.nwtable
             _listener = new SupportUpdateListener();
     
             var config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = true;
             config.AddEventType<SupportBean>("SupportBean");
             config.AddEventType<SupportBean_A>("SupportBean_A");
             _epService = EPServiceProviderManager.GetDefaultProvider(config);

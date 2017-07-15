@@ -163,7 +163,7 @@ namespace com.espertech.esper.view.window
 
         private void ScheduleCallback()
         {
-            long afterMSec = _timeDeltaComputation.DeltaMillisecondsAdd(
+            long afterTime = _timeDeltaComputation.DeltaAdd(
                 AgentInstanceContext.StatementContext.SchedulingService.Time);
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
@@ -178,7 +178,7 @@ namespace com.espertech.esper.view.window
                     })
             };
             _handle = new EPStatementHandleCallback(AgentInstanceContext.EpStatementAgentInstanceHandle, callback);
-            AgentInstanceContext.StatementContext.SchedulingService.Add(afterMSec, _handle, _scheduleSlot);
+            AgentInstanceContext.StatementContext.SchedulingService.Add(afterTime, _handle, _scheduleSlot);
         }
 
         public void StopView()

@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
 using com.espertech.esper.util;
 
@@ -37,7 +36,17 @@ namespace com.espertech.esper.filter
             _coercionType = coercionType;
             _isMustCoerce = isMustCoerce;
         }
-    
+
+        public Type ReturnType
+        {
+            get { return _coercionType; }
+        }
+
+        public bool IsConstant
+        {
+            get { return false; }
+        }
+
         public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
         {
             EventBean theEvent = matchedEvents.GetMatchingEventByTag(ResultEventAsName);
@@ -46,9 +55,9 @@ namespace com.espertech.esper.filter
                 throw new IllegalStateException("Matching event named " +
                         '\'' + ResultEventAsName + "' not found in event result set");
             }
-    
+
             Object value = theEvent.Get(ResultEventProperty);
-    
+
             // Coerce if necessary
             if (_isMustCoerce)
             {
@@ -91,8 +100,8 @@ namespace com.espertech.esper.filter
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (InSetOfValuesEventProp)) return false;
-            return Equals((InSetOfValuesEventProp) obj);
+            if (obj.GetType() != typeof(InSetOfValuesEventProp)) return false;
+            return Equals((InSetOfValuesEventProp)obj);
         }
 
         /// <summary>
@@ -106,7 +115,7 @@ namespace com.espertech.esper.filter
         {
             unchecked
             {
-                return ((ResultEventAsName != null ? ResultEventAsName.GetHashCode() : 0)*397) ^ (ResultEventProperty != null ? ResultEventProperty.GetHashCode() : 0);
+                return ((ResultEventAsName != null ? ResultEventAsName.GetHashCode() : 0) * 397) ^ (ResultEventProperty != null ? ResultEventProperty.GetHashCode() : 0);
             }
         }
     }

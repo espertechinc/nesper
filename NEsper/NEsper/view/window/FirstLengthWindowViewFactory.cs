@@ -6,64 +6,43 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.window
 {
-    /// <summary>
-    /// Factory for <seealso cref="FirstLengthWindowView"/>.
-    /// </summary>
+    /// <summary>Factory for <seealso cref="FirstLengthWindowView" />.</summary>
     public class FirstLengthWindowViewFactory : AsymetricDataWindowViewFactory
     {
-        /// <summary>Count of length first window. </summary>
-        private int _size;
-    
         private EventType _eventType;
-    
+
+        /// <summary>Size of length first window.</summary>
+        private ExprEvaluator _sizeEvaluator;
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            IList<Object> viewParameters = ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters);
-            if (viewParameters.Count != 1)
-            {
-                throw new ViewParameterException(ViewParamMessage);
-            }
-    
-            Object parameter = viewParameters[0];
-            if (!(parameter.IsNumber()))
-            {
-                throw new ViewParameterException(ViewParamMessage);
-            }
-            var numParam = parameter;
-            if ((numParam.IsFloatingPointNumber()) ||
-                (numParam.IsLongNumber()))
-            {
-                throw new ViewParameterException(ViewParamMessage);
-            }
-
-            _size = numParam.AsInt();
-            if (_size <= 0)
-            {
-                throw new ViewParameterException(ViewName + " view requires a positive number");
-            }
+            _sizeEvaluator = ViewFactorySupport.ValidateSizeSingleParam(
+                ViewName, viewFactoryContext, expressionParameters);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, _size);
+            int size = ViewFactorySupport.EvaluateSizeParam(
+                ViewName, _sizeEvaluator, agentInstanceViewFactoryContext.AgentInstanceContext);
+            return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, size);
         }
 
         public EventType EventType
@@ -71,35 +50,21 @@ namespace com.espertech.esper.view.window
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is FirstLengthWindowView))
             {
                 return false;
             }
-    
+
             var myView = (FirstLengthWindowView) view;
-            if (myView.Size != _size)
-            {
-                return false;
-            }
-    
-            return myView.IsEmpty();
+            int size = ViewFactorySupport.EvaluateSizeParam(ViewName, _sizeEvaluator, agentInstanceContext);
+            return myView.Size == size && myView.IsEmpty();
         }
 
         public string ViewName
         {
             get { return "First-Length"; }
         }
-
-        private string ViewParamMessage
-        {
-            get { return ViewName + " view requires an integer-type size parameter"; }
-        }
-
-        public int Size
-        {
-            get { return _size; }
-        }
     }
-}
+} // end of namespace

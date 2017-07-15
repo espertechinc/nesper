@@ -19,7 +19,7 @@ namespace com.espertech.esper.collection
     /// - this must be used with care as old elements could be in the array and the array is only valid until 
     /// the number of elements indicated by size.
     /// <para/>
-    /// Implements only the add, size and clear methods of the collection interface.
+    /// : only the add, size and clear methods of the collection interface.
     /// <para/>
     /// When running out of space for the underlying array, allocates a new array of double the size 
     /// of the current array. 

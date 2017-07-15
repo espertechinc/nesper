@@ -10,23 +10,46 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.script
 {
-    /// <summary>Context-partition local script context. </summary>
-    public class AgentInstanceScriptContext : EPLScriptContext
-    {
-        private readonly IDictionary<String, Object> _scriptProperties = new Dictionary<String, Object>();
-
-        public void SetScriptAttribute(String attribute, Object value)
-        {
-            _scriptProperties.Put(attribute, value);
+    /// <summary>Context-partition local script context.</summary>
+    public class AgentInstanceScriptContext : EPLScriptContext {
+    
+        private readonly EventBeanService eventBeanService;
+        private IDictionary<string, Object> scriptProperties;
+    
+        private AgentInstanceScriptContext(EventBeanService eventBeanService) {
+            this.eventBeanService = eventBeanService;
+        }
+    
+        public static AgentInstanceScriptContext From(EventAdapterService eventAdapterService) {
+            return new AgentInstanceScriptContext(eventAdapterService);
         }
 
-        public Object GetScriptAttribute(String attribute)
+        public EventBeanService EventBeanService
         {
-            return _scriptProperties.Get(attribute);
+            get { return eventBeanService; }
+        }
+
+        public void SetScriptAttribute(string attribute, Object value) {
+            AllocateScriptProperties();
+            scriptProperties.Put(attribute, value);
+        }
+    
+        public Object GetScriptAttribute(string attribute) {
+            AllocateScriptProperties();
+            return ScriptProperties.Get(attribute);
+        }
+    
+        private void AllocateScriptProperties() {
+            if (scriptProperties == null) {
+                scriptProperties = new HashMap<>();
+            }
         }
     }
-}
+} // end of namespace

@@ -71,7 +71,7 @@ namespace com.espertech.esper.epl.core
             IsEnableOutputLimitOpt = enableOutputLimitOpt;
             NumStreams = numStreams;
         }
-    
+
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
             return new ResultSetProcessorAggregateGrouped(this, _selectExprProcessor, orderByProcessor, aggregationService, agentInstanceContext);

@@ -247,7 +247,7 @@ namespace com.espertech.esper.regression.events
 
             // assert type metadata
             var type = (EventTypeSPI)((EPServiceProviderSPI)_epService).EventAdapterService.GetEventTypeByName("MyLegacyEvent");
-            Assert.AreEqual(ApplicationType.CLASS, type.Metadata.OptionalApplicationType);
+            Assert.AreEqual(typeof(ApplicationType), type.Metadata.OptionalApplicationType);
             Assert.AreEqual(1, type.Metadata.OptionalSecondaryNames.Count);
             Assert.AreEqual(typeof(SupportLegacyBean).FullName, type.Metadata.OptionalSecondaryNames.First());
             Assert.AreEqual("MyLegacyEvent", type.Metadata.PrimaryName);

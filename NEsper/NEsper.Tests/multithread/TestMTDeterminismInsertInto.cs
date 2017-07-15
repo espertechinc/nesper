@@ -44,13 +44,13 @@ namespace com.espertech.esper.multithread
         [Test]
         public void TestSceneOneSuspend()
         {
-            TrySendCountFollowedBy(4, 100, ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
+            TrySendCountFollowedBy(4, 100, ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND);
         }
     
         [Test]
         public void TestSceneOneSpin()
         {
-            TrySendCountFollowedBy(4, 100, ConfigurationEngineDefaults.Threading.Locking.SPIN);
+            TrySendCountFollowedBy(4, 100, ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN);
         }
 
         [Test]
@@ -193,7 +193,7 @@ namespace com.espertech.esper.multithread
             return total;
         }
     
-        private void TrySendCountFollowedBy(int numThreads, int numEvents, ConfigurationEngineDefaults.Threading.Locking locking)
+        private void TrySendCountFollowedBy(int numThreads, int numEvents, ConfigurationEngineDefaults.ThreadingConfig.Locking locking)
         {
             var config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking = locking;

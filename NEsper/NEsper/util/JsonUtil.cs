@@ -9,21 +9,18 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.parse;
 
 namespace com.espertech.esper.util
 {
     public class JsonUtil
     {
-        public static Object ParsePopulate(String json, Type topClass, EngineImportService engineImportService)
+        public static Object ParsePopulate(String json, Type topClass, ExprNodeOrigin exprNodeOrigin, ExprValidationContext exprValidationContext)
         {
             var startRuleSelector = new ParseRuleSelector(parser => parser.startJsonValueRule());
             var parseResult = ParseHelper.Parse(json, json, true, startRuleSelector, false);
-            var tree = (EsperEPL2GrammarParser.StartJsonValueRuleContext) parseResult.Tree;
+            var tree = (EsperEPL2GrammarParser.StartJsonValueRuleContext)parseResult.Tree;
             var parsed = ASTJsonHelper.Walk(parseResult.TokenStream, tree.jsonvalue());
 
             if (!(parsed is IDictionary<String, Object>))
@@ -32,8 +29,8 @@ namespace com.espertech.esper.util
                     "Failed to map value to object of type " + topClass.FullName +
                     ", expected Json Map/Object format, received " + (parsed != null ? parsed.GetType().Name : "null"));
             }
-            var objectProperties = (IDictionary<String, Object>) parsed;
-            return PopulateUtil.InstantiatePopulateObject(objectProperties, topClass, engineImportService);
+            var objectProperties = (IDictionary<String, Object>)parsed;
+            return PopulateUtil.InstantiatePopulateObject(objectProperties, topClass, exprNodeOrigin, exprValidationContext);
         }
     }
 }

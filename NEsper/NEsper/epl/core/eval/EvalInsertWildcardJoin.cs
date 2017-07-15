@@ -8,9 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.core.eval
@@ -19,27 +20,31 @@ namespace com.espertech.esper.epl.core.eval
         : EvalBaseMap
         , SelectExprProcessor
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly SelectExprProcessor _joinWildcardProcessor;
 
-        public EvalInsertWildcardJoin(SelectExprContext selectExprContext,
-                                      EventType resultEventType,
-                                      SelectExprProcessor joinWildcardProcessor)
+        public EvalInsertWildcardJoin(
+            SelectExprContext selectExprContext,
+            EventType resultEventType,
+            SelectExprProcessor joinWildcardProcessor)
             : base(selectExprContext, resultEventType)
         {
             _joinWildcardProcessor = joinWildcardProcessor;
         }
 
-        public override EventBean ProcessSpecific(IDictionary<String, Object> props,
-                                                  EventBean[] eventsPerStream,
-                                                  bool isNewData,
-                                                  bool isSynthesize,
-                                                  ExprEvaluatorContext exprEvaluatorContext)
+        public override EventBean ProcessSpecific(
+            IDictionary<string, Object> props,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean theEvent = _joinWildcardProcessor.Process(eventsPerStream, isNewData, isSynthesize,
-                                                              exprEvaluatorContext);
+            EventBean theEvent = _joinWildcardProcessor.Process(
+                eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
             // Wrapping it even when not adding properties is very inexpensive.
-            return EventAdapterService.AdapterForTypedWrapper(theEvent, props, ResultEventType);
+            return base.EventAdapterService.AdapterForTypedWrapper(theEvent, props, base.ResultEventType);
         }
     }
-}
+} // end of namespace

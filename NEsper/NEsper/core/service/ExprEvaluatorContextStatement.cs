@@ -55,9 +55,9 @@ namespace com.espertech.esper.core.service
             set { _contextProperties = value; }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
-            get { return _statementContext.DefaultAgentInstanceScriptContext; }
+            get { return _statementContext.AllocateAgentInstanceScriptContext; }
         }
 
         public String StatementName

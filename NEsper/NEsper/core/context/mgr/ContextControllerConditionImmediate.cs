@@ -12,7 +12,7 @@ using com.espertech.esper.pattern;
 namespace com.espertech.esper.core.context.mgr
 {
     /// <summary>
-    /// Context condition used for Non-Overlapping contexts only, when @Now is specified. 
+    /// Context condition used for Non-Overlapping contexts only, when @GetInstance is specified. 
     /// Not used for end-conditions (only for start range conditions). This is enforced by 
     /// the grammar and spec mapper. 
     /// </summary>

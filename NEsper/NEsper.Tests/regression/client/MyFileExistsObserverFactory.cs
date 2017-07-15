@@ -55,9 +55,9 @@ namespace com.espertech.esper.regression.client
             return new MyFileExistsObserver(beginState, observerEventEvaluator, filename.ToString());
         }
 
-        public override bool IsNonRestarting()
+        public override bool IsNonRestarting
         {
-            return false;
+            get { return false; }
         }
     }
 }

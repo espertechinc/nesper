@@ -17,16 +17,16 @@ namespace com.espertech.esper.events
     using DataMap = IDictionary<string, object>;
 
     /// <summary>
-	/// Event bean that wraps another event bean adding additional properties.
-	/// <para>
-	/// This can be useful for classes for which the statement adds derived values retaining the original class.
-	/// </para>
-	/// <para>
-	/// The event type of such events is always <see cref="WrapperEventType"/>. Additional properties are stored in a
-	/// Map.
-	/// </para>
-	/// </summary>
-    public class WrapperEventBean 
+    /// Event bean that wraps another event bean adding additional properties.
+    /// <para>
+    /// This can be useful for classes for which the statement adds derived values retaining the original class.
+    /// </para>
+    /// <para>
+    /// The event type of such events is always <see cref="WrapperEventType"/>. Additional properties are stored in a
+    /// Map.
+    /// </para>
+    /// </summary>
+    public class WrapperEventBean
         : EventBean
         , DecoratingEventBean
     {
@@ -145,7 +145,7 @@ namespace com.espertech.esper.events
             EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
             if (getter == null)
             {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
             return getter.GetFragment(this);
         }

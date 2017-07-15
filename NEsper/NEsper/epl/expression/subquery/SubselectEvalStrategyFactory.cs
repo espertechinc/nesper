@@ -16,6 +16,7 @@ namespace com.espertech.esper.epl.expression.subquery
 {
     using DataCollection = System.Collections.Generic.ICollection<object>;
     using DataMap = System.Collections.Generic.IDictionary<string, object>;
+    using RelationalComputer = Func<object, object, bool>;
 
     /// <summary>Factory for subselect evaluation strategies. </summary>
     public class SubselectEvalStrategyFactory
@@ -70,7 +71,7 @@ namespace com.espertech.esper.epl.expression.subquery
                 }
     
                 Type compareType = typeOne.GetCompareToCoercionType(typeTwo);
-                RelationalOpEnumExtensions.Computer computer = relationalOp.Value.GetComputer(compareType, typeOne, typeTwo);
+                RelationalComputer computer = relationalOp.Value.GetComputer(compareType, typeOne, typeTwo);
     
                 ExprEvaluator selectClause = subselectExpression.SelectClause == null ? null : subselectExpression.SelectClause[0].ExprEvaluator;
                 ExprEvaluator filterExpr = subselectExpression.FilterExpr;

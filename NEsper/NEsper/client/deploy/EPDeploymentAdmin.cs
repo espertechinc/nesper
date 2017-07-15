@@ -52,7 +52,7 @@ namespace com.espertech.esper.client.deploy
         /// <throws>IOException when the parser failed to read the string buffer</throws>
         /// <throws>ParseException when parsing of the module failed</throws>
         Module Parse(String eplModuleText);
-    
+
         /// <summary>Compute a deployment order among the modules passed in considering their uses-dependency declarations and considering the already-deployed modules. <para />The operation also checks and reports circular dependencies. <para />Pass in @{link DeploymentOrderOptions} to customize the behavior if this method. When passing no options or passing default options, the default behavior checks uses-dependencies and circular dependencies. </summary>
         /// <param name="modules">to determine ordering for</param>
         /// <param name="options">operation options or null for default options</param>
@@ -150,12 +150,12 @@ namespace com.espertech.esper.client.deploy
         /// <throws>DeploymentOrderException when any module dependencies are not satisfied</throws>
         /// <throws>DeploymentActionException when the deployment fails, contains a list of deployment failures</throws>
         DeploymentResult ParseDeploy(String eplModuleText);
-    
+
         /// <summary>Adds a module in undeployed state, generating a deployment id and returning the generated deployment id of the module. </summary>
         /// <param name="module">to add</param>
         /// <returns>The deployment id assigned to the module</returns>
         String Add(Module module);
-    
+
         /// <summary>Adds a module in undeployed state, using the provided deployment id as a unique identifier for the module. </summary>
         /// <param name="module">to add</param>
         /// <param name="assignedDeploymentId">deployment id to assign</param>

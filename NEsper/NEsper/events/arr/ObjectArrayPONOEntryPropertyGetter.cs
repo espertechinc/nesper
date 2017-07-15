@@ -18,7 +18,8 @@ namespace com.espertech.esper.events.arr
     /// </summary>
     public class ObjectArrayPONOEntryPropertyGetter
         : BaseNativePropertyGetter
-        , ObjectArrayEventPropertyGetter
+            ,
+            ObjectArrayEventPropertyGetter
     {
         private readonly int _propertyIndex;
         private readonly BeanEventPropertyGetter _entryGetter;
@@ -31,13 +32,18 @@ namespace com.espertech.esper.events.arr
         /// <param name="eventAdapterService">for producing wrappers to objects</param>
         /// <param name="returnType">type of the entry returned</param>
         /// <param name="nestedComponentType">Type of the nested component.</param>
-        public ObjectArrayPONOEntryPropertyGetter(int propertyIndex, BeanEventPropertyGetter entryGetter, EventAdapterService eventAdapterService, Type returnType, Type nestedComponentType)
+        public ObjectArrayPONOEntryPropertyGetter(
+            int propertyIndex,
+            BeanEventPropertyGetter entryGetter,
+            EventAdapterService eventAdapterService,
+            Type returnType,
+            Type nestedComponentType)
             : base(eventAdapterService, returnType, nestedComponentType)
         {
             _propertyIndex = propertyIndex;
             _entryGetter = entryGetter;
         }
-    
+
         public Object GetObjectArray(Object[] array)
         {
             // If the map does not contain the key, this is allowed and represented as null
@@ -46,7 +52,7 @@ namespace com.espertech.esper.events.arr
             {
                 return null;
             }
-    
+
             // Object within the map
             if (value is EventBean)
             {
@@ -55,20 +61,34 @@ namespace com.espertech.esper.events.arr
 
             return _entryGetter.GetBeanProp(value);
         }
-    
-        public bool IsObjectArrayExistsProperty(Object[] array) {
+
+        public bool IsObjectArrayExistsProperty(Object[] array)
+        {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-    
+
         public override Object Get(EventBean eventBean)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetObjectArray(array);
         }
-    
+
         public override bool IsExistsProperty(EventBean eventBean)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            var value = array[_propertyIndex];
+
+            if (value == null)
+            {
+                return false;
+            }
+
+            // Object within the map
+            if (value is EventBean)
+            {
+                return _entryGetter.IsExistsProperty((EventBean) value);
+            }
+            return _entryGetter.IsBeanExistsProperty(value);
         }
     }
 }

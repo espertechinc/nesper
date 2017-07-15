@@ -50,7 +50,7 @@ namespace com.espertech.esper.rowregex
 	    private readonly ObjectArrayBackedEventBean _defineMultimatchEventBean;
 	    private readonly bool[] _isExprRequiresMultimatchState;
         private readonly RowRegexExprNode _expandedPatternNode;
-        private readonly ConfigurationEngineDefaults.MatchRecognize _matchRecognizeConfig;
+        private readonly ConfigurationEngineDefaults.MatchRecognizeConfig _matchRecognizeConfig;
 
         /// <summary>
         /// Ctor.
@@ -80,7 +80,7 @@ namespace com.espertech.esper.rowregex
 	        AgentInstanceContext agentInstanceContext,
 	        bool isUnbound,
 	        Attribute[] annotations,
-            ConfigurationEngineDefaults.MatchRecognize matchRecognizeConfig)
+            ConfigurationEngineDefaults.MatchRecognizeConfig matchRecognizeConfig)
 	    {
 	        var parentViewType = viewChain.EventType;
 	        _matchRecognizeSpec = matchRecognizeSpec;

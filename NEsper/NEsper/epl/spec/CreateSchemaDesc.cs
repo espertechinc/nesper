@@ -8,13 +8,16 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.spec
 {
-    /// <summary>Specification for creating an event type/schema. </summary>
+    /// <summary>
+    /// Specification for creating an event type/schema.
+    /// </summary>
     [Serializable]
     public class CreateSchemaDesc : MetaDefItem
     {
@@ -26,10 +29,18 @@ namespace com.espertech.esper.epl.spec
         /// <param name="columns">column definition</param>
         /// <param name="inherits">supertypes</param>
         /// <param name="assignedType">any type assignment such as Map, Object-array or variant or none-specified</param>
-        /// <param name="startTimestampProperty">The start timestamp property.</param>
-        /// <param name="endTimestampProperty">The end timestamp property.</param>
-        /// <param name="copyFrom">The copy from.</param>
-        public CreateSchemaDesc(String schemaName, ICollection<String> types, IList<ColumnDesc> columns, ICollection<String> inherits, AssignedType assignedType, String startTimestampProperty, String endTimestampProperty, ICollection<String> copyFrom)
+        /// <param name="startTimestampProperty">name of start-interval prop</param>
+        /// <param name="endTimestampProperty">name of end-interval prop</param>
+        /// <param name="copyFrom">copy-from</param>
+        public CreateSchemaDesc(
+            string schemaName,
+            ICollection<string> types,
+            IList<ColumnDesc> columns,
+            ICollection<string> inherits,
+            AssignedType assignedType,
+            string startTimestampProperty,
+            string endTimestampProperty,
+            ICollection<string> copyFrom)
         {
             SchemaName = schemaName;
             Types = types;
@@ -41,19 +52,27 @@ namespace com.espertech.esper.epl.spec
             CopyFrom = copyFrom;
         }
 
-        /// <summary>Returns schema name. </summary>
+        /// <summary>
+        /// Returns schema name.
+        /// </summary>
         /// <value>schema name</value>
         public string SchemaName { get; private set; }
 
-        /// <summary>Returns column definitions. </summary>
+        /// <summary>
+        /// Returns column definitions.
+        /// </summary>
         /// <value>column defs</value>
         public IList<ColumnDesc> Columns { get; private set; }
 
-        /// <summary>Returns supertypes. </summary>
+        /// <summary>
+        /// Returns supertypes.
+        /// </summary>
         /// <value>supertypes</value>
         public ICollection<string> Inherits { get; private set; }
 
-        /// <summary>Returns type Name(s). </summary>
+        /// <summary>
+        /// Returns type Name(s).
+        /// </summary>
         /// <value>types</value>
         public ICollection<string> Types { get; private set; }
 
@@ -71,26 +90,12 @@ namespace com.espertech.esper.epl.spec
         VARIANT,
         MAP,
         OBJECTARRAY,
+        AVRO,
         NONE
     }
 
     public static class AssignedTypeExtensions
     {
-        public static CreateSchemaClauseTypeDef MapToSoda(this AssignedType value)
-        {
-            switch (value)
-            {
-                case AssignedType.VARIANT:
-                    return CreateSchemaClauseTypeDef.VARIANT;
-                case AssignedType.MAP:
-                    return CreateSchemaClauseTypeDef.MAP;
-                case AssignedType.OBJECTARRAY:
-                    return CreateSchemaClauseTypeDef.OBJECTARRAY;
-                default:
-                    return CreateSchemaClauseTypeDef.NONE;
-            }
-        }
-
         public static AssignedType ParseKeyword(string keywordNodeText)
         {
             switch (keywordNodeText.ToLowerInvariant())
@@ -101,9 +106,11 @@ namespace com.espertech.esper.epl.spec
                     return AssignedType.MAP;
                 case "objectarray":
                     return AssignedType.OBJECTARRAY;
+                case "avro":
+                    return AssignedType.AVRO;
             }
 
-            throw new EPException("Expected 'variant', 'map' or 'objectarray' keyword after create-schema clause but encountered '" + keywordNodeText + "'");
+            throw new EPException("Expected 'variant', 'map', 'objectarray' or 'avro' keyword after create-schema clause but encountered '" + keywordNodeText + "'");
         }
 
         public static AssignedType MapFrom(CreateSchemaClauseTypeDef typeDefinition)
@@ -116,9 +123,28 @@ namespace com.espertech.esper.epl.spec
                     return AssignedType.MAP;
                 case CreateSchemaClauseTypeDef.OBJECTARRAY:
                     return AssignedType.OBJECTARRAY;
+                case CreateSchemaClauseTypeDef.AVRO:
+                    return AssignedType.AVRO;
             }
 
             return AssignedType.VARIANT;
         }
+
+        public static CreateSchemaClauseTypeDef MapToSoda(this AssignedType value)
+        {
+            switch (value)
+            {
+                case AssignedType.VARIANT:
+                    return CreateSchemaClauseTypeDef.VARIANT;
+                case AssignedType.MAP:
+                    return CreateSchemaClauseTypeDef.MAP;
+                case AssignedType.OBJECTARRAY:
+                    return CreateSchemaClauseTypeDef.OBJECTARRAY;
+                case AssignedType.AVRO:
+                    return CreateSchemaClauseTypeDef.AVRO;
+                default:
+                    return CreateSchemaClauseTypeDef.NONE;
+            }
+        }
     }
-}
+} // end of namespace

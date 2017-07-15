@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.join.plan
 	        return new HistoricalDataExecNode(viewable, pair.Second, pair.First, _numStreams, _streamNum);
 	    }
 
-	    public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes) {
+	    public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes) {
 	        // none to add
 	    }
 
@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.join.plan
 	        return new HistoricalTableLookupStrategy(viewable, pair.Second, pair.First, _numStreams, _streamNum, _rootStreamNum, _outerJoinExprNode == null ? null : _outerJoinExprNode.ExprEvaluator);
 	    }
 
-	    protected internal override void Print(IndentWriter writer)
+	    public override void Print(IndentWriter writer)
 	    {
 	        writer.IncrIndent();
 	        writer.WriteLine("HistoricalDataPlanNode streamNum=" + _streamNum);

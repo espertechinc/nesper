@@ -24,7 +24,7 @@ namespace com.espertech.esper.view.internals
     /// The view is parameterized by two or more data windows. From an external viewpoint, the 
     /// view retains all events that is in any of the data windows (a union).
     /// </summary>
-    public class UnionAsymetricView 
+    public class UnionAsymetricView
         : ViewSupport
         , LastPostObserver
         , CloneableView
@@ -41,7 +41,7 @@ namespace com.espertech.esper.view.internals
         private readonly RefCountedSet<EventBean> _unionWindow;
         private readonly IList<EventBean> _removalEvents = new List<EventBean>();
         private readonly ArrayDeque<EventBean> _newEvents = new ArrayDeque<EventBean>();
-    
+
         private EventBean[] _newDataChildView;
         private bool _isHasRemovestreamData;
         private bool _isRetainObserverEvents;
@@ -62,7 +62,7 @@ namespace com.espertech.esper.view.internals
             _views = viewList.ToArray();
             _unionWindow = new RefCountedSet<EventBean>();
             _oldEventsPerView = new EventBean[viewList.Count][];
-            
+
             for (var i = 0; i < viewList.Count; i++)
             {
                 var view = new LastPostObserverView(i);
@@ -70,12 +70,12 @@ namespace com.espertech.esper.view.internals
                 _views[i].AddView(view);
                 view.Observer = this;
             }
-    
+
             // recover
             for (var i = 0; i < _views.Length; i++)
             {
                 var viewSnapshot = _views[i].GetEnumerator();
-                while(viewSnapshot.MoveNext())
+                while (viewSnapshot.MoveNext())
                 {
                     var theEvent = viewSnapshot.Current;
                     _unionWindow.Add(theEvent);
@@ -127,7 +127,7 @@ namespace com.espertech.esper.view.internals
             // add new event to union
             if (newData != null)
             {
-                var removedByView = new bool[newData.Length,_views.Length];
+                var removedByView = new bool[newData.Length, _views.Length];
                 foreach (var newEvent in newData)
                 {
                     _unionWindow.Add(newEvent, _views.Length);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.view.internals
                                 }
                                 if (!found)
                                 {
-                                    removedByView[i,viewIndex] = true;
+                                    removedByView[i, viewIndex] = true;
                                 }
                             }
                         }
@@ -168,7 +168,7 @@ namespace com.espertech.esper.view.internals
                         {
                             for (var i = 0; i < newData.Length; i++)
                             {
-                                removedByView[i,viewIndex] = true;
+                                removedByView[i, viewIndex] = true;
                             }
                         }
                     }
@@ -185,7 +185,7 @@ namespace com.espertech.esper.view.internals
                     var allTrue = true;
                     for (var j = 0; j < _views.Length; j++)
                     {
-                        if (!removedByView[i,j])
+                        if (!removedByView[i, j])
                         {
                             allTrue = false;
                             break;
@@ -352,7 +352,7 @@ namespace com.espertech.esper.view.internals
         {
             throw new UnsupportedOperationException();
         }
-    
+
         public ViewFactory ViewFactory
         {
             get { return _unionViewFactory; }

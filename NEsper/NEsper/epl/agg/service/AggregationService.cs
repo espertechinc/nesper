@@ -50,11 +50,13 @@ namespace com.espertech.esper.epl.agg.service
         /// </summary>
         /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         void ClearResults(ExprEvaluatorContext exprEvaluatorContext);
-    
+
         void SetRemovedCallback(AggregationRowRemovedCallback callback);
-    
+
         void Accept(AggregationServiceVisitor visitor);
         void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor);
         bool IsGrouped { get; }
+
+        AggregationService GetContextPartitionAggregationService(int agentInstanceId);
     }
 }

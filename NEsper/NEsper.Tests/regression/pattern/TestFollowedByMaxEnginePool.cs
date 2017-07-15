@@ -227,7 +227,7 @@ namespace com.espertech.esper.regression.pattern
             config.EngineDefaults.ConditionHandlingConfig.AddClass(typeof(SupportConditionHandlerFactory));
             config.EngineDefaults.PatternsConfig.MaxSubexpressions = max;
             config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart = preventStart;
-            config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
     
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();

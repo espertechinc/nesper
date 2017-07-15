@@ -55,9 +55,9 @@ namespace com.espertech.esper.regression.enummethod
 	        IList<Item> separatedLuggage = LocationReportFactory.FindSeparatedLuggage(theEvent);
 
 	        foreach (Item item in separatedLuggage) {
-	            //log.info("Luggage that are separated (dist>20): " + item);
+	            //log.INFO("Luggage that are separated (dist>20): " + item);
 	            Item newOwner = LocationReportFactory.FindPotentialNewOwner(theEvent, item);
-	            //log.info("Found new owner " + newOwner);
+	            //log.INFO("Found new owner " + newOwner);
 	        }
 
 	        string eplFragment = "" +

@@ -6,141 +6,85 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.variable;
 
 namespace com.espertech.esper.filter
 {
-    public class FilterBooleanExpressionFactoryImpl : FilterBooleanExpressionFactory
-    {
-        public ExprNodeAdapterBase Make(
-            FilterSpecParamExprNode node,
-            EventBean[] events,
-            ExprEvaluatorContext exprEvaluatorContext,
-            StatementContext statementContext,
-            int agentInstanceId)
-        {
+    public class FilterBooleanExpressionFactoryImpl : FilterBooleanExpressionFactory {
+    
+        public ExprNodeAdapterBase Make(FilterSpecParamExprNode node, EventBean[] events, ExprEvaluatorContext exprEvaluatorContext, StatementContext statementContext, int agentInstanceId) {
+    
             int filterSpecId = node.FilterSpecId;
             int filterSpecParamPathNum = node.FilterSpecParamPathNum;
             ExprNode exprNode = node.ExprNode;
             VariableService variableService = node.VariableService;
-
+    
             // handle table evaluator context
-            if (node.HasTableAccess)
-            {
+            if (node.IsHasTableAccess) {
                 exprEvaluatorContext = new ExprEvaluatorContextWTableAccess(exprEvaluatorContext, node.TableService);
             }
-
+    
             // non-pattern case
             ExprNodeAdapterBase adapter;
-            if (events == null)
-            {
+            if (events == null) {
+    
                 // if a subquery is present in a filter stream acquire the agent instance lock
-                if (node.HasFilterStreamSubquery)
-                {
-                    adapter = GetLockableSingle(
-                        filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService,
-                        statementContext, agentInstanceId);
-                }
+                if (node.IsHasFilterStreamSubquery) {
+                    adapter = GetLockableSingle(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService, statementContext, agentInstanceId);
+                } else if (!node.IsHasVariable) {
                     // no-variable no-prior event evaluation
-                else if (!node.HasVariable)
-                {
-                    adapter = new ExprNodeAdapterBase(
-                        filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext);
-                }
-                else
-                {
+                    adapter = new ExprNodeAdapterBase(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext);
+                } else {
                     // with-variable no-prior event evaluation
-                    adapter = new ExprNodeAdapterBaseVariables(
-                        filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService);
+                    adapter = new ExprNodeAdapterBaseVariables(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService);
                 }
-            }
-            else
-            {
+            } else {
                 // pattern cases
-                VariableService variableServiceToUse = node.HasVariable ? variableService : null;
-                if (node.UseLargeThreadingProfile)
-                {
+                VariableService variableServiceToUse = node.IsHasVariable ? variableService : null;
+                if (node.UseLargeThreadingProfile) {
                     // no-threadlocal evaluation
                     // if a subquery is present in a pattern filter acquire the agent instance lock
-                    if (node.HasFilterStreamSubquery)
-                    {
-                        adapter = GetLockableMultiStreamNoTL(
-                            filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse,
-                            events);
+                    if (node.IsHasFilterStreamSubquery) {
+                        adapter = GetLockableMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                    } else {
+                        adapter = new ExprNodeAdapterMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     }
-                    else
-                    {
-                        adapter = new ExprNodeAdapterMultiStreamNoTL(
-                            filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse,
-                            events);
-                    }
-                }
-                else
-                {
-                    if (node.HasFilterStreamSubquery)
-                    {
-                        adapter = GetLockableMultiStream(
-                            filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse,
-                            events);
-                    }
-                    else
-                    {
+                } else {
+                    if (node.IsHasFilterStreamSubquery) {
+                        adapter = GetLockableMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+                    } else {
                         // evaluation with threadlocal cache
-                        adapter = new ExprNodeAdapterMultiStream(
-                            filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse,
-                            events);
+                        adapter = new ExprNodeAdapterMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     }
                 }
             }
-
-            if (!node.HasTableAccess)
-            {
+    
+            if (!node.IsHasTableAccess) {
                 return adapter;
             }
-
+    
             // handle table
-            return new ExprNodeAdapterBaseWTableAccess(
-                filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, adapter, node.TableService);
+            return new ExprNodeAdapterBaseWTableAccess(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, adapter, node.TableService);
         }
-
-        protected ExprNodeAdapterBase GetLockableSingle(
-            int filterSpecId,
-            int filterSpecParamPathNum,
-            ExprNode exprNode,
-            ExprEvaluatorContext exprEvaluatorContext,
-            VariableService variableService,
-            StatementContext statementContext,
-            int agentInstanceId)
-        {
-            return new ExprNodeAdapterBaseStmtLock(
-                filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService);
+    
+        protected ExprNodeAdapterBase GetLockableSingle(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableService, StatementContext statementContext, int agentInstanceId) {
+            return new ExprNodeAdapterBaseStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService);
         }
-
-        protected ExprNodeAdapterBase GetLockableMultiStreamNoTL(
-            int filterSpecId,
-            int filterSpecParamPathNum,
-            ExprNode exprNode,
-            ExprEvaluatorContext exprEvaluatorContext,
-            VariableService variableServiceToUse,
-            EventBean[] events)
-        {
-            return new ExprNodeAdapterMultiStreamNoTLStmtLock(
-                filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+    
+        protected ExprNodeAdapterBase GetLockableMultiStreamNoTL(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableServiceToUse, EventBean[] events) {
+            return new ExprNodeAdapterMultiStreamNoTLStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
         }
-
-        protected ExprNodeAdapterBase GetLockableMultiStream(
-            int filterSpecId,
-            int filterSpecParamPathNum,
-            ExprNode exprNode,
-            ExprEvaluatorContext exprEvaluatorContext,
-            VariableService variableServiceToUse,
-            EventBean[] events)
-        {
-            return new ExprNodeAdapterMultiStreamStmtLock(
-                filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
+    
+        protected ExprNodeAdapterBase GetLockableMultiStream(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext exprEvaluatorContext, VariableService variableServiceToUse, EventBean[] events) {
+            return new ExprNodeAdapterMultiStreamStmtLock(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
         }
     }
 } // end of namespace

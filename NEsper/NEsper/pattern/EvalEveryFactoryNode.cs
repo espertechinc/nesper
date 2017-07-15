@@ -9,6 +9,8 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.compat.logging;
+
 namespace com.espertech.esper.pattern
 {
     /// <summary>
@@ -16,13 +18,13 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalEveryFactoryNode : EvalNodeFactoryBase
     {
-        /// <summary>Ctor. </summary>
-        public EvalEveryFactoryNode()
-        {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
+        /// <summary>Ctor.</summary>
+        protected EvalEveryFactoryNode() {
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
-        {
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalEveryNode(agentInstanceContext, this, child);
         }
@@ -42,8 +44,7 @@ namespace com.espertech.esper.pattern
             get { return true; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
-        {
+        public override void ToPrecedenceFreeEPL(TextWriter writer) {
             writer.Write("every ");
             ChildNodes[0].ToEPL(writer, Precedence);
         }
@@ -53,4 +54,4 @@ namespace com.espertech.esper.pattern
             get { return PatternExpressionPrecedenceEnum.UNARY; }
         }
     }
-}
+} // end of namespace

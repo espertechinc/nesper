@@ -24,10 +24,10 @@ namespace com.espertech.esper.view.stat
     public class WeightedAverageViewFactory : ViewFactory
     {
         public readonly static String NAME = "Weighted-average";
-    
+
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
-    
+
         /// <summary>Expression of X field. </summary>
         private ExprNode _fieldNameX;
         /// <summary>Expression of weight field. </summary>
@@ -36,31 +36,32 @@ namespace com.espertech.esper.view.stat
         private StatViewAdditionalProps _additionalProps;
 
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
             _streamNumber = viewFactoryContext.StreamNum;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
-    
-            if (validated.Length < 2) {
+
+            if (validated.Length < 2)
+            {
                 throw new ViewParameterException(ViewParamMessage);
             }
             if ((!validated[0].ExprEvaluator.ReturnType.IsNumeric()) || (!validated[1].ExprEvaluator.ReturnType.IsNumeric()))
             {
                 throw new ViewParameterException(ViewParamMessage);
             }
-    
+
             _fieldNameX = validated[0];
             _fieldNameWeight = validated[1];
             _additionalProps = StatViewAdditionalProps.Make(validated, 2, parentEventType);
             _eventType = WeightedAverageView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new WeightedAverageView(this, agentInstanceViewFactoryContext);
@@ -72,7 +73,7 @@ namespace com.espertech.esper.view.stat
             set { _eventType = value; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is WeightedAverageView))
             {
@@ -82,10 +83,10 @@ namespace com.espertech.esper.view.stat
             {
                 return false;
             }
-    
-            var myView = (WeightedAverageView) view;
+
+            var myView = (WeightedAverageView)view;
             if ((!ExprNodeUtility.DeepEquals(_fieldNameWeight, myView.FieldNameWeight)) ||
-                (!ExprNodeUtility.DeepEquals(_fieldNameX, myView.FieldNameX)) )
+                (!ExprNodeUtility.DeepEquals(_fieldNameX, myView.FieldNameX)))
             {
                 return false;
             }

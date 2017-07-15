@@ -10,7 +10,9 @@ using System;
 
 namespace com.espertech.esper.util
 {
-    /// <summary>Type widener that coerces from String to char if required. </summary>
+    /// <summary>
+    /// Type widener that coerces from String to char if required.
+    /// </summary>
     public class TypeWidenerStringToCharCoercer
     {
         public static Object Widen(Object input)

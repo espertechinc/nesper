@@ -13,40 +13,37 @@ using com.espertech.esper.client;
 
 namespace com.espertech.esper.events.map
 {
-    using DataMap = IDictionary<string, object>;
-
     /// <summary>
-    /// Wrapper for events represented by a Map of key-value pairs that are the event
-    /// properties. MapEventBean instances are equal if they have the same <seealso
-    /// cref="client.EventType"/> and all property names and values are reference-equal.
+    ///     Wrapper for events represented by a Map of key-value pairs that are the event properties.
+    ///     MapEventBean instances are equal if they have the same <seealso cref="client.EventType" /> and all property names
+    ///     and values are reference-equal.
     /// </summary>
     public class MapEventBean
         : EventBeanSPI
         , MappedEventBean
     {
         private readonly EventType _eventType;
-        private DataMap _properties;
-    
+        private IDictionary<string, Object> _properties;
+
         /// <summary>
-        /// Constructor for initialization with existing values. Makes a shallow copy of the
-        /// supplied values to not be surprised by changing property values.
+        ///     Constructor for initialization with existing values.
+        ///     Makes a shallow copy of the supplied values to not be surprised by changing property values.
         /// </summary>
         /// <param name="properties">are the event property values</param>
         /// <param name="eventType">is the type of the event, i.e. describes the map entries</param>
-        public MapEventBean(DataMap properties, EventType eventType)
+        public MapEventBean(IDictionary<string, Object> properties, EventType eventType)
         {
-            _eventType = eventType;
             _properties = properties;
+            _eventType = eventType;
         }
 
         /// <summary>
-        /// Constructor for the mutable functions, e.g. only the type of values is known but
-        /// not the actual values.
+        ///     Constructor for the mutable functions, e.g. only the type of values is known but not the actual values.
         /// </summary>
         /// <param name="eventType">is the type of the event, i.e. describes the map entries</param>
-        public MapEventBean(MapEventType eventType)
+        public MapEventBean(EventType eventType)
         {
-            _properties = new Dictionary<string, object>();
+            _properties = new Dictionary<string, Object>();
             _eventType = eventType;
         }
 
@@ -55,15 +52,15 @@ namespace com.espertech.esper.events.map
             get { return _eventType; }
         }
 
-        /// <summary>
-        /// Returns the properties.
-        /// </summary>
-        /// <returns>
-        /// properties
-        /// </returns>
-        public DataMap Properties
+        public Object Get(string property)
         {
-            get { return _properties; }
+            EventPropertyGetter getter = _eventType.GetGetter(property);
+            if (getter == null)
+            {
+                throw new PropertyAccessException(
+                    "Property named '" + property + "' is not a valid property name for this type");
+            }
+            return getter.Get(this);
         }
 
         public object this[string property]
@@ -71,36 +68,35 @@ namespace com.espertech.esper.events.map
             get { return Get(property); }
         }
 
-        public Object Get(String property)
-        {
-            EventPropertyGetter getter = _eventType.GetGetter(property);
-            if (getter == null)
-            {
-                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
-            }
-            return getter.Get(this);
-        }
-
         public object Underlying
         {
             get { return _properties; }
-            set { _properties = value as DataMap; }
+            set { _properties = (IDictionary<string, Object>) value; }
+        }
+
+        public Object GetFragment(string propertyExpression)
+        {
+            EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
+            if (getter == null)
+            {
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
+            }
+            return getter.GetFragment(this);
+        }
+
+        /// <summary>
+        ///     Returns the properties.
+        /// </summary>
+        /// <value>properties</value>
+        public IDictionary<string, object> Properties
+        {
+            get { return _properties; }
         }
 
         public override String ToString()
         {
             return "MapEventBean " +
-                    "eventType=" + _eventType;
-        }
-    
-        public Object GetFragment(String propertyExpression)
-        {
-            EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
-            if (getter == null)
-            {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
-            }
-            return getter.GetFragment(this);
+                   "eventType=" + _eventType;
         }
     }
-}
+} // end of namespace

@@ -59,8 +59,8 @@ namespace com.espertech.esper.client
             Assert.AreEqual(1000, _config.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout);
             Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled);
             Assert.AreEqual(100, _config.EngineDefaults.ThreadingConfig.InternalTimerMsecResolution);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
             Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolInbound);
             Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound);
             Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolRouteExec);
@@ -74,12 +74,12 @@ namespace com.espertech.esper.client
             Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecCapacity);
             Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecCapacity);
             Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsEngineFairlock);
-            //Assert.IsFalse(_config.EngineDefaults.MetricsReportingConfig.IsJmxEngineMetrics);
+            //Assert.IsFalse(_config.EngineDefaults.MetricsReporting.IsJmxEngineMetrics);
             Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
             Assert.AreEqual(long.MaxValue, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
     
-            Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, _config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle);
+            Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, _config.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle);
             Assert.AreEqual(AccessorStyleEnum.NATIVE, _config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle);
             Assert.AreEqual(EventRepresentation.MAP, _config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation);
             Assert.AreEqual(5, _config.EngineDefaults.EventMetaConfig.AnonymousCacheSize);
@@ -87,11 +87,11 @@ namespace com.espertech.esper.client
             Assert.IsTrue(_config.EngineDefaults.ViewResourcesConfig.IsShareViews);
             Assert.IsFalse(_config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies);
             Assert.IsFalse(_config.EngineDefaults.ViewResourcesConfig.IsIterableUnbound);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug);
-            Assert.IsTrue(_config.EngineDefaults.LoggingConfig.IsEnableTimerDebug);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableQueryPlan);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableADO);
-            Assert.IsNull(_config.EngineDefaults.LoggingConfig.AuditPattern);
+            Assert.IsFalse(_config.EngineDefaults.Logging.IsEnableExecutionDebug);
+            Assert.IsTrue(_config.EngineDefaults.Logging.IsEnableTimerDebug);
+            Assert.IsFalse(_config.EngineDefaults.Logging.IsEnableQueryPlan);
+            Assert.IsFalse(_config.EngineDefaults.Logging.IsEnableADO);
+            Assert.IsNull(_config.EngineDefaults.Logging.AuditPattern);
             Assert.AreEqual(15000, _config.EngineDefaults.VariablesConfig.MsecVersionRelease);
             Assert.AreEqual(null, _config.EngineDefaults.PatternsConfig.MaxSubexpressions);
             Assert.AreEqual(true, _config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
@@ -146,14 +146,14 @@ namespace com.espertech.esper.client
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.espertech.esper.client.annotation")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.espertech.esper.dataflow.ops")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp")));
-            Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp.ClassOne")));
+            Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.typeof(myapp)One")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp", "AssemblyA")));
             Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp", "AssemblyB.dll")));
-            Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.myapp.ClassTwo", "AssemblyB.dll")));
+            Assert.IsTrue(config.Imports.Contains(new AutoImportDesc("com.mycompany.typeof(myapp)Two", "AssemblyB.dll")));
 
             Assert.That(config.AnnotationImports.Count, Is.EqualTo(2));
             Assert.That(config.AnnotationImports, Contains.Item(new AutoImportDesc("com.mycompany.myapp.annotations")));
-            Assert.That(config.AnnotationImports, Contains.Item(new AutoImportDesc("com.mycompany.myapp.annotations.ClassOne")));
+            Assert.That(config.AnnotationImports, Contains.Item(new AutoImportDesc("com.mycompany.myapp.typeof(annotations)One")));
 
             // assert XML DOM - no schema
             Assert.AreEqual(2, config.EventTypesXMLDOM.Count);
@@ -386,15 +386,15 @@ namespace com.espertech.esper.client
             // assert engine defaults
             Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder);
             Assert.AreEqual(3000, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
 
             Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
             Assert.AreEqual(4000, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
 
             Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder);
             Assert.AreEqual(2000, config.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
             Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolInbound);
             Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound);
             Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolRouteExec);
@@ -413,15 +413,15 @@ namespace com.espertech.esper.client
             Assert.IsFalse(config.EngineDefaults.ViewResourcesConfig.IsShareViews);
             Assert.IsTrue(config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies);
             Assert.IsTrue(config.EngineDefaults.ViewResourcesConfig.IsIterableUnbound);
-            Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle);
+            Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle);
             Assert.AreEqual(AccessorStyleEnum.PUBLIC, config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle);
             Assert.AreEqual(EventRepresentation.MAP, config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation);
             Assert.AreEqual(100, config.EngineDefaults.EventMetaConfig.AnonymousCacheSize);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug);
-            Assert.IsFalse(config.EngineDefaults.LoggingConfig.IsEnableTimerDebug);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableQueryPlan);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableADO);
-            Assert.AreEqual("[%u] %m", config.EngineDefaults.LoggingConfig.AuditPattern);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableExecutionDebug);
+            Assert.IsFalse(config.EngineDefaults.Logging.IsEnableTimerDebug);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableQueryPlan);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableADO);
+            Assert.AreEqual("[%u] %m", config.EngineDefaults.Logging.AuditPattern);
             Assert.AreEqual(30000, config.EngineDefaults.VariablesConfig.MsecVersionRelease);
             Assert.AreEqual(3L, (long) config.EngineDefaults.PatternsConfig.MaxSubexpressions);
             Assert.AreEqual(false, config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
@@ -438,7 +438,7 @@ namespace com.espertech.esper.client
             Assert.AreEqual(ConfigurationEngineDefaults.FilterServiceProfile.READWRITE, config.EngineDefaults.ExecutionConfig.FilterServiceProfile);
             Assert.AreEqual(100, config.EngineDefaults.ExecutionConfig.FilterServiceMaxFilterWidth);
     
-            var metrics = config.EngineDefaults.MetricsReportingConfig;
+            var metrics = config.EngineDefaults.MetricsReporting;
             Assert.IsTrue(metrics.IsEnableMetricsReporting);
             Assert.AreEqual(4000L, metrics.EngineInterval);
             Assert.AreEqual(500L, metrics.StatementInterval);

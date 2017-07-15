@@ -14,7 +14,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.client.soda
 {
 	/// <summary>
-	/// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
+	/// Named parameter expression of the form "name:expression" or "name:(expression, params Expression[])"
 	/// </summary>
 	[Serializable]
     public class NamedParameterExpression : ExpressionBase

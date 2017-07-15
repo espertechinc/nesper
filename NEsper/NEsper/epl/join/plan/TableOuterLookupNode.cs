@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.join.plan
             get { return _tableLookupPlan; }
         }
 
-        protected internal override void Print(IndentWriter writer)
+        public override void Print(IndentWriter writer)
         {
             writer.WriteLine("TableOuterLookupNode " +
                    " tableLookupPlan=" + _tableLookupPlan);
@@ -59,7 +59,7 @@ namespace com.espertech.esper.epl.join.plan
             return new TableOuterLookupExecNode(_tableLookupPlan.IndexedStream, lookupStrategy);
         }
 
-        public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
             usedIndexes.AddAll(_tableLookupPlan.IndexNum);
         }

@@ -118,7 +118,7 @@ namespace com.espertech.esper.epl.join.plan
         /// until no additional entries to be added are found, ie. several passes can be made.
         /// </summary>
         /// <param name="typesPerStream">The types per stream.</param>
-        /// <param name="queryGraph">navigablity info between streamss</param>
+        /// <param name="queryGraph">navigablity INFO between streamss</param>
         public static void FillEquivalentNav(EventType[] typesPerStream, QueryGraph queryGraph)
         {
             bool addedEquivalency;

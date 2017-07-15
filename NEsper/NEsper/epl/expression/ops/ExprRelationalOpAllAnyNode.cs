@@ -18,12 +18,13 @@ using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
-using DataCollection = System.Collections.Generic.ICollection<object>;
-using DataMap = System.Collections.Generic.IDictionary<string, object>;
-using AnyMap = System.Collections.Generic.IDictionary<object, object>;
-
 namespace com.espertech.esper.epl.expression.ops
 {
+    using DataCollection = ICollection<object>;
+    using DataMap = IDictionary<string, object>;
+    using AnyMap = IDictionary<object, object>;
+    using RelationalComputer = Func<object, object, bool>;
+
     /// <summary>
     /// Represents a lesser or greater then (&lt;/&lt;=/&gt;/&gt;=) expression in a filter
     /// expression tree.
@@ -39,7 +40,7 @@ namespace com.espertech.esper.epl.expression.ops
         private bool _hasCollectionOrArray;
 
         [NonSerialized] private Func<object, object>[] _transformList;
-        [NonSerialized] private RelationalOpEnumExtensions.Computer _computer;
+        [NonSerialized] private RelationalComputer _computer;
         [NonSerialized] private ExprEvaluator[] _evaluators;
 
         /// <summary>

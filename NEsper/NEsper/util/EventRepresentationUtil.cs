@@ -7,43 +7,81 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.epl.annotation;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.util
 {
     public class EventRepresentationUtil
     {
-        public static bool IsMap(Attribute[] annotations, ConfigurationInformation configs, AssignedType assignedType)
+
+        public static EventUnderlyingType GetRepresentation(
+            Attribute[] annotations,
+            ConfigurationInformation configs,
+            AssignedType assignedType)
         {
             // assigned type has priority
             if (assignedType == AssignedType.OBJECTARRAY)
             {
-                return false;
+                return EventUnderlyingType.OBJECTARRAY;
             }
-            if (assignedType == AssignedType.MAP)
+            else if (assignedType == AssignedType.MAP)
             {
-                return true;
+                return EventUnderlyingType.MAP;
             }
-            if (assignedType == AssignedType.VARIANT || assignedType != AssignedType.NONE)
+            else if (assignedType == AssignedType.AVRO)
+            {
+                return EventUnderlyingType.AVRO;
+            }
+            if (assignedType == AssignedType.VARIANT ||
+                assignedType != AssignedType.NONE)
             {
                 throw new IllegalStateException("Not handled by event representation: " + assignedType);
             }
 
             // annotation has second priority
-            Attribute annotation = epl.annotation.AnnotationUtil.FindAttribute((IEnumerable<Attribute>)annotations, typeof(EventRepresentationAttribute));
+            var annotation = AnnotationUtil.FindAnnotation(annotations, typeof (EventRepresentationAttribute));
             if (annotation != null)
             {
-                var eventRepresentation = (EventRepresentationAttribute)annotation;
-                return !eventRepresentation.Array;
+                EventRepresentationAttribute eventRepresentation = (EventRepresentationAttribute) annotation;
+                if (eventRepresentation.Value == EventUnderlyingType.AVRO)
+                {
+                    return EventUnderlyingType.AVRO;
+                }
+                else if (eventRepresentation.Value == EventUnderlyingType.OBJECTARRAY)
+                {
+                    return EventUnderlyingType.OBJECTARRAY;
+                }
+                else if (eventRepresentation.Value == EventUnderlyingType.MAP)
+                {
+                    return EventUnderlyingType.MAP;
+                }
+                else
+                {
+                    throw new IllegalStateException("Unrecognized enum " + eventRepresentation.Value);
+                }
             }
 
             // use engine-wide default
-            return configs.EngineDefaults.EventMetaConfig.DefaultEventRepresentation == EventRepresentation.MAP;
+            EventUnderlyingType configured = configs.EngineDefaults.EventMeta.DefaultEventRepresentation;
+            if (configured == EventUnderlyingType.OBJECTARRAY)
+            {
+                return EventUnderlyingType.OBJECTARRAY;
+            }
+            else if (configured == EventUnderlyingType.MAP)
+            {
+                return EventUnderlyingType.MAP;
+            }
+            else if (configured == EventUnderlyingType.AVRO)
+            {
+                return EventUnderlyingType.AVRO;
+            }
+            return EventUnderlyingType.MAP;
         }
     }
-}
+} // end of namespace

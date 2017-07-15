@@ -9,9 +9,7 @@
 using System;
 
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
-
 
 namespace com.espertech.esper.filter
 {
@@ -24,13 +22,28 @@ namespace com.espertech.esper.filter
         {
             Constant = constant;
         }
-    
-        public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext) {
+
+        public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        {
             return Constant;
         }
 
-        /// <summary>Returns the constant value. </summary>
-        /// <value>constant</value>
+        public Type ReturnType
+        {
+            get { return Constant == null ? null : Constant.GetType(); }
+        }
+
+        public bool IsConstant
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Returns the constant value.
+        /// </summary>
+        /// <value>
+        /// constant
+        /// </value>
         public object Constant { get; private set; }
 
         public bool Equals(InSetOfValuesConstant other)
@@ -51,8 +64,8 @@ namespace com.espertech.esper.filter
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (InSetOfValuesConstant)) return false;
-            return Equals((InSetOfValuesConstant) obj);
+            if (obj.GetType() != typeof(InSetOfValuesConstant)) return false;
+            return Equals((InSetOfValuesConstant)obj);
         }
 
         /// <summary>

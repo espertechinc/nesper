@@ -215,7 +215,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (listThis != null)
             {
-                var node = listThis.First;
+                var node = listthis.First;
                 while (node != null)
                 {
                     action.Invoke(node.Value);
@@ -228,7 +228,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (arrayThis != null)
             {
-                int length = arrayThis.Count;
+                int length = arraythis.Count;
                 for (int ii = 0; ii < length; ii++)
                 {
                     action.Invoke(arrayThis[ii]);
@@ -240,7 +240,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (arrayThis != null)
             {
-                int length = arrayThis.Length;
+                int length = arraythis.Length;
                 for (int ii = 0; ii < length; ii++)
                 {
                     action.Invoke(arrayThis[ii]);
@@ -259,17 +259,17 @@ namespace com.espertech.esper.compat.collections
                 if (enumThis is ChainedArrayList<T>)
                 {
                     var arrayThis = (ChainedArrayList<T>) enumThis;
-                    arrayThis.ForEach(action);
+                    arraythis.ForEach(action);
                 }
                 else if (enumThis is List<T>)
                 {
                     var arrayThis = (List<T>)enumThis;
-                    arrayThis.ForEach(action);
+                    arraythis.ForEach(action);
                 }
                 else if (enumThis is IList<T>)
                 {
                     var arrayThis = (IList<T>) enumThis;
-                    var length = arrayThis.Count;
+                    var length = arraythis.Count;
                     for (int ii = 0; ii < length; ii++)
                     {
                         action.Invoke(arrayThis[ii]);
@@ -287,12 +287,12 @@ namespace com.espertech.esper.compat.collections
 
         public static IEnumerable Is<T, TX>(this IEnumerable<T> enumThis)
         {
-            return enumThis.Where(item => item is TX);
+            return enumthis.Where(item => item is TX);
         }
 
         public static void Fill<T>(this T[] arrayThis, T value)
         {
-            for (int ii = 0; ii < arrayThis.Length; ii++)
+            for (int ii = 0; ii < arraythis.Length; ii++)
             {
                 arrayThis[ii] = value;
             }
@@ -300,7 +300,7 @@ namespace com.espertech.esper.compat.collections
 
         public static void Fill<T>(this T[] arrayThis, Func<T> generator)
         {
-            for (int ii = 0; ii < arrayThis.Length; ii++)
+            for (int ii = 0; ii < arraythis.Length; ii++)
             {
                 arrayThis[ii] = generator.Invoke();
             }
@@ -308,7 +308,7 @@ namespace com.espertech.esper.compat.collections
 
         public static void Fill<T>(this T[] arrayThis, Func<int, T> generator)
         {
-            for (int ii = 0; ii < arrayThis.Length; ii++)
+            for (int ii = 0; ii < arraythis.Length; ii++)
             {
                 arrayThis[ii] = generator.Invoke(ii);
             }
@@ -318,11 +318,11 @@ namespace com.espertech.esper.compat.collections
         {
             while (true)
             {
-                var testThis = enumThis.MoveNext();
+                var testThis = enumthis.MoveNext();
                 var testThat = enumThat.MoveNext();
                 if (testThis && testThat)
                 {
-                    if (!Equals(enumThis.Current, enumThat.Current))
+                    if (!Equals(enumthis.Current, enumThat.Current))
                     {
                         return false;
                     }
@@ -900,6 +900,45 @@ namespace com.espertech.esper.compat.collections
                 return ((IEnumerable<object>)value).OfType<T>().ToArray();
             if (value is IEnumerable)
                 return ((IEnumerable)value).Cast<object>().OfType<T>().ToArray();
+
+            throw new ArgumentException("invalid value");
+        }
+
+        public static IList<T> UnwrapIntoList<T>(this object value, bool includeNullValues = true)
+        {
+            if (value == null)
+                return null;
+            if (value is IList<T>)
+                return ((IList<T>) value);
+            if (value is IEnumerable<object>)
+            {
+                IEnumerable<object> expression = ((IEnumerable<object>) value);
+                if (includeNullValues)
+                {
+                    expression = expression.Where(o => o == null || o is T);
+                }
+                else
+                {
+                    expression = expression.Where(o => o != null || o is T);
+                }
+
+                return expression.Cast<T>().ToList();
+            }
+
+            if (value is IEnumerable)
+            {
+                IEnumerable<object> expression = ((IEnumerable) value).Cast<object>();
+                if (includeNullValues)
+                {
+                    expression = expression.Where(o => o == null || o is T);
+                }
+                else
+                {
+                    expression = expression.Where(o => o != null || o is T);
+                }
+
+                return expression.Cast<T>().ToList();
+            }
 
             throw new ArgumentException("invalid value");
         }

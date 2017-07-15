@@ -24,27 +24,18 @@ namespace com.espertech.esper.epl.join.pollindex
     {
         private readonly int _streamNum;
         private readonly EventType _eventType;
-        private readonly String[] _indexPropertiesJoin;
-        private readonly Type[] _keyCoercionTypes;
-        private readonly String[] _rangePropertiesJoin;
-        private readonly Type[] _rangeCoercionTypes;
+        private readonly IList<string> _indexPropertiesJoin;
+        private readonly IList<Type> _keyCoercionTypes;
+        private readonly IList<string> _rangePropertiesJoin;
+        private readonly IList<Type> _rangeCoercionTypes;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="streamNum">is the stream number of the indexed stream</param>
-        /// <param name="eventType">is the event type of the indexed stream</param>
-        /// <param name="indexPropertiesJoin">The index properties join.</param>
-        /// <param name="keyCoercionTypes">The key coercion types.</param>
-        /// <param name="rangePropertiesJoin">The range properties join.</param>
-        /// <param name="rangeCoercionTypes">The range coercion types.</param>
         public PollResultIndexingStrategyComposite(
             int streamNum,
             EventType eventType,
-            String[] indexPropertiesJoin,
-            Type[] keyCoercionTypes,
-            String[] rangePropertiesJoin,
-            Type[] rangeCoercionTypes)
+            IList<string> indexPropertiesJoin,
+            IList<Type> keyCoercionTypes,
+            IList<string> rangePropertiesJoin,
+            IList<Type> rangeCoercionTypes)
         {
             _streamNum = streamNum;
             _eventType = eventType;
@@ -56,26 +47,25 @@ namespace com.espertech.esper.epl.join.pollindex
     
         public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
         {
-            if (!isActiveCache)
-            {
-                return new EventTable[]
-                {
-                    new UnindexedEventTableList(pollResult, _streamNum)
-                };
+            if (!isActiveCache) {
+                return new EventTable[]{new UnindexedEventTableList(pollResult, _streamNum)};
             }
             var factory = new PropertyCompositeEventTableFactory(_streamNum, _eventType, _indexPropertiesJoin, _keyCoercionTypes, _rangePropertiesJoin, _rangeCoercionTypes);
-            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
-            foreach (var table in tables)
+            EventTable[] tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
+            foreach (EventTable table in tables) {
                 table.Add(pollResult.ToArray());
+            }
             return tables;
         }
     
-        public String ToQueryPlan() {
-            return GetType().FullName +
-                    " hash " + _indexPropertiesJoin.Render() +
-                    " btree " + _rangePropertiesJoin.Render() +
-                    " key coercion " + _keyCoercionTypes.Render() +
-                    " range coercion " + _rangeCoercionTypes.Render();
+        public string ToQueryPlan()
+        {
+            return string.Format(
+                "{0} hash {1} btree {2} key coercion {3} range coercion {4}", GetType().Name,
+                CompatExtensions.Render(_indexPropertiesJoin), 
+                CompatExtensions.Render(_rangePropertiesJoin),
+                CompatExtensions.Render(_keyCoercionTypes), 
+                CompatExtensions.Render(_rangeCoercionTypes));
         }
     }
-}
+} // end of namespace

@@ -46,7 +46,7 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
-        /// Resolves a resource and returns the file info.
+        /// Resolves a resource and returns the file INFO.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="searchPath">The search path.</param>
@@ -68,7 +68,7 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
-        /// Resolves a resource and returns the file info.
+        /// Resolves a resource and returns the file INFO.
         /// </summary>
         /// <param name="name">The name.</param>
 

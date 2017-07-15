@@ -7,21 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 using com.espertech.esper.client.soda;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.pattern
 {
-    public class PatternLevelAnnotationUtil
-    {
-        private readonly static String DISCARDPARTIALSONMATCH = "DiscardPartialsOnMatch";
-        private readonly static String SUPPRESSOVERLAPPINGMATCHES = "SuppressOverlappingMatches";
+    public class PatternLevelAnnotationUtil {
+    
+        private static readonly string DISCARDPARTIALSONMATCH = "DiscardPartialsOnMatch";
+        private static readonly string SUPPRESSOVERLAPPINGMATCHES = "SuppressOverlappingMatches";
     
         public static AnnotationPart[] AnnotationsFromSpec(PatternStreamSpecRaw pattern) {
-            ArrayDeque<AnnotationPart> parts = null;
+            Deque<AnnotationPart> parts = null;
     
             if (pattern.IsDiscardPartialsOnMatch) {
                 parts = new ArrayDeque<AnnotationPart>();
@@ -38,32 +40,28 @@ namespace com.espertech.esper.pattern
             if (parts == null) {
                 return null;
             }
-            return parts.ToArray();
+            return Parts.ToArray(new AnnotationPart[parts.Count]);
         }
-
-        public static PatternLevelAnnotationFlags AnnotationsToSpec(AnnotationPart[] parts)
-        {
-            PatternLevelAnnotationFlags flags = new PatternLevelAnnotationFlags();
+    
+        public static PatternLevelAnnotationFlags AnnotationsToSpec(AnnotationPart[] parts) {
+            var flags = new PatternLevelAnnotationFlags();
             if (parts == null) {
                 return flags;
             }
-            foreach (AnnotationPart part in parts)
-            {
+            foreach (AnnotationPart part in parts) {
                 ValidateSetFlags(flags, part.Name);
             }
             return flags;
         }
     
-        public static void ValidateSetFlags(PatternLevelAnnotationFlags flags, String annotation) {
-            if (annotation.ToLower().Equals(DISCARDPARTIALSONMATCH.ToLower())) {
-                flags.IsDiscardPartialsOnMatch = true;
-            }
-            else if (annotation.ToLower().Equals(SUPPRESSOVERLAPPINGMATCHES.ToLower())) {
-                flags.IsSuppressSameEventMatches = true;
-            }
-            else {
+        public static void ValidateSetFlags(PatternLevelAnnotationFlags flags, string annotation) {
+            if (annotation.ToLowerInvariant().Equals(DISCARDPARTIALSONMATCH.ToLowerInvariant())) {
+                flags.DiscardPartialsOnMatch = true;
+            } else if (annotation.ToLowerInvariant().Equals(SUPPRESSOVERLAPPINGMATCHES.ToLowerInvariant())) {
+                flags.SuppressSameEventMatches = true;
+            } else {
                 throw new ArgumentException("Unrecognized pattern-level annotation '" + annotation + "'");
             }
         }
     }
-}
+} // end of namespace

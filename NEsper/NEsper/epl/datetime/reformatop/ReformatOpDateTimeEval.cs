@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 
 namespace com.espertech.esper.epl.datetime.reformatop
@@ -36,9 +35,19 @@ namespace com.espertech.esper.epl.datetime.reformatop
             return _dateTimeEval.Invoke(ts.TimeFromMillis(_timeZone));
         }
 
+        public object Evaluate(DateTime dt, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return _dateTimeEval.Invoke(dt.TranslateTo(_timeZone));
+        }
+
         public object Evaluate(DateTimeOffset dateTime, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return _dateTimeEval.Invoke(dateTime.TranslateTo(_timeZone));
+        }
+
+        public object Evaluate(DateTimeEx dtx, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return _dateTimeEval.Invoke(dtx.DateTime.TranslateTo(_timeZone));
         }
 
         public Type ReturnType
@@ -46,7 +55,11 @@ namespace com.espertech.esper.epl.datetime.reformatop
             get { return _returnType; }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream, DatetimeMethodEnum currentMethod, ICollection<ExprNode> currentParameters, ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             return null;
         }

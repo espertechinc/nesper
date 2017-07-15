@@ -84,7 +84,7 @@ namespace com.espertech.esper.regression.context
 	        filtered = new SupportSelectorFilteredInitTerm("S0_2");
 	        Assert.IsFalse(stmt.GetEnumerator(filtered).MoveNext());
 
-	        // test always-false filter - compare context partition info
+	        // test always-false filter - compare context partition INFO
 	        filtered = new SupportSelectorFilteredInitTerm(null);
             Assert.IsFalse(stmt.GetEnumerator(filtered).MoveNext());
 	        EPAssertionUtil.AssertEqualsAnyOrder(new object[]{1000L}, filtered.ContextsStartTimes);

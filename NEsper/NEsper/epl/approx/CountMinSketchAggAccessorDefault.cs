@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 
@@ -19,11 +20,12 @@ namespace com.espertech.esper.epl.approx
 {
     public class CountMinSketchAggAccessorDefault : AggregationAccessor {
     
-        public static CountMinSketchAggAccessorDefault INSTANCE = new CountMinSketchAggAccessorDefault();
+        public static readonly CountMinSketchAggAccessorDefault INSTANCE = new CountMinSketchAggAccessorDefault();
     
-        private CountMinSketchAggAccessorDefault() {}
+        private CountMinSketchAggAccessorDefault() {
+        }
     
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public Object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
             return null;
         }
     
@@ -35,8 +37,8 @@ namespace com.espertech.esper.epl.approx
             return null;
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
             return null;
         }
     }
-}
+} // end of namespace

@@ -26,14 +26,15 @@ namespace com.espertech.esper.pattern
         /// <summary>Ctor. </summary>
         public EvalMatchUntilFactoryNode(ExprNode lowerBounds, ExprNode upperBounds, ExprNode singleBound)
         {
-            if (singleBound != null && (lowerBounds != null || upperBounds != null)) {
+            if (singleBound != null && (lowerBounds != null || upperBounds != null))
+            {
                 throw new ArgumentException("Invalid bounds, specify either single bound or range bounds");
             }
             LowerBounds = lowerBounds;
             UpperBounds = upperBounds;
             SingleBound = singleBound;
         }
-    
+
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext, parentNode);
@@ -73,27 +74,34 @@ namespace com.espertech.esper.pattern
             get { return true; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
-            if (SingleBound != null) {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            if (SingleBound != null)
+            {
                 writer.Write("[");
                 writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(SingleBound));
                 writer.Write("] ");
             }
-            else {
-                if (LowerBounds != null || UpperBounds != null) {
+            else
+            {
+                if (LowerBounds != null || UpperBounds != null)
+                {
                     writer.Write("[");
-                    if (LowerBounds != null) {
+                    if (LowerBounds != null)
+                    {
                         writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(LowerBounds));
                     }
                     writer.Write(":");
-                    if (UpperBounds != null) {
+                    if (UpperBounds != null)
+                    {
                         writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(UpperBounds));
                     }
                     writer.Write("] ");
                 }
             }
             ChildNodes[0].ToEPL(writer, Precedence);
-            if (ChildNodes.Count > 1) {
+            if (ChildNodes.Count > 1)
+            {
                 writer.Write(" until ");
                 ChildNodes[1].ToEPL(writer, Precedence);
             }

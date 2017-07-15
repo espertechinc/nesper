@@ -30,11 +30,12 @@ namespace com.espertech.esper.events.arr
         }
 
         public abstract Object HandleNestedValue(Object value);
+        public abstract bool HandleNestedValueExists(Object value);
         public abstract Object HandleNestedValueFragment(Object value);
 
         public Object GetObjectArray(Object[] array)
         {
-            Object value = array[PropertyIndex];
+            var value = array[PropertyIndex];
             if (value == null)
             {
                 return null;
@@ -54,13 +55,19 @@ namespace com.espertech.esper.events.arr
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            var value = array[PropertyIndex];
+            if (value == null)
+            {
+                return false;
+            }
+            return HandleNestedValueExists(value);
         }
 
         public Object GetFragment(EventBean obj)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj);
-            Object value = array[PropertyIndex];
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj);
+            var value = array[PropertyIndex];
             if (value == null)
             {
                 return null;

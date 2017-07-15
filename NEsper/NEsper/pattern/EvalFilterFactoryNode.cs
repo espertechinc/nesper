@@ -8,9 +8,10 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
@@ -20,29 +21,29 @@ namespace com.espertech.esper.pattern
     /// <summary>
     /// This class represents a filter of events in the evaluation tree representing any event expressions.
     /// </summary>
-    [Serializable]
     public class EvalFilterFactoryNode : EvalNodeFactoryBase
     {
-        private readonly FilterSpecRaw _rawFilterSpec;
-        private readonly String _eventAsName;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         [NonSerialized] private FilterSpecCompiled _filterSpec;
-        private readonly int? _consumptionLevel;
-    
-        private int _eventAsTagNumber = -1;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="filterSpecification">specifies the filter properties</param>
-        /// <param name="eventAsName">is the name to use for adding matching events to the MatchedEventMaptable used when indicating truth value of true.</param>
-        /// <param name="consumptionLevel">The consumption level.</param>
-        public EvalFilterFactoryNode(FilterSpecRaw filterSpecification,
-                                     String eventAsName,
-                                     int? consumptionLevel)
+        /// <param name="eventAsName">
+        /// is the name to use for adding matching events to the MatchedEventMap
+        /// table used when indicating truth value of true.
+        /// </param>
+        /// <param name="consumptionLevel">when using @consume</param>
+        protected EvalFilterFactoryNode(FilterSpecRaw filterSpecification,
+                                        string eventAsName,
+                                        int? consumptionLevel)
         {
-            _rawFilterSpec = filterSpecification;
-            _eventAsName = eventAsName;
-            _consumptionLevel = consumptionLevel;
+            EventAsTagNumber = -1;
+            RawFilterSpec = filterSpecification;
+            EventAsName = eventAsName;
+            ConsumptionLevel = consumptionLevel;
         }
     
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
@@ -50,14 +51,15 @@ namespace com.espertech.esper.pattern
             return new EvalFilterNode(agentInstanceContext, this);
         }
 
-        /// <summary>Returns the raw (unoptimized/validated) filter definition. </summary>
+        /// <summary>
+        /// Returns the raw (unoptimized/validated) filter definition.
+        /// </summary>
         /// <value>filter def</value>
-        public FilterSpecRaw RawFilterSpec
-        {
-            get { return _rawFilterSpec; }
-        }
+        public FilterSpecRaw RawFilterSpec { get; private set; }
 
-        /// <summary>Returns filter specification. </summary>
+        /// <summary>
+        /// Returns filter specification.
+        /// </summary>
         /// <value>filter definition</value>
         public FilterSpecCompiled FilterSpec
         {
@@ -65,24 +67,20 @@ namespace com.espertech.esper.pattern
             set { _filterSpec = value; }
         }
 
-        /// <summary>Returns the tag for any matching events to this filter, or null since tags are optional. </summary>
+        /// <summary>
+        /// Returns the tag for any matching events to this filter, or null since tags are optional.
+        /// </summary>
         /// <value>tag string for event</value>
-        public string EventAsName
-        {
-            get { return _eventAsName; }
-        }
+        public string EventAsName { get; private set; }
 
-        public int? ConsumptionLevel
-        {
-            get { return _consumptionLevel; }
-        }
+        public int? ConsumptionLevel { get; private set; }
 
         public override String ToString()
         {
             var buffer = new StringBuilder();
-            buffer.Append("EvalFilterNode rawFilterSpec=" + _rawFilterSpec);
+            buffer.Append("EvalFilterNode rawFilterSpec=" + RawFilterSpec);
             buffer.Append(" filterSpec=" + _filterSpec);
-            buffer.Append(" eventAsName=" + _eventAsName);
+            buffer.Append(" eventAsName=" + EventAsName);
             return buffer.ToString();
         }
 
@@ -91,33 +89,30 @@ namespace com.espertech.esper.pattern
             get { return false; }
         }
 
-        public int EventAsTagNumber
-        {
-            get { return _eventAsTagNumber; }
-            set { _eventAsTagNumber = value; }
-        }
+        public int EventAsTagNumber { get; set; }
 
         public override bool IsStateful
         {
             get { return false; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
             if (EventAsName != null) {
                 writer.Write(EventAsName);
                 writer.Write("=");
             }
-            writer.Write(_rawFilterSpec.EventTypeName);
-            if (_rawFilterSpec.FilterExpressions != null && _rawFilterSpec.FilterExpressions.Count > 0) {
+            writer.Write(RawFilterSpec.EventTypeName);
+            if (RawFilterSpec.FilterExpressions != null && RawFilterSpec.FilterExpressions.Count > 0) {
                 writer.Write("(");
-                ExprNodeUtility.ToExpressionStringParameterList(_rawFilterSpec.FilterExpressions, writer);
+                ExprNodeUtility.ToExpressionStringParameterList(RawFilterSpec.FilterExpressions, writer);
                 writer.Write(")");
             }
-            if (_consumptionLevel != null) {
+            if (ConsumptionLevel != null) {
                 writer.Write("@consume");
-                if (_consumptionLevel != 1) {
+                if (ConsumptionLevel != 1) {
                     writer.Write("(");
-                    writer.Write(Convert.ToString(_consumptionLevel));
+                    writer.Write(ConsumptionLevel);
                     writer.Write(")");
                 }
             }
@@ -128,4 +123,4 @@ namespace com.espertech.esper.pattern
             get { return PatternExpressionPrecedenceEnum.ATOM; }
         }
     }
-}
+} // end of namespace

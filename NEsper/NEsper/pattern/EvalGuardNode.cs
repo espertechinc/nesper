@@ -18,9 +18,9 @@ namespace com.espertech.esper.pattern
     {
         private readonly EvalGuardFactoryNode _factoryNode;
         private readonly EvalNode _childNode;
-    
+
         public EvalGuardNode(PatternAgentInstanceContext context, EvalGuardFactoryNode factoryNode, EvalNode childNode)
-                    : base(context)
+            : base(context)
         {
             _factoryNode = factoryNode;
             _childNode = childNode;

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.util
 {
-	/// <summary>
+    /// <summary>
     /// Parser for strings with substitution parameters of the form ${parameter}.
     /// </summary>
 

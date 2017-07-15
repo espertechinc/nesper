@@ -28,7 +28,7 @@ namespace com.espertech.esper.events.vaevent
     {
         /// <summary>Specification for the variant stream. </summary>
         protected readonly VariantSpec VariantSpec;
-    
+
         /// <summary>The event type representing the variant stream. </summary>
         protected VariantEventType VariantEventType;
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.events.vaevent
         public VAEVariantProcessor(VariantSpec variantSpec, EventTypeIdGenerator eventTypeIdGenerator, ConfigurationVariantStream config)
         {
             VariantSpec = variantSpec;
-    
+
             VariantPropResolutionStrategy strategy;
             if (variantSpec.TypeVariance == TypeVarianceEnum.ANY)
             {
@@ -51,7 +51,7 @@ namespace com.espertech.esper.events.vaevent
             {
                 strategy = new VariantPropResolutionStrategyDefault(variantSpec);
             }
-    
+
             EventTypeMetadata metadata = EventTypeMetadata.CreateValueAdd(variantSpec.VariantStreamName, TypeClass.VARIANT);
             VariantEventType = new VariantEventType(metadata, eventTypeIdGenerator.GetTypeId(variantSpec.VariantStreamName), variantSpec, strategy, config);
         }
@@ -67,18 +67,18 @@ namespace com.espertech.esper.events.vaevent
             {
                 return;
             }
-    
+
             if (eventType == null)
             {
                 throw new ExprValidationException(GetMessage());
             }
-    
+
             // try each permitted type
             if (VariantSpec.EventTypes.Any(variant => variant == eventType))
             {
                 return;
             }
-    
+
             // test if any of the supertypes of the eventtype is a variant type
             foreach (EventType variant in VariantSpec.EventTypes)
             {
@@ -88,8 +88,8 @@ namespace com.espertech.esper.events.vaevent
                 {
                     continue;
                 }
-    
-                foreach(var superType in deepSupers)
+
+                foreach (var superType in deepSupers)
                 {
                     if (superType == variant)
                     {
@@ -97,29 +97,30 @@ namespace com.espertech.esper.events.vaevent
                     }
                 }
             }
-    
+
             throw new ExprValidationException(GetMessage());
         }
-    
+
         public EventBean GetValueAddEventBean(EventBean theEvent)
         {
             return new VariantEventBean(VariantEventType, theEvent);
         }
-    
+
         public void OnUpdate(EventBean[] newData, EventBean[] oldData, NamedWindowRootViewInstance namedWindowRootView, EventTableIndexRepository indexRepository)
         {
             throw new UnsupportedOperationException();
         }
-    
-        public ICollection<EventBean> GetSnapshot(EPStatementAgentInstanceHandle createWindowStmtHandle, Viewable parent) {
+
+        public ICollection<EventBean> GetSnapshot(EPStatementAgentInstanceHandle createWindowStmtHandle, Viewable parent)
+        {
             throw new UnsupportedOperationException();
         }
-    
+
         public void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository)
         {
             throw new UnsupportedOperationException();
         }
-    
+
         private String GetMessage()
         {
             return "Selected event type is not a valid event type of the variant stream '" + VariantSpec.VariantStreamName + "'";

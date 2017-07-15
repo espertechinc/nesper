@@ -9,6 +9,7 @@
 using System;
 using System.Xml;
 using System.Xml.Linq;
+
 using com.espertech.esper.client;
 
 namespace com.espertech.esper.events.xml

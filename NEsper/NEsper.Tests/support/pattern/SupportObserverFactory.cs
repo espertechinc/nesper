@@ -33,9 +33,9 @@ namespace com.espertech.esper.support.pattern
             return null;
         }
 
-        public bool IsNonRestarting()
+        public bool IsNonRestarting
         {
-            return false;
+            get { return false; }
         }
     }
 }

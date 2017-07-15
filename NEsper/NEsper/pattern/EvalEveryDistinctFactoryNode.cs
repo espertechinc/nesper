@@ -9,76 +9,67 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.pattern
 {
     /// <summary>
-    /// This class represents an 'every-distinct' operator in the evaluation tree representing an event expression.
+    ///     This class represents an 'every-distinct' operator in the evaluation tree representing an event expression.
     /// </summary>
-    [Serializable]
     public class EvalEveryDistinctFactoryNode : EvalNodeFactoryBase
     {
-        [NonSerialized] protected ExprEvaluator[] distinctExpressionsArray;
-        [NonSerialized] private MatchedEventConvertor convertor;
-        private ExprNode _expiryTimeExp;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        /// <summary>Ctor. </summary>
+        private readonly IList<ExprNode> _expressions;
+        [NonSerialized] private MatchedEventConvertor _convertor;
+        private IList<ExprNode> _distinctExpressions;
+        [NonSerialized] private ExprEvaluator[] _distinctExpressionsArray;
+        private ExprNode _expiryTimeExp;
+        private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
+
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
         /// <param name="expressions">distinct-value expressions</param>
-        public EvalEveryDistinctFactoryNode(IList<ExprNode> expressions)
+        protected EvalEveryDistinctFactoryNode(IList<ExprNode> expressions)
         {
-            Expressions = expressions;
-        }
-    
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
-            if (distinctExpressionsArray == null) {
-                distinctExpressionsArray = ExprNodeUtility.GetEvaluators(DistinctExpressions);
-            }
-            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
-            return new EvalEveryDistinctNode(this, child, agentInstanceContext);
+            _expressions = expressions;
         }
 
         public ExprEvaluator[] DistinctExpressionsArray
         {
-            get { return distinctExpressionsArray; }
+            get { return _distinctExpressionsArray; }
         }
-
-        /// <summary>Sets the convertor for matching events to events-per-stream. </summary>
-        /// <value>convertor</value>
-        public MatchedEventConvertor Convertor
-        {
-            get { return convertor; }
-            set { convertor = value; }
-        }
-
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation { get; private set; }
-
-        public override String ToString()
-        {
-            return "EvalEveryNode children=" + ChildNodes.Count;
-        }
-
-        /// <summary>Returns all expressions. </summary>
-        /// <value>expressions</value>
-        public IList<ExprNode> Expressions { get; protected set; }
-
-        /// <summary>Returns distinct expressions. </summary>
-        /// <value>expressions</value>
-        public IList<ExprNode> DistinctExpressions { get; protected set; }
 
         /// <summary>
-        /// Sets expressions for distinct-value.
+        ///     Gets or sets the convertor for matching events to events-per-stream.
         /// </summary>
-        /// <param name="distinctExpressions">to set</param>
-        /// <param name="expiryTimeExp">The expiry time exp.</param>
-        public void SetDistinctExpressions(IList<ExprNode> distinctExpressions, ExprTimePeriodEvalDeltaConst timeDeltaComputation, ExprNode expiryTimeExp)
+        public MatchedEventConvertor Convertor
         {
-            DistinctExpressions = distinctExpressions;
-            TimeDeltaComputation = timeDeltaComputation;
-            _expiryTimeExp = expiryTimeExp;
+            get { return _convertor; }
+            set { _convertor = value; }
+        }
+
+        /// <summary>
+        ///     Returns all expressions.
+        /// </summary>
+        /// <value>expressions</value>
+        public IList<ExprNode> Expressions
+        {
+            get { return _expressions; }
+        }
+
+        /// <summary>
+        ///     Returns distinct expressions.
+        /// </summary>
+        /// <value>expressions</value>
+        public IList<ExprNode> DistinctExpressions
+        {
+            get { return _distinctExpressions; }
         }
 
         public override bool IsFilterChildNonQuitting
@@ -91,27 +82,58 @@ namespace com.espertech.esper.pattern
             get { return true; }
         }
 
-        public long AbsMillisecondExpiry(PatternAgentInstanceContext context)
+        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
         {
-            long current = context.StatementContext.SchedulingService.Time;
-            return current + TimeDeltaComputation.DeltaMillisecondsAdd(current);
-        }
-
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
-        {
-            writer.Write("every-distinct(");
-            ExprNodeUtility.ToExpressionStringParameterList(DistinctExpressions, writer);
-            if (_expiryTimeExp != null) {
-                writer.Write(",");
-                writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_expiryTimeExp));
-            }
-            writer.Write(") ");
-            ChildNodes[0].ToEPL(writer, Precedence);
+            get { return _timeDeltaComputation; }
         }
 
         public override PatternExpressionPrecedenceEnum Precedence
         {
             get { return PatternExpressionPrecedenceEnum.UNARY; }
         }
+
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        {
+            if (_distinctExpressionsArray == null)
+            {
+                _distinctExpressionsArray = ExprNodeUtility.GetEvaluators(_distinctExpressions);
+            }
+            EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
+            return new EvalEveryDistinctNode(this, child, agentInstanceContext);
+        }
+
+        public override String ToString()
+        {
+            return "EvalEveryNode children=" + ChildNodes.Count;
+        }
+
+        public void SetDistinctExpressions(
+            IList<ExprNode> distinctExpressions,
+            ExprTimePeriodEvalDeltaConst timeDeltaComputation,
+            ExprNode expiryTimeExp)
+        {
+            _distinctExpressions = distinctExpressions;
+            _timeDeltaComputation = timeDeltaComputation;
+            _expiryTimeExp = expiryTimeExp;
+        }
+
+        public long AbsExpiry(PatternAgentInstanceContext context)
+        {
+            long current = context.StatementContext.SchedulingService.Time;
+            return current + _timeDeltaComputation.DeltaAdd(current);
+        }
+
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            writer.Write("every-Distinct(");
+            ExprNodeUtility.ToExpressionStringParameterList(_distinctExpressions, writer);
+            if (_expiryTimeExp != null)
+            {
+                writer.Write(",");
+                writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_expiryTimeExp));
+            }
+            writer.Write(") ");
+            ChildNodes[0].ToEPL(writer, Precedence);
+        }
     }
-}
+} // end of namespace

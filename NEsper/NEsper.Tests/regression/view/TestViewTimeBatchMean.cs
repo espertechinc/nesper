@@ -79,7 +79,7 @@ namespace com.espertech.esper.regression.view
     
             // Sleep for 1.5 seconds, thus triggering a new batch
             Sleep(1500);
-            CheckMeanIterator(timeBatchMean, 925);                 // Now the statistics view received the first batch
+            CheckMeanIterator(timeBatchMean, 925);                 // GetInstance the statistics view received the first batch
             Assert.IsTrue(_testListener.IsInvoked);   // Listener has been invoked
             CheckMeanListener(925);
     
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regression.view
     
             // Sleep for 1.5 seconds, thus triggering a new batch
             Sleep(1500);
-            CheckMeanIterator(timeBatchMean, 2300d / 4d); // Now the statistics view received the second batch, the mean now is over all events
+            CheckMeanIterator(timeBatchMean, 2300d / 4d); // GetInstance the statistics view received the second batch, the mean now is over all events
             Assert.IsTrue(_testListener.IsInvoked);   // Listener has been invoked
             CheckMeanListener(2300d / 4d);
     

@@ -29,37 +29,37 @@ namespace com.espertech.esper.util
         private static readonly IDictionary<DatabaseTypeEnum, DatabaseTypeBinding> bindings;
 
         /// <summary>Boolean type.</summary>
-        public static readonly DatabaseTypeEnum Boolean = new DatabaseTypeEnum(typeof (Boolean));
+        public static readonly DatabaseTypeEnum Boolean = new DatabaseTypeEnum(typeof(Boolean));
 
         /// <summary>Byte type.</summary>
-        public static readonly DatabaseTypeEnum Byte = new DatabaseTypeEnum(typeof (Byte));
+        public static readonly DatabaseTypeEnum Byte = new DatabaseTypeEnum(typeof(Byte));
 
         /// <summary>Byte array type.</summary>
-        public static readonly DatabaseTypeEnum ByteArray = new DatabaseTypeEnum(typeof (Byte[]));
+        public static readonly DatabaseTypeEnum ByteArray = new DatabaseTypeEnum(typeof(Byte[]));
 
         /// <summary>Big decimal.</summary>
-        public static readonly DatabaseTypeEnum Decimal = new DatabaseTypeEnum(typeof (Decimal));
+        public static readonly DatabaseTypeEnum Decimal = new DatabaseTypeEnum(typeof(Decimal));
 
         /// <summary>Double type.</summary>
-        public static readonly DatabaseTypeEnum Double = new DatabaseTypeEnum(typeof (Double));
+        public static readonly DatabaseTypeEnum Double = new DatabaseTypeEnum(typeof(Double));
 
         /// <summary>Float type.</summary>
-        public static readonly DatabaseTypeEnum Float = new DatabaseTypeEnum(typeof (Single));
+        public static readonly DatabaseTypeEnum Float = new DatabaseTypeEnum(typeof(Single));
 
         /// <summary>Integer type.</summary>
-        public static readonly DatabaseTypeEnum Int = new DatabaseTypeEnum(typeof (Int32));
+        public static readonly DatabaseTypeEnum Int = new DatabaseTypeEnum(typeof(Int32));
 
         /// <summary>Long type.</summary>
-        public static readonly DatabaseTypeEnum Long = new DatabaseTypeEnum(typeof (Int64));
+        public static readonly DatabaseTypeEnum Long = new DatabaseTypeEnum(typeof(Int64));
 
         /// <summary>Short type.</summary>
-        public static readonly DatabaseTypeEnum Short = new DatabaseTypeEnum(typeof (Int16));
+        public static readonly DatabaseTypeEnum Short = new DatabaseTypeEnum(typeof(Int16));
 
         /// <summary>String type.</summary>
-        public static readonly DatabaseTypeEnum String = new DatabaseTypeEnum(typeof (String));
+        public static readonly DatabaseTypeEnum String = new DatabaseTypeEnum(typeof(String));
 
         /// <summary>timestamp type.</summary>
-        public static readonly DatabaseTypeEnum Timestamp = new DatabaseTypeEnum(typeof (DateTime));
+        public static readonly DatabaseTypeEnum Timestamp = new DatabaseTypeEnum(typeof(DateTime));
 
         public static readonly DatabaseTypeEnum[] Values = new[]
                                                            {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.util
             bindings.Put(
                 ByteArray,
                 new ProxyDatabaseTypeBinding<Byte[]>(
-                    (rawData, columnName) => Convert.ChangeType(rawData, typeof (byte[]))));
+                    (rawData, columnName) => Convert.ChangeType(rawData, typeof(byte[]))));
 
             bindings.Put(
                 Double,
@@ -202,23 +202,28 @@ namespace com.espertech.esper.util
             String boxedType = TypeHelper.GetBoxedTypeName(type).ToLower();
             String sourceName1 = boxedType.ToLower();
 
-            foreach (DatabaseTypeEnum val in Values) {
+            foreach (DatabaseTypeEnum val in Values)
+            {
                 String targetName1 = val.BoxedType.FullName.ToLower();
-                if (targetName1 == sourceName1) {
+                if (targetName1 == sourceName1)
+                {
                     return val;
                 }
 
                 String targetName2 = val.DataType.FullName.ToLower();
-                if (targetName2 == sourceName1) {
+                if (targetName2 == sourceName1)
+                {
                     return val;
                 }
 
-                if (targetName2 == boxedType) {
+                if (targetName2 == boxedType)
+                {
                     return val;
                 }
 
                 String targetName3 = val.DataType.Name;
-                if (targetName3 == boxedType) {
+                if (targetName3 == boxedType)
+                {
                     return val;
                 }
             }

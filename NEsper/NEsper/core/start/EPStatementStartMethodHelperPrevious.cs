@@ -39,7 +39,7 @@ namespace com.espertech.esper.core.start
 
             for (int streamNum = 0; streamNum < contexts.Length; streamNum++)
             {
-                // get stream-specific info
+                // get stream-specific INFO
                 ViewResourceDelegateVerifiedStream @delegate = viewResourceDelegate.PerStream[streamNum];
 
                 // obtain getter

@@ -312,5 +312,40 @@ namespace com.espertech.esper.compat
             _dateTime = _dateTime.MoveToWeek(week, _timeZone);
             return Rebase();
         }
+
+        public static DateTimeEx NowUtc()
+        {
+            return GetInstance(TimeZoneInfo.Utc);
+        }
+
+        public static DateTimeEx NowLocal()
+        {
+            return GetInstance(TimeZoneInfo.Local);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo)
+        {
+            return new DateTimeEx(
+                DateTimeOffsetHelper.Now(timeZoneInfo),
+                timeZoneInfo
+                );
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, DateTimeOffset dtoffset)
+        {
+            return new DateTimeEx(dtoffset, timeZoneInfo);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, DateTime dateTime)
+        {
+            var baseDt = DateTimeOffsetHelper.ToDateTimeOffset(dateTime, timeZoneInfo);
+            return new DateTimeEx(baseDt, timeZoneInfo);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, long timeInMillis)
+        {
+            var baseDt = DateTimeOffsetHelper.TimeFromMillis(timeInMillis, timeZoneInfo);
+            return new DateTimeEx(baseDt, timeZoneInfo);
+        }
     }
 }

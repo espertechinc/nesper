@@ -9,89 +9,82 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.timer;
 
 namespace com.espertech.esper.core.service
 {
     /// <summary>
-    /// Class to hold a current latch per statement that uses an insert-into stream (per statement and insert-into stream relationship).
+    /// Type to hold a current latch per statement that uses an insert-into stream (per statement and insert-into stream
+    /// relationship).
     /// </summary>
-    public class InsertIntoLatchFactory
-    {
-        private readonly String _name;
-        private readonly bool _stateless;
-        private readonly bool _useSpin;
-        private readonly TimeSourceService _timeSourceService;
-        private readonly long _msecWait;
+    public class InsertIntoLatchFactory {
+        private readonly string name;
+        private readonly bool stateless;
+        private readonly bool useSpin;
+        private readonly TimeSourceService timeSourceService;
+        private readonly long msecWait;
     
-        private InsertIntoLatchSpin _currentLatchSpin;
-        private InsertIntoLatchWait _currentLatchWait;
-
+        private InsertIntoLatchSpin currentLatchSpin;
+        private InsertIntoLatchWait currentLatchWait;
+    
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="name">the factory name</param>
-        /// <param name="stateless">if set to <c>true</c> [stateless].</param>
         /// <param name="msecWait">the number of milliseconds latches will await maximually</param>
         /// <param name="locking">the blocking strategy to employ</param>
         /// <param name="timeSourceService">time source provider</param>
-        public InsertIntoLatchFactory(String name, bool stateless, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService)
-        {
-            _name = name;
-            _msecWait = msecWait;
-            _timeSourceService = timeSourceService;
-            _stateless = stateless;
+        /// <param name="stateless">indicator whether stateless</param>
+        public InsertIntoLatchFactory(string name, bool stateless, long msecWait, ConfigurationEngineDefaults.ThreadingConfig.Locking locking,
+                                      TimeSourceService timeSourceService) {
+            this.name = name;
+            this.msecWait = msecWait;
+            this.timeSourceService = timeSourceService;
+            this.stateless = stateless;
     
-            _useSpin = (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
+            useSpin = locking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN;
     
             // construct a completed latch as an initial root latch
-            if (_useSpin)
-            {
-                _currentLatchSpin = new InsertIntoLatchSpin(this);
-            }
-            else
-            {
-                _currentLatchWait = new InsertIntoLatchWait(this);
+            if (useSpin) {
+                currentLatchSpin = new InsertIntoLatchSpin(this);
+            } else {
+                currentLatchWait = new InsertIntoLatchWait(this);
             }
         }
     
-        /// <summary>Returns a new latch.
+        /// <summary>
+        /// Returns a new latch.
         /// <para>
         /// Need not be synchronized as there is one per statement and execution is during statement lock.
         /// </para>
         /// </summary>
         /// <param name="payload">is the object returned by the await.</param>
         /// <returns>latch</returns>
-        public Object NewLatch(EventBean payload)
-        {
-            if (_stateless)
-            {
+        public Object NewLatch(EventBean payload) {
+            if (stateless) {
                 return payload;
             }
-
-            if (_useSpin)
-            {
-                var nextLatch = new InsertIntoLatchSpin(this, _currentLatchSpin, _msecWait, payload);
-                _currentLatchSpin = nextLatch;
+            if (useSpin) {
+                var nextLatch = new InsertIntoLatchSpin(this, currentLatchSpin, msecWait, payload);
+                currentLatchSpin = nextLatch;
                 return nextLatch;
-            }
-            else
-            {
-                var nextLatch = new InsertIntoLatchWait(_currentLatchWait, _msecWait, payload);
-                _currentLatchWait.SetLater(nextLatch);
-                _currentLatchWait = nextLatch;
+            } else {
+                var nextLatch = new InsertIntoLatchWait(currentLatchWait, msecWait, payload);
+                currentLatchWait.Later = nextLatch;
+                currentLatchWait = nextLatch;
                 return nextLatch;
             }
         }
-
-        public TimeSourceService TimeSourceService
-        {
-            get { return _timeSourceService; }
+    
+        public TimeSourceService GetTimeSourceService() {
+            return timeSourceService;
         }
-
-        public string Name
-        {
-            get { return _name; }
+    
+        public string GetName() {
+            return name;
         }
     }
-}
+} // end of namespace

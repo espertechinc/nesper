@@ -100,7 +100,7 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Serialization constructor
         /// </summary>
-        /// <param name="info">The info.</param>
+        /// <param name="info">The INFO.</param>
         /// <param name="context">The context.</param>
 
         public LinkedHashMap(SerializationInfo info, StreamingContext context)
@@ -349,7 +349,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
         /// </summary>
         /// <value></value>
-        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 
         public ICollection<TK> Keys
         {
@@ -440,7 +440,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
         /// </summary>
         /// <value></value>
-        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 
         public ICollection<TV> Values
         {

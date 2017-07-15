@@ -17,19 +17,29 @@ namespace com.espertech.esper.client.hook
     /// Statement information pertains to the statement currently being processed when 
     /// the unchecked exception occured.
     /// </summary>
-    public class ExceptionHandlerContext {
+    public class ExceptionHandlerContext
+    {
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="exception">exception</param>
         /// <param name="statementName">statement name</param>
         /// <param name="epl">statement EPL expression text</param>
-        public ExceptionHandlerContext(String engineURI, Exception exception, String statementName, String epl, ExceptionHandlerExceptionType exceptionType)
+        /// <param name="exceptionType"></param>
+        /// <param name="currentEvent"></param>
+        public ExceptionHandlerContext(
+            string engineURI,
+            Exception exception,
+            string statementName,
+            string epl,
+            ExceptionHandlerExceptionType exceptionType,
+            EventBean currentEvent)
         {
             EngineURI = engineURI;
             Exception = exception;
             StatementName = statementName;
             Epl = epl;
             ExceptionType = exceptionType;
+            CurrentEvent = currentEvent;
         }
 
         /// <summary>Returns the engine URI. </summary>
@@ -55,5 +65,13 @@ namespace com.espertech.esper.client.hook
         /// The type of the exception.
         /// </value>
         public ExceptionHandlerExceptionType ExceptionType { get; private set; }
+
+        /// <summary>
+        /// Gets the current event, when available.
+        /// </summary>
+        /// <value>
+        /// The current event.
+        /// </value>
+        public EventBean CurrentEvent { get; private set; }
     }
 }

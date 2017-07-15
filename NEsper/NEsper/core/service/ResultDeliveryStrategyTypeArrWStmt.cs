@@ -12,6 +12,7 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.core.service
 {
@@ -19,8 +20,8 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ResultDeliveryStrategyTypeArrWStmt(EPStatement statement, object subscriber, MethodInfo method, Type componentType)
-            : base(statement, subscriber, method, componentType)
+        public ResultDeliveryStrategyTypeArrWStmt(EPStatement statement, object subscriber, MethodInfo method, Type componentType, EngineImportService engineImportService)
+            : base(statement, subscriber, method, componentType, engineImportService)
         {
         }
 

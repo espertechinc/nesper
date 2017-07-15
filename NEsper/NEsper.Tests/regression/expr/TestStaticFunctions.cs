@@ -214,9 +214,9 @@ namespace com.espertech.esper.regression.expr
             Assert.IsTrue(result <= finishTime);
 
 #if false
-    		_statementText = "select java.lang.ClassLoader.SystemClassLoader " + _stream;
+    		_statementText = "select java.typeof(lang)Loader.SystemClassLoader " + _stream;
     		Object expected = ClassLoader.SystemClassLoader;
-    		var resultTwo = CreateStatementAndGetProperty(true, "java.lang.ClassLoader.SystemClassLoader");
+    		var resultTwo = CreateStatementAndGetProperty(true, "java.typeof(lang)Loader.SystemClassLoader");
     		Assert.AreEqual(expected, resultTwo[0]);
 #endif
 

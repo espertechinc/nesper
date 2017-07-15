@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 
 namespace com.espertech.esper.epl.datetime.reformatop
@@ -22,9 +21,12 @@ namespace com.espertech.esper.epl.datetime.reformatop
     {
         private readonly long _first;
         private readonly long _second;
+        private readonly TimeZoneInfo _timeZone;
 
-        public ReformatOpBetweenConstantParams(IList<ExprNode> parameters)
+        public ReformatOpBetweenConstantParams(IList<ExprNode> parameters, TimeZoneInfo timeZone)
         {
+            this._timeZone = timeZone;
+
             long paramFirst = GetLongValue(parameters[0]);
             long paramSecond = GetLongValue(parameters[1]);
 
@@ -51,34 +53,64 @@ namespace com.espertech.esper.epl.datetime.reformatop
             }
         }
 
-        private static long GetLongValue(ExprNode exprNode)
+        private long GetLongValue(ExprNode exprNode)
         {
-            Object value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
+            var value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
             if (value == null)
             {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
-            return DatetimeLongCoercerFactory.GetCoercer(value.GetType()).Coerce(value);
+            return DatetimeLongCoercerFactory.GetCoercer(value.GetType(), _timeZone).Coerce(value);
         }
 
-        private static bool GetBooleanValue(ExprNode exprNode)
+        private bool GetBooleanValue(ExprNode exprNode)
         {
-            Object value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
+            var value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
             if (value == null)
             {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
-            return value.AsBoolean();
+            return (bool) value;
         }
 
-        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(
+            long ts,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateInternal(ts);
         }
 
-        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(
+            DateTime d,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return EvaluateInternal(d.UtcMillis());
+        }
+
+        public Object Evaluate(
+            DateTimeOffset d,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateInternal(d.TimeInMillis());
+        }
+
+        public Object Evaluate(
+            DateTimeEx dtx,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (dtx == null)
+            {
+                return null;
+            }
+            return EvaluateInternal(dtx.TimeInMillis);
         }
 
         public Object EvaluateInternal(long ts)
@@ -88,15 +120,16 @@ namespace com.espertech.esper.epl.datetime.reformatop
 
         public Type ReturnType
         {
-            get { return typeof(bool?); }
+            get { return typeof (bool?); }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,
-                                                           DatetimeMethodEnum currentMethod,
-                                                           ICollection<ExprNode> currentParameters,
-                                                           ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             return null;
         }
     }
-}
+} // end of namespace

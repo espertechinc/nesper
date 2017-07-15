@@ -73,7 +73,7 @@ namespace com.espertech.esper.core.start
                 callbackList.Add(priorNode);
             }
     
-            // build per-stream info
+            // build per-stream INFO
             for (var i = 0; i < numStreams; i++) {
                 if (previousPerStream[i] == null) {
                     previousPerStream[i] = Collections.GetEmptyList<ExprPreviousNode>();

@@ -25,12 +25,12 @@ namespace com.espertech.esper.rowregex
     {
         /// <summary>Empty state collection initial threshold. </summary>
         public readonly static int INITIAL_COLLECTION_MIN = 100;
-    
+
         private readonly RegexPartitionStateRepoGroupMeta _meta;
         private readonly RegexPartitionStateRandomAccessGetter _getter;
         private readonly IDictionary<Object, RegexPartitionStateImpl> _states;
         private readonly RegexPartitionStateRepoScheduleStateImpl _optionalIntervalSchedules;
-    
+
         private int _currentCollectionSize = INITIAL_COLLECTION_MIN;
         private int _eventSequenceNumber;
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.rowregex
         {
             _states.Remove(partitionKey);
         }
-    
+
         public RegexPartitionStateRepo CopyForIterate(bool forOutOfOrderReprocessing)
         {
             var copy = new RegexPartitionStateRepoGroup(_getter, _meta, false, null);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.rowregex
                         entry.Value.CurrentStates = Collections.GetEmptyList<RegexNFAStateEntry>();
                     }
                 }
-    
+
                 // clear "prev" state
                 if (_getter != null)
                 {
@@ -120,7 +120,7 @@ namespace com.espertech.esper.rowregex
 
                 return countRemoved;
             }
-    
+
             // we will need to remove event-by-event
             for (var i = 0; i < oldData.Length; i++)
             {
@@ -129,7 +129,7 @@ namespace com.espertech.esper.rowregex
                 {
                     continue;
                 }
-    
+
                 if (found[i])
                 {
                     countRemoved += partitionState.RemoveEventFromState(oldData[i]);
@@ -142,22 +142,22 @@ namespace com.espertech.esper.rowregex
                         }
                     }
                 }
-    
+
                 partitionState.RemoveEventFromPrev(oldData[i]);
             }
 
             return countRemoved;
         }
-       
+
         public RegexPartitionState GetState(Object key)
         {
             return _states.Get(key);
         }
-    
+
         public RegexPartitionState GetState(EventBean theEvent, bool isCollect)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegExPartition(_meta.PartitionExpressionNodes); }
-    
+
             // collect unused states
             if ((isCollect) && (_states.Count >= _currentCollectionSize))
             {
@@ -170,36 +170,37 @@ namespace com.espertech.esper.rowregex
                         removeList.Add(entry.Key);
                     }
                 }
-    
+
                 foreach (var removeKey in removeList)
                 {
                     _states.Remove(removeKey);
                 }
-    
+
                 if (removeList.Count < (_currentCollectionSize / 5))
                 {
                     _currentCollectionSize *= 2;
                 }
             }
-    
+
             var key = GetKeys(theEvent, _meta);
-            
+
             var state = _states.Get(key);
             if (state != null)
             {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExPartition(true, state); }
                 return state;
             }
-    
+
             state = new RegexPartitionStateImpl(_getter, new List<RegexNFAStateEntry>(), key);
             _states.Put(key, state);
-    
+
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExPartition(false, state); }
             return state;
         }
-    
-        public void Accept(EventRowRegexNFAViewServiceVisitor visitor) {
-            visitor.VisitPartitioned((IDictionary<object, RegexPartitionState>) _states);
+
+        public void Accept(EventRowRegexNFAViewServiceVisitor visitor)
+        {
+            visitor.VisitPartitioned((IDictionary<object, RegexPartitionState>)_states);
         }
 
         public bool IsPartitioned
@@ -221,24 +222,28 @@ namespace com.espertech.esper.rowregex
         {
             var eventsPerStream = meta.EventsPerStream;
             eventsPerStream[0] = theEvent;
-    
+
             var partitionExpressions = meta.PartitionExpressions;
-            if (partitionExpressions.Length == 1) {
-                if (InstrumentationHelper.ENABLED) {
+            if (partitionExpressions.Length == 1)
+            {
+                if (InstrumentationHelper.ENABLED)
+                {
                     InstrumentationHelper.Get().QExprValue(meta.PartitionExpressionNodes[0], eventsPerStream);
                     var value = partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, meta.ExprEvaluatorContext));
                     InstrumentationHelper.Get().AExprValue(value);
                     return value;
                 }
-                else {
+                else
+                {
                     return partitionExpressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, meta.ExprEvaluatorContext));
                 }
             }
-    
+
             var keys = new Object[partitionExpressions.Length];
             var count = 0;
             var exprEvaluatorContext = meta.ExprEvaluatorContext;
-            foreach (var node in partitionExpressions) {
+            foreach (var node in partitionExpressions)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprValue(meta.PartitionExpressionNodes[count], eventsPerStream); }
                 keys[count] = node.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprValue(keys[count]); }

@@ -62,11 +62,11 @@ namespace com.espertech.esper.timer
                 {
                     _timerCallback();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Log.Error("Timer thread caught unhandled exception: " + ex.Message, ex);
-                } 
-                
+                }
+
             }
         }
 

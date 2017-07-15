@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.epl.core;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
@@ -37,56 +39,60 @@ namespace com.espertech.esper.core.service
         /// <param name="statement">the statement.</param>
         /// <param name="subscriber">is the receiver to method invocations</param>
         /// <param name="method">is the method to deliver to</param>
-        public ResultDeliveryStrategyTypeArr(EPStatement statement, Object subscriber, MethodInfo method, Type componentType)
+        public ResultDeliveryStrategyTypeArr(EPStatement statement, Object subscriber, MethodInfo method, Type componentType, EngineImportService engineImportService)
         {
             _statement = statement;
             _subscriber = subscriber;
             _fastMethod = FastClass.CreateMethod(method);
             _componentType = componentType;
         }
-    
+
         public virtual void Execute(UniformPair<EventBean[]> result)
         {
             Object newData;
             Object oldData;
-    
-            if (result == null) {
+
+            if (result == null)
+            {
                 newData = null;
                 oldData = null;
             }
-            else {
+            else
+            {
                 newData = Convert(result.First);
                 oldData = Convert(result.Second);
             }
-    
-            var paramList = new[] {newData, oldData};
-            try {
+
+            var paramList = new[] { newData, oldData };
+            try
+            {
                 _fastMethod.Invoke(_subscriber, paramList);
             }
-            catch (TargetInvocationException e) {
+            catch (TargetInvocationException e)
+            {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
         }
-    
+
         internal Object Convert(EventBean[] events)
         {
             if ((events == null) || (events.Length == 0))
             {
                 return null;
             }
-    
+
             Array array = Array.CreateInstance(_componentType, events.Length);
             int length = 0;
             for (int i = 0; i < events.Length; i++)
             {
                 if (events[i] is NaturalEventBean)
                 {
-                    var natural = (NaturalEventBean) events[i];
+                    var natural = (NaturalEventBean)events[i];
                     array.SetValue(natural.Natural[0], length);
                     length++;
                 }
             }
-    
+
             if (length == 0)
             {
                 return null;

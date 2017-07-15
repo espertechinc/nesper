@@ -15,40 +15,14 @@ using com.espertech.esper.epl.expression.subquery;
 namespace com.espertech.esper.epl.expression.visitor
 {
     /// <summary>
-    /// Visitor for compiling usage informaton of special expressions within an expression tree.
+    ///     Visitor for compiling usage informaton of special expressions within an expression tree.
     /// </summary>
     public class ExprNodeSummaryVisitor : ExprNodeVisitor
     {
-        public bool IsVisit(ExprNode exprNode)
-        {
-            return true;
-        }
-    
-        public void Visit(ExprNode exprNode)
-        {
-            if (exprNode is ExprIdentNode)
-            {
-                HasProperties = true;
-            }
-            else if (exprNode is ExprSubselectNode)
-            {
-                HasSubselect = true;
-            }
-            else if (exprNode is ExprAggregateNode)
-            {
-                HasAggregation = true;
-            }
-            else if ((exprNode is ExprStreamUnderlyingNode))
-            {
-                HasStreamSelect = true;
-            }
-            else if ((exprNode is ExprPriorNode) || (exprNode is ExprPreviousNode))
-            {
-                HasPreviousPrior = true;
-            }
-        }
-
-        /// <summary>Returns true if the expression is a plain-value expression, without any of the following: properties, aggregation, subselect, stream select, previous or prior </summary>
+        /// <summary>
+        ///     Returns true if the expression is a plain-value expression, without any of the following:
+        ///     properties, aggregation, subselect, stream select, previous or prior
+        /// </summary>
         /// <value>true for plain</value>
         public bool IsPlain
         {
@@ -65,34 +39,62 @@ namespace com.espertech.esper.epl.expression.visitor
 
         public bool HasPreviousPrior { get; private set; }
 
-        /// <summary>Returns a message if the expression contains special-instruction expressions. </summary>
-        /// <value>message</value>
-        public string Message
+        public bool IsVisit(ExprNode exprNode)
         {
-            get
+            return true;
+        }
+
+        public void Visit(ExprNode exprNode)
+        {
+            if (exprNode is ExprIdentNode)
             {
-                if (HasProperties)
-                {
-                    return "event properties";
-                }
-                else if (HasAggregation)
-                {
-                    return "aggregation functions";
-                }
-                else if (HasSubselect)
-                {
-                    return "sub-selects";
-                }
-                else if (HasStreamSelect)
-                {
-                    return "stream selects or event instance methods";
-                }
-                else if (HasPreviousPrior)
-                {
-                    return "previous or prior functions";
-                }
-                return null;
+                HasProperties = true;
+            }
+            else if (exprNode is ExprSubselectNode)
+            {
+                HasSubselect = true;
+            }
+            else if (exprNode is ExprAggregateNode)
+            {
+                HasAggregation = true;
+            }
+            else if (exprNode is ExprStreamUnderlyingNode)
+            {
+                HasStreamSelect = true;
+            }
+            else if ((exprNode is ExprPriorNode) || (exprNode is ExprPreviousNode))
+            {
+                HasPreviousPrior = true;
             }
         }
+
+        /// <summary>
+        ///     Returns a message if the expression contains special-instruction expressions.
+        /// </summary>
+        /// <returns>message</returns>
+        public string GetMessage()
+        {
+            if (HasProperties)
+            {
+                return "event properties";
+            }
+            else if (HasAggregation)
+            {
+                return "aggregation functions";
+            }
+            else if (HasSubselect)
+            {
+                return "sub-selects";
+            }
+            else if (HasStreamSelect)
+            {
+                return "stream selects or event instance methods";
+            }
+            else if (HasPreviousPrior)
+            {
+                return "previous or prior functions";
+            }
+            return null;
+        }
     }
-}
+} // end of namespace

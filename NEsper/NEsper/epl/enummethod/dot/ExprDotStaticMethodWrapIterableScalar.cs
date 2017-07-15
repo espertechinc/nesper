@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.enummethod.dot
                 return null;
             }
 
-            var asEnumerable = (IEnumerable) result;
+            var asEnumerable = (IEnumerable)result;
             return asEnumerable.Cast<object>().ToList();
         }
     }

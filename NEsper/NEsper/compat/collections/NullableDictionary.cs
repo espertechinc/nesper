@@ -322,7 +322,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets the value associated with the specified key.
         /// </summary>
         /// <returns>
-        /// true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.
+        /// true if the object that : <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.
         /// </returns>
         /// <param name="key">
         ///                     The key whose value to get.
@@ -404,7 +404,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>
-        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
         public ICollection<K> Keys
         {
@@ -425,7 +425,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>
-        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
         public ICollection<V> Values
         {
@@ -747,7 +747,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets the value associated with the specified key.
         /// </summary>
         /// <returns>
-        /// true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.
+        /// true if the object that : <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.
         /// </returns>
         /// <param name="key">
         ///                     The key whose value to get.
@@ -829,7 +829,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>
-        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
         public ICollection<K?> Keys
         {
@@ -850,7 +850,7 @@ namespace com.espertech.esper.compat.collections
         ///                     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
         /// <returns>
-        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        ///                     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
         public ICollection<V> Values
         {

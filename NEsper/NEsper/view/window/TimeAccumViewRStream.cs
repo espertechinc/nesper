@@ -14,7 +14,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
@@ -23,24 +22,23 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.view.window
 {
     /// <summary>
-    /// A data window view that holds events in a stream and only removes events from a stream 
-    /// (rstream) if no more events arrive for a given time interval, also handling the remove 
-    /// stream by keeping set-like semantics. See <seealso cref="TimeAccumView"/> for the same 
-    /// behavior without remove stream handling.
+    /// A data window view that holds events in a stream and only removes events from a stream (rstream) if
+    /// no more events arrive for a given time interval, also handling the remove stream
+    /// by keeping set-like semantics. See <seealso cref="TimeAccumView" /> for the same behavior without
+    /// remove stream handling.
     /// </summary>
     public class TimeAccumViewRStream
-        : ViewSupport
-        , CloneableView
-        , DataWindowView
-        , StoppableView
-        , StopCallback
+        : ViewSupport,
+            CloneableView,
+            DataWindowView,
+            StoppableView,
+            StopCallback
     {
-        // View parameters
-        private readonly TimeAccumViewFactory _factory;
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
         private readonly long _scheduleSlot;
-
+        // View parameters
+        private readonly TimeAccumViewFactory _factory;
         // Current running parameters
         private readonly LinkedHashMap<EventBean, long> _currentBatch = new LinkedHashMap<EventBean, long>();
         private EventBean _lastEvent;
@@ -51,8 +49,8 @@ namespace com.espertech.esper.view.window
         /// Constructor.
         /// </summary>
         /// <param name="timeBatchViewFactory">for copying this view in a group-by</param>
-        /// <param name="agentInstanceContext">The agent instance context.</param>
-        /// <param name="timeDeltaComputation">The time delta computation.</param>
+        /// <param name="agentInstanceContext">context</param>
+        /// <param name="timeDeltaComputation">time delta eval</param>
         public TimeAccumViewRStream(
             TimeAccumViewFactory timeBatchViewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext,
@@ -64,21 +62,23 @@ namespace com.espertech.esper.view.window
 
             _scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
 
-            ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
+            var callback = new ProxyScheduleHandleCallback
             {
                 ProcScheduledTrigger = extensionServicesContext =>
                 {
-                    using (Instrument.With(
-                        i => i.QViewScheduledEval(this, _factory.ViewName),
-                        i => i.AViewScheduledEval()))
+                    if (InstrumentationHelper.ENABLED)
                     {
-                        SendRemoveStream();
+                        InstrumentationHelper.Get().QViewScheduledEval(this, _factory.ViewName);
+                    }
+                    SendRemoveStream();
+                    if (InstrumentationHelper.ENABLED)
+                    {
+                        InstrumentationHelper.Get().AViewScheduledEval();
                     }
                 }
             };
-
             _handle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
-            agentInstanceContext.AddTerminationCallback(Stop);
+            agentInstanceContext.AddTerminationCallback(this);
         }
 
         public View CloneView()
@@ -86,8 +86,6 @@ namespace com.espertech.esper.view.window
             return _factory.MakeView(_agentInstanceContext);
         }
 
-        /// <summary>Returns the interval size</summary>
-        /// <value>batch size</value>
         public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
         {
             get { return _timeDeltaComputation; }
@@ -100,110 +98,118 @@ namespace com.espertech.esper.view.window
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            using (Instrument.With(
-                i => i.QViewProcessIRStream(this, _factory.ViewName, newData, oldData),
-                i => i.AViewProcessIRStream()))
+            if (InstrumentationHelper.ENABLED)
             {
-                if ((newData != null) && (newData.Length > 0))
-                {
-                    // If we have an empty window about to be filled for the first time, add a callback
-                    bool removeSchedule = false;
-                    bool addSchedule = false;
-                    long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
+                InstrumentationHelper.Get().QViewProcessIRStream(this, _factory.ViewName, newData, oldData);
+            }
 
-                    // if the window is already filled, then we may need to reschedule
-                    if (_currentBatch.IsNotEmpty())
+            if ((newData != null) && (newData.Length > 0))
+            {
+                // If we have an empty window about to be filled for the first time, add a callback
+                bool removeSchedule = false;
+                bool addSchedule = false;
+                long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
+
+                // if the window is already filled, then we may need to reschedule
+                if (!_currentBatch.IsEmpty())
+                {
+                    // check if we need to reschedule
+                    long callbackTime = timestamp + _timeDeltaComputation.DeltaAdd(timestamp);
+                    if (callbackTime != _callbackScheduledTime)
                     {
-                        // check if we need to reschedule
-                        long callbackTime = timestamp + _timeDeltaComputation.DeltaMillisecondsAdd(timestamp);
-                        if (callbackTime != _callbackScheduledTime)
-                        {
-                            removeSchedule = true;
-                            addSchedule = true;
-                        }
-                    }
-                    else
-                    {
+                        removeSchedule = true;
                         addSchedule = true;
                     }
+                }
+                else
+                {
+                    addSchedule = true;
+                }
 
-                    if (removeSchedule)
-                    {
-                        _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
-                        _callbackScheduledTime = -1;
-                    }
-                    if (addSchedule)
-                    {
-                        long msecIntervalSize = _timeDeltaComputation.DeltaMillisecondsAdd(timestamp);
-                        _agentInstanceContext.StatementContext.SchedulingService.Add(
-                            msecIntervalSize, _handle, _scheduleSlot);
-                        _callbackScheduledTime = msecIntervalSize + timestamp;
-                    }
+                if (removeSchedule)
+                {
+                    _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
+                    _callbackScheduledTime = -1;
+                }
+                if (addSchedule)
+                {
+                    long timeIntervalSize = _timeDeltaComputation.DeltaAdd(timestamp);
+                    _agentInstanceContext.StatementContext.SchedulingService.Add(
+                        timeIntervalSize, _handle, _scheduleSlot);
+                    _callbackScheduledTime = timeIntervalSize + timestamp;
+                }
 
-                    // add data points to the window
-                    for (int i = 0; i < newData.Length; i++)
+                // add data points to the window
+                for (int i = 0; i < newData.Length; i++)
+                {
+                    _currentBatch.Put(newData[i], timestamp);
+                    InternalHandleAdded(newData[i], timestamp);
+                    _lastEvent = newData[i];
+                }
+            }
+
+            if ((oldData != null) && (oldData.Length > 0))
+            {
+                bool removedLastEvent = false;
+                foreach (EventBean anOldData in oldData)
+                {
+                    _currentBatch.Remove(anOldData);
+                    InternalHandleRemoved(anOldData);
+                    if (anOldData == _lastEvent)
                     {
-                        _currentBatch.Put(newData[i], timestamp);
-                        InternalHandleAdded(newData[i], timestamp);
-                        _lastEvent = newData[i];
+                        removedLastEvent = true;
                     }
                 }
 
-                if ((oldData != null) && (oldData.Length > 0))
+                // we may need to reschedule as the newest event may have been deleted
+                if (_currentBatch.Count == 0)
                 {
-                    bool removedLastEvent = false;
-                    foreach (EventBean anOldData in oldData)
+                    _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
+                    _callbackScheduledTime = -1;
+                    _lastEvent = null;
+                }
+                else
+                {
+                    // reschedule if the last event was removed
+                    if (removedLastEvent)
                     {
-                        _currentBatch.Remove(anOldData);
-                        InternalHandleRemoved(anOldData);
-                        if (anOldData == _lastEvent)
+                        var keyset = _currentBatch.Keys;
+                        var events = keyset.ToArray();
+                        _lastEvent = events[events.Length - 1];
+                        long lastTimestamp = _currentBatch.Get(_lastEvent);
+
+                        // reschedule, newest event deleted
+                        long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
+                        long callbackTime = lastTimestamp + _timeDeltaComputation.DeltaAdd(lastTimestamp);
+                        long deltaFromNow = callbackTime - timestamp;
+                        if (callbackTime != _callbackScheduledTime)
                         {
-                            removedLastEvent = true;
+                            _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
+                            _agentInstanceContext.StatementContext.SchedulingService.Add(
+                                deltaFromNow, _handle, _scheduleSlot);
+                            _callbackScheduledTime = callbackTime;
                         }
                     }
-
-                    // we may need to reschedule as the newest event may have been deleted
-                    if (_currentBatch.Count == 0)
-                    {
-                        _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
-                        _callbackScheduledTime = -1;
-                        _lastEvent = null;
-                    }
-                    else
-                    {
-                        // reschedule if the last event was removed
-                        if (removedLastEvent)
-                        {
-                            ICollection<EventBean> keyset = _currentBatch.Keys;
-                            EventBean[] events = keyset.ToArray();
-                            _lastEvent = events[events.Length - 1];
-                            long lastTimestamp = _currentBatch.Get(_lastEvent);
-
-                            // reschedule, newest event deleted
-                            long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
-                            long callbackTime = lastTimestamp + _timeDeltaComputation.DeltaMillisecondsAdd(lastTimestamp);
-                            long deltaFromNow = callbackTime - timestamp;
-                            if (callbackTime != _callbackScheduledTime)
-                            {
-                                _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
-                                _agentInstanceContext.StatementContext.SchedulingService.Add(
-                                    deltaFromNow, _handle, _scheduleSlot);
-                                _callbackScheduledTime = callbackTime;
-                            }
-                        }
-                    }
                 }
+            }
 
-                // Update child views
-                if (HasViews)
+            // update child views
+            if (HasViews)
+            {
+                if (InstrumentationHelper.ENABLED)
                 {
-                    using (Instrument.With(
-                        i => i.QViewIndicate(this, _factory.ViewName, newData, oldData),
-                        i => i.AViewIndicate()))
-                    {
-                        UpdateChildren(newData, oldData);
-                    }
+                    InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, newData, oldData);
                 }
+                UpdateChildren(newData, oldData);
+                if (InstrumentationHelper.ENABLED)
+                {
+                    InstrumentationHelper.Get().AViewIndicate();
+                }
+            }
+
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().AViewProcessIRStream();
             }
         }
 
@@ -212,28 +218,33 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_currentBatch, true, _factory.ViewName, _currentBatch.Count, null);
         }
 
-        /// <summary>This method sends the remove stream for all accumulated events. </summary>
+        /// <summary>
+        /// This method sends the remove stream for all accumulated events.
+        /// </summary>
         protected void SendRemoveStream()
         {
             _callbackScheduledTime = -1;
 
-            // If there are child views and the batch was filled, fireStatementStopped Update method
+            // If there are child views and the batch was filled, fireStatementStopped update method
             if (HasViews)
             {
                 // Convert to object arrays
                 EventBean[] oldData = null;
-                if (_currentBatch.IsNotEmpty())
+                if (!_currentBatch.IsEmpty())
                 {
                     oldData = _currentBatch.Keys.ToArray();
                 }
 
                 if (oldData != null)
                 {
-                    using (Instrument.With(
-                        i => i.QViewIndicate(this, _factory.ViewName, null, oldData),
-                        i => i.AViewIndicate()))
+                    if (InstrumentationHelper.ENABLED)
                     {
-                        UpdateChildren(null, oldData);
+                        InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, null, oldData);
+                    }
+                    UpdateChildren(null, oldData);
+                    if (InstrumentationHelper.ENABLED)
+                    {
+                        InstrumentationHelper.Get().AViewIndicate();
                     }
                 }
             }
@@ -241,7 +252,9 @@ namespace com.espertech.esper.view.window
             _currentBatch.Clear();
         }
 
-        /// <summary>Returns true if the window is empty, or false if not empty. </summary>
+        /// <summary>
+        /// Returns true if the window is empty, or false if not empty.
+        /// </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
         {
@@ -261,7 +274,7 @@ namespace com.espertech.esper.view.window
         public void StopView()
         {
             StopSchedule();
-            _agentInstanceContext.RemoveTerminationCallback(Stop);
+            _agentInstanceContext.RemoveTerminationCallback(this);
         }
 
         public void Stop()
@@ -292,4 +305,4 @@ namespace com.espertech.esper.view.window
             get { return _factory; }
         }
     }
-}
+} // end of namespace

@@ -235,7 +235,7 @@ namespace com.espertech.esper.regression.context
 	        var filtered = new SupportSelectorFilteredInitTerm("S0_2");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(stmt.GetEnumerator(filtered), stmt.GetSafeEnumerator(filtered), fields, new object[][] { new object[] { 1, "S0_2", "E1", 3 }, new object[] { 1, "S0_2", "E3", 201 } });
 
-	        // test always-false filter - compare context partition info
+	        // test always-false filter - compare context partition INFO
 	        filtered = new SupportSelectorFilteredInitTerm(null);
 	        Assert.IsFalse(stmt.GetEnumerator(filtered).MoveNext());
 	        EPAssertionUtil.AssertEqualsAnyOrder(new object[]{1000L, 2000L}, filtered.ContextsStartTimes);

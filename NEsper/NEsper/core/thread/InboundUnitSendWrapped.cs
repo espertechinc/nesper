@@ -17,14 +17,16 @@ namespace com.espertech.esper.core.thread
     /// <summary>
     /// Inbound unit for wrapped events.
     /// </summary>
-    public class InboundUnitSendWrapped
+    public class InboundUnitSendWrapped 
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EventBean _eventBean;
         private readonly EPRuntimeEventSender _runtime;
     
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="theEvent">inbound event, wrapped</param>
         /// <param name="runtime">to process</param>
         public InboundUnitSendWrapped(EventBean theEvent, EPRuntimeEventSender runtime)
@@ -45,4 +47,4 @@ namespace com.espertech.esper.core.thread
             }
         }
     }
-}
+} // end of namespace

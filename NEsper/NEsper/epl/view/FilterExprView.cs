@@ -78,24 +78,24 @@ namespace com.espertech.esper.epl.view
         {
             return GetEnumerator(Parent.GetEnumerator(), _exprEvaluator, _exprEvaluatorContext);
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseFilter(_exprNode, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseFilter(_exprNode, newData, oldData); }
+
             var filteredNewData = FilterEvents(_exprEvaluator, newData, true, _exprEvaluatorContext);
             var filteredOldData = FilterEvents(_exprEvaluator, oldData, false, _exprEvaluatorContext);
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseFilter(filteredNewData, filteredOldData);}
-    
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseFilter(filteredNewData, filteredOldData); }
+
             if ((filteredNewData != null) || (filteredOldData != null))
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseIR(filteredNewData, filteredOldData);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseIR(filteredNewData, filteredOldData); }
                 UpdateChildren(filteredNewData, filteredOldData);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseIR();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseIR(); }
             }
         }
-    
+
         /// <summary>Filters events using the supplied evaluator. </summary>
         /// <param name="exprEvaluator">evaluator to use</param>
         /// <param name="events">events to filter</param>
@@ -108,24 +108,24 @@ namespace com.espertech.esper.epl.view
             {
                 return null;
             }
-    
+
             var evalEventArr = new EventBean[1];
             var passResult = new bool[events.Length];
             var passCount = 0;
-    
+
             for (var i = 0; i < events.Length; i++)
             {
                 evalEventArr[0] = events[i];
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseFilterEval(i, events[i], isNewData);}
-                var pass = (bool?) exprEvaluator.Evaluate(new EvaluateParams(evalEventArr, isNewData, exprEvaluatorContext));
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseFilterEval(pass);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QWhereClauseFilterEval(i, events[i], isNewData); }
+                var pass = (bool?)exprEvaluator.Evaluate(new EvaluateParams(evalEventArr, isNewData, exprEvaluatorContext));
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AWhereClauseFilterEval(pass); }
                 if ((pass != null) && (pass.Value))
                 {
                     passResult[i] = true;
                     passCount++;
                 }
             }
-    
+
             if (passCount == 0)
             {
                 return null;
@@ -134,7 +134,7 @@ namespace com.espertech.esper.epl.view
             {
                 return events;
             }
-    
+
             var resultArray = new EventBean[passCount];
             var count = 0;
             for (var i = 0; i < passResult.Length; i++)

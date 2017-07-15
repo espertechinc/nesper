@@ -16,11 +16,10 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.expression.core
 {
-    /// <summary>
-    /// Expression for use within crontab to specify a frequency.
-    /// </summary>
-    [Serializable]
-    public class ExprNumberSetFrequency : ExprNodeBase, ExprEvaluator
+    /// <summary>Expression for use within crontab to specify a frequency.</summary>
+    public class ExprNumberSetFrequency
+        : ExprNodeBase
+        , ExprEvaluator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.epl.expression.core
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("*/");
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
 
         public override ExprPrecedenceEnum Precedence
@@ -44,7 +43,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public override bool IsConstantResult
         {
-            get { return ChildNodes[0].IsConstantResult; }
+            get { return this.ChildNodes[0].IsConstantResult; }
         }
 
         public override bool EqualsNode(ExprNode node)
@@ -55,12 +54,11 @@ namespace com.espertech.esper.epl.expression.core
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             _evaluator = ChildNodes[0].ExprEvaluator;
-            Type type = _evaluator.ReturnType;
+            var type = _evaluator.ReturnType;
             if (!type.IsNumericNonFP())
             {
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
-
             return null;
         }
 
@@ -69,19 +67,19 @@ namespace com.espertech.esper.epl.expression.core
             get { return typeof (FrequencyParameter); }
         }
 
-        public object Evaluate(EvaluateParams evaluateParams)
+        public Object Evaluate(EvaluateParams evaluateParams)
         {
-            object value = _evaluator.Evaluate(evaluateParams);
+            var value = _evaluator.Evaluate(evaluateParams);
             if (value == null)
             {
                 Log.Warn("Null value returned for frequency parameter");
-                return new FrequencyParameter(int.MaxValue);
+                return new FrequencyParameter(Int32.MaxValue);
             }
             else
             {
-                int intValue = (value).AsInt();
+                var intValue = value.AsInt();
                 return new FrequencyParameter(intValue);
             }
         }
     }
-}
+} // end of namespace

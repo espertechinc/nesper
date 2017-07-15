@@ -30,9 +30,9 @@ namespace com.espertech.esper.epl.spec
             _substitutionParams.Add(subsParam);
         }
 
-        public IList<SubstitutionParameterExpressionBase> GetSubstitutionParams()
+        public IList<SubstitutionParameterExpressionBase> SubstitutionParams
         {
-            return _substitutionParams;
+            get { return _substitutionParams; }
         }
 
         public void AddAll(IList<SubstitutionParameterExpressionBase> inner)

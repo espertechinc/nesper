@@ -46,7 +46,7 @@ namespace com.espertech.esper.events.arr
 
         public Object Get(EventBean eventBean)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetObjectArray(array);
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.events.arr
 
         public Object GetFragment(EventBean eventBean)
         {
-            Object value = Get(eventBean);
+            var value = Get(eventBean);
             return HandleCreateFragment(value);
         }
     }

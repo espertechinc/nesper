@@ -94,7 +94,7 @@ namespace com.espertech.esper.epl.join.@base
             {
                 // Using the index, determine a subset of the whole indexed table to process, unless
                 // the strategy is a full table scan
-                IEnumerator<EventBean> subsetIter = 
+                IEnumerator<EventBean> subsetIter =
                     _indexLookupStrategy.Lookup(lookupEvents[count], index, exprEvaluatorContext);
 
                 // Ensure that the subset enumerator is advanced; assuming that there
@@ -116,7 +116,7 @@ namespace com.espertech.esper.epl.join.@base
                     if (subsetIterAdvanced)
                     {
                         // Add each row to the join result or, for outer joins, run through the outer join filter
-                        
+
                         do
                         {
                             var resultRow = new EventBean[2];
@@ -127,7 +127,7 @@ namespace com.espertech.esper.epl.join.@base
                             if (_outerJoinCompareNode != null)
                             {
                                 var compareResult =
-                                    (bool?) _outerJoinCompareNode.Evaluate(new EvaluateParams(resultRow, true, exprEvaluatorContext));
+                                    (bool?)_outerJoinCompareNode.Evaluate(new EvaluateParams(resultRow, true, exprEvaluatorContext));
                                 if ((compareResult != null) && (compareResult.Value))
                                 {
                                     joinSet.Add(new MultiKey<EventBean>(resultRow));

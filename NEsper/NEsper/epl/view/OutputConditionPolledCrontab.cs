@@ -13,49 +13,46 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.view
 {
-	/// <summary>
-	/// Output condition handling crontab-at schedule output.
-	/// </summary>
-	public sealed class OutputConditionPolledCrontab : OutputConditionPolled
-	{
-	    private readonly AgentInstanceContext _agentInstanceContext;
-	    private readonly OutputConditionPolledCrontabState _state;
-
-	    public OutputConditionPolledCrontab(AgentInstanceContext agentInstanceContext, OutputConditionPolledCrontabState state)
-        {
-	        _agentInstanceContext = agentInstanceContext;
-	        _state = state;
-	    }
-
-	    public OutputConditionPolledState State
-	    {
-	        get { return _state; }
-	    }
-
-	    public bool UpdateOutputCondition(int newEventsCount, int oldEventsCount)
-	    {
-	        if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
-	        	Log.Debug(".updateOutputCondition, " +
-	        			"  newEventsCount==" + newEventsCount +
-	        			"  oldEventsCount==" + oldEventsCount);
-	        }
-
-	        bool output = false;
-	        long currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-	        if (_state.CurrentReferencePoint == null) {
-	        	_state.CurrentReferencePoint = currentTime;
-	            _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_state.ScheduleSpec, currentTime, _agentInstanceContext.StatementContext.EngineImportService.TimeZone);
-	            output = true;
-	        }
-
-	        if (_state.NextScheduledTime <= currentTime) {
-	            _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_state.ScheduleSpec, currentTime, _agentInstanceContext.StatementContext.EngineImportService.TimeZone);
-	            output = true;
-	        }
-
-	        return output;
-	    }
-
+    /// <summary>Output condition handling crontab-at schedule output.</summary>
+    public sealed class OutputConditionPolledCrontab : OutputConditionPolled
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	}
+
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly OutputConditionPolledCrontabState _state;
+    
+        public OutputConditionPolledCrontab(AgentInstanceContext agentInstanceContext, OutputConditionPolledCrontabState state) {
+            _agentInstanceContext = agentInstanceContext;
+            _state = state;
+        }
+
+        public OutputConditionPolledState State
+        {
+            get { return _state; }
+        }
+
+        public bool UpdateOutputCondition(int newEventsCount, int oldEventsCount) {
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+                Log.Debug(".updateOutputCondition, " +
+                        "  newEventsCount==" + newEventsCount +
+                        "  oldEventsCount==" + oldEventsCount);
+            }
+    
+            var output = false;
+            var currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
+            var engineImportService = _agentInstanceContext.StatementContext.EngineImportService;
+            if (_state.CurrentReferencePoint == null) {
+                _state.CurrentReferencePoint = currentTime;
+                _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_state.ScheduleSpec, currentTime, engineImportService.TimeZone, engineImportService.TimeAbacus);
+                output = true;
+            }
+    
+            if (_state.NextScheduledTime <= currentTime) {
+                _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(_state.ScheduleSpec, currentTime, engineImportService.TimeZone, engineImportService.TimeAbacus);
+                output = true;
+            }
+    
+            return output;
+        }
+    }
 } // end of namespace

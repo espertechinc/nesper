@@ -9,27 +9,26 @@
 using System;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.epl.db
 {
-    public class DataCacheUtil
-    {
-        public static Object GetLookupKey(Object[] lookupKeys)
-        {
-            Object key;
-            if (lookupKeys.Length == 0)
-            {
-                key = typeof (Object);
+    public class DataCacheUtil {
+        public static Object GetLookupKey(Object[] methodParams, int numInputParameters) {
+            if (numInputParameters == 0) {
+                return typeof(Object);
+            } else if (numInputParameters == 1) {
+                return methodParams[0];
+            } else {
+                if (methodParams.Length == numInputParameters) {
+                    return new MultiKeyUntyped(methodParams);
+                }
+                var lookupKeys = new Object[numInputParameters];
+                Array.Copy(methodParams, 0, lookupKeys, 0, numInputParameters);
+                return new MultiKeyUntyped(lookupKeys);
             }
-            else if (lookupKeys.Length > 1)
-            {
-                key = new MultiKeyUntyped(lookupKeys);
-            }
-            else
-            {
-                key = lookupKeys[0];
-            }
-            return key;
         }
     }
-}
+} // end of namespace

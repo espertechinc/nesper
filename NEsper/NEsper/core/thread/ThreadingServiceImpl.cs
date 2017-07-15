@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.thread
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ConfigurationEngineDefaults.Threading _config;
+        private readonly ConfigurationEngineDefaults.ThreadingConfig _config;
         private readonly bool _isTimerThreading;
         private readonly bool _isInboundThreading;
         private readonly bool _isRouteThreading;
@@ -34,7 +34,7 @@ namespace com.espertech.esper.core.thread
         private IBlockingQueue<Runnable> _inboundQueue;
         private IBlockingQueue<Runnable> _routeQueue;
         private IBlockingQueue<Runnable> _outboundQueue;
-    
+
         private IExecutorService _timerThreadPool;
         private IExecutorService _inboundThreadPool;
         private IExecutorService _routeThreadPool;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.thread
 
         /// <summary>Ctor. </summary>
         /// <param name="threadingConfig">configuration</param>
-        public ThreadingServiceImpl(ConfigurationEngineDefaults.Threading threadingConfig)
+        public ThreadingServiceImpl(ConfigurationEngineDefaults.ThreadingConfig threadingConfig)
         {
             _config = threadingConfig;
             if (ThreadingOption.IsThreadingEnabled)
@@ -88,38 +88,38 @@ namespace com.espertech.esper.core.thread
                 _inboundQueue = MakeQueue(_config.ThreadPoolInboundCapacity, _config.ThreadPoolInboundBlocking);
                 _inboundThreadPool = GetThreadPool(services.EngineURI, "Inbound", _inboundQueue, _config.ThreadPoolInboundNumThreads);
             }
-    
+
             if (_isTimerThreading)
             {
                 _timerQueue = MakeQueue(_config.ThreadPoolTimerExecCapacity, _config.ThreadPoolTimerExecBlocking);
                 _timerThreadPool = GetThreadPool(services.EngineURI, "TimerExec", _timerQueue, _config.ThreadPoolTimerExecNumThreads);
             }
-    
+
             if (_isRouteThreading)
             {
                 _routeQueue = MakeQueue(_config.ThreadPoolRouteExecCapacity, _config.ThreadPoolRouteExecBlocking);
                 _routeThreadPool = GetThreadPool(services.EngineURI, "RouteExec", _routeQueue, _config.ThreadPoolRouteExecNumThreads);
             }
-    
+
             if (_isOutboundThreading)
             {
                 _outboundQueue = MakeQueue(_config.ThreadPoolOutboundCapacity, _config.ThreadPoolOutboundBlocking);
                 _outboundThreadPool = GetThreadPool(services.EngineURI, "Outbound", _outboundQueue, _config.ThreadPoolOutboundNumThreads);
             }
         }
-    
-        private static IBlockingQueue<Runnable> MakeQueue(int? threadPoolTimerExecCapacity, ConfigurationEngineDefaults.Threading.Locking blocking)
+
+        private static IBlockingQueue<Runnable> MakeQueue(int? threadPoolTimerExecCapacity, ConfigurationEngineDefaults.ThreadingConfig.Locking blocking)
         {
             if ((threadPoolTimerExecCapacity == null) ||
                 (threadPoolTimerExecCapacity <= 0) ||
                 (threadPoolTimerExecCapacity == int.MaxValue))
             {
-                return blocking == ConfigurationEngineDefaults.Threading.Locking.SPIN
-                    ? (IBlockingQueue<Runnable>) new ImperfectBlockingQueue<Runnable>()
-                    : (IBlockingQueue<Runnable>) new LinkedBlockingQueue<Runnable>();
+                return blocking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN
+                    ? (IBlockingQueue<Runnable>)new ImperfectBlockingQueue<Runnable>()
+                    : (IBlockingQueue<Runnable>)new LinkedBlockingQueue<Runnable>();
             }
 
-            return blocking == ConfigurationEngineDefaults.Threading.Locking.SPIN
+            return blocking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN
                        ? (IBlockingQueue<Runnable>)new ImperfectBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value)
                        : (IBlockingQueue<Runnable>)new BoundBlockingQueue<Runnable>(threadPoolTimerExecCapacity.Value);
         }
@@ -249,7 +249,7 @@ namespace com.espertech.esper.core.thread
             {
                 Log.Info("Shutting down pool " + name);
             }
-    
+
             queue.Clear();
             executorService.Shutdown();
             executorService.AwaitTermination(new TimeSpan(0, 0, 10));

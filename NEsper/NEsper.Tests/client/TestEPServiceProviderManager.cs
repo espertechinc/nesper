@@ -72,7 +72,7 @@ namespace com.espertech.esper.client
         [Test]
         public void TestDefaultNaming()
         {
-        	Assert.AreEqual("default", EPServiceProviderConstants.DEFAULT_ENGINE_URI__QUALIFIER);
+        	Assert.AreEqual("default", EPServiceProviderConstants.DEFAULT_ENGINE_URI_QUALIFIER);
         	EPServiceProvider epNoArg = EPServiceProviderManager.GetDefaultProvider();
         	EPServiceProvider epDefault = EPServiceProviderManager.GetProvider("default");
         	EPServiceProvider epNull = EPServiceProviderManager.GetProvider(null);

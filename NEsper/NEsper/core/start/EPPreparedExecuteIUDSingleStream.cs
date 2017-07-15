@@ -30,14 +30,14 @@ namespace com.espertech.esper.core.start
     {
         private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         protected readonly StatementSpecCompiled StatementSpec;
         protected readonly FireAndForgetProcessor Processor;
         protected readonly EPServicesContext Services;
         protected readonly EPPreparedExecuteIUDSingleStreamExec Executor;
         protected readonly StatementContext StatementContext;
         protected bool HasTableAccess;
-    
+
         public abstract EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName);
 
         /// <summary>
@@ -53,68 +53,76 @@ namespace com.espertech.esper.core.start
             EPServicesContext services,
             StatementContext statementContext)
         {
-            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
-            if (queryPlanLogging) {
+            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
+            if (queryPlanLogging)
+            {
                 QueryPlanLog.Info("Query plans for Fire-and-forget query '" + statementContext.Expression + "'");
             }
-    
+
             HasTableAccess = statementSpec.IntoTableSpec != null ||
                     (statementSpec.TableNodes != null && statementSpec.TableNodes.Length > 0);
-            if (statementSpec.InsertIntoDesc != null && services.TableService.GetTableMetadata(statementSpec.InsertIntoDesc.EventTypeName) != null) {
+            if (statementSpec.InsertIntoDesc != null && services.TableService.GetTableMetadata(statementSpec.InsertIntoDesc.EventTypeName) != null)
+            {
                 HasTableAccess = true;
             }
             if (statementSpec.FireAndForgetSpec is FireAndForgetSpecUpdate ||
-                statementSpec.FireAndForgetSpec is FireAndForgetSpecDelete) {
+                statementSpec.FireAndForgetSpec is FireAndForgetSpecDelete)
+            {
                 HasTableAccess |= statementSpec.StreamSpecs[0] is TableQueryStreamSpec;
             }
-    
+
             StatementSpec = statementSpec;
             Services = services;
             StatementContext = statementContext;
-    
+
             // validate general FAF criteria
             EPPreparedExecuteMethodHelper.ValidateFAFQuery(statementSpec);
-    
+
             // obtain processor
             var streamSpec = statementSpec.StreamSpecs[0];
             Processor = FireAndForgetProcessorFactory.ValidateResolveProcessor(streamSpec, services);
-    
+
             // obtain name and type
             var processorName = Processor.NamedWindowOrTableName;
             var eventType = Processor.EventTypeResultSetProcessor;
-    
+
             // determine alias
             var aliasName = processorName;
-            if (streamSpec.OptionalStreamName != null) {
+            if (streamSpec.OptionalStreamName != null)
+            {
                 aliasName = streamSpec.OptionalStreamName;
             }
-    
+
             // compile filter to optimize access to named window
-            var typeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new string[] {aliasName}, new bool[] {true}, services.EngineURI, true);
+            var typeService = new StreamTypeServiceImpl(new EventType[] { eventType }, new string[] { aliasName }, new bool[] { true }, services.EngineURI, true);
             FilterSpecCompiled filter;
-            if (statementSpec.FilterRootNode != null) {
+            if (statementSpec.FilterRootNode != null)
+            {
                 var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
                 FilterSpecCompiled filterCompiled;
-                try {
+                try
+                {
                     filterCompiled = FilterSpecCompiler.MakeFilterSpec(eventType, aliasName,
                             Collections.SingletonList(statementSpec.FilterRootNode), null,
                             tagged, tagged, typeService,
                             null, statementContext,
                             Collections.SingletonList(0));
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
                     filterCompiled = null;
                 }
                 filter = filterCompiled;
             }
-            else {
+            else
+            {
                 filter = null;
             }
-    
+
             // validate expressions
             EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec, statementContext, typeService, null);
-    
+
             // get executor
             Executor = GetExecutor(filter, aliasName);
         }
@@ -134,71 +142,85 @@ namespace com.espertech.esper.core.start
         /// <returns>query results</returns>
         public EPPreparedQueryResult Execute(ContextPartitionSelector[] contextPartitionSelectors)
         {
-            try {
-                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1) {
+            try
+            {
+                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1)
+                {
                     throw new ArgumentException("Number of context partition selectors must be one");
                 }
                 var optionalSingleSelector = contextPartitionSelectors != null && contextPartitionSelectors.Length > 0 ? contextPartitionSelectors[0] : null;
-    
+
                 // validate context
                 if (Processor.ContextName != null &&
                     StatementSpec.OptionalContextName != null &&
-                    !Processor.ContextName.Equals(StatementSpec.OptionalContextName)) {
+                    !Processor.ContextName.Equals(StatementSpec.OptionalContextName))
+                {
                     throw new EPException("Context for named window is '" + Processor.ContextName + "' and query specifies context '" + StatementSpec.OptionalContextName + "'");
                 }
-    
+
                 // handle non-specified context
-                if (StatementSpec.OptionalContextName == null) {
+                if (StatementSpec.OptionalContextName == null)
+                {
                     FireAndForgetInstance processorInstance = Processor.GetProcessorInstanceNoContext();
-                    if (processorInstance != null) {
+                    if (processorInstance != null)
+                    {
                         var rows = Executor.Execute(processorInstance);
-                        if (rows != null && rows.Length > 0) {
+                        if (rows != null && rows.Length > 0)
+                        {
                             Dispatch();
                         }
                         return new EPPreparedQueryResult(Processor.EventTypePublic, rows);
                     }
                 }
-    
+
                 // context partition runtime query
                 var agentInstanceIds = EPPreparedExecuteMethodHelper.GetAgentInstanceIds(Processor, optionalSingleSelector, Services.ContextManagementService, Processor.ContextName);
-    
+
                 // collect events and agent instances
-                if (agentInstanceIds.IsEmpty()) {
+                if (agentInstanceIds.IsEmpty())
+                {
                     return new EPPreparedQueryResult(Processor.EventTypeResultSetProcessor, CollectionUtil.EVENTBEANARRAY_EMPTY);
                 }
-    
+
                 if (agentInstanceIds.Count == 1)
                 {
                     int agentInstanceId = agentInstanceIds.First();
                     var processorInstance = Processor.GetProcessorInstanceContextById(agentInstanceId);
                     var rows = Executor.Execute(processorInstance);
-                    if (rows.Length > 0) {
+                    if (rows.Length > 0)
+                    {
                         Dispatch();
                     }
                     return new EPPreparedQueryResult(Processor.EventTypeResultSetProcessor, rows);
                 }
-    
+
                 var allRows = new ArrayDeque<EventBean>();
-                foreach (int agentInstanceId in agentInstanceIds) {
+                foreach (int agentInstanceId in agentInstanceIds)
+                {
                     var processorInstance = Processor.GetProcessorInstanceContextById(agentInstanceId);
-                    if (processorInstance != null) {
+                    if (processorInstance != null)
+                    {
                         var rows = Executor.Execute(processorInstance);
                         allRows.AddAll(rows);
                     }
                 }
-                if (allRows.Count > 0) {
+                if (allRows.Count > 0)
+                {
                     Dispatch();
                 }
                 return new EPPreparedQueryResult(Processor.EventTypeResultSetProcessor, allRows.ToArray());
             }
-            finally {
-                if (HasTableAccess) {
+            finally
+            {
+                if (HasTableAccess)
+                {
                     Services.TableService.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }
             }
         }
-    
-        protected void Dispatch() {
+
+        protected void Dispatch()
+        {
             Services.InternalEventEngineRouteDest.ProcessThreadWorkQueue();
         }
     }

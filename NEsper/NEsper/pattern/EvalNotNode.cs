@@ -6,21 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.pattern
 {
     /// <summary>
     /// This class represents an 'not' operator in the evaluation tree representing any event expressions.
     /// </summary>
-    [Serializable]
     public class EvalNotNode : EvalNodeBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly EvalNotFactoryNode _factoryNode;
         private readonly EvalNode _childNode;
     
         public EvalNotNode(PatternAgentInstanceContext context, EvalNotFactoryNode factoryNode, EvalNode childNode)
-                    : base(context)
+            : base(context)
         {
             _factoryNode = factoryNode;
             _childNode = childNode;
@@ -36,9 +37,12 @@ namespace com.espertech.esper.pattern
             get { return _childNode; }
         }
 
-        public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
+        public override EvalStateNode NewState(
+            Evaluator parentNode,
+            EvalStateNodeNumber stateNodeNumber,
+            long stateNodeId)
         {
             return new EvalNotStateNode(parentNode, this);
         }
     }
-}
+} // end of namespace

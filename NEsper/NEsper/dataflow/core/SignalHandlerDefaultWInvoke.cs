@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.epl.core;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client.dataflow;
@@ -23,7 +25,7 @@ namespace com.espertech.esper.dataflow.core
         protected readonly Object Target;
         protected readonly FastMethod FastMethod;
 
-        public SignalHandlerDefaultWInvoke(Object target, MethodInfo method)
+        public SignalHandlerDefaultWInvoke(Object target, MethodInfo method, EngineImportService engineImportService)
         {
             Target = target;
 

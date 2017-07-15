@@ -7,36 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.events.vaevent;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertNoWildcardSingleColCoercionRevisionBean
-        : EvalBaseFirstProp,
-          SelectExprProcessor
+    public class EvalInsertNoWildcardSingleColCoercionRevisionBean : EvalBaseFirstProp, SelectExprProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly EventType _vaeInnerEventType;
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
         private readonly ValueAddEventProcessor _vaeProcessor;
-
-        public EvalInsertNoWildcardSingleColCoercionRevisionBean(SelectExprContext selectExprContext,
-                                                                 EventType resultEventType,
-                                                                 ValueAddEventProcessor vaeProcessor,
-                                                                 EventType vaeInnerEventType)
+        private readonly EventType _vaeInnerEventType;
+    
+        public EvalInsertNoWildcardSingleColCoercionRevisionBean(SelectExprContext selectExprContext, EventType resultEventType, ValueAddEventProcessor vaeProcessor, EventType vaeInnerEventType)
             : base(selectExprContext, resultEventType)
         {
             _vaeProcessor = vaeProcessor;
             _vaeInnerEventType = vaeInnerEventType;
         }
-
+    
         public override EventBean ProcessFirstCol(Object result)
         {
-            return
-                _vaeProcessor.GetValueAddEventBean(base.EventAdapterService.AdapterForTypedObject(result, _vaeInnerEventType));
+            return _vaeProcessor.GetValueAddEventBean(base.EventAdapterService.AdapterForTypedObject(result, _vaeInnerEventType));
         }
     }
-}
+} // end of namespace

@@ -7,30 +7,23 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
+
 using com.espertech.esper.client;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertNoWildcardSingleColCoercionBeanWrap
-        : EvalBaseFirstProp,
-          SelectExprProcessor
+    public class EvalInsertNoWildcardSingleColCoercionBeanWrap : EvalBaseFirstPropFromWrap, SelectExprProcessor
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public EvalInsertNoWildcardSingleColCoercionBeanWrap(SelectExprContext selectExprContext,
-                                                             EventType resultEventType)
-            : base(selectExprContext, resultEventType)
+        public EvalInsertNoWildcardSingleColCoercionBeanWrap(SelectExprContext selectExprContext, WrapperEventType wrapper)
+            : base(selectExprContext, wrapper)
         {
         }
-
-        public override EventBean ProcessFirstCol(Object result)
-        {
-            EventBean wrappedEvent = base.EventAdapterService.AdapterForObject(result);
-            return base.EventAdapterService.AdapterForTypedWrapper(wrappedEvent, new Dictionary<string, object>(),
-                                                                   base.ResultEventType);
+    
+        public override EventBean ProcessFirstCol(Object result) {
+            EventBean wrappedEvent = base.EventAdapterService.AdapterForTypedObject(result, Wrapper.UnderlyingEventType);
+            return base.EventAdapterService.AdapterForTypedWrapper(wrappedEvent, Collections.EmptyDataMap, Wrapper);
         }
     }
-}
+} // end of namespace

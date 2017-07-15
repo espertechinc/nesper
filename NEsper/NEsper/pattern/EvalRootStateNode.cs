@@ -25,10 +25,10 @@ namespace com.espertech.esper.pattern
         protected EvalNode RootSingleChildNode;
         private EvalStateNode _topStateNode;
         private PatternMatchCallback _callback;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="rootSingleChildNode">is the root nodes single child node</param>
-        public EvalRootStateNode(EvalNode rootSingleChildNode) 
+        public EvalRootStateNode(EvalNode rootSingleChildNode)
             : base(null)
         {
             RootSingleChildNode = rootSingleChildNode;
@@ -46,76 +46,82 @@ namespace com.espertech.esper.pattern
             set { _callback = value; }
         }
 
-        public void StartRecoverable(bool startRecoverable, MatchedEventMap beginState) {
+        public void StartRecoverable(bool startRecoverable, MatchedEventMap beginState)
+        {
             Start(beginState);
         }
-    
+
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootStart(beginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootStart(beginState); }
             _topStateNode = RootSingleChildNode.NewState(this, null, 0L);
             _topStateNode.Start(beginState);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootStart(); }
         }
-    
+
         public void Stop()
         {
             Quit();
         }
-    
+
         public override void Quit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootQuit(); }
             if (_topStateNode != null)
             {
                 _topStateNode.Quit();
                 HandleQuitEvent();
             }
             _topStateNode = null;
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootQuit(); }
         }
-    
-        public void HandleQuitEvent() {
+
+        public void HandleQuitEvent()
+        {
             // no action
         }
-    
-        public void HandleChildQuitEvent() {
+
+        public void HandleChildQuitEvent()
+        {
             // no action
         }
-    
-        public void HandleEvaluateFalseEvent() {
+
+        public void HandleEvaluateFalseEvent()
+        {
             // no action
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootEvaluateTrue(matchEvent);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootEvaluateTrue(matchEvent); }
+
             if (isQuitted)
             {
                 _topStateNode = null;
                 HandleChildQuitEvent();
             }
-    
+
             _callback.Invoke(matchEvent.MatchingEventsAsMap);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootEvaluateTrue(_topStateNode == null);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootEvaluateTrue(_topStateNode == null); }
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootEvalFalse();}
-            if (_topStateNode != null) {
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternRootEvalFalse(); }
+            if (_topStateNode != null)
+            {
                 _topStateNode.Quit();
                 _topStateNode = null;
                 HandleEvaluateFalseEvent();
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootEvalFalse();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternRootEvalFalse(); }
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitRoot(this);
-            if (_topStateNode != null) {
+            if (_topStateNode != null)
+            {
                 _topStateNode.Accept(visitor);
             }
         }
@@ -153,7 +159,8 @@ namespace com.espertech.esper.pattern
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (_topStateNode != null) {
+            if (_topStateNode != null)
+            {
                 _topStateNode.RemoveMatch(matchEvent);
             }
         }

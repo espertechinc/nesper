@@ -29,7 +29,7 @@ namespace com.espertech.esper.view.std
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly EventType _eventType;
         private readonly StatViewAdditionalProps _additionalProps;
-    
+
         private long _size = 0;
         private EventBean _lastSizeEvent;
         private Object[] _lastValuesEventNew;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.view.std
             _eventType = eventType;
             _additionalProps = additionalProps;
         }
-    
+
         public View CloneView()
         {
             return new SizeView(_agentInstanceContext, _eventType, _additionalProps);
@@ -59,9 +59,9 @@ namespace com.espertech.esper.view.std
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, SizeViewFactory.NAME, newData, oldData);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, SizeViewFactory.NAME, newData, oldData); }
             var priorSize = _size;
-    
+
             // If we have child views, keep a reference to the old values, so we can Update them as old data event.
             EventBean oldDataMap = null;
             if (_lastSizeEvent == null)
@@ -74,28 +74,31 @@ namespace com.espertech.esper.view.std
                     oldDataMap = _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(postOldData, _eventType);
                 }
             }
-    
+
             // add data points to the window
             if (newData != null)
             {
                 _size += newData.Length;
-    
-                if ((_additionalProps != null) && (newData.Length != 0)) {
-                    if (_lastValuesEventNew == null) {
+
+                if ((_additionalProps != null) && (newData.Length != 0))
+                {
+                    if (_lastValuesEventNew == null)
+                    {
                         _lastValuesEventNew = new Object[_additionalProps.AdditionalExpr.Length];
                     }
-                    for (var val = 0; val < _additionalProps.AdditionalExpr.Length; val++) {
+                    for (var val = 0; val < _additionalProps.AdditionalExpr.Length; val++)
+                    {
                         _lastValuesEventNew[val] = _additionalProps.AdditionalExpr[val].Evaluate(
-                            new EvaluateParams(new EventBean[] {newData[newData.Length - 1]}, true, _agentInstanceContext));
+                            new EvaluateParams(new EventBean[] { newData[newData.Length - 1] }, true, _agentInstanceContext));
                     }
                 }
             }
-    
+
             if (oldData != null)
             {
                 _size -= oldData.Length;
             }
-    
+
             // If there are child views, fireStatementStopped Update method
             if ((HasViews) && (priorSize != _size))
             {
@@ -103,26 +106,28 @@ namespace com.espertech.esper.view.std
                 postNewData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), _size);
                 AddProperties(postNewData);
                 var newEvent = _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(postNewData, _eventType);
-    
+
                 EventBean[] oldEvents;
-                if (_lastSizeEvent != null) {
-                    oldEvents = new EventBean[] {_lastSizeEvent};
+                if (_lastSizeEvent != null)
+                {
+                    oldEvents = new EventBean[] { _lastSizeEvent };
                 }
-                else {
-                    oldEvents =  new EventBean[] {oldDataMap};
+                else
+                {
+                    oldEvents = new EventBean[] { oldDataMap };
                 }
-                var newEvents = new EventBean[] {newEvent};
-    
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, SizeViewFactory.NAME, newEvents, oldEvents);}
+                var newEvents = new EventBean[] { newEvent };
+
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, SizeViewFactory.NAME, newEvents, oldEvents); }
                 UpdateChildren(newEvents, oldEvents);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
-    
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
+
                 _lastSizeEvent = newEvent;
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             var current = new Dictionary<String, Object>();
@@ -130,7 +135,7 @@ namespace com.espertech.esper.view.std
             AddProperties(current);
             yield return _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(current, _eventType);
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName;
@@ -151,10 +156,11 @@ namespace com.espertech.esper.view.std
             var outputEventTypeName = statementContext.StatementId + "_sizeview_" + streamNum;
             return statementContext.EventAdapterService.CreateAnonymousMapType(outputEventTypeName, schemaMap, false);
         }
-    
+
         private void AddProperties(IDictionary<String, Object> newDataMap)
         {
-            if (_additionalProps == null) {
+            if (_additionalProps == null)
+            {
                 return;
             }
             _additionalProps.AddProperties(newDataMap, _lastValuesEventNew);

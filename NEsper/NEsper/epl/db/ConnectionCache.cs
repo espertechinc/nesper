@@ -85,7 +85,7 @@ namespace com.espertech.esper.epl.db
         /// <summary> Make a new pair of resources.</summary>
         /// <returns> pair of resources
         /// </returns>
-        
+
         protected Pair<DbDriver, DbDriverCommand> MakeNew()
         {
             Log.Info(".MakeNew Obtaining new connection and statement");
@@ -121,9 +121,9 @@ namespace com.espertech.esper.epl.db
             StringBuilder currToken = new StringBuilder();
             String token;
 
-            foreach( char ch in sql )
+            foreach (char ch in sql)
             {
-                switch( ch )
+                switch (ch)
                 {
                     case '\\':
                         inEscape = !inEscape; // Addresses the case of double backslash
@@ -145,7 +145,7 @@ namespace com.espertech.esper.epl.db
                             // Reset the current token
                             currToken.Length = 0;
                             // Add the current token to the sql fragments if it has any value
-                            if (! String.IsNullOrEmpty(token))
+                            if (!String.IsNullOrEmpty(token))
                             {
                                 sqlFragments.Add(new PlaceholderParser.TextFragment(token));
                             }

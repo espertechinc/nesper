@@ -25,20 +25,20 @@ namespace com.espertech.esper.epl.expression.dot
     public class ExprDotEvalStaticMethod : ExprEvaluator, EventPropertyGetter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _statementName;
         private readonly String _classOrPropertyName;
-    	private readonly FastMethod _staticMethod;
+        private readonly FastMethod _staticMethod;
         private readonly ExprEvaluator[] _childEvals;
         private readonly bool _isConstantParameters;
         private readonly ExprDotEval[] _chainEval;
         private readonly ExprDotStaticMethodWrap _resultWrapLambda;
         private readonly bool _rethrowExceptions;
         private readonly Object _targetObject;
-    
+
         private bool _isCachedResult;
         private Object _cachedResult;
-    
+
         public ExprDotEvalStaticMethod(String statementName,
                                        String classOrPropertyName,
                                        FastMethod staticMethod,
@@ -80,18 +80,18 @@ namespace com.espertech.esper.epl.expression.dot
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprPlugInSingleRow(_staticMethod.Target); }
             if ((_isConstantParameters) && (_isCachedResult))
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(_cachedResult);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(_cachedResult); }
                 return _cachedResult;
             }
-    
-    		var args = new Object[_childEvals.Length];
-    		for(var i = 0; i < args.Length; i++)
-    		{
-    			args[i] = _childEvals[i].Evaluate(evaluateParams);
-    		}
-    
-    		// The method is static so the object it is invoked on
-    		// can be null
+
+            var args = new Object[_childEvals.Length];
+            for (var i = 0; i < args.Length; i++)
+            {
+                args[i] = _childEvals[i].Evaluate(evaluateParams);
+            }
+
+            // The method is static so the object it is invoked on
+            // can be null
             try
             {
                 var result = _staticMethod.Invoke(_targetObject, args);
@@ -136,18 +136,18 @@ namespace com.espertech.esper.epl.expression.dot
                 }
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(null);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(null); }
             return null;
         }
-    
+
         public Object Get(EventBean eventBean)
         {
             var args = new Object[_childEvals.Length];
-            for(var i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
-                args[i] = _childEvals[i].Evaluate(new EvaluateParams(new EventBean[] {eventBean}, false, null));
+                args[i] = _childEvals[i].Evaluate(new EvaluateParams(new EventBean[] { eventBean }, false, null));
             }
-    
+
             // The method is static so the object it is invoked on
             // can be null
             try
@@ -158,18 +158,19 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 var message = TypeHelper.GetMessageInvocationTarget(_statementName, _staticMethod.Target, _classOrPropertyName, args, e);
                 Log.Error(message, e.InnerException);
-                if (_rethrowExceptions) {
+                if (_rethrowExceptions)
+                {
                     throw new EPException(message, e.InnerException);
                 }
             }
             return null;
         }
-    
+
         public bool IsExistsProperty(EventBean eventBean)
         {
             return false;
         }
-    
+
         public Object GetFragment(EventBean eventBean)
         {
             return null;

@@ -6,51 +6,40 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
-
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.rowregex
 {
-    /// <summary>
-    /// Nested () regular expression in a regex expression tree.
-    /// </summary>
-    [Serializable]
+    /// <summary>Nested () regular expression in a regex expression tree.</summary>
     public class RowRegexExprNodeNested : RowRegexExprNode
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="type">multiplicity and greedy</param>
+        private readonly RegexNFATypeEnum _type;
+        private readonly RowRegexExprRepeatDesc _optionalRepeat;
+    
         public RowRegexExprNodeNested(RegexNFATypeEnum type, RowRegexExprRepeatDesc optionalRepeat)
         {
-            NFAType = type;
-            OptionalRepeat = optionalRepeat;
+            _type = type;
+            _optionalRepeat = optionalRepeat;
         }
 
         /// <summary>
         /// Returns multiplicity and greedy.
         /// </summary>
-        /// <returns>
-        /// type
-        /// </returns>
-        public RegexNFATypeEnum NFAType { get; private set; }
+        /// <value>type</value>
+        public RegexNFATypeEnum ReturnType
+        {
+            get { return _type; }
+        }
 
-        /// <summary>
-        /// Returns the optional repeat information.
-        /// </summary>
-        /// <value>
-        /// The optional repeat.
-        /// </value>
-        public RowRegexExprRepeatDesc OptionalRepeat { get; private set; }
+        public RowRegexExprRepeatDesc OptionalRepeat
+        {
+            get { return _optionalRepeat; }
+        }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(NFAType.OptionalPostfix());
+            writer.Write(_type.OptionalPostfix);
         }
 
         public override RowRegexExprNodePrecedenceEnum Precedence
@@ -58,4 +47,4 @@ namespace com.espertech.esper.rowregex
             get { return RowRegexExprNodePrecedenceEnum.GROUPING; }
         }
     }
-}
+} // end of namespace

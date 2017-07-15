@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.epl
 	        config.AddMethodRef(typeof(MyStaticService), new ConfigurationMethodRef());
 	        config.AddImport(typeof(MyStaticService));
 
-	        config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+	        config.EngineDefaults.Logging.IsEnableQueryPlan = true;
 	        config.AddEventType<SupportBean>();
 	        config.AddEventType(typeof(SupportBean_S0));
 	        config.AddEventType(typeof(SupportBean_S1));

@@ -28,7 +28,7 @@ namespace com.espertech.esper.client
         public void SetUp()
         {
             _config = new Configuration();
-            _config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            _config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
         [Test]

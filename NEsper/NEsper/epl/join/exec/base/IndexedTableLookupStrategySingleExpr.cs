@@ -36,7 +36,8 @@ namespace com.espertech.esper.epl.join.exec.@base
         /// <param name="strategyDesc">The strategy desc.</param>
         public IndexedTableLookupStrategySingleExpr(ExprNode exprNode, int streamNum, PropertyIndexedEventTableSingle index, LookupStrategyDesc strategyDesc)
         {
-            if (index == null) {
+            if (index == null)
+            {
                 throw new ArgumentException("Unexpected null index received");
             }
             _index = index;
@@ -45,27 +46,27 @@ namespace com.espertech.esper.epl.join.exec.@base
             _eventsPerStream = new EventBean[streamNum + 1];
             _exprEvaluator = exprNode.ExprEvaluator;
         }
-    
+
         /// <summary>Returns index to look up in. </summary>
         /// <returns>index to use</returns>
         public PropertyIndexedEventTableSingle GetIndex()
         {
             return _index;
         }
-    
+
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) {InstrumentationHelper.Get().QIndexJoinLookup(this, _index);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexJoinLookup(this, _index); }
+
             _eventsPerStream[_streamNum] = theEvent;
             var key = _exprEvaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, exprEvaluatorContext));
             var result = _index.Lookup(key);
-    
-            if (InstrumentationHelper.ENABLED) {InstrumentationHelper.Get().AIndexJoinLookup(result, key);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexJoinLookup(result, key); }
 
             return result;
         }
-    
+
         public override String ToString()
         {
             return "IndexedTableLookupStrategySingleExpr evaluation" +

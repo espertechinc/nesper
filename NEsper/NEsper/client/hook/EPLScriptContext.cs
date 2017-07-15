@@ -6,23 +6,33 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.client.hook
 {
-    /// <summary>Available when using JSR-223 scripts or MVEL, for access of script attributes. </summary>
+    /// <summary>
+    ///     Available when using JSR-223 scripts or MVEL, for access of script attributes.
+    /// </summary>
     public interface EPLScriptContext
     {
         /// <summary>
-        /// Set a script attributed.
+        ///     Returns event and event type services
+        /// </summary>
+        /// <value>event type and event services</value>
+        EventBeanService EventBeanService { get; }
+
+        /// <summary>
+        ///     Set a script attributed.
         /// </summary>
         /// <param name="attribute">name to use</param>
         /// <param name="value">value to set</param>
-        void SetScriptAttribute(string attribute, object value);
+        void SetScriptAttribute(string attribute, Object value);
 
         /// <summary>
-        /// Return a script attribute value.
+        ///     Return a script attribute value.
         /// </summary>
         /// <param name="attribute">name to retrieve value for</param>
         /// <returns>attribute value or null if undefined</returns>
-        object GetScriptAttribute(string attribute);
+        Object GetScriptAttribute(string attribute);
     }
-}
+} // end of namespace

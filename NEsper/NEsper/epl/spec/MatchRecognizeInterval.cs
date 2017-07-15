@@ -17,65 +17,83 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.spec
 {
-    /// <summary>
-    /// Interval specification within match_recognize.
-    /// </summary>
+    /// <summary>Interval specification within match_recognize.</summary>
     [Serializable]
     public class MatchRecognizeInterval : MetaDefItem
     {
+        private ExprTimePeriod _timePeriodExpr;
+        private readonly bool _orTerminated;
         private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
-
+    
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="timePeriodExpr">time period</param>
-        /// <param name="orTerminated">if set to <c>true</c> [or terminated].</param>
+        /// <param name="orTerminated">or-terminated indicator</param>
         public MatchRecognizeInterval(ExprTimePeriod timePeriodExpr, bool orTerminated)
         {
-            TimePeriodExpr = timePeriodExpr;
-            IsOrTerminated = orTerminated;
+            _timePeriodExpr = timePeriodExpr;
+            _orTerminated = orTerminated;
         }
 
-        /// <summary>Returns the time period. </summary>
+        /// <summary>
+        /// Returns the time period.
+        /// </summary>
         /// <value>time period</value>
-        public ExprTimePeriod TimePeriodExpr { get; private set; }
+        public ExprTimePeriod TimePeriodExpr
+        {
+            get { return _timePeriodExpr; }
+        }
 
         /// <summary>
         /// Returns the number of milliseconds.
         /// </summary>
+        /// <param name="fromTime">from-time</param>
+        /// <param name="agentInstanceContext">context</param>
+        /// <returns>msec</returns>
         public long GetScheduleForwardDelta(long fromTime, AgentInstanceContext agentInstanceContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegIntervalValue(TimePeriodExpr); }
-            if (_timeDeltaComputation == null)
-            {
-                _timeDeltaComputation = TimePeriodExpr.ConstEvaluator(new ExprEvaluatorContextStatement(agentInstanceContext.StatementContext, false));
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QRegIntervalValue(_timePeriodExpr);
             }
-            long result = _timeDeltaComputation.DeltaMillisecondsAdd(fromTime);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegIntervalValue(result); }
+            if (_timeDeltaComputation == null) {
+                _timeDeltaComputation = _timePeriodExpr.ConstEvaluator(new ExprEvaluatorContextStatement(agentInstanceContext.StatementContext, false));
+            }
+            long result = _timeDeltaComputation.DeltaAdd(fromTime);
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().ARegIntervalValue(result);
+            }
             return result;
         }
-
+    
         /// <summary>
         /// Returns the number of milliseconds.
         /// </summary>
-        /// <returns></returns>
-        public long GetScheduleBackwardDelta(long fromTime, AgentInstanceContext agentInstanceContext)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegIntervalValue(TimePeriodExpr); }
-            if (_timeDeltaComputation == null)
-            {
-                _timeDeltaComputation = TimePeriodExpr.ConstEvaluator(new ExprEvaluatorContextStatement(agentInstanceContext.StatementContext, false));
+        /// <param name="fromTime">from-time</param>
+        /// <param name="agentInstanceContext">context</param>
+        /// <returns>msec</returns>
+        public long GetScheduleBackwardDelta(long fromTime, AgentInstanceContext agentInstanceContext) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QRegIntervalValue(_timePeriodExpr);
             }
-            long result = _timeDeltaComputation.DeltaMillisecondsSubtract(fromTime);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegIntervalValue(result); }
+            if (_timeDeltaComputation == null) {
+                _timeDeltaComputation = _timePeriodExpr.ConstEvaluator(new ExprEvaluatorContextStatement(agentInstanceContext.StatementContext, false));
+            }
+            long result = _timeDeltaComputation.DeltaSubtract(fromTime);
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().ARegIntervalValue(result);
+            }
             return result;
         }
 
-        public bool IsOrTerminated { get; private set; }
+        public bool IsOrTerminated
+        {
+            get { return _orTerminated; }
+        }
 
         public void Validate(ExprValidationContext validationContext)
         {
-            TimePeriodExpr = (ExprTimePeriod)ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.MATCHRECOGINTERVAL, TimePeriodExpr, validationContext);
+            _timePeriodExpr = (ExprTimePeriod) ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.MATCHRECOGINTERVAL, _timePeriodExpr, validationContext);
         }
     }
-}
+} // end of namespace

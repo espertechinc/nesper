@@ -8,45 +8,59 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
+using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
     public class ReformatOpToDateTime : ReformatOp
     {
-        private readonly TimeZoneInfo _timeZone;
-
-        public ReformatOpToDateTime(TimeZoneInfo timeZone)
+    private readonly TimeZoneInfo _timeZone;
+        private readonly TimeAbacus _timeAbacus;
+    
+        public ReformatOpToDateTime(TimeZoneInfo timeZone, TimeAbacus timeAbacus)
         {
             _timeZone = timeZone;
+            _timeAbacus = timeAbacus;
+        }
+    
+        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) {
+            return _timeAbacus.ToDate(ts);
+        }
+    
+        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) {
+            return d;
         }
 
-        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return ts.TimeFromMillis(_timeZone);
+            return d.DateTime;
         }
 
-        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(DateTimeEx dtx, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return d.TranslateTo(_timeZone);
+            return dtx.DateTime.DateTime;
         }
 
         public Type ReturnType
         {
-            get { return typeof(DateTimeOffset?); }
+            get { return typeof (DateTime); }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,
-                                                   DatetimeMethodEnum currentMethod,
-                                                   ICollection<ExprNode> currentParameters,
-                                                   ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             return null;
         }
     }
-}
+} // end of namespace

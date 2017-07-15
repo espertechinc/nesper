@@ -24,9 +24,9 @@ namespace com.espertech.esper.epl.db
         IEnumerable<string> ColumnNames { get; }
 
         /// <summary>
-        /// Gets the column info.
+        /// Gets the column INFO.
         /// </summary>
-        /// <value>The column info.</value>
+        /// <value>The column INFO.</value>
         IEnumerable<KeyValuePair<string, DBOutputTypeDesc>> ColumnInfo { get; }
 
         /// <summary>

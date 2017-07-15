@@ -129,7 +129,8 @@ namespace com.espertech.esper.epl.db
             {
                 connectionCache = databaseConfigService.GetConnectionCache(
                     databaseName, dbCommand.PseudoText, contextAttributes);
-                dataCache = databaseConfigService.GetDataCache(databaseName, statementContext, epStatementAgentInstanceHandle, dataCacheFactory, streamNumber);
+                dataCache = databaseConfigService.GetDataCache(
+                    databaseName, statementContext, epStatementAgentInstanceHandle, dataCacheFactory, streamNumber);
             }
             catch (DatabaseConfigException e)
             {
@@ -138,13 +139,14 @@ namespace com.espertech.esper.epl.db
                 throw new ExprValidationException(text + ", reason: " + e.Message, e);
             }
 
-            var dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService,
-                    eventType,
-                    connectionCache,
-                    dbCommand.CommandText,
-                    queryMetaData.OutputParameters,
-                    columnTypeConversionHook,
-                    outputRowConversionHook);
+            var dbPollStrategy = new PollExecStrategyDBQuery(
+                eventAdapterService,
+                eventType,
+                connectionCache,
+                dbCommand.CommandText,
+                queryMetaData.OutputParameters,
+                columnTypeConversionHook,
+                outputRowConversionHook);
 
             return new DatabasePollingViewable(
                 streamNumber,
@@ -162,8 +164,9 @@ namespace com.espertech.esper.epl.db
         /// <param name="databaseName"></param>
         /// <returns></returns>
 
-        private static ColumnSettings GetMetaDataSettings(DatabaseConfigService databaseConfigService,
-                                                          String databaseName)
+        private static ColumnSettings GetMetaDataSettings(
+            DatabaseConfigService databaseConfigService,
+            String databaseName)
         {
             try
             {
@@ -244,9 +247,10 @@ namespace com.espertech.esper.epl.db
             else
             {
                 var carrierClass = outputRowConversionHook.Invoke(
-                    new SQLOutputRowTypeContext(databaseStreamSpec.DatabaseName,
-                                                databaseStreamSpec.SqlWithSubsParams,
-                                                eventTypeFields));
+                    new SQLOutputRowTypeContext(
+                        databaseStreamSpec.DatabaseName,
+                        databaseStreamSpec.SqlWithSubsParams,
+                        eventTypeFields));
                 if (carrierClass == null)
                 {
                     throw new ExprValidationException("Output row conversion hook returned no type");
@@ -264,7 +268,9 @@ namespace com.espertech.esper.epl.db
         /// <param name="databaseConfigService">The database config service.</param>
         /// <param name="databaseName">Name of the database.</param>
         /// <returns></returns>
-        private static DatabaseConnectionFactory GetDatabaseConnectionFactory(DatabaseConfigService databaseConfigService, string databaseName)
+        private static DatabaseConnectionFactory GetDatabaseConnectionFactory(
+            DatabaseConfigService databaseConfigService,
+            string databaseName)
         {
             DatabaseConnectionFactory databaseConnectionFactory;
             try
@@ -308,10 +314,11 @@ namespace com.espertech.esper.epl.db
         /// <param name="dbCommand">The database command.</param>
         /// <param name="contextAttributes">The context attributes.</param>
         /// <returns></returns>
-        private static QueryMetaData GetQueryMetaData(DBStatementStreamSpec databaseStreamSpec,
-                                                      DatabaseConfigService databaseConfigService,
-                                                      DbDriverCommand dbCommand,
-                                                      IEnumerable<Attribute> contextAttributes)
+        private static QueryMetaData GetQueryMetaData(
+            DBStatementStreamSpec databaseStreamSpec,
+            DatabaseConfigService databaseConfigService,
+            DbDriverCommand dbCommand,
+            IEnumerable<Attribute> contextAttributes)
         {
             // Get a database connection
             var databaseName = databaseStreamSpec.DatabaseName;
@@ -338,47 +345,49 @@ namespace com.espertech.esper.epl.db
                         queryMetaData = dbCommand.MetaData;
                         break;
                     case ConfigurationDBRef.MetadataOriginEnum.SAMPLE:
+                    {
+                        var parameterDesc = dbCommand.ParameterDescription;
+
+                        String sampleSQL;
+                        if (databaseStreamSpec.MetadataSQL != null)
                         {
-                            var parameterDesc = dbCommand.ParameterDescription;
-
-                            String sampleSQL;
-                            if (databaseStreamSpec.MetadataSQL != null)
+                            sampleSQL = databaseStreamSpec.MetadataSQL;
+                            if (Log.IsInfoEnabled)
                             {
-                                sampleSQL = databaseStreamSpec.MetadataSQL;
-                                if (Log.IsInfoEnabled)
-                                {
-                                    Log.Info(".GetQueryMetaData Using provided sample SQL '" + sampleSQL + "'");
-                                }
+                                Log.Info(".GetQueryMetaData Using provided sample SQL '" + sampleSQL + "'");
                             }
-                            else
-                            {
-                                // Create the sample SQL by replacing placeholders with null and
-                                // SAMPLE_WHERECLAUSE_PLACEHOLDER with a "where 1=0" clause
-                                sampleSQL = CreateSamplePlaceholderStatement(dbCommand.Fragments);
-
-                                if (Log.IsInfoEnabled)
-                                {
-                                    Log.Info(".GetQueryMetaData Using un-lexed sample SQL '" + sampleSQL + "'");
-                                }
-
-                                // If there is no SAMPLE_WHERECLAUSE_PLACEHOLDER, lexical analyse the SQL
-                                // adding a "where 1=0" clause.
-                                if (parameterDesc.BuiltinIdentifiers.Count != 1)
-                                {
-                                    sampleSQL = LexSampleSQL(sampleSQL);
-                                    if (Log.IsInfoEnabled)
-                                    {
-                                        Log.Info(".GetQueryMetaData Using lexed sample SQL '" + sampleSQL + "'");
-                                    }
-                                }
-                            }
-
-                            // finally get the metadata by firing the sample SQL
-                            queryMetaData = GetExampleQueryMetaData(dbCommand.Driver, sampleSQL, metadataSetting, contextAttributes);
                         }
+                        else
+                        {
+                            // Create the sample SQL by replacing placeholders with null and
+                            // SAMPLE_WHERECLAUSE_PLACEHOLDER with a "where 1=0" clause
+                            sampleSQL = CreateSamplePlaceholderStatement(dbCommand.Fragments);
+
+                            if (Log.IsInfoEnabled)
+                            {
+                                Log.Info(".GetQueryMetaData Using un-lexed sample SQL '" + sampleSQL + "'");
+                            }
+
+                            // If there is no SAMPLE_WHERECLAUSE_PLACEHOLDER, lexical analyse the SQL
+                            // adding a "where 1=0" clause.
+                            if (parameterDesc.BuiltinIdentifiers.Count != 1)
+                            {
+                                sampleSQL = LexSampleSQL(sampleSQL);
+                                if (Log.IsInfoEnabled)
+                                {
+                                    Log.Info(".GetQueryMetaData Using lexed sample SQL '" + sampleSQL + "'");
+                                }
+                            }
+                        }
+
+                        // finally get the metadata by firing the sample SQL
+                        queryMetaData = GetExampleQueryMetaData(
+                            dbCommand.Driver, sampleSQL, metadataSetting, contextAttributes);
+                    }
                         break;
                     default:
-                        throw new ArgumentException("MetaOriginPolicy contained an unhandled value: #" + metaOriginPolicy);
+                        throw new ArgumentException(
+                            "MetaOriginPolicy contained an unhandled value: #" + metaOriginPolicy);
                 }
             }
             catch (DatabaseConfigException ex)
@@ -425,7 +434,7 @@ namespace com.espertech.esper.epl.db
 
             for (var i = 0; i < tokenList.Count; i++)
             {
-                var token = (IToken)tokenList[i];
+                var token = (IToken) tokenList[i];
                 if ((token == null) || token.Text == null)
                 {
                     break;
@@ -540,8 +549,9 @@ namespace com.espertech.esper.epl.db
             }
             catch (Exception ex)
             {
-                const string text = "Error constructing sample SQL to retrieve metadata for JDBC-drivers that don't support metadata, consider using the " +
-                                    SAMPLE_WHERECLAUSE_PLACEHOLDER + " placeholder or providing a sample SQL";
+                const string text =
+                    "Error constructing sample SQL to retrieve metadata for JDBC-drivers that don't support metadata, consider using the " +
+                    SAMPLE_WHERECLAUSE_PLACEHOLDER + " placeholder or providing a sample SQL";
                 Log.Error(text, ex);
                 throw new ExprValidationException(text, ex);
             }
@@ -555,10 +565,11 @@ namespace com.espertech.esper.epl.db
         /// <param name="metadataSetting">The metadata setting.</param>
         /// <param name="contextAttributes">The context attributes.</param>
         /// <returns></returns>
-        private static QueryMetaData GetExampleQueryMetaData(DbDriver dbDriver,
-                                                             String sampleSQL,
-                                                             ColumnSettings metadataSetting,
-                                                             IEnumerable<Attribute> contextAttributes)
+        private static QueryMetaData GetExampleQueryMetaData(
+            DbDriver dbDriver,
+            String sampleSQL,
+            ColumnSettings metadataSetting,
+            IEnumerable<Attribute> contextAttributes)
         {
             var sampleSQLFragments = PlaceholderParser.ParsePlaceholder(sampleSQL);
             using (var dbCommand = dbDriver.CreateCommand(sampleSQLFragments, metadataSetting, contextAttributes))
@@ -597,6 +608,7 @@ namespace com.espertech.esper.epl.db
             return buffer.ToString();
         }
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

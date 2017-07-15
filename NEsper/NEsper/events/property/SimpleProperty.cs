@@ -24,21 +24,24 @@ namespace com.espertech.esper.events.property
     /// <summary>
     /// Represents a simple property of a given name.
     /// </summary>
-    public class SimpleProperty : PropertyBase
+    public class SimpleProperty 
+        : PropertyBase
+        , PropertySimple
     {
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="propertyName">is the property name</param>
-        public SimpleProperty(String propertyName) : base(propertyName)
+        public SimpleProperty(String propertyName)
+            : base(propertyName)
         {
         }
-    
+
         public override String[] ToPropertyArray()
         {
-            return new[] {PropertyNameAtomic};
-        }    
-    
+            return new[] { PropertyNameAtomic };
+        }
+
         public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
@@ -52,7 +55,7 @@ namespace com.espertech.esper.events.property
             }
             return eventType.GetGetter(PropertyNameAtomic);
         }
-    
+
         public override Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
@@ -62,7 +65,7 @@ namespace com.espertech.esper.events.property
             }
             return propertyDesc.ReturnType.GetBoxedType();
         }
-    
+
         public override GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
@@ -72,8 +75,8 @@ namespace com.espertech.esper.events.property
             }
             return propertyDesc.GetReturnTypeGeneric();
         }
-    
-        public override Type GetPropertyTypeMap(IDictionary<string,object> optionalMapPropTypes, EventAdapterService eventAdapterService)
+
+        public override Type GetPropertyTypeMap(IDictionary<string, object> optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
             // The simple, none-dynamic property needs a definition of the map contents else no property
             if (optionalMapPropTypes == null)
@@ -87,30 +90,31 @@ namespace com.espertech.esper.events.property
             }
             if (def is Type)
             {
-                return ((Type) def).GetBoxedType();
+                return ((Type)def).GetBoxedType();
             }
-            else if (def is IDictionary<string,object>)
+            else if (def is IDictionary<string, object>)
             {
-                return typeof(IDictionary<string,object>);
+                return typeof(IDictionary<string, object>);
             }
             else if (def is String)
             {
                 String propertyName = def.ToString();
                 bool isArray = EventTypeUtility.IsPropertyArray(propertyName);
-                if (isArray) {
+                if (isArray)
+                {
                     propertyName = EventTypeUtility.GetPropertyRemoveArray(propertyName);
                 }
-    
+
                 var eventType = eventAdapterService.GetEventTypeByName(propertyName);
                 if (eventType is MapEventType)
                 {
                     if (isArray)
                     {
-                        return typeof(IDictionary<string,object>[]);
+                        return typeof(IDictionary<string, object>[]);
                     }
                     else
                     {
-                        return typeof(IDictionary<string,object>);
+                        return typeof(IDictionary<string, object>);
                     }
                 }
 
@@ -122,7 +126,7 @@ namespace com.espertech.esper.events.property
                     }
                     else
                     {
-                        return typeof (Object[]);
+                        return typeof(Object[]);
                     }
                 }
             }
@@ -130,8 +134,8 @@ namespace com.espertech.esper.events.property
                 + def.GetType() + " for property '" + PropertyNameAtomic + "', expected Map or Class";
             throw new PropertyAccessException(message);
         }
-    
-        public override MapEventPropertyGetter GetGetterMap(IDictionary<string,object> optionalMapPropTypes, EventAdapterService eventAdapterService)
+
+        public override MapEventPropertyGetter GetGetterMap(IDictionary<string, object> optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
             // The simple, none-dynamic property needs a definition of the map contents else no property
             if (optionalMapPropTypes == null)
@@ -146,29 +150,29 @@ namespace com.espertech.esper.events.property
 
             return new MapPropertyGetterDefaultNoFragment(PropertyNameAtomic, eventAdapterService);
         }
-    
+
         public override void ToPropertyEPL(TextWriter writer)
         {
             writer.Write(PropertyNameAtomic);
         }
-    
+
         public override EventPropertyGetter GetGetterDOM()
         {
             return new DOMAttributeAndElementGetter(PropertyNameAtomic);
         }
-    
+
         public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression)
         {
             if (complexProperty.Attributes.Any(attribute => attribute.Name == PropertyNameAtomic))
             {
                 return new DOMSimpleAttributeGetter(PropertyNameAtomic);
             }
-    
+
             foreach (var simple in complexProperty.SimpleElements.Where(simple => simple.Name == PropertyNameAtomic))
             {
                 return new DOMComplexElementGetter(PropertyNameAtomic, null, simple.IsArray);
             }
-    
+
             foreach (SchemaElementComplex complex in complexProperty.ComplexElements)
             {
                 var complexFragmentFactory = new FragmentFactoryDOMGetter(eventAdapterService, xmlEventType, propertyExpression);
@@ -177,10 +181,10 @@ namespace com.espertech.esper.events.property
                     return new DOMComplexElementGetter(PropertyNameAtomic, complexFragmentFactory, complex.IsArray);
                 }
             }
-    
+
             return null;
         }
-    
+
         public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
         {
             return SchemaUtil.FindPropertyMapping(complexProperty, PropertyNameAtomic);
@@ -192,8 +196,8 @@ namespace com.espertech.esper.events.property
         }
 
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, 
-            IDictionary<string, object> nestableTypes, 
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
             EventAdapterService eventAdapterService)
         {
             // The simple, none-dynamic property needs a definition of the map contents else no property
@@ -201,7 +205,7 @@ namespace com.espertech.esper.events.property
             {
                 return null;
             }
-        
+
             int propertyIndex;
             if (!indexPerProperty.TryGetValue(PropertyNameAtomic, out propertyIndex))
             {

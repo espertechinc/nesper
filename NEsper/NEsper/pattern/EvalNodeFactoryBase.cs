@@ -23,23 +23,23 @@ namespace com.espertech.esper.pattern
     {
         private readonly List<EvalFactoryNode> _childNodes;
         private short _factoryNodeId;
-    
+
         public abstract EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode);
         public abstract void ToPrecedenceFreeEPL(TextWriter writer);
-    
+
         /// <summary>Constructor creates a list of child nodes. </summary>
         protected EvalNodeFactoryBase()
         {
             _childNodes = new List<EvalFactoryNode>();
         }
-    
+
         /// <summary>Adds a child node. </summary>
         /// <param name="childNode">is the child evaluation tree node to add</param>
         public void AddChildNode(EvalFactoryNode childNode)
         {
             _childNodes.Add(childNode);
         }
-    
+
         public void AddChildNodes(IEnumerable<EvalFactoryNode> childNodesToAdd)
         {
             _childNodes.AddRange(childNodesToAdd);
@@ -60,12 +60,14 @@ namespace com.espertech.esper.pattern
 
         public void ToEPL(TextWriter writer, PatternExpressionPrecedenceEnum parentPrecedence)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
+            {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);
                 writer.Write(")");
             }
-            else {
+            else
+            {
                 ToPrecedenceFreeEPL(writer);
             }
         }

@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat.threading
         /// <param name="releaseLock"></param>
         /// <param name="msec"></param>
         /// <returns></returns>
-        public IDisposable Acquire(bool releaseLock, int? msec = null)
+        public IDisposable Acquire(bool releaseLock, long? msec = null)
         {
             return _singleton;
             //return new VoidDisposable();
@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.threading
         /// </summary>
         /// <param name="msec">The msec.</param>
         /// <returns></returns>
-        public IDisposable Acquire(int msec)
+        public IDisposable Acquire(long msec)
         {
             return _singleton;
             //return new VoidDisposable();

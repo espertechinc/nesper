@@ -8,13 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.calop;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
+using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
@@ -22,46 +23,59 @@ namespace com.espertech.esper.epl.datetime.reformatop
     {
         private readonly CalendarFieldEnum _fieldNum;
         private readonly TimeZoneInfo _timeZone;
+        private readonly TimeAbacus _timeAbacus;
     
-        public ReformatOpGetField(CalendarFieldEnum fieldNum, TimeZoneInfo timeZone)
-        {
+        public ReformatOpGetField(CalendarFieldEnum fieldNum, TimeZoneInfo timeZone, TimeAbacus timeAbacus) {
             _fieldNum = fieldNum;
             _timeZone = timeZone;
-        }
-
-        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) 
-        {
-            return Action(ts.TimeFromMillis(_timeZone));
-        }
-
-        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) 
-        {
-            return Action(d);
+            _timeAbacus = timeAbacus;
         }
     
-        private int Action(DateTimeOffset dateTime)
+        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) {
+            DateTimeEx cal = DateTimeEx.GetInstance(_timeZone);
+            _timeAbacus.CalendarSet(ts, cal);
+            return Action(cal);
+        }
+    
+        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext) {
+            DateTimeEx cal = DateTimeEx.GetInstance(_timeZone, d);
+            return Action(cal);
+        }
+
+        public Object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            DateTimeEx cal = DateTimeEx.GetInstance(_timeZone, d);
+            return Action(cal);
+        }
+
+        public Object Evaluate(DateTimeEx dtx, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return Action(dtx);
+        }
+
+        private int Action(DateTimeEx dtx)
         {
             switch (_fieldNum)
             {
-                case CalendarFieldEnum.MILLISEC:
-                    return dateTime.Millisecond;
-                case CalendarFieldEnum.SECOND:
-                    return dateTime.Second;
-                case CalendarFieldEnum.MINUTE:
-                    return dateTime.Minute;
-                case CalendarFieldEnum.HOUR:
-                    return dateTime.Hour;
-                case CalendarFieldEnum.DAY:
-                    return dateTime.Day;
-                case CalendarFieldEnum.MONTH:
-                    return dateTime.Month;
-                case CalendarFieldEnum.YEAR:
-                    return dateTime.Year;
                 case CalendarFieldEnum.WEEK:
-                    return dateTime.GetWeekOfYear();
+                    return dtx.DateTime.GetWeekOfYear();
+                case CalendarFieldEnum.YEAR:
+                    return dtx.Year;
+                case CalendarFieldEnum.MONTH:
+                    return dtx.Month;
+                case CalendarFieldEnum.DAY:
+                    return dtx.Day;
+                case CalendarFieldEnum.HOUR:
+                    return dtx.Hour;
+                case CalendarFieldEnum.MINUTE:
+                    return dtx.Minute;
+                case CalendarFieldEnum.SECOND:
+                    return dtx.Second;
+                case CalendarFieldEnum.MILLISEC:
+                    return dtx.Millisecond;
+                default:
+                    throw new ArgumentException("invalid value for field num");
             }
-
-            throw new ArgumentException("invalid field enum");
         }
 
         public Type ReturnType
@@ -69,12 +83,8 @@ namespace com.espertech.esper.epl.datetime.reformatop
             get { return typeof (int?); }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,
-                                                           DatetimeMethodEnum currentMethod,
-                                                           ICollection<ExprNode> currentParameters,
-                                                           ExprDotNodeFilterAnalyzerInput inputDesc)
-        {
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream, DatetimeMethodEnum currentMethod, IList<ExprNode> currentParameters, ExprDotNodeFilterAnalyzerInput inputDesc) {
             return null;
         }
     }
-}
+} // end of namespace

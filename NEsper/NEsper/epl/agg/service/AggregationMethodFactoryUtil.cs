@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
@@ -18,12 +20,10 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    public class AggregationMethodFactoryUtil
-    {
+    public class AggregationMethodFactoryUtil {
         public static void ValidateAggregationType(AggregationMethodFactory requiredFactory,
-                                                   AggregationMethodFactory providedFactory)
-        {
-            if (!TypeHelper.IsSubclassOrImplementsInterface(providedFactory.GetType(), requiredFactory.GetType())) {
+                                                   AggregationMethodFactory providedFactory) {
+            if (!TypeHelper.IsSubclassOrImplementsInterface(providedFactory.Class, requiredFactory.Class)) {
                 throw new ExprValidationException("Not a '" + requiredFactory.AggregationExpression.AggregationFunctionName + "' aggregation");
             }
             ExprAggregateNode aggNodeRequired = requiredFactory.AggregationExpression;
@@ -37,12 +37,12 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
     
-        public static void ValidateAggregationInputType(Type requiredParam, Type providedParam)
-        {
+        public static void ValidateAggregationInputType(Type requiredParam,
+                                                        Type providedParam) {
             Type boxedRequired = TypeHelper.GetBoxedType(requiredParam);
             Type boxedProvided = TypeHelper.GetBoxedType(providedParam);
             if (boxedRequired != boxedProvided &&
-                !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
+                    !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
                 throw new ExprValidationException("The required parameter type is " +
                         TypeHelper.GetTypeNameFullyQualPretty(requiredParam) +
                         " and provided is " +
@@ -50,8 +50,8 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
     
-        public static void ValidateAggregationFilter(bool requireFilter, bool provideFilter)
-        {
+        public static void ValidateAggregationFilter(bool requireFilter,
+                                                     bool provideFilter) {
             if (requireFilter != provideFilter) {
                 throw new ExprValidationException("The aggregation declares " +
                         (requireFilter ? "a" : "no") +
@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateAggregationUnbound(bool requiredHasDataWindows, bool providedHasDataWindows)
-        {
+                {
             if (requiredHasDataWindows != providedHasDataWindows) {
                 throw new ExprValidationException("The aggregation declares " +
                         (requiredHasDataWindows ? "use with data windows" : "unbound") +
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateEventType(EventType requiredType, EventType providedType)
-        {
+                {
             if (!EventTypeUtility.IsTypeOrSubTypeOf(providedType, requiredType)) {
                 throw new ExprValidationException("The required event type is '" +
                         requiredType.Name +
@@ -81,8 +81,8 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateAggFuncName(string requiredName, string providedName)
-        {
-            if (requiredName.ToLower() != providedName) {
+                {
+            if (!requiredName.ToLowerInvariant().Equals(providedName)) {
                 throw new ExprValidationException("The required aggregation function name is '" +
                         requiredName + "' and provided is '" + providedName + "'");
             }
@@ -94,4 +94,4 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
     }
-}
+} // end of namespace

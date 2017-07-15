@@ -27,7 +27,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = false;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = false;
             config.AddEventType("SSB1", typeof(SupportSimpleBeanOne));
             config.AddEventType("SSB2", typeof(SupportSimpleBeanTwo));
             _epService = EPServiceProviderManager.GetDefaultProvider(config);

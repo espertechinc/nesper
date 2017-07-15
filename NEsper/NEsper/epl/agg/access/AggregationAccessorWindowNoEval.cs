@@ -13,6 +13,7 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
@@ -20,45 +21,45 @@ namespace com.espertech.esper.epl.agg.access
     /// <summary>
     /// Represents the aggregation accessor that provides the result for the "window" aggregation function.
     /// </summary>
-    public class AggregationAccessorWindowNoEval : AggregationAccessor
-    {
-        private readonly Type _componentType;
+    public class AggregationAccessorWindowNoEval : AggregationAccessor {
+        private readonly Type componentType;
     
         public AggregationAccessorWindowNoEval(Type componentType) {
-            this._componentType = componentType;
+            this.componentType = componentType;
         }
     
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public Object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            var count = 0;
-            var array = Array.CreateInstance(_componentType, linear.Count);
-            foreach(var bean in linear) {
-                array.SetValue(bean.Underlying, count++);
+            Object array = Array.NewInstance(componentType, linear.Count);
+            IEnumerator<EventBean> it = linear.GetEnumerator();
+            int count = 0;
+            for (; it.HasNext(); ) {
+                EventBean bean = it.Next();
+                Array.Set(array, count++, bean.Underlying);
             }
             return array;
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            return linear.CollectionReadOnly;
+            return Linear.CollectionReadOnly();
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            var values = new List<object>(linear.Count);
-            foreach (var bean in linear) {
+            var values = new List<Object>(linear.Count);
+            IEnumerator<EventBean> it = linear.GetEnumerator();
+            for (; it.HasNext(); ) {
+                EventBean bean = it.Next();
                 values.Add(bean.Underlying);
             }
             return values;
@@ -68,4 +69,4 @@ namespace com.espertech.esper.epl.agg.access
             return null;
         }
     }
-}
+} // end of namespace

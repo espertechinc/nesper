@@ -21,16 +21,22 @@ namespace com.espertech.esper.core.context.mgr
 {
     public class ContextControllerConditionFilter : ContextControllerCondition
     {
-        private readonly EPServicesContext _servicesContext;
         private readonly AgentInstanceContext _agentInstanceContext;
-        private readonly ContextDetailConditionFilter _endpointFilterSpec;
         private readonly ContextControllerConditionCallback _callback;
+        private readonly ContextDetailConditionFilter _endpointFilterSpec;
         private readonly ContextInternalFilterAddendum _filterAddendum;
+        private readonly EPServicesContext _servicesContext;
 
         private EPStatementHandleCallback _filterHandle;
         private FilterServiceEntry _filterServiceEntry;
+        private EventBean _lastEvent;
 
-        public ContextControllerConditionFilter(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, ContextDetailConditionFilter endpointFilterSpec, ContextControllerConditionCallback callback, ContextInternalFilterAddendum filterAddendum)
+        public ContextControllerConditionFilter(
+            EPServicesContext servicesContext,
+            AgentInstanceContext agentInstanceContext,
+            ContextDetailConditionFilter endpointFilterSpec,
+            ContextControllerConditionCallback callback,
+            ContextInternalFilterAddendum filterAddendum)
         {
             _servicesContext = servicesContext;
             _agentInstanceContext = agentInstanceContext;
@@ -39,13 +45,17 @@ namespace com.espertech.esper.core.context.mgr
             _filterAddendum = filterAddendum;
         }
 
-        public void Activate(EventBean optionalTriggeringEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringResilient)
+        public void Activate(
+            EventBean optionalTriggeringEvent,
+            MatchedEventMap priorMatches,
+            long timeOffset,
+            bool isRecoveringResilient)
         {
-            FilterHandleCallback filterCallback = new ProxyFilterHandleCallback
+            var filterCallback = new ProxyFilterHandleCallback
             {
-                ProcStatementId = () => _agentInstanceContext.StatementContext.StatementId,
-                ProcIsSubselect = () => false,
-                ProcMatchFound = (theEvent, allStmtMatches) => FilterMatchFound(theEvent)
+                ProcStatementId = () => { return AgentInstanceContext.StatementContext.StatementId; },
+                ProcMatchFound = (theEvent, allStmtMatches) => { FilterMatchFound(theEvent); },
+                ProcIsSubselect = () => { return false; }
             };
 
             // determine addendum, if any
@@ -55,29 +65,25 @@ namespace com.espertech.esper.core.context.mgr
                 addendum = _filterAddendum.GetFilterAddendum(_endpointFilterSpec.FilterSpecCompiled);
             }
 
-            _filterHandle = new EPStatementHandleCallback(_agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
-            FilterValueSet filterValueSet = _endpointFilterSpec.FilterSpecCompiled.GetValueSet(null, _agentInstanceContext, addendum);
+            _filterHandle = new EPStatementHandleCallback(
+                _agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
+            FilterValueSet filterValueSet = _endpointFilterSpec.FilterSpecCompiled.GetValueSet(
+                null, _agentInstanceContext, addendum);
             _filterServiceEntry = _servicesContext.FilterService.Add(filterValueSet, _filterHandle);
+            long filtersVersion = _servicesContext.FilterService.FiltersVersion;
+            _agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                filtersVersion;
 
             if (optionalTriggeringEvent != null)
             {
-                bool match = StatementAgentInstanceUtil.EvaluateFilterForStatement(_servicesContext, optionalTriggeringEvent, _agentInstanceContext, _filterHandle);
+                bool match = StatementAgentInstanceUtil.EvaluateFilterForStatement(
+                    _servicesContext, optionalTriggeringEvent, _agentInstanceContext, _filterHandle);
 
                 if (match)
                 {
                     FilterMatchFound(optionalTriggeringEvent);
                 }
             }
-        }
-
-        private void FilterMatchFound(EventBean theEvent)
-        {
-            IDictionary<String, Object> props = Collections.GetEmptyMap<string, object>();
-            if (_endpointFilterSpec.OptionalFilterAsName != null)
-            {
-                props = Collections.SingletonDataMap(_endpointFilterSpec.OptionalFilterAsName, theEvent);
-            }
-            _callback.RangeNotification(props, this, theEvent, null, _filterAddendum);
         }
 
         public void Deactivate()
@@ -88,8 +94,28 @@ namespace com.espertech.esper.core.context.mgr
                 _filterHandle = null;
                 _filterServiceEntry = null;
                 long filtersVersion = _agentInstanceContext.StatementContext.FilterService.FiltersVersion;
-                _agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+                _agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                    filtersVersion;
             }
+        }
+
+        private void FilterMatchFound(EventBean theEvent)
+        {
+            // For OR-type filters we de-duplicate here by keeping the last event instance
+            if (_endpointFilterSpec.FilterSpecCompiled.Parameters.Length > 1)
+            {
+                if (theEvent == _lastEvent)
+                {
+                    return;
+                }
+                _lastEvent = theEvent;
+            }
+            IDictionary<string, Object> props = Collections.EmptyDataMap;
+            if (_endpointFilterSpec.OptionalFilterAsName != null)
+            {
+                props = Collections.SingletonDataMap(_endpointFilterSpec.OptionalFilterAsName, theEvent);
+            }
+            _callback.RangeNotification(props, this, theEvent, null, _filterAddendum);
         }
 
         public bool IsRunning
@@ -112,4 +138,4 @@ namespace com.espertech.esper.core.context.mgr
             get { return _endpointFilterSpec; }
         }
     }
-}
+} // end of namespace

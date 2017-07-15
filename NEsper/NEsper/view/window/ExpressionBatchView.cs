@@ -30,7 +30,7 @@ namespace com.espertech.esper.view.window
         private readonly ExpressionBatchViewFactory _dataWindowViewFactory;
 
         protected readonly ICollection<EventBean> Window = new LinkedHashSet<EventBean>();
-    
+
         protected EventBean[] LastBatch;
         protected long NewestEventTimestamp;
         protected long OldestEventTimestamp;
@@ -68,14 +68,14 @@ namespace com.espertech.esper.view.window
         {
             return _dataWindowViewFactory.MakeView(AgentInstanceContext);
         }
-    
+
         /// <summary>Returns true if the window is empty, or false if not empty. </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
         {
             return Window.IsEmpty();
         }
-    
+
         public override void ScheduleCallback()
         {
             bool fireBatch = EvaluateExpression(null, Window.Count);
@@ -84,90 +84,106 @@ namespace com.espertech.esper.view.window
                 Expire(Window.Count);
             }
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _dataWindowViewFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _dataWindowViewFactory.ViewName, newData, oldData); }
+
             bool fireBatch = false;
-    
+
             // remove points from data window
-            if (oldData != null) {
-                foreach (EventBean anOldData in oldData) {
+            if (oldData != null)
+            {
+                foreach (EventBean anOldData in oldData)
+                {
                     Window.Remove(anOldData);
                 }
-                if (AggregationService != null) {
+                if (AggregationService != null)
+                {
                     AggregationService.ApplyLeave(oldData, null, AgentInstanceContext);
                 }
-    
+
                 if (Window.IsNotEmpty())
                 {
                     OldestEvent = Window.First();
                 }
-                else {
+                else
+                {
                     OldestEvent = null;
                 }
-    
+
                 fireBatch = EvaluateExpression(null, Window.Count);
             }
-    
+
             // add data points to the window
             int numEventsInBatch = -1;
             if (newData != null && newData.Length > 0)
             {
-                if (Window.IsEmpty()) {
+                if (Window.IsEmpty())
+                {
                     OldestEventTimestamp = AgentInstanceContext.StatementContext.SchedulingService.Time;
                 }
                 NewestEventTimestamp = AgentInstanceContext.StatementContext.SchedulingService.Time;
-                if (OldestEvent == null) {
+                if (OldestEvent == null)
+                {
                     OldestEvent = newData[0];
                 }
-    
-                foreach (EventBean newEvent in newData) {
+
+                foreach (EventBean newEvent in newData)
+                {
                     Window.Add(newEvent);
-                    if (AggregationService != null) {
-                        AggregationService.ApplyEnter(new EventBean[] {newEvent}, null, AgentInstanceContext);
+                    if (AggregationService != null)
+                    {
+                        AggregationService.ApplyEnter(new EventBean[] { newEvent }, null, AgentInstanceContext);
                     }
                     NewestEvent = newEvent;
-                    if (!fireBatch) {
+                    if (!fireBatch)
+                    {
                         fireBatch = EvaluateExpression(newEvent, Window.Count);
-                        if (fireBatch && !_dataWindowViewFactory.IsIncludeTriggeringEvent) {
+                        if (fireBatch && !_dataWindowViewFactory.IsIncludeTriggeringEvent)
+                        {
                             numEventsInBatch = Window.Count - 1;
                         }
                     }
                 }
             }
-    
+
             // may fire the batch
-            if (fireBatch) {
+            if (fireBatch)
+            {
                 Expire(numEventsInBatch);
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
+
         // Called based on schedule evaluation registered when a variable changes (new data is null).
         // Called when new data arrives.
-        public void Expire(int numEventsInBatch) {
-    
-            if (numEventsInBatch == Window.Count || numEventsInBatch == -1) {
+        public void Expire(int numEventsInBatch)
+        {
+
+            if (numEventsInBatch == Window.Count || numEventsInBatch == -1)
+            {
                 var batchNewData = Window.ToArray();
-                if (ViewUpdatedCollection != null) {
+                if (ViewUpdatedCollection != null)
+                {
                     ViewUpdatedCollection.Update(batchNewData, LastBatch);
                 }
-    
+
                 // post
-                if (batchNewData != null || LastBatch != null) {
+                if (batchNewData != null || LastBatch != null)
+                {
                     Instrument.With(
                         i => i.QViewIndicate(this, _dataWindowViewFactory.ViewName, batchNewData, LastBatch),
                         i => i.AViewIndicate(),
                         () => UpdateChildren(batchNewData, LastBatch));
                 }
-    
+
                 // clear
                 Window.Clear();
                 LastBatch = batchNewData;
-                if (AggregationService != null) {
+                if (AggregationService != null)
+                {
                     AggregationService.ClearResults(AgentInstanceContext);
                 }
                 OldestEvent = null;
@@ -184,32 +200,36 @@ namespace com.espertech.esper.view.window
                     }
                 }
 
-                if (ViewUpdatedCollection != null) {
+                if (ViewUpdatedCollection != null)
+                {
                     ViewUpdatedCollection.Update(batchNewData, LastBatch);
                 }
-    
+
                 // post
-                if (batchNewData != null || LastBatch != null) {
+                if (batchNewData != null || LastBatch != null)
+                {
                     Instrument.With(
                         i => i.QViewIndicate(this, _dataWindowViewFactory.ViewName, batchNewData, LastBatch),
                         i => i.AViewIndicate(),
                         () => UpdateChildren(batchNewData, LastBatch));
                 }
-    
+
                 // clear
                 LastBatch = batchNewData;
-                if (AggregationService != null) {
+                if (AggregationService != null)
+                {
                     AggregationService.ApplyLeave(batchNewData, null, AgentInstanceContext);
                 }
                 OldestEvent = Window.FirstOrDefault();
             }
         }
-    
-        public override void VisitView(ViewDataVisitor viewDataVisitor) {
+
+        public override void VisitView(ViewDataVisitor viewDataVisitor)
+        {
             viewDataVisitor.VisitPrimary(Window, true, _dataWindowViewFactory.ViewName, null);
             viewDataVisitor.VisitPrimary(LastBatch, _dataWindowViewFactory.ViewName);
         }
-    
+
         private bool EvaluateExpression(EventBean arriving, int windowSize)
         {
             ExpressionViewOAFieldEnumExtensions.Populate(BuiltinEventProps.Properties, windowSize, OldestEventTimestamp, NewestEventTimestamp, this, 0, OldestEvent, NewestEvent);
@@ -233,7 +253,7 @@ namespace com.espertech.esper.view.window
         {
             return Window.GetEnumerator();
         }
-    
+
         // Handle variable updates by scheduling a re-evaluation with timers
         public override void Update(Object newValue, Object oldValue)
         {

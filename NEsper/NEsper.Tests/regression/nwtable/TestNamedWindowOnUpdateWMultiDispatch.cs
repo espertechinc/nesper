@@ -26,12 +26,12 @@ namespace com.espertech.esper.regression.nwtable
 	    public void TestMultipleDataWindowIntersectOnUpdate()
         {
 	        RunAssertion(true, null, null);
-	        RunAssertion(false, true, ConfigurationEngineDefaults.Threading.Locking.SPIN);
-	        RunAssertion(false, true, ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
+	        RunAssertion(false, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN);
+	        RunAssertion(false, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND);
 	        RunAssertion(false, false, null);
 	    }
 
-	    private void RunAssertion(bool useDefault, bool? preserve, ConfigurationEngineDefaults.Threading.Locking? locking)
+	    private void RunAssertion(bool useDefault, bool? preserve, ConfigurationEngineDefaults.ThreadingConfig.Locking? locking)
         {
 	        var config = SupportConfigFactory.GetConfiguration();
 	        if (!useDefault) {

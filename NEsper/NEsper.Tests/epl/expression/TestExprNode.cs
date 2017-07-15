@@ -68,37 +68,37 @@ namespace com.espertech.esper.epl.expression
         public void TestParseMappedProp()
         {
             ExprNodeUtility.MappedPropertyParseResult result = ExprNodeUtility.ParseMappedProperty("a.b('c')");
-            Assert.AreEqual("a", result.ClassName);
+            Assert.AreEqual("a", typeof(result)Name);
             Assert.AreEqual("b", result.MethodName);
             Assert.AreEqual("c", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("SupportStaticMethodLib.DelimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))')");
-            Assert.AreEqual("SupportStaticMethodLib", result.ClassName);
+            Assert.AreEqual("SupportStaticMethodLib", typeof(result)Name);
             Assert.AreEqual("DelimitPipe", result.MethodName);
             Assert.AreEqual("POLYGON ((100.0 100, \", 100 100, 400 400))", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("a.b.c.d.e('f.g.h,u.h')");
-            Assert.AreEqual("a.b.c.d", result.ClassName);
+            Assert.AreEqual("a.b.c.d", typeof(result)Name);
             Assert.AreEqual("e", result.MethodName);
             Assert.AreEqual("f.g.h,u.h", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("a.b.c.d.E(\"hfhf f f f \")");
-            Assert.AreEqual("a.b.c.d", result.ClassName);
+            Assert.AreEqual("a.b.c.d", typeof(result)Name);
             Assert.AreEqual("E", result.MethodName);
             Assert.AreEqual("hfhf f f f ", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("c.d.GetEnumerationSource(\"kf\"kf'kf\")");
-            Assert.AreEqual("c.d", result.ClassName);
+            Assert.AreEqual("c.d", typeof(result)Name);
             Assert.AreEqual("GetEnumerationSource", result.MethodName);
             Assert.AreEqual("kf\"kf'kf", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("c.d.GetEnumerationSource('kf\"kf'kf\"')");
-            Assert.AreEqual("c.d", result.ClassName);
+            Assert.AreEqual("c.d", typeof(result)Name);
             Assert.AreEqual("GetEnumerationSource", result.MethodName);
             Assert.AreEqual("kf\"kf'kf\"", result.ArgString);
     
             result = ExprNodeUtility.ParseMappedProperty("f('a')");
-            Assert.AreEqual(null, result.ClassName);
+            Assert.AreEqual(null, typeof(result)Name);
             Assert.AreEqual("f", result.MethodName);
             Assert.AreEqual("a", result.ArgString);
     

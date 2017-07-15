@@ -26,12 +26,12 @@ namespace com.espertech.esper.epl.agg.service
     {
         // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
         private readonly IDictionary<Object, AggregationMethodRow> _aggregatorsPerGroup;
-    
+
         // maintain a current row for random access into the aggregator state table
         // (row=groups, columns=expression nodes that have aggregation functions)
         private AggregationMethod[] _currentAggregatorRow;
         private Object _currentGroupKey;
-    
+
         private readonly IList<Object> _removedKeys;
 
         /// <summary>
@@ -45,17 +45,17 @@ namespace com.espertech.esper.epl.agg.service
             _aggregatorsPerGroup = new NullableDictionary<Object, AggregationMethodRow>();
             _removedKeys = new List<Object>();
         }
-    
+
         public override void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
         {
             _aggregatorsPerGroup.Clear();
         }
-    
+
         public override void ApplyEnter(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, Aggregators.Length, 0, groupByKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, Aggregators.Length, 0, groupByKey); }
             HandleRemovedKeys();
-    
+
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationMethodRow row;
             AggregationMethod[] groupAggregators;
@@ -79,19 +79,20 @@ namespace com.espertech.esper.epl.agg.service
             var evaluators = Evaluators;
             var evaluatorsLength = evaluators.Length;
 
-            for (var ii = 0; ii < evaluatorsLength; ii++) {
+            for (var ii = 0; ii < evaluatorsLength; ii++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggNoAccessEnterLeave(true, ii, groupAggregators[ii], Aggregators[ii].AggregationExpression); }
                 groupAggregators[ii].Enter(evaluators[ii].Evaluate(evaluateParams));
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(true, ii, groupAggregators[ii]); }
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true); }
         }
-    
+
         public override void ApplyLeave(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, Aggregators.Length, 0, groupByKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, Aggregators.Length, 0, groupByKey); }
             var row = _aggregatorsPerGroup.Get(groupByKey);
-    
+
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationMethod[] groupAggregators;
             if (row != null)
@@ -113,65 +114,76 @@ namespace com.espertech.esper.epl.agg.service
             var evaluators = Evaluators;
             var evaluatorsLength = evaluators.Length;
 
-            for (var ii = 0; ii < evaluatorsLength; ii++) {
+            for (var ii = 0; ii < evaluatorsLength; ii++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggNoAccessEnterLeave(false, ii, groupAggregators[ii], Aggregators[ii].AggregationExpression); }
                 groupAggregators[ii].Leave(evaluators[ii].Evaluate(evaluateParams));
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(false, ii, groupAggregators[ii]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(false, ii, groupAggregators[ii]); }
             }
-    
+
             row.DecreaseRefcount();
             if (row.Refcount <= 0)
             {
                 _removedKeys.Add(groupByKey);
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false); }
         }
 
         public override void SetCurrentAccess(Object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
         {
             var row = _aggregatorsPerGroup.Get(groupByKey);
-    
-            if (row != null) {
+
+            if (row != null)
+            {
                 _currentAggregatorRow = row.Methods;
             }
-            else {
+            else
+            {
                 _currentAggregatorRow = null;
             }
-    
-            if (_currentAggregatorRow == null) {
+
+            if (_currentAggregatorRow == null)
+            {
                 _currentAggregatorRow = AggSvcGroupByUtil.NewAggregators(Aggregators);
             }
             _currentGroupKey = groupByKey;
         }
-    
+
         public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return _currentAggregatorRow[column].Value;
         }
-    
-        public override ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public override ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
 
-        public override ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public override ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public override EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public override EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public override void SetRemovedCallback(AggregationRowRemovedCallback callback) {
+
+        public override void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
             // not applicable
         }
-    
-        public override void Accept(AggregationServiceVisitor visitor) {
+
+        public override void Accept(AggregationServiceVisitor visitor)
+        {
             visitor.VisitAggregations(_aggregatorsPerGroup.Count, _aggregatorsPerGroup);
         }
-    
-        public override void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
+
+        public override void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
             visitor.VisitGrouped(_aggregatorsPerGroup.Count);
-            foreach (var entry in _aggregatorsPerGroup) {
+            foreach (var entry in _aggregatorsPerGroup)
+            {
                 visitor.VisitGroup(entry.Key, entry.Value);
             }
         }
@@ -181,12 +193,15 @@ namespace com.espertech.esper.epl.agg.service
             get { return true; }
         }
 
-        public override Object GetGroupKey(int agentInstanceId) {
+        public override Object GetGroupKey(int agentInstanceId)
+        {
             return _currentGroupKey;
         }
-    
-        protected void HandleRemovedKeys() {
-            if (_removedKeys.IsNotEmpty())     // we collect removed keys lazily on the next enter to reduce the chance of empty-group queries creating empty aggregators temporarily
+
+        protected void HandleRemovedKeys()
+        {
+            // we collect removed keys lazily on the next enter to reduce the chance of empty-group queries creating empty aggregators temporarily
+            if (_removedKeys.IsNotEmpty())
             {
                 foreach (var removedKey in _removedKeys)
                 {
@@ -195,8 +210,9 @@ namespace com.espertech.esper.epl.agg.service
                 _removedKeys.Clear();
             }
         }
-    
-        public override ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
+
+        public override ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
             HandleRemovedKeys();
             return _aggregatorsPerGroup.Keys;
         }

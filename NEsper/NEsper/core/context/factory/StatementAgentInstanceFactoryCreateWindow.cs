@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.context.factory
     public class StatementAgentInstanceFactoryCreateWindow : StatementAgentInstanceFactoryBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly StatementContext _statementContext;
         private readonly StatementSpecCompiled _statementSpec;
         private readonly EPServicesContext _services;
@@ -39,7 +39,7 @@ namespace com.espertech.esper.core.context.factory
         private readonly ResultSetProcessorFactoryDesc _resultSetProcessorPrototype;
         private readonly OutputProcessViewFactory _outputProcessViewFactory;
         private readonly bool _isRecoveringStatement;
-    
+
         public StatementAgentInstanceFactoryCreateWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, ViewFactoryChain unmaterializedViewChain, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, OutputProcessViewFactory outputProcessViewFactory, bool recoveringStatement)
             : base(statementContext.Annotations)
         {
@@ -56,7 +56,7 @@ namespace com.espertech.esper.core.context.factory
         protected override StatementAgentInstanceFactoryResult NewContextInternal(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             var stopCallbacks = new List<StopCallback>();
-    
+
             String windowName = _statementSpec.CreateWindowDesc.WindowName;
             Viewable finalView;
             Viewable eventStreamParentViewable;
@@ -64,24 +64,26 @@ namespace com.espertech.esper.core.context.factory
             Viewable topView;
             NamedWindowProcessorInstance processorInstance;
             ViewableActivationResult viewableActivationResult;
-    
-            try {
+
+            try
+            {
                 // Register interest
                 viewableActivationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
                 stopCallbacks.Add(viewableActivationResult.StopCallback);
                 eventStreamParentViewable = viewableActivationResult.Viewable;
-    
+
                 // Obtain processor for this named window
                 var processor = _services.NamedWindowMgmtService.GetProcessor(windowName);
-                if (processor == null) {
+                if (processor == null)
+                {
                     throw new Exception("Failed to obtain named window processor for named window '" + windowName + "'");
                 }
-    
+
                 // Allocate processor instance
                 processorInstance = processor.AddInstance(agentInstanceContext);
                 var rootView = processorInstance.RootViewInstance;
                 eventStreamParentViewable.AddView(rootView);
-    
+
                 // Materialize views
                 var viewFactoryChainContext = new AgentInstanceViewFactoryChainContext(agentInstanceContext, true, null, null);
                 var createResult = _services.ViewService.CreateViews(rootView, _unmaterializedViewChain.FactoryChain, viewFactoryChainContext, false);
@@ -90,12 +92,13 @@ namespace com.espertech.esper.core.context.factory
 
                 // add views to stop callback if applicable
                 StatementAgentInstanceFactorySelect.AddViewStopCallback(stopCallbacks, createResult.NewViews);
-    
+
                 // If this is a virtual data window implementation, bind it to the context for easy lookup
                 StopCallback envStopCallback = null;
-                if (finalView is VirtualDWView) {
+                if (finalView is VirtualDWView)
+                {
                     var objectName = "/virtualdw/" + windowName;
-                    var virtualDWView = (VirtualDWView) finalView;
+                    var virtualDWView = (VirtualDWView)finalView;
                     _services.EngineEnvContext.Bind(objectName, virtualDWView.VirtualDataWindow);
                     envStopCallback = new ProxyStopCallback(() =>
                     {
@@ -104,7 +107,7 @@ namespace com.espertech.esper.core.context.factory
                     });
                 }
                 StopCallback environmentStopCallback = envStopCallback;
-    
+
                 // Only if we are context-allocated: destroy the instance
                 var contextName = processor.ContextName;
                 var agentInstanceId = agentInstanceContext.AgentInstanceId;
@@ -139,23 +142,23 @@ namespace com.espertech.esper.core.context.factory
                 });
 
                 stopCallbacks.Add(allInOneStopMethod);
-    
+
                 // Attach tail view
                 NamedWindowTailViewInstance tailView = processorInstance.TailViewInstance;
                 finalView.AddView(tailView);
                 finalView = tailView;
-    
+
                 // obtain result set processor
                 ResultSetProcessor resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(agentInstanceContext, _resultSetProcessorPrototype, false, null, false);
-    
+
                 // Attach output view
                 View outputView = _outputProcessViewFactory.MakeView(resultSetProcessor, agentInstanceContext);
                 finalView.AddView(outputView);
                 finalView = outputView;
-    
+
                 // obtain post load
                 postLoad = processorInstance.PostLoad;
-    
+
                 // Handle insert case
                 if (_statementSpec.CreateWindowDesc.IsInsert && !_isRecoveringStatement)
                 {
@@ -167,7 +170,7 @@ namespace com.espertech.esper.core.context.factory
                     {
                         var eventsPerStream = new EventBean[1];
                         var filter = _statementSpec.CreateWindowDesc.InsertFilter.ExprEvaluator;
-                        for (IEnumerator<EventBean> it = sourceWindowInstances.TailViewInstance.GetEnumerator(); it.MoveNext();)
+                        for (IEnumerator<EventBean> it = sourceWindowInstances.TailViewInstance.GetEnumerator(); it.MoveNext(); )
                         {
                             var candidate = it.Current;
                             eventsPerStream[0] = candidate;
@@ -181,7 +184,7 @@ namespace com.espertech.esper.core.context.factory
                     }
                     else
                     {
-                        for (IEnumerator<EventBean> it = sourceWindowInstances.TailViewInstance.GetEnumerator(); it.MoveNext();)
+                        for (IEnumerator<EventBean> it = sourceWindowInstances.TailViewInstance.GetEnumerator(); it.MoveNext(); )
                         {
                             events.Add(it.Current);
                         }
@@ -207,7 +210,7 @@ namespace com.espertech.esper.core.context.factory
             {
                 _statementContext.StatementExtensionServicesContext.ContributeStopCallback(createWindowResult, stopCallbacks);
             }
-    
+
             Log.Debug(".start Statement start completed");
             StopCallback stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
             createWindowResult.StopCallback = stopCallback;

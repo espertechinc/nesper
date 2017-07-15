@@ -41,12 +41,12 @@ namespace com.espertech.esper.view.window
             _indexedEvents = new LinkedHashSet<EventBean>();
             _viewUpdatedCollection = viewUpdatedCollection;
         }
-    
+
         public View CloneView()
         {
             return _keepAllViewFactory.MakeView(AgentInstanceViewFactoryContext);
         }
-    
+
         /// <summary>Returns true if the window is empty, or false if not empty. </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
@@ -72,16 +72,17 @@ namespace com.espertech.esper.view.window
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _keepAllViewFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _keepAllViewFactory.ViewName, newData, oldData); }
+
             if (newData != null)
             {
-                foreach (EventBean newEvent in newData) {
+                foreach (EventBean newEvent in newData)
+                {
                     _indexedEvents.Add(newEvent);
                     InternalHandleAdded(newEvent);
                 }
             }
-    
+
             if (oldData != null)
             {
                 foreach (EventBean anOldData in oldData)
@@ -90,35 +91,35 @@ namespace com.espertech.esper.view.window
                     InternalHandleRemoved(anOldData);
                 }
             }
-    
+
             // Update event buffer for access by expressions, if any
             if (_viewUpdatedCollection != null)
             {
                 _viewUpdatedCollection.Update(newData, oldData);
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _keepAllViewFactory.ViewName, newData, oldData);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _keepAllViewFactory.ViewName, newData, oldData); }
             UpdateChildren(newData, oldData);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return _indexedEvents.GetEnumerator();
         }
-    
+
         public void InternalHandleAdded(EventBean newEvent)
         {
             // no action required
         }
-    
+
         public void InternalHandleRemoved(EventBean oldEvent)
         {
             // no action required
         }
-    
+
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_indexedEvents, true, _keepAllViewFactory.ViewName, null);

@@ -24,16 +24,15 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
+using Stream = System.IO.Stream;
+
 namespace com.espertech.esper.client
 {
-    using Stream = System.IO.Stream;
-
-    /// <summary>
-    /// Parser for configuration XML.
-    /// </summary>
+    /// <summary>Parser for configuration XML.</summary>
     public class ConfigurationParser
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly XslCompiledTransform InitializerTransform;
 
@@ -44,9 +43,8 @@ namespace com.espertech.esper.client
         {
             var transformDocument = new XmlDocument();
             using (
-                var transformDocumentStream =
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "com.espertech.esper.client.InitializerTransform.xslt"))
+                var transformDocumentStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                    "com.espertech.esper.client.InitializerTransform.xslt"))
             {
                 transformDocument.Load(transformDocumentStream);
             }
@@ -105,21 +103,12 @@ namespace com.espertech.esper.client
         /// </summary>
         /// <param name="configuration">is the configuration object to populate</param>
         /// <param name="doc">to parse</param>
-        /// <throws>  com.espertech.esper.client.EPException </throws>
-        public static void DoConfigure(Configuration configuration, XmlDocument doc)
+        /// <exception cref="EPException">to indicate parse errors</exception>
+        internal static void DoConfigure(Configuration configuration, XmlDocument doc)
         {
-            var rootElement = doc.DocumentElement;
-            DoConfigure(configuration, rootElement);
-        }
+            var root = doc.DocumentElement;
 
-        /// <summary>
-        /// Parse the configuration starting at the specified root node.
-        /// </summary>
-        /// <param name="configuration">The configuration.</param>
-        /// <param name="rootNode">The root node.</param>
-        public static void DoConfigure(Configuration configuration, XmlNode rootNode)
-        {
-            foreach (var element in CreateElementEnumerable(rootNode.ChildNodes))
+            foreach (var element in CreateElementEnumerable(root.ChildNodes))
             {
                 var nodeName = element.Name;
                 switch (nodeName)
@@ -197,13 +186,12 @@ namespace com.espertech.esper.client
             configuration.AddEventTypeAutoName(name);
         }
 
-
         private static void HandleEventTypes(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "name");
             var classNode = element.Attributes.GetNamedItem("class");
 
-            String optionalClassName = null;
+            string optionalClassName = null;
             if (classNode != null)
             {
                 optionalClassName = classNode.InnerText;
@@ -213,31 +201,39 @@ namespace com.espertech.esper.client
             HandleEventTypeDef(name, optionalClassName, configuration, element);
         }
 
-        private static void HandleEventTypeDef(String name, String optionalClassName, Configuration configuration,
-                                               XmlNode parentNode)
+        private static void HandleEventTypeDef(
+            string name,
+            string optionalClassName,
+            Configuration configuration,
+            XmlNode parentNode)
         {
             foreach (var eventTypeElement in CreateElementEnumerable(parentNode.ChildNodes))
             {
                 var nodeName = eventTypeElement.Name;
-                switch (nodeName)
+                if (nodeName == "xml-dom")
                 {
-                    case "xml-dom":
-                        HandleXMLDOM(name, configuration, eventTypeElement);
-                        break;
-                    case "map":
-                        HandleMap(name, configuration, eventTypeElement);
-                        break;
-                    case "legacy-type":
-                        HandleLegacy(name, optionalClassName, configuration, eventTypeElement);
-                        break;
-                    case "objectarray":
-                        HandleObjectArray(name, configuration, eventTypeElement);
-                        break;
+                    HandleXMLDOM(name, configuration, eventTypeElement);
+                }
+                else if (nodeName == "java-util-map")
+                {
+                    HandleMap(name, configuration, eventTypeElement);
+                }
+                else if (nodeName == "objectarray")
+                {
+                    HandleObjectArray(name, configuration, eventTypeElement);
+                }
+                else if (nodeName == "legacy-type")
+                {
+                    HandleLegacy(name, optionalClassName, configuration, eventTypeElement);
+                }
+                else if (nodeName == "avro")
+                {
+                    HandleAvro(name, configuration, eventTypeElement);
                 }
             }
         }
 
-        private static void HandleMap(String name, Configuration configuration, XmlElement eventTypeElement)
+        private static void HandleMap(string name, Configuration configuration, XmlElement eventTypeElement)
         {
             ConfigurationEventTypeMap config;
             var startTimestampProp = GetOptionalAttribute(eventTypeElement, "start-timestamp-property-name");
@@ -249,7 +245,7 @@ namespace com.espertech.esper.client
                 if (superTypesList != null)
                 {
                     var value = superTypesList.InnerText;
-                    var names = value.Split(',');
+                    var names = value.SplitCsv();
                     foreach (var superTypeName in names)
                     {
                         config.SuperTypes.Add(superTypeName.Trim());
@@ -262,16 +258,16 @@ namespace com.espertech.esper.client
 
             var propertyTypeNames = new Properties();
             var propertyList = eventTypeElement.GetElementsByTagName("map-property");
-            foreach (XmlNode propertyNode in propertyList)
+            for (var i = 0; i < propertyList.Count; i++)
             {
-                var nameProperty = GetRequiredAttribute(propertyNode, "name");
-                var type = GetRequiredAttribute(propertyNode, "class");
-                propertyTypeNames[nameProperty] = type;
+                var nameProperty = GetRequiredAttribute(propertyList.Item(i), "name");
+                var clazz = GetRequiredAttribute(propertyList.Item(i), "class");
+                propertyTypeNames.Put(nameProperty, clazz);
             }
             configuration.AddEventType(name, propertyTypeNames);
         }
 
-        private static void HandleObjectArray(String name, Configuration configuration, XmlElement eventTypeElement)
+        private static void HandleObjectArray(string name, Configuration configuration, XmlElement eventTypeElement)
         {
             ConfigurationEventTypeObjectArray config;
             var startTimestampProp = GetOptionalAttribute(eventTypeElement, "start-timestamp-property-name");
@@ -283,7 +279,7 @@ namespace com.espertech.esper.client
                 if (superTypesList != null)
                 {
                     var value = superTypesList.InnerText;
-                    var names = value.Split(',');
+                    var names = value.SplitCsv();
                     foreach (var superTypeName in names)
                     {
                         config.SuperTypes.Add(superTypeName.Trim());
@@ -307,15 +303,15 @@ namespace com.espertech.esper.client
             configuration.AddEventType(name, propertyNames.ToArray(), propertyTypes.ToArray());
         }
 
-        private static void HandleXMLDOM(String name, Configuration configuration, XmlElement xmldomElement)
+        private static void HandleXMLDOM(string name, Configuration configuration, XmlElement xmldomElement)
         {
             var rootElementName = GetRequiredAttribute(xmldomElement, "root-element-name");
             var rootElementNamespace = GetOptionalAttribute(xmldomElement, "root-element-namespace");
             var schemaResource = GetOptionalAttribute(xmldomElement, "schema-resource");
             var schemaText = GetOptionalAttribute(xmldomElement, "schema-text");
             var defaultNamespace = GetOptionalAttribute(xmldomElement, "default-namespace");
-            var resolvePropertiesAbsoluteStr = GetOptionalAttribute(xmldomElement,
-                                                                       "xpath-resolve-properties-absolute");
+            var resolvePropertiesAbsoluteStr = GetOptionalAttribute(
+                xmldomElement, "xpath-resolve-properties-absolute");
             var propertyExprXPathStr = GetOptionalAttribute(xmldomElement, "xpath-property-expr");
             var eventSenderChecksRootStr = GetOptionalAttribute(xmldomElement, "event-sender-validates-root");
             var xpathFunctionResolverClass = GetOptionalAttribute(xmldomElement, "xpath-function-resolver");
@@ -415,10 +411,36 @@ namespace com.espertech.esper.client
             }
         }
 
-        private static void HandleLegacy(String name, String className, Configuration configuration,
-                                         XmlElement xmldomElement)
+        private static void HandleAvro(string name, Configuration configuration, XmlElement element)
         {
-            // Class name is required for legacy classes
+            var schemaText = GetOptionalAttribute(element, "schema-text");
+
+            var avroEventTypeDesc = new ConfigurationEventTypeAvro();
+            avroEventTypeDesc.AvroSchemaText = schemaText;
+            configuration.AddEventTypeAvro(name, avroEventTypeDesc);
+
+            avroEventTypeDesc.StartTimestampPropertyName = GetOptionalAttribute(
+                element, "start-timestamp-property-name");
+            avroEventTypeDesc.EndTimestampPropertyName = GetOptionalAttribute(element, "end-timestamp-property-name");
+
+            var names = GetOptionalAttribute(element, "supertype-names");
+            if (names != null)
+            {
+                var split = names.SplitCsv();
+                for (var i = 0; i < split.Length; i++)
+                {
+                    avroEventTypeDesc.SuperTypes.Add(split[i].Trim());
+                }
+            }
+        }
+
+        private static void HandleLegacy(
+            string name,
+            string className,
+            Configuration configuration,
+            XmlElement xmldomElement)
+        {
+            // Type name is required for legacy classes
             if (className == null)
             {
                 throw new ConfigurationException("Required class name not supplied for legacy type definition");
@@ -435,47 +457,41 @@ namespace com.espertech.esper.client
             var legacyDesc = new ConfigurationEventTypeLegacy();
             if (accessorStyle != null)
             {
-                legacyDesc.AccessorStyle =
-                    EnumHelper.Parse<AccessorStyleEnum>(accessorStyle);
+                legacyDesc.AccessorStyle = EnumHelper.Parse<AccessorStyleEnum>(accessorStyle);
             }
             if (codeGeneration != null)
             {
-                legacyDesc.CodeGeneration =
-                    EnumHelper.Parse<CodeGenerationEnum>(codeGeneration);
+                legacyDesc.CodeGeneration = EnumHelper.Parse<CodeGenerationEnum>(codeGeneration);
             }
             if (propertyResolution != null)
             {
                 legacyDesc.PropertyResolutionStyle = EnumHelper.Parse<PropertyResolutionStyle>(propertyResolution);
             }
-
             legacyDesc.FactoryMethod = factoryMethod;
             legacyDesc.CopyMethod = copyMethod;
             legacyDesc.StartTimestampPropertyName = startTimestampProp;
             legacyDesc.EndTimestampPropertyName = endTimestampProp;
-
             configuration.AddEventType(name, className, legacyDesc);
 
             foreach (var propertyElement in CreateElementEnumerable(xmldomElement.ChildNodes))
             {
-                switch (propertyElement.Name)
+                if (propertyElement.Name.Equals("method-property"))
                 {
-                    case "method-property":
-                        {
-                            var nameProperty = GetRequiredAttribute(propertyElement, "name");
-                            var method = GetRequiredAttribute(propertyElement, "accessor-method");
-                            legacyDesc.AddMethodProperty(nameProperty, method);
-                            break;
-                        }
-                    case "field-property":
-                        {
-                            var nameProperty = GetRequiredAttribute(propertyElement, "name");
-                            var field = GetRequiredAttribute(propertyElement, "accessor-field");
-                            legacyDesc.AddFieldProperty(nameProperty, field);
-                            break;
-                        }
-                    default:
-                        throw new ConfigurationException("Invalid node " + propertyElement.Name +
-                                                         " encountered while parsing legacy type definition");
+                    var nameProperty = GetRequiredAttribute(propertyElement, "name");
+                    var method = GetRequiredAttribute(propertyElement, "accessor-method");
+                    legacyDesc.AddMethodProperty(nameProperty, method);
+                }
+                else if (propertyElement.Name.Equals("field-property"))
+                {
+                    var nameProperty = GetRequiredAttribute(propertyElement, "name");
+                    var field = GetRequiredAttribute(propertyElement, "accessor-field");
+                    legacyDesc.AddFieldProperty(nameProperty, field);
+                }
+                else
+                {
+                    throw new ConfigurationException(
+                        "Invalid node " + propertyElement.Name
+                        + " encountered while parsing legacy type definition");
                 }
             }
         }
@@ -483,15 +499,7 @@ namespace com.espertech.esper.client
         private static void HandleAutoImports(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
-            var assembly = GetOptionalAttribute(element, "assembly");
-            if (String.IsNullOrEmpty(assembly))
-            {
-                configuration.AddImport(name);
-            }
-            else
-            {
-                configuration.AddImport(name, assembly);
-            }
+            configuration.AddImport(name);
         }
 
         private static void HandleAutoImportAnnotations(Configuration configuration, XmlElement element)
@@ -613,34 +621,28 @@ namespace com.espertech.esper.client
 
         private static void HandleMethodReference(Configuration configuration, XmlElement element)
         {
-            var className = element.Attributes.GetNamedItem("class-name").Value;
+            var className = GetRequiredAttribute(element, "class-name");
             var configMethodRef = new ConfigurationMethodRef();
             configuration.AddMethodRef(className, configMethodRef);
 
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
-                switch (subElement.Name)
+                if (subElement.Name == "expiry-time-cache")
                 {
-                    case "expiry-time-cache":
-                        {
-                            var maxAge = subElement.Attributes.GetNamedItem("max-age-seconds").Value;
-                            var purgeInterval = subElement.Attributes.GetNamedItem("purge-interval-seconds").Value;
-                            var refTypeEnum = ConfigurationCacheReferenceTypeHelper.GetDefault();
-                            if (subElement.Attributes.GetNamedItem("ref-type") != null)
-                            {
-                                var refType = subElement.Attributes.GetNamedItem("ref-type").Value;
-                                refTypeEnum = EnumHelper.Parse<ConfigurationCacheReferenceType>(refType);
-                            }
-                            configMethodRef.SetExpiryTimeCache(Double.Parse(maxAge),
-                                                               Double.Parse(purgeInterval), refTypeEnum);
-                        }
-                        break;
-                    case "lru-cache":
-                        {
-                            var size = subElement.Attributes.GetNamedItem("size").Value;
-                            configMethodRef.SetLRUCache(Int32.Parse(size));
-                            break;
-                        }
+                    var maxAge = GetRequiredAttribute(subElement, "max-age-seconds");
+                    var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");
+                    ConfigurationCacheReferenceType refTypeEnum = ConfigurationCacheReferenceType.Default;
+                    if (subElement.Attributes.GetNamedItem("ref-type") != null)
+                    {
+                        var refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
+                        refTypeEnum = EnumHelper.Parse<ConfigurationCacheReferenceType>(refType);
+                    }
+                    configMethodRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval), refTypeEnum);
+                }
+                else if (subElement.Name == "lru-cache")
+                {
+                    var size = GetRequiredAttribute(subElement, "size");
+                    configMethodRef.SetLRUCache(Int32.Parse(size));
                 }
             }
         }
@@ -674,7 +676,7 @@ namespace com.espertech.esper.client
             var functionNames = GetRequiredAttribute(element, "function-names");
             var factoryClassName = GetOptionalAttribute(element, "factory-class");
 
-            IDictionary<String, Object> additionalProps = null;
+            IDictionary<string, Object> additionalProps = null;
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
                 if (subElement.Name == "init-arg")
@@ -683,33 +685,35 @@ namespace com.espertech.esper.client
                     var value = GetRequiredAttribute(subElement, "value");
                     if (additionalProps == null)
                     {
-                        additionalProps = new Dictionary<String, Object>();
+                        additionalProps = new Dictionary<string, Object>();
                     }
                     additionalProps.Put(name, value);
                 }
             }
 
-            var config = new ConfigurationPlugInAggregationMultiFunction(functionNames.Split(','), factoryClassName);
+            var config = new ConfigurationPlugInAggregationMultiFunction(functionNames.SplitCsv(), factoryClassName);
             config.AdditionalConfiguredProperties = additionalProps;
             configuration.AddPlugInAggregationMultiFunction(config);
         }
 
         private static void HandlePlugInSingleRow(Configuration configuration, XmlElement element)
         {
-            var name = GetRequiredAttribute(element, "name");
-            var functionClassName = GetRequiredAttribute(element, "function-class");
-            var functionMethodName = GetRequiredAttribute(element, "function-method");
-            var valueCache = ValueCache.DISABLED;
-            var filterOptimizable = FilterOptimizable.ENABLED;
+            var name = element.Attributes.GetNamedItem("name").InnerText;
+            var functionClassName = element.Attributes.GetNamedItem("function-class").InnerText;
+            var functionMethodName = element.Attributes.GetNamedItem("function-method").InnerText;
+            var valueCache =
+                ConfigurationPlugInSingleRowFunction.ValueCache.DISABLED;
+            var filterOptimizable =
+                ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED;
             var valueCacheStr = GetOptionalAttribute(element, "value-cache");
             if (valueCacheStr != null)
             {
-                valueCache = EnumHelper.Parse<ValueCache>(valueCacheStr, true);
+                valueCache = EnumHelper.Parse<ConfigurationPlugInSingleRowFunction.ValueCacheEnum>(valueCacheStr);
             }
             var filterOptimizableStr = GetOptionalAttribute(element, "filter-optimizable");
             if (filterOptimizableStr != null)
             {
-                filterOptimizable = EnumHelper.Parse<FilterOptimizable>(filterOptimizableStr, true);
+                filterOptimizable = EnumHelper.Parse<ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum>(filterOptimizableStr);
             }
             var rethrowExceptionsStr = GetOptionalAttribute(element, "rethrow-exceptions");
             var rethrowExceptions = false;
@@ -717,7 +721,11 @@ namespace com.espertech.esper.client
             {
                 rethrowExceptions = Boolean.Parse(rethrowExceptionsStr);
             }
-            configuration.AddPlugInSingleRowFunction(name, functionClassName, functionMethodName, valueCache, filterOptimizable, rethrowExceptions);
+            var eventTypeName = GetOptionalAttribute(element, "event-type-name");
+            configuration.AddPlugInSingleRowFunction(
+                new ConfigurationPlugInSingleRowFunction(
+                    name, functionClassName, functionMethodName, valueCache, filterOptimizable, rethrowExceptions,
+                    eventTypeName));
         }
 
         private static void HandlePlugInPatternGuard(Configuration configuration, XmlElement element)
@@ -738,20 +746,21 @@ namespace com.espertech.esper.client
 
         private static void HandleVariable(Configuration configuration, XmlElement element)
         {
-            var variableName = element.Attributes.GetNamedItem("name").Value;
-            var type = element.Attributes.GetNamedItem("type").Value;
+            var variableName = GetRequiredAttribute(element, "name");
+            var type = GetRequiredAttribute(element, "type");
 
-            var variableType = TypeHelper.GetTypeForSimpleName(type);
+            var variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
             if (variableType == null)
             {
-                throw new ConfigurationException("Invalid variable type for variable '" + variableName + "', the type is not recognized");
+                throw new ConfigurationException(
+                    "Invalid variable type for variable '" + variableName + "', the type is not recognized");
             }
 
             var initValueNode = element.Attributes.GetNamedItem("initialization-value");
-            String initValue = null;
+            string initValue = null;
             if (initValueNode != null)
             {
-                initValue = initValueNode.Value;
+                initValue = initValueNode.InnerText;
             }
 
             var isConstant = false;
@@ -768,7 +777,7 @@ namespace com.espertech.esper.client
             var loaderName = GetRequiredAttribute(element, "name");
             var className = GetRequiredAttribute(element, "class-name");
             var properties = new Properties();
-            String configXML = null;
+            string configXML = null;
 
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
@@ -795,8 +804,7 @@ namespace com.espertech.esper.client
         {
             var uri = GetRequiredAttribute(element, "uri");
             var className = GetRequiredAttribute(element, "class-name");
-            String initializer = null;
-
+            string initializer = null;
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
                 if (subElement.Name == "initializer")
@@ -851,6 +859,7 @@ namespace com.espertech.esper.client
                 throw new ConfigurationException(
                     "Error parsing URI '" + uri + "' as a valid System.Uri string:" + ex.Message, ex);
             }
+
             configuration.AddPlugInEventRepresentation(uriParsed, className, initializer);
         }
 
@@ -858,7 +867,8 @@ namespace com.espertech.esper.client
         {
             var uris = new List<Uri>();
             var name = GetRequiredAttribute(element, "name");
-            String initializer = null;
+            string initializer = null;
+
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
                 switch (subElement.Name)
@@ -926,7 +936,8 @@ namespace com.espertech.esper.client
                 }
             }
 
-            configuration.AddPlugInEventType(name, uris, initializer);
+
+            configuration.AddPlugInEventType(name, uris.ToArray(), initializer);
         }
 
         private static void HandlePlugInEventTypeNameResolution(Configuration configuration, XmlElement element)
@@ -951,7 +962,7 @@ namespace com.espertech.esper.client
                 }
             }
 
-            configuration.PlugInEventTypeResolutionURIs = uris;
+            configuration.PlugInEventTypeResolutionURIs = uris.ToArray();
         }
 
         private static void HandleRevisionEventType(Configuration configuration, XmlElement element)
@@ -961,50 +972,49 @@ namespace com.espertech.esper.client
 
             if (element.Attributes.GetNamedItem("property-revision") != null)
             {
-                var propertyRevision = GetRequiredAttribute(element, "property-revision");
+                var propertyRevision = element.Attributes.GetNamedItem("property-revision").InnerText;
+                ConfigurationRevisionEventType.PropertyRevision propertyRevisionEnum;
                 try
                 {
-                    var propertyRevisionEnum = EnumHelper.Parse<PropertyRevisionEnum>(propertyRevision.Trim(), true);
+                    propertyRevisionEnum = ConfigurationRevisionEventType.PropertyRevision.ValueOf(
+                            propertyRevision.Trim().ToUpperInvariant());
                     revEventType.PropertyRevision = propertyRevisionEnum;
                 }
                 catch
                 {
-                    throw new ConfigurationException("Invalid enumeration value for property-revision attribute '" +
-                                                     propertyRevision + "'");
+                    throw new ConfigurationException(
+                        "Invalid enumeration value for property-revision attribute '" + propertyRevision + "'");
                 }
             }
 
-            ICollection<String> keyProperties = new HashSet<String>();
+            var keyProperties = new HashSet<string>();
 
             foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
             {
                 switch (subElement.Name)
                 {
                     case "base-event-type":
-                        do
-                        {
-                            var name = GetRequiredAttribute(subElement, "name");
-                            revEventType.AddNameBaseEventType(name);
-                        } while (false);
+                    {
+                        var name = GetRequiredAttribute(subElement, "name");
+                        revEventType.AddNameBaseEventType(name);
                         break;
+                    }
                     case "delta-event-type":
-                        do
-                        {
-                            var name = GetRequiredAttribute(subElement, "name");
-                            revEventType.AddNameDeltaEventType(name);
-                        } while (false);
+                    {
+                        var name = GetRequiredAttribute(subElement, "name");
+                        revEventType.AddNameDeltaEventType(name);
                         break;
+                    }
                     case "key-property":
-                        do
-                        {
-                            var name = GetRequiredAttribute(subElement, "name");
-                            keyProperties.Add(name);
-                        } while (false);
+                    {
+                        var name = GetRequiredAttribute(subElement, "name");
+                        keyProperties.Add(name);
                         break;
+                    }
                 }
             }
 
-            var keyProps = keyProperties.ToArray();
+            string[] keyProps = keyProperties.ToArray();
             revEventType.KeyPropertyNames = keyProps;
 
             configuration.AddRevisionEventType(revTypeName, revEventType);
@@ -1017,16 +1027,17 @@ namespace com.espertech.esper.client
 
             if (element.Attributes.GetNamedItem("type-variance") != null)
             {
-                var typeVar = GetRequiredAttribute(element, "type-variance");
+                var typeVar = element.Attributes.GetNamedItem("type-variance").InnerText;
+                TypeVarianceEnum typeVarianceEnum;
                 try
                 {
-                    var typeVarianceEnum = EnumHelper.Parse<TypeVarianceEnum>(typeVar.Trim(), true);
+                    typeVarianceEnum = EnumHelper.Parse<TypeVarianceEnum>(typeVar);
                     variantStream.TypeVariance = typeVarianceEnum;
                 }
                 catch
                 {
-                    throw new ConfigurationException("Invalid enumeration value for type-variance attribute '" + typeVar +
-                                                     "'");
+                    throw new ConfigurationException(
+                        "Invalid enumeration value for type-variance attribute '" + typeVar + "'");
                 }
             }
 
@@ -1034,7 +1045,7 @@ namespace com.espertech.esper.client
             {
                 if (subElement.Name == "variant-event-type")
                 {
-                    var name = GetRequiredAttribute(subElement, "name");
+                    var name = subElement.Attributes.GetNamedItem("name").InnerText;
                     variantStream.AddEventTypeName(name);
                 }
             }
@@ -1050,27 +1061,6 @@ namespace com.espertech.esper.client
                 {
                     HandleEngineSettingsDefaults(configuration, subElement);
                 }
-            }
-        }
-
-        private static void HandlePlugInPatternObjects(Configuration configuration, XmlElement parentElement)
-        {
-            var nodes = parentElement.GetElementsByTagName("plugin-pattern-guard");
-            foreach (XmlNode node in nodes)
-            {
-                var nspace = GetRequiredAttribute(node, "namespace");
-                var name = GetRequiredAttribute(node, "name");
-                var factoryClassName = GetRequiredAttribute(node, "factory-class");
-                configuration.AddPlugInPatternGuard(nspace, name, factoryClassName);
-            }
-
-            nodes = parentElement.GetElementsByTagName("plugin-pattern-observer");
-            foreach (XmlNode node in nodes)
-            {
-                var nspace = GetRequiredAttribute(node, "namespace");
-                var name = GetRequiredAttribute(node, "name");
-                var factoryClassName = GetRequiredAttribute(node, "factory-class");
-                configuration.AddPlugInPatternObserver(nspace, name, factoryClassName);
             }
         }
 
@@ -1120,30 +1110,19 @@ namespace com.espertech.esper.client
                         HandleExecution(configuration, subElement);
                         break;
                     case "exceptionHandling":
+                    {
+                        configuration.EngineDefaults.ExceptionHandling.AddClasses(GetHandlerFactories(subElement));
+                        var enableUndeployRethrowStr = GetOptionalAttribute(subElement, "undeploy-rethrow-policy");
+                        if (enableUndeployRethrowStr != null)
                         {
-                            configuration.EngineDefaults.ExceptionHandlingConfig.AddClasses(
-                                GetHandlerFactories(subElement));
-                            var enableUndeployRethrowStr = GetOptionalAttribute(subElement, "undeploy-rethrow-policy");
-                            if (enableUndeployRethrowStr != null)
-                            {
-                                configuration.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy = 
-                                    EnumHelper.Parse<ConfigurationEngineDefaults.UndeployRethrowPolicy>(enableUndeployRethrowStr);
-                            }
+                            configuration.EngineDefaults.ExceptionHandling.UndeployRethrowPolicy =
+                                EnumHelper.Parse<ConfigurationEngineDefaults.UndeployRethrowPolicy>(
+                                    enableUndeployRethrowStr);
                         }
-
+                    }
                         break;
                     case "conditionHandling":
-                        {
-                            configuration.EngineDefaults.ConditionHandlingConfig.AddClasses(
-                                GetHandlerFactories(subElement));
-                            var enableUndeployRethrowStr = GetOptionalAttribute(subElement, "undeploy-rethrow-policy");
-                            if (enableUndeployRethrowStr != null)
-                            {
-                                configuration.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy =
-                                    EnumHelper.Parse<ConfigurationEngineDefaults.UndeployRethrowPolicy>(enableUndeployRethrowStr);
-                            }
-                        }
-
+                        configuration.EngineDefaults.ConditionHandling.AddClasses(GetHandlerFactories(subElement));
                         break;
                     case "scripts":
                         HandleDefaultScriptConfig(configuration, subElement);
@@ -1158,129 +1137,107 @@ namespace com.espertech.esper.client
             if (engineFairlockStr != null)
             {
                 var isEngineFairlock = Boolean.Parse(engineFairlockStr);
-                configuration.EngineDefaults.ThreadingConfig.IsEngineFairlock = isEngineFairlock;
+                configuration.EngineDefaults.Threading.IsEngineFairlock = isEngineFairlock;
             }
 
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
-                switch (subElement.Name)
+                if (subElement.Name == "listener-dispatch")
                 {
-                    case "listener-dispatch":
-                        {
-                            var preserveOrderText =
-                                GetRequiredAttribute(subElement, "preserve-order");
-                            var preserveOrder = Boolean.Parse(preserveOrderText);
-                            configuration.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder = preserveOrder;
+                    var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
+                    var preserveOrder = Boolean.Parse(preserveOrderText);
+                    configuration.EngineDefaults.Threading.IsListenerDispatchPreserveOrder = preserveOrder;
 
-                            if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                            {
-                                var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").Value;
-                                var timeoutMSec = Int64.Parse(timeoutMSecText);
-                                configuration.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout = timeoutMSec;
-                            }
+                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
+                    {
+                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
+                        var timeoutMSec = Int64.Parse(timeoutMSecText);
+                        configuration.EngineDefaults.Threading.ListenerDispatchTimeout = timeoutMSec;
+                    }
 
-                            if (subElement.Attributes.GetNamedItem("locking") != null)
-                            {
-                                var value = subElement.Attributes.GetNamedItem("locking").Value;
-                                configuration.EngineDefaults.ThreadingConfig.ListenerDispatchLocking =
-                                    EnumHelper.Parse<ConfigurationEngineDefaults.Threading.Locking>(value);
-                            }
-                            break;
-                        }
-                    case "insert-into-dispatch":
-                        {
-                            var preserveOrderText =
-                                GetRequiredAttribute(subElement, "preserve-order");
-                            var preserveOrder = Boolean.Parse(preserveOrderText);
-                            configuration.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder = preserveOrder;
+                    if (subElement.Attributes.GetNamedItem("locking") != null)
+                    {
+                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
+                        configuration.EngineDefaults.Threading.ListenerDispatchLocking =
+                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                    }
+                }
+                else if (subElement.Name == "insert-into-dispatch")
+                {
+                    var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
+                    var preserveOrder = Boolean.Parse(preserveOrderText);
+                    configuration.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder = preserveOrder;
 
-                            if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                            {
-                                var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").Value;
-                                var timeoutMSec = Int64.Parse(timeoutMSecText);
-                                configuration.EngineDefaults.ThreadingConfig.InsertIntoDispatchTimeout = timeoutMSec;
-                            }
+                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
+                    {
+                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
+                        var timeoutMSec = Int64.Parse(timeoutMSecText);
+                        configuration.EngineDefaults.Threading.InsertIntoDispatchTimeout = timeoutMSec;
+                    }
+                    else if (subElement.Attributes.GetNamedItem("locking") != null)
+                    {
+                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
+                        configuration.EngineDefaults.Threading.InsertIntoDispatchLocking =
+                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                    }
+                }
+                else if (subElement.Name == "named-window-consumer-dispatch")
+                {
+                    var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
+                    var preserveOrder = Boolean.Parse(preserveOrderText);
+                    configuration.EngineDefaults.Threading.IsNamedWindowConsumerDispatchPreserveOrder =
+                        preserveOrder;
 
-                            if (subElement.Attributes.GetNamedItem("locking") != null)
-                            {
-                                var value = subElement.Attributes.GetNamedItem("locking").Value;
-                                configuration.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking =
-                                    EnumHelper.Parse<ConfigurationEngineDefaults.Threading.Locking>(value);
-                            }
-                            break;
-                        }
-                    case "named-window-consumer-dispatch":
-                        {
-                            var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
-                            var preserveOrder = Boolean.Parse(preserveOrderText);
-                            configuration.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder = preserveOrder;
+                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
+                    {
+                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
+                        var timeoutMSec = Int64.Parse(timeoutMSecText);
+                        configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchTimeout = timeoutMSec;
+                    }
 
-                            if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                            {
-                                var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").Value;
-                                var timeoutMSec = Int64.Parse(timeoutMSecText);
-                                configuration.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout = timeoutMSec;
-                            }
-
-                            if (subElement.Attributes.GetNamedItem("locking") != null)
-                            {
-                                var value = subElement.Attributes.GetNamedItem("locking").Value;
-                                configuration.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking =
-                                    EnumHelper.Parse<ConfigurationEngineDefaults.Threading.Locking>(value);
-                            }
-
-                            break;
-                        }
-                    case "internal-timer":
-                        {
-                            var enabledText = GetRequiredAttribute(subElement, "enabled");
-                            var enabled = Boolean.Parse(enabledText);
-                            var msecResolutionText =
-                                GetRequiredAttribute(subElement, "msec-resolution");
-                            var msecResolution = Int64.Parse(msecResolutionText);
-                            configuration.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = enabled;
-                            configuration.EngineDefaults.ThreadingConfig.InternalTimerMsecResolution = msecResolution;
-                            break;
-                        }
-                    case "threadpool-inbound":
-                        {
-                            var result = ParseThreadPoolConfig(subElement);
-                            configuration.EngineDefaults.ThreadingConfig.IsThreadPoolInbound = result.IsEnabled;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolInboundNumThreads = result.ThreadCount;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolInboundCapacity = result.Capacity;
-                        }
-                        break;
-                    case "threadpool-outbound":
-                        {
-                            var result = ParseThreadPoolConfig(subElement);
-                            configuration.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound = result.IsEnabled;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolOutboundNumThreads = result.ThreadCount;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolOutboundCapacity = result.Capacity;
-                        }
-                        break;
-                    case "threadpool-timerexec":
-                        {
-                            var result = ParseThreadPoolConfig(subElement);
-                            configuration.EngineDefaults.ThreadingConfig.IsThreadPoolTimerExec = result.IsEnabled;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecNumThreads = result.ThreadCount;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecCapacity = result.Capacity;
-                        }
-                        break;
-                    case "threadpool-routeexec":
-                        {
-                            var result = ParseThreadPoolConfig(subElement);
-                            configuration.EngineDefaults.ThreadingConfig.IsThreadPoolRouteExec = result.IsEnabled;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecNumThreads = result.ThreadCount;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecCapacity = result.Capacity;
-                        }
-                        break;
-                    case "thread-local":
-                        {
-                            var value = subElement.Attributes.GetNamedItem("style").Value;
-                            configuration.EngineDefaults.ThreadingConfig.ThreadLocalStyle =
-                                EnumHelper.Parse<ConfigurationEngineDefaults.Threading.ThreadLocal>(value);
-                            break;
-                        }
+                    if (subElement.Attributes.GetNamedItem("locking") != null)
+                    {
+                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
+                        configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking =
+                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                    }
+                }
+                else if (subElement.Name == "internal-timer")
+                {
+                    var enabledText = GetRequiredAttribute(subElement, "enabled");
+                    var enabled = Boolean.Parse(enabledText);
+                    var msecResolutionText = GetRequiredAttribute(subElement, "msec-resolution");
+                    long msecResolution = Int64.Parse(msecResolutionText);
+                    configuration.EngineDefaults.Threading.IsInternalTimerEnabled = enabled;
+                    configuration.EngineDefaults.Threading.InternalTimerMsecResolution = msecResolution;
+                }
+                else if (subElement.Name == "threadpool-inbound")
+                {
+                    var result = ParseThreadPoolConfig(subElement);
+                    configuration.EngineDefaults.Threading.IsThreadPoolInbound = result.IsEnabled;
+                    configuration.EngineDefaults.Threading.ThreadPoolInboundNumThreads = result.NumThreads;
+                    configuration.EngineDefaults.Threading.ThreadPoolInboundCapacity = result.Capacity;
+                }
+                else if (subElement.Name == "threadpool-outbound")
+                {
+                    var result = ParseThreadPoolConfig(subElement);
+                    configuration.EngineDefaults.Threading.IsThreadPoolOutbound = result.IsEnabled;
+                    configuration.EngineDefaults.Threading.ThreadPoolOutboundNumThreads = result.NumThreads;
+                    configuration.EngineDefaults.Threading.ThreadPoolOutboundCapacity = result.Capacity;
+                }
+                else if (subElement.Name == "threadpool-timerexec")
+                {
+                    var result = ParseThreadPoolConfig(subElement);
+                    configuration.EngineDefaults.Threading.IsThreadPoolTimerExec = result.IsEnabled;
+                    configuration.EngineDefaults.Threading.ThreadPoolTimerExecNumThreads = result.NumThreads;
+                    configuration.EngineDefaults.Threading.ThreadPoolTimerExecCapacity = result.Capacity;
+                }
+                else if (subElement.Name == "threadpool-routeexec")
+                {
+                    var result = ParseThreadPoolConfig(subElement);
+                    configuration.EngineDefaults.Threading.IsThreadPoolRouteExec = result.IsEnabled;
+                    configuration.EngineDefaults.Threading.ThreadPoolRouteExecNumThreads = result.NumThreads;
+                    configuration.EngineDefaults.Threading.ThreadPoolRouteExecCapacity = result.Capacity;
                 }
             }
         }
@@ -1289,79 +1246,47 @@ namespace com.espertech.esper.client
         {
             var enabled = GetRequiredAttribute(parentElement, "enabled");
             var isEnabled = Boolean.Parse(enabled);
-            if (isEnabled)
+
+            var numThreadsStr = GetRequiredAttribute(parentElement, "num-threads");
+            var numThreads = Int32.Parse(numThreadsStr);
+
+            var capacityStr = GetOptionalAttribute(parentElement, "capacity");
+            int? capacity = null;
+            if (capacityStr != null)
             {
-
-                var numThreadsStr = GetRequiredAttribute(parentElement, "num-threads");
-                var numThreads = Int32.Parse(numThreadsStr);
-
-                var capacityStr = GetOptionalAttribute(parentElement, "capacity");
-                int? capacity = null;
-                if (capacityStr != null)
-                {
-                    capacity = Int32.Parse(capacityStr);
-                }
-
-                return new ThreadPoolConfig(isEnabled, numThreads, capacity);
+                capacity = Int32.Parse(capacityStr);
             }
 
-            return new ThreadPoolConfig(false, 0, null);
+            return new ThreadPoolConfig(isEnabled, numThreads, capacity);
         }
 
         private static void HandleDefaultsViewResources(Configuration configuration, XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
-                if (subElement.Name == "share-views")
+                switch (subElement.Name)
                 {
-                    var valueText = GetRequiredAttribute(subElement, "enabled");
-                    var value = Boolean.Parse(valueText);
-                    configuration.EngineDefaults.ViewResourcesConfig.IsShareViews = value;
-                }
-                else if (subElement.Name == "allow-multiple-expiry-policy")
-                {
-                    var valueText = GetRequiredAttribute(subElement, "enabled");
-                    var value = Boolean.Parse(valueText);
-                    configuration.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies = value;
-                }
-                else if (subElement.Name == "iterable-unbound")
-                {
-                    var valueText = GetRequiredAttribute(subElement, "enabled");
-                    var value = Boolean.Parse(valueText);
-                    configuration.EngineDefaults.ViewResourcesConfig.IsIterableUnbound = value;
-                }
-            }
-        }
-
-        private static void HandleDefaultsVariables(Configuration configuration, XmlElement parentElement)
-        {
-            foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
-            {
-                if (subElement.Name == "msec-version-release")
-                {
-                    var valueText = subElement.Attributes.GetNamedItem("value").Value;
-                    var value = Int64.Parse(valueText);
-                    configuration.EngineDefaults.VariablesConfig.MsecVersionRelease = value;
-                }
-            }
-        }
-
-        private static void HandleDefaultsPatterns(Configuration configuration, XmlElement parentElement)
-        {
-            foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
-            {
-                if (subElement.Name == "max-subexpression")
-                {
-                    var valueText = GetRequiredAttribute(subElement, "value");
-                    var value = long.Parse(valueText);
-                    configuration.EngineDefaults.PatternsConfig.MaxSubexpressions = value;
-
-                    var preventText = GetOptionalAttribute(subElement, "prevent-start");
-                    if (preventText != null)
+                    case "share-views":
                     {
-                        configuration.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart = 
-                            Boolean.Parse(preventText);
+                        var valueText = GetRequiredAttribute(subElement, "enabled");
+                        var value = Boolean.Parse(valueText);
+                        configuration.EngineDefaults.ViewResources.IsShareViews = value;
                     }
+                        break;
+                    case "allow-multiple-expiry-policy":
+                    {
+                        var valueText = GetRequiredAttribute(subElement, "enabled");
+                        var value = Boolean.Parse(valueText);
+                        configuration.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = value;
+                    }
+                        break;
+                    case "iterable-unbound":
+                    {
+                        var valueText = GetRequiredAttribute(subElement, "enabled");
+                        var value = Boolean.Parse(valueText);
+                        configuration.EngineDefaults.ViewResources.IsIterableUnbound = value;
+                    }
+                        break;
                 }
             }
         }
@@ -1376,33 +1301,66 @@ namespace com.espertech.esper.client
                     {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = Boolean.Parse(valueText);
-                        configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = value;
-                    }
+                        configuration.EngineDefaults.Logging.IsEnableExecutionDebug = value;
                         break;
+                    }
                     case "timer-debug":
                     {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = Boolean.Parse(valueText);
-                        configuration.EngineDefaults.LoggingConfig.IsEnableTimerDebug = value;
-                    }
+                        configuration.EngineDefaults.Logging.IsEnableTimerDebug = value;
                         break;
+                    }
                     case "query-plan":
                     {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = Boolean.Parse(valueText);
-                        configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = value;
-                    }
+                        configuration.EngineDefaults.Logging.IsEnableQueryPlan = value;
                         break;
+                    }
                     case "ado":
                     {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = Boolean.Parse(valueText);
-                        configuration.EngineDefaults.LoggingConfig.IsEnableADO = value;
+                        configuration.EngineDefaults.Logging.IsEnableADO = value;
+                        break;
                     }
-                        break;
                     case "audit":
-                        configuration.EngineDefaults.LoggingConfig.AuditPattern = GetOptionalAttribute(subElement, "pattern");
+                        configuration.EngineDefaults.Logging.AuditPattern = GetOptionalAttribute(
+                            subElement, "pattern");
                         break;
+                }
+            }
+        }
+
+        private static void HandleDefaultsVariables(Configuration configuration, XmlElement parentElement)
+        {
+            foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
+            {
+                if (subElement.Name == "msec-version-release")
+                {
+                    var valueText = GetRequiredAttribute(subElement, "value");
+                    long value = Int64.Parse(valueText);
+                    configuration.EngineDefaults.Variables.MsecVersionRelease = value;
+                }
+            }
+        }
+
+        private static void HandleDefaultsPatterns(Configuration configuration, XmlElement parentElement)
+        {
+            foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
+            {
+                if (subElement.Name == "max-subexpression")
+                {
+                    var valueText = GetRequiredAttribute(subElement, "value");
+                    long value = Int64.Parse(valueText);
+                    configuration.EngineDefaults.Patterns.MaxSubexpressions = value;
+
+                    var preventText = GetOptionalAttribute(subElement, "prevent-start");
+                    if (preventText != null)
+                    {
+                        configuration.EngineDefaults.Patterns.IsMaxSubexpressionPreventStart = Boolean.Parse(preventText);
+                    }
                 }
             }
         }
@@ -1415,12 +1373,12 @@ namespace com.espertech.esper.client
                 {
                     var valueText = GetRequiredAttribute(subElement, "value");
                     var value = Int64.Parse(valueText);
-                    configuration.EngineDefaults.MatchRecognizeConfig.MaxStates = value;
+                    configuration.EngineDefaults.MatchRecognize.MaxStates = value;
 
                     var preventText = GetOptionalAttribute(subElement, "prevent-start");
                     if (preventText != null)
                     {
-                        configuration.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart = Boolean.Parse(preventText);
+                        configuration.EngineDefaults.MatchRecognize.IsMaxStatesPreventStart = Boolean.Parse(preventText);
                     }
                 }
             }
@@ -1438,23 +1396,25 @@ namespace com.espertech.esper.client
                         throw new ConfigurationException("No value attribute supplied for stream-selector element");
                     }
                     StreamSelector defaultSelector;
-                    switch (valueText.ToUpper().Trim())
+                    if (string.Equals(valueText, "ISTREAM", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        case "ISTREAM":
-                            defaultSelector = StreamSelector.ISTREAM_ONLY;
-                            break;
-                        case "RSTREAM":
-                            defaultSelector = StreamSelector.RSTREAM_ONLY;
-                            break;
-                        case "IRSTREAM":
-                            defaultSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
-                            break;
-                        default:
-                            throw new ConfigurationException("ConstantValue attribute for stream-selector element invalid, " +
-                                                             "expected one of the following keywords: istream, irstream, rstream");
+                        defaultSelector = StreamSelector.ISTREAM_ONLY;
                     }
-
-                    configuration.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector = defaultSelector;
+                    else if (string.Equals(valueText, "RSTREAM", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        defaultSelector = StreamSelector.RSTREAM_ONLY;
+                    }
+                    else if (string.Equals(valueText, "IRSTREAM", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        defaultSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
+                    }
+                    else
+                    {
+                        throw new ConfigurationException(
+                            "Value attribute for stream-selector element invalid, " +
+                            "expected one of the following keywords: istream, irstream, rstream");
+                    }
+                    configuration.EngineDefaults.StreamSelection.DefaultStreamSelector = defaultSelector;
                 }
             }
         }
@@ -1470,60 +1430,42 @@ namespace com.espertech.esper.client
                     {
                         throw new ConfigurationException("No value attribute supplied for time-source element");
                     }
-
-                    var timeSourceType = EnumHelper.Parse<ConfigurationEngineDefaults.TimeSourceType>(valueText, true);
-                    configuration.EngineDefaults.TimeSourceConfig.TimeSourceType = timeSourceType;
+                    ConfigurationEngineDefaults.TimeSourceType timeSourceType;
+                    if (string.Equals(valueText, "NANO", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        timeSourceType = ConfigurationEngineDefaults.TimeSourceType.NANO;
+                    }
+                    else if (string.Equals(valueText, "MILLI" , StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        timeSourceType = ConfigurationEngineDefaults.TimeSourceType.MILLI;
+                    }
+                    else
+                    {
+                        throw new ConfigurationException(
+                            "Value attribute for time-source element invalid, " +
+                            "expected one of the following keywords: nano, milli");
+                    }
+                    configuration.EngineDefaults.TimeSource.TimeSourceType = timeSourceType;
                 }
-            }
-        }
 
-        private static void HandleExecution(Configuration configuration, XmlElement parentElement)
-        {
-            var prioritizedStr = GetOptionalAttribute(parentElement, "prioritized");
-            if (prioritizedStr != null)
-            {
-                var isPrioritized = Boolean.Parse(prioritizedStr);
-                configuration.EngineDefaults.ExecutionConfig.IsPrioritized = isPrioritized;
-            }
-            var fairlockStr = GetOptionalAttribute(parentElement, "fairlock");
-            if (fairlockStr != null)
-            {
-                var isFairlock = Boolean.Parse(fairlockStr);
-                configuration.EngineDefaults.ExecutionConfig.IsFairlock = isFairlock;
-            }
-            var disableLockingStr = GetOptionalAttribute(parentElement, "disable-locking");
-            if (disableLockingStr != null)
-            {
-                var isDisablelock = Boolean.Parse(disableLockingStr);
-                configuration.EngineDefaults.ExecutionConfig.IsDisableLocking = isDisablelock;
-            }
-            var threadingProfileStr = GetOptionalAttribute(parentElement, "threading-profile");
-            if (threadingProfileStr != null)
-            {
-                var profile = EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingProfile>(threadingProfileStr, true);
-                configuration.EngineDefaults.ExecutionConfig.ThreadingProfile = profile;
-            }
-            var filterServiceProfileStr = GetOptionalAttribute(parentElement, "filter-service-profile");
-            if (filterServiceProfileStr != null)
-            {
-                var profile = EnumHelper.Parse<ConfigurationEngineDefaults.FilterServiceProfile>(filterServiceProfileStr);
-                configuration.EngineDefaults.ExecutionConfig.FilterServiceProfile = profile;
-            }
-            var filterServiceMaxFilterWidthStr = GetOptionalAttribute(parentElement, "filter-service-max-filter-width");
-            if (filterServiceMaxFilterWidthStr != null)
-            {
-                configuration.EngineDefaults.ExecutionConfig.FilterServiceMaxFilterWidth = Int32.Parse(filterServiceMaxFilterWidthStr);
-            } 
-            var allowIsolatedServiceStr = GetOptionalAttribute(parentElement, "allow-isolated-service");
-            if (allowIsolatedServiceStr != null)
-            {
-                var isAllowIsolatedService = Boolean.Parse(allowIsolatedServiceStr);
-                configuration.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = isAllowIsolatedService;
-            }
-            var declExprValueCacheSizeStr = GetOptionalAttribute(parentElement, "declared-expr-value-cache-size");
-            if (declExprValueCacheSizeStr != null)
-            {
-                configuration.EngineDefaults.ExecutionConfig.DeclaredExprValueCacheSize = Int32.Parse(declExprValueCacheSizeStr);
+                if (subElement.Name == "time-unit")
+                {
+                    var valueText = GetRequiredAttribute(subElement, "value");
+                    if (valueText == null)
+                    {
+                        throw new ConfigurationException("No value attribute supplied for time-unit element");
+                    }
+                    try
+                    {
+                        TimeUnit timeUnit = TimeUnit.ValueOf(valueText.ToUpperInvariant());
+                        configuration.EngineDefaults.TimeSource.TimeUnit = timeUnit;
+                    }
+                    catch
+                    {
+                        throw new ConfigurationException(
+                            "Value attribute for time-unit element invalid: " + t.Message, t);
+                    }
+                }
             }
         }
 
@@ -1531,24 +1473,24 @@ namespace com.espertech.esper.client
         {
             var enabled = GetRequiredAttribute(parentElement, "enabled");
             var isEnabled = Boolean.Parse(enabled);
-            configuration.EngineDefaults.MetricsReportingConfig.IsEnableMetricsReporting = isEnabled;
+            configuration.EngineDefaults.MetricsReporting.IsEnableMetricsReporting = isEnabled;
 
             var engineInterval = GetOptionalAttribute(parentElement, "engine-interval");
             if (engineInterval != null)
             {
-                configuration.EngineDefaults.MetricsReportingConfig.EngineInterval = Int64.Parse(engineInterval);
+                configuration.EngineDefaults.MetricsReporting.EngineInterval = Int64.Parse(engineInterval);
             }
 
             var statementInterval = GetOptionalAttribute(parentElement, "statement-interval");
             if (statementInterval != null)
             {
-                configuration.EngineDefaults.MetricsReportingConfig.StatementInterval = Int64.Parse(statementInterval);
+                configuration.EngineDefaults.MetricsReporting.StatementInterval = Int64.Parse(statementInterval);
             }
 
             var threading = GetOptionalAttribute(parentElement, "threading");
             if (threading != null)
             {
-                configuration.EngineDefaults.MetricsReportingConfig.IsThreading = Boolean.Parse(threading);
+                configuration.EngineDefaults.MetricsReporting.IsThreading = Boolean.Parse(threading);
             }
 
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
@@ -1556,11 +1498,11 @@ namespace com.espertech.esper.client
                 if (subElement.Name == "stmtgroup")
                 {
                     var name = GetRequiredAttribute(subElement, "name");
-                    var interval = Int64.Parse(GetRequiredAttribute(subElement, "interval"));
+                    long interval = Int64.Parse(GetRequiredAttribute(subElement, "interval"));
 
-                    var metrics = new ConfigurationMetricsReporting.StmtGroupMetrics();
+                    var metrics = new MetricsReportingConfig.StmtGroupMetrics();
                     metrics.Interval = interval;
-                    configuration.EngineDefaults.MetricsReportingConfig.AddStmtGroup(name, metrics);
+                    configuration.EngineDefaults.MetricsReporting.AddStmtGroup(name, metrics);
 
                     var defaultInclude = GetOptionalAttribute(subElement, "default-include");
                     if (defaultInclude != null)
@@ -1591,7 +1533,7 @@ namespace com.espertech.esper.client
             if (sortUsingCollator != null)
             {
                 var isSortUsingCollator = Boolean.Parse(sortUsingCollator);
-                configuration.EngineDefaults.LanguageConfig.IsSortUsingCollator = isSortUsingCollator;
+                configuration.EngineDefaults.Language.IsSortUsingCollator = isSortUsingCollator;
             }
         }
 
@@ -1601,41 +1543,37 @@ namespace com.espertech.esper.client
             if (integerDivision != null)
             {
                 var isIntegerDivision = Boolean.Parse(integerDivision);
-                configuration.EngineDefaults.ExpressionConfig.IsIntegerDivision = isIntegerDivision;
+                configuration.EngineDefaults.Expression.IsIntegerDivision = isIntegerDivision;
             }
-
             var divZero = GetOptionalAttribute(parentElement, "division-by-zero-is-null");
             if (divZero != null)
             {
                 var isDivZero = Boolean.Parse(divZero);
-                configuration.EngineDefaults.ExpressionConfig.IsDivisionByZeroReturnsNull = isDivZero;
+                configuration.EngineDefaults.Expression.IsDivisionByZeroReturnsNull = isDivZero;
             }
-
             var udfCache = GetOptionalAttribute(parentElement, "udf-cache");
             if (udfCache != null)
             {
                 var isUdfCache = Boolean.Parse(udfCache);
-                configuration.EngineDefaults.ExpressionConfig.IsUdfCache = isUdfCache;
+                configuration.EngineDefaults.Expression.IsUdfCache = isUdfCache;
             }
-
             var selfSubselectPreeval = GetOptionalAttribute(parentElement, "self-subselect-preeval");
             if (selfSubselectPreeval != null)
             {
                 var isSelfSubselectPreeval = Boolean.Parse(selfSubselectPreeval);
-                configuration.EngineDefaults.ExpressionConfig.IsSelfSubselectPreeval = isSelfSubselectPreeval;
+                configuration.EngineDefaults.Expression.IsSelfSubselectPreeval = isSelfSubselectPreeval;
             }
-
             var extendedAggregationStr = GetOptionalAttribute(parentElement, "extended-agg");
             if (extendedAggregationStr != null)
             {
                 var extendedAggregation = Boolean.Parse(extendedAggregationStr);
-                configuration.EngineDefaults.ExpressionConfig.IsExtendedAggregation = extendedAggregation;
+                configuration.EngineDefaults.Expression.IsExtendedAggregation = extendedAggregation;
             }
             var duckTypingStr = GetOptionalAttribute(parentElement, "ducktyping");
             if (duckTypingStr != null)
             {
                 var duckTyping = Boolean.Parse(duckTypingStr);
-                configuration.EngineDefaults.ExpressionConfig.IsDuckTyping = duckTyping;
+                configuration.EngineDefaults.Expression.IsDuckTyping = duckTyping;
             }
             var mathContextStr = GetOptionalAttribute(parentElement, "math-context");
             if (mathContextStr != null)
@@ -1643,17 +1581,74 @@ namespace com.espertech.esper.client
                 try
                 {
                     var mathContext = new MathContext(mathContextStr);
-                    configuration.EngineDefaults.ExpressionConfig.MathContext = mathContext;
+                    configuration.EngineDefaults.Expression.MathContext = mathContext;
                 }
                 catch (ArgumentException)
                 {
                     throw new ConfigurationException("Failed to parse '" + mathContextStr + "' as a MathContext");
                 }
             }
+
             var timeZoneStr = GetOptionalAttribute(parentElement, "time-zone");
             if (timeZoneStr != null)
             {
-                configuration.EngineDefaults.ExpressionConfig.TimeZone = TimeZoneHelper.GetTimeZoneInfo(timeZoneStr);
+                TimeZoneInfo timeZone = TimeZoneInfo.GetTimeZone(timeZoneStr);
+                configuration.EngineDefaults.Expression.TimeZone = timeZone;
+            }
+        }
+
+        private static void HandleExecution(Configuration configuration, XmlElement parentElement)
+        {
+            var prioritizedStr = GetOptionalAttribute(parentElement, "prioritized");
+            if (prioritizedStr != null)
+            {
+                var isPrioritized = Boolean.Parse(prioritizedStr);
+                configuration.EngineDefaults.Execution.IsPrioritized = isPrioritized;
+            }
+            var fairlockStr = GetOptionalAttribute(parentElement, "fairlock");
+            if (fairlockStr != null)
+            {
+                var isFairlock = Boolean.Parse(fairlockStr);
+                configuration.EngineDefaults.Execution.IsFairlock = isFairlock;
+            }
+            var disableLockingStr = GetOptionalAttribute(parentElement, "disable-locking");
+            if (disableLockingStr != null)
+            {
+                var isDisablelock = Boolean.Parse(disableLockingStr);
+                configuration.EngineDefaults.Execution.IsDisableLocking = isDisablelock;
+            }
+            var threadingProfileStr = GetOptionalAttribute(parentElement, "threading-profile");
+            if (threadingProfileStr != null)
+            {
+                var profile =
+                    EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingProfile>(threadingProfileStr);
+                configuration.EngineDefaults.Execution.ThreadingProfile = profile;
+            }
+            var filterServiceProfileStr = GetOptionalAttribute(parentElement, "filter-service-profile");
+            if (filterServiceProfileStr != null)
+            {
+                var profile =
+                    EnumHelper.Parse < ConfigurationEngineDefaults.FilterServiceProfile>(filterServiceProfileStr);
+                configuration.EngineDefaults.Execution.FilterServiceProfile = profile;
+            }
+            var filterServiceMaxFilterWidthStr = GetOptionalAttribute(
+                parentElement, "filter-service-max-filter-width");
+            if (filterServiceMaxFilterWidthStr != null)
+            {
+                configuration.EngineDefaults.Execution.FilterServiceMaxFilterWidth =
+                    Int32.Parse(filterServiceMaxFilterWidthStr);
+            }
+            var allowIsolatedServiceStr = GetOptionalAttribute(parentElement, "allow-isolated-service");
+            if (allowIsolatedServiceStr != null)
+            {
+                var isAllowIsolatedService = Boolean.Parse(allowIsolatedServiceStr);
+                configuration.EngineDefaults.Execution.IsAllowIsolatedService = isAllowIsolatedService;
+            }
+            var declExprValueCacheSizeStr = GetOptionalAttribute(parentElement, "declared-expr-value-cache-size");
+            if (declExprValueCacheSizeStr != null)
+            {
+                configuration.EngineDefaults.Execution.DeclaredExprValueCacheSize =
+                    Int32.Parse(declExprValueCacheSizeStr);
             }
         }
 
@@ -1662,42 +1657,57 @@ namespace com.espertech.esper.client
             var defaultDialect = GetOptionalAttribute(parentElement, "default-dialect");
             if (defaultDialect != null)
             {
-                configuration.EngineDefaults.ScriptsConfig.DefaultDialect = defaultDialect;
+                configuration.EngineDefaults.Scripts.DefaultDialect = defaultDialect;
             }
         }
 
-        private static IEnumerable<string> GetHandlerFactories(XmlElement parentElement)
+        private static IList<string> GetHandlerFactories(XmlElement parentElement)
         {
-            return CreateElementEnumerable(parentElement.ChildNodes)
-                .Where(subElement => subElement.Name == "handlerFactory")
-                .Select(subElement => GetRequiredAttribute(subElement, "class"))
-                .ToArray();
+            var list = new List<string>();
+
+            foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
+            {
+                if (subElement.Name == "handlerFactory")
+                {
+                    var text = GetRequiredAttribute(subElement, "class");
+                    list.Add(text);
+                }
+            }
+            return list;
         }
 
-        private static void HandleMetricsReportingPatterns(ConfigurationMetricsReporting.StmtGroupMetrics groupDef,
-                                                           XmlElement parentElement)
+        private static void HandleMetricsReportingPatterns(
+            MetricsReportingConfig.StmtGroupMetrics groupDef,
+            XmlElement parentElement)
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
-                string text;
                 switch (subElement.Name)
                 {
                     case "include-regex":
-                        text = subElement.ChildNodes[0].InnerText;
-                        groupDef.Patterns.Add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), true));
+                    {
+                        var text = subElement.ChildNodes.Item(0).InnerText;
+                        groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetRegex(text), true));
                         break;
+                    }
                     case "exclude-regex":
-                        text = subElement.ChildNodes[0].InnerText;
-                        groupDef.Patterns.Add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), false));
+                    {
+                        var text = subElement.ChildNodes.Item(0).InnerText;
+                        groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetRegex(text), false));
                         break;
+                    }
                     case "include-like":
-                        text = subElement.ChildNodes[0].InnerText;
-                        groupDef.Patterns.Add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), true));
+                    {
+                        var text = subElement.ChildNodes.Item(0).InnerText;
+                        groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetLike(text), true));
                         break;
+                    }
                     case "exclude-like":
-                        text = subElement.ChildNodes[0].InnerText;
-                        groupDef.Patterns.Add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), false));
+                    {
+                        var text = subElement.ChildNodes.Item(0).InnerText;
+                        groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetLike(text), false));
                         break;
+                    }
                 }
             }
         }
@@ -1706,50 +1716,100 @@ namespace com.espertech.esper.client
         {
             foreach (var subElement in CreateElementEnumerable(parentElement.ChildNodes))
             {
-                switch (subElement.Name)
+                if (subElement.Name == "class-property-resolution")
                 {
-                    case "class-property-resolution":
+                    var styleNode = subElement.Attributes.GetNamedItem("style");
+                    if (styleNode != null)
                     {
-                        var styleNode = subElement.Attributes.GetNamedItem("style");
-                        if (styleNode != null)
-                        {
-                            var styleText = styleNode.InnerText;
-                            var value = EnumHelper.Parse<PropertyResolutionStyle>(styleText);
-                            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = value;
-                        }
+                        var styleText = styleNode.InnerText;
+                        var value = EnumHelper.Parse<PropertyResolutionStyle>(styleText);
+                        configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = value;
+                    }
 
-                        var accessorStyleNode = subElement.Attributes.GetNamedItem("accessor-style");
-                        if (accessorStyleNode != null)
-                        {
-                            var accessorStyleText = accessorStyleNode.InnerText;
-                            var value = EnumHelper.Parse<AccessorStyleEnum>(accessorStyleText);
-                            configuration.EngineDefaults.EventMetaConfig.DefaultAccessorStyle = value;
-                        }
-                        break;
-                    }
-                    case "event-representation":
+                    var accessorStyleNode = subElement.Attributes.GetNamedItem("accessor-style");
+                    if (accessorStyleNode != null)
                     {
-                        var typeNode = subElement.Attributes.GetNamedItem("type");
-                        if (typeNode != null)
-                        {
-                            var typeText = typeNode.InnerText;
-                            var value = EnumHelper.Parse<EventRepresentation>(typeText);
-                            configuration.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = value;
-                        }
-                        break;
-                    }
-                    case "anonymous-cache":
-                    {
-                        var sizeNode = subElement.Attributes.GetNamedItem("size");
-                        if (sizeNode != null)
-                        {
-                            configuration.EngineDefaults.EventMetaConfig.AnonymousCacheSize = int.Parse(sizeNode.InnerText);
-                        }
-                        break;
+                        var accessorStyleText = accessorStyleNode.InnerText;
+                        var value = EnumHelper.Parse<AccessorStyleEnum>(accessorStyleText);
+                        configuration.EngineDefaults.EventMeta.DefaultAccessorStyle = value;
                     }
                 }
 
+                else if (subElement.Name == "event-representation")
+                {
+                    var typeNode = subElement.Attributes.GetNamedItem("type");
+                    if (typeNode != null)
+                    {
+                        var typeText = typeNode.InnerText;
+                        EventUnderlyingType value = EventUnderlyingType.ValueOf(typeText.ToUpperInvariant());
+                        configuration.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = value;
+                    }
+                }
+
+                else if (subElement.Name == "anonymous-cache")
+                {
+                    var sizeNode = subElement.Attributes.GetNamedItem("size");
+                    if (sizeNode != null)
+                    {
+                        configuration.EngineDefaults.EventMeta.AnonymousCacheSize =
+                            Int32.Parse(sizeNode.InnerText);
+                    }
+                }
+
+                else if (subElement.Name == "avro-settings")
+                {
+                    var enableAvroStr = GetOptionalAttribute(subElement, "enable-avro");
+                    if (enableAvroStr != null)
+                    {
+                        configuration.EngineDefaults.EventMeta.AvroSettings.IsEnableAvro =
+                            Boolean.Parse(enableAvroStr);
+                    }
+
+                    var enableNativeStringStr = GetOptionalAttribute(subElement, "enable-native-string");
+                    if (enableNativeStringStr != null)
+                    {
+                        configuration.EngineDefaults.EventMeta.AvroSettings.IsEnableNativeString =
+                            Boolean.Parse(enableNativeStringStr);
+                    }
+
+                    var enableSchemaDefaultNonNullStr = GetOptionalAttribute(
+                        subElement, "enable-schema-default-nonnull");
+                    if (enableSchemaDefaultNonNullStr != null)
+                    {
+                        configuration.EngineDefaults.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull =
+                            Boolean.Parse(enableSchemaDefaultNonNullStr);
+                    }
+
+                    var objectvalueTypewidenerFactoryClass = GetOptionalAttribute(
+                        subElement, "objectvalue-typewidener-factory-class");
+                    if (objectvalueTypewidenerFactoryClass != null &&
+                        objectvalueTypewidenerFactoryClass.Trim().Length > 0)
+                    {
+                        configuration.EngineDefaults.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass =
+                            objectvalueTypewidenerFactoryClass.Trim();
+                    }
+
+                    var typeRepresentationMapperClass = GetOptionalAttribute(
+                        subElement, "type-representation-mapper-class");
+                    configuration.EngineDefaults.EventMeta.AvroSettings.TypeRepresentationMapperClass =
+                        typeRepresentationMapperClass;
+                }
             }
+        }
+
+        private static Properties HandleProperties(XmlElement element, string propElementName)
+        {
+            var properties = new Properties();
+            foreach (var subElement in CreateElementEnumerable(element.ChildNodes))
+            {
+                if (subElement.Name.Equals(propElementName))
+                {
+                    var name = GetRequiredAttribute(subElement, "name");
+                    var value = GetRequiredAttribute(subElement, "value");
+                    properties.Put(name, value);
+                }
+            }
+            return properties;
         }
 
         public static Properties CreatePropertiesFromAttributes(XmlAttributeCollection attributes)
@@ -1778,7 +1838,7 @@ namespace com.espertech.esper.client
         {
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
             var stream = ResourceManager.GetResourceAsStream(resource) ??
-                            ResourceManager.GetResourceAsStream(stripped);
+                         ResourceManager.GetResourceAsStream(stripped);
             if (stream == null)
             {
                 throw new EPException(resource + " not found");
@@ -1804,7 +1864,8 @@ namespace com.espertech.esper.client
                 var name = String.IsNullOrEmpty(node.Name)
                     ? node.LocalName
                     : node.Name;
-                throw new ConfigurationException("Required attribute by name '" + key + "' not found for element '" + name + "'");
+                throw new ConfigurationException(
+                    "Required attribute by name '" + key + "' not found for element '" + name + "'");
             }
             return valueNode.InnerText;
         }
@@ -1825,22 +1886,21 @@ namespace com.espertech.esper.client
             }
         }
 
-        #region Nested type: ThreadPoolConfig
 
         private class ThreadPoolConfig
         {
             public ThreadPoolConfig(bool enabled, int numThreads, int? capacity)
             {
                 IsEnabled = enabled;
-                ThreadCount = numThreads;
+                NumThreads = numThreads;
                 Capacity = capacity;
             }
 
             public bool IsEnabled { get; private set; }
-            public int ThreadCount { get; private set; }
+
+            public int NumThreads { get; private set; }
+
             public int? Capacity { get; private set; }
         }
-
-        #endregion
     }
-}
+} // end of namespace

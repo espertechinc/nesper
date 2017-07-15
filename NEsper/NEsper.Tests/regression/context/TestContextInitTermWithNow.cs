@@ -89,7 +89,7 @@ namespace com.espertech.esper.regression.context
         {
 	        _epService.EPRuntime.SendEvent(new CurrentTimeEvent(0));
 	        var contextExpr =  "create context MyContext " +
-	                "initiated by @Now and pattern [every timer:interval(10)] terminated after 10 sec";
+	                "initiated by @GetInstance and pattern [every timer:interval(10)] terminated after 10 sec";
 	        _epService.EPAdministrator.CreateEPL(contextExpr);
 
 	        var fields = new string[] {"cnt"};

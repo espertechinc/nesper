@@ -11,100 +11,104 @@ using System.Text;
 
 namespace com.espertech.esper.client.util
 {
-	[Serializable]
+    [Serializable]
     public class TimePeriod
     {
-	    public TimePeriod(int? years, int? months, int? weeks, int? days, int? hours, int? minutes, int? seconds, int? milliseconds)
+        public TimePeriod(int? years, int? months, int? weeks, int? days, int? hours, int? minutes, int? seconds, int? milliseconds, int? microseconds)
         {
-	        Years = years;
-	        Months = months;
-	        Weeks = weeks;
-	        Days = days;
-	        Hours = hours;
-	        Minutes = minutes;
-	        Seconds = seconds;
-	        Milliseconds = milliseconds;
-	    }
+            Years = years;
+            Months = months;
+            Weeks = weeks;
+            Days = days;
+            Hours = hours;
+            Minutes = minutes;
+            Seconds = seconds;
+            Milliseconds = milliseconds;
+            Microseconds = microseconds;
+        }
 
-	    public TimePeriod()
+        public TimePeriod()
         {
-	    }
+        }
 
-	    public int? Years { get; set; }
+        public int? Years { get; set; }
 
-	    public int? Months { get; set; }
+        public int? Months { get; set; }
 
-	    public int? Weeks { get; set; }
+        public int? Weeks { get; set; }
 
-	    public int? Days { get; set; }
+        public int? Days { get; set; }
 
-	    public int? Hours { get; set; }
+        public int? Hours { get; set; }
 
-	    public int? Minutes { get; set; }
+        public int? Minutes { get; set; }
 
-	    public int? Seconds { get; set; }
+        public int? Seconds { get; set; }
 
-	    public int? Milliseconds { get; set; }
+        public int? Milliseconds { get; set; }
 
-	    public TimePeriod SetYears(int? years)
+        public int? Microseconds { get; set; }
+
+        public TimePeriod SetYears(int? years)
         {
-	        Years = years;
-	        return this;
-	    }
+            Years = years;
+            return this;
+        }
 
-	    public TimePeriod SetMonths(int? months)
+        public TimePeriod SetMonths(int? months)
         {
-	        Months = months;
-	        return this;
-	    }
+            Months = months;
+            return this;
+        }
 
-	    public TimePeriod SetWeeks(int? weeks)
+        public TimePeriod SetWeeks(int? weeks)
         {
-	        Weeks = weeks;
-	        return this;
-	    }
+            Weeks = weeks;
+            return this;
+        }
 
-	    public TimePeriod SetDays(int? days)
+        public TimePeriod SetDays(int? days)
         {
-	        Days = days;
-	        return this;
-	    }
+            Days = days;
+            return this;
+        }
 
-	    public TimePeriod SetHours(int? hours)
+        public TimePeriod SetHours(int? hours)
         {
-	        Hours = hours;
+            Hours = hours;
 
-	        return this;
-	    }
+            return this;
+        }
 
-	    public TimePeriod SetMinutes(int? minutes)
+        public TimePeriod SetMinutes(int? minutes)
         {
-	        Minutes = minutes;
-	        return this;
-	    }
+            Minutes = minutes;
+            return this;
+        }
 
-	    public TimePeriod SetSeconds(int? seconds)
+        public TimePeriod SetSeconds(int? seconds)
         {
-	        Seconds = seconds;
-	        return this;
-	    }
+            Seconds = seconds;
+            return this;
+        }
 
-	    public TimePeriod SetMillis(int? milliseconds)
+        public TimePeriod SetMillis(int? milliseconds)
         {
-	        Milliseconds = milliseconds;
-	        return this;
-	    }
+            Milliseconds = milliseconds;
+            return this;
+        }
 
         protected bool Equals(TimePeriod other)
         {
             return Years == other.Years &&
-                Months == other.Months &&
-                Weeks == other.Weeks &&
-                Days == other.Days &&
-                Hours == other.Hours &&
-                Minutes == other.Minutes &&
-                Seconds == other.Seconds &&
-                Milliseconds == other.Milliseconds;
+                   Months == other.Months &&
+                   Weeks == other.Weeks &&
+                   Days == other.Days &&
+                   Hours == other.Hours &&
+                   Minutes == other.Minutes &&
+                   Seconds == other.Seconds &&
+                   Milliseconds == other.Milliseconds &&
+                   Microseconds == other.Microseconds;
         }
 
         public override bool Equals(object obj)
@@ -130,82 +134,95 @@ namespace com.espertech.esper.client.util
                 hashCode = (hashCode * 397) ^ Minutes.GetHashCode();
                 hashCode = (hashCode * 397) ^ Seconds.GetHashCode();
                 hashCode = (hashCode * 397) ^ Milliseconds.GetHashCode();
+                hashCode = (hashCode * 397) ^ Microseconds.GetHashCode();
                 return hashCode;
             }
-	    }
+        }
 
-	    public string ToStringISO8601()
+        public string ToStringISO8601()
         {
-	        var buf = new StringBuilder();
-	        if (Years != null) {
-	            Append(buf, Years, "Y");
-	        }
-	        if (Months != null) {
-	            Append(buf, Months, "M");
-	        }
-	        if (Weeks != null) {
-	            Append(buf, Weeks, "W");
-	        }
-	        if (Days != null) {
-	            Append(buf, Days, "D");
-	        }
-	        if (Hours != null || Minutes != null || Seconds != null) {
-	            buf.Append("T");
-	            if (Hours != null) {
-	                Append(buf, Hours, "H");
-	            }
-	            if (Minutes != null) {
-	                Append(buf, Minutes, "M");
-	            }
-	            if (Seconds != null) {
-	                Append(buf, Seconds, "S");
-	            }
-	        }
-	        return buf.ToString();
-	    }
+            var buf = new StringBuilder();
+            if (Years != null)
+            {
+                Append(buf, Years, "Y");
+            }
+            if (Months != null)
+            {
+                Append(buf, Months, "M");
+            }
+            if (Weeks != null)
+            {
+                Append(buf, Weeks, "W");
+            }
+            if (Days != null)
+            {
+                Append(buf, Days, "D");
+            }
+            if (Hours != null || Minutes != null || Seconds != null)
+            {
+                buf.Append("T");
+                if (Hours != null)
+                {
+                    Append(buf, Hours, "H");
+                }
+                if (Minutes != null)
+                {
+                    Append(buf, Minutes, "M");
+                }
+                if (Seconds != null)
+                {
+                    Append(buf, Seconds, "S");
+                }
+            }
+            return buf.ToString();
+        }
 
-	    public int? LargestAbsoluteValue()
+        public int? LargestAbsoluteValue()
         {
-	        int? absMax = null;
-	        if (Years != null && (absMax == null || Math.Abs(Years.Value) > absMax))
+            int? absMax = null;
+            if (Years != null && (absMax == null || Math.Abs(Years.Value) > absMax))
             {
                 absMax = Math.Abs(Years.Value);
-	        }
+            }
             if (Months != null && (absMax == null || Math.Abs(Months.Value) > absMax))
             {
                 absMax = Math.Abs(Months.Value);
-	        }
+            }
             if (Weeks != null && (absMax == null || Math.Abs(Weeks.Value) > absMax))
             {
                 absMax = Math.Abs(Weeks.Value);
-	        }
+            }
             if (Days != null && (absMax == null || Math.Abs(Days.Value) > absMax))
             {
                 absMax = Math.Abs(Days.Value);
-	        }
+            }
             if (Hours != null && (absMax == null || Math.Abs(Hours.Value) > absMax))
             {
                 absMax = Math.Abs(Hours.Value);
-	        }
+            }
             if (Minutes != null && (absMax == null || Math.Abs(Minutes.Value) > absMax))
             {
                 absMax = Math.Abs(Minutes.Value);
-	        }
+            }
             if (Seconds != null && (absMax == null || Math.Abs(Seconds.Value) > absMax))
             {
                 absMax = Math.Abs(Seconds.Value);
-	        }
+            }
             if (Milliseconds != null && (absMax == null || Math.Abs(Milliseconds.Value) > absMax))
             {
                 absMax = Math.Abs(Milliseconds.Value);
-	        }
-	        return absMax;
-	    }
+            }
+            if (Microseconds != null && (absMax == null || Math.Abs(Microseconds.Value) > absMax))
+            {
+                absMax = Math.Abs(Microseconds.Value);
+            }
+            return absMax;
+        }
 
-	    private void Append(StringBuilder buf, int? units, string unit)
-	    {
-	        buf.Append(units.ToString());
-	        buf.Append(unit);
-	    }
-	}
+        private void Append(StringBuilder buf, int? units, string unit)
+        {
+            buf.Append(units.ToString());
+            buf.Append(unit);
+        }
+    }
 } // end of namespace

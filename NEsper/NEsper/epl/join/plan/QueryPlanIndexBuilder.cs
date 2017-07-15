@@ -27,13 +27,13 @@ namespace com.espertech.esper.epl.join.plan
     public class QueryPlanIndexBuilder
     {
         /// <summary>
-        /// Build index specification from navigability info.
+        /// Build index specification from navigability INFO.
         /// <para/>
         /// Looks at each stream and determines which properties in the stream must be indexed
         /// in order for other streams to look up into the stream. Determines the unique set of
         /// properties to avoid building duplicate indexes on the same set of properties.
         /// </summary>
-        /// <param name="queryGraph">navigability info</param>
+        /// <param name="queryGraph">navigability INFO</param>
         /// <param name="typePerStream">The type per stream.</param>
         /// <param name="indexedStreamsUniqueProps">The indexed streams unique props.</param>
         /// <returns>query index specs for each stream</returns>
@@ -205,20 +205,20 @@ namespace com.espertech.esper.epl.join.plan
                         var relOpThis = (QueryGraphValueEntryRangeRelOp) rangeDesc;
     
                         QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.GetCanConsolidate(
-                            relOpThis.RangeType, 
+                            relOpthis.RangeType, 
                             relOpOther.RangeType);
                         if (opsDesc != null) {
                             ExprNode start;
                             ExprNode end;
                             if (!opsDesc.IsReverse) {
                                 start = relOpOther.Expression;
-                                end = relOpThis.Expression;
+                                end = relOpthis.Expression;
                             }
                             else {
-                                start = relOpThis.Expression;
+                                start = relOpthis.Expression;
                                 end = relOpOther.Expression;
                             }
-                            var allowRangeReversal = relOpOther.IsBetweenPart && relOpThis.IsBetweenPart;
+                            var allowRangeReversal = relOpOther.IsBetweenPart && relOpthis.IsBetweenPart;
                             var rangeIn = new QueryGraphValueEntryRangeIn(opsDesc.RangeType, start, end, allowRangeReversal);
     
                             var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();

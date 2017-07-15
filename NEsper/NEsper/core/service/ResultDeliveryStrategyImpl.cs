@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.epl.core;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
@@ -55,7 +57,8 @@ namespace com.espertech.esper.core.service
             MethodInfo method,
             MethodInfo startMethod,
             MethodInfo endMethod,
-            MethodInfo rStreamMethod)
+            MethodInfo rStreamMethod,
+            EngineImportService engineImportService)
         {
             _statement = statement;
             _subscriber = subscriber;
@@ -140,7 +143,7 @@ namespace com.espertech.esper.core.service
                     EventBean theEvent = newData[i];
                     if (theEvent is NaturalEventBean)
                     {
-                        var natural = (NaturalEventBean) theEvent;
+                        var natural = (NaturalEventBean)theEvent;
                         Object[] paramList = _deliveryConvertor.ConvertRow(natural.Natural);
                         try
                         {
@@ -165,7 +168,7 @@ namespace com.espertech.esper.core.service
                     EventBean theEvent = oldData[i];
                     if (theEvent is NaturalEventBean)
                     {
-                        var natural = (NaturalEventBean) theEvent;
+                        var natural = (NaturalEventBean)theEvent;
                         var paramList = _deliveryConvertor.ConvertRow(natural.Natural);
                         try
                         {
@@ -221,7 +224,7 @@ namespace com.espertech.esper.core.service
                                               FastMethod method)
         {
             String message = TypeHelper.GetMessageInvocationTarget(statementName, method.Target,
-                                                                   subscriber.GetType().FullName, 
+                                                                   subscriber.GetType().FullName,
                                                                    paramList, e);
             logger.Error(message, e.InnerException);
         }

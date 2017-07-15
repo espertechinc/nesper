@@ -107,50 +107,50 @@ namespace com.espertech.esperio.regression.adapter
     		coordinator.Coordinate(new CSVInputAdapter(noTimestampsNotLooping));
     		coordinator.Coordinate(new CSVInputAdapter(noTimestampsLooping));
     
-    		// Time is 0
+    		// TimeInMillis is 0
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     		coordinator.Start();
     
-    		// Time is 50
+    		// TimeInMillis is 50
     		SendTimeEvent(50);
     
-    		// Time is 100
+    		// TimeInMillis is 100
     		SendTimeEvent(50);
     		AssertEvent(0, 1, 1.1, "timestampOne.one");
     		AssertEvent(1, 1, 1.1, "noTimestampOne.one");
     		AssertSizeAndReset(2);
     
-    		// Time is 150
+    		// TimeInMillis is 150
     		SendTimeEvent(50);
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-    		// Time is 200
+    		// TimeInMillis is 200
     		SendTimeEvent(50);
     		AssertEvent(0, 2, 2.2, "timestampTwo.two");
     		AssertEvent(1, 2, 2.2, "noTimestampOne.two");
     		AssertEvent(2, 2, 2.2, "noTimestampTwo.two");
     		AssertSizeAndReset(3);
     
-    		// Time is 250
+    		// TimeInMillis is 250
     		SendTimeEvent(50);
     
-    		// Time is 300
+    		// TimeInMillis is 300
     		SendTimeEvent(50);
     		AssertEvent(0, 3, 3.3, "timestampOne.three");
     		AssertEvent(1, 3, 3.3, "noTimestampOne.three");
     		AssertSizeAndReset(2);
     
-    		// Time is 350
+    		// TimeInMillis is 350
     		SendTimeEvent(50);
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
     		coordinator.Pause();
     
-    		// Time is 400
+    		// TimeInMillis is 400
     		SendTimeEvent(50);
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-    		// Time is 450
+    		// TimeInMillis is 450
     		SendTimeEvent(50);
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
@@ -160,18 +160,18 @@ namespace com.espertech.esperio.regression.adapter
     		AssertEvent(1, 4, 4.4, "noTimestampTwo.four");
     		AssertSizeAndReset(2);
     
-    		// Time is 500
+    		// TimeInMillis is 500
     		SendTimeEvent(50);
     		AssertEvent(0, 5, 5.5, "timestampOne.five");
     		AssertSizeAndReset(1);
     
-    		// Time is 600
+    		// TimeInMillis is 600
     		SendTimeEvent(100);
     		AssertEvent(0, 6, 6.6, "timestampTwo.six");
     		AssertEvent(1, 2, 2.2, "noTimestampTwo.two");
     		AssertSizeAndReset(2);
     
-    		// Time is 800
+    		// TimeInMillis is 800
     		SendTimeEvent(200);
     		AssertEvent(0, 2, 2.2, "timestampTwo.two");
     		AssertEvent(1, 4, 4.4, "noTimestampTwo.four");
@@ -188,35 +188,35 @@ namespace com.espertech.esperio.regression.adapter
     		coordinator.Coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
     		coordinator.Start();
     
-    		// Time is 100
+    		// TimeInMillis is 100
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==100");
     		AssertEvent(0, 1, 1.1, "timestampOne.one");
     		AssertSizeAndReset(1);
     
-    		// Time is 300
+    		// TimeInMillis is 300
     		SendTimeEvent(200);
             Log.Debug(".testRunTillNull time==300");
     		AssertEvent(0, 3, 3.3, "timestampOne.three");
     		AssertSizeAndReset(1);
     
-    		// Time is 500
+    		// TimeInMillis is 500
     		SendTimeEvent(200);
             Log.Debug(".testRunTillNull time==500");
     		AssertEvent(0, 5, 5.5, "timestampOne.five");
     		AssertSizeAndReset(1);
     
-    		// Time is 600
+    		// TimeInMillis is 600
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==600");
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-    		// Time is 700
+    		// TimeInMillis is 700
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==700");
     		Assert.IsFalse(listener.GetAndClearIsInvoked());
     
-    		// Time is 800
+    		// TimeInMillis is 800
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==800");
     	}

@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.util;
-using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -261,7 +260,7 @@ namespace com.espertech.esper.epl.agg.service
         public void HandleRemovedKeys()
         {
             if (!RemovedKeys.IsEmpty())
-                // we collect removed keys lazily on the next enter to reduce the chance of empty-group queries creating empty aggregators temporarily
+            // we collect removed keys lazily on the next enter to reduce the chance of empty-group queries creating empty aggregators temporarily
             {
                 foreach (var removedKey in RemovedKeys)
                 {
@@ -379,6 +378,11 @@ namespace com.espertech.esper.epl.agg.service
 
         public void Stop()
         {
+        }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
         }
 
         private int NumGroups

@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.visitor
         }
 
         /// <summary>Returns list of event property stream numbers and names that uniquely identify which property is from whcih stream, and the name of each. </summary>
-        /// <value>list of event property statement-unique info</value>
+        /// <value>list of event property statement-unique INFO</value>
         public IList<ExprIdentNode> ExprProperties { get; private set; }
 
         public ICollection<int> StreamsRequired

@@ -6,96 +6,115 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
 
 namespace com.espertech.esper.plugin
 {
     /// <summary>
-    /// Context for use with <seealso cref="PlugInAggregationMultiFunctionFactory"/> provides 
+    /// Context for use with <seealso cref="PlugInAggregationMultiFunctionFactory" /> provides
     /// information about an aggregation function at the time of validation.
-    /// <para/>
-    /// At validation time the event type information, parameter expressions and other 
-    /// statement-specific services are available.
+    /// <para>
+    /// At validation time the event type information, parameter expressions
+    /// and other statement-specific services are available.
+    /// </para>
     /// </summary>
-    public class PlugInAggregationMultiFunctionValidationContext
-    {
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="functionName">the aggregation function name</param>
-        /// <param name="eventTypes">the event types of all events in the select clause</param>
-        /// <param name="parameterExpressions">the parameter expressions</param>
-        /// <param name="engineURI">the engine URI</param>
-        /// <param name="statementName">the statement name</param>
-        /// <param name="validationContext">additional validation contextual services</param>
-        /// <param name="config">the original configuration object for the aggregation multi-function</param>
-        /// <param name="optionalTableColumnAccessed">The optional table column accessed.</param>
-        /// <param name="allParameterExpressions">All parameter expressions.</param>
-        public PlugInAggregationMultiFunctionValidationContext(
-            string functionName,
-            EventType[] eventTypes,
-            ExprNode[] parameterExpressions,
-            string engineURI,
-            string statementName,
-            ExprValidationContext validationContext,
-            ConfigurationPlugInAggregationMultiFunction config,
-            TableMetadataColumnAggregation optionalTableColumnAccessed,
-            ExprNode[] allParameterExpressions)
-        {
-            FunctionName = functionName;
-            EventTypes = eventTypes;
-            ParameterExpressions = parameterExpressions;
-            EngineURI = engineURI;
-            StatementName = statementName;
-            ValidationContext = validationContext;
-            Config = config;
-            OptionalTableColumnAccessed = optionalTableColumnAccessed;
-            AllParameterExpressions = allParameterExpressions;
+    public class PlugInAggregationMultiFunctionValidationContext {
+        private readonly string functionName;
+        private readonly EventType[] eventTypes;
+        private readonly ExprNode[] parameterExpressions;
+        private readonly string engineURI;
+        private readonly string statementName;
+        private readonly ExprValidationContext validationContext;
+        private readonly ConfigurationPlugInAggregationMultiFunction config;
+        private readonly TableMetadataColumnAggregation optionalTableColumnAccessed;
+        private readonly ExprNode[] allParameterExpressions;
+    
+        public PlugInAggregationMultiFunctionValidationContext(string functionName, EventType[] eventTypes, ExprNode[] parameterExpressions, string engineURI, string statementName, ExprValidationContext validationContext, ConfigurationPlugInAggregationMultiFunction config, TableMetadataColumnAggregation optionalTableColumnAccessed, ExprNode[] allParameterExpressions) {
+            this.functionName = functionName;
+            this.eventTypes = eventTypes;
+            this.parameterExpressions = parameterExpressions;
+            this.engineURI = engineURI;
+            this.statementName = statementName;
+            this.validationContext = validationContext;
+            this.config = config;
+            this.optionalTableColumnAccessed = optionalTableColumnAccessed;
+            this.allParameterExpressions = allParameterExpressions;
         }
-
-        /// <summary>Returns the aggregation function name </summary>
-        /// <value>aggregation function name</value>
-        public string FunctionName { get; private set; }
-
-        /// <summary>Returns the event types of all events in the select clause </summary>
-        /// <value>types</value>
-        public EventType[] EventTypes { get; private set; }
-
+    
+        /// <summary>
+        /// Returns the aggregation function name
+        /// </summary>
+        /// <returns>aggregation function name</returns>
+        public string GetFunctionName() {
+            return functionName;
+        }
+    
+        /// <summary>
+        /// Returns the event types of all events in the select clause
+        /// </summary>
+        /// <returns>types</returns>
+        public EventType[] GetEventTypes() {
+            return eventTypes;
+        }
+    
         /// <summary>
         /// Returns positional parameters expressions to this aggregation function.
-        /// Use <seealso cref="AllParameterExpressions" /> for a list of all parameters including non-positional parameters.
+        /// Use {@link #GetAllParameterExpressions()} for a list of all parameters including non-positional parameters.
         /// </summary>
-        public ExprNode[] ParameterExpressions { get; private set; }
-
-        /// <summary>Returns the engine URI. </summary>
-        /// <value>engine URI.</value>
-        public string EngineURI { get; private set; }
-
-        /// <summary>Returns the statement name. </summary>
-        /// <value>statement name</value>
-        public string StatementName { get; private set; }
-
-        /// <summary>Returns additional validation contextual services. </summary>
-        /// <value>validation context</value>
-        public ExprValidationContext ValidationContext { get; private set; }
-
-        /// <summary>Returns the original configuration object for the aggregation multi-function </summary>
-        /// <value>config</value>
-        public ConfigurationPlugInAggregationMultiFunction Config { get; private set; }
-
+        /// <returns>positional parameter expressions</returns>
+        public ExprNode[] GetParameterExpressions() {
+            return parameterExpressions;
+        }
+    
         /// <summary>
-        /// Returns the optional table column.
+        /// Returns the engine URI.
         /// </summary>
-        /// <value>
-        /// The optional table column.
-        /// </value>
-        public TableMetadataColumnAggregation OptionalTableColumnAccessed { get; private set; }
-
+        /// <returns>engine URI.</returns>
+        public string GetEngineURI() {
+            return engineURI;
+        }
+    
+        /// <summary>
+        /// Returns the statement name.
+        /// </summary>
+        /// <returns>statement name</returns>
+        public string GetStatementName() {
+            return statementName;
+        }
+    
+        /// <summary>
+        /// Returns additional validation contextual services.
+        /// </summary>
+        /// <returns>validation context</returns>
+        public ExprValidationContext GetValidationContext() {
+            return validationContext;
+        }
+    
+        /// <summary>
+        /// Returns the original configuration object for the aggregation multi-function
+        /// </summary>
+        /// <returns>config</returns>
+        public ConfigurationPlugInAggregationMultiFunction GetConfig() {
+            return config;
+        }
+    
+        public TableMetadataColumnAggregation GetOptionalTableColumnAccessed() {
+            return optionalTableColumnAccessed;
+        }
+    
         /// <summary>
         /// Returns positional and non-positional parameters.
         /// </summary>
-        public ExprNode[] AllParameterExpressions { get; private set; }
+        /// <returns>all parameters</returns>
+        public ExprNode[] GetAllParameterExpressions() {
+            return allParameterExpressions;
+        }
     }
-}
+} // end of namespace

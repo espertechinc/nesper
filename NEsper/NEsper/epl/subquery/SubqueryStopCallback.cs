@@ -12,7 +12,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.subquery
 {
     /// <summary>
-    /// Implements a stop callback for use with subqueries to clear their indexes when a statement is stopped.
+    /// : a stop callback for use with subqueries to clear their indexes when a statement is stopped.
     /// </summary>
     public class SubqueryStopCallback : StopCallback
     {

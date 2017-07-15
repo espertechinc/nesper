@@ -7,41 +7,67 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.spec
 {
-    public class PluggableObjectRegistryImpl : PluggableObjectRegistry
-    {
-        private readonly PluggableObjectCollection[] _collections;
-
-        public PluggableObjectRegistryImpl(PluggableObjectCollection[] collections)
-        {
-            _collections = collections;
+    public class PluggableObjectRegistryImpl : PluggableObjectRegistry {
+        private PluggableObjectCollection[] collections;
+    
+        public PluggableObjectRegistryImpl(PluggableObjectCollection[] collections) {
+            this.collections = collections;
         }
-
-        public Pair<Type, PluggableObjectEntry> Lookup(String nameSpace, String name)
-        {
-            for (int ii = 0; ii < _collections.Length; ii++)
-            {
-                var names = _collections[ii].Pluggables.Get(nameSpace);
-                if (names == null)
-                {
-                    continue;
+    
+        public Pair<Type, PluggableObjectEntry> Lookup(string nameSpace, string name) {
+    
+            // Handle namespace-provided
+            if (nameSpace != null) {
+                for (int i = 0; i < collections.Length; i++) {
+                    IDictionary<string, Pair<Type, PluggableObjectEntry>> names = collections[i].Pluggables.Get(nameSpace);
+                    if (names == null) {
+                        continue;
+                    }
+                    Pair<Type, PluggableObjectEntry> entry = names.Get(name);
+                    if (entry == null) {
+                        continue;
+                    }
+                    return entry;
                 }
-
-                var entry = names.Get(name);
-                if (entry == null)
-                {
-                    continue;
-                }
-
-                return entry;
+                return null;
             }
-
-            return null;
+    
+            // Handle namespace-not-provided
+            ISet<string> entriesDuplicate = null;
+            var found = null;
+            for (int i = 0; i < collections.Length; i++) {
+                for (var collEntry : collections[i].Pluggables) {
+                    foreach (var viewEntry in collEntry.Value) {
+                        if (viewEntry.Key.Equals(name)) {
+                            if (found != null) {
+                                if (entriesDuplicate == null) {
+                                    entriesDuplicate = new HashSet<>();
+                                }
+                                entriesDuplicate.Add(viewEntry.Key);
+                            } else {
+                                found = viewEntry;
+                            }
+                        }
+                    }
+                }
+            }
+    
+            if (entriesDuplicate != null) {
+                entriesDuplicate.Add(found.Key);
+                throw new ViewProcessingException("Duplicate entries for view '" + name + "' found in namespaces " + Arrays.ToString(entriesDuplicate.ToArray()));
+            }
+    
+            return found == null ? null : found.Value;
         }
     }
-}
+} // end of namespace

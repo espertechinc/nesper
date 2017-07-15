@@ -10,16 +10,17 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.service
 {
     /// <summary>
-    /// A null object implementation of the AggregationService interface.
+    /// A null object implementation of the AggregationService
+    /// interface.
     /// </summary>
     public class AggregationServiceNull : AggregationService
     {
+
         public AggregationServiceNull()
         {
         }
@@ -42,22 +43,39 @@ namespace com.espertech.esper.epl.agg.service
         {
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object GetValue(
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-            return null;
-        }
-        
-        public ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<Object> GetCollectionScalar(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return null;
+        }
+
+        public EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return null;
         }
@@ -98,5 +116,10 @@ namespace com.espertech.esper.epl.agg.service
         public void Stop()
         {
         }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
+        }
     }
-}
+} // end of namespace

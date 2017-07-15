@@ -31,39 +31,46 @@ namespace com.espertech.esper.epl.parse
 
         public static IList<String> GetIdentList(EsperEPL2GrammarParser.ColumnListContext ctx)
         {
-            if (ctx == null || (ctx.ChildCount == 0)) {
+            if (ctx == null || (ctx.ChildCount == 0))
+            {
                 return Collections.GetEmptyList<string>();
             }
             IList<ITerminalNode> idents = ctx.IDENT();
             IList<String> parameters = new List<String>(idents.Count);
-            foreach (var ident in idents) {
+            foreach (var ident in idents)
+            {
                 parameters.Add(ident.GetText());
             }
             return parameters;
         }
-    
-        public static bool IsTerminatedOfType(ITree child, int tokenType) {
-            if (!(child is ITerminalNode)) {
+
+        public static bool IsTerminatedOfType(ITree child, int tokenType)
+        {
+            if (!(child is ITerminalNode))
+            {
                 return false;
             }
-            var termNode = (ITerminalNode) child;
+            var termNode = (ITerminalNode)child;
             return termNode.Symbol.Type == tokenType;
         }
 
         public static int GetRuleIndexIfProvided(IParseTree tree)
         {
-            if (!(tree is IRuleNode)) {
+            if (!(tree is IRuleNode))
+            {
                 return -1;
             }
-            var ruleNode = (IRuleNode) tree;
+            var ruleNode = (IRuleNode)tree;
             return ruleNode.RuleContext.RuleIndex;
         }
-    
-        public static int GetAssertTerminatedTokenType(IParseTree child) {
-            if (!(child is ITerminalNode)) {
+
+        public static int GetAssertTerminatedTokenType(IParseTree child)
+        {
+            if (!(child is ITerminalNode))
+            {
                 throw ASTWalkException.From("Unexpected exception walking AST, expected terminal node", child.GetText());
             }
-            var term = (ITerminalNode) child;
+            var term = (ITerminalNode)child;
             return term.Symbol.Type;
         }
 
@@ -73,15 +80,17 @@ namespace com.espertech.esper.epl.parse
             ASTUtil.DumpAST(writer, node, 0);
             return writer.ToString();
         }
-    
-        public static bool IsRecursiveParentRule(RuleContext ctx, ICollection<int> rulesIds) {
+
+        public static bool IsRecursiveParentRule(RuleContext ctx, ICollection<int> rulesIds)
+        {
             var parent = ctx.Parent;
-            if (parent == null) {
+            if (parent == null)
+            {
                 return false;
             }
             return rulesIds.Contains(parent.RuleIndex) || IsRecursiveParentRule(parent, rulesIds);
         }
-    
+
         /// <summary>Dump the AST node to system.out. </summary>
         /// <param name="ast">to dump</param>
         public static void DumpAST(ITree ast)
@@ -91,16 +100,16 @@ namespace com.espertech.esper.epl.parse
                 var writer = new StringWriter();
                 RenderNode(new char[0], ast, writer);
                 DumpAST(writer, ast, 2);
-    
+
                 Log.Info(".dumpAST ANTLR Tree dump follows...\n" + writer);
             }
         }
-    
+
         public static void DumpAST(TextWriter printer, ITree ast, int ident)
         {
             var identChars = new char[ident];
             identChars.Fill(' ');
-    
+
             if (ast == null)
             {
                 RenderNode(identChars, null, printer);
@@ -127,9 +136,9 @@ namespace com.espertech.esper.epl.parse
             if (Log.IsDebugEnabled)
             {
                 var tokenList = tokens.GetTokens();
-    
+
                 var writer = new StringWriter();
-                for (var i = 0; i < tokens.Size ; i++)
+                for (var i = 0; i < tokens.Size; i++)
                 {
                     var t = tokenList[i];
                     var text = t.Text;
@@ -150,7 +159,7 @@ namespace com.espertech.esper.epl.parse
                 Log.Debug("Tokens: " + writer);
             }
         }
-    
+
         private static void RenderNode(char[] ident, ITree node, TextWriter printer)
         {
             printer.Write(ident);
@@ -160,21 +169,24 @@ namespace com.espertech.esper.epl.parse
             }
             else
             {
-                if (node is ParserRuleContext) {
-                    var ctx = (ParserRuleContext) node;
+                if (node is ParserRuleContext)
+                {
+                    var ctx = (ParserRuleContext)node;
                     var ruleIndex = ctx.RuleIndex;
                     var ruleName = EsperEPL2GrammarParser.ruleNames[ruleIndex];
                     printer.Write(ruleName);
                 }
-                else {
-                    var terminal = (ITerminalNode) node;
+                else
+                {
+                    var terminal = (ITerminalNode)node;
                     printer.Write(terminal.Symbol.Text);
                     printer.Write(" [");
                     printer.Write(terminal.Symbol.Type);
                     printer.Write("]");
                 }
-    
-                if (node is IParseTree) {
+
+                if (node is IParseTree)
+                {
                     var parseTree = (IParseTree)node;
                     var parseTreeText = parseTree.GetText();
                     if (parseTreeText == null)
@@ -184,7 +196,7 @@ namespace com.espertech.esper.epl.parse
                     else if (parseTreeText.Contains("\\"))
                     {
                         var count = 0;
-                        for (var i = 0; i < parseTreeText.Length ; i++)
+                        for (var i = 0; i < parseTreeText.Length; i++)
                         {
                             if (parseTreeText[i] == '\\')
                             {
@@ -197,7 +209,7 @@ namespace com.espertech.esper.epl.parse
             }
             printer.WriteLine();
         }
-    
+
         /// <summary>Escape all unescape dot characters in the text (identifier only) passed in. </summary>
         /// <param name="identifierToEscape">text to escape</param>
         /// <returns>text where dots are escaped</returns>
@@ -208,7 +220,7 @@ namespace com.espertech.esper.epl.parse
             {
                 return identifierToEscape;
             }
-    
+
             var builder = new StringBuilder();
             for (var i = 0; i < identifierToEscape.Length; i++)
             {
@@ -218,7 +230,7 @@ namespace com.espertech.esper.epl.parse
                     builder.Append(c);
                     continue;
                 }
-    
+
                 if (i > 0)
                 {
                     if (identifierToEscape[i - 1] == '\\')
@@ -227,14 +239,14 @@ namespace com.espertech.esper.epl.parse
                         continue;
                     }
                 }
-    
+
                 builder.Append('\\');
                 builder.Append('.');
             }
-    
+
             return builder.ToString();
         }
-    
+
         /// <summary>Find the index of an unescaped dot (.) character, or return -1 if none found. </summary>
         /// <param name="identifier">text to find an un-escaped dot character</param>
         /// <returns>index of first unescaped dot</returns>
@@ -245,7 +257,7 @@ namespace com.espertech.esper.epl.parse
             {
                 return -1;
             }
-    
+
             for (var i = 0; i < identifier.Length; i++)
             {
                 var c = identifier[i];
@@ -253,7 +265,7 @@ namespace com.espertech.esper.epl.parse
                 {
                     continue;
                 }
-    
+
                 if (i > 0)
                 {
                     if (identifier[i - 1] == '\\')
@@ -261,13 +273,13 @@ namespace com.espertech.esper.epl.parse
                         continue;
                     }
                 }
-    
+
                 return i;
             }
-    
+
             return -1;
         }
-    
+
         /// <summary>Un-Escape all escaped dot characters in the text (identifier only) passed in. </summary>
         /// <param name="identifierToUnescape">text to un-escape</param>
         /// <returns>string</returns>
@@ -283,7 +295,7 @@ namespace com.espertech.esper.epl.parse
             {
                 return identifierToUnescape;
             }
-    
+
             var builder = new StringBuilder();
             var index = -1;
             var max = identifierToUnescape.Length - 1;
@@ -291,7 +303,8 @@ namespace com.espertech.esper.epl.parse
             {
                 index++;
                 var c = identifierToUnescape[index];
-                if (c != '\\') {
+                if (c != '\\')
+                {
                     builder.Append(c);
                     continue;
                 }
@@ -305,25 +318,29 @@ namespace com.espertech.esper.epl.parse
                 }
             }
             while (index < max);
-    
+
             return builder.ToString();
         }
-    
-        public static String GetPropertyName(EsperEPL2GrammarParser.EventPropertyContext ctx, int startNode) {
+
+        public static String GetPropertyName(EsperEPL2GrammarParser.EventPropertyContext ctx, int startNode)
+        {
             var buf = new StringBuilder();
-            for (var i = startNode; i < ctx.ChildCount; i++) {
+            for (var i = startNode; i < ctx.ChildCount; i++)
+            {
                 var tree = ctx.GetChild(i);
                 buf.Append(tree.GetText());
             }
             return buf.ToString();
         }
-    
-        public static String UnescapeBacktick(String text) {
+
+        public static String UnescapeBacktick(String text)
+        {
             var indexof = text.IndexOf("`");
-            if (indexof == -1) {
+            if (indexof == -1)
+            {
                 return text;
             }
-    
+
             var builder = new StringBuilder();
             var index = -1;
             var max = text.Length - 1;
@@ -332,18 +349,20 @@ namespace com.espertech.esper.epl.parse
             {
                 index++;
                 var c = text[index];
-                if (c == '`') {
+                if (c == '`')
+                {
                     skip = !skip;
                 }
-                else {
+                else
+                {
                     builder.Append(c);
                 }
             }
             while (index < max);
-    
+
             return builder.ToString();
         }
-    
+
         public static String UnescapeClassIdent(EsperEPL2GrammarParser.ClassIdentifierContext classIdentCtx)
         {
             return UnescapeEscapableStr(classIdentCtx.escapableStr(), ".");
@@ -352,7 +371,8 @@ namespace com.espertech.esper.epl.parse
         public static String UnescapeSlashIdentifier(EsperEPL2GrammarParser.SlashIdentifierContext ctx)
         {
             String name = UnescapeEscapableStr(ctx.escapableStr(), "/");
-            if (ctx.d != null) {
+            if (ctx.d != null)
+            {
                 name = "/" + name;
             }
             return name;
@@ -360,18 +380,20 @@ namespace com.espertech.esper.epl.parse
 
         private static String UnescapeEscapableStr(IList<EsperEPL2GrammarParser.EscapableStrContext> ctxs, String delimiterConst)
         {
-            if (ctxs.Count == 1) {
+            if (ctxs.Count == 1)
+            {
                 return UnescapeBacktick(UnescapeDot(ctxs[0].GetText()));
             }
-    
+
             var writer = new StringWriter();
             var delimiter = "";
-            foreach (var ctx in ctxs) {
+            foreach (var ctx in ctxs)
+            {
                 writer.Write(delimiter);
                 writer.Write(UnescapeBacktick(UnescapeDot(ctx.GetText())));
                 delimiter = delimiterConst;
             }
-    
+
             return writer.ToString();
         }
     }

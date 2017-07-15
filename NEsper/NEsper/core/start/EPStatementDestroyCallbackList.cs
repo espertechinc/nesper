@@ -7,56 +7,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
-using Castle.Core.Internal;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    /// <summary>
-    /// Method to call to destroy an EPStatement.
-    /// </summary>
-    public class EPStatementDestroyCallbackList : EPStatementDestroyMethod
-    {
-        private static readonly ILog Log =
-            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private Deque<DestroyCallback> _callbacks;
-
-        public void AddCallback(Action destroyAction)
-        {
-            AddCallback(new ProxyDestroyCallback(destroyAction));
-        }
-
-        public void AddCallback(DestroyCallback destroyCallback)
-        {
-            if (_callbacks == null)
-            {
-                _callbacks = new ArrayDeque<DestroyCallback>(2);
+    /// <summary>Method to call to destroy an EPStatement.</summary>
+    public class EPStatementDestroyCallbackList : EPStatementDestroyMethod {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
+        private Deque<DestroyCallback> callbacks;
+    
+        public void AddCallback(DestroyCallback destroyCallback) {
+            if (callbacks == null) {
+                callbacks = new ArrayDeque<DestroyCallback>(2);
             }
-            _callbacks.Add(destroyCallback);
+            callbacks.Add(destroyCallback);
         }
-
-        public void Destroy()
-        {
-            if (_callbacks != null)
-            {
-                _callbacks.ForEach(
-                    destroyCallback =>
-                    {
-                        try
-                        {
-                            destroyCallback.Destroy();
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error("Failed to destroy resource: " + ex.Message, ex);
-                        }
-                    });
+    
+        public void Destroy() {
+            if (callbacks == null) {
+                return;
+            }
+            foreach (DestroyCallback destroyCallback in callbacks) {
+                try {
+                    destroyCallback.Destroy();
+                } catch (RuntimeException ex) {
+                    Log.Error("Failed to destroy resource: " + ex.Message, ex);
+                }
             }
         }
     }
-}
+} // end of namespace

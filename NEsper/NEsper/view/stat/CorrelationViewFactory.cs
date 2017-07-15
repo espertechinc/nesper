@@ -12,7 +12,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.stat
@@ -24,43 +23,44 @@ namespace com.espertech.esper.view.stat
     {
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
-    
+
         /// <summary>Property name of X field. </summary>
         private ExprNode _expressionX;
-    
+
         /// <summary>Property name of Y field. </summary>
         private ExprNode _expressionY;
-    
+
         /// <summary>Additional properties. </summary>
         private StatViewAdditionalProps _additionalProps;
-    
+
         /// <summary>Event type. </summary>
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
             _streamNumber = viewFactoryContext.StreamNum;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
-            if (validated.Length < 2) {
+            if (validated.Length < 2)
+            {
                 throw new ViewParameterException(ViewParamMessage);
             }
             if ((!validated[0].ExprEvaluator.ReturnType.IsNumeric()) || (!validated[1].ExprEvaluator.ReturnType.IsNumeric()))
             {
                 throw new ViewParameterException(ViewParamMessage);
             }
-    
+
             _expressionX = validated[0];
             _expressionY = validated[1];
-    
+
             _additionalProps = StatViewAdditionalProps.Make(validated, 2, parentEventType);
             _eventType = CorrelationView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new CorrelationView(this, agentInstanceViewFactoryContext.AgentInstanceContext, ExpressionX, ExpressionY, EventType, AdditionalProps);
@@ -72,24 +72,25 @@ namespace com.espertech.esper.view.stat
             set { _eventType = value; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is CorrelationView))
             {
                 return false;
             }
-    
-            if (_additionalProps != null) {
+
+            if (_additionalProps != null)
+            {
                 return false;
             }
-    
-            CorrelationView other = (CorrelationView) view;
+
+            CorrelationView other = (CorrelationView)view;
             if ((!ExprNodeUtility.DeepEquals(other.ExpressionX, _expressionX) ||
                 (!ExprNodeUtility.DeepEquals(other.ExpressionY, _expressionY))))
             {
                 return false;
             }
-    
+
             return true;
         }
 

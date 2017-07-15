@@ -8,30 +8,47 @@
 
 using System;
 
+using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 
 namespace com.espertech.esper.epl.expression.core
 {
-    [Serializable]
     public class ExprNodeUtilExprEvalMethodContext : ExprEvaluator
     {
-        private readonly String _functionName;
+        private readonly EPLMethodInvocationContext _defaultContextForFilters;
 
-        public ExprNodeUtilExprEvalMethodContext(String functionName)
+        public ExprNodeUtilExprEvalMethodContext(
+            string engineURI,
+            string functionName,
+            EventBeanService eventBeanService)
         {
-            _functionName = functionName;
+            _defaultContextForFilters = new EPLMethodInvocationContext(
+                null, -1, engineURI, functionName, null, eventBeanService);
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            var context = evaluateParams.ExprEvaluatorContext;
+            return Evaluate(
+                evaluateParams.EventsPerStream,
+                evaluateParams.IsNewData,
+                evaluateParams.ExprEvaluatorContext
+                );
+        }
+
+        public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
+            if (context == null)
+            {
+                return _defaultContextForFilters;
+            }
             return new EPLMethodInvocationContext(
                 context.StatementName,
-                context.AgentInstanceId, 
-                context.EngineURI, 
-                _functionName,
-                context.StatementUserObject
-            );
+                context.AgentInstanceId,
+                _defaultContextForFilters.EngineURI,
+                _defaultContextForFilters.FunctionName,
+                context.StatementUserObject,
+                _defaultContextForFilters.EventBeanService
+                );
         }
 
         public Type ReturnType
@@ -39,4 +56,4 @@ namespace com.espertech.esper.epl.expression.core
             get { return typeof (EPLMethodInvocationContext); }
         }
     }
-}
+} // end of namespace

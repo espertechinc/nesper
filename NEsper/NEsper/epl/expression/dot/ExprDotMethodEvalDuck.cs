@@ -26,15 +26,15 @@ namespace com.espertech.esper.epl.expression.dot
     public class ExprDotMethodEvalDuck : ExprDotEval
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _statementName;
         private readonly EngineImportService _engineImportService;
         private readonly String _methodName;
         private readonly Type[] _parameterTypes;
         private readonly ExprEvaluator[] _parameters;
-    
+
         private readonly IDictionary<Type, FastMethod> _cache;
-    
+
         public ExprDotMethodEvalDuck(string statementName, EngineImportService engineImportService, string methodName, Type[] parameterTypes, ExprEvaluator[] parameters)
         {
             _statementName = statementName;
@@ -44,49 +44,55 @@ namespace com.espertech.esper.epl.expression.dot
             _parameters = parameters;
             _cache = new Dictionary<Type, FastMethod>();
         }
-    
-        public void Visit(ExprDotEvalVisitor visitor) {
+
+        public void Visit(ExprDotEvalVisitor visitor)
+        {
             visitor.VisitMethod(_methodName);
         }
-    
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            if (target == null) {
+
+        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (target == null)
+            {
                 return null;
             }
-    
+
             FastMethod method;
             var targetType = target.GetType();
-            if (_cache.ContainsKey(targetType)) {
+            if (_cache.ContainsKey(targetType))
+            {
                 method = _cache.Get(targetType);
             }
-            else {
+            else
+            {
                 method = GetFastMethod(targetType);
                 _cache.Put(targetType, method);
             }
-    
-            if (method == null) {
+
+            if (method == null)
+            {
                 return null;
             }
 
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             var args = new Object[_parameters.Length];
-    		for(int i = 0; i < args.Length; i++)
-    		{
-    		    args[i] = _parameters[i].Evaluate(evaluateParams);
-    		}
+            for (int i = 0; i < args.Length; i++)
+            {
+                args[i] = _parameters[i].Evaluate(evaluateParams);
+            }
 
             try
-    		{
+            {
                 return method.Invoke(target, args);
-    		}
-    		catch (TargetInvocationException e)
-    		{
+            }
+            catch (TargetInvocationException e)
+            {
                 String message = TypeHelper.GetMessageInvocationTarget(_statementName, method.Target, targetType.FullName, args, e);
                 Log.Error(message, e.InnerException);
-    		}
+            }
             return null;
         }
-    
+
         private FastMethod GetFastMethod(Type clazz)
         {
             try
@@ -95,7 +101,7 @@ namespace com.espertech.esper.epl.expression.dot
                 FastClass declaringClass = FastClass.Create(method.DeclaringType);
                 return declaringClass.GetMethod(method);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Log.Debug("Not resolved for class '" + clazz.Name + "' method '" + _methodName + "'");
             }
@@ -104,7 +110,7 @@ namespace com.espertech.esper.epl.expression.dot
 
         public EPType TypeInfo
         {
-            get { return EPTypeHelper.SingleValue(typeof (Object)); }
+            get { return EPTypeHelper.SingleValue(typeof(Object)); }
         }
     }
 }

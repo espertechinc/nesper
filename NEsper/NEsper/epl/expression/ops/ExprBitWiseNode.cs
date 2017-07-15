@@ -20,7 +20,7 @@ namespace com.espertech.esper.epl.expression.ops
     /// Represents the bit-wise operators in an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprBitWiseNode 
+    public class ExprBitWiseNode
         : ExprNodeBase
         , ExprEvaluator
     {
@@ -28,10 +28,10 @@ namespace com.espertech.esper.epl.expression.ops
         [NonSerialized]
         private BitWiseOpEnumExtensions.Computer _bitWiseOpEnumComputer;
         private Type _returnType;
-    
+
         [NonSerialized]
         private ExprEvaluator[] _evaluators;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="bitWiseOpEnum">type of math</param>
         public ExprBitWiseNode(BitWiseOpEnum bitWiseOpEnum)
@@ -57,7 +57,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 throw new ExprValidationException("BitWise node must have 2 parameters");
             }
-    
+
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
             foreach (var child in _evaluators)
             {
@@ -68,7 +68,7 @@ namespace com.espertech.esper.epl.expression.ops
                             childType.Name + " is not allowed");
                 }
             }
-    
+
             // Determine result type, set up compute function
             var childTypeOne = _evaluators[0].ReturnType;
             var childTypeTwo = _evaluators[1].ReturnType;
@@ -78,8 +78,8 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                var childBoxedTypeOne = childTypeOne.GetBoxedType() ;
-                var childBoxedTypeTwo = childTypeTwo.GetBoxedType() ;
+                var childBoxedTypeOne = childTypeOne.GetBoxedType();
+                var childBoxedTypeTwo = childTypeTwo.GetBoxedType();
                 if (childBoxedTypeOne == childBoxedTypeTwo)
                 {
                     _returnType = childBoxedTypeOne;
@@ -106,38 +106,39 @@ namespace com.espertech.esper.epl.expression.ops
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprBitwise(this, _bitWiseOpEnum);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprBitwise(this, _bitWiseOpEnum); }
             var valueChildOne = _evaluators[0].Evaluate(evaluateParams);
             var valueChildTwo = _evaluators[1].Evaluate(evaluateParams);
-    
+
             if ((valueChildOne == null) || (valueChildTwo == null))
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprBitwise(null);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprBitwise(null); }
                 return null;
             }
-    
+
             // bitWiseOpEnumComputer is initialized by validation
-            if (InstrumentationHelper.ENABLED) {
+            if (InstrumentationHelper.ENABLED)
+            {
                 var result = _bitWiseOpEnumComputer.Invoke(valueChildOne, valueChildTwo);
                 InstrumentationHelper.Get().AExprBitwise(result);
                 return result;
             }
             return _bitWiseOpEnumComputer.Invoke(valueChildOne, valueChildTwo);
         }
-    
+
         public override bool EqualsNode(ExprNode node)
         {
             if (!(node is ExprBitWiseNode))
             {
                 return false;
             }
-    
-            var other = (ExprBitWiseNode) node;
+
+            var other = (ExprBitWiseNode)node;
             if (other._bitWiseOpEnum != _bitWiseOpEnum)
             {
                 return false;
             }
-    
+
             return true;
         }
 

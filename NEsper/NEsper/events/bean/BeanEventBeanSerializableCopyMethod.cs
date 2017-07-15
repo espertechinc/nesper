@@ -10,52 +10,45 @@ using System;
 using System.IO;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.events;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.events.bean
 {
-    /// <summary>
-    /// Copy method for bean events utilizing serializable.
-    /// </summary>
-    public class BeanEventBeanSerializableCopyMethod : EventBeanCopyMethod
-    {
+    /// <summary>Copy method for bean events utilizing serializable.</summary>
+    public class BeanEventBeanSerializableCopyMethod : EventBeanCopyMethod {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly BeanEventType _beanEventType;
-        private readonly EventAdapterService _eventAdapterService;
-
+    
+        private readonly BeanEventType beanEventType;
+        private readonly EventAdapterService eventAdapterService;
+    
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="beanEventType">event type</param>
         /// <param name="eventAdapterService">for creating the event object</param>
-        public BeanEventBeanSerializableCopyMethod(BeanEventType beanEventType, EventAdapterService eventAdapterService)
-        {
-            _beanEventType = beanEventType;
-            _eventAdapterService = eventAdapterService;
+        public BeanEventBeanSerializableCopyMethod(BeanEventType beanEventType, EventAdapterService eventAdapterService) {
+            this.beanEventType = beanEventType;
+            this.eventAdapterService = eventAdapterService;
         }
-
-        public EventBean Copy(EventBean theEvent)
-        {
+    
+        public EventBean Copy(EventBean theEvent) {
             Object underlying = theEvent.Underlying;
             Object copied;
-            try
-            {
+            try {
                 copied = SerializableObjectCopier.Copy(underlying);
-            }
-            catch (IOException e)
-            {
-                Log.Error("IOException copying event object for Update: " + e.Message, e);
+            } catch (IOException e) {
+                Log.Error("IOException copying event object for update: " + e.Message, e);
+                return null;
+            } catch (ClassNotFoundException e) {
+                Log.Error("Exception copying event object for update: " + e.Message, e);
                 return null;
             }
-            catch (TypeLoadException e)
-            {
-                Log.Error("Exception copying event object for Update: " + e.Message, e);
-                return null;
-            }
-
-            return _eventAdapterService.AdapterForTypedObject(copied, _beanEventType);
+    
+            return EventAdapterService.AdapterForTypedBean(copied, beanEventType);
         }
     }
-}
+} // end of namespace

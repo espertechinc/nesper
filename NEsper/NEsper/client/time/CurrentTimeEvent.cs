@@ -13,27 +13,27 @@ using com.espertech.esper.compat;
 namespace com.espertech.esper.client.time
 {
     /// <summary>
-    /// Event for externally controlling the time within an <see cref="com.espertech.esper.client.EPRuntime"/> instance.
-    /// External clocking must be enabled via <see cref="TimerControlEvent"/> before this class can be used
-    /// to externally feed time.
+    /// Event for externally controlling the TimeInMillis within an <seealso cref="com.espertech.esper.client.EPRuntime" />
+    /// or <seealso cref="com.espertech.esper.client.EPRuntimeIsolated" /> instance.
+    /// External clocking must be enabled via <seealso cref="TimerControlEvent" /> before this class can be used
+    /// to externally feed TimeInMillis.
     /// </summary>
-	
-	[Serializable]
     public sealed class CurrentTimeEvent : TimerEvent
-	{
-	    /// <summary> Returns the time in milliseconds.</summary>
-	    /// <returns> time in milliseconds
-	    /// </returns>
-	    public long TimeInMillis { get; set; }
+    {
+        /// <summary>
+        /// Returns the TimeInMillis in milliseconds.
+        /// </summary>
+        /// <value>TimeInMillis in milliseconds</value>
+        public long Time { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentTimeEvent"/> class.
         /// </summary>
-        /// <param name="timeInMillis">The time in millis.</param>
-		public CurrentTimeEvent(long timeInMillis)
-		{
-			TimeInMillis = timeInMillis;
-		}
+        /// <param name="time">The time in millis.</param>
+        public CurrentTimeEvent(long time)
+        {
+            Time = time;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CurrentTimeEvent"/> class.
@@ -41,7 +41,7 @@ namespace com.espertech.esper.client.time
         /// <param name="dateTime">The date time.</param>
         public CurrentTimeEvent(DateTime dateTime)
         {
-            TimeInMillis = (new DateTimeOffset(dateTime, TimeZoneInfo.Local.GetUtcOffset(dateTime))).TimeInMillis();
+            Time = (new DateTimeOffset(dateTime, TimeZoneInfo.Local.GetUtcOffset(dateTime))).TimeInMillis();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace com.espertech.esper.client.time
         /// <param name="dateTime">The date time.</param>
         public CurrentTimeEvent(DateTimeOffset dateTime)
         {
-            TimeInMillis = dateTime.TimeInMillis();
+            Time = dateTime.TimeInMillis();
         }
 
         /// <summary>
@@ -59,9 +59,9 @@ namespace com.espertech.esper.client.time
         /// <returns>
         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </returns>
-		public override String ToString()
+        public override String ToString()
         {
-            return DateTimeOffsetHelper.TimeFromMillis(TimeInMillis, TimeZoneInfo.Utc).ToString();
-		}
-	}
-}
+            return DateTimeOffsetHelper.TimeFromMillis(Time, TimeZoneInfo.Utc).ToString();
+        }
+    }
+} // end of namespace

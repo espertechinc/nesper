@@ -20,22 +20,24 @@ namespace com.espertech.esper.epl.expression.dot
     public class ExprDotMethodEvalNoDuckUnderlying : ExprDotMethodEvalNoDuck
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         public ExprDotMethodEvalNoDuckUnderlying(String statementName, FastMethod method, ExprEvaluator[] parameters)
             : base(statementName, method, parameters)
         {
         }
-    
+
         public override Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (target == null) {
+            if (target == null)
+            {
                 return null;
             }
-            if (!(target is EventBean)) {
+            if (!(target is EventBean))
+            {
                 Log.Warn("Expected EventBean return value but received '" + target.GetType().FullName + "' for statement " + base.StatementName);
                 return null;
             }
-            var bean = (EventBean) target;
+            var bean = (EventBean)target;
             return base.Evaluate(bean.Underlying, eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }

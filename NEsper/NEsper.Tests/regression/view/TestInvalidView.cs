@@ -31,7 +31,7 @@ namespace com.espertech.esper.regression.view
         public void SetUp()
         {
             var configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle = PropertyResolutionStyle.CASE_SENSITIVE;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}

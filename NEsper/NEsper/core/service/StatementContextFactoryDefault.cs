@@ -40,66 +40,65 @@ namespace com.espertech.esper.core.service
         private readonly PluggableObjectRegistryImpl _viewRegistry;
         private readonly PluggableObjectCollection _patternObjectClasses;
         private readonly Type _systemVirtualDwViewFactory;
-
+    
         private StatementContextEngineServices _stmtEngineServices;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="viewPlugIns">is the view plug-in object descriptions</param>
         /// <param name="plugInPatternObj">is the pattern plug-in object descriptions</param>
+        /// <param name="systemVirtualDWViewFactory">virtual DW factory</param>
         public StatementContextFactoryDefault(
             PluggableObjectCollection viewPlugIns,
             PluggableObjectCollection plugInPatternObj,
             Type systemVirtualDWViewFactory)
         {
-            _viewRegistry = new PluggableObjectRegistryImpl(
-                new PluggableObjectCollection[]
-                {
-                    ViewEnumHelper.BuiltinViews,
-                    viewPlugIns
-                });
-
+            _viewRegistry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{ViewEnumHelper.BuiltinViews, viewPlugIns});
+    
             _systemVirtualDwViewFactory = systemVirtualDWViewFactory;
-
+    
             _patternObjectClasses = new PluggableObjectCollection();
             _patternObjectClasses.AddObjects(plugInPatternObj);
             _patternObjectClasses.AddObjects(PatternObjectHelper.BuiltinPatternObjects);
+        }
+    
+        public static StatementContextEngineServices GetStmtCtxEngineServices(EPServicesContext services)
+        {
+            return new StatementContextEngineServices(
+                    services.EngineURI,
+                    services.EventAdapterService,
+                    services.NamedWindowMgmtService,
+                    services.VariableService,
+                    services.TableService,
+                    services.EngineSettingsService,
+                    services.ValueAddEventService,
+                    services.ConfigSnapshot,
+                    services.MetricsReportingService,
+                    services.ViewService,
+                    services.ExceptionHandlingService,
+                    services.ExpressionResultCacheSharable,
+                    services.StatementEventTypeRefService,
+                    services.TableService.TableExprEvaluatorContext,
+                    services.EngineLevelExtensionServicesContext,
+                    services.RegexHandlerFactory,
+                    services.StatementLockFactory,
+                    services.ContextManagementService,
+                    services.ViewServicePreviousFactory,
+                    services.EventTableIndexService,
+                    services.PatternNodeFactory,
+                    services.FilterBooleanExpressionFactory,
+                    services.TimeSource,
+                    services.EngineImportService,
+                    services.AggregationFactoryFactory,
+                    services.SchedulingService,
+                    services.ExprDeclaredService
+            );
         }
 
         public EPServicesContext StmtEngineServices
         {
             set { _stmtEngineServices = GetStmtCtxEngineServices(value); }
-        }
-
-        public static StatementContextEngineServices GetStmtCtxEngineServices(EPServicesContext services)
-        {
-            return new StatementContextEngineServices(
-                services.EngineURI,
-                services.EventAdapterService,
-                services.NamedWindowMgmtService,
-                services.VariableService,
-                services.TableService,
-                services.EngineSettingsService,
-                services.ValueAddEventService,
-                services.ConfigSnapshot,
-                services.MetricsReportingService,
-                services.ViewService,
-                services.ExceptionHandlingService,
-                services.ExpressionResultCacheSharable,
-                services.StatementEventTypeRefService,
-                services.TableService.TableExprEvaluatorContext,
-                services.EngineLevelExtensionServicesContext,
-                services.RegexHandlerFactory,
-                services.StatementLockFactory,
-                services.ContextManagementService,
-                services.ViewServicePreviousFactory,
-                services.EventTableIndexService,
-                services.PatternNodeFactory,
-                services.FilterBooleanExpressionFactory,
-                services.TimeSource,
-                services.EngineImportService,
-                services.AggregationFactoryFactory,
-                services.SchedulingService
-            );
         }
 
         public StatementContext MakeContext(
@@ -108,7 +107,7 @@ namespace com.espertech.esper.core.service
             string expression,
             StatementType statementType,
             EPServicesContext engineServices,
-            IDictionary<string, object> optAdditionalContext,
+            IDictionary<string, Object> optAdditionalContext,
             bool isFireAndForget,
             Attribute[] annotations,
             EPIsolationUnitServices isolationUnitServices,
@@ -116,146 +115,120 @@ namespace com.espertech.esper.core.service
             StatementSpecRaw statementSpecRaw,
             IList<ExprSubselectNode> subselectNodes,
             bool writesToTables,
-            object statementUserObject)
+            Object statementUserObject)
         {
             // Allocate the statement's schedule bucket which stays constant over it's lifetime.
             // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
             var scheduleBucket = engineServices.SchedulingMgmtService.AllocateBucket();
-
+    
             // Create a lock for the statement
             IReaderWriterLock defaultStatementAgentInstanceLock;
-
+    
             // For on-delete statements, use the create-named-window statement lock
             var optCreateWindowDesc = statementSpecRaw.CreateWindowDesc;
             var optOnTriggerDesc = statementSpecRaw.OnTriggerDesc;
             if ((optOnTriggerDesc != null) && (optOnTriggerDesc is OnTriggerWindowDesc))
             {
                 var windowName = ((OnTriggerWindowDesc) optOnTriggerDesc).WindowName;
-                if (engineServices.TableService.GetTableMetadata(windowName) == null)
-                {
+                if (engineServices.TableService.GetTableMetadata(windowName) == null) {
                     defaultStatementAgentInstanceLock = engineServices.NamedWindowMgmtService.GetNamedWindowLock(windowName);
-                    if (defaultStatementAgentInstanceLock == null)
-                    {
+                    if (defaultStatementAgentInstanceLock == null) {
                         throw new EPStatementException("Named window or table '" + windowName + "' has not been declared", expression);
                     }
-                }
-                else
-                {
+                } else {
                     defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(statementName, annotations, stateless);
                 }
-            }
-            // For creating a named window, save the lock for use with on-delete/on-merge/on-Update etc. statements
-            else if (optCreateWindowDesc != null)
-            {
-                defaultStatementAgentInstanceLock =
-                    engineServices.NamedWindowMgmtService.GetNamedWindowLock(optCreateWindowDesc.WindowName);
-                if (defaultStatementAgentInstanceLock == null)
-                {
-                    defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(
-                            statementName, annotations, false);
-                    engineServices.NamedWindowMgmtService.AddNamedWindowLock(
-                        optCreateWindowDesc.WindowName, defaultStatementAgentInstanceLock, statementName);
+            } else if (optCreateWindowDesc != null) {
+                // For creating a named window, save the lock for use with on-delete/on-merge/on-update etc. statements
+                defaultStatementAgentInstanceLock = engineServices.NamedWindowMgmtService.GetNamedWindowLock(optCreateWindowDesc.WindowName);
+                if (defaultStatementAgentInstanceLock == null) {
+                    defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(statementName, annotations, false);
+                    engineServices.NamedWindowMgmtService.AddNamedWindowLock(optCreateWindowDesc.WindowName, defaultStatementAgentInstanceLock, statementName);
                 }
+            } else {
+                defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(statementName, annotations, stateless);
             }
-            else
-            {
-                defaultStatementAgentInstanceLock = engineServices.StatementLockFactory.GetStatementLock(
-                    statementName, annotations, stateless);
-            }
-
+    
             StatementMetricHandle stmtMetric = null;
-            if (!isFireAndForget)
-            {
+            if (!isFireAndForget) {
                 stmtMetric = engineServices.MetricsReportingService.GetStatementHandle(statementId, statementName);
             }
-
+    
             var annotationData = AnnotationAnalysisResult.AnalyzeAnnotations(annotations);
             var hasVariables = statementSpecRaw.HasVariables || (statementSpecRaw.CreateContextDesc != null);
             var hasTableAccess = StatementContextFactoryUtil.DetermineHasTableAccess(subselectNodes, statementSpecRaw, engineServices);
             var epStatementHandle = new EPStatementHandle(
-                statementId, statementName, expression, statementType, expression,
-                hasVariables, stmtMetric,
-                annotationData.Priority,
-                annotationData.IsPremptive,
-                hasTableAccess,
+                statementId, statementName, expression, statementType, expression, 
+                hasVariables, stmtMetric, 
+                annotationData.Priority, 
+                annotationData.IsPremptive, 
+                hasTableAccess, 
                 engineServices.MultiMatchHandlerFactory.GetDefaultHandler());
-
+    
             var patternContextFactory = new PatternContextFactoryDefault();
-
-            var optionalCreateNamedWindowName = statementSpecRaw.CreateWindowDesc != null
-                ? statementSpecRaw.CreateWindowDesc.WindowName
-                : null;
-            var viewResolutionService = new ViewResolutionServiceImpl(
-                _viewRegistry, optionalCreateNamedWindowName, _systemVirtualDwViewFactory);
-            var patternResolutionService =
-                new PatternObjectResolutionServiceImpl(_patternObjectClasses);
-
+    
+            var optionalCreateNamedWindowName = statementSpecRaw.CreateWindowDesc != null ? statementSpecRaw.CreateWindowDesc.WindowName : null;
+            var viewResolutionService = new ViewResolutionServiceImpl(_viewRegistry, optionalCreateNamedWindowName, _systemVirtualDwViewFactory);
+            var patternResolutionService = new PatternObjectResolutionServiceImpl(_patternObjectClasses);
+    
             var schedulingService = engineServices.SchedulingService;
             var filterService = engineServices.FilterService;
-            if (isolationUnitServices != null)
-            {
+            if (isolationUnitServices != null) {
                 filterService = isolationUnitServices.FilterService;
                 schedulingService = isolationUnitServices.SchedulingService;
             }
-
+    
             var scheduleAudit = AuditEnum.SCHEDULE.GetAudit(annotations);
-            if (scheduleAudit != null)
-            {
-                schedulingService = new SchedulingServiceAudit(
-                    engineServices.EngineURI, statementName, schedulingService);
+            if (scheduleAudit != null) {
+                schedulingService = new SchedulingServiceAudit(engineServices.EngineURI, statementName, schedulingService);
             }
-
+    
             StatementAIResourceRegistry statementAgentInstanceRegistry = null;
             ContextDescriptor contextDescriptor = null;
             var optionalContextName = statementSpecRaw.OptionalContextName;
-            if (optionalContextName != null)
-            {
+            if (optionalContextName != null) {
                 contextDescriptor = engineServices.ContextManagementService.GetContextDescriptor(optionalContextName);
-
+    
                 // allocate a per-instance registry of aggregations and prev/prior/subselect
-                if (contextDescriptor != null)
-                {
+                if (contextDescriptor != null) {
                     statementAgentInstanceRegistry = contextDescriptor.AiResourceRegistryFactory.Invoke();
                 }
             }
-
-            var countSubexpressions = engineServices.ConfigSnapshot.EngineDefaults.PatternsConfig.MaxSubexpressions != null;
+    
+            var countSubexpressions = engineServices.ConfigSnapshot.EngineDefaults.Patterns.MaxSubexpressions != null;
             PatternSubexpressionPoolStmtSvc patternSubexpressionPoolStmtSvc = null;
-            if (countSubexpressions)
-            {
+            if (countSubexpressions) {
                 var stmtCounter = new PatternSubexpressionPoolStmtHandler();
-                patternSubexpressionPoolStmtSvc =
-                    new PatternSubexpressionPoolStmtSvc(engineServices.PatternSubexpressionPoolSvc, stmtCounter);
+                patternSubexpressionPoolStmtSvc = new PatternSubexpressionPoolStmtSvc(engineServices.PatternSubexpressionPoolSvc, stmtCounter);
                 engineServices.PatternSubexpressionPoolSvc.AddPatternContext(statementName, stmtCounter);
             }
-
-            var countMatchRecogStates = engineServices.ConfigSnapshot.EngineDefaults.MatchRecognizeConfig.MaxStates != null;
+    
+            var countMatchRecogStates = engineServices.ConfigSnapshot.EngineDefaults.MatchRecognize.MaxStates != null;
             MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc = null;
-            if (countMatchRecogStates && statementSpecRaw.MatchRecognizeSpec != null)
-            {
+            if (countMatchRecogStates && statementSpecRaw.MatchRecognizeSpec != null) {
                 var stmtCounter = new MatchRecognizeStatePoolStmtHandler();
                 matchRecognizeStatePoolStmtSvc = new MatchRecognizeStatePoolStmtSvc(engineServices.MatchRecognizeStatePoolEngineSvc, stmtCounter);
                 engineServices.MatchRecognizeStatePoolEngineSvc.AddPatternContext(statementName, stmtCounter);
             }
-
+    
             AgentInstanceScriptContext defaultAgentInstanceScriptContext = null;
-            if (statementSpecRaw.ScriptExpressions != null && !statementSpecRaw.ScriptExpressions.IsEmpty())
-            {
-                defaultAgentInstanceScriptContext = new AgentInstanceScriptContext();
+            if (statementSpecRaw.ScriptExpressions != null && !statementSpecRaw.ScriptExpressions.IsEmpty()) {
+                defaultAgentInstanceScriptContext = AgentInstanceScriptContext.From(engineServices.EventAdapterService);
             }
-
+    
             // allow a special context controller factory for testing
-            var contextControllerFactoryService =
-                GetContextControllerFactoryService(annotations);
-
+            var contextControllerFactoryService = GetContextControllerFactoryService(annotations, engineServices.EngineImportService);
+    
             // may use resource tracking
             var statementResourceService = new StatementResourceService(optionalContextName != null);
-            StatementExtensionSvcContext extensionSvcContext = new ProxyStatementExtensionSvcContext
-            {
-                ProcStmtResources = () => statementResourceService,
-                ProcExtractStatementResourceHolder = resultOfStart => StatementResourceHolderUtil.PopulateHolder(resultOfStart)
+            var extensionSvcContext = new ProxyStatementExtensionSvcContext() {
+                ProcGetStmtResources = () => statementResourceService,
+                ProcExtractStatementResourceHolder = (resultOfStart) => StatementResourceHolderUtil.PopulateHolder(resultOfStart),
+                ProcPreStartWalk = (selectDesc) => {},
+                ProcPostProcessStart = (resultOfStart) => {},
+                ProcContributeStopCallback = (selectResult, stopCallbacks) => {}
             };
-
+    
             // Create statement context
             return new StatementContext(
                 _stmtEngineServices,
@@ -269,9 +242,7 @@ namespace com.espertech.esper.core.service
                 patternContextFactory,
                 filterService,
                 new StatementResultServiceImpl(
-                    statementName,
-                    engineServices.StatementLifecycleSvc,
-                    engineServices.MetricsReportingService,
+                    statementName, engineServices.StatementLifecycleSvc, engineServices.MetricsReportingService,
                     engineServices.ThreadingService),
                 engineServices.InternalEventEngineRouteDest,
                 annotations,
@@ -284,54 +255,48 @@ namespace com.espertech.esper.core.service
                 contextControllerFactoryService,
                 defaultAgentInstanceScriptContext,
                 AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
-                engineServices.ScriptingService,
                 writesToTables,
                 statementUserObject,
                 StatementSemiAnonymousTypeRegistryImpl.INSTANCE,
                 annotationData.Priority);
         }
 
-        private ContextControllerFactoryService GetContextControllerFactoryService(Attribute[] annotations)
+        private ContextControllerFactoryService GetContextControllerFactoryService(
+            Attribute[] annotations,
+            EngineImportService engineImportService)
         {
             try
             {
                 var replacementCache = (ContextStateCache) TypeHelper.GetAnnotationHook(
-                    annotations, HookType.CONTEXT_STATE_CACHE, typeof (ContextStateCache), null);
+                    annotations, HookType.CONTEXT_STATE_CACHE, typeof (ContextStateCache), engineImportService);
                 if (replacementCache != null)
                 {
                     return new ContextControllerFactoryServiceImpl(replacementCache);
                 }
             }
-            catch (ExprValidationException)
+            catch (ExprValidationException e)
             {
                 throw new EPException("Failed to obtain hook for " + HookType.CONTEXT_STATE_CACHE);
             }
             return ContextControllerFactoryServiceImpl.DEFAULT_FACTORY;
         }
 
-        /// <summary>
-        /// Analysis result of analysing annotations for a statement.
-        /// </summary>
+        /// <summary>Analysis result of analysing annotations for a statement.</summary>
         public class AnnotationAnalysisResult
         {
-            /// <summary>Ctor. </summary>
+            /// <summary>
+            /// Ctor.
+            /// </summary>
             /// <param name="priority">priority</param>
             /// <param name="premptive">preemptive indicator</param>
-            private AnnotationAnalysisResult(int priority, bool premptive)
-            {
-                Priority = priority;
+            private AnnotationAnalysisResult(int priority, bool premptive) {
+                this.Priority = priority;
                 IsPremptive = premptive;
             }
 
-            /// <summary>Returns execution priority. </summary>
-            /// <value>priority.</value>
-            public int Priority { get; private set; }
-
-            /// <summary>Returns preemptive indicator (drop or normal). </summary>
-            /// <value>true for drop</value>
-            public bool IsPremptive { get; private set; }
-
-            /// <summary>Analyze the annotations and return priority and drop settings. </summary>
+            /// <summary>
+            /// Analyze the annotations and return priority and drop settings.
+            /// </summary>
             /// <param name="annotations">to analyze</param>
             /// <returns>analysis result</returns>
             public static AnnotationAnalysisResult AnalyzeAnnotations(Attribute[] annotations)
@@ -357,6 +322,18 @@ namespace com.espertech.esper.core.service
                 }
                 return new AnnotationAnalysisResult(priority, preemptive);
             }
+
+            /// <summary>
+            /// Returns execution priority.
+            /// </summary>
+            /// <value>priority.</value>
+            public int Priority { get; private set; }
+
+            /// <summary>
+            /// Returns preemptive indicator (drop or normal).
+            /// </summary>
+            /// <value>true for drop</value>
+            public bool IsPremptive { get; private set; }
         }
     }
-}
+} // end of namespace

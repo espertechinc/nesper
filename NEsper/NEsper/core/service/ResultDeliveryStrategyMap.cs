@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.epl.core;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
@@ -41,37 +43,42 @@ namespace com.espertech.esper.core.service
         /// <param name="subscriber">the object to deliver to</param>
         /// <param name="method">the delivery method</param>
         /// <param name="columnNames">the column names for the map</param>
-        public ResultDeliveryStrategyMap(EPStatement statement, object subscriber, MethodInfo method, string[] columnNames)
+        /// <param name="engineImportService">The engine import service.</param>
+        public ResultDeliveryStrategyMap(EPStatement statement, object subscriber, MethodInfo method, string[] columnNames, EngineImportService engineImportService)
         {
             _statement = statement;
             _subscriber = subscriber;
             _fastMethod = FastClass.CreateMethod(method);
             _columnNames = columnNames;
         }
-    
+
         public virtual void Execute(UniformPair<EventBean[]> result)
         {
             DataMap[] newData;
             DataMap[] oldData;
-    
-            if (result == null) {
+
+            if (result == null)
+            {
                 newData = null;
                 oldData = null;
             }
-            else {
+            else
+            {
                 newData = Convert(result.First);
                 oldData = Convert(result.Second);
             }
-    
-            var paramList = new Object[] {newData, oldData};
-            try {
+
+            var paramList = new Object[] { newData, oldData };
+            try
+            {
                 _fastMethod.Invoke(_subscriber, paramList);
             }
-            catch (TargetInvocationException e) {
+            catch (TargetInvocationException e)
+            {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
         }
-    
+
         internal DataMap[] Convert(EventBean[] events)
         {
             if ((events == null) || (events.Length == 0))
@@ -85,12 +92,12 @@ namespace com.espertech.esper.core.service
             {
                 if (events[i] is NaturalEventBean)
                 {
-                    var natural = (NaturalEventBean) events[i];
+                    var natural = (NaturalEventBean)events[i];
                     result[length] = Convert(natural);
                     length++;
                 }
             }
-    
+
             if (length == 0)
             {
                 return null;

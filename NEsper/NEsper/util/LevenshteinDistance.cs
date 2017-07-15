@@ -33,38 +33,38 @@ namespace com.espertech.esper.util
                 return int.MaxValue;
             }
 
-            if (str1.ToLower() == str2.ToLower())
+            if (str1.ToLowerInvariant() == str2.ToLowerInvariant())
             {
                 return 0;
             }
-            
-            var distance = new int[str1.Length + 1,str2.Length + 1];
-    
+
+            var distance = new int[str1.Length + 1, str2.Length + 1];
+
             for (int i = 0; i <= str1.Length; i++)
             {
-                distance[i,0] = i;
+                distance[i, 0] = i;
             }
             for (int j = 0; j <= str2.Length; j++)
             {
-                distance[0,j] = j;
+                distance[0, j] = j;
             }
-    
+
             for (int i = 1; i <= str1.Length; i++)
             {
                 for (int j = 1; j <= str2.Length; j++)
                 {
-                    distance[i,j] = Minimum(
-                            distance[i - 1,j] + 1,
-                            distance[i,j - 1] + 1,
-                            distance[i - 1,j - 1]
+                    distance[i, j] = Minimum(
+                            distance[i - 1, j] + 1,
+                            distance[i, j - 1] + 1,
+                            distance[i - 1, j - 1]
                                     + ((str1[i - 1] == str2[j - 1]) ? 0
                                     : 1));
                 }
             }
-    
-            return distance[str1.Length,str2.Length];
+
+            return distance[str1.Length, str2.Length];
         }
-    
+
         private static int Minimum(int a, int b, int c)
         {
             return Math.Min(Math.Min(a, b), c);

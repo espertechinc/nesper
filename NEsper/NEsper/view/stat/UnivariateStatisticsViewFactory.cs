@@ -24,26 +24,27 @@ namespace com.espertech.esper.view.stat
     public class UnivariateStatisticsViewFactory : ViewFactory
     {
         internal readonly static String NAME = "Univariate statistics";
-    
+
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
-    
+
         /// <summary>Property name of data field. </summary>
         private ExprNode _fieldExpression;
         private StatViewAdditionalProps _additionalProps;
 
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
             _streamNumber = viewFactoryContext.StreamNum;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
-            if (validated.Length < 1) {
+            if (validated.Length < 1)
+            {
                 throw new ViewParameterException(ViewParamMessage);
             }
             if (!validated[0].ExprEvaluator.ReturnType.IsNumeric())
@@ -51,11 +52,11 @@ namespace com.espertech.esper.view.stat
                 throw new ViewParameterException(ViewParamMessage);
             }
             _fieldExpression = validated[0];
-    
+
             _additionalProps = StatViewAdditionalProps.Make(validated, 1, parentEventType);
             _eventType = UnivariateStatisticsView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new UnivariateStatisticsView(this, agentInstanceViewFactoryContext);
@@ -67,21 +68,23 @@ namespace com.espertech.esper.view.stat
             set { _eventType = value; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
-            if (!(view is UnivariateStatisticsView)) {
+            if (!(view is UnivariateStatisticsView))
+            {
                 return false;
             }
-            if (_additionalProps != null) {
+            if (_additionalProps != null)
+            {
                 return false;
             }
-    
-            var other = (UnivariateStatisticsView) view;
+
+            var other = (UnivariateStatisticsView)view;
             if (!ExprNodeUtility.DeepEquals(other.FieldExpression, _fieldExpression))
             {
                 return false;
             }
-    
+
             return true;
         }
 

@@ -37,27 +37,31 @@ namespace com.espertech.esper.epl.lookup
             int statementId,
             Attribute[] annotations)
         {
-            var allStreamsZeroIndexed = new EventType[] {eventTypeIndexed, filterEventType};
-            var outerStreams = new EventType[] {filterEventType};
+            var allStreamsZeroIndexed = new EventType[] { eventTypeIndexed, filterEventType };
+            var outerStreams = new EventType[] { filterEventType };
             var joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(joinExpr, 1, allStreamsZeroIndexed, excludePlanHint);
-    
+
             // No join expression means all
-            if (joinExpr == null && !isVirtualDataWindow) {
+            if (joinExpr == null && !isVirtualDataWindow)
+            {
                 return new SubordinateWMatchExprQueryPlanResult(new SubordWMatchExprLookupStrategyFactoryAllUnfiltered(), null);
             }
-    
+
             var queryPlanDesc = PlanSubquery(outerStreams, joinedPropPlan, true, false, optionalIndexHint, isIndexShare, subqueryNumber,
                     isVirtualDataWindow, indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes, statementName, statementId, annotations);
-    
-            if (queryPlanDesc == null) {
+
+            if (queryPlanDesc == null)
+            {
                 return new SubordinateWMatchExprQueryPlanResult(new SubordWMatchExprLookupStrategyFactoryAllFiltered(joinExpr.ExprEvaluator), null);
             }
-    
-            if (joinExpr == null) {   // it can be null when using virtual data window
+
+            if (joinExpr == null)
+            {   // it can be null when using virtual data window
                 return new SubordinateWMatchExprQueryPlanResult(
                         new SubordWMatchExprLookupStrategyFactoryIndexedUnfiltered(queryPlanDesc.LookupStrategyFactory), queryPlanDesc.IndexDescs);
             }
-            else {
+            else
+            {
                 return new SubordinateWMatchExprQueryPlanResult(
                         new SubordWMatchExprLookupStrategyFactoryIndexedFiltered(joinExpr.ExprEvaluator, queryPlanDesc.LookupStrategyFactory), queryPlanDesc.IndexDescs);
             }
@@ -79,7 +83,8 @@ namespace com.espertech.esper.epl.lookup
             int statementId,
             Attribute[] annotations)
         {
-            if (isVirtualDataWindow) {
+            if (isVirtualDataWindow)
+            {
                 var indexProps = GetIndexPropDesc(joinDesc.HashProps, joinDesc.RangeProps);
                 var lookupStrategyFactoryVdw = new SubordTableLookupStrategyFactoryVDW(statementName, statementId, annotations,
                         outerStreams,
@@ -91,51 +96,58 @@ namespace com.espertech.esper.epl.lookup
                         joinDesc, forceTableScan, indexProps.ListPair);
                 return new SubordinateQueryPlanDesc(lookupStrategyFactoryVdw, null);
             }
-    
+
             var hashKeys = Collections.GetEmptyList<SubordPropHashKey>();
             CoercionDesc hashKeyCoercionTypes = null;
             var rangeKeys = Collections.GetEmptyList<SubordPropRangeKey>();
             CoercionDesc rangeKeyCoercionTypes = null;
             ExprNode[] inKeywordSingleIdxKeys = null;
             ExprNode inKeywordMultiIdxKey = null;
-    
+
             SubordinateQueryIndexDesc[] indexDescs;
-            if (joinDesc.InKeywordSingleIndex != null) {
+            if (joinDesc.InKeywordSingleIndex != null)
+            {
                 var single = joinDesc.InKeywordSingleIndex;
                 var keyInfo = new SubordPropHashKey(new QueryGraphValueEntryHashKeyedExpr(single.Expressions[0], false), null, single.CoercionType);
                 var indexDesc = FindOrSuggestIndex(
                         Collections.SingletonMap(single.IndexedProp, keyInfo),
                         Collections.GetEmptyMap<string, SubordPropRangeKey>(), optionalIndexHint, indexShare, subqueryNumber,
                         indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes);
-                if (indexDesc == null) {
+                if (indexDesc == null)
+                {
                     return null;
                 }
                 var desc = new SubordinateQueryIndexDesc(indexDesc.IndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
-                indexDescs = new SubordinateQueryIndexDesc[] {desc};
+                indexDescs = new SubordinateQueryIndexDesc[] { desc };
                 inKeywordSingleIdxKeys = single.Expressions;
             }
-            else if (joinDesc.InKeywordMultiIndex != null) {
+            else if (joinDesc.InKeywordMultiIndex != null)
+            {
                 var multi = joinDesc.InKeywordMultiIndex;
-    
+
                 indexDescs = new SubordinateQueryIndexDesc[multi.IndexedProp.Length];
-                for (var i = 0; i < multi.IndexedProp.Length; i++) {
+                for (var i = 0; i < multi.IndexedProp.Length; i++)
+                {
                     var keyInfo = new SubordPropHashKey(new QueryGraphValueEntryHashKeyedExpr(multi.Expression, false), null, multi.CoercionType);
                     var indexDesc = FindOrSuggestIndex(
                             Collections.SingletonMap(multi.IndexedProp[i], keyInfo),
                             Collections.GetEmptyMap<string, SubordPropRangeKey>(), optionalIndexHint, indexShare, subqueryNumber,
                             indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes);
-                    if (indexDesc == null) {
+                    if (indexDesc == null)
+                    {
                         return null;
                     }
                     indexDescs[i] = indexDesc;
                 }
                 inKeywordMultiIdxKey = multi.Expression;
             }
-            else {
+            else
+            {
                 var indexDesc = FindOrSuggestIndex(joinDesc.HashProps,
                         joinDesc.RangeProps, optionalIndexHint, false, subqueryNumber,
                         indexMetadata, optionalUniqueKeyProps, onlyUseExistingIndexes);
-                if (indexDesc == null) {
+                if (indexDesc == null)
+                {
                     return null;
                 }
                 var indexKeyInfo = indexDesc.IndexKeyInfo;
@@ -144,13 +156,14 @@ namespace com.espertech.esper.epl.lookup
                 rangeKeys = indexKeyInfo.OrderedRangeDesc;
                 rangeKeyCoercionTypes = indexKeyInfo.OrderedRangeCoercionTypes;
                 var desc = new SubordinateQueryIndexDesc(indexDesc.IndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
-                indexDescs = new SubordinateQueryIndexDesc[] {desc};
+                indexDescs = new SubordinateQueryIndexDesc[] { desc };
             }
-    
-            if (forceTableScan) {
+
+            if (forceTableScan)
+            {
                 return null;
             }
-    
+
             var lookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(outerStreams,
                     hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, inKeywordSingleIdxKeys, inKeywordMultiIdxKey, isNWOnTrigger);
             return new SubordinateQueryPlanDesc(lookupStrategyFactory, indexDescs);
@@ -168,74 +181,86 @@ namespace com.espertech.esper.epl.lookup
         {
             var indexProps = GetIndexPropDesc(hashProps, rangeProps);
             var hashedAndBtreeProps = indexProps.ListPair;
-    
+
             // Get or create the table for this index (exact match or property names, type of index and coercion type is expected)
             IndexKeyInfo indexKeyInfo;   // how needs all of IndexKeyInfo+QueryPlanIndexItem+IndexMultiKey
             IndexMultiKey indexMultiKey;
             string indexName = null;
             QueryPlanIndexItem planIndexItem = null;
-    
-            if (hashedAndBtreeProps.HashedProps.IsEmpty() && hashedAndBtreeProps.BtreeProps.IsEmpty()) {
+
+            if (hashedAndBtreeProps.HashedProps.IsEmpty() && hashedAndBtreeProps.BtreeProps.IsEmpty())
+            {
                 return null;
             }
-    
+
             Pair<IndexMultiKey, string> existing = null;
             Pair<QueryPlanIndexItem, IndexMultiKey> planned = null;
-    
+
             // consider index hints
             IList<IndexHintInstruction> optionalIndexHintInstructions = null;
-            if (optionalIndexHint != null) {
+            if (optionalIndexHint != null)
+            {
                 optionalIndexHintInstructions = optionalIndexHint.GetInstructionsSubquery(subqueryNumber);
             }
-    
+
             var indexFoundPair = EventTableIndexUtil.FindIndexConsiderTyping(indexMetadata.Indexes, hashedAndBtreeProps.HashedProps, hashedAndBtreeProps.BtreeProps, optionalIndexHintInstructions);
-            if (indexFoundPair != null) {
+            if (indexFoundPair != null)
+            {
                 var hintIndex = indexMetadata.Indexes.Get(indexFoundPair);
                 existing = new Pair<IndexMultiKey, string>(indexFoundPair, hintIndex.OptionalIndexName);
             }
-    
+
             // nothing found: plan one
-            if (existing == null && !onlyUseExistingIndexes) {
+            if (existing == null && !onlyUseExistingIndexes)
+            {
                 // not found, see if the item is declared unique
                 var proposedHashedProps = hashedAndBtreeProps.HashedProps;
                 var proposedBtreeProps = hashedAndBtreeProps.BtreeProps;
-    
+
                 // match against unique-key properties when suggesting an index
                 var unique = false;
                 var coerce = !isIndexShare;
-                if (optionalUniqueKeyProps != null && !optionalUniqueKeyProps.IsEmpty()) {
+                if (optionalUniqueKeyProps != null && !optionalUniqueKeyProps.IsEmpty())
+                {
                     IList<IndexedPropDesc> newHashProps = new List<IndexedPropDesc>();
-                    foreach (var uniqueKey in optionalUniqueKeyProps) {
+                    foreach (var uniqueKey in optionalUniqueKeyProps)
+                    {
                         var found = false;
-                        foreach (var hashProp in hashedAndBtreeProps.HashedProps) {
-                            if (hashProp.IndexPropName.Equals(uniqueKey)) {
+                        foreach (var hashProp in hashedAndBtreeProps.HashedProps)
+                        {
+                            if (hashProp.IndexPropName.Equals(uniqueKey))
+                            {
                                 newHashProps.Add(hashProp);
                                 found = true;
                                 break;
                             }
                         }
-                        if (!found) {
+                        if (!found)
+                        {
                             newHashProps = null;
                             break;
                         }
                     }
-                    if (newHashProps != null) {
+                    if (newHashProps != null)
+                    {
                         proposedHashedProps = newHashProps;
                         proposedBtreeProps = Collections.GetEmptyList<IndexedPropDesc>();
                         unique = true;
                         coerce = false;
                     }
                 }
-    
+
                 planned = PlanIndex(unique, proposedHashedProps, proposedBtreeProps, coerce);
             }
-    
+
             // compile index information
-            if (existing == null && planned == null) {
+            if (existing == null && planned == null)
+            {
                 return null;
             }
             // handle existing
-            if (existing != null) {
+            if (existing != null)
+            {
                 indexKeyInfo = SubordinateQueryPlannerUtil.CompileIndexKeyInfo(existing.First,
                         indexProps.HashIndexPropsProvided, indexProps.HashJoinedProps,
                         indexProps.RangeIndexPropsProvided, indexProps.RangeJoinedProps);
@@ -243,17 +268,18 @@ namespace com.espertech.esper.epl.lookup
                 indexMultiKey = existing.First;
             }
             // handle planned
-            else {
+            else
+            {
                 indexKeyInfo = SubordinateQueryPlannerUtil.CompileIndexKeyInfo(planned.Second,
                         indexProps.HashIndexPropsProvided, indexProps.HashJoinedProps,
                         indexProps.RangeIndexPropsProvided, indexProps.RangeJoinedProps);
                 indexMultiKey = planned.Second;
                 planIndexItem = planned.First;
             }
-    
+
             return new SubordinateQueryIndexDesc(indexKeyInfo, indexName, indexMultiKey, planIndexItem);
         }
-    
+
         private static SubordinateQueryPlannerIndexPropDesc GetIndexPropDesc(IDictionary<String, SubordPropHashKey> hashProps, IDictionary<String, SubordPropRangeKey> rangeProps)
         {
             // hash property names and types
@@ -261,23 +287,25 @@ namespace com.espertech.esper.epl.lookup
             var hashIndexCoercionType = new Type[hashProps.Count];
             var hashJoinedProps = new SubordPropHashKey[hashProps.Count];
             var count = 0;
-            foreach (var entry in hashProps) {
+            foreach (var entry in hashProps)
+            {
                 hashIndexPropsProvided[count] = entry.Key;
                 hashIndexCoercionType[count] = entry.Value.CoercionType;
                 hashJoinedProps[count++] = entry.Value;
             }
-    
+
             // range property names and types
             var rangeIndexPropsProvided = new string[rangeProps.Count];
             var rangeIndexCoercionType = new Type[rangeProps.Count];
             var rangeJoinedProps = new SubordPropRangeKey[rangeProps.Count];
             count = 0;
-            foreach (var entry in rangeProps) {
+            foreach (var entry in rangeProps)
+            {
                 rangeIndexPropsProvided[count] = entry.Key;
                 rangeIndexCoercionType[count] = entry.Value.CoercionType;
                 rangeJoinedProps[count++] = entry.Value;
             }
-    
+
             // Add all joined fields to an array for sorting
             var listPair = SubordinateQueryPlannerUtil.ToListOfHashedAndBtreeProps(hashIndexPropsProvided,
                     hashIndexCoercionType, rangeIndexPropsProvided, rangeIndexCoercionType);

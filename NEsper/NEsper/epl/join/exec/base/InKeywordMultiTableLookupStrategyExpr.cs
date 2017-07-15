@@ -37,7 +37,8 @@ namespace com.espertech.esper.epl.join.exec.@base
         /// <param name="lookupStrategyDesc">The lookup strategy desc.</param>
         public InKeywordMultiTableLookupStrategyExpr(ExprEvaluator evaluator, int streamNum, PropertyIndexedEventTableSingle[] indexes, LookupStrategyDesc lookupStrategyDesc)
         {
-            if (indexes == null) {
+            if (indexes == null)
+            {
                 throw new ArgumentException("Unexpected null index received");
             }
             this._indexes = indexes;
@@ -46,20 +47,20 @@ namespace com.espertech.esper.epl.join.exec.@base
             this._evaluator = evaluator;
             this._lookupStrategyDesc = lookupStrategyDesc;
         }
-    
+
         /// <summary>Returns index to look up in. </summary>
         /// <returns>index to use</returns>
         public PropertyIndexedEventTableSingle[] GetIndex()
         {
             return _indexes;
         }
-    
+
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
         {
             _eventsPerStream[_streamNum] = theEvent;
             return InKeywordTableLookupUtil.MultiIndexLookup(_evaluator, _eventsPerStream, exprEvaluatorContext, _indexes);
         }
-    
+
         public override String ToString()
         {
             return this.GetType().Name + " " + _lookupStrategyDesc;

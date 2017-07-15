@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.join.plan
             return execNode;
         }
 
-        public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
             foreach (QueryPlanNode child in _childNodes)
             {
@@ -80,7 +80,7 @@ namespace com.espertech.esper.epl.join.plan
             }
         }
 
-        protected internal override void Print(IndentWriter indentWriter)
+        public override void Print(IndentWriter indentWriter)
         {
             indentWriter.WriteLine("NestedIterationNode with nesting order " + _nestingOrder.Render());
             indentWriter.IncrIndent();

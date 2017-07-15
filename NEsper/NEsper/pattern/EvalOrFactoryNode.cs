@@ -8,7 +8,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 
 namespace com.espertech.esper.pattern
 {
@@ -17,19 +16,18 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalOrFactoryNode : EvalNodeFactoryBase
     {
-        public EvalOrFactoryNode()
+        protected EvalOrFactoryNode()
         {
         }
     
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
-            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext, parentNode);
+            EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(this.ChildNodes, agentInstanceContext, parentNode);
             return new EvalOrNode(agentInstanceContext, this, children);
         }
     
-        public override String ToString()
-        {
-            return ("EvalOrNode children=" + ChildNodes.Count);
+        public override String ToString() {
+            return "EvalOrNode children=" + this.ChildNodes.Count;
         }
 
         public override bool IsFilterChildNonQuitting
@@ -39,7 +37,17 @@ namespace com.espertech.esper.pattern
 
         public override bool IsStateful
         {
-            get { return ChildNodes.Any(child => child.IsStateful); }
+            get
+            {
+                foreach (EvalFactoryNode child in this.ChildNodes)
+                {
+                    if (child.IsStateful)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -52,4 +60,4 @@ namespace com.espertech.esper.pattern
             get { return PatternExpressionPrecedenceEnum.OR; }
         }
     }
-}
+} // end of namespace

@@ -34,12 +34,12 @@ namespace com.espertech.esper.support.epl
 	        return new SupportQueryExecNode(_id);
 	    }
 
-	    protected internal override void Print(IndentWriter writer)
+	    public override void Print(IndentWriter writer)
 	    {
 	        writer.WriteLine(GetType().FullName);
 	    }
 
-	    public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+	    public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
 	    }
 	}

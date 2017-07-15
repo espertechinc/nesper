@@ -414,7 +414,7 @@ namespace com.espertech.esper.core.service
         public NamedWindowConsumerMgmtService NamedWindowConsumerMgmtService { get; private set; }
 
         public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
-        
+
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>
         public void SetStatementLifecycleSvc(StatementLifecycleSvc statementLifecycleSvc)

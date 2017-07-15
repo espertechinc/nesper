@@ -8,9 +8,12 @@
 
 namespace com.espertech.esper.client.hook
 {
-	public enum ExceptionHandlerExceptionType
+    /// <summary>
+    /// Indicates the phase during which and exception was encountered.
+    /// </summary>
+    public enum ExceptionHandlerExceptionType
     {
-	    PROCESS,
-	    STOP
-	}
+        PROCESS,
+        STOP
+    }
 } // end of namespace

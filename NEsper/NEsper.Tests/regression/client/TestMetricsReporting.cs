@@ -169,23 +169,23 @@ namespace com.espertech.esper.regression.client
         {
             Configuration config = GetConfig(-1, 7000, true);
 
-            ConfigurationMetricsReporting.StmtGroupMetrics groupOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            MetricsReportingConfig.StmtGroupMetrics groupOne = new MetricsReportingConfig.StmtGroupMetrics();
             groupOne.Interval = 8000;
             groupOne.AddIncludeLike("%GroupOne%");
             groupOne.IsReportInactive = true;
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("GroupOneStatements", groupOne);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("GroupOneStatements", groupOne);
 
-            ConfigurationMetricsReporting.StmtGroupMetrics groupTwo = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            MetricsReportingConfig.StmtGroupMetrics groupTwo = new MetricsReportingConfig.StmtGroupMetrics();
             groupTwo.Interval = 6000;
             groupTwo.IsDefaultInclude = true;
             groupTwo.AddExcludeLike("%Default%");
             groupTwo.AddExcludeLike("%Metrics%");
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("GroupTwoNonDefaultStatements", groupTwo);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("GroupTwoNonDefaultStatements", groupTwo);
 
-            ConfigurationMetricsReporting.StmtGroupMetrics groupThree = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            MetricsReportingConfig.StmtGroupMetrics groupThree = new MetricsReportingConfig.StmtGroupMetrics();
             groupThree.Interval = -1;
             groupThree.AddIncludeLike("%Metrics%");
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("MetricsStatements", groupThree);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("MetricsStatements", groupThree);
 
             _epService = EPServiceProviderManager.GetProvider("MyURI", config);
             _epService.Initialize();
@@ -252,17 +252,17 @@ namespace com.espertech.esper.regression.client
             Configuration config = GetConfig(-1, -1, true);
 
             // report on all statements every 10 seconds
-            ConfigurationMetricsReporting.StmtGroupMetrics configOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            MetricsReportingConfig.StmtGroupMetrics configOne = new MetricsReportingConfig.StmtGroupMetrics();
             configOne.Interval = 10000;
             configOne.AddIncludeLike("%cpuStmt%");
             configOne.AddIncludeLike("%wallStmt%");
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("nonmetrics", configOne);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("nonmetrics", configOne);
 
             // exclude metrics themselves from reporting
-            ConfigurationMetricsReporting.StmtGroupMetrics configTwo = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            MetricsReportingConfig.StmtGroupMetrics configTwo = new MetricsReportingConfig.StmtGroupMetrics();
             configTwo.Interval = -1;
             configOne.AddExcludeLike("%metrics%");
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("metrics", configTwo);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("metrics", configTwo);
 
             _epService = EPServiceProviderManager.GetProvider("MyURI", config);
             _epService.Initialize();
@@ -369,10 +369,10 @@ namespace com.espertech.esper.regression.client
             var statements = new EPStatement[5];
             var config = GetConfig(-1, 10000, true);
 
-            var configOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
+            var configOne = new MetricsReportingConfig.StmtGroupMetrics();
             configOne.Interval = -1;
             configOne.AddIncludeLike("%@METRIC%");
-            config.EngineDefaults.MetricsReportingConfig.AddStmtGroup("metrics", configOne);
+            config.EngineDefaults.MetricsReporting.AddStmtGroup("metrics", configOne);
 
             _epService = EPServiceProviderManager.GetProvider("MyURI", config);
             _epService.Initialize();
@@ -480,7 +480,7 @@ namespace com.espertech.esper.regression.client
         public void TestManual()
         {
             Configuration config = GetConfig(1000, 1000, true);
-            config.EngineDefaults.MetricsReportingConfig.IsThreading = true;
+            config.EngineDefaults.MetricsReporting.IsThreading = true;
 
 #if false
             epService = EPServiceProviderManager.GetProvider("MyURI", config);
@@ -509,10 +509,10 @@ namespace com.espertech.esper.regression.client
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
             configuration.EngineDefaults.ViewResourcesConfig.IsShareViews = shareViews;
-            configuration.EngineDefaults.MetricsReportingConfig.IsEnableMetricsReporting = true;
-            configuration.EngineDefaults.MetricsReportingConfig.IsThreading = false;
-            configuration.EngineDefaults.MetricsReportingConfig.EngineInterval = engineMetricInterval;
-            configuration.EngineDefaults.MetricsReportingConfig.StatementInterval = stmtMetricInterval;
+            configuration.EngineDefaults.MetricsReporting.IsEnableMetricsReporting = true;
+            configuration.EngineDefaults.MetricsReporting.IsThreading = false;
+            configuration.EngineDefaults.MetricsReporting.EngineInterval = engineMetricInterval;
+            configuration.EngineDefaults.MetricsReporting.StatementInterval = stmtMetricInterval;
 
             configuration.AddImport<MyMetricFunctions>();
             configuration.AddEventType<SupportBean>();

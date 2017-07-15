@@ -15,12 +15,12 @@ using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.datetime.calop
 {
-    public class CalendarOpWithDate : CalendarOp 
+    public class CalendarOpWithDate : CalendarOp
     {
         private readonly ExprEvaluator _year;
         private readonly ExprEvaluator _month;
         private readonly ExprEvaluator _day;
-    
+
         public CalendarOpWithDate(ExprEvaluator year, ExprEvaluator month, ExprEvaluator day)
         {
             _year = year;
@@ -28,21 +28,22 @@ namespace com.espertech.esper.epl.datetime.calop
             _day = day;
         }
 
-        public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) 
+        public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             int? yearNum = GetInt(_year, eventsPerStream, isNewData, context);
             int? monthNum = GetInt(_month, eventsPerStream, isNewData, context);
             int? dayNum = GetInt(_day, eventsPerStream, isNewData, context);
             Action(dateTime, yearNum, monthNum, dayNum);
         }
-    
-        public static int? GetInt(ExprEvaluator expr, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) 
+
+        public static int? GetInt(ExprEvaluator expr, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             var result = expr.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
-            if (result == null) {
+            if (result == null)
+            {
                 return null;
             }
-            return (int?) result;
+            return (int?)result;
         }
 
         private static DateTimeEx Action(DateTimeEx dateTime, int? year, int? month, int? day)

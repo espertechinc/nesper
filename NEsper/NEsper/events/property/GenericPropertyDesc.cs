@@ -15,54 +15,48 @@ namespace com.espertech.esper.events.property
     /// </summary>
     public class GenericPropertyDesc
     {
-        static GenericPropertyDesc()
-        {
-            ObjectGeneric = new GenericPropertyDesc(typeof(Object));
-        }
+        private static readonly GenericPropertyDesc OBJECT_GENERIC = new GenericPropertyDesc(typeof (Object));
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="type">the type</param>
         /// <param name="generic">its generic type parameter, if any</param>
         public GenericPropertyDesc(Type type, Type generic)
         {
-            PropertyType = type;
-            GenericType = generic;
+            GenericType = type;
+            Generic = generic;
         }
 
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="type">the type</param>
         public GenericPropertyDesc(Type type)
         {
-            PropertyType = type;
-            GenericType = null;
+            GenericType = type;
+            Generic = null;
         }
 
         /// <summary>
-        /// Returns the type.
+        ///     typeof(Object) type.
         /// </summary>
-        /// <returns>
-        /// type
-        /// </returns>
-        public Type PropertyType { get; private set; }
+        /// <value>type descriptor</value>
+        public static GenericPropertyDesc ObjectGeneric
+        {
+            get { return OBJECT_GENERIC; }
+        }
 
         /// <summary>
-        /// Returns the generic parameter, or null if none.
+        ///     Returns the type.
         /// </summary>
-        /// <returns>
-        /// generic parameter
-        /// </returns>
+        /// <value>type</value>
         public Type GenericType { get; private set; }
 
         /// <summary>
-        /// typeof(Object) type.
+        ///     Returns the generic parameter, or null if none.
         /// </summary>
-        /// <returns>
-        /// type descriptor
-        /// </returns>
-        public static GenericPropertyDesc ObjectGeneric { get; private set; }
+        /// <value>generic parameter</value>
+        public Type Generic { get; private set; }
     }
-}
+} // end of namespace

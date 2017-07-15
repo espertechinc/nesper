@@ -45,7 +45,7 @@ namespace com.espertech.esper.events.arr
 
         public IDictionary<string, int> PropertiesIndexes
         {
-            get { return ((EventTypeNestableGetterFactoryObjectArray) GetterFactory).PropertiesIndex; }
+            get { return ((EventTypeNestableGetterFactoryObjectArray)GetterFactory).PropertiesIndex; }
         }
 
         public override Type UnderlyingType
@@ -68,9 +68,9 @@ namespace com.espertech.esper.events.arr
             }
         }
 
-        public override EventBeanReader GetReader()
+        public override EventBeanReader Reader
         {
-            return null;
+            get { return null; }
         }
 
         public override EventPropertyWriter GetWriter(String propertyName)
@@ -85,7 +85,7 @@ namespace com.espertech.esper.events.arr
                 return pair.Second;
             }
 
-            Property property = PropertyParser.ParseAndWalk(propertyName, false);
+            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
                 var mapProp = (MappedProperty)property;
@@ -127,7 +127,7 @@ namespace com.espertech.esper.events.arr
                 return pair.First;
             }
 
-            Property property = PropertyParser.ParseAndWalk(propertyName, false);
+            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
                 var writer = GetWriter(propertyName);
@@ -214,7 +214,7 @@ namespace com.espertech.esper.events.arr
                 writeableProps.Add(prop);
                 var propertyName = prop.PropertyName;
                 int index;
-                
+
                 if (!PropertiesIndexes.TryGetValue(prop.PropertyName, out index))
                 {
                     continue;
@@ -296,8 +296,8 @@ namespace com.espertech.esper.events.arr
 
         public bool IsDeepEqualsConsiderOrder(ObjectArrayEventType other)
         {
-            var factoryOther = (EventTypeNestableGetterFactoryObjectArray) other.GetterFactory;
-            var factoryMe = (EventTypeNestableGetterFactoryObjectArray) GetterFactory;
+            var factoryOther = (EventTypeNestableGetterFactoryObjectArray)other.GetterFactory;
+            var factoryMe = (EventTypeNestableGetterFactoryObjectArray)GetterFactory;
 
             if (factoryOther.PropertiesIndex.Count != factoryMe.PropertiesIndex.Count)
             {

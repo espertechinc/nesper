@@ -101,7 +101,7 @@ namespace com.espertech.esper.linq
         }
 
         /// <summary>
-        /// Expands the view to use a time bound window.  Time bound windows are sliding windows that extend the
+        /// Expands the view to use a time bound window.  TimeInMillis bound windows are sliding windows that extend the
         /// specified time interval into the past based on the system time.  Provide a time period as parameter.
         /// <para/>
         /// If batch is specified, then the window buffers events (tumbling window) and releases them
@@ -118,7 +118,7 @@ namespace com.espertech.esper.linq
         }
 
         /// <summary>
-        /// Expands the view to use a time bound window.  Time bound windows are sliding windows that extend the
+        /// Expands the view to use a time bound window.  TimeInMillis bound windows are sliding windows that extend the
         /// specified time interval into the past based on the system time.  Provide a time period as parameter.
         /// </summary>
         /// <typeparam name="T"></typeparam>

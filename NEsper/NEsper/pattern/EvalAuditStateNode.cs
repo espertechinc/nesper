@@ -64,7 +64,8 @@ namespace com.espertech.esper.pattern
 
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (_evalAuditNode.FactoryNode.IsAuditPattern && AuditPath.IsInfoEnabled) {
+            if (_evalAuditNode.FactoryNode.IsAuditPattern && AuditPath.IsInfoEnabled)
+            {
                 String message = ToStringEvaluateTrue(this, _evalAuditNode.FactoryNode.PatternExpr, matchEvent, fromNode, isQuitted);
                 AuditPath.AuditLog(_evalAuditNode.Context.StatementContext.EngineURI, _evalAuditNode.Context.PatternContext.StatementName, AuditEnum.PATTERN, message);
             }
@@ -79,7 +80,8 @@ namespace com.espertech.esper.pattern
 
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
-            if (_evalAuditNode.FactoryNode.IsAuditPattern && AuditPath.IsInfoEnabled) {
+            if (_evalAuditNode.FactoryNode.IsAuditPattern && AuditPath.IsInfoEnabled)
+            {
                 String message = ToStringEvaluateFalse(this, _evalAuditNode.FactoryNode.PatternExpr, fromNode);
                 AuditPath.AuditLog(_evalAuditNode.Context.StatementContext.EngineURI, _evalAuditNode.Context.PatternContext.StatementName, AuditEnum.PATTERN, message);
             }
@@ -90,7 +92,8 @@ namespace com.espertech.esper.pattern
 
         public override void Quit()
         {
-            if (_childState != null) {
+            if (_childState != null)
+            {
                 _childState.Quit();
             }
             _evalAuditNode.FactoryNode.DecreaseRefCount(this, _evalAuditNode.Context.PatternContext);
@@ -99,7 +102,8 @@ namespace com.espertech.esper.pattern
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitAudit();
-            if (_childState != null) {
+            if (_childState != null)
+            {
                 _childState.Accept(visitor);
             }
         }
@@ -158,17 +162,20 @@ namespace com.espertech.esper.pattern
             writer.Write(" map: {");
             var delimiter = "";
             var data = matchEvent.MatchingEvents;
-            for (int i = 0; i < data.Length; i++) {
+            for (int i = 0; i < data.Length; i++)
+            {
                 var name = matchEvent.Meta.TagsPerIndex[i];
                 var value = matchEvent.GetMatchingEventAsObject(i);
                 writer.Write(delimiter);
                 writer.Write(name);
                 writer.Write("=");
-                if (value is EventBean) {
-                    writer.Write(((EventBean) value).Underlying.ToString());
+                if (value is EventBean)
+                {
+                    writer.Write(((EventBean)value).Underlying.ToString());
                 }
-                else if (value is EventBean[]) {
-                    writer.Write(EventBeanUtility.Summarize((EventBean[]) value));
+                else if (value is EventBean[])
+                {
+                    writer.Write(EventBeanUtility.Summarize((EventBean[])value));
                 }
                 delimiter = ", ";
             }

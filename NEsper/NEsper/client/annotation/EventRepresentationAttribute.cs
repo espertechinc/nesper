@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.client.util;
+
 namespace com.espertech.esper.client.annotation
 {
     /// <summary>
@@ -15,8 +17,12 @@ namespace com.espertech.esper.client.annotation
     /// </summary>
     public class EventRepresentationAttribute : Attribute
     {
-        /// <summary>True for object-array, false for Map. </summary>
-        /// <returns>array indicator</returns>
-        public bool Array { get; set; }
+        /// <summary>
+        /// Define the event underlying type.
+        /// </summary>
+        /// <value>
+        /// The event underlying type.
+        /// </value>
+        public EventUnderlyingType Value { get; set; }
     }
 }

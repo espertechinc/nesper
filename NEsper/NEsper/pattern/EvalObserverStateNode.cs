@@ -22,20 +22,21 @@ namespace com.espertech.esper.pattern
     {
         private readonly EvalObserverNode _evalObserverNode;
         private EventObserver _eventObserver;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalObserverNode">is the factory node associated to the state</param>
         public EvalObserverStateNode(Evaluator parentNode, EvalObserverNode evalObserverNode)
             : base(parentNode)
         {
-    
+
             _evalObserverNode = evalObserverNode;
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (PatternConsumptionUtil.ContainsEvent(matchEvent, _eventObserver.BeginState)) {
+            if (PatternConsumptionUtil.ContainsEvent(matchEvent, _eventObserver.BeginState))
+            {
                 Quit();
                 ParentEvaluator.EvaluateFalse(this, true);
             }
@@ -53,32 +54,33 @@ namespace com.espertech.esper.pattern
 
         public void ObserverEvaluateTrue(MatchedEventMap matchEvent, bool quitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverEvaluateTrue(_evalObserverNode, matchEvent);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverEvaluateTrue(_evalObserverNode, matchEvent); }
             ParentEvaluator.EvaluateTrue(matchEvent, this, quitted);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverEvaluateTrue();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverEvaluateTrue(); }
         }
-    
+
         public void ObserverEvaluateFalse(bool restartable)
         {
             ParentEvaluator.EvaluateFalse(this, restartable);
         }
-    
+
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverStart(_evalObserverNode, beginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverStart(_evalObserverNode, beginState); }
             _eventObserver = _evalObserverNode.FactoryNode.ObserverFactory.MakeObserver(_evalObserverNode.Context, beginState, this, null, null, ParentEvaluator.IsFilterChildNonQuitting);
             _eventObserver.StartObserve();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverStart(); }
         }
-    
+
         public override void Quit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverQuit(_evalObserverNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverQuit(_evalObserverNode); }
             _eventObserver.StopObserve();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverQuit(); }
         }
-    
-        public override void Accept(EvalStateNodeVisitor visitor) {
+
+        public override void Accept(EvalStateNodeVisitor visitor)
+        {
             visitor.VisitObserver(_evalObserverNode.FactoryNode, this, _eventObserver);
         }
 

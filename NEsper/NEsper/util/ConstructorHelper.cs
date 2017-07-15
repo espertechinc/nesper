@@ -16,7 +16,7 @@ namespace com.espertech.esper.util
     /// </summary>
     public class ConstructorHelper
     {
-        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new [] { typeof (Object[]) };
+        private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] { typeof(Object[]) };
 
         /// <summary>
         /// Find and invoke constructor matching the argument number and types returning an instance of given class.
@@ -35,21 +35,21 @@ namespace com.espertech.esper.util
             {
                 parameterTypes[i] = arguments[i].GetType();
             }
-    
+
             // Find a constructor that matches exactly
             ConstructorInfo ctor = GetRegularConstructor(type, parameterTypes);
             if (ctor != null)
             {
                 return ctor.Invoke(arguments);
             }
-    
+
             // Find a constructor with the same number of assignable parameters (such as int -> Integer).
             ctor = FindMatchingConstructor(type, parameterTypes);
             if (ctor != null)
             {
                 return ctor.Invoke(arguments);
             }
-    
+
             // Find an Object[] constructor, which always matches (throws an exception if not found)
             ctor = GetObjectArrayConstructor(type);
             if (ctor == null)
@@ -59,21 +59,21 @@ namespace com.espertech.esper.util
 
             return ctor.Invoke(new Object[] { arguments });
         }
-    
+
         private static ConstructorInfo FindMatchingConstructor(Type type, Type[] parameterTypes)
         {
             ConstructorInfo[] ctors = type.GetConstructors();
-    
+
             for (int i = 0; i < ctors.Length; i++)
             {
                 ParameterInfo[] ctorParams = ctors[i].GetParameters();
-    
+
                 if (IsAssignmentCompatible(parameterTypes, ctorParams))
                 {
                     return ctors[i];
                 }
             }
-    
+
             return null;
         }
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.util
             {
                 return false;
             }
-    
+
             for (int i = 0; i < parameterTypes.Length; i++)
             {
                 if (!ctorParams[i].ParameterType.IsAssignmentCompatible(parameterTypes[i]))
@@ -91,17 +91,17 @@ namespace com.espertech.esper.util
                     return false;
                 }
             }
-    
+
             return true;
         }
-    
+
         private static ConstructorInfo GetRegularConstructor(Type type, Type[] parameterTypes)
         {
             // Try to find the matching constructor
             ConstructorInfo ctor = type.GetConstructor(parameterTypes);
             return ctor;
         }
-    
+
         // Try to find an Object[] constructor
         private static ConstructorInfo GetObjectArrayConstructor(Type clazz)
         {

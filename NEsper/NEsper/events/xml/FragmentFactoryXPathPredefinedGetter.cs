@@ -20,13 +20,13 @@ namespace com.espertech.esper.events.xml
     public class FragmentFactoryXPathPredefinedGetter : FragmentFactory
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly EventAdapterService _eventAdapterService;
         private readonly String _eventTypeName;
         private readonly String _propertyName;
-    
+
         private volatile EventType _eventType;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -39,7 +39,7 @@ namespace com.espertech.esper.events.xml
             _eventTypeName = eventTypeName;
             _propertyName = propertyName;
         }
-    
+
         public EventBean GetEvent(XmlNode result)
         {
             if (_eventType == null)
@@ -57,7 +57,7 @@ namespace com.espertech.esper.events.xml
                 }
                 _eventType = candidateEventType;
             }
-    
+
             return _eventAdapterService.AdapterForTypedDOM(result, _eventType);
         }
 

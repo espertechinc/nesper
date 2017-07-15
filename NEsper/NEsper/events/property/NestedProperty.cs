@@ -52,7 +52,7 @@ namespace com.espertech.esper.events.property
         public EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var getters = new List<EventPropertyGetter>();
-    
+
             Property lastProperty = null;
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-    
+
                 if (it.HasNext())
                 {
                     var clazz = property.GetPropertyType(eventType, eventAdapterService);
@@ -86,11 +86,11 @@ namespace com.espertech.esper.events.property
                 }
                 getters.Add(getter);
             }
-    
-            var finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, eventAdapterService);
-            return new NestedPropertyGetter(getters, eventAdapterService, finalPropertyType.PropertyType, finalPropertyType.GenericType);
+
+            GenericPropertyDesc finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, eventAdapterService);
+            return new NestedPropertyGetter(getters, eventAdapterService, finalPropertyType.GenericType, finalPropertyType.GenericType);
         }
-    
+
         public Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             Type result = null;
@@ -99,13 +99,13 @@ namespace com.espertech.esper.events.property
             {
                 Property property = it.Next();
                 result = property.GetPropertyType(eventType, eventAdapterService);
-    
+
                 if (result == null)
                 {
                     // property not found, return null
                     return null;
                 }
-    
+
                 if (it.HasNext())
                 {
                     // Map cannot be used to further nest as the type cannot be determined
@@ -118,14 +118,14 @@ namespace com.espertech.esper.events.property
                     {
                         return null;
                     }
-    
+
                     eventType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(result.Name, result, false, false, false);
                 }
             }
-    
+
             return result;
         }
-    
+
         public GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             GenericPropertyDesc result = null;
@@ -134,54 +134,54 @@ namespace com.espertech.esper.events.property
             {
                 Property property = it.Next();
                 result = property.GetPropertyTypeGeneric(eventType, eventAdapterService);
-    
+
                 if (result == null)
                 {
                     // property not found, return null
                     return null;
                 }
-    
+
                 if (it.HasNext())
                 {
                     // Map cannot be used to further nest as the type cannot be determined
-                    if (result.PropertyType == typeof(Map))
+                    if (result.GenericType == typeof(Map))
                     {
                         return null;
                     }
 
-                    if (result.PropertyType.IsArray)
+                    if (result.GenericType.IsArray)
                     {
                         return null;
                     }
 
                     eventType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(
-                        result.PropertyType.FullName, 
-                        result.PropertyType, 
+                        result.GenericType.FullName,
+                        result.GenericType,
                         false, false, false);
                 }
             }
-    
+
             return result;
         }
-    
+
         public Type GetPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
             Map currentDictionary = optionalMapPropTypes;
-    
+
             int count = 0;
-            for (var it = Properties.EnumerateWithLookahead(); it.HasNext();)
+            for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
                 count++;
                 var property = it.Next();
-                var propertyBase = (PropertyBase) property;
+                var propertyBase = (PropertyBase)property;
                 var propertyName = propertyBase.PropertyNameAtomic;
-    
+
                 Object nestedType = null;
                 if (currentDictionary != null)
                 {
                     nestedType = currentDictionary.Get(propertyName);
                 }
-    
+
                 if (nestedType == null)
                 {
                     if (property is DynamicProperty)
@@ -193,27 +193,27 @@ namespace com.espertech.esper.events.property
                         return null;
                     }
                 }
-    
+
                 if (!it.HasNext())
                 {
                     if (nestedType is Type)
                     {
-                        return ((Type) nestedType).GetBoxedType();
+                        return ((Type)nestedType).GetBoxedType();
                     }
                     if (nestedType is Map)
                     {
                         return typeof(Map);
                     }
                 }
-    
+
                 if (ReferenceEquals(nestedType, typeof(Map)))
                 {
                     return typeof(Object);
                 }
-    
+
                 if (nestedType is Type)
                 {
-                    Type pocoType = (Type) nestedType;
+                    Type pocoType = (Type)nestedType;
                     if (!pocoType.IsArray)
                     {
                         BeanEventType beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(pocoType.Name, pocoType, false, false, false);
@@ -228,27 +228,28 @@ namespace com.espertech.esper.events.property
                         return beanType.GetPropertyType(remainingProps).GetBoxedType();
                     }
                 }
-    
+
                 if (nestedType is String)       // property type is the name of a map event type
                 {
                     String nestedName = nestedType.ToString();
                     bool isArray = EventTypeUtility.IsPropertyArray(nestedName);
-                    if (isArray) {
+                    if (isArray)
+                    {
                         nestedName = EventTypeUtility.GetPropertyRemoveArray(nestedName);
                     }
-    
+
                     EventType innerType = eventAdapterService.GetEventTypeByName(nestedName);
                     if (innerType == null)
                     {
                         return null;
                     }
-    
+
                     String remainingProps = ToPropertyEPL(Properties, count);
                     return innerType.GetPropertyType(remainingProps).GetBoxedType();
                 }
                 else if (nestedType is EventType)       // property type is the name of a map event type
                 {
-                    var innerType = (EventType) nestedType;
+                    var innerType = (EventType)nestedType;
                     var remainingProps = ToPropertyEPL(Properties, count);
                     return innerType.GetPropertyType(remainingProps).GetBoxedType();
                 }
@@ -261,8 +262,8 @@ namespace com.espertech.esper.events.property
                         throw new PropertyAccessException(message);
                     }
                 }
-    
-                currentDictionary = (Map) nestedType;
+
+                currentDictionary = (Map)nestedType;
             }
             throw new IllegalStateException("Unexpected end of nested property");
         }
@@ -273,7 +274,7 @@ namespace com.espertech.esper.events.property
             var currentDictionary = optionalMapPropTypes;
 
             int count = 0;
-            for (var it = Properties.EnumerateWithLookahead(); it.HasNext();)
+            for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
                 count++;
                 Property property = it.Next();
@@ -286,7 +287,7 @@ namespace com.espertech.esper.events.property
                 }
                 getters.Add(getter);
 
-                var @base = (PropertyBase) property;
+                var @base = (PropertyBase)property;
                 var propertyName = @base.PropertyNameAtomic;
 
                 // For the next property if there is one, check how to property type is defined
@@ -308,9 +309,9 @@ namespace com.espertech.esper.events.property
                     {
                         if (propertyReturnType is Map)
                         {
-                            currentDictionary = (Map) propertyReturnType;
+                            currentDictionary = (Map)propertyReturnType;
                         }
-                        else if (ReferenceEquals(propertyReturnType, typeof (Map)))
+                        else if (ReferenceEquals(propertyReturnType, typeof(Map)))
                         {
                             currentDictionary = null;
                         }
@@ -341,7 +342,7 @@ namespace com.espertech.esper.events.property
                         }
                         else if (propertyReturnType is EventType)
                         {
-                            var innerType = (EventType) propertyReturnType;
+                            var innerType = (EventType)propertyReturnType;
                             var remainingProps = ToPropertyEPL(Properties, count);
                             var getterInner = innerType.GetGetter(remainingProps);
                             if (getterInner == null)
@@ -355,7 +356,7 @@ namespace com.espertech.esper.events.property
                         else
                         {
                             // treat the return type of the map property as an object
-                            var returnType = (Type) propertyReturnType;
+                            var returnType = (Type)propertyReturnType;
                             if (!returnType.IsArray)
                             {
                                 BeanEventType beanType =
@@ -422,7 +423,7 @@ namespace com.espertech.esper.events.property
                 delimiter = ".";
             }
         }
-    
+
         public String[] ToPropertyArray()
         {
             var propertyNames = new List<String>();
@@ -433,12 +434,12 @@ namespace com.espertech.esper.events.property
             }
             return propertyNames.ToArray();
         }
-    
+
         public EventPropertyGetter GetGetterDOM()
         {
             var getters = new List<EventPropertyGetter>();
-    
-            for (var it = Properties.EnumerateWithLookahead(); it.HasNext();)
+
+            for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
                 Property property = it.Next();
                 EventPropertyGetter getter = property.GetGetterDOM();
@@ -446,17 +447,17 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-    
+
                 getters.Add(getter);
             }
-    
+
             return new DOMNestedPropertyGetter(getters, null);
         }
-    
+
         public EventPropertyGetter GetGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
         {
             List<EventPropertyGetter> getters = new List<EventPropertyGetter>();
-    
+
             SchemaElementComplex complexElement = parentComplexProperty;
 
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
@@ -467,7 +468,7 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-    
+
                 if (it.HasNext())
                 {
                     SchemaItem childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
@@ -476,14 +477,14 @@ namespace com.espertech.esper.events.property
                         // if the property is not valid, return null
                         return null;
                     }
-    
+
                     if ((childSchemaItem is SchemaItemAttribute) || (childSchemaItem is SchemaElementSimple))
                     {
                         return null;
                     }
-    
-                    complexElement = (SchemaElementComplex) childSchemaItem;
-    
+
+                    complexElement = (SchemaElementComplex)childSchemaItem;
+
                     if (complexElement.IsArray)
                     {
                         if ((property is SimpleProperty) || (property is DynamicSimpleProperty))
@@ -492,23 +493,23 @@ namespace com.espertech.esper.events.property
                         }
                     }
                 }
-                
+
                 getters.Add(getter);
             }
-    
+
             return new DOMNestedPropertyGetter(getters, new FragmentFactoryDOMGetter(eventAdapterService, eventType, propertyExpression));
         }
-    
+
         public SchemaItem GetPropertyTypeSchema(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)
         {
             Property lastProperty = null;
             SchemaElementComplex complexElement = parentComplexProperty;
-    
-            for (var en = Properties.EnumerateWithLookahead(); en.HasNext();)
+
+            for (var en = Properties.EnumerateWithLookahead(); en.HasNext(); )
             {
                 Property property = en.Next();
                 lastProperty = property;
-    
+
                 if (en.HasNext())
                 {
                     SchemaItem childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
@@ -517,16 +518,16 @@ namespace com.espertech.esper.events.property
                         // if the property is not valid, return null
                         return null;
                     }
-    
+
                     if ((childSchemaItem is SchemaItemAttribute) || (childSchemaItem is SchemaElementSimple))
                     {
                         return null;
                     }
-    
-                    complexElement = (SchemaElementComplex) childSchemaItem;
+
+                    complexElement = (SchemaElementComplex)childSchemaItem;
                 }
             }
-    
+
             return lastProperty.GetPropertyTypeSchema(complexElement, eventAdapterService);
         }
 

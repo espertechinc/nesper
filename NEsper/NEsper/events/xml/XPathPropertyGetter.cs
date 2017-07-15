@@ -26,10 +26,10 @@ namespace com.espertech.esper.events.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-    	private readonly XPathExpression _expression;
+        private readonly XPathExpression _expression;
         private readonly String _expressionText;
         private readonly String _property;
-    	private readonly XPathResultType _resultType;
+        private readonly XPathResultType _resultType;
         private readonly SimpleTypeParser _simpleTypeParser;
         private readonly Type _optionalCastToType;
         private readonly bool _isCastToArray;
@@ -51,12 +51,12 @@ namespace com.espertech.esper.events.xml
                                    Type optionalCastToType,
                                    FragmentFactory fragmentFactory)
         {
-    		_expression = xPathExpression;
+            _expression = xPathExpression;
             _expressionText = expressionText;
             _property = propertyName;
-    		_resultType = resultType;
+            _resultType = resultType;
             _fragmentFactory = fragmentFactory;
-    
+
             if ((optionalCastToType != null) && (optionalCastToType.IsArray))
             {
                 _isCastToArray = true;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.events.xml
             {
                 _isCastToArray = false;
             }
-    
+
             if (optionalCastToType != null)
             {
                 _simpleTypeParser = SimpleTypeParserFactory.GetParser(optionalCastToType);
@@ -89,21 +89,23 @@ namespace com.espertech.esper.events.xml
                 _optionalCastToType = optionalCastToType;
             }
         }
-    
-    	public Object Get(EventBean eventBean)
+
+        public Object Get(EventBean eventBean)
         {
-    		var und = eventBean.Underlying;
+            var und = eventBean.Underlying;
             if (und == null)
             {
                 throw new PropertyAccessException("Unexpected null underlying event encountered, expecting System.Xml.XmlNode instance as underlying");
             }
 
-    	    XPathNavigator navigator;
+            XPathNavigator navigator;
 
-    	    var xnode = und as XElement;
-            if (xnode == null) {
+            var xnode = und as XElement;
+            if (xnode == null)
+            {
                 var node = und as XmlNode;
-                if (node == null) {
+                if (node == null)
+                {
                     throw new PropertyAccessException("Unexpected underlying event of type '" + und.GetType().FullName +
                                                       "' encountered, expecting System.Xml.XmlNode as underlying");
                 }
@@ -118,14 +120,17 @@ namespace com.espertech.esper.events.xml
                 }
 
                 navigator = node.CreateNavigator();
-            } else {
+            }
+            else
+            {
                 navigator = xnode.CreateNavigator();
             }
 
-    	    try
-    	    {
+            try
+            {
                 var result = navigator.Evaluate(_expression);
-                if (result == null) {
+                if (result == null)
+                {
                     return null;
                 }
 
@@ -133,16 +138,19 @@ namespace com.espertech.esper.events.xml
                 if (_optionalCastToType == null)
                 {
                     var nodeIterator = result as XPathNodeIterator;
-                    if (nodeIterator != null) {
+                    if (nodeIterator != null)
+                    {
                         if (nodeIterator.Count == 0)
                         {
                             return null;
                         }
-                        if (nodeIterator.Count == 1) {
+                        if (nodeIterator.Count == 1)
+                        {
                             nodeIterator.MoveNext();
-                            switch( _resultType ) {
+                            switch (_resultType)
+                            {
                                 case XPathResultType.Any:
-                                    return ((System.Xml.IHasXmlNode) nodeIterator.Current).GetNode();
+                                    return ((System.Xml.IHasXmlNode)nodeIterator.Current).GetNode();
                                 case XPathResultType.String:
                                     return nodeIterator.Current.TypedValue;
                                 case XPathResultType.Boolean:
@@ -152,20 +160,22 @@ namespace com.espertech.esper.events.xml
                                 default:
                                     return nodeIterator.Current.TypedValue;
                             }
-                        } else {
+                        }
+                        else
+                        {
                             return new XPathIteratorNodeList(nodeIterator);
                         }
                     }
 
                     return result;
                 }
-    
+
                 if (_isCastToArray)
                 {
                     return CastToArray(result);
                 }
-    
-                if ( result is XPathNodeIterator )
+
+                if (result is XPathNodeIterator)
                 {
                     var nodeIterator = result as XPathNodeIterator;
                     if (nodeIterator.Count == 0) return null;
@@ -199,7 +209,7 @@ namespace com.espertech.esper.events.xml
                 {
                     try
                     {
-                        return _simpleTypeParser.Invoke((string) result);
+                        return _simpleTypeParser.Invoke((string)result);
                     }
                     catch
                     {
@@ -207,7 +217,7 @@ namespace com.espertech.esper.events.xml
                         return null;
                     }
                 }
-    
+
                 // coercion
                 if (result is Double)
                 {
@@ -221,7 +231,7 @@ namespace com.espertech.esper.events.xml
                         return null;
                     }
                 }
-    
+
                 // check bool type
                 if (result is Boolean)
                 {
@@ -232,20 +242,21 @@ namespace com.espertech.esper.events.xml
                     }
                     return result;
                 }
-    
+
                 Log.Warn("Error processing XPath property named '" + _property + "' expression result '" + result + ", not a known type");
                 return null;
             }
-            catch (XPathException e) {
-    			throw new PropertyAccessException("Error getting property " + _property,e);
-    		}
-    	}
-    
+            catch (XPathException e)
+            {
+                throw new PropertyAccessException("Error getting property " + _property, e);
+            }
+        }
+
         public bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-    
+
         public Object GetFragment(EventBean eventBean)
         {
             if (_fragmentFactory == null)
@@ -264,15 +275,16 @@ namespace com.espertech.esper.events.xml
             {
                 throw new PropertyAccessException("Unexpected underlying event of type '" + und.GetType().FullName + "' encountered, expecting System.Xml.XmlNode as underlying");
             }
-    
-            try {
+
+            try
+            {
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug(
                         "Running XPath '{0}' for property '{1}' against Node XML : {2}",
                         _expressionText,
                         _property,
-                        SchemaUtil.Serialize((XmlNode) und));
+                        SchemaUtil.Serialize((XmlNode)und));
                 }
 
                 var navigator = node.CreateNavigator();
@@ -289,12 +301,13 @@ namespace com.espertech.esper.events.xml
                     if (nodeIterator.Count == 1)
                     {
                         nodeIterator.MoveNext();
-                        return _fragmentFactory.GetEvent(((IHasXmlNode) nodeIterator.Current).GetNode());
+                        return _fragmentFactory.GetEvent(((IHasXmlNode)nodeIterator.Current).GetNode());
                     }
 
                     var events = new List<EventBean>();
-                    while (nodeIterator.MoveNext()) {
-                        events.Add(_fragmentFactory.GetEvent(((IHasXmlNode) nodeIterator.Current).GetNode()));
+                    while (nodeIterator.MoveNext())
+                    {
+                        events.Add(_fragmentFactory.GetEvent(((IHasXmlNode)nodeIterator.Current).GetNode()));
                     }
 
                     return events.ToArray();
@@ -305,25 +318,31 @@ namespace com.espertech.esper.events.xml
             }
             catch (XPathException e)
             {
-                throw new PropertyAccessException("Error getting property " + _property,e);
+                throw new PropertyAccessException("Error getting property " + _property, e);
             }
         }
-    
+
         private Object CastToArray(XPathNodeIterator nodeIterator)
         {
             var itemList = new List<object>();
-            while(nodeIterator.MoveNext()) {
+            while (nodeIterator.MoveNext())
+            {
                 var item = nodeIterator.Current;
-                if (item != null) {
-                    try {
+                if (item != null)
+                {
+                    try
+                    {
                         if ((item.NodeType == XPathNodeType.Attribute) ||
-                            (item.NodeType == XPathNodeType.Element)) {
+                            (item.NodeType == XPathNodeType.Element))
+                        {
                             var textContent = item.InnerXml;
                             itemList.Add(_simpleTypeParser.Invoke(textContent));
                         }
                     }
-                    catch {
-                        if (Log.IsInfoEnabled) {
+                    catch
+                    {
+                        if (Log.IsInfoEnabled)
+                        {
                             Log.Info("Parse error for text content {0} for expression {1}", item.InnerXml, _expression);
                         }
                     }
@@ -331,7 +350,8 @@ namespace com.espertech.esper.events.xml
             }
 
             var array = Array.CreateInstance(_optionalCastToType, itemList.Count);
-            for( int ii = 0 ; ii < itemList.Count ; ii++ ) {
+            for (int ii = 0; ii < itemList.Count; ii++)
+            {
                 array.SetValue(itemList[ii], ii);
             }
 
@@ -340,8 +360,9 @@ namespace com.espertech.esper.events.xml
 
         private Object CastToArray(Object result)
         {
-            if (result is XPathNodeIterator) {
-                return CastToArray((XPathNodeIterator) result);
+            if (result is XPathNodeIterator)
+            {
+                return CastToArray((XPathNodeIterator)result);
             }
 
             if (!(result is XmlNodeList))
@@ -360,14 +381,15 @@ namespace com.espertech.esper.events.xml
                     XmlNode item = nodeList.Item(i);
                     String textContent;
                     if ((item.NodeType == XmlNodeType.Attribute) ||
-                        (item.NodeType == XmlNodeType.Element)) {
+                        (item.NodeType == XmlNodeType.Element))
+                    {
                         textContent = item.InnerText;
                     }
                     else
                     {
                         continue;
-                    } 
-                    
+                    }
+
                     arrayItem = _simpleTypeParser.Invoke(textContent);
                 }
                 catch
@@ -380,7 +402,7 @@ namespace com.espertech.esper.events.xml
 
                 array.SetValue(arrayItem, i);
             }
-            
+
             return array;
         }
     }

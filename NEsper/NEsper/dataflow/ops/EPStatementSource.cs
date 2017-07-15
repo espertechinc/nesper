@@ -28,11 +28,15 @@ namespace com.espertech.esper.dataflow.ops
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 #pragma warning disable 649
-        [DataFlowOpParameterAttribute] private String _statementName;
-        [DataFlowOpParameterAttribute] private EPDataFlowEPStatementFilter _statementFilter;
-        [DataFlowOpParameterAttribute] private EPDataFlowIRStreamCollector _collector;
+        [DataFlowOpParameterAttribute]
+        private String _statementName;
+        [DataFlowOpParameterAttribute]
+        private EPDataFlowEPStatementFilter _statementFilter;
+        [DataFlowOpParameterAttribute]
+        private EPDataFlowIRStreamCollector _collector;
 
-        [DataFlowContextAttribute] private EPDataFlowEmitter _graphContext;
+        [DataFlowContextAttribute]
+        private EPDataFlowEmitter _graphContext;
 #pragma warning restore 649
 
         private StatementLifecycleSvc _statementLifecycleSvc;
@@ -41,7 +45,7 @@ namespace com.espertech.esper.dataflow.ops
         private readonly IBlockingQueue<Object> _emittables = new LinkedBlockingQueue<Object>();
         private bool _submitEventBean;
 
-        private readonly ILockable _iLock = 
+        private readonly ILockable _iLock =
             LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IThreadLocal<EPDataFlowIRStreamCollectorContext> _collectorDataTL =

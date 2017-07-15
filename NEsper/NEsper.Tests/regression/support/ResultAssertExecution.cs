@@ -92,7 +92,7 @@ namespace com.espertech.esper.regression.support
                 Log.Debug(String.Format("{0,-28}  {1,-38}", "Input", "Output"));
                 Log.Debug(String.Format("{0,-45}  {1,-15}  {2,-15}", "", "Insert Stream", "Remove Stream"));
                 Log.Debug(String.Format("{0,-28}  {1,-30}", "-----------------------------------------------", "----------------------------------"));
-                Log.Debug(String.Format("{0,-5} {1,-5}{2,-8}{3,-8}", "Time", "Symbol", "Volume", "Price"));
+                Log.Debug(String.Format("{0,-5} {1,-5}{2,-8}{3,-8}", "TimeInMillis", "Symbol", "Volume", "Price"));
             }
 
             foreach (KeyValuePair<long, TimeAction> timeEntry in Input)

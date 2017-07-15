@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.timer
 
             var administrator = serviceProvider.EPAdministrator;
 
-            var timeZone = "US Eastern Standard Time";
+            var timeZone = "US Eastern Standard TimeInMillis";
 
             var counter = new Mutable<int>(0);
 

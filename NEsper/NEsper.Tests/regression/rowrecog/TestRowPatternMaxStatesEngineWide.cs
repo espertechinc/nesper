@@ -448,7 +448,7 @@ namespace com.espertech.esper.regression.rowrecog
 	        config.EngineDefaults.ConditionHandlingConfig.AddClass<SupportConditionHandlerFactory>();
 	        config.EngineDefaults.MatchRecognizeConfig.MaxStates = max;
 	        config.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart = preventStart;
-	        config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+	        config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
 
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();

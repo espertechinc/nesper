@@ -25,14 +25,14 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.spec
 {
-	/// <summary>
-	/// Context for mapping a SODA statement to a statement specification, or multiple for subqueries,
-	/// and obtaining certain optimization information from a statement.
-	/// </summary>
-	public class StatementSpecMapContext
-	{
-	    private IDictionary<string, ExpressionDeclItem> _expressionDeclarations;
-	    private IDictionary<string, ExpressionScriptProvided> _scripts;
+    /// <summary>
+    /// Context for mapping a SODA statement to a statement specification, or multiple for subqueries,
+    /// and obtaining certain optimization information from a statement.
+    /// </summary>
+    public class StatementSpecMapContext
+    {
+        private IDictionary<string, ExpressionDeclItem> _expressionDeclarations;
+        private IDictionary<string, ExpressionScriptProvided> _scripts;
 
         /// <summary>
         /// Ctor.
@@ -49,112 +49,115 @@ namespace com.espertech.esper.epl.spec
         /// <param name="contextDescriptor">optional context description</param>
         /// <param name="tableService">The table service.</param>
         public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration, SchedulingService schedulingService, string engineURI, PatternNodeFactory patternNodeFactory, NamedWindowMgmtService namedWindowMgmtService, ContextManagementService contextManagementService, ExprDeclaredService exprDeclaredService, ContextDescriptor contextDescriptor, TableService tableService)
-	    {
-	        PlugInAggregations = new LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>();
-	        TableExpressions = new HashSet<ExprTableAccessNode>();
-	        EngineImportService = engineImportService;
-	        VariableService = variableService;
-	        Configuration = configuration;
-	        VariableNames = new HashSet<string>();
-	        SchedulingService = schedulingService;
-	        EngineURI = engineURI;
-	        PatternNodeFactory = patternNodeFactory;
-	        NamedWindowMgmtService = namedWindowMgmtService;
-	        ContextManagementService = contextManagementService;
-	        ExprDeclaredService = exprDeclaredService;
-	        ContextDescriptor = contextDescriptor;
-	        TableService = tableService;
-	    }
-
-	    /// <summary>
-	    /// Returns the engine import service.
-	    /// </summary>
-	    /// <value>service</value>
-	    public EngineImportService EngineImportService { get; private set; }
-
-	    /// <summary>
-	    /// Returns the variable service.
-	    /// </summary>
-	    /// <value>service</value>
-	    public VariableService VariableService { get; private set; }
-
-	    /// <summary>
-	    /// Returns true if a statement has variables.
-	    /// </summary>
-	    /// <value>true for variables found</value>
-	    public bool HasVariables { get; set; }
-
-	    /// <summary>
-	    /// Returns the configuration.
-	    /// </summary>
-	    /// <value>config</value>
-	    public ConfigurationInformation Configuration { get; private set; }
-
-	    /// <summary>
-	    /// Returns variables.
-	    /// </summary>
-	    /// <value>variables</value>
-	    public ISet<string> VariableNames { get; private set; }
-
-	    public SchedulingService SchedulingService { get; private set; }
-
-	    public string EngineURI { get; private set; }
-
-	    public PatternNodeFactory PatternNodeFactory { get; private set; }
-
-	    public NamedWindowMgmtService NamedWindowMgmtService { get; private set; }
-
-	    public IDictionary<string, ExpressionDeclItem> ExpressionDeclarations
-	    {
-	        get
-	        {
-	            if (_expressionDeclarations == null)
-	            {
-	                return Collections.GetEmptyMap<string, ExpressionDeclItem>();
-	            }
-	            return _expressionDeclarations;
-	        }
-	    }
-
-	    public void AddExpressionDeclarations(ExpressionDeclItem item) {
-	        if (_expressionDeclarations == null) {
-	            _expressionDeclarations = new Dictionary<string, ExpressionDeclItem>();
-	        }
-	        _expressionDeclarations.Put(item.Name, item);
-	    }
-
-	    public IDictionary<string, ExpressionScriptProvided> Scripts
-	    {
-	        get
-	        {
-	            if (_scripts == null)
-	            {
-	                return Collections.GetEmptyMap<string, ExpressionScriptProvided>();
-	            }
-	            return _scripts;
-	        }
-	    }
-
-	    public void AddScript(ExpressionScriptProvided item)
         {
-	        if (_scripts == null) {
-	            _scripts = new Dictionary<string, ExpressionScriptProvided>();
-	        }
-	        _scripts.Put(item.Name, item);
-	    }
+            PlugInAggregations = new LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>();
+            TableExpressions = new HashSet<ExprTableAccessNode>();
+            EngineImportService = engineImportService;
+            VariableService = variableService;
+            Configuration = configuration;
+            VariableNames = new HashSet<string>();
+            SchedulingService = schedulingService;
+            EngineURI = engineURI;
+            PatternNodeFactory = patternNodeFactory;
+            NamedWindowMgmtService = namedWindowMgmtService;
+            ContextManagementService = contextManagementService;
+            ExprDeclaredService = exprDeclaredService;
+            ContextDescriptor = contextDescriptor;
+            TableService = tableService;
+        }
 
-	    public ContextManagementService ContextManagementService { get; private set; }
+        /// <summary>
+        /// Returns the engine import service.
+        /// </summary>
+        /// <value>service</value>
+        public EngineImportService EngineImportService { get; private set; }
 
-	    public string ContextName { get; set; }
+        /// <summary>
+        /// Returns the variable service.
+        /// </summary>
+        /// <value>service</value>
+        public VariableService VariableService { get; private set; }
 
-	    public ExprDeclaredService ExprDeclaredService { get; private set; }
+        /// <summary>
+        /// Returns true if a statement has variables.
+        /// </summary>
+        /// <value>true for variables found</value>
+        public bool HasVariables { get; set; }
 
-	    public LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> PlugInAggregations { get; private set; }
+        /// <summary>
+        /// Returns the configuration.
+        /// </summary>
+        /// <value>config</value>
+        public ConfigurationInformation Configuration { get; private set; }
 
-	    public ContextDescriptor ContextDescriptor { get; private set; }
+        /// <summary>
+        /// Returns variables.
+        /// </summary>
+        /// <value>variables</value>
+        public ISet<string> VariableNames { get; private set; }
 
-	    public TableService TableService { get; private set; }
+        public SchedulingService SchedulingService { get; private set; }
 
-	    public ISet<ExprTableAccessNode> TableExpressions { get; private set; }
-	}
+        public string EngineURI { get; private set; }
+
+        public PatternNodeFactory PatternNodeFactory { get; private set; }
+
+        public NamedWindowMgmtService NamedWindowMgmtService { get; private set; }
+
+        public IDictionary<string, ExpressionDeclItem> ExpressionDeclarations
+        {
+            get
+            {
+                if (_expressionDeclarations == null)
+                {
+                    return Collections.GetEmptyMap<string, ExpressionDeclItem>();
+                }
+                return _expressionDeclarations;
+            }
+        }
+
+        public void AddExpressionDeclarations(ExpressionDeclItem item)
+        {
+            if (_expressionDeclarations == null)
+            {
+                _expressionDeclarations = new Dictionary<string, ExpressionDeclItem>();
+            }
+            _expressionDeclarations.Put(item.Name, item);
+        }
+
+        public IDictionary<string, ExpressionScriptProvided> Scripts
+        {
+            get
+            {
+                if (_scripts == null)
+                {
+                    return Collections.GetEmptyMap<string, ExpressionScriptProvided>();
+                }
+                return _scripts;
+            }
+        }
+
+        public void AddScript(ExpressionScriptProvided item)
+        {
+            if (_scripts == null)
+            {
+                _scripts = new Dictionary<string, ExpressionScriptProvided>();
+            }
+            _scripts.Put(item.Name, item);
+        }
+
+        public ContextManagementService ContextManagementService { get; private set; }
+
+        public string ContextName { get; set; }
+
+        public ExprDeclaredService ExprDeclaredService { get; private set; }
+
+        public LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> PlugInAggregations { get; private set; }
+
+        public ContextDescriptor ContextDescriptor { get; private set; }
+
+        public TableService TableService { get; private set; }
+
+        public ISet<ExprTableAccessNode> TableExpressions { get; private set; }
+    }
 } // end of namespace

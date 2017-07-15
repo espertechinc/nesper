@@ -33,7 +33,7 @@ namespace com.espertech.esper.regression.context
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportBean_S0>();
-            configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
             configuration.AddPlugInSingleRowFunction("toArray", GetType().FullName, "ToArray");
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();

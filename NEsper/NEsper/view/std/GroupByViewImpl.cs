@@ -38,7 +38,7 @@ namespace com.espertech.esper.view.std
     public class GroupByViewImpl : ViewSupport, CloneableView, GroupByView
     {
         public readonly static String VIEWNAME = "Group-By";
-    
+
         private readonly ExprNode[] _criteriaExpressions;
         private readonly ExprEvaluator[] _criteriaEvaluators;
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.view.std
 
         private readonly String[] _propertyNames;
         private readonly IDictionary<Object, Object> _subViewsPerKey = new Dictionary<Object, Object>();
-    
+
         private readonly Dictionary<Object, Pair<Object, Object>> _groupedEvents = new Dictionary<Object, Pair<Object, Object>>();
 
         /// <summary>
@@ -60,14 +60,14 @@ namespace com.espertech.esper.view.std
             _agentInstanceContext = agentInstanceContext;
             _criteriaExpressions = criteriaExpressions;
             _criteriaEvaluators = criteriaEvaluators;
-    
+
             _propertyNames = new String[criteriaExpressions.Length];
             for (var i = 0; i < criteriaExpressions.Length; i++)
             {
                 _propertyNames[i] = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(criteriaExpressions[i]);
             }
         }
-    
+
         public View CloneView()
         {
             return new GroupByViewImpl(_agentInstanceContext, _criteriaExpressions, _criteriaEvaluators);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.view.std
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            using(Instrument.With(
+            using (Instrument.With(
                 i => i.QViewProcessIRStream(this, "Grouped", newData, oldData),
                 i => i.AViewProcessIRStream()))
             {
@@ -149,12 +149,12 @@ namespace com.espertech.esper.view.std
                 }
             }
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             throw new UnsupportedOperationException("Cannot iterate over group view, this operation is not supported");
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName + " groupFieldNames=" + _criteriaExpressions.Render();
@@ -181,46 +181,55 @@ namespace com.espertech.esper.view.std
             if (!groupView.HasViews)
             {
                 const string message = "Unexpected empty list of child nodes for group view";
-                Log.Fatal(".copySubViews " + message);
+                Log.Error(".copySubViews " + message);
                 throw new EPException(message);
             }
-    
+
             Object subviewHolder;
-            if (groupView.Views.Length == 1) {
+            if (groupView.Views.Length == 1)
+            {
                 subviewHolder = CopyChildView(groupView, propertyNames, groupByValues, agentInstanceContext, groupView.Views[0]);
             }
-            else {
+            else
+            {
                 // For each child node
                 var subViewList = new List<View>(4);
                 subviewHolder = subViewList;
-                foreach (var originalChildView in groupView.Views) {
+                foreach (var originalChildView in groupView.Views)
+                {
                     var copyChildView = CopyChildView(groupView, propertyNames, groupByValues, agentInstanceContext, originalChildView);
                     subViewList.Add(copyChildView);
                 }
             }
-    
+
             return subviewHolder;
         }
-    
-        public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor) {
+
+        public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
+        {
             viewDataVisitor.VisitPrimary(VIEWNAME, _subViewsPerKey.Count);
-            foreach (var entry in _subViewsPerKey) {
+            foreach (var entry in _subViewsPerKey)
+            {
                 VisitView(viewDataVisitor, entry.Key, entry.Value);
             }
         }
-    
-        public static void VisitView(ViewDataVisitorContained viewDataVisitor, Object groupkey, Object subviewHolder) {
-            if (subviewHolder == null) {
+
+        public static void VisitView(ViewDataVisitorContained viewDataVisitor, Object groupkey, Object subviewHolder)
+        {
+            if (subviewHolder == null)
+            {
                 return;
             }
-            if (subviewHolder is View) {
-                viewDataVisitor.VisitContained(groupkey, (View) subviewHolder);
+            if (subviewHolder is View)
+            {
+                viewDataVisitor.VisitContained(groupkey, (View)subviewHolder);
                 return;
             }
             if (subviewHolder is ICollection<View>)
             {
-                var deque = (ICollection<View>) subviewHolder;
-                foreach (var view in deque) {
+                var deque = (ICollection<View>)subviewHolder;
+                foreach (var view in deque)
+                {
                     viewDataVisitor.VisitContained(groupkey, view);
                     return;
                 }
@@ -243,14 +252,14 @@ namespace com.espertech.esper.view.std
                 _subViewsPerKey.Clear();
                 return true;
             }
-            var removedView = (GroupableView) view;
+            var removedView = (GroupableView)view;
             Deque<Object> removedKeys = null;
             foreach (var entry in _subViewsPerKey)
             {
                 var value = entry.Value;
                 if (value is View)
                 {
-                    var subview = (GroupableView) value;
+                    var subview = (GroupableView)value;
                     if (CompareViews(subview, removedView))
                     {
                         if (removedKeys == null)
@@ -262,10 +271,10 @@ namespace com.espertech.esper.view.std
                 }
                 else if (value is IList<View>)
                 {
-                    var subviews = (IList<View>) value;
+                    var subviews = (IList<View>)value;
                     for (var i = 0; i < subviews.Count; i++)
                     {
-                        var subview = (GroupableView) subviews[i];
+                        var subview = (GroupableView)subviews[i];
                         if (CompareViews(subview, removedView))
                         {
                             subviews.RemoveAt(i);
@@ -301,66 +310,71 @@ namespace com.espertech.esper.view.std
         {
             if (subViews is IList<View>)
             {
-                var viewList = (IList<View>) subViews;
+                var viewList = (IList<View>)subViews;
                 UpdateChildren(viewList, newData, oldData);
             }
-            else {
-                ((View) subViews).Update(newData, oldData);
+            else
+            {
+                ((View)subViews).Update(newData, oldData);
             }
         }
-    
+
         private void HandleEvent(EventBean theEvent, bool isNew)
         {
             var groupByValuesKey = GetGroupKey(theEvent);
-    
+
             // Get child views that belong to this group-by value combination
             var subViews = _subViewsPerKey.Get(groupByValuesKey);
-    
+
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
-            if (subViews == null) {
+            if (subViews == null)
+            {
                 subViews = MakeSubViews(this, _propertyNames, groupByValuesKey, _agentInstanceContext);
                 _subViewsPerKey.Put(groupByValuesKey, subViews);
             }
-    
+
             // Construct a pair of lists to hold the events for the grouped value if not already there
             var pair = _groupedEvents.Get(subViews);
-            if (pair == null) {
+            if (pair == null)
+            {
                 pair = new Pair<Object, Object>(null, null);
                 _groupedEvents.Put(subViews, pair);
             }
-    
+
             // Add event to a child view event list for later child Update that includes new and old events
-            if (isNew) {
+            if (isNew)
+            {
                 pair.First = AddUpgradeToDequeIfPopulated(pair.First, theEvent);
             }
-            else {
+            else
+            {
                 pair.Second = AddUpgradeToDequeIfPopulated(pair.Second, theEvent);
             }
         }
-    
+
         private static View CopyChildView(GroupByView groupView, String[] propertyNames, Object groupByValues, AgentInstanceViewFactoryChainContext agentInstanceContext, View originalChildView)
         {
             if (originalChildView is MergeView)
             {
                 const string message = "Unexpected merge view as child of group-by view";
-                Log.Fatal(".copySubViews " + message);
+                Log.Error(".copySubViews " + message);
                 throw new EPException(message);
             }
-    
+
             if (!(originalChildView is CloneableView))
             {
                 throw new EPException("Unexpected error copying subview " + originalChildView.GetType().FullName);
             }
-            var cloneableView = (CloneableView) originalChildView;
-    
+            var cloneableView = (CloneableView)originalChildView;
+
             // Copy child node
             var copyChildView = cloneableView.CloneView();
             copyChildView.Parent = groupView;
-    
+
             // Make the sub views for child copying from the original to the child
             CopySubViews(groupView.CriteriaExpressions, propertyNames, groupByValues, originalChildView, copyChildView,
                     agentInstanceContext);
-    
+
             return copyChildView;
         }
 
@@ -377,7 +391,7 @@ namespace com.espertech.esper.view.std
                 // Determine if view is our merge view
                 if (subView is MergeViewMarker)
                 {
-                    var mergeView = (MergeViewMarker) subView;
+                    var mergeView = (MergeViewMarker)subView;
                     if (ExprNodeUtility.DeepEquals(mergeView.GroupFieldNames, criteriaExpressions))
                     {
                         if (mergeView.EventType != copyView.EventType)
@@ -406,27 +420,28 @@ namespace com.espertech.esper.view.std
                         continue;
                     }
                 }
-    
+
                 if (!(subView is CloneableView))
                 {
                     throw new EPException("Unexpected error copying subview");
                 }
-                var cloneableView = (CloneableView) subView;
+                var cloneableView = (CloneableView)subView;
                 var copiedChild = cloneableView.CloneView();
                 copyView.AddView(copiedChild);
-    
+
                 // Make the sub views for child
                 CopySubViews(criteriaExpressions, propertyNames, groupByValues, subView, copiedChild, agentInstanceContext);
             }
         }
-    
+
         private Object GetGroupKey(EventBean theEvent)
         {
             _eventsPerStream[0] = theEvent;
-            if (_criteriaEvaluators.Length == 1) {
+            if (_criteriaEvaluators.Length == 1)
+            {
                 return _criteriaEvaluators[0].Evaluate(new EvaluateParams(_eventsPerStream, true, _agentInstanceContext));
             }
-    
+
             var values = new Object[_criteriaEvaluators.Length];
             var evaluateParams = new EvaluateParams(_eventsPerStream, true, _agentInstanceContext);
             for (var i = 0; i < _criteriaEvaluators.Length; i++)
@@ -444,14 +459,14 @@ namespace com.espertech.esper.view.std
             }
             else if (holder is Deque<EventBean>)
             {
-                var deque = (Deque<EventBean>) holder;
+                var deque = (Deque<EventBean>)holder;
                 deque.Add(theEvent);
                 return deque;
             }
             else
             {
                 var deque = new ArrayDeque<EventBean>(4);
-                deque.Add((EventBean) holder);
+                deque.Add((EventBean)holder);
                 deque.Add(theEvent);
                 return deque;
             }
@@ -459,15 +474,17 @@ namespace com.espertech.esper.view.std
 
         internal static EventBean[] ConvertToArray(Object eventOrDeque)
         {
-            if (eventOrDeque == null) {
+            if (eventOrDeque == null)
+            {
                 return null;
             }
-            if (eventOrDeque is EventBean) {
-                return new EventBean[] {(EventBean) eventOrDeque};
+            if (eventOrDeque is EventBean)
+            {
+                return new EventBean[] { (EventBean)eventOrDeque };
             }
-            return ((ICollection<EventBean>) eventOrDeque).ToArray();
+            return ((ICollection<EventBean>)eventOrDeque).ToArray();
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

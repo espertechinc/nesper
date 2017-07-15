@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.join.plan
             // Analyze relationships between streams. Relationships are properties in AND and EQUALS nodes of joins.
             if (topNode is ExprEqualsNode)
             {
-                var equalsNode = (ExprEqualsNode) topNode;
+                var equalsNode = (ExprEqualsNode)topNode;
                 if (!equalsNode.IsNotEquals)
                 {
                     AnalyzeEqualsNode(equalsNode, queryGraph, isOuterJoin);
@@ -48,30 +48,35 @@ namespace com.espertech.esper.epl.join.plan
             }
             else if (topNode is ExprAndNode)
             {
-                var andNode = (ExprAndNode) topNode;
+                var andNode = (ExprAndNode)topNode;
                 AnalyzeAndNode(andNode, queryGraph, isOuterJoin);
             }
-            else if (topNode is ExprBetweenNode) {
-                var betweenNode = (ExprBetweenNode) topNode;
+            else if (topNode is ExprBetweenNode)
+            {
+                var betweenNode = (ExprBetweenNode)topNode;
                 AnalyzeBetweenNode(betweenNode, queryGraph);
             }
-            else if (topNode is ExprRelationalOpNode) {
-                var relNode = (ExprRelationalOpNode) topNode;
+            else if (topNode is ExprRelationalOpNode)
+            {
+                var relNode = (ExprRelationalOpNode)topNode;
                 AnalyzeRelationalOpNode(relNode, queryGraph);
             }
             else if (topNode is ExprDotNode && !isOuterJoin)
             {
-                var dotNode = (ExprDotNode) topNode;
+                var dotNode = (ExprDotNode)topNode;
                 AnalyzeDotNode(dotNode, queryGraph);
             }
-            else if (topNode is ExprInNode) {
-                ExprInNode inNode = (ExprInNode) topNode;
+            else if (topNode is ExprInNode)
+            {
+                ExprInNode inNode = (ExprInNode)topNode;
                 AnalyzeInNode(inNode, queryGraph);
             }
-            else if (topNode is ExprOrNode) {
+            else if (topNode is ExprOrNode)
+            {
                 ExprNode rewritten = FilterSpecCompilerMakeParamUtil.RewriteOrToInIfApplicable(topNode);
-                if (rewritten is ExprInNode) {
-                    var inNode = (ExprInNode) rewritten;
+                if (rewritten is ExprInNode)
+                {
+                    var inNode = (ExprInNode)rewritten;
                     AnalyzeInNode(inNode, queryGraph);
                 }
             }
@@ -106,7 +111,7 @@ namespace com.espertech.esper.epl.join.plan
                 {
                     continue;
                 }
-                var setIdent = (ExprIdentNode) exprNodeSet;
+                var setIdent = (ExprIdentNode)exprNodeSet;
                 AddToList(setIdent.StreamId, setIdent, perStreamExprs);
             }
             if (perStreamExprs.IsEmpty())
@@ -148,7 +153,7 @@ namespace com.espertech.esper.epl.join.plan
             }
             else
             {
-                testStreamNum = ((ExprIdentNode) testExpr).StreamId;
+                testStreamNum = ((ExprIdentNode)testExpr).StreamId;
             }
 
             if (testStreamNum == null)
@@ -171,7 +176,7 @@ namespace com.espertech.esper.epl.join.plan
             {
                 return;
             }
-            var testIdent = (ExprIdentNode) inNode.ChildNodes[0];
+            var testIdent = (ExprIdentNode)inNode.ChildNodes[0];
             var testIdentClass = TypeHelper.GetBoxedType(testIdent.ExprEvaluator.ReturnType);
             int indexedStream = testIdent.StreamId;
 
@@ -191,7 +196,7 @@ namespace com.espertech.esper.epl.join.plan
                 }
                 if (exprNodeSet is ExprIdentNode)
                 {
-                    var setIdent = (ExprIdentNode) exprNodeSet;
+                    var setIdent = (ExprIdentNode)exprNodeSet;
                     AddToList(setIdent.StreamId, setIdent, perStreamExprs);
                 }
                 else
@@ -235,66 +240,75 @@ namespace com.espertech.esper.epl.join.plan
         {
             var setExpressions = new ExprNode[inNode.ChildNodes.Length - 1];
             var count = 0;
-            for (int i = 1; i < inNode.ChildNodes.Length; i++) {
+            for (int i = 1; i < inNode.ChildNodes.Length; i++)
+            {
                 setExpressions[count++] = inNode.ChildNodes[i];
             }
             return setExpressions;
         }
-    
-        private static void AnalyzeDotNode(ExprDotNode dotNode, QueryGraph queryGraph) {
+
+        private static void AnalyzeDotNode(ExprDotNode dotNode, QueryGraph queryGraph)
+        {
             var interval = dotNode.ExprDotNodeFilterAnalyzerDesc;
-            if (interval == null) {
+            if (interval == null)
+            {
                 return;
             }
             interval.Apply(queryGraph);
         }
-    
-        private static void AnalyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph) {
-            if ( ((relNode.ChildNodes[0] is ExprIdentNode)) &&
+
+        private static void AnalyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph)
+        {
+            if (((relNode.ChildNodes[0] is ExprIdentNode)) &&
                  ((relNode.ChildNodes[1] is ExprIdentNode)))
             {
-                var identNodeLeft = (ExprIdentNode) relNode.ChildNodes[0];
-                var identNodeRight = (ExprIdentNode) relNode.ChildNodes[1];
-    
+                var identNodeLeft = (ExprIdentNode)relNode.ChildNodes[0];
+                var identNodeRight = (ExprIdentNode)relNode.ChildNodes[1];
+
                 if (identNodeLeft.StreamId != identNodeRight.StreamId)
                 {
                     queryGraph.AddRelationalOpStrict(
                         identNodeLeft.StreamId, identNodeLeft,
-                        identNodeRight.StreamId, identNodeRight, 
+                        identNodeRight.StreamId, identNodeRight,
                         relNode.RelationalOpEnum);
                 }
                 return;
             }
-    
+
             var indexedStream = -1;
             ExprIdentNode indexedPropExpr = null;
             ExprNode exprNodeNoIdent = null;
             RelationalOpEnum relop = relNode.RelationalOpEnum;
-    
-            if (relNode.ChildNodes[0] is ExprIdentNode) {
+
+            if (relNode.ChildNodes[0] is ExprIdentNode)
+            {
                 indexedPropExpr = (ExprIdentNode)relNode.ChildNodes[0];
                 indexedStream = indexedPropExpr.StreamId;
                 exprNodeNoIdent = relNode.ChildNodes[1];
             }
-            else if (relNode.ChildNodes[1] is ExprIdentNode) {
+            else if (relNode.ChildNodes[1] is ExprIdentNode)
+            {
                 indexedPropExpr = (ExprIdentNode)relNode.ChildNodes[1];
                 indexedStream = indexedPropExpr.StreamId;
                 exprNodeNoIdent = relNode.ChildNodes[0];
                 relop = relop.Reversed();
             }
-            if (indexedStream == -1) {
+            if (indexedStream == -1)
+            {
                 return;     // require property of right/left side of equals
             }
-    
+
             var eligibility = EligibilityUtil.VerifyInputStream(exprNodeNoIdent, indexedStream);
-            if (!eligibility.Eligibility.IsEligible()) {
+            if (!eligibility.Eligibility.IsEligible())
+            {
                 return;
             }
-    
+
             queryGraph.AddRelationalOp(indexedStream, indexedPropExpr, eligibility.StreamNum, exprNodeNoIdent, relop);
         }
-    
-        private static void AnalyzeBetweenNode(ExprBetweenNode betweenNode, QueryGraph queryGraph) {
+
+        private static void AnalyzeBetweenNode(ExprBetweenNode betweenNode, QueryGraph queryGraph)
+        {
             RangeFilterAnalyzer.Apply(betweenNode.ChildNodes[0], betweenNode.ChildNodes[1], betweenNode.ChildNodes[2],
                     betweenNode.IsLowEndpointIncluded, betweenNode.IsHighEndpointIncluded, betweenNode.IsNotBetween,
                     queryGraph);
@@ -308,52 +322,59 @@ namespace com.espertech.esper.epl.join.plan
         /// <param name="isOuterJoin">if set to <c>true</c> [is outer join].</param>
         internal static void AnalyzeEqualsNode(ExprEqualsNode equalsNode, QueryGraph queryGraph, bool isOuterJoin)
         {
-            if ( (equalsNode.ChildNodes[0] is ExprIdentNode) &&
+            if ((equalsNode.ChildNodes[0] is ExprIdentNode) &&
                  (equalsNode.ChildNodes[1] is ExprIdentNode))
             {
-                var identNodeLeft = (ExprIdentNode) equalsNode.ChildNodes[0];
-                var identNodeRight = (ExprIdentNode) equalsNode.ChildNodes[1];
-    
+                var identNodeLeft = (ExprIdentNode)equalsNode.ChildNodes[0];
+                var identNodeRight = (ExprIdentNode)equalsNode.ChildNodes[1];
+
                 if (identNodeLeft.StreamId != identNodeRight.StreamId)
                 {
                     queryGraph.AddStrictEquals(identNodeLeft.StreamId, identNodeLeft.ResolvedPropertyName, identNodeLeft,
                             identNodeRight.StreamId, identNodeRight.ResolvedPropertyName, identNodeRight);
                 }
-    
+
                 return;
             }
-            if (isOuterJoin) {      // outerjoins don't use constants or one-way expression-derived information to evaluate join
+            if (isOuterJoin)
+            {      // outerjoins don't use constants or one-way expression-derived information to evaluate join
                 return;
             }
-    
+
             // handle constant-compare or transformation case
             var indexedStream = -1;
             ExprIdentNode indexedPropExpr = null;
             ExprNode exprNodeNoIdent = null;
-    
-            if (equalsNode.ChildNodes[0] is ExprIdentNode) {
+
+            if (equalsNode.ChildNodes[0] is ExprIdentNode)
+            {
                 indexedPropExpr = (ExprIdentNode)equalsNode.ChildNodes[0];
                 indexedStream = indexedPropExpr.StreamId;
                 exprNodeNoIdent = equalsNode.ChildNodes[1];
             }
-            else if (equalsNode.ChildNodes[1] is ExprIdentNode) {
+            else if (equalsNode.ChildNodes[1] is ExprIdentNode)
+            {
                 indexedPropExpr = (ExprIdentNode)equalsNode.ChildNodes[1];
                 indexedStream = indexedPropExpr.StreamId;
                 exprNodeNoIdent = equalsNode.ChildNodes[0];
             }
-            if (indexedStream == -1) {
+            if (indexedStream == -1)
+            {
                 return;     // require property of right/left side of equals
             }
-    
+
             var eligibility = EligibilityUtil.VerifyInputStream(exprNodeNoIdent, indexedStream);
-            if (!eligibility.Eligibility.IsEligible()) {
+            if (!eligibility.Eligibility.IsEligible())
+            {
                 return;
             }
-    
-            if (eligibility.Eligibility == Eligibility.REQUIRE_NONE) {
+
+            if (eligibility.Eligibility == Eligibility.REQUIRE_NONE)
+            {
                 queryGraph.AddUnkeyedExpression(indexedStream, indexedPropExpr, exprNodeNoIdent);
             }
-            else {
+            else
+            {
                 queryGraph.AddKeyedExpression(indexedStream, indexedPropExpr, eligibility.StreamNum.Value, exprNodeNoIdent);
             }
         }

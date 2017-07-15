@@ -22,10 +22,12 @@ namespace com.espertech.esper.pattern
             : base(context)
         {
             FactoryNode = factoryNode;
-            if (context.AgentInstanceContext.AgentInstanceFilterProxy != null) {
+            if (context.AgentInstanceContext.AgentInstanceFilterProxy != null)
+            {
                 AddendumFilters = context.AgentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(factoryNode.FilterSpec);
             }
-            else {
+            else
+            {
                 AddendumFilters = null;
             }
         }
@@ -36,12 +38,13 @@ namespace com.espertech.esper.pattern
 
         public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
         {
-            if (Context.ConsumptionHandler != null) {
+            if (Context.ConsumptionHandler != null)
+            {
                 return new EvalFilterStateNodeConsumeImpl(parentNode, this);
             }
             return new EvalFilterStateNode(parentNode, this);
         }
-    
+
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

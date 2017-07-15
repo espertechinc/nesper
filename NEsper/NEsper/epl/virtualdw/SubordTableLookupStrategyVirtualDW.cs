@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.virtualdw
     public class SubordTableLookupStrategyVirtualDW : SubordTableLookupStrategy
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _namedWindowName;
         private readonly VirtualDataWindowLookup _externalIndex;
         private readonly ExternalEvaluator[] _evaluators;
@@ -46,23 +46,27 @@ namespace com.espertech.esper.epl.virtualdw
             _evaluators = new ExternalEvaluator[hashKeys.Count + rangeKeys.Count];
             _nwOnTrigger = nwOnTrigger;
             _eventsLocal = new EventBean[numOuterStreams + 1];
-    
+
             var count = 0;
-            foreach (var hashKey in hashKeys) {
+            foreach (var hashKey in hashKeys)
+            {
                 var evaluator = hashKey.HashKey.KeyExpr.ExprEvaluator;
                 _evaluators[count] = new ExternalEvaluatorHashRelOp(evaluator, hashKeyCoercionTypes.CoercionTypes[count]);
                 count++;
             }
-            for (var i = 0; i < rangeKeys.Count; i++) {
+            for (var i = 0; i < rangeKeys.Count; i++)
+            {
                 SubordPropRangeKey rangeKey = rangeKeys[i];
-                if (rangeKey.RangeInfo.RangeType.IsRange()) {
-                    var range = (QueryGraphValueEntryRangeIn) rangeKey.RangeInfo;
+                if (rangeKey.RangeInfo.RangeType.IsRange())
+                {
+                    var range = (QueryGraphValueEntryRangeIn)rangeKey.RangeInfo;
                     var evaluatorStart = range.ExprStart.ExprEvaluator;
                     var evaluatorEnd = range.ExprEnd.ExprEvaluator;
                     _evaluators[count] = new ExternalEvaluatorBtreeRange(evaluatorStart, evaluatorEnd, rangeKeyCoercionTypes.CoercionTypes[i]);
                 }
-                else {
-                    var relOp = (QueryGraphValueEntryRangeRelOp) rangeKey.RangeInfo;
+                else
+                {
+                    var relOp = (QueryGraphValueEntryRangeRelOp)rangeKey.RangeInfo;
                     var evaluator = relOp.Expression.ExprEvaluator;
                     _evaluators[count] = new ExternalEvaluatorHashRelOp(evaluator, rangeKeyCoercionTypes.CoercionTypes[i]);
                 }
@@ -73,28 +77,33 @@ namespace com.espertech.esper.epl.virtualdw
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             EventBean[] events;
-            if (_nwOnTrigger) {
+            if (_nwOnTrigger)
+            {
                 events = eventsPerStream;
             }
-            else {
+            else
+            {
                 Array.Copy(eventsPerStream, 0, _eventsLocal, 1, eventsPerStream.Length);
                 events = _eventsLocal;
             }
             var keys = new Object[_evaluators.Length];
-            for (var i = 0; i < _evaluators.Length; i++) {
+            for (var i = 0; i < _evaluators.Length; i++)
+            {
                 keys[i] = _evaluators[i].Evaluate(events, context);
             }
-    
+
             ISet<EventBean> data = null;
-            try {
+            try
+            {
                 data = _externalIndex.Lookup(keys, eventsPerStream);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Log.Warn("Exception encountered invoking virtual data window external index for window '" + _namedWindowName + "': " + ex.Message, ex);
             }
             return data;
         }
-    
+
         public String ToQueryPlan()
         {
             return GetType().FullName + " external index " + _externalIndex;
@@ -120,7 +129,7 @@ namespace com.espertech.esper.epl.virtualdw
                 _hashKeysEval = hashKeysEval;
                 _coercionType = coercionType;
             }
-    
+
             public Object Evaluate(EventBean[] events, ExprEvaluatorContext context)
             {
                 return EventBeanUtility.Coerce(
@@ -141,7 +150,7 @@ namespace com.espertech.esper.epl.virtualdw
                 _endEval = endEval;
                 _coercionType = coercionType;
             }
-    
+
             public Object Evaluate(EventBean[] events, ExprEvaluatorContext context)
             {
                 var evaluateParams = new EvaluateParams(events, true, context);

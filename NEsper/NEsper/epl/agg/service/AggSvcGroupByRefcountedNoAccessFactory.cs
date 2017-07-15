@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.service
 {
@@ -23,16 +20,23 @@ namespace com.espertech.esper.epl.agg.service
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="evaluators">evaluate the sub-expression within the aggregate function (ie. Sum(4*myNum))</param>
-        /// <param name="prototypes">collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregationsaggregation states for each group</param>
+        /// <param name="evaluators">- evaluate the sub-expression within the aggregate function (ie. Sum(4*myNum))</param>
+        /// <param name="prototypes">
+        /// - collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregations
+        /// aggregation states for each group
+        /// </param>
         public AggSvcGroupByRefcountedNoAccessFactory(ExprEvaluator[] evaluators, AggregationMethodFactory[] prototypes)
             : base(evaluators, prototypes)
         {
         }
 
-        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
+        public override AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            EngineImportService engineImportService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             return new AggSvcGroupByRefcountedNoAccessImpl(Evaluators, Aggregators);
         }
     }
-}
+} // end of namespace

@@ -24,12 +24,13 @@ namespace com.espertech.esper.epl.expression.core
     {
         private readonly TimeProvider _timeProvider;
         private readonly ExpressionResultCacheService _expressionResultCacheService;
-    
-        public ExprEvaluatorContextTimeOnly(TimeProvider timeProvider) {
+
+        public ExprEvaluatorContextTimeOnly(TimeProvider timeProvider)
+        {
             _timeProvider = timeProvider;
             _expressionResultCacheService = new ExpressionResultCacheService(1);
         }
-    
+
         /// <summary>Returns the time provider. </summary>
         /// <value>time provider</value>
         public TimeProvider TimeProvider
@@ -52,7 +53,7 @@ namespace com.espertech.esper.epl.expression.core
             get { return null; }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
             get { return null; }
         }

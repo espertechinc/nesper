@@ -44,13 +44,13 @@ namespace com.espertech.esper.dataflow.ops
     public class Select : OutputProcessViewCallback, DataFlowOpLifecycle
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         [DataFlowOpParameter]
         private StatementSpecRaw select;
-    
+
         [DataFlowOpParameter]
         private bool iterate;
-    
+
         private EPLSelectViewable[] _viewablesPerPort;
         private EventBeanAdapterFactory[] _adapterFactories;
         private AgentInstanceContext _agentInstanceContext;
@@ -58,69 +58,78 @@ namespace com.espertech.esper.dataflow.ops
         private StatementAgentInstanceFactorySelectResult _selectResult;
         private bool _isOutputLimited;
         private bool _submitEventBean;
-    
+
         [DataFlowContext]
         private EPDataFlowEmitter graphContext;
-    
+
         public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
         {
-            if (context.InputPorts.IsEmpty()) {
+            if (context.InputPorts.IsEmpty())
+            {
                 throw new ArgumentException("Select operator requires at least one input stream");
             }
-            if (context.OutputPorts.Count != 1) {
+            if (context.OutputPorts.Count != 1)
+            {
                 throw new ArgumentException("Select operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
             }
-    
+
             DataFlowOpOutputPort portZero = context.OutputPorts[0];
-            if (portZero.OptionalDeclaredType != null && !portZero.OptionalDeclaredType.IsUnderlying) {
+            if (portZero.OptionalDeclaredType != null && !portZero.OptionalDeclaredType.IsUnderlying)
+            {
                 _submitEventBean = true;
             }
-    
+
             // determine adapter factories for each type
             int numStreams = context.InputPorts.Count;
             _adapterFactories = new EventBeanAdapterFactory[numStreams];
-            for (int i = 0; i < numStreams; i++) {
+            for (int i = 0; i < numStreams; i++)
+            {
                 EventType eventType = context.InputPorts.Get(i).TypeDesc.EventType;
                 _adapterFactories[i] = context.StatementContext.EventAdapterService.GetAdapterFactoryForType(eventType);
             }
-    
+
             // Compile and prepare execution
             //
             StatementContext statementContext = context.StatementContext;
             EPServicesContext servicesContext = context.ServicesContext;
             AgentInstanceContext agentInstanceContext = context.AgentInstanceContext;
-    
+
             // validate
-            if (select.InsertIntoDesc != null) {
+            if (select.InsertIntoDesc != null)
+            {
                 throw new ExprValidationException("Insert-into clause is not supported");
             }
-            if (select.SelectStreamSelectorEnum != SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
+            if (select.SelectStreamSelectorEnum != SelectClauseStreamSelectorEnum.ISTREAM_ONLY)
+            {
                 throw new ExprValidationException("Selecting remove-stream is not supported");
             }
             ExprNodeSubselectDeclaredDotVisitor visitor = StatementSpecRawAnalyzer.WalkSubselectAndDeclaredDotExpr(select);
             GroupByClauseExpressions groupByExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
-                    select.GroupByExpressions, 
-                    select.SelectClauseSpec, 
-                    select.HavingExprRootNode, 
+                    select.GroupByExpressions,
+                    select.SelectClauseSpec,
+                    select.HavingExprRootNode,
                     select.OrderByList,
                     visitor);
             if (!visitor.Subselects.IsEmpty())
             {
                 throw new ExprValidationException("Subselects are not supported");
             }
-    
+
             IDictionary<int, FilterStreamSpecRaw> streams = new Dictionary<int, FilterStreamSpecRaw>();
-            for (int streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
+            for (int streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++)
+            {
                 var rawStreamSpec = select.StreamSpecs[streamNum];
-                if (!(rawStreamSpec is FilterStreamSpecRaw)) {
+                if (!(rawStreamSpec is FilterStreamSpecRaw))
+                {
                     throw new ExprValidationException("From-clause must contain only streams and cannot contain patterns or other constructs");
                 }
-                streams.Put(streamNum, (FilterStreamSpecRaw) rawStreamSpec);
+                streams.Put(streamNum, (FilterStreamSpecRaw)rawStreamSpec);
             }
-    
+
             // compile offered streams
             IList<StreamSpecCompiled> streamSpecCompileds = new List<StreamSpecCompiled>();
-            for (int streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
+            for (int streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++)
+            {
                 var filter = streams.Get(streamNum);
                 var inputPort = FindInputPort(filter.RawFilterSpec.EventTypeName, context.InputPorts);
                 if (inputPort == null)
@@ -130,24 +139,26 @@ namespace com.espertech.esper.dataflow.ops
                 }
                 var eventType = inputPort.Value.Value.TypeDesc.EventType;
                 var streamAlias = filter.OptionalStreamName;
-                var filterSpecCompiled = new FilterSpecCompiled(eventType, streamAlias, new IList<FilterSpecParam>[]{ Collections.GetEmptyList<FilterSpecParam>() }, null);
-                var filterStreamSpecCompiled = new FilterStreamSpecCompiled(filterSpecCompiled, select.StreamSpecs[0].ViewSpecs, streamAlias, new StreamSpecOptions());
+                var filterSpecCompiled = new FilterSpecCompiled(eventType, streamAlias, new IList<FilterSpecParam>[] { Collections.GetEmptyList<FilterSpecParam>() }, null);
+                var filterStreamSpecCompiled = new FilterStreamSpecCompiled(filterSpecCompiled, select.StreamSpecs[0].ViewSpecs, streamAlias, StreamSpecOptions.DEFAULT);
                 streamSpecCompileds.Add(filterStreamSpecCompiled);
             }
-    
+
             // create compiled statement spec
             SelectClauseSpecCompiled selectClauseCompiled = StatementLifecycleSvcUtil.CompileSelectClause(select.SelectClauseSpec);
-    
+
             // determine if snapshot output is needed
             OutputLimitSpec outputLimitSpec = select.OutputLimitSpec;
             _isOutputLimited = outputLimitSpec != null;
-            if (iterate) {
-                if (outputLimitSpec != null) {
+            if (iterate)
+            {
+                if (outputLimitSpec != null)
+                {
                     throw new ExprValidationException("Output rate limiting is not supported with 'iterate'");
                 }
                 outputLimitSpec = new OutputLimitSpec(OutputLimitLimitType.SNAPSHOT, OutputLimitRateType.TERM);
             }
-    
+
             var mergedAnnotations = AnnotationUtil.MergeAnnotations(statementContext.Annotations, context.OperatorAnnotations);
             var orderByArray = OrderByItem.ToArray(select.OrderByList);
             var outerJoinArray = OuterJoinDesc.ToArray(select.OuterJoinDescList);
@@ -156,26 +167,30 @@ namespace com.espertech.esper.dataflow.ops
                     selectClauseCompiled, streamSpecArray, outerJoinArray, select.FilterExprRootNode, select.HavingExprRootNode, outputLimitSpec,
                     orderByArray, ExprSubselectNode.EMPTY_SUBSELECT_ARRAY, ExprNodeUtility.EMPTY_DECLARED_ARR, ExprNodeUtility.EMPTY_SCRIPTS, select.ReferencedVariables,
                     select.RowLimitSpec, CollectionUtil.EMPTY_STRING_ARRAY, mergedAnnotations, null, null, null, null, null, null, null, null, null, groupByExpressions, null, null);
-    
+
             // create viewable per port
             var viewables = new EPLSelectViewable[context.InputPorts.Count];
             _viewablesPerPort = viewables;
-            foreach (var entry in context.InputPorts) {
+            foreach (var entry in context.InputPorts)
+            {
                 EPLSelectViewable viewable = new EPLSelectViewable(entry.Value.TypeDesc.EventType);
                 viewables[entry.Key] = viewable;
             }
-    
+
             var activatorFactory = new ProxyViewableActivatorFactory
             {
                 ProcCreateActivatorSimple = filterStreamSpec =>
                 {
                     EPLSelectViewable found = null;
-                    foreach (EPLSelectViewable sviewable in viewables) {
-                        if (sviewable.EventType == filterStreamSpec.FilterSpec.FilterForEventType) {
+                    foreach (EPLSelectViewable sviewable in viewables)
+                    {
+                        if (sviewable.EventType == filterStreamSpec.FilterSpec.FilterForEventType)
+                        {
                             found = sviewable;
                         }
                     }
-                    if (found == null) {
+                    if (found == null)
+                    {
                         throw new IllegalStateException("Failed to find viewable for filter");
                     }
                     EPLSelectViewable viewable = found;
@@ -192,39 +207,41 @@ namespace com.espertech.esper.dataflow.ops
                             null));
                 }
             };
-    
+
             // for per-row deliver, register select expression result callback
             OutputProcessViewCallback optionalOutputProcessViewCallback = null;
-            if (!iterate && !_isOutputLimited) {
+            if (!iterate && !_isOutputLimited)
+            {
                 _deliveryCallback = new EPLSelectDeliveryCallback();
                 optionalOutputProcessViewCallback = this;
             }
-    
+
             // prepare
             EPStatementStartMethodSelectDesc selectDesc = EPStatementStartMethodSelectUtil.Prepare(compiled, servicesContext, statementContext, false, agentInstanceContext, false, activatorFactory, optionalOutputProcessViewCallback, _deliveryCallback);
-    
+
             // start
-            _selectResult = (StatementAgentInstanceFactorySelectResult) selectDesc.StatementAgentInstanceFactorySelect.NewContext(agentInstanceContext, false);
-    
+            _selectResult = (StatementAgentInstanceFactorySelectResult)selectDesc.StatementAgentInstanceFactorySelect.NewContext(agentInstanceContext, false);
+
             // for output-rate-limited, register a dispatch view
-            if (_isOutputLimited) {
+            if (_isOutputLimited)
+            {
                 _selectResult.FinalView.AddView(new EPLSelectUpdateDispatchView(this));
             }
-    
+
             // assign strategies to expression nodes
             EPStatementStartMethodHelperAssignExpr.AssignExpressionStrategies(
-                selectDesc, 
-                _selectResult.OptionalAggegationService, 
+                selectDesc,
+                _selectResult.OptionalAggegationService,
                 _selectResult.SubselectStrategies,
-                _selectResult.PriorNodeStrategies, 
-                _selectResult.PreviousNodeStrategies, 
-                null, 
+                _selectResult.PriorNodeStrategies,
+                _selectResult.PreviousNodeStrategies,
+                null,
                 null,
                 _selectResult.TableAccessEvalStrategies);
-    
+
             EventType outputEventType = selectDesc.ResultSetProcessorPrototypeDesc.ResultSetProcessorFactory.ResultEventType;
             _agentInstanceContext = agentInstanceContext;
-            return new DataFlowOpInitializeResult(new GraphTypeDesc[] {new GraphTypeDesc(false, true, outputEventType)});
+            return new DataFlowOpInitializeResult(new GraphTypeDesc[] { new GraphTypeDesc(false, true, outputEventType) });
         }
 
         private String[] GetInputPortNames(IDictionary<int, DataFlowOpInputPort> inputPorts)
@@ -270,7 +287,7 @@ namespace com.espertech.esper.dataflow.ops
 
             EventBean theEvent = _adapterFactories[originatingStream].MakeAdapter(row);
 
-            using(_agentInstanceContext.StatementContext.DefaultAgentInstanceLock.AcquireWriteLock())
+            using (_agentInstanceContext.StatementContext.DefaultAgentInstanceLock.AcquireWriteLock())
             {
                 try
                 {
@@ -297,7 +314,7 @@ namespace com.espertech.esper.dataflow.ops
                 IEnumerator<EventBean> it = _selectResult.FinalView.GetEnumerator();
                 if (it != null)
                 {
-                    for (; it.MoveNext();)
+                    for (; it.MoveNext(); )
                     {
                         var @event = it.Current;
                         if (_submitEventBean)

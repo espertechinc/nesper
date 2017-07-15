@@ -8,8 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
@@ -17,12 +21,11 @@ namespace com.espertech.esper.epl.agg.access
     /// <summary>
     /// Represents the aggregation accessor that provides the result for the "window" aggregation function.
     /// </summary>
-    public class AggregationAccessorWindowWEval : AggregationAccessor
-    {
-        private readonly int _streamNum;
-        private readonly ExprEvaluator _childNode;
-        private readonly EventBean[] _eventsPerStream;
-        private readonly Type _componentType;
+    public class AggregationAccessorWindowWEval : AggregationAccessor {
+        private readonly int streamNum;
+        private readonly ExprEvaluator childNode;
+        private readonly EventBean[] eventsPerStream;
+        private readonly Type componentType;
     
         /// <summary>
         /// Ctor.
@@ -30,61 +33,58 @@ namespace com.espertech.esper.epl.agg.access
         /// <param name="streamNum">stream id</param>
         /// <param name="childNode">expression</param>
         /// <param name="componentType">type</param>
-        public AggregationAccessorWindowWEval(int streamNum, ExprEvaluator childNode, Type componentType)
-        {
-            _streamNum = streamNum;
-            _childNode = childNode;
-            _eventsPerStream = new EventBean[streamNum + 1];
-            _componentType = componentType;
+        public AggregationAccessorWindowWEval(int streamNum, ExprEvaluator childNode, Type componentType) {
+            this.streamNum = streamNum;
+            this.childNode = childNode;
+            this.eventsPerStream = new EventBean[streamNum + 1];
+            this.componentType = componentType;
         }
     
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public Object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            var array = Array.CreateInstance(_componentType, linear.Count);
-            var count = 0;
-            foreach(var bean in linear)
-            {
-                _eventsPerStream[_streamNum] = bean;
-                var value = _childNode.Evaluate(new EvaluateParams(_eventsPerStream, true, null));
-                array.SetValue(value, count++);
+            Object array = Array.NewInstance(componentType, linear.Count);
+            IEnumerator<EventBean> it = linear.GetEnumerator();
+            int count = 0;
+            for (; it.HasNext(); ) {
+                EventBean bean = it.Next();
+                this.eventsPerStream[streamNum] = bean;
+                Object value = childNode.Evaluate(this.eventsPerStream, true, null);
+                Array.Set(array, count++, value);
             }
     
             return array;
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            return linear.CollectionReadOnly;
+            return Linear.CollectionReadOnly();
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var linear = ((AggregationStateLinear) state);
+        public ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+            AggregationStateLinear linear = (AggregationStateLinear) state;
             if (linear.Count == 0) {
                 return null;
             }
-            var values = new List<object>(linear.Count);
-            foreach(EventBean bean in linear)
-            {
-                _eventsPerStream[_streamNum] = bean;
-                object value = _childNode.Evaluate(new EvaluateParams(_eventsPerStream, true, null));
+            var values = new List<Object>(linear.Count);
+            IEnumerator<EventBean> it = linear.GetEnumerator();
+            for (; it.HasNext(); ) {
+                EventBean bean = it.Next();
+                this.eventsPerStream[streamNum] = bean;
+                Object value = childNode.Evaluate(this.eventsPerStream, true, null);
                 values.Add(value);
             }
     
             return values;
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
+        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
             return null;
         }
     }
-}
+} // end of namespace

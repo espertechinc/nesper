@@ -3,4 +3,6 @@
 **/*.suo
 **/*.user
 **/*.py
+**/*.orig
+**/*.keep
 packages

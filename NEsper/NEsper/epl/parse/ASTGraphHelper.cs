@@ -107,7 +107,7 @@ namespace com.espertech.esper.epl.parse
                 }
             }
             else {
-                paramNames.Add(ASTUtil.UnescapeClassIdent(item.classIdentifier()));
+                paramNames.Add(ASTUtil.UnescapeClassIdent(typeof(item)Identifier()));
             }
             return paramNames.ToArray();
         }

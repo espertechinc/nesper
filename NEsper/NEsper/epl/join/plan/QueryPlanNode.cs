@@ -40,11 +40,11 @@ namespace com.espertech.esper.epl.join.plan
         /// <returns></returns>
         public abstract ExecNode MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal, ILockable[] tableSecondaryIndexLocks);
 
-        public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
+        public abstract void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes);
 
         /// <summary>Print a long readable format of the query node to the supplied PrintWriter. </summary>
         /// <param name="writer">is the indentation writer to print to</param>
-        protected internal abstract void Print(IndentWriter writer);
+        public abstract void Print(IndentWriter writer);
 
         /// <summary>Print in readable format the execution plan spec. </summary>
         /// <param name="planNodeSpecs">plans to print</param>

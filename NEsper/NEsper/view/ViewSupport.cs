@@ -29,12 +29,12 @@ namespace com.espertech.esper.view
     public abstract class ViewSupport : View
     {
         public readonly static View[] EMPTY_VIEW_ARRAY = new View[0];
-    
+
         /// <summary>Parent viewable to this view - directly accessible by subclasses. </summary>
         private Viewable _parent;
-    
+
         private View[] _children;
-    
+
         /// <summary>Constructor. </summary>
         protected ViewSupport()
         {
@@ -62,11 +62,12 @@ namespace com.espertech.esper.view
             view.Parent = this;
             return view;
         }
-    
+
         public virtual bool RemoveView(View view)
         {
             int index = FindViewIndex(_children, view);
-            if (index == -1) {
+            if (index == -1)
+            {
                 return false;
             }
             _children = RemoveView(_children, index);
@@ -95,7 +96,7 @@ namespace com.espertech.esper.view
         public virtual void UpdateChildren(EventBean[] newData, EventBean[] oldData)
         {
             int size = _children.Length;
-    
+
             // Provide a shortcut for a single child view since this is a very common case.
             // No iteration required here.
             if (size == 0)
@@ -115,7 +116,7 @@ namespace com.espertech.esper.view
                 }
             }
         }
-    
+
         /// <summary>Updates all the children with new data. Static convenience method that accepts the list of child views as a parameter. </summary>
         /// <param name="childViews">is the list of child views to send the data to</param>
         /// <param name="newData">is the array of new event data</param>
@@ -127,7 +128,7 @@ namespace com.espertech.esper.view
                 child.Update(newData, oldData);
             }
         }
-    
+
         /// <summary>Convenience method for logging the parameters passed to the Update method. Only logs if debug is enabled. </summary>
         /// <param name="prefix">is a prefix text to output for each line</param>
         /// <param name="result">is the data in an Update call</param>
@@ -137,7 +138,7 @@ namespace com.espertech.esper.view
             EventBean[] oldEventArr = result != null ? result.Second : null;
             DumpUpdateParams(prefix, newEventArr, oldEventArr);
         }
-    
+
         /// <summary>Convenience method for logging the parameters passed to the Update method. Only logs if debug is enabled. </summary>
         /// <param name="prefix">is a prefix text to output for each line</param>
         /// <param name="newData">is the new data in an Update call</param>
@@ -148,7 +149,7 @@ namespace com.espertech.esper.view
             {
                 return;
             }
-    
+
             var writer = new StringWriter();
             if (newData == null)
             {
@@ -159,7 +160,7 @@ namespace com.espertech.esper.view
                 writer.WriteLine(prefix + " newData.size=" + newData.Length + "...");
                 PrintObjectArray(prefix, writer, newData);
             }
-    
+
             if (oldData == null)
             {
                 writer.WriteLine(prefix + " oldData=null ");
@@ -170,7 +171,7 @@ namespace com.espertech.esper.view
                 PrintObjectArray(prefix, writer, oldData);
             }
         }
-    
+
         private static void PrintObjectArray(String prefix, TextWriter writer, Object[] objects)
         {
             int count = 0;
@@ -180,7 +181,7 @@ namespace com.espertech.esper.view
                 writer.WriteLine(prefix + " #" + count + " = " + objectToString);
             }
         }
-    
+
         /// <summary>Convenience method for logging the child views of a Viewable. Only logs if debug is enabled. This is a recursive method. </summary>
         /// <param name="prefix">is a text to print for each view printed</param>
         /// <param name="parentViewable">is the parent for which the child views are displayed.</param>
@@ -188,7 +189,8 @@ namespace com.espertech.esper.view
         {
             if (Log.IsDebugEnabled)
             {
-                if (parentViewable != null && parentViewable.Views != null) {
+                if (parentViewable != null && parentViewable.Views != null)
+                {
                     foreach (View child in parentViewable.Views)
                     {
                         if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
@@ -221,9 +223,9 @@ namespace com.espertech.esper.view
                     viewList.Reverse();
                     return viewList;
                 }
-    
+
                 bool found = FindDescendentRecusive(view, descendentView, stack);
-    
+
                 if (found)
                 {
                     var viewList = new List<View>(stack);
@@ -231,14 +233,14 @@ namespace com.espertech.esper.view
                     return viewList;
                 }
             }
-    
+
             return null;
         }
-    
+
         private static bool FindDescendentRecusive(View parentView, Viewable descendentView, Stack<View> stack)
         {
             stack.Push(parentView);
-    
+
             bool found = false;
             foreach (View view in parentView.Views)
             {
@@ -246,52 +248,60 @@ namespace com.espertech.esper.view
                 {
                     return true;
                 }
-    
+
                 found = FindDescendentRecusive(view, descendentView, stack);
-    
+
                 if (found)
                 {
                     break;
                 }
             }
-    
+
             if (!found)
             {
                 stack.Pop();
                 return false;
             }
-    
+
             return true;
         }
-    
+
         public static View[] AddView(View[] children, View view)
         {
-            if (children.Length == 0) {
-                return new View[] {view};
+            if (children.Length == 0)
+            {
+                return new View[] { view };
             }
-            else {
-                return (View[]) (CollectionUtil.ArrayExpandAddSingle(children, view));
+            else
+            {
+                return (View[])(CollectionUtil.ArrayExpandAddSingle(children, view));
             }
         }
-    
-        public static int FindViewIndex(View[] children, View view) {
-            for (int i = 0; i < children.Length; i++) {
-                if (children[i] == view) {
+
+        public static int FindViewIndex(View[] children, View view)
+        {
+            for (int i = 0; i < children.Length; i++)
+            {
+                if (children[i] == view)
+                {
                     return i;
                 }
             }
             return -1;
         }
-    
-        public static View[] RemoveView(View[] children, int index) {
-            if (children.Length == 1) {
+
+        public static View[] RemoveView(View[] children, int index)
+        {
+            if (children.Length == 1)
+            {
                 return EMPTY_VIEW_ARRAY;
             }
-            else {
-                return (View[]) (CollectionUtil.ArrayShrinkRemoveSingle(children, index));
+            else
+            {
+                return (View[])(CollectionUtil.ArrayShrinkRemoveSingle(children, index));
             }
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

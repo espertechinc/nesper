@@ -35,58 +35,64 @@ namespace com.espertech.esper.view.window
         private AggregationServiceFactoryDesc _aggregationServiceFactoryDesc;
         private ExprEvaluator _expiryExpressionEvaluator;
         private EventType _builtinMapType;
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
-    
+
             // define built-in fields
             var builtinTypeDef = ExpressionViewOAFieldEnumExtensions.AsMapOfTypes(_eventType);
             _builtinMapType = statementContext.EventAdapterService.CreateAnonymousObjectArrayType(
                 statementContext.StatementId + "_exprview", builtinTypeDef);
 
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] { _eventType, _builtinMapType }, new String[2], new bool[2], statementContext.EngineURI, false);
-    
+
             // validate expression
             _expiryExpression = ViewFactorySupport.ValidateExpr(ViewName, statementContext, _expiryExpression, streamTypeService, 0);
             _expiryExpressionEvaluator = _expiryExpression.ExprEvaluator;
-    
+
             var summaryVisitor = new ExprNodeSummaryVisitor();
             _expiryExpression.Accept(summaryVisitor);
-            if (summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect || summaryVisitor.HasPreviousPrior) {
+            if (summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect || summaryVisitor.HasPreviousPrior)
+            {
                 throw new ViewParameterException("Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context");
             }
-    
+
             var returnType = _expiryExpressionEvaluator.ReturnType;
-            if (returnType.GetBoxedType() != typeof(bool?)) {
+            if (returnType.GetBoxedType() != typeof(bool?))
+            {
                 throw new ViewParameterException("Invalid return value for expiry expression, expected a bool return value but received " + returnType.GetParameterAsString());
             }
-    
+
             // determine variables used, if any
-            var visitor = new ExprNodeVariableVisitor();
+            var visitor = new ExprNodeVariableVisitor(statementContext.VariableService);
             _expiryExpression.Accept(visitor);
             _variableNames = visitor.VariableNames;
-    
+
             // determine aggregation nodes, if any
             var aggregateNodes = new List<ExprAggregateNode>();
             ExprAggregateNodeUtil.GetAggregatesBottomUp(_expiryExpression, aggregateNodes);
-            if (aggregateNodes.IsNotEmpty()) {
-                try {
+            if (aggregateNodes.IsNotEmpty())
+            {
+                try
+                {
                     _aggregationServiceFactoryDesc = AggregationServiceFactoryFactory.GetService(
                         Collections.GetEmptyList<ExprAggregateNode>(),
                         Collections.GetEmptyMap<ExprNode, String>(),
                         Collections.GetEmptyList<ExprDeclaredNode>(),
-                        null, aggregateNodes, 
-                        Collections.GetEmptyList<ExprAggregateNode>(), 
-                        Collections.GetEmptyList<ExprAggregateNodeGroupKey>(), false, 
-                        statementContext.Annotations, 
-                        statementContext.VariableService, false, false, null, null, 
-                        statementContext.AggregationServiceFactoryService, 
+                        null, aggregateNodes,
+                        Collections.GetEmptyList<ExprAggregateNode>(),
+                        Collections.GetEmptyList<ExprAggregateNodeGroupKey>(), false,
+                        statementContext.Annotations,
+                        statementContext.VariableService, false, false, null, null,
+                        statementContext.AggregationServiceFactoryService,
                         streamTypeService.EventTypes, null,
                         statementContext.ContextName,
-                        null, null, false, false, false);
+                        null, null, false, false, false,
+                        statementContext.EngineImportService);
                 }
-                catch (ExprValidationException ex) {
+                catch (ExprValidationException ex)
+                {
                     throw new ViewParameterException(ex.Message, ex);
                 }
             }
@@ -97,7 +103,7 @@ namespace com.espertech.esper.view.window
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return false;
         }

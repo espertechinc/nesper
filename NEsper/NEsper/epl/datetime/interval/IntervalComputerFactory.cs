@@ -21,10 +21,9 @@ namespace com.espertech.esper.epl.datetime.interval
 {
     public class IntervalComputerFactory
     {
-
-        public static IntervalComputer Make(DatetimeMethodEnum method, IList<ExprNode> expressions)
+        public static IntervalComputer Make(DatetimeMethodEnum method, IList<ExprNode> expressions, TimeAbacus timeAbacus)
         {
-            var parameters = GetParameters(expressions);
+            var parameters = GetParameters(expressions, timeAbacus);
 
             if (method == DatetimeMethodEnum.BEFORE)
             {
@@ -87,7 +86,7 @@ namespace com.espertech.esper.epl.datetime.interval
                         method == DatetimeMethodEnum.DURING, pair.Start.Evaluator, pair.End.Evaluator);
                 }
                 return new IntervalComputerDuringMinMaxStartEnd(
-                    method == DatetimeMethodEnum.DURING, GetEvaluators(expressions));
+                    method == DatetimeMethodEnum.DURING, GetEvaluators(expressions, timeAbacus));
             }
             else if (method == DatetimeMethodEnum.FINISHES)
             {
@@ -173,45 +172,45 @@ namespace com.espertech.esper.epl.datetime.interval
             }
         }
 
-        private static ExprOptionalConstant[] GetParameters(IList<ExprNode> expressions)
+        private static ExprOptionalConstant[] GetParameters(IList<ExprNode> expressions, TimeAbacus timeAbacus)
         {
             var parameters = new ExprOptionalConstant[expressions.Count - 1];
             for (var i = 1; i < expressions.Count; i++)
             {
-                parameters[i - 1] = GetExprOrConstant(expressions[i]);
+                parameters[i - 1] = GetExprOrConstant(expressions[i], timeAbacus);
             }
             return parameters;
         }
 
-        private static IntervalDeltaExprEvaluator[] GetEvaluators(IList<ExprNode> expressions)
+        private static IntervalDeltaExprEvaluator[] GetEvaluators(IList<ExprNode> expressions, TimeAbacus timeAbacus)
         {
             var parameters = new IntervalDeltaExprEvaluator[expressions.Count - 1];
             for (var i = 1; i < expressions.Count; i++)
             {
-                parameters[i - 1] = GetExprOrConstant(expressions[i]).Evaluator;
+                parameters[i - 1] = GetExprOrConstant(expressions[i], timeAbacus).Evaluator;
             }
             return parameters;
         }
 
-        private static ExprOptionalConstant GetExprOrConstant(ExprNode exprNode)
+        private static ExprOptionalConstant GetExprOrConstant(ExprNode exprNode, TimeAbacus timeAbacus)
         {
             if (exprNode is ExprTimePeriod)
             {
-                var timePeriod = (ExprTimePeriod) exprNode;
+                var timePeriod = (ExprTimePeriod)exprNode;
                 if (!timePeriod.HasMonth && !timePeriod.HasYear)
                 {
                     // no-month and constant
                     if (exprNode.IsConstantResult)
                     {
-                        double sec = timePeriod.EvaluateAsSeconds(null, true, null);
-                        var l = (long) (sec*1000L);
+                        var sec = timePeriod.EvaluateAsSeconds(null, true, null);
+                        var l = timeAbacus.DeltaForSecondsDouble(sec);
                         IntervalDeltaExprEvaluator eval = new ProxyIntervalDeltaExprEvaluator
                         {
                             ProcEvaluate = (reference, eventsPerStream, isNewData, context) => l,
                         };
                         return new ExprOptionalConstant(eval, l);
                     }
-                        // no-month and not constant
+                    // no-month and not constant
                     else
                     {
                         IntervalDeltaExprEvaluator eval = new ProxyIntervalDeltaExprEvaluator
@@ -219,13 +218,13 @@ namespace com.espertech.esper.epl.datetime.interval
                             ProcEvaluate = (reference, eventsPerStream, isNewData, context) =>
                             {
                                 double sec = timePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
-                                return (long) Math.Round(sec*1000d);
+                                return timeAbacus.DeltaForSecondsDouble(sec);
                             },
                         };
                         return new ExprOptionalConstant(eval, null);
                     }
                 }
-                    // has-month
+                // has-month
                 else
                 {
                     // has-month and constant
@@ -236,21 +235,18 @@ namespace com.espertech.esper.epl.datetime.interval
                         {
                             ProcEvaluate = (reference, eventsPerStream, isNewData, context) =>
                             {
-                                return
-                                    timerPeriodConst
-                                        .DeltaMillisecondsAdd
-                                        (reference);
+                                return timerPeriodConst.DeltaAdd(reference);
                             },
                         };
                         return new ExprOptionalConstant(eval, null);
                     }
-                        // has-month and not constant
+                    // has-month and not constant
                     else
                     {
                         ExprTimePeriodEvalDeltaNonConst timerPeriodNonConst = timePeriod.NonconstEvaluator();
                         IntervalDeltaExprEvaluator eval = new ProxyIntervalDeltaExprEvaluator
                         {
-                            ProcEvaluate = (reference, eventsPerStream, isNewData, context) => timerPeriodNonConst.DeltaMillisecondsAdd(
+                            ProcEvaluate = (reference, eventsPerStream, isNewData, context) => timerPeriodNonConst.DeltaAdd(
                                 reference, eventsPerStream, isNewData, context),
                         };
                         return new ExprOptionalConstant(eval, null);
@@ -259,7 +255,7 @@ namespace com.espertech.esper.epl.datetime.interval
             }
             else if (ExprNodeUtility.IsConstantValueExpr(exprNode))
             {
-                var constantNode = (ExprConstantNode) exprNode;
+                var constantNode = (ExprConstantNode)exprNode;
                 long l = constantNode.GetConstantValue(null).AsLong();
                 IntervalDeltaExprEvaluator eval = new ProxyIntervalDeltaExprEvaluator
                 {

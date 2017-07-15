@@ -28,7 +28,7 @@ namespace com.espertech.esper.events.vaevent
                                           RevisionTypeDesc typesDesc)
         {
             EventBean underlyingEvent = revisionEvent.UnderlyingFullOrDelta;
-    
+
             NullableObject<Object>[] changeSetValues = revisionState.Overlays;
             if (changeSetValues == null)    // optimization - the full event sets it to null, deltas all get a new one
             {
@@ -38,14 +38,14 @@ namespace com.espertech.esper.events.vaevent
             {
                 changeSetValues = ArrayCopy(changeSetValues);   // preserve the last revisions
             }
-    
+
             // apply all properties of the delta event
             int[] indexes = typesDesc.ChangesetPropertyIndex;
             EventPropertyGetter[] getters = typesDesc.ChangesetPropertyGetters;
             for (int i = 0; i < indexes.Length; i++)
             {
                 int index = indexes[i];
-    
+
                 if (!getters[i].IsExistsProperty(underlyingEvent))
                 {
                     continue;
@@ -54,7 +54,7 @@ namespace com.espertech.esper.events.vaevent
                 Object value = getters[i].Get(underlyingEvent);
                 changeSetValues[index] = new NullableObject<Object>(value);
             }
-    
+
             revisionState.Overlays = changeSetValues;
         }
     }

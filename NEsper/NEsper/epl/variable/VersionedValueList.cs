@@ -32,58 +32,58 @@ namespace com.espertech.esper.epl.variable
     /// If an older version is requested then held by the list, the list can either throw an exception
     /// or return the current value.
     /// </summary>
-	public class VersionedValueList<T> 
+    public class VersionedValueList<T>
         where T : class
-	{
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-	    // Variables name and read lock; read lock used when older version then the prior version is requested
-	    private readonly String _name;
-	    private readonly ILockable _readLock;
-	    private readonly int _highWatermark;    // used for removing older versions
-	    private readonly bool _errorWhenNotFound;
-	    private readonly long _millisecondLifetimeOldVersions;
+        // Variables name and read lock; read lock used when older version then the prior version is requested
+        private readonly String _name;
+        private readonly ILockable _readLock;
+        private readonly int _highWatermark;    // used for removing older versions
+        private readonly bool _errorWhenNotFound;
+        private readonly long _millisecondLifetimeOldVersions;
 
-	    // Hold the current and prior version for no-lock reading
-	    private volatile CurrentValue<T> _currentAndPriorValue;
+        // Hold the current and prior version for no-lock reading
+        private volatile CurrentValue<T> _currentAndPriorValue;
 
-	    // Holds the older versions
-	    private readonly List<VersionedValue<T>> _olderVersions;
+        // Holds the older versions
+        private readonly List<VersionedValue<T>> _olderVersions;
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="name">variable name</param>
-	    /// <param name="initialVersion">first version number</param>
-	    /// <param name="initialValue">first value</param>
-	    /// <param name="timestamp">timestamp of first version</param>
-	    /// <param name="millisecondLifetimeOldVersions">
-	    /// number of milliseconds after which older versions get expired and removed
-	    /// </param>
-	    /// <param name="readLock">for coordinating Update to old versions</param>
-	    /// <param name="highWatermark">
-	    /// when the number of old versions reached high watermark, the list inspects size on every write
-	    /// </param>
-	    /// <param name="errorWhenNotFound">
-	    /// true if an exception should be throw if the requested version cannot be found,
-	    /// or false if the engine should log a warning
-	    /// </param>
+        /// <summary>Ctor.</summary>
+        /// <param name="name">variable name</param>
+        /// <param name="initialVersion">first version number</param>
+        /// <param name="initialValue">first value</param>
+        /// <param name="timestamp">timestamp of first version</param>
+        /// <param name="millisecondLifetimeOldVersions">
+        /// number of milliseconds after which older versions get expired and removed
+        /// </param>
+        /// <param name="readLock">for coordinating Update to old versions</param>
+        /// <param name="highWatermark">
+        /// when the number of old versions reached high watermark, the list inspects size on every write
+        /// </param>
+        /// <param name="errorWhenNotFound">
+        /// true if an exception should be throw if the requested version cannot be found,
+        /// or false if the engine should log a warning
+        /// </param>
         public VersionedValueList(String name, int initialVersion, T initialValue, long timestamp, long millisecondLifetimeOldVersions, ILockable readLock, int highWatermark, bool errorWhenNotFound)
-	    {
-	        _name = name;
-	        _readLock = readLock;
-	        _highWatermark = highWatermark;
-	        _olderVersions = new List<VersionedValue<T>>();
-	        _errorWhenNotFound = errorWhenNotFound;
-	        _millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
+        {
+            _name = name;
+            _readLock = readLock;
+            _highWatermark = highWatermark;
+            _olderVersions = new List<VersionedValue<T>>();
+            _errorWhenNotFound = errorWhenNotFound;
+            _millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
             _currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(initialVersion, initialValue, timestamp),
-	                                                    new VersionedValue<T>(-1, null, timestamp));
-	    }
+                                                        new VersionedValue<T>(-1, null, timestamp));
+        }
 
-	    /// <summary>Returns the name of the value stored.</summary>
-	    /// <returns>value name</returns>
-	    public String Name
-	    {
+        /// <summary>Returns the name of the value stored.</summary>
+        /// <returns>value name</returns>
+        public String Name
+        {
             get { return _name; }
-	    }
+        }
 
         /// <summary>
         /// Retrieve a value for the given version or older then then given version.
@@ -94,27 +94,27 @@ namespace com.espertech.esper.epl.variable
         /// <returns>
         /// value for the version or the next older version, ignoring newer versions
         /// </returns>
-	    public T GetVersion(int versionAndOlder)
-	    {
+        public T GetVersion(int versionAndOlder)
+        {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-	        {
-	            Log.Debug(".GetVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + _name + "' retrieving version " + versionAndOlder + " or older");
-	        }
+            {
+                Log.Debug(".GetVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + _name + "' retrieving version " + versionAndOlder + " or older");
+            }
 
-	        T resultValue = null;
-	        CurrentValue<T> current = _currentAndPriorValue;
+            T resultValue = null;
+            CurrentValue<T> current = _currentAndPriorValue;
 
-	        if (current.CurrentVersion.Version <= versionAndOlder)
-	        {
-	            resultValue = current.CurrentVersion.Value;
-	        }
-	        else if ((current.PriorVersion.Version != -1) &&
-	            (current.PriorVersion.Version <= versionAndOlder))
-	        {
-	            resultValue = current.PriorVersion.Value;
-	        }
-	        else
-	        {
+            if (current.CurrentVersion.Version <= versionAndOlder)
+            {
+                resultValue = current.CurrentVersion.Value;
+            }
+            else if ((current.PriorVersion.Version != -1) &&
+                (current.PriorVersion.Version <= versionAndOlder))
+            {
+                resultValue = current.PriorVersion.Value;
+            }
+            else
+            {
                 using (_readLock.Acquire())
                 {
                     current = _currentAndPriorValue;
@@ -168,93 +168,93 @@ namespace com.espertech.esper.epl.variable
                         }
                     }
                 }
-	        }
+            }
 
-	        if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-	        {
-	            Log.Debug(".getVersion Thread " + Thread.CurrentThread.ManagedThreadId +  " for '" + _name + " version " + versionAndOlder + " or older result is " + resultValue);
-	        }
-
-	        return resultValue;
-	    }
-
-	    /// <summary>
-	    /// Add a value and version to the list, returning the prior value of the variable.
-	    /// </summary>
-	    /// <param name="version">for the value to add</param>
-	    /// <param name="value">to add</param>
-	    /// <param name="timestamp">the time associated with the version</param>
-	    /// <returns>prior value</returns>
-	    public Object AddValue(int version, T value, long timestamp)
-	    {
             if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
-	        {
-	            Log.Debug(".addValue Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + _name + "' adding version " + version + " at value " + value);
-	        }
+            {
+                Log.Debug(".getVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + _name + " version " + versionAndOlder + " or older result is " + resultValue);
+            }
 
-	        // push to prior if not already used
-	        if (_currentAndPriorValue.PriorVersion.Version == -1)
-	        {
-	            _currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
-	              _currentAndPriorValue.CurrentVersion);
-	            return _currentAndPriorValue.PriorVersion.Value;
-	        }
+            return resultValue;
+        }
 
-	        // add to list
-	        VersionedValue<T> priorVersion = _currentAndPriorValue.PriorVersion;
-	        _olderVersions.Add(priorVersion);
+        /// <summary>
+        /// Add a value and version to the list, returning the prior value of the variable.
+        /// </summary>
+        /// <param name="version">for the value to add</param>
+        /// <param name="value">to add</param>
+        /// <param name="timestamp">the time associated with the version</param>
+        /// <returns>prior value</returns>
+        public Object AddValue(int version, T value, long timestamp)
+        {
+            if (ExecutionPathDebugLog.IsEnabled && Log.IsDebugEnabled)
+            {
+                Log.Debug(".addValue Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + _name + "' adding version " + version + " at value " + value);
+            }
 
-	        // check watermarks
-	        if (_olderVersions.Count >= _highWatermark)
-	        {
-	            long expireBefore = timestamp - _millisecondLifetimeOldVersions;
-	            while(_olderVersions.Count > 0)
-	            {
-	                VersionedValue<T> oldestVersion = _olderVersions[0];
-	                if (oldestVersion.Timestamp <= expireBefore)
-	                {
-	                    _olderVersions.RemoveAt(0);
-	                }
-	                else
-	                {
-	                    break;
-	                }
-	            }
-	        }
+            // push to prior if not already used
+            if (_currentAndPriorValue.PriorVersion.Version == -1)
+            {
+                _currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
+                  _currentAndPriorValue.CurrentVersion);
+                return _currentAndPriorValue.PriorVersion.Value;
+            }
 
-	        _currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
-	                                                   _currentAndPriorValue.CurrentVersion);
-	        return _currentAndPriorValue.PriorVersion.Value;
-	    }
+            // add to list
+            VersionedValue<T> priorVersion = _currentAndPriorValue.PriorVersion;
+            _olderVersions.Add(priorVersion);
 
-	    /// <summary>Returns the current and prior version.</summary>
-	    /// <returns>value</returns>
-	    public CurrentValue<T> CurrentAndPriorValue
-	    {
+            // check watermarks
+            if (_olderVersions.Count >= _highWatermark)
+            {
+                long expireBefore = timestamp - _millisecondLifetimeOldVersions;
+                while (_olderVersions.Count > 0)
+                {
+                    VersionedValue<T> oldestVersion = _olderVersions[0];
+                    if (oldestVersion.Timestamp <= expireBefore)
+                    {
+                        _olderVersions.RemoveAt(0);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            _currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
+                                                       _currentAndPriorValue.CurrentVersion);
+            return _currentAndPriorValue.PriorVersion.Value;
+        }
+
+        /// <summary>Returns the current and prior version.</summary>
+        /// <returns>value</returns>
+        public CurrentValue<T> CurrentAndPriorValue
+        {
             get { return _currentAndPriorValue; }
-	    }
+        }
 
-	    /// <summary>Returns the list of old versions, for testing purposes.</summary>
-	    /// <returns>list of versions older then current and prior version</returns>
-        public List<VersionedValue<T>> OlderVersions
-	    {
+        /// <summary>Returns the list of old versions, for testing purposes.</summary>
+        /// <returns>list of versions older then current and prior version</returns>
+        public IList<VersionedValue<T>> OlderVersions
+        {
             get { return _olderVersions; }
-	    }
+        }
 
-	    public override String ToString()
-	    {
-	        StringBuilder buffer = new StringBuilder();
-	        buffer.Append("Variable '").Append(_name).Append("' ");
-	        buffer.Append(" current=").Append(_currentAndPriorValue.CurrentVersion.ToString());
-	        buffer.Append(" prior=").Append(_currentAndPriorValue.CurrentVersion.ToString());
+        public override String ToString()
+        {
+            StringBuilder buffer = new StringBuilder();
+            buffer.Append("Variable '").Append(_name).Append("' ");
+            buffer.Append(" current=").Append(_currentAndPriorValue.CurrentVersion.ToString());
+            buffer.Append(" prior=").Append(_currentAndPriorValue.CurrentVersion.ToString());
 
-	        int count = 0;
-	        foreach (VersionedValue<T> old in _olderVersions)
-	        {
-	            buffer.Append(" Old(").Append(count).Append(")=").Append(old.ToString()).Append("\n");
-	            count++;
-	        }
-	        return buffer.ToString();
-	    }
-	}
+            int count = 0;
+            foreach (VersionedValue<T> old in _olderVersions)
+            {
+                buffer.Append(" Old(").Append(count).Append(")=").Append(old.ToString()).Append("\n");
+                count++;
+            }
+            return buffer.ToString();
+        }
+    }
 } // End of namespace

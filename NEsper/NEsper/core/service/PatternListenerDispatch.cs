@@ -10,119 +10,77 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dispatch;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>
-    /// Dispatchable for dispatching events to Update listeners.
-    /// </summary>
-
-    public class PatternListenerDispatch : Dispatchable
-    {
+    /// <summary>Dispatchable for dispatching events to update listeners.</summary>
+    public class PatternListenerDispatch : Dispatchable {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly EPStatement _statement;
-        private readonly EPServiceProvider _serviceProvider;
-        private readonly ICollection<UpdateEventHandler> _eventHandlers;
-        private EventBean _singleEvent;
-        private List<EventBean> _eventList;
-
+        private readonly ISet<UpdateListener> listeners;
+    
+        private EventBean singleEvent;
+        private List<EventBean> eventList;
+    
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
-        /// <param name="statement">The statement.</param>
-        /// <param name="eventHandlers">The event handlers.</param>
-
-        public PatternListenerDispatch(EPServiceProvider serviceProvider,
-                                       EPStatement statement,
-                                       ICollection<UpdateEventHandler> eventHandlers)
-        {
-            _serviceProvider = serviceProvider;
-            _statement = statement;
-            _eventHandlers = eventHandlers;
+        /// <param name="listeners">is the listeners to dispatch to.</param>
+        public PatternListenerDispatch(ISet<UpdateListener> listeners) {
+            this.listeners = listeners;
         }
-
+    
         /// <summary>
         /// Add an event to be dispatched.
         /// </summary>
-        /// <param name="theEvent">event to add</param>
-
-        public virtual void Add(EventBean theEvent)
-        {
-            if (_singleEvent == null)
-            {
-                _singleEvent = theEvent;
-            }
-            else
-            {
-                if (_eventList == null)
-                {
-                    _eventList = new List<EventBean>();
-                    _eventList.Add(_singleEvent);
+        /// <param name="theEvent">to add</param>
+        public void Add(EventBean theEvent) {
+            if (singleEvent == null) {
+                singleEvent = theEvent;
+            } else {
+                if (eventList == null) {
+                    eventList = new List<EventBean>(5);
+                    eventList.Add(singleEvent);
                 }
-
-                _eventList.Add(theEvent);
+                eventList.Add(theEvent);
             }
         }
-
-        /// <summary>
-        /// Fires the Update event.
-        /// </summary>
-        /// <param name="newEvents">The new events.</param>
-        /// <param name="oldEvents">The old events.</param>
-        protected void FireUpdateEvent(EventBean[] newEvents, EventBean[] oldEvents)
-        {
-            if ((_eventHandlers != null) && (_eventHandlers.Count != 0))
-            {
-                var e = new UpdateEventArgs(_serviceProvider, _statement, newEvents, oldEvents);
-                foreach (var eventHandler in _eventHandlers)
-                {
-                    try
-                    {
-                        eventHandler(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        String message = "Unexpected exception invoking listener Update method on listener class '" +
-                                         eventHandler.GetType().Name + "' : " + ex.GetType().Name + " : " + ex.Message;
-                        Log.Error(message, ex);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Execute any listeners.
-        /// </summary>
-        public virtual void Execute()
-        {
+    
+        public void Execute() {
             EventBean[] eventArray;
-
-            if (_eventList != null)
-            {
-                eventArray = _eventList.ToArray();
-                _eventList = null;
-                _singleEvent = null;
+    
+            if (eventList != null) {
+                eventArray = eventList.ToArray(new EventBean[eventList.Count]);
+                eventList = null;
+                singleEvent = null;
+            } else {
+                eventArray = new EventBean[]{singleEvent};
+                singleEvent = null;
             }
-            else
-            {
-                eventArray = new[] { _singleEvent };
-                _singleEvent = null;
+    
+            foreach (UpdateListener listener in listeners) {
+                try {
+                    listener.Update(eventArray, null);
+                } catch (Throwable t) {
+                    string message = "Unexpected exception invoking listener update method on listener class '" + listener.Class.SimpleName +
+                            "' : " + t.Class.SimpleName + " : " + t.Message;
+                    Log.Error(message, t);
+                }
             }
-
-            FireUpdateEvent(eventArray, null);
         }
-
-        /// <summary> Returns true if at least one event has been added.</summary>
-        /// <returns> true if it has data, false if not
-        /// </returns>
-
-        public virtual bool HasData
-        {
-            get { return _singleEvent != null; }
+    
+        /// <summary>
+        /// Returns true if at least one event has been added.
+        /// </summary>
+        /// <returns>true if it has data, false if not</returns>
+        public bool HasData() {
+            if (singleEvent != null) {
+                return true;
+            }
+            return false;
         }
     }
-}
+} // end of namespace

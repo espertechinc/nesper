@@ -12,22 +12,25 @@ using System.Collections.Generic;
 namespace com.espertech.esper.epl.spec
 {
     [Serializable]
-    public class ExpressionScriptProvided
+    public class ExpressionScriptProvided 
     {
         [NonSerialized] private ExpressionScriptCompiled _compiled;
 
-        public ExpressionScriptProvided(String name,
-                                        String expression,
-                                        IList<String> parameterNames,
-                                        String optionalReturnTypeName,
-                                        Boolean optionalReturnTypeIsArray,
-                                        String optionalDialect)
+        public ExpressionScriptProvided(
+            string name,
+            string expression,
+            IList<string> parameterNames,
+            string optionalReturnTypeName,
+            bool optionalReturnTypeIsArray,
+            string optionalEventTypeName,
+            string optionalDialect)
         {
             Name = name;
             Expression = expression;
             ParameterNames = parameterNames;
             OptionalReturnTypeName = optionalReturnTypeName;
             IsOptionalReturnTypeIsArray = optionalReturnTypeIsArray;
+            OptionalEventTypeName = optionalEventTypeName;
             OptionalDialect = optionalDialect;
     
             if (expression == null) {
@@ -52,5 +55,7 @@ namespace com.espertech.esper.epl.spec
         }
 
         public bool IsOptionalReturnTypeIsArray { get; private set; }
+
+        public string OptionalEventTypeName { get; private set; }
     }
-}
+} // end of namespace

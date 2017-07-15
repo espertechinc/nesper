@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.@join.table;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.schedule;
@@ -22,40 +23,52 @@ using com.espertech.esper.schedule;
 namespace com.espertech.esper.epl.db
 {
     /// <summary>
-    /// Implements an expiry-time cache that evicts data when data becomes stale after a given
-    /// number of seconds.
-    /// <para/>
+    /// Implements an expiry-time cache that evicts data when data becomes stale
+    /// after a given number of seconds.
+    /// <para>
     /// The cache reference type indicates which backing Map is used: Weak type uses the WeakHashMap,
     /// Soft type uses the apache commons ReferenceMap, and Hard type simply uses a HashMap.
+    /// </para>
     /// </summary>
-    public class DataCacheExpiringImpl : DataCache, ScheduleHandleCallback
+    public class DataCacheExpiringImpl
+        : DataCache
+        , ScheduleHandleCallback
     {
-        private readonly IDictionary<Object, Item> _cache;
-        private readonly EPStatementAgentInstanceHandle _epStatementAgentInstanceHandle;
+        private readonly double _maxAgeSec;
+        private readonly double _purgeIntervalSec;
         private readonly SchedulingService _schedulingService;
         private readonly long _scheduleSlot;
-    
+        private readonly IDictionary<Object, Item> _cache;
+        private readonly EPStatementAgentInstanceHandle _epStatementAgentInstanceHandle;
+        private readonly TimeAbacus _timeAbacus;
+
         private bool _isScheduled;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="maxAgeSec">is the maximum age in seconds</param>
         /// <param name="purgeIntervalSec">is the purge interval in seconds</param>
         /// <param name="cacheReferenceType">indicates whether hard, soft or weak references are used in the cache</param>
         /// <param name="schedulingService">is a service for call backs at a scheduled time, for purging</param>
         /// <param name="scheduleSlot">slot for scheduling callbacks for this cache</param>
         /// <param name="epStatementAgentInstanceHandle">is the statements-own handle for use in registering callbacks with services</param>
-        public DataCacheExpiringImpl(double maxAgeSec,
-                                     double purgeIntervalSec,
-                                     ConfigurationCacheReferenceType cacheReferenceType,
-                                     SchedulingService schedulingService,
-                                     long scheduleSlot,
-                                     EPStatementAgentInstanceHandle epStatementAgentInstanceHandle)
+        /// <param name="timeAbacus">time abacus</param>
+        public DataCacheExpiringImpl(
+            double maxAgeSec,
+            double purgeIntervalSec,
+            ConfigurationCacheReferenceType cacheReferenceType,
+            SchedulingService schedulingService,
+            long scheduleSlot,
+            EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
+            TimeAbacus timeAbacus)
         {
-            MaxAgeMSec = (long) maxAgeSec * 1000;
-            PurgeIntervalMSec = (long) purgeIntervalSec * 1000;
+            _maxAgeSec = maxAgeSec;
+            _purgeIntervalSec = purgeIntervalSec;
             _schedulingService = schedulingService;
             _scheduleSlot = scheduleSlot;
-    
+            _timeAbacus = timeAbacus;
+
             if (cacheReferenceType == ConfigurationCacheReferenceType.HARD)
             {
                 _cache = new Dictionary<Object, Item>();
@@ -68,23 +81,57 @@ namespace com.espertech.esper.epl.db
             {
                 _cache = new WeakDictionary<Object, Item>();
             }
-    
+
             _epStatementAgentInstanceHandle = epStatementAgentInstanceHandle;
         }
 
-        /// <summary>Returns the maximum age in milliseconds. </summary>
-        /// <value>millisecon max age</value>
-        public long MaxAgeMSec { get; private set; }
-
-        /// <summary>Returns the purge interval in milliseconds. </summary>
-        /// <value>millisecond purge interval</value>
-        public long PurgeIntervalMSec { get; private set; }
-
-        /// <summary>Returns the current cache size. </summary>
-        /// <value>cache size</value>
-        public long Count
+        public EventTable[] GetCached(Object[] methodParams, int numLookupKeys)
         {
-            get { return _cache.Count; }
+            var key = DataCacheUtil.GetLookupKey(methodParams, numLookupKeys);
+            var item = _cache.Get(key);
+            if (item == null)
+            {
+                return null;
+            }
+
+            var now = _schedulingService.Time;
+            long maxAgeMSec = _timeAbacus.DeltaForSecondsDouble(_maxAgeSec);
+            if ((now - item.Time) > maxAgeMSec)
+            {
+                _cache.Remove(key);
+                return null;
+            }
+
+            return item.Data;
+        }
+
+        public void PutCached(Object[] methodParams, int numLookupKeys, EventTable[] rows)
+        {
+            var key = DataCacheUtil.GetLookupKey(methodParams, numLookupKeys);
+            var now = _schedulingService.Time;
+            var item = new Item(rows, now);
+            _cache.Put(key, item);
+
+            if (!_isScheduled)
+            {
+                var callback = new EPStatementHandleCallback(_epStatementAgentInstanceHandle, this);
+                _schedulingService.Add(_timeAbacus.DeltaForSecondsDouble(_purgeIntervalSec), callback, _scheduleSlot);
+                _isScheduled = true;
+            }
+        }
+
+        /// <summary>
+        /// Returns the maximum age in milliseconds.
+        /// </summary>
+        /// <value>millisecon max age</value>
+        protected double MaxAgeSec
+        {
+            get { return _maxAgeSec; }
+        }
+
+        public double PurgeIntervalSec
+        {
+            get { return _purgeIntervalSec; }
         }
 
         public bool IsActive
@@ -92,72 +139,52 @@ namespace com.espertech.esper.epl.db
             get { return true; }
         }
 
-        public EventTable[] GetCached(object[] lookupKeys)
+        /// <summary>
+        /// Returns the current cache size.
+        /// </summary>
+        /// <value>cache size</value>
+        protected long Count
         {
-            var key = DataCacheUtil.GetLookupKey(lookupKeys);
-            var item = _cache.Get(key);
-            if (item == null)
-            {
-                return null;
-            }
-    
-            var now = _schedulingService.Time;
-            if ((now - item.Time) > MaxAgeMSec)
-            {
-                _cache.Remove(key);
-                return null;
-            }
-    
-            return item.Data;
-        }
-    
-        public void PutCached(object[] lookupKeys, EventTable[] rows)
-        {
-            var key = DataCacheUtil.GetLookupKey(lookupKeys);
-            var now = _schedulingService.Time;
-            var item = new Item(rows, now);
-            _cache.Put(key, item);
-    
-            if (!_isScheduled)
-            {
-                var callback = new EPStatementHandleCallback(_epStatementAgentInstanceHandle, this);
-                _schedulingService.Add(PurgeIntervalMSec, callback, _scheduleSlot);
-                _isScheduled = true;
-            }
+            get { return _cache.Count; }
         }
 
-        public void ScheduledTrigger(EngineLevelExtensionServicesContext extensionServicesContext)
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QHistoricalScheduledEval();}
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().QHistoricalScheduledEval();
+            }
             // purge expired
             var now = _schedulingService.Time;
+            var maxAgeMSec = _timeAbacus.DeltaForSecondsDouble(_maxAgeSec);
 
-            _cache.Where(entry => MaxAgeMSec < (now - entry.Value.Time))
+            _cache
+                .Where(entry => ((now - entry.Value.Time) > maxAgeMSec))
                 .Select(entry => entry.Key)
                 .ToList()
-                .ForEach(key => _cache.Remove(key));
+                .ForEach(itemKey => _cache.Remove(itemKey));
 
             _isScheduled = false;
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AHistoricalScheduledEval();}
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().AHistoricalScheduledEval();
+            }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
         public void Dispose()
         {
         }
 
         private class Item
         {
-            public EventTable[] Data { get; private set; }
-            public long Time { get; private set; }
-
             public Item(EventTable[] data, long time)
             {
                 Data = data;
                 Time = time;
             }
+
+            public EventTable[] Data { get; private set; }
+            public long Time { get; private set; }
         }
     }
-}
+} // end of namespace

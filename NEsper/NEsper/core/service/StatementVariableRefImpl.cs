@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.service
     public class StatementVariableRefImpl : StatementVariableRef
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly IReaderWriterLock _mapLock;
         private readonly IDictionary<String, ICollection<String>> _variableToStmt;
         private readonly IDictionary<String, ICollection<String>> _stmtToVariable;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.core.service
         private readonly TableService _tableService;
         private readonly NamedWindowMgmtService _namedWindowMgmtService;
         private readonly ICollection<String> _configuredVariables;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="variableService">variables</param>
         public StatementVariableRefImpl(VariableService variableService, TableService tableService, NamedWindowMgmtService namedWindowMgmtService)
@@ -43,27 +43,30 @@ namespace com.espertech.esper.core.service
             _variableService = variableService;
             _tableService = tableService;
             _namedWindowMgmtService = namedWindowMgmtService;
-    
+
             _configuredVariables = new HashSet<String>();
             foreach (var entry in variableService.VariableReadersNonCP)
             {
                 _configuredVariables.Add(entry.Key);
             }
         }
-    
-        public void AddConfiguredVariable(String variableName) {
+
+        public void AddConfiguredVariable(String variableName)
+        {
             _configuredVariables.Add(variableName);
         }
-    
-        public void RemoveConfiguredVariable(String variableName) {
+
+        public void RemoveConfiguredVariable(String variableName)
+        {
             _configuredVariables.Remove(variableName);
         }
 
         public void AddReferences(String statementName, ICollection<String> variablesReferenced, ExprTableAccessNode[] tableNodes)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
-                if (variablesReferenced != null) {
+                if (variablesReferenced != null)
+                {
                     foreach (var reference in variablesReferenced)
                     {
                         AddReference(statementName, reference);
@@ -81,7 +84,7 @@ namespace com.espertech.esper.core.service
 
         public void AddReferences(String statementName, String variableReferenced)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
                 AddReference(statementName, variableReferenced);
             }
@@ -89,7 +92,7 @@ namespace com.espertech.esper.core.service
 
         public void RemoveReferencesStatement(String statementName)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
                 var variables = _stmtToVariable.Delete(statementName);
                 if (variables != null)
@@ -104,7 +107,7 @@ namespace com.espertech.esper.core.service
 
         public void RemoveReferencesVariable(String name)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
                 var statementNames = _variableToStmt.Delete(name);
                 if (statementNames != null)
@@ -119,15 +122,15 @@ namespace com.espertech.esper.core.service
 
         public bool IsInUse(String variable)
         {
-            using(_mapLock.AcquireReadLock())
+            using (_mapLock.AcquireReadLock())
             {
                 return _variableToStmt.ContainsKey(variable);
             }
         }
-    
+
         public ICollection<String> GetStatementNamesForVar(String variableName)
         {
-            using(_mapLock.AcquireReadLock())
+            using (_mapLock.AcquireReadLock())
             {
                 var variables = _variableToStmt.Get(variableName);
                 if (variables == null)
@@ -137,7 +140,7 @@ namespace com.espertech.esper.core.service
                 return variables.AsReadOnlyCollection();
             }
         }
-    
+
         private void AddReference(String statementName, String variableName)
         {
             // add to variables
@@ -148,7 +151,7 @@ namespace com.espertech.esper.core.service
                 _variableToStmt.Put(variableName, statements);
             }
             statements.Add(statementName);
-    
+
             // add to statements
             var variables = _stmtToVariable.Get(statementName);
             if (variables == null)
@@ -159,7 +162,7 @@ namespace com.espertech.esper.core.service
 
             variables.Add(variableName);
         }
-    
+
         private void RemoveReference(String statementName, String variableName)
         {
             // remove from variables
@@ -170,19 +173,20 @@ namespace com.espertech.esper.core.service
                 {
                     Log.Info("Failed to find statement name '" + statementName + "' in collection");
                 }
-    
+
                 if (statements.IsEmpty())
                 {
                     _variableToStmt.Remove(variableName);
-    
-                    if (!_configuredVariables.Contains(variableName)) {
+
+                    if (!_configuredVariables.Contains(variableName))
+                    {
                         _variableService.RemoveVariableIfFound(variableName);
                         _tableService.RemoveTableIfFound(variableName);
                         _namedWindowMgmtService.RemoveNamedWindowIfFound(variableName);
                     }
                 }
             }
-    
+
             // remove from statements
             var variables = _stmtToVariable.Get(statementName);
             if (variables != null)
@@ -191,12 +195,12 @@ namespace com.espertech.esper.core.service
                 {
                     Log.Info("Failed to find variable '" + variableName + "' in collection");
                 }
-    
+
                 if (variables.IsEmpty())
                 {
                     _stmtToVariable.Remove(statementName);
                 }
-            }               
+            }
         }
 
         /// <summary>For testing, returns the mapping of variable name to statement names. </summary>

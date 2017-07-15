@@ -101,7 +101,7 @@ namespace com.espertech.esper.multithread
 
             var epConfig = new Configuration();
             epConfig.AddEventType<SupportBean>();
-            epConfig.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking = ConfigurationEngineDefaults.Threading.Locking.SUSPEND;
+            epConfig.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking = ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND;
 
             EPServiceProvider epServiceProvider = EPServiceProviderManager.GetDefaultProvider(epConfig);
             epServiceProvider.Initialize();

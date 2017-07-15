@@ -17,20 +17,12 @@ using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.expression.subquery
 {
-    /// <summary>
-    /// Represents a subselect in an expression tree.
-    /// </summary>
-    [Serializable]
+    /// <summary>Represents a subselect in an expression tree.</summary>
     public class ExprSubselectInNode : ExprSubselectNode
     {
         private readonly bool _isNotIn;
-        [NonSerialized] private SubselectEvalStrategy _subselectEvalStrategy;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="statementSpec">is the lookup statement spec from the parser, unvalidated</param>
-        /// <param name="isNotIn">if set to <c>true</c> [is not in].</param>
+        [NonSerialized] private SubselectEvalStrategyNR _subselectEvalStrategyNr;
+    
         public ExprSubselectInNode(StatementSpecRaw statementSpec, bool isNotIn)
             : base(statementSpec)
         {
@@ -42,21 +34,21 @@ namespace com.espertech.esper.epl.expression.subquery
             get { return typeof (bool?); }
         }
 
-        /// <summary>Returns true for not-in, or false for in. </summary>
+        /// <summary>
+        /// Returns true for not-in, or false for in.
+        /// </summary>
         /// <value>true for not-in</value>
         public bool IsNotIn
         {
             get { return _isNotIn; }
         }
 
-        public override void ValidateSubquery(ExprValidationContext validationContext)
-        {
-            _subselectEvalStrategy = SubselectEvalStrategyFactory.CreateStrategy(this, _isNotIn, false, false, null);
+        public override void ValidateSubquery(ExprValidationContext validationContext) {
+            _subselectEvalStrategyNr = SubselectEvalStrategyNRFactory.CreateStrategyAnyAllIn(this, _isNotIn, false, false, null);
         }
     
-        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return _subselectEvalStrategy.Evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+            return _subselectEvalStrategyNr.Evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext, SubselectAggregationService);
         }
 
         public override LinkedHashMap<string, object> TypableGetRowProperties
@@ -106,4 +98,4 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
     }
-}
+} // end of namespace

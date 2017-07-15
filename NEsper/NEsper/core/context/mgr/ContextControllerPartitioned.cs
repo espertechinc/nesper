@@ -17,7 +17,7 @@ using com.espertech.esper.core.context.util;
 
 namespace com.espertech.esper.core.context.mgr
 {
-    public class ContextControllerPartitioned 
+    public class ContextControllerPartitioned
         : ContextController
         , ContextControllerPartitionedInstanceCreateCallback
     {
@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.context.mgr
 
         private readonly IDictionary<Object, ContextControllerInstanceHandle> _partitionKeys =
             new Dictionary<Object, ContextControllerInstanceHandle>().WithNullSupport();
-    
+
         private ContextInternalFilterAddendum _activationFilterAddendum;
         private int _currentSubpathId;
 
@@ -40,93 +40,111 @@ namespace com.espertech.esper.core.context.mgr
             _activationCallback = activationCallback;
             _factory = factory;
         }
-    
+
         public void ImportContextPartitions(ContextControllerState state, int pathIdToUse, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector)
         {
             InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector, true);
         }
-    
+
         public void DeletePath(ContextPartitionIdentifier identifier)
         {
-            var partitioned = (ContextPartitionIdentifierPartitioned) identifier;
+            var partitioned = (ContextPartitionIdentifierPartitioned)identifier;
             _partitionKeys.Remove(GetKeyObjectForLookup(partitioned.Keys));
         }
-    
+
         public void VisitSelectedPartitions(ContextPartitionSelector contextPartitionSelector, ContextPartitionVisitor visitor)
         {
             var nestingLevel = _factory.FactoryContext.NestingLevel;
-            if (contextPartitionSelector is ContextPartitionSelectorFiltered) {
-                var filtered = (ContextPartitionSelectorFiltered) contextPartitionSelector;
-    
+            if (contextPartitionSelector is ContextPartitionSelectorFiltered)
+            {
+                var filtered = (ContextPartitionSelectorFiltered)contextPartitionSelector;
+
                 var identifier = new ContextPartitionIdentifierPartitioned();
-                foreach (var entry in _partitionKeys) {
+                foreach (var entry in _partitionKeys)
+                {
                     identifier.ContextPartitionId = entry.Value.ContextPartitionOrPathId;
                     var identifierOA = GetKeyObjectsAccountForMultikey(entry.Key);
                     identifier.Keys = identifierOA;
-    
-                    if (filtered.Filter(identifier)) {
+
+                    if (filtered.Filter(identifier))
+                    {
                         visitor.Visit(nestingLevel, _pathId, _factory.Binding, identifierOA, this, entry.Value);
                     }
                 }
                 return;
             }
-            else if (contextPartitionSelector is ContextPartitionSelectorSegmented) {
-                var partitioned = (ContextPartitionSelectorSegmented) contextPartitionSelector;
-                if (partitioned.PartitionKeys == null || partitioned.PartitionKeys.IsEmpty()) {
+            else if (contextPartitionSelector is ContextPartitionSelectorSegmented)
+            {
+                var partitioned = (ContextPartitionSelectorSegmented)contextPartitionSelector;
+                if (partitioned.PartitionKeys == null || partitioned.PartitionKeys.IsEmpty())
+                {
                     return;
                 }
-                foreach (var keyObjects in partitioned.PartitionKeys) {
+                foreach (var keyObjects in partitioned.PartitionKeys)
+                {
                     var key = GetKeyObjectForLookup(keyObjects);
                     var instanceHandle = _partitionKeys.Get(key);
-                    if (instanceHandle != null && instanceHandle.ContextPartitionOrPathId != null) {
+                    if (instanceHandle != null && instanceHandle.ContextPartitionOrPathId != null)
+                    {
                         visitor.Visit(nestingLevel, _pathId, _factory.Binding, keyObjects, this, instanceHandle);
                     }
                 }
                 return;
             }
-            else if (contextPartitionSelector is ContextPartitionSelectorById) {
-                var filtered = (ContextPartitionSelectorById) contextPartitionSelector;
-    
-                foreach (var entry in _partitionKeys) {
-                    if (filtered.ContextPartitionIds.Contains(entry.Value.ContextPartitionOrPathId)) {
+            else if (contextPartitionSelector is ContextPartitionSelectorById)
+            {
+                var filtered = (ContextPartitionSelectorById)contextPartitionSelector;
+
+                foreach (var entry in _partitionKeys)
+                {
+                    if (filtered.ContextPartitionIds.Contains(entry.Value.ContextPartitionOrPathId))
+                    {
                         visitor.Visit(nestingLevel, _pathId, _factory.Binding, GetKeyObjectsAccountForMultikey(entry.Key), this, entry.Value);
                     }
                 }
                 return;
             }
-            else if (contextPartitionSelector is ContextPartitionSelectorAll) {
-                foreach (var entry in _partitionKeys) {
+            else if (contextPartitionSelector is ContextPartitionSelectorAll)
+            {
+                foreach (var entry in _partitionKeys)
+                {
                     visitor.Visit(nestingLevel, _pathId, _factory.Binding, GetKeyObjectsAccountForMultikey(entry.Key), this, entry.Value);
                 }
                 return;
             }
-            throw ContextControllerSelectorUtil.GetInvalidSelector(new Type[]{typeof(ContextPartitionSelectorSegmented)}, contextPartitionSelector);
+            throw ContextControllerSelectorUtil.GetInvalidSelector(new Type[] { typeof(ContextPartitionSelectorSegmented) }, contextPartitionSelector);
         }
-    
-        public void Activate(EventBean optionalTriggeringEvent, IDictionary<String, Object> optionalTriggeringPattern, ContextControllerState controllerState, ContextInternalFilterAddendum filterAddendum, int? importPathId) {
+
+        public void Activate(EventBean optionalTriggeringEvent, IDictionary<String, Object> optionalTriggeringPattern, ContextControllerState controllerState, ContextInternalFilterAddendum filterAddendum, int? importPathId)
+        {
             var factoryContext = _factory.FactoryContext;
             _activationFilterAddendum = filterAddendum;
-    
-            foreach (var item in _factory.SegmentedSpec.Items) {
+
+            foreach (var item in _factory.SegmentedSpec.Items)
+            {
                 var callback = new ContextControllerPartitionedFilterCallback(factoryContext.ServicesContext, factoryContext.AgentInstanceContextCreate, item, this, filterAddendum);
                 _filterCallbacks.Add(callback);
-    
-                if (optionalTriggeringEvent != null) {
+
+                if (optionalTriggeringEvent != null)
+                {
                     var match = StatementAgentInstanceUtil.EvaluateFilterForStatement(factoryContext.ServicesContext, optionalTriggeringEvent, factoryContext.AgentInstanceContextCreate, callback.FilterHandle);
-    
-                    if (match) {
+
+                    if (match)
+                    {
                         callback.MatchFound(optionalTriggeringEvent, null);
                     }
                 }
             }
-    
-            if (factoryContext.NestingLevel == 1) {
+
+            if (factoryContext.NestingLevel == 1)
+            {
                 controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.FactoryContext.StateCache, factoryContext.OutermostContextName);
             }
-            if (controllerState == null) {
+            if (controllerState == null)
+            {
                 return;
             }
-    
+
             int? pathIdToUse = importPathId ?? _pathId;
             InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse.Value, null, false);
         }
@@ -143,7 +161,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Deactivate()
         {
-            lock(this)
+            lock (this)
             {
                 var factoryContext = _factory.FactoryContext;
                 foreach (var callback in _filterCallbacks)
@@ -156,7 +174,7 @@ namespace com.espertech.esper.core.context.mgr
                     factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId);
             }
         }
-    
+
         public void Create(Object key, EventBean theEvent)
         {
             lock (this)
@@ -190,6 +208,10 @@ namespace com.espertech.esper.core.context.mgr
 
                 _partitionKeys.Put(key, handle);
 
+                // update the filter version for this handle
+                long filterVersion = factoryContext.ServicesContext.FilterService.FiltersVersion;
+                _factory.FactoryContext.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filterVersion;
+
                 var keyObjectSaved = GetKeyObjectsAccountForMultikey(key);
                 _factory.FactoryContext.StateCache.AddContextPath(
                     factoryContext.OutermostContextName, factoryContext.NestingLevel, _pathId, _currentSubpathId,
@@ -201,7 +223,7 @@ namespace com.espertech.esper.core.context.mgr
         {
             if (key is MultiKeyUntyped)
             {
-                return ((MultiKeyUntyped) key).Keys;
+                return ((MultiKeyUntyped)key).Keys;
             }
             else
             {
@@ -243,7 +265,7 @@ namespace com.espertech.esper.core.context.mgr
 
             foreach (var entry in childContexts)
             {
-                var keys = (Object[]) _factory.Binding.ByteArrayToObject(entry.Value.Blob, eventAdapterService);
+                var keys = (Object[])_factory.Binding.ByteArrayToObject(entry.Value.Blob, eventAdapterService);
                 var mapKey = GetKeyObjectForLookup(keys);
 
                 // merge filter addendum, if any

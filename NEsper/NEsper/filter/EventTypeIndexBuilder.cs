@@ -84,7 +84,7 @@ namespace com.espertech.esper.filter
                     }
                 }
     
-                // Now add to tree
+                // GetInstance add to tree
                 var path = IndexTreeBuilder.Add(filterValueSet, filterCallback, rootNode, lockFactory);
                 var pathArray = path.Select(p => p.ToArray()).ToArray();
                 var pair = new EventTypeIndexBuilderValueIndexesPair(filterValueSet, pathArray);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.filter
                 var eventType = pair.FilterValueSet.EventType;
                 var rootNode = _eventTypeIndex.Get(eventType);
 
-                // Now remove from tree
+                // GetInstance remove from tree
                 if (rootNode != null)
                 {
                     pair.IndexPairs.ForEach(
@@ -167,7 +167,7 @@ namespace com.espertech.esper.filter
                         var eventType = pair.FilterValueSet.EventType;
                         var rootNode = _eventTypeIndex.Get(eventType);
     
-                        // Now remove from tree
+                        // GetInstance remove from tree
                         pair.IndexPairs.ForEvery(
                             indexPair => IndexTreeBuilder.Remove(eventType, entry.Key, indexPair, rootNode));
                     }

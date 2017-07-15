@@ -33,7 +33,11 @@ namespace com.espertech.esper.client
         Object this[string property] { get; }
 
         /// <summary>
-        /// Returns the value of an event property for the given property name or property expression. <para/> Returns null if the property value is null. Throws an exception if the expression is not valid against the event type. <para/> The method takes a property name or property expression as a parameter. Property expressions may include indexed properties via the syntax "name[index]", mapped properties via the syntax "name('key')", nested properties via the syntax "outer.inner" or combinations thereof.
+        /// Returns the value of an event property for the given property name or property expression.
+        /// <para/> Returns null if the property value is null. Throws an exception if the expression is not valid against the event type.
+        /// <para/> The method takes a property name or property expression as a parameter. Property expressions may include indexed properties 
+        /// via the syntax "name[index]", mapped properties via the syntax "name('key')", nested properties via the syntax "outer.inner" or 
+        /// combinations thereof.
         /// </summary>
         /// <param name="propertyExpression">name or expression of the property whose value is to be retrieved</param>
         /// <returns>

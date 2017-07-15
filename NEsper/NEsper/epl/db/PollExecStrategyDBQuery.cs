@@ -48,13 +48,14 @@ namespace com.espertech.esper.epl.db
         /// <param name="outputTypes">describe columns selected by the SQL</param>
         /// <param name="outputRowConversionHook">hook to convert rows, if any hook is registered</param>
         /// <param name="columnTypeConversionHook">hook to convert columns, if any hook is registered</param>
-        public PollExecStrategyDBQuery(EventAdapterService eventAdapterService,
-                                       EventType eventType,
-                                       ConnectionCache connectionCache,
-                                       String preparedStatementText,
-                                       IDictionary<String, DBOutputTypeDesc> outputTypes,
-                                       SQLColumnTypeConversion columnTypeConversionHook,
-                                       SQLOutputRowConversion outputRowConversionHook)
+        public PollExecStrategyDBQuery(
+            EventAdapterService eventAdapterService,
+            EventType eventType,
+            ConnectionCache connectionCache,
+            String preparedStatementText,
+            IDictionary<String, DBOutputTypeDesc> outputTypes,
+            SQLColumnTypeConversion columnTypeConversionHook,
+            SQLOutputRowConversion outputRowConversionHook)
         {
             _eventAdapterService = eventAdapterService;
             _eventType = eventType;

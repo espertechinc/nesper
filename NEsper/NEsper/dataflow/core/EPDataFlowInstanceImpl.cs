@@ -21,6 +21,7 @@ using com.espertech.esper.compat.threading;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.dataflow.runnables;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.dataflow.core
@@ -41,6 +42,7 @@ namespace com.espertech.esper.dataflow.core
         private readonly ICollection<int> _operatorBuildOrder;
         private readonly EPDataFlowInstanceStatistics _statisticsProvider;
         private readonly IDictionary<String, Object> _parameters;
+        private readonly EngineImportService _engineImportService;
 
         private IList<CountDownLatch> _joinedThreadLatches;
         private IList<Thread> _threads;
@@ -58,7 +60,8 @@ namespace com.espertech.esper.dataflow.core
             IDictionary<int, Object> operators,
             ICollection<int> operatorBuildOrder,
             EPDataFlowInstanceStatistics statisticsProvider,
-            IDictionary<String, Object> parameters)
+            IDictionary<String, Object> parameters,
+            EngineImportService engineImportService)
         {
             _engineUri = engineURI;
             _statementName = statementName;
@@ -76,6 +79,7 @@ namespace com.espertech.esper.dataflow.core
             _statisticsProvider = statisticsProvider;
             SetState(state);
             _parameters = parameters;
+            _engineImportService = engineImportService;
         }
 
         public string DataFlowName
@@ -119,7 +123,7 @@ namespace com.espertech.esper.dataflow.core
                 {
                     if (operatorStatePair.First is Emitter)
                     {
-                        Emitter emitter = (Emitter) operatorStatePair.First;
+                        Emitter emitter = (Emitter)operatorStatePair.First;
                         emitters.Put(emitter.Name, emitter);
                     }
                 }
@@ -282,7 +286,7 @@ namespace com.espertech.esper.dataflow.core
                     }
                 }
             }
-                // handle run
+            // handle run
             else
             {
                 if (_runCurrentThread != null)
@@ -362,7 +366,7 @@ namespace com.espertech.esper.dataflow.core
                     {
                         try
                         {
-                            var lf = (DataFlowOpLifecycle) operatorStatePair.First;
+                            var lf = (DataFlowOpLifecycle)operatorStatePair.First;
                             lf.Close(new DataFlowOpCloseContext());
                         }
                         catch (Exception ex)
@@ -385,7 +389,7 @@ namespace com.espertech.esper.dataflow.core
                 {
                     try
                     {
-                        var lf = (DataFlowOpLifecycle) operatorStatePair.First;
+                        var lf = (DataFlowOpLifecycle)operatorStatePair.First;
                         lf.Open(new DataFlowOpOpenContext());
                     }
                     catch (Exception ex)

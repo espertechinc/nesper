@@ -17,63 +17,63 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.view
 {
-	/// <summary>
-	/// Output limit condition that is satisfied when either
-	/// the total number of new events arrived or the total number
-	/// of old events arrived is greater than a preset value.
-	/// </summary>
-	public sealed class OutputConditionPolledCount : OutputConditionPolled
-	{
-	    private readonly OutputConditionPolledCountFactory _factory;
-	    private readonly OutputConditionPolledCountState _state;
-	    private readonly VariableReader _optionalVariableReader;
+    /// <summary>
+    /// Output limit condition that is satisfied when either
+    /// the total number of new events arrived or the total number
+    /// of old events arrived is greater than a preset value.
+    /// </summary>
+    public sealed class OutputConditionPolledCount : OutputConditionPolled
+    {
+        private readonly OutputConditionPolledCountFactory _factory;
+        private readonly OutputConditionPolledCountState _state;
+        private readonly VariableReader _optionalVariableReader;
 
-	    public OutputConditionPolledCount(OutputConditionPolledCountFactory factory, OutputConditionPolledCountState state, VariableReader optionalVariableReader)
+        public OutputConditionPolledCount(OutputConditionPolledCountFactory factory, OutputConditionPolledCountState state, VariableReader optionalVariableReader)
         {
-	        _factory = factory;
-	        _state = state;
-	        _optionalVariableReader = optionalVariableReader;
-	    }
+            _factory = factory;
+            _state = state;
+            _optionalVariableReader = optionalVariableReader;
+        }
 
-	    public OutputConditionPolledState State
-	    {
-	        get { return _state; }
-	    }
+        public OutputConditionPolledState State
+        {
+            get { return _state; }
+        }
 
-	    public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
-	    {
-	        if (_optionalVariableReader != null)
+        public bool UpdateOutputCondition(int newDataCount, int oldDataCount)
+        {
+            if (_optionalVariableReader != null)
             {
-	            var value = _optionalVariableReader.Value;
-	            if (value != null)
-	            {
-	                _state.EventRate = value.AsLong();
-	            }
-	        }
-
-	        _state.NewEventsCount = _state.NewEventsCount + newDataCount;
-	        _state.OldEventsCount = _state.OldEventsCount + oldDataCount;
-
-	        if (IsSatisfied || _state.IsFirst)
-            {
-	        	if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled))
+                var value = _optionalVariableReader.Value;
+                if (value != null)
                 {
-	                log.Debug(".updateOutputCondition() condition satisfied");
-	            }
-	            _state.IsFirst = false;
-	            _state.NewEventsCount = 0;
-	            _state.OldEventsCount = 0;
-	            return true;
-	        }
+                    _state.EventRate = value.AsLong();
+                }
+            }
 
-	        return false;
-	    }
+            _state.NewEventsCount = _state.NewEventsCount + newDataCount;
+            _state.OldEventsCount = _state.OldEventsCount + oldDataCount;
 
-	    private bool IsSatisfied
-	    {
-	        get { return (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate); }
-	    }
+            if (IsSatisfied || _state.IsFirst)
+            {
+                if ((ExecutionPathDebugLog.IsEnabled) && (log.IsDebugEnabled))
+                {
+                    log.Debug(".updateOutputCondition() condition satisfied");
+                }
+                _state.IsFirst = false;
+                _state.NewEventsCount = 0;
+                _state.OldEventsCount = 0;
+                return true;
+            }
 
-	    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-	}
+            return false;
+        }
+
+        private bool IsSatisfied
+        {
+            get { return (_state.NewEventsCount >= _state.EventRate) || (_state.OldEventsCount >= _state.EventRate); }
+        }
+
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    }
 } // end of namespace

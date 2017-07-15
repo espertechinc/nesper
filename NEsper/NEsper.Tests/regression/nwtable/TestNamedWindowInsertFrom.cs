@@ -201,7 +201,7 @@ namespace com.espertech.esper.regression.nwtable
             EPStatementObjectModel model = new EPStatementObjectModel();
             eventRepresentationEnum.AddAnnotation(model);
             Expression where = Expressions.Eq("b", 10);
-            model.CreateWindow = CreateWindowClause.Create("MyWindowTwo", View.Create("win", "keepall")).SetInsert(true).SetInsertWhereClause(where);
+            model.CreateWindow = (CreateWindowClause.Create("MyWindowTwo", View.Create("win", "keepall")).IsInsert = true).SetInsertWhereClause(where);
             model.SelectClause = SelectClause.CreateWildcard();
             model.FromClause = FromClause.Create(FilterStream.Create("MyWindow"));
             string text = eventRepresentationEnum.GetAnnotationText() + " create window MyWindowTwo.win:keepall() as select * from MyWindow insert where b=10";

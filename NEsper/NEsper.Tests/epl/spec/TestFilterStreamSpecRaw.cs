@@ -274,7 +274,7 @@ namespace com.espertech.esper.epl.spec
         private static FilterStreamSpecRaw MakeSpec(String expression)
         {
             EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-            return (FilterStreamSpecRaw)walker.GetStatementSpec().StreamSpecs[0];
+            return (FilterStreamSpecRaw)walker.StatementSpec.StreamSpecs[0];
         }
     }
 }

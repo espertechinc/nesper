@@ -22,13 +22,18 @@ namespace com.espertech.esper.epl.expression.dot
         private readonly VariableReader _variableReader;
         private readonly ExprDotStaticMethodWrap _resultWrapLambda;
         private readonly ExprDotEval[] _chainEval;
-    
+
         public ExprDotEvalVariable(ExprDotNode dotNode, VariableReader variableReader, ExprDotStaticMethodWrap resultWrapLambda, ExprDotEval[] chainEval)
         {
             _dotNode = dotNode;
             _variableReader = variableReader;
             _resultWrapLambda = resultWrapLambda;
             _chainEval = chainEval;
+        }
+
+        public string VariableName
+        {
+            get { return _variableReader.VariableMetaData.VariableName; }
         }
 
         public Type ReturnType
@@ -48,18 +53,18 @@ namespace com.espertech.esper.epl.expression.dot
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprDot(_dotNode);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprDot(_dotNode); }
+
             Object result = _variableReader.Value;
             result = ExprDotNodeUtility.EvaluateChainWithWrap(
-                _resultWrapLambda, result, 
-                _variableReader.VariableMetaData.EventType, 
-                _variableReader.VariableMetaData.VariableType, _chainEval, 
-                evaluateParams.EventsPerStream, 
-                evaluateParams.IsNewData, 
+                _resultWrapLambda, result,
+                _variableReader.VariableMetaData.EventType,
+                _variableReader.VariableMetaData.VariableType, _chainEval,
+                evaluateParams.EventsPerStream,
+                evaluateParams.IsNewData,
                 evaluateParams.ExprEvaluatorContext);
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprDot(result);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprDot(result); }
             return result;
         }
     }

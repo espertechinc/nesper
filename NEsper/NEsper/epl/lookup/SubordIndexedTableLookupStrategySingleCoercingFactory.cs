@@ -19,19 +19,22 @@ namespace com.espertech.esper.epl.lookup
     public class SubordIndexedTableLookupStrategySingleCoercingFactory : SubordIndexedTableLookupStrategySingleExprFactory
     {
         private readonly Type _coercionType;
-    
+
         /// <summary>Ctor. </summary>
-        public SubordIndexedTableLookupStrategySingleCoercingFactory(bool isNWOnTrigger, int streamCountOuter, SubordPropHashKey hashKey, Type coercionType) 
+        public SubordIndexedTableLookupStrategySingleCoercingFactory(bool isNWOnTrigger, int streamCountOuter, SubordPropHashKey hashKey, Type coercionType)
             : base(isNWOnTrigger, streamCountOuter, hashKey)
         {
             _coercionType = coercionType;
         }
-    
-        public override SubordTableLookupStrategy MakeStrategy(EventTable[] eventTable, VirtualDWView vdw) {
-            if (IsNWOnTrigger) {
-                return new SubordIndexedTableLookupStrategySingleCoercingNW(Evaluator, (PropertyIndexedEventTableSingle) eventTable[0], _coercionType, StrategyDesc);
+
+        public override SubordTableLookupStrategy MakeStrategy(EventTable[] eventTable, VirtualDWView vdw)
+        {
+            if (IsNWOnTrigger)
+            {
+                return new SubordIndexedTableLookupStrategySingleCoercingNW(Evaluator, (PropertyIndexedEventTableSingle)eventTable[0], _coercionType, StrategyDesc);
             }
-            else {
+            else
+            {
                 return new SubordIndexedTableLookupStrategySingleCoercing(StreamCountOuter, Evaluator, (PropertyIndexedEventTableSingle)eventTable[0], _coercionType, StrategyDesc);
             }
         }

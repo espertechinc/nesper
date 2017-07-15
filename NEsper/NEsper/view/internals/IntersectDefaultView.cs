@@ -239,7 +239,7 @@ namespace com.espertech.esper.view.internals
             {
                 if (view is StoppableView)
                 {
-                    ((StoppableView) view).Stop();
+                    ((StoppableView)view).Stop();
                 }
             }
         }

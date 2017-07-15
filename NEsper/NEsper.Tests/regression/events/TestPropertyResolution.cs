@@ -32,7 +32,7 @@ namespace com.espertech.esper.regression.events
         public void TestReservedKeywordEscape()
         {
             var configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle =
                 PropertyResolutionStyle.DEFAULT;
             configuration.EngineDefaults.EventMetaConfig.DefaultAccessorStyle =
                 AccessorStyleEnum.NATIVE;
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regression.events
         public void TestCaseSensitive()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle =
                 PropertyResolutionStyle.CASE_SENSITIVE;
 
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regression.events
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
     
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle =
                     PropertyResolutionStyle.CASE_INSENSITIVE;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regression.events
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
     
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle =
                     PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regression.events
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
     
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             configuration.AddEventType("Bean", typeof(SupportBean));
     
             TryCaseInsensitive(configuration,

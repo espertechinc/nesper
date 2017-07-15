@@ -6,42 +6,36 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.view.std
 {
-    /// <summary>
-    /// Factory for <seealso cref="LastElementView"/> instances.
-    /// </summary>
+    /// <summary>Factory for <seealso cref="LastElementView" /> instances.</summary>
     public class LastElementViewFactory : DataWindowViewFactory
     {
-        public readonly static String NAME = "Last-Event";
-    
+        public static readonly string NAME = "Last-Event";
+
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            IList<Object> viewParameters = ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters);
-            if (viewParameters.IsNotEmpty())
-            {
-                String errorMessage = ViewName + " view does not take any parameters";
-                throw new ViewParameterException(errorMessage);
-            }
+            ViewFactorySupport.ValidateNoParameters(ViewName, expressionParameters);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
-            this._eventType = parentEventType;
+            _eventType = parentEventType;
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new LastElementView(this);
@@ -52,13 +46,9 @@ namespace com.espertech.esper.view.std
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
-            if (!(view is LastElementView))
-            {
-                return false;
-            }
-            return true;
+            return view is LastElementView;
         }
 
         public string ViewName
@@ -66,4 +56,4 @@ namespace com.espertech.esper.view.std
             get { return NAME; }
         }
     }
-}
+} // end of namespace

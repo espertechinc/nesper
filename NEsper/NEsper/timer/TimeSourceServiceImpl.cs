@@ -9,90 +9,74 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.timer
 {
     /// <summary>
-    /// Allow for different strategies for getting VM (wall clock) time. See JIRA issue
-    /// ESPER-191 Support nano/microsecond resolution for more information on system
-    /// time-call performance, accuracy and drift.
+    /// Allow for different strategies for getting VM (wall clock) time.
+    /// See JIRA issue ESPER-191 Support nano/microsecond resolution for more
+    /// information on Java system time-call performance, accuracy and drift.
     /// </summary>
-    public class TimeSourceServiceImpl : TimeSourceService
-    {
-    	private const long MICROS_TO_MILLIS = 1000;
-    	private const long NANOS_TO_MICROS = 1000;
+    /// <author>Jerry Shea</author>
+    public class TimeSourceServiceImpl : TimeSourceService {
+        private static readonly long MICROS_TO_MILLIS = 1000;
+        private static readonly long NANOS_TO_MICROS = 1000;
     
         /// <summary>
-        /// A public variable indicating whether to use the System millisecond time or nano
-        /// time, to be configured through the engine settings.
+        /// A public variable indicating whether to use the System millisecond time or
+        /// nano time, to be configured through the engine settings.
         /// </summary>
-        public static bool IS_SYSTEM_CURRENT_TIME = true;
+        public static bool isSystemCurrentTime = true;
     
-        private readonly long _wallClockOffset;
-        private readonly string _description;
+        private readonly long wallClockOffset;
+        private readonly string description;
     
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        public TimeSourceServiceImpl()
-        {
-            _wallClockOffset = DateTimeHelper.CurrentTimeMillis * MICROS_TO_MILLIS - GetTimeMicros();
-            _description = String.Format("{0}: resolution {1} microsecs",
-                               GetType().FullName, CalculateResolution());
+        /// <summary>Ctor.</summary>
+        public TimeSourceServiceImpl() {
+            this.wallClockOffset = System.CurrentTimeMillis() * MICROS_TO_MILLIS - this.TimeMicros;
+            this.description = string.Format("%s: resolution %d microsecs",
+                    this.GetType().Name, this.CalculateResolution());
         }
-
+    
         /// <summary>
-        /// Get time in milliseconds.
+        /// Convenience method to get time in milliseconds
         /// </summary>
         /// <returns>wall-clock time in milliseconds</returns>
-        public long GetTimeMillis()
-        {
-            if (IS_SYSTEM_CURRENT_TIME)
-            {
-                return DateTimeHelper.CurrentTimeMillis;
+        public long GetTimeMillis() {
+            if (isSystemCurrentTime) {
+                return System.CurrentTimeMillis();
             }
             return GetTimeMicros() / MICROS_TO_MILLIS;
         }
-
-        /// <summary>
-        /// Get time in microseconds.
-        /// </summary>
-        /// <returns></returns>
-        private long GetTimeMicros()
-        {
-            return (DateTimeHelper.CurrentTimeNanos / NANOS_TO_MICROS) + _wallClockOffset;
+    
+        private long GetTimeMicros() {
+            return (System.NanoTime() / NANOS_TO_MICROS) + wallClockOffset;
         }
-
-
+    
+    
         /// <summary>
         /// Calculate resolution of this timer in microseconds i.e. what is the resolution
         /// of the underlying platform's timer.
         /// </summary>
-        /// <returns>
-        /// timer resolution
-        /// </returns>
-    	protected long CalculateResolution()
-        {
-    		const int LOOPS = 5;
+        /// <returns>timer resolution</returns>
+        protected long CalculateResolution() {
+            int loops = 5;
             long totalResolution = 0;
-    		long time = GetTimeMicros(), prevTime = time;
-            for (int i = 0; i < LOOPS; i++) {
+            long time = this.TimeMicros, prevTime = time;
+            for (int i = 0; i < loops; i++) {
                 // wait until time changes
                 while (time == prevTime)
-                    time = GetTimeMicros();
-                totalResolution += (time - prevTime);
-    			prevTime = time;
+                    time = this.TimeMicros;
+                totalResolution += time - prevTime;
+                prevTime = time;
             }
-    		return totalResolution / LOOPS;
-    	}
-
-        /// <summary>
-        /// Provides a string rendering of the object.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Format("{0}, Description: {1}", base.ToString(), _description);
+            return totalResolution / loops;
+        }
+    
+        public override string ToString() {
+            return description;
         }
     }
-}
+} // end of namespace

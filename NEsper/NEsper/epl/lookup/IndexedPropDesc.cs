@@ -140,7 +140,7 @@ namespace com.espertech.esper.epl.lookup
             }
         }
 
-        public static void ToQueryPlan(StringWriter writer, IndexedPropDesc[] indexedProps)
+        public static void ToQueryPlan(TextWriter writer, IndexedPropDesc[] indexedProps)
         {
             String delimiter = "";
             foreach (IndexedPropDesc prop in indexedProps)

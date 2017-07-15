@@ -34,7 +34,7 @@ namespace com.espertech.esper.regression.nwtable
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = true;
             _epService = (EPServiceProviderSPI) EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), GetType().FullName);}

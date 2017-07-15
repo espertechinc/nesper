@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.core.eval
             // wrapper bean, we also need to add the map properties
             if (_singleStreamWrapper)
             {
-                var wrapper = (DecoratingEventBean) eventsPerStream[0];
+                var wrapper = (DecoratingEventBean)eventsPerStream[0];
                 if (wrapper != null)
                 {
                     IDictionary<String, Object> map = wrapper.DecoratingProperties;
@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.core.eval
             if (_underlyingIsFragmentEvent)
             {
                 EventBean eventBean = eventsPerStream[_underlyingStreamNumber];
-                theEvent = (EventBean) eventBean.GetFragment(_unnamedStreams[0].StreamSelected.StreamName);
+                theEvent = (EventBean)eventBean.GetFragment(_unnamedStreams[0].StreamSelected.StreamName);
             }
             else if (_underlyingPropertyEventGetter != null)
             {

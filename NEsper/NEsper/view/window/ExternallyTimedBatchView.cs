@@ -16,7 +16,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.events;
 using com.espertech.esper.metrics.instrumentation;
@@ -26,8 +25,8 @@ namespace com.espertech.esper.view.window
     /// <summary>
     /// Batch window based on timestamp of arriving events.
     /// </summary>
-    public class ExternallyTimedBatchView 
-        : ViewSupport 
+    public class ExternallyTimedBatchView
+        : ViewSupport
         , DataWindowView
         , CloneableView
     {
@@ -35,14 +34,14 @@ namespace com.espertech.esper.view.window
         private readonly ExprNode _timestampExpression;
         private readonly ExprEvaluator _timestampExpressionEval;
         private readonly ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
-    
+
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
         internal EventBean[] LastBatch;
-    
+
         private long? _oldestTimestamp;
         internal readonly ISet<EventBean> Window = new LinkedHashSet<EventBean>();
         internal long? ReferenceTimestamp;
-    
+
         internal ViewUpdatedCollection ViewUpdatedCollection;
         internal AgentInstanceViewFactoryChainContext AgentInstanceViewFactoryContext;
 
@@ -76,7 +75,7 @@ namespace com.espertech.esper.view.window
             AgentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
             ReferenceTimestamp = optionalReferencePoint;
         }
-    
+
         public View CloneView()
         {
             return _factory.MakeView(AgentInstanceViewFactoryContext);
@@ -102,80 +101,93 @@ namespace com.espertech.esper.view.window
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _factory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _factory.ViewName, newData, oldData); }
+
             // remove points from data window
-            if (oldData != null && oldData.Length != 0) {
-                foreach (EventBean anOldData in oldData) {
+            if (oldData != null && oldData.Length != 0)
+            {
+                foreach (EventBean anOldData in oldData)
+                {
                     Window.Remove(anOldData);
                     HandleInternalRemovedEvent(anOldData);
                 }
                 DetermineOldestTimestamp();
             }
-    
+
             // add data points to the window
             EventBean[] batchNewData = null;
-            if (newData != null) {
-                foreach (EventBean newEvent in newData) {
-    
+            if (newData != null)
+            {
+                foreach (EventBean newEvent in newData)
+                {
+
                     long timestamp = GetLongValue(newEvent);
-                    if (ReferenceTimestamp == null) {
+                    if (ReferenceTimestamp == null)
+                    {
                         ReferenceTimestamp = timestamp;
                     }
-    
-                    if (_oldestTimestamp == null) {
+
+                    if (_oldestTimestamp == null)
+                    {
                         _oldestTimestamp = timestamp;
                     }
                     else
                     {
-                        var delta = _timeDeltaComputation.DeltaMillisecondsAddWReference(
+                        var delta = _timeDeltaComputation.DeltaAddWReference(
                             _oldestTimestamp.Value, ReferenceTimestamp.Value);
                         ReferenceTimestamp = delta.LastReference;
-                        if (timestamp - _oldestTimestamp >= delta.Delta) {
-                            if (batchNewData == null) {
+                        if (timestamp - _oldestTimestamp >= delta.Delta)
+                        {
+                            if (batchNewData == null)
+                            {
                                 batchNewData = Window.ToArray();
                             }
-                            else {
+                            else
+                            {
                                 batchNewData = EventBeanUtility.AddToArray(batchNewData, Window);
                             }
                             Window.Clear();
                             _oldestTimestamp = null;
                         }
                     }
-    
+
                     Window.Add(newEvent);
                     HandleInternalAddEvent(newEvent, batchNewData != null);
                 }
             }
-    
-            if (batchNewData != null) {
+
+            if (batchNewData != null)
+            {
                 HandleInternalPostBatch(Window, batchNewData);
-                if (ViewUpdatedCollection != null) {
+                if (ViewUpdatedCollection != null)
+                {
                     ViewUpdatedCollection.Update(batchNewData, LastBatch);
                 }
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, newData, LastBatch);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, newData, LastBatch); }
                 UpdateChildren(batchNewData, LastBatch);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
                 LastBatch = batchNewData;
                 DetermineOldestTimestamp();
             }
-            if (oldData != null && oldData.Length > 0) {
-                if (ViewUpdatedCollection != null) {
+            if (oldData != null && oldData.Length > 0)
+            {
+                if (ViewUpdatedCollection != null)
+                {
                     ViewUpdatedCollection.Update(null, oldData);
                 }
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, null, oldData);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _factory.ViewName, null, oldData); }
                 UpdateChildren(null, oldData);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return Window.GetEnumerator();
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName +
@@ -189,12 +201,14 @@ namespace com.espertech.esper.view.window
         {
             return Window.IsEmpty();
         }
-    
-        public ExprTimePeriodEvalDeltaConst GetTimeDeltaComputation() {
+
+        public ExprTimePeriodEvalDeltaConst GetTimeDeltaComputation()
+        {
             return _timeDeltaComputation;
         }
-    
-        public void VisitView(ViewDataVisitor viewDataVisitor) {
+
+        public void VisitView(ViewDataVisitor viewDataVisitor)
+        {
             viewDataVisitor.VisitPrimary(Window, true, _factory.ViewName, null);
         }
 
@@ -224,12 +238,12 @@ namespace com.espertech.esper.view.window
         {
             // no action require
         }
-    
+
         protected void HandleInternalAddEvent(EventBean anNewData, bool isNextBatch)
         {
             // no action require
         }
-    
+
         private long GetLongValue(EventBean obj)
         {
             _eventsPerStream[0] = obj;

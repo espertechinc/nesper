@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.service
@@ -24,7 +23,7 @@ namespace com.espertech.esper.epl.agg.service
     {
         /// <summary>Evaluation nodes under. </summary>
         protected internal ExprEvaluator[] Evaluators;
-    
+
         /// <summary>Aggregation states and factories. </summary>
         protected internal AggregationMethodFactory[] Aggregators;
 
@@ -37,7 +36,7 @@ namespace com.espertech.esper.epl.agg.service
         {
             Evaluators = evaluators;
             Aggregators = aggregators;
-    
+
             if (evaluators.Length != aggregators.Length)
             {
                 throw new ArgumentException("Expected the same number of evaluates as computer prototypes");
@@ -46,6 +45,11 @@ namespace com.espertech.esper.epl.agg.service
 
         public void Stop()
         {
+        }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
         }
 
         public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);

@@ -38,13 +38,13 @@ namespace com.espertech.esper.multithread
         [Test]
         public void TestOrderedDeliverySuspend()
         {
-            TrySend(4, 10000, true, ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
+            TrySend(4, 10000, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND);
         }
     
         [Test]
         public void TestOrderedDeliverySpin()
         {
-            TrySend(4, 10000, true, ConfigurationEngineDefaults.Threading.Locking.SPIN);
+            TrySend(4, 10000, true, ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN);
         }
     
         public void ManualTestOrderedDeliveryFail()
@@ -54,7 +54,7 @@ namespace com.espertech.esper.multithread
             TrySend(3, 1000, false, null);
         }
 
-        private void TrySend(int numThreads, int numEvents, bool isPreserveOrder, ConfigurationEngineDefaults.Threading.Locking? locking)
+        private void TrySend(int numThreads, int numEvents, bool isPreserveOrder, ConfigurationEngineDefaults.ThreadingConfig.Locking? locking)
         {
             var config = SupportConfigFactory.GetConfiguration();
             config.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder = isPreserveOrder;

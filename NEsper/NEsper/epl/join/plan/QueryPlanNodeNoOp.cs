@@ -28,11 +28,11 @@ namespace com.espertech.esper.epl.join.plan
             return NOOP;
         }
 
-        public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
         }
 
-        protected internal override void Print(IndentWriter writer)
+        public override void Print(IndentWriter writer)
         {
             writer.WriteLine("No-Op Execution");
         }

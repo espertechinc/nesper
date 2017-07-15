@@ -83,7 +83,7 @@ namespace com.espertech.esper.regression.pattern
             patternStmt.Start();
             Assert.IsFalse(patternStmt.HasFirst());
 
-            // assert statement-eventtype reference info
+            // assert statement-eventtype reference INFO
             EPServiceProviderSPI spi = (EPServiceProviderSPI)_epService;
             Assert.IsTrue(spi.StatementEventTypeRef.IsInUse(typeof(SupportBean).FullName));
             ICollection<String> stmtNames = spi.StatementEventTypeRef.GetStatementNamesForType(typeof(SupportBean).FullName);

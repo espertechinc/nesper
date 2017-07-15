@@ -96,7 +96,7 @@ namespace com.espertech.esper.regression.resultset
         [Test]
 	    public void TestAvgGroupWindow()
 	    {
-	        //String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
+	        //String stmtText = "select istream avg(price) as aprice from "+ typeof(SupportMarketDataBean).getName()
 	        //        +".std:groupwin(symbol).win:length(1) having avg(price) <= 0";
             string stmtText = "select istream avg(price) as aprice from " + typeof(SupportMarketDataBean).FullName
 	                +".std:unique(symbol) having avg(price) <= 0";

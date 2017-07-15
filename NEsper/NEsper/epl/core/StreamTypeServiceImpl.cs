@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.core
         private bool _requireStreamNames;
         private readonly bool _isOnDemandStreams;
         private bool _hasTableTypes;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.core
             : this(new EventType[0], new String[0], new bool[0], engineURI, isOnDemandStreams)
         {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -51,11 +51,11 @@ namespace com.espertech.esper.epl.core
         /// <param name="streamName">the stream name of the single stream</param>
         /// <param name="engineURI">engine URI</param>
         /// <param name="isIStreamOnly">true for no datawindow for stream</param>
-        public StreamTypeServiceImpl (EventType eventType, String streamName, bool isIStreamOnly, String engineURI)
+        public StreamTypeServiceImpl(EventType eventType, String streamName, bool isIStreamOnly, String engineURI)
             : this(new EventType[] { eventType }, new String[] { streamName }, new bool[] { isIStreamOnly }, engineURI, false)
         {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -73,13 +73,13 @@ namespace com.espertech.esper.epl.core
 
             if (engineURI == null || EPServiceProviderConstants.DEFAULT_ENGINE_URI.Equals(engineURI))
             {
-                _engineURIQualifier = EPServiceProviderConstants.DEFAULT_ENGINE_URI__QUALIFIER;
+                _engineURIQualifier = EPServiceProviderConstants.DEFAULT_ENGINE_URI_QUALIFIER;
             }
             else
             {
                 _engineURIQualifier = engineURI;
             }
-    
+
             if (eventTypes.Length != streamNames.Length)
             {
                 throw new ArgumentException("Number of entries for event types and stream names differs");
@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.core
 
             _hasTableTypes = DetermineHasTableTypes();
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -102,8 +102,8 @@ namespace com.espertech.esper.epl.core
             _requireStreamNames = requireStreamNames;
             _engineURIQualifier = engineURI;
             _isIStreamOnly = new bool[namesAndTypes.Count];
-            _eventTypes = new EventType[namesAndTypes.Count] ;
-            _streamNames = new String[namesAndTypes.Count] ;
+            _eventTypes = new EventType[namesAndTypes.Count];
+            _streamNames = new String[namesAndTypes.Count];
 
             var count = 0;
             foreach (var entry in namesAndTypes)
@@ -158,9 +158,8 @@ namespace com.espertech.esper.epl.core
             }
             return -1;
         }
-    
+
         public PropertyResolutionDescriptor ResolveByPropertyName(String propertyName, bool obtainFragment)
-            
         {
             if (propertyName == null)
             {
@@ -173,8 +172,9 @@ namespace com.espertech.esper.epl.core
             }
             return desc;
         }
-    
-        public PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(String propertyName, bool obtainFragment) {
+
+        public PropertyResolutionDescriptor ResolveByPropertyNameExplicitProps(String propertyName, bool obtainFragment)
+        {
             if (propertyName == null)
             {
                 throw new ArgumentException("Null property name");
@@ -186,9 +186,8 @@ namespace com.espertech.esper.epl.core
             }
             return desc;
         }
-    
+
         public PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamName, String propertyName, bool obtainFragment)
-            
         {
             if (streamName == null)
             {
@@ -200,8 +199,9 @@ namespace com.espertech.esper.epl.core
             }
             return FindByStreamAndEngineName(propertyName, streamName, false, obtainFragment);
         }
-    
-        public PropertyResolutionDescriptor ResolveByStreamAndPropNameExplicitProps(String streamName, String propertyName, bool obtainFragment) {
+
+        public PropertyResolutionDescriptor ResolveByStreamAndPropNameExplicitProps(String streamName, String propertyName, bool obtainFragment)
+        {
             if (streamName == null)
             {
                 throw new ArgumentException("Null property name");
@@ -212,14 +212,14 @@ namespace com.espertech.esper.epl.core
             }
             return FindByStreamAndEngineName(propertyName, streamName, true, obtainFragment);
         }
-    
-        public PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamAndPropertyName, bool obtainFragment) 
+
+        public PropertyResolutionDescriptor ResolveByStreamAndPropName(String streamAndPropertyName, bool obtainFragment)
         {
             if (streamAndPropertyName == null)
             {
                 throw new ArgumentException("Null stream and property name");
             }
-    
+
             PropertyResolutionDescriptor desc;
             try
             {
@@ -260,18 +260,17 @@ namespace com.espertech.esper.epl.core
                 }
                 return desc;
             }
-    
+
             return desc;
         }
-    
+
         private PropertyResolutionDescriptor FindByPropertyName(String propertyName, bool obtainFragment)
-            
         {
             var index = 0;
             var foundIndex = 0;
             var foundCount = 0;
             EventType streamType = null;
-    
+
             for (var i = 0; i < _eventTypes.Length; i++)
             {
                 if (_eventTypes[i] != null)
@@ -279,31 +278,37 @@ namespace com.espertech.esper.epl.core
                     Type propertyType = null;
                     var found = false;
                     FragmentEventType fragmentEventTypeX = null;
-                    
-                    if (_eventTypes[i].IsProperty(propertyName)) {
+
+                    if (_eventTypes[i].IsProperty(propertyName))
+                    {
                         propertyType = _eventTypes[i].GetPropertyType(propertyName);
-                        if (obtainFragment) {
+                        if (obtainFragment)
+                        {
                             fragmentEventTypeX = _eventTypes[i].GetFragmentType(propertyName);
                         }
                         found = true;
                     }
-                    else {
+                    else
+                    {
                         // mapped(expression) or array(expression) are not property names but expressions against a property by name "mapped" or "array"
                         var descriptor = _eventTypes[i].GetPropertyDescriptor(propertyName);
-                        if (descriptor != null) {
+                        if (descriptor != null)
+                        {
                             found = true;
                             propertyType = descriptor.PropertyType;
-                            if (descriptor.IsFragment && obtainFragment) {
-                                fragmentEventTypeX =  _eventTypes[i].GetFragmentType(propertyName);
+                            if (descriptor.IsFragment && obtainFragment)
+                            {
+                                fragmentEventTypeX = _eventTypes[i].GetFragmentType(propertyName);
                             }
                         }
                     }
-    
-                    if (found) {
+
+                    if (found)
+                    {
                         streamType = _eventTypes[i];
                         foundCount++;
                         foundIndex = index;
-    
+
                         // If the property could be resolved from stream 0 then we don't need to look further
                         if ((i == 0) && _isStreamZeroUnambigous)
                         {
@@ -313,48 +318,53 @@ namespace com.espertech.esper.epl.core
                 }
                 index++;
             }
-    
+
             HandleFindExceptions(propertyName, foundCount, streamType);
-    
+
             FragmentEventType fragmentEventType = null;
-            if (obtainFragment) {
+            if (obtainFragment)
+            {
                 fragmentEventType = streamType.GetFragmentType(propertyName);
             }
-    
+
             return new PropertyResolutionDescriptor(_streamNames[foundIndex], _eventTypes[foundIndex], propertyName, foundIndex, streamType.GetPropertyType(propertyName), fragmentEventType);
         }
-    
+
         private PropertyResolutionDescriptor FindByPropertyNameExplicitProps(String propertyName, bool obtainFragment)
         {
             var index = 0;
             var foundIndex = 0;
             var foundCount = 0;
             EventType streamType = null;
-    
+
             for (var i = 0; i < _eventTypes.Length; i++)
             {
                 if (_eventTypes[i] != null)
                 {
-                    var descriptors  = _eventTypes[i].PropertyDescriptors;
+                    var descriptors = _eventTypes[i].PropertyDescriptors;
                     Type propertyType = null;
                     var found = false;
                     FragmentEventType fragmentEventTypeX = null;
-    
-                    foreach (var desc in descriptors) {
-                        if (desc.PropertyName.Equals(propertyName)) {
+
+                    foreach (var desc in descriptors)
+                    {
+                        if (desc.PropertyName.Equals(propertyName))
+                        {
                             propertyType = desc.PropertyType;
                             found = true;
-                            if (obtainFragment && desc.IsFragment) {
+                            if (obtainFragment && desc.IsFragment)
+                            {
                                 fragmentEventTypeX = _eventTypes[i].GetFragmentType(propertyName);
                             }
                         }
                     }
-    
-                    if (found) {
+
+                    if (found)
+                    {
                         streamType = _eventTypes[i];
                         foundCount++;
                         foundIndex = index;
-    
+
                         // If the property could be resolved from stream 0 then we don't need to look further
                         if ((i == 0) && _isStreamZeroUnambigous)
                         {
@@ -364,23 +374,25 @@ namespace com.espertech.esper.epl.core
                 }
                 index++;
             }
-    
+
             HandleFindExceptions(propertyName, foundCount, streamType);
-    
+
             FragmentEventType fragmentEventType = null;
-            if (obtainFragment) {
+            if (obtainFragment)
+            {
                 fragmentEventType = streamType.GetFragmentType(propertyName);
             }
-    
+
             return new PropertyResolutionDescriptor(_streamNames[foundIndex], _eventTypes[foundIndex], propertyName, foundIndex, streamType.GetPropertyType(propertyName), fragmentEventType);
         }
-    
-        private void HandleFindExceptions(String propertyName, int foundCount, EventType streamType) {
+
+        private void HandleFindExceptions(String propertyName, int foundCount, EventType streamType)
+        {
             if (foundCount > 1)
             {
                 throw new DuplicatePropertyException("Property named '" + propertyName + "' is ambiguous as is valid for more then one stream");
             }
-    
+
             if (streamType == null)
             {
                 var message = "Property named '" + propertyName + "' is not valid in any stream";
@@ -390,7 +402,6 @@ namespace com.espertech.esper.epl.core
         }
 
         private PropertyResolutionDescriptor FindByStreamAndEngineName(String propertyName, String streamName, bool explicitPropertiesOnly, bool obtainFragment)
-            
         {
             PropertyResolutionDescriptor desc;
             try
@@ -417,32 +428,32 @@ namespace com.espertech.esper.epl.core
             }
             return desc;
         }
-    
-        private Pair<String, String> GetIsEngineQualified(String propertyName, String streamName) {
-    
+
+        private Pair<String, String> GetIsEngineQualified(String propertyName, String streamName)
+        {
+
             // If still not found, test for the stream name to contain the engine URI
             if (!streamName.Equals(_engineURIQualifier))
             {
                 return null;
             }
-    
+
             var index = ASTUtil.UnescapedIndexOfDot(propertyName);
             if (index == -1)
             {
                 return null;
             }
-    
+
             var streamNameNoEngine = propertyName.Substring(0, index);
             var propertyNameNoEngine = propertyName.Substring(index + 1);
             return new Pair<String, String>(propertyNameNoEngine, streamNameNoEngine);
         }
-    
+
         private PropertyResolutionDescriptor FindByStreamNameOnly(String propertyName, String streamName, bool explicitPropertiesOnly, bool obtainFragment)
-            
         {
             var index = 0;
             EventType streamType = null;
-    
+
             // Stream name resultion examples:
             // A)  select A1.price from Event.price as A2  => mismatch stream name, cannot resolve
             // B)  select Event1.price from Event2.price   => mismatch event type name, cannot resolve
@@ -459,67 +470,77 @@ namespace com.espertech.esper.epl.core
                     streamType = _eventTypes[i];
                     break;
                 }
-    
+
                 // If the stream name is the event type name, that is also acceptable
                 if ((_eventTypes[i].Name != null) && (_eventTypes[i].Name.Equals(streamName)))
                 {
                     streamType = _eventTypes[i];
                     break;
                 }
-    
+
                 index++;
             }
-            
+
             if (streamType == null)
             {
                 var message = "Failed to find a stream named '" + streamName + "'";
                 var msgGen = new StreamNotFoundExceptionSuggestionGen(_eventTypes, _streamNames, streamName);
                 throw new StreamNotFoundException(message, msgGen.GetSuggestion);
             }
-    
+
             Type propertyType = null;
             FragmentEventType fragmentEventType = null;
-    
-            if (!explicitPropertiesOnly) {
+
+            if (!explicitPropertiesOnly)
+            {
                 propertyType = streamType.GetPropertyType(propertyName);
                 if (propertyType == null)
                 {
                     var desc = streamType.GetPropertyDescriptor(propertyName);
-                    if (desc == null) {
+                    if (desc == null)
+                    {
                         throw HandlePropertyNotFound(propertyName, streamName, streamType);
                     }
                     propertyType = desc.PropertyType;
-                    if (obtainFragment && desc.IsFragment) {
+                    if (obtainFragment && desc.IsFragment)
+                    {
                         fragmentEventType = streamType.GetFragmentType(propertyName);
                     }
                 }
-                else {
-                    if (obtainFragment) {
+                else
+                {
+                    if (obtainFragment)
+                    {
                         fragmentEventType = streamType.GetFragmentType(propertyName);
                     }
                 }
             }
-            else {
+            else
+            {
                 var explicitProps = streamType.PropertyDescriptors;
                 var found = false;
-                foreach (var prop in explicitProps) {
-                    if (prop.PropertyName.Equals(propertyName)) {
+                foreach (var prop in explicitProps)
+                {
+                    if (prop.PropertyName.Equals(propertyName))
+                    {
                         propertyType = prop.PropertyType;
-                        if (obtainFragment && prop.IsFragment) {
+                        if (obtainFragment && prop.IsFragment)
+                        {
                             fragmentEventType = streamType.GetFragmentType(propertyName);
                         }
                         found = true;
                         break;
                     }
                 }
-                if (!found) {
+                if (!found)
+                {
                     throw HandlePropertyNotFound(propertyName, streamName, streamType);
                 }
             }
-    
+
             return new PropertyResolutionDescriptor(streamName, streamType, propertyName, index, propertyType, fragmentEventType);
         }
-    
+
         private PropertyNotFoundException HandlePropertyNotFound(String propertyName, String streamName, EventType streamType)
         {
             var message = "Property named '" + propertyName + "' is not valid in stream '" + streamName + "'";
@@ -556,42 +577,50 @@ namespace com.espertech.esper.epl.core
             private readonly EventType[] _eventTypes;
             private readonly String _propertyName;
 
-            internal PropertyNotFoundExceptionSuggestionGenMultiTyped(EventType[] eventTypes, String propertyName) {
+            internal PropertyNotFoundExceptionSuggestionGenMultiTyped(EventType[] eventTypes, String propertyName)
+            {
                 _eventTypes = eventTypes;
                 _propertyName = propertyName;
             }
 
-            public Pair<int, string> GetSuggestion() {
+            public Pair<int, string> GetSuggestion()
+            {
                 return StreamTypeServiceUtil.FindLevMatch(_eventTypes, _propertyName);
             }
         }
 
-        internal class PropertyNotFoundExceptionSuggestionGenSingleTyped {
+        internal class PropertyNotFoundExceptionSuggestionGenSingleTyped
+        {
             private readonly EventType _eventType;
             private readonly String _propertyName;
 
-            internal PropertyNotFoundExceptionSuggestionGenSingleTyped(EventType eventType, String propertyName) {
+            internal PropertyNotFoundExceptionSuggestionGenSingleTyped(EventType eventType, String propertyName)
+            {
                 _eventType = eventType;
                 _propertyName = propertyName;
             }
 
-            public Pair<int, string> GetSuggestion() {
+            public Pair<int, string> GetSuggestion()
+            {
                 return StreamTypeServiceUtil.FindLevMatch(_propertyName, _eventType);
             }
         }
 
-        internal class StreamNotFoundExceptionSuggestionGen {
+        internal class StreamNotFoundExceptionSuggestionGen
+        {
             private readonly EventType[] _eventTypes;
             private readonly String[] _streamNames;
             private readonly String _streamName;
 
-            public StreamNotFoundExceptionSuggestionGen(EventType[] eventTypes, String[] streamNames, String streamName) {
+            public StreamNotFoundExceptionSuggestionGen(EventType[] eventTypes, String[] streamNames, String streamName)
+            {
                 _eventTypes = eventTypes;
                 _streamNames = streamNames;
                 _streamName = streamName;
             }
 
-            public Pair<int, string> GetSuggestion() {
+            public Pair<int, string> GetSuggestion()
+            {
                 // find a near match, textually
                 String bestMatch = null;
                 var bestMatchDiff = int.MaxValue;

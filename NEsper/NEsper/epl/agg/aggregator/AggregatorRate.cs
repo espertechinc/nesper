@@ -17,10 +17,16 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// </summary>
     public class AggregatorRate : AggregationMethod
     {
+        private long _oneSecondTime;
         private double _accumulator;
         private long _latest;
         private long _oldest;
         private bool _isSet = false;
+
+        public AggregatorRate(long oneSecondTime)
+        {
+            _oneSecondTime = oneSecondTime;
+        }
 
         public virtual void Enter(Object value)
         {
@@ -59,7 +65,7 @@ namespace com.espertech.esper.epl.agg.aggregator
             {
                 if (!_isSet)
                     return null;
-                return (_accumulator * 1000) / (_latest - _oldest);
+                return (_accumulator * _oneSecondTime) / (_latest - _oldest);
             }
         }
 

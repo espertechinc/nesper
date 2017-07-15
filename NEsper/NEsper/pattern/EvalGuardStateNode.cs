@@ -26,7 +26,7 @@ namespace com.espertech.esper.pattern
         private EvalStateNode _activeChildNode;
         private Guard _guard;
         private MatchedEventMap _beginState;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalGuardNode">is the factory node associated to the state</param>
@@ -35,15 +35,18 @@ namespace com.espertech.esper.pattern
         {
             _evalGuardNode = evalGuardNode;
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState)) {
+            if (PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState))
+            {
                 Quit();
                 ParentEvaluator.EvaluateFalse(this, true);
             }
-            else {
-                if (_activeChildNode != null) {
+            else
+            {
+                if (_activeChildNode != null)
+                {
                     _activeChildNode.RemoveMatch(matchEvent);
                 }
             }
@@ -61,33 +64,33 @@ namespace com.espertech.esper.pattern
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardStart(_evalGuardNode, beginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardStart(_evalGuardNode, beginState); }
             _beginState = beginState;
             _guard = _evalGuardNode.FactoryNode.GuardFactory.MakeGuard(_evalGuardNode.Context, beginState, this, null, null);
             _activeChildNode = _evalGuardNode.ChildNode.NewState(this, null, 0L);
-    
+
             // Start the single child state
             _activeChildNode.Start(beginState);
-    
+
             // Start the guard
             _guard.StartGuard();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardStart(); }
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardEvaluateTrue(_evalGuardNode, matchEvent);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardEvaluateTrue(_evalGuardNode, matchEvent); }
             bool haveQuitted = _activeChildNode == null;
-    
+
             // If one of the children quits, remove the child
             if (isQuitted)
             {
                 _activeChildNode = null;
-    
+
                 // Stop guard, since associated subexpression is gone
                 _guard.StopGuard();
             }
-    
+
             if (!(haveQuitted))
             {
                 bool guardPass = _guard.Inspect(matchEvent);
@@ -96,38 +99,41 @@ namespace com.espertech.esper.pattern
                     ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
                 }
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardEvaluateTrue(isQuitted);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardEvaluateTrue(isQuitted); }
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
             _activeChildNode = null;
             ParentEvaluator.EvaluateFalse(this, true);
         }
-    
+
         public override void Quit()
         {
-            if (_activeChildNode == null) {
+            if (_activeChildNode == null)
+            {
                 return;
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardQuit(_evalGuardNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardQuit(_evalGuardNode); }
             if (_activeChildNode != null)
             {
                 _activeChildNode.Quit();
                 _guard.StopGuard();
             }
-    
+
             _activeChildNode = null;
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardQuit(); }
         }
-    
-        public override void Accept(EvalStateNodeVisitor visitor) {
+
+        public override void Accept(EvalStateNodeVisitor visitor)
+        {
             visitor.VisitGuard(_evalGuardNode.FactoryNode, this, _guard);
-            if (_activeChildNode != null) {
+            if (_activeChildNode != null)
+            {
                 _activeChildNode.Accept(visitor);
             }
         }
-    
+
         public override String ToString()
         {
             return "EvaluationWitinStateNode activeChildNode=" + _activeChildNode +
@@ -156,7 +162,7 @@ namespace com.espertech.esper.pattern
 
         public void GuardQuit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardGuardQuit(_evalGuardNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardGuardQuit(_evalGuardNode); }
             // It is possible that the child node has already been quit such as when the parent wait time was shorter.
             // 1. parent node's guard indicates quit to all children
             // 2. this node's guards also indicates quit, however that already occured
@@ -165,10 +171,10 @@ namespace com.espertech.esper.pattern
                 _activeChildNode.Quit();
             }
             _activeChildNode = null;
-    
+
             // Indicate to parent state that this is permanently false.
             ParentEvaluator.EvaluateFalse(this, true);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardGuardQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardGuardQuit(); }
         }
     }
 }

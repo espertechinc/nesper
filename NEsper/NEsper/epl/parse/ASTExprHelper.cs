@@ -30,98 +30,124 @@ namespace com.espertech.esper.epl.parse
 {
     public class ASTExprHelper
     {
-        public static ExprNode ResolvePropertyOrVariableIdentifier(String identifier, VariableService variableService, StatementSpecRaw spec) {
+        public static ExprNode ResolvePropertyOrVariableIdentifier(String identifier, VariableService variableService, StatementSpecRaw spec)
+        {
             var metaData = variableService.GetVariableMetaData(identifier);
-            if (metaData != null) {
+            if (metaData != null)
+            {
                 var exprNode = new ExprVariableNodeImpl(metaData, null);
                 spec.HasVariables = true;
                 AddVariableReference(spec, metaData.VariableName);
                 var message = VariableServiceUtil.CheckVariableContextName(spec.OptionalContextName, metaData);
-                if (message != null) {
+                if (message != null)
+                {
                     throw ASTWalkException.From(message);
                 }
                 return exprNode;
             }
-            else {
+            else
+            {
                 return new ExprIdentNodeImpl(identifier);
             }
         }
-    
-        public static void AddVariableReference(StatementSpecRaw statementSpec, String variableName) {
-            if (statementSpec.ReferencedVariables == null) {
+
+        public static void AddVariableReference(StatementSpecRaw statementSpec, String variableName)
+        {
+            if (statementSpec.ReferencedVariables == null)
+            {
                 statementSpec.ReferencedVariables = new HashSet<String>();
             }
             statementSpec.ReferencedVariables.Add(variableName);
         }
 
-        public static ExprTimePeriod TimePeriodGetExprAllParams(EsperEPL2GrammarParser.TimePeriodContext ctx, IDictionary<ITree, ExprNode> astExprNodeMap, VariableService variableService, StatementSpecRaw spec, ConfigurationInformation config)
+        public static ExprTimePeriod TimePeriodGetExprAllParams(
+            EsperEPL2GrammarParser.TimePeriodContext ctx,
+            IDictionary<ITree, ExprNode> astExprNodeMap,
+            VariableService variableService,
+            StatementSpecRaw spec,
+            ConfigurationInformation config,
+            TimeAbacus timeAbacus)
         {
-            var nodes = new ExprNode[8];
-            for (var i = 0; i < ctx.ChildCount; i++) {
+            var nodes = new ExprNode[9];
+            for (var i = 0; i < ctx.ChildCount; i++)
+            {
                 var unitRoot = ctx.GetChild(i);
-    
+
                 ExprNode valueExpr;
-                if (ASTUtil.IsTerminatedOfType(unitRoot.GetChild(0), EsperEPL2GrammarLexer.IDENT)) {
+                if (ASTUtil.IsTerminatedOfType(unitRoot.GetChild(0), EsperEPL2GrammarLexer.IDENT))
+                {
                     var ident = unitRoot.GetChild(0).GetText();
                     valueExpr = ASTExprHelper.ResolvePropertyOrVariableIdentifier(ident, variableService, spec);
                 }
-                else {
+                else
+                {
                     var @ref = new Atomic<ExprNode>();
-                    ExprAction action = (exprNode, astExprNodeMapX, nodeX) => {
+                    ExprAction action = (exprNode, astExprNodeMapX, nodeX) =>
+                    {
                         astExprNodeMapX.Remove(nodeX);
                         @ref.Set(exprNode);
                     };
                     ASTExprHelper.RecursiveFindRemoveChildExprNode(unitRoot.GetChild(0), astExprNodeMap, action);
                     valueExpr = @ref.Get();
                 }
-    
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_millisecondPart) {
+
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_microsecondPart)
+                {
+                    nodes[8] = valueExpr;
+                }
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_millisecondPart)
+                {
                     nodes[7] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_secondPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_secondPart)
+                {
                     nodes[6] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_minutePart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_minutePart)
+                {
                     nodes[5] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_hourPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_hourPart)
+                {
                     nodes[4] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_dayPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_dayPart)
+                {
                     nodes[3] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_weekPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_weekPart)
+                {
                     nodes[2] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_monthPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_monthPart)
+                {
                     nodes[1] = valueExpr;
                 }
-                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_yearPart) {
+                if (ASTUtil.GetRuleIndexIfProvided(unitRoot) == EsperEPL2GrammarParser.RULE_yearPart)
+                {
                     nodes[0] = valueExpr;
                 }
             }
 
             ExprTimePeriod timeNode = new ExprTimePeriodImpl(config.EngineDefaults.ExpressionConfig.TimeZone,
-                nodes[0] != null, nodes[1] != null, nodes[2] != null, nodes[3] != null, nodes[4] != null, nodes[5] != null, nodes[6] != null, nodes[7] != null);
-            if (nodes[0] != null) timeNode.AddChildNode(nodes[0]);
-            if (nodes[1] != null) timeNode.AddChildNode(nodes[1]);
-            if (nodes[2] != null) timeNode.AddChildNode(nodes[2]);
-            if (nodes[3] != null) timeNode.AddChildNode(nodes[3]);
-            if (nodes[4] != null) timeNode.AddChildNode(nodes[4]);
-            if (nodes[5] != null) timeNode.AddChildNode(nodes[5]);
-            if (nodes[6] != null) timeNode.AddChildNode(nodes[6]);
-            if (nodes[7] != null) timeNode.AddChildNode(nodes[7]);
+                nodes[0] != null, nodes[1] != null, nodes[2] != null, nodes[3] != null, nodes[4] != null, nodes[5] != null, nodes[6] != null, nodes[7] != null, nodes[8] != null, timeAbacus);
+
+            foreach (ExprNode node in nodes) {
+                if (node != null) timeNode.AddChildNode(node);
+            }
+
             return timeNode;
         }
-    
-        public static ExprTimePeriod TimePeriodGetExprJustSeconds(EsperEPL2GrammarParser.ExpressionContext expression, IDictionary<ITree, ExprNode> astExprNodeMap, ConfigurationInformation config) {
+
+        public static ExprTimePeriod TimePeriodGetExprJustSeconds(EsperEPL2GrammarParser.ExpressionContext expression, IDictionary<ITree, ExprNode> astExprNodeMap, ConfigurationInformation config)
+        {
             var node = ExprCollectSubNodes(expression, 0, astExprNodeMap)[0];
             var timeNode = new ExprTimePeriodImpl(config.EngineDefaults.ExpressionConfig.TimeZone,
                 false, false, false, false, false, false, true, false);
             timeNode.AddChildNode(node);
             return timeNode;
         }
-    
+
         /// <summary>
         /// Returns the list of set-variable assignments under the given node.
         /// </summary>
@@ -129,14 +155,17 @@ namespace com.espertech.esper.epl.parse
         /// <returns>list of assignments</returns>
         internal static IList<OnTriggerSetAssignment> GetOnTriggerSetAssignments(EsperEPL2GrammarParser.OnSetAssignmentListContext ctx, IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-            if (ctx == null || ctx.onSetAssignment().IsEmpty()) {
+            if (ctx == null || ctx.onSetAssignment().IsEmpty())
+            {
                 return Collections.GetEmptyList<OnTriggerSetAssignment>();
             }
             IList<EsperEPL2GrammarParser.OnSetAssignmentContext> ctxs = ctx.onSetAssignment();
             IList<OnTriggerSetAssignment> assignments = new List<OnTriggerSetAssignment>(ctx.onSetAssignment().Length);
-            foreach (var assign in ctxs) {
+            foreach (var assign in ctxs)
+            {
                 ExprNode childEvalNode;
-                if (assign.eventProperty() != null) {
+                if (assign.eventProperty() != null)
+                {
                     var prop = ASTExprHelper.ExprCollectSubNodes(assign.eventProperty(), 0, astExprNodeMap)[0];
                     var value = ASTExprHelper.ExprCollectSubNodes(assign.expression(), 0, astExprNodeMap)[0];
                     ExprEqualsNode equals = new ExprEqualsNodeImpl(false, false);
@@ -144,7 +173,8 @@ namespace com.espertech.esper.epl.parse
                     equals.AddChildNode(value);
                     childEvalNode = equals;
                 }
-                else {
+                else
+                {
                     childEvalNode = ASTExprHelper.ExprCollectSubNodes(assign, 0, astExprNodeMap)[0];
                 }
                 assignments.Add(new OnTriggerSetAssignment(childEvalNode));
@@ -154,13 +184,16 @@ namespace com.espertech.esper.epl.parse
 
         public static void PatternCollectAddSubnodesAddParentNode(EvalFactoryNode evalNode, ITree node, IDictionary<ITree, EvalFactoryNode> astPatternNodeMap)
         {
-            if (evalNode == null) {
+            if (evalNode == null)
+            {
                 throw ASTWalkException.From("Invalid null expression node for '" + ASTUtil.PrintNode(node) + "'");
             }
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 var childNode = node.GetChild(i);
                 var childEvalNode = PatternGetRemoveTopNode(childNode, astPatternNodeMap);
-                if (childEvalNode != null) {
+                if (childEvalNode != null)
+                {
                     evalNode.AddChildNode(childEvalNode);
                 }
             }
@@ -170,13 +203,16 @@ namespace com.espertech.esper.epl.parse
         public static EvalFactoryNode PatternGetRemoveTopNode(ITree node, IDictionary<ITree, EvalFactoryNode> astPatternNodeMap)
         {
             var pattern = astPatternNodeMap.Get(node);
-            if (pattern != null) {
+            if (pattern != null)
+            {
                 astPatternNodeMap.Remove(node);
                 return pattern;
             }
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 pattern = PatternGetRemoveTopNode(node.GetChild(i), astPatternNodeMap);
-                if (pattern != null) {
+                if (pattern != null)
+                {
                     return pattern;
                 }
             }
@@ -188,16 +224,20 @@ namespace com.espertech.esper.epl.parse
             RegExCollectAddSubNodes(exprNode, node, astRegExNodeMap);
             astRegExNodeMap.Put(node, exprNode);
         }
-    
-        public static void RegExCollectAddSubNodes(RowRegexExprNode regexNode, ITree node, IDictionary<ITree, RowRegexExprNode> astRegExNodeMap) {
-            if (regexNode == null) {
+
+        public static void RegExCollectAddSubNodes(RowRegexExprNode regexNode, ITree node, IDictionary<ITree, RowRegexExprNode> astRegExNodeMap)
+        {
+            if (regexNode == null)
+            {
                 throw ASTWalkException.From("Invalid null expression node for '" + ASTUtil.PrintNode(node) + "'");
             }
-            RegExAction action = (exprNode, astRegExNodeMapX, nodeX) => {
+            RegExAction action = (exprNode, astRegExNodeMapX, nodeX) =>
+            {
                 astRegExNodeMapX.Remove(nodeX);
                 regexNode.AddChildNode(exprNode);
             };
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 var childNode = node.GetChild(i);
                 RegExApplyActionRecursive(childNode, astRegExNodeMap, action);
             }
@@ -206,11 +246,13 @@ namespace com.espertech.esper.epl.parse
         public static void RegExApplyActionRecursive(ITree node, IDictionary<ITree, RowRegexExprNode> astRegExNodeMap, RegExAction action)
         {
             var expr = astRegExNodeMap.Get(node);
-            if (expr != null) {
+            if (expr != null)
+            {
                 action.Invoke(expr, astRegExNodeMap, node);
                 return;
             }
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 RegExApplyActionRecursive(node.GetChild(i), astRegExNodeMap, action);
             }
         }
@@ -220,159 +262,192 @@ namespace com.espertech.esper.epl.parse
             ExprCollectAddSubNodes(exprNode, node, astExprNodeMap);
             astExprNodeMap.Put(node, exprNode);
         }
-    
-        public static void ExprCollectAddSubNodes(ExprNode parentNode, ITree node, IDictionary<ITree, ExprNode> astExprNodeMap) {
-            if (parentNode == null) {
+
+        public static void ExprCollectAddSubNodes(ExprNode parentNode, ITree node, IDictionary<ITree, ExprNode> astExprNodeMap)
+        {
+            if (parentNode == null)
+            {
                 throw ASTWalkException.From("Invalid null expression node for '" + ASTUtil.PrintNode(node) + "'");
             }
-            if (node == null) {
+            if (node == null)
+            {
                 return;
             }
-            ExprAction action = (exprNode, astExprNodeMapX, nodeX) => {
+            ExprAction action = (exprNode, astExprNodeMapX, nodeX) =>
+            {
                 astExprNodeMapX.Remove(nodeX);
                 parentNode.AddChildNode(exprNode);
             };
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 var childNode = node.GetChild(i);
                 RecursiveFindRemoveChildExprNode(childNode, astExprNodeMap, action);
             }
         }
 
-        public static void ExprCollectAddSingle(ExprNode parentNode, ITree node, IDictionary<ITree, ExprNode> astExprNodeMap) {
-            if (parentNode == null) {
+        public static void ExprCollectAddSingle(ExprNode parentNode, ITree node, IDictionary<ITree, ExprNode> astExprNodeMap)
+        {
+            if (parentNode == null)
+            {
                 throw ASTWalkException.From("Invalid null expression node for '" + ASTUtil.PrintNode(node) + "'");
             }
-            if (node == null) {
+            if (node == null)
+            {
                 return;
             }
-            ExprAction action = (exprNodeX, astExprNodeMapX, nodeX) => {
+            ExprAction action = (exprNodeX, astExprNodeMapX, nodeX) =>
+            {
                 astExprNodeMapX.Remove(nodeX);
                 parentNode.AddChildNode(exprNodeX);
             };
             RecursiveFindRemoveChildExprNode(node, astExprNodeMap, action);
         }
 
-        public static void ExprCollectAddSubNodesExpressionCtx(ExprNode parentNode, IList<EsperEPL2GrammarParser.ExpressionContext> expressionContexts, IDictionary<ITree, ExprNode> astExprNodeMap) {
-            ExprAction action = (exprNode, astExprNodeMapX, node) => {
+        public static void ExprCollectAddSubNodesExpressionCtx(ExprNode parentNode, IList<EsperEPL2GrammarParser.ExpressionContext> expressionContexts, IDictionary<ITree, ExprNode> astExprNodeMap)
+        {
+            ExprAction action = (exprNode, astExprNodeMapX, node) =>
+            {
                 astExprNodeMapX.Remove(node);
                 parentNode.AddChildNode(exprNode);
             };
-            foreach (var ctx in expressionContexts) {
+            foreach (var ctx in expressionContexts)
+            {
                 RecursiveFindRemoveChildExprNode(ctx, astExprNodeMap, action);
             }
         }
-    
+
         public static IList<ExprNode> ExprCollectSubNodes(ITree parentNode, int startIndex, IDictionary<ITree, ExprNode> astExprNodeMap)
         {
             var selfNode = astExprNodeMap.Delete(parentNode);
-            if (selfNode != null) {
+            if (selfNode != null)
+            {
                 return Collections.SingletonList(selfNode);
             }
             IList<ExprNode> exprNodes = new List<ExprNode>();
-            ExprAction action = (exprNode, astExprNodeMapX, node) => {
+            ExprAction action = (exprNode, astExprNodeMapX, node) =>
+            {
                 astExprNodeMapX.Remove(node);
                 exprNodes.Add(exprNode);
             };
-            for (var i = startIndex; i < parentNode.ChildCount; i++) {
+            for (var i = startIndex; i < parentNode.ChildCount; i++)
+            {
                 var currentNode = parentNode.GetChild(i);
                 RecursiveFindRemoveChildExprNode(currentNode, astExprNodeMap, action);
             }
             return exprNodes;
         }
-    
-        private static void RecursiveFindRemoveChildExprNode(ITree node, IDictionary<ITree, ExprNode> astExprNodeMap, ExprAction action) {
+
+        private static void RecursiveFindRemoveChildExprNode(ITree node, IDictionary<ITree, ExprNode> astExprNodeMap, ExprAction action)
+        {
             var expr = astExprNodeMap.Get(node);
-            if (expr != null) {
+            if (expr != null)
+            {
                 action.Invoke(expr, astExprNodeMap, node);
                 return;
             }
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 RecursiveFindRemoveChildExprNode(node.GetChild(i), astExprNodeMap, action);
             }
         }
-    
-        public static RowRegexExprNode RegExGetRemoveTopNode(ITree node, IDictionary<ITree, RowRegexExprNode> astRowRegexNodeMap) {
+
+        public static RowRegexExprNode RegExGetRemoveTopNode(ITree node, IDictionary<ITree, RowRegexExprNode> astRowRegexNodeMap)
+        {
             var regex = astRowRegexNodeMap.Get(node);
-            if (regex != null) {
+            if (regex != null)
+            {
                 astRowRegexNodeMap.Remove(node);
                 return regex;
             }
-            for (var i = 0; i < node.ChildCount; i++) {
+            for (var i = 0; i < node.ChildCount; i++)
+            {
                 regex = RegExGetRemoveTopNode(node.GetChild(i), astRowRegexNodeMap);
-                if (regex != null) {
+                if (regex != null)
+                {
                     return regex;
                 }
             }
             return null;
         }
-    
-        public static ExprNode MathGetExpr(IParseTree ctx, IDictionary<ITree, ExprNode> astExprNodeMap, ConfigurationInformation configurationInformation) {
-    
+
+        public static ExprNode MathGetExpr(IParseTree ctx, IDictionary<ITree, ExprNode> astExprNodeMap, ConfigurationInformation configurationInformation)
+        {
+
             var count = 1;
             var @base = ASTExprHelper.ExprCollectSubNodes(ctx.GetChild(0), 0, astExprNodeMap)[0];
-    
-            while(true) {
+
+            while (true)
+            {
                 int token = ASTUtil.GetAssertTerminatedTokenType(ctx.GetChild(count));
                 var mathArithTypeEnum = TokenToMathEnum(token);
-    
+
                 var right = ASTExprHelper.ExprCollectSubNodes(ctx.GetChild(count + 1), 0, astExprNodeMap)[0];
-    
+
                 var math = new ExprMathNode(mathArithTypeEnum,
                         configurationInformation.EngineDefaults.ExpressionConfig.IsIntegerDivision,
                         configurationInformation.EngineDefaults.ExpressionConfig.IsDivisionByZeroReturnsNull);
                 math.AddChildNode(@base);
                 math.AddChildNode(right);
                 @base = math;
-    
+
                 count += 2;
-                if (count >= ctx.ChildCount) {
+                if (count >= ctx.ChildCount)
+                {
                     break;
                 }
             }
             return @base;
         }
-    
-        private static MathArithTypeEnum TokenToMathEnum(int token) {
-            switch (token) {
-                case EsperEPL2GrammarLexer.DIV :
+
+        private static MathArithTypeEnum TokenToMathEnum(int token)
+        {
+            switch (token)
+            {
+                case EsperEPL2GrammarLexer.DIV:
                     return MathArithTypeEnum.DIVIDE;
-                case EsperEPL2GrammarLexer.STAR :
+                case EsperEPL2GrammarLexer.STAR:
                     return MathArithTypeEnum.MULTIPLY;
-                case EsperEPL2GrammarLexer.PLUS :
+                case EsperEPL2GrammarLexer.PLUS:
                     return MathArithTypeEnum.ADD;
-                case EsperEPL2GrammarLexer.MINUS :
+                case EsperEPL2GrammarLexer.MINUS:
                     return MathArithTypeEnum.SUBTRACT;
-                case EsperEPL2GrammarLexer.MOD :
+                case EsperEPL2GrammarLexer.MOD:
                     return MathArithTypeEnum.MODULO;
-                default :
+                default:
                     throw ASTWalkException.From("Encountered unrecognized math token type " + token);
             }
         }
-    
-        public static void AddOptionalNumber(ExprNode exprNode, EsperEPL2GrammarParser.NumberContext number) {
-            if (number == null) {
+
+        public static void AddOptionalNumber(ExprNode exprNode, EsperEPL2GrammarParser.NumberContext number)
+        {
+            if (number == null)
+            {
                 return;
             }
             ExprConstantNode constantNode = new ExprConstantNodeImpl(ASTConstantHelper.Parse(number));
             exprNode.AddChildNode(constantNode);
         }
-    
-        public static void AddOptionalSimpleProperty(ExprNode exprNode, IToken token, VariableService variableService, StatementSpecRaw spec) {
-            if (token == null) {
+
+        public static void AddOptionalSimpleProperty(ExprNode exprNode, IToken token, VariableService variableService, StatementSpecRaw spec)
+        {
+            if (token == null)
+            {
                 return;
             }
             var node = ASTExprHelper.ResolvePropertyOrVariableIdentifier(token.Text, variableService, spec);
             exprNode.AddChildNode(node);
         }
-    
-        public static ExprNode[] ExprCollectSubNodesPerNode(IList<EsperEPL2GrammarParser.ExpressionContext> expression, IDictionary<ITree, ExprNode> astExprNodeMap) {
+
+        public static ExprNode[] ExprCollectSubNodesPerNode(IList<EsperEPL2GrammarParser.ExpressionContext> expression, IDictionary<ITree, ExprNode> astExprNodeMap)
+        {
             var nodes = new ExprNode[expression.Count];
-            for (var i = 0; i < expression.Count; i++) {
+            for (var i = 0; i < expression.Count; i++)
+            {
                 nodes[i] = ExprCollectSubNodes(expression[i], 0, astExprNodeMap)[0];
             }
             return nodes;
         }
-    
+
         public delegate void ExprAction(ExprNode exprNode, IDictionary<ITree, ExprNode> astExprNodeMap, ITree node);
         public delegate void RegExAction(RowRegexExprNode exprNode, IDictionary<ITree, RowRegexExprNode> astRegExNodeMap, ITree node);
     }

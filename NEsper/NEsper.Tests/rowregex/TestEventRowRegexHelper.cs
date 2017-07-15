@@ -47,7 +47,7 @@ namespace com.espertech.esper.rowregex
                         "  partition by TheString measures A.TheString as a_string pattern ( " + pattern + ") define A as (A.value = 1) )";
 
                 EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-                StatementSpecRaw raw = walker.GetStatementSpec();
+                StatementSpecRaw raw = walker.StatementSpec;
     
                 RowRegexExprNode parent = raw.MatchRecognizeSpec.Pattern;
                 var singles = new FIFOHashSet<String>();
@@ -93,7 +93,7 @@ namespace com.espertech.esper.rowregex
                         "  partition by string measures A.string as a_string pattern ( " + pattern + ") define A as (A.value = 1) )";
 
                 EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-                StatementSpecRaw raw = walker.GetStatementSpec();
+                StatementSpecRaw raw = walker.StatementSpec;
 
                 RowRegexExprNode parent = raw.MatchRecognizeSpec.Pattern;
 

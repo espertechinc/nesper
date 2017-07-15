@@ -65,7 +65,7 @@ namespace com.espertech.esper.view.stream
             return (EventStream) EventStreamProxy.NewInstance(engineURI, statementName, writer.ToString(), designated);
         }
 
-        private static void WriteFilter(StringWriter writer, FilterSpecParam[] paramLine)
+        private static void WriteFilter(TextWriter writer, FilterSpecParam[] paramLine)
         {
             String delimiter = "";
             foreach (FilterSpecParam param in paramLine)

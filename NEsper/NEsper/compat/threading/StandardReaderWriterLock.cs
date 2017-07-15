@@ -51,9 +51,9 @@ namespace com.espertech.esper.compat.threading
 
 #if DEBUG
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="StandardReaderWriterLock"/> is trace.
+        /// Gets or sets a value indicating whether this <see cref="StandardReaderWriterLock"/> is TRACE.
         /// </summary>
-        /// <value><c>true</c> if trace; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if TRACE; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
 

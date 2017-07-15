@@ -13,13 +13,14 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
     using DataMap = IDictionary<string, object>;
-    
+
     /// <summary>
     /// Factory for creating a dispatch strategy based on the subscriber object
     /// and the columns produced by a select-clause.
@@ -34,6 +35,8 @@ namespace com.espertech.esper.core.service
         /// <param name="subscriber">to indicate to</param>
         /// <param name="selectClauseTypes">are the types of each column in the select clause</param>
         /// <param name="selectClauseColumns">the names of each column in the select clause</param>
+        /// <param name="engineURI">The engine URI.</param>
+        /// <param name="engineImportService">The engine import service.</param>
         /// <returns>
         /// strategy for dispatching naturals
         /// </returns>
@@ -44,7 +47,9 @@ namespace com.espertech.esper.core.service
             EPStatement statement,
             EPSubscriber subscriber,
             Type[] selectClauseTypes,
-            string[] selectClauseColumns)
+            string[] selectClauseColumns,
+            string engineURI,
+            EngineImportService engineImportService)
         {
             var subscriberObject = subscriber.Subscriber;
             var subscriberMethod = subscriber.SubscriberMethod;
@@ -179,28 +184,28 @@ namespace com.espertech.esper.core.service
                 foreach (var methodNormParameterEntry in updateMethods)
                 {
                     var normalized = methodNormParameterEntry.Value;
-                    if ((normalized.Length == 1) && (normalized[0] == typeof (DataMap)))
+                    if ((normalized.Length == 1) && (normalized[0] == typeof(DataMap)))
                     {
                         isSingleRowMap = true;
                         subscriptionMethod = methodNormParameterEntry.Key;
                         break;
                     }
-                    if ((normalized.Length == 1) && (normalized[0] == typeof (object[])))
+                    if ((normalized.Length == 1) && (normalized[0] == typeof(object[])))
                     {
                         isSingleRowObjectArr = true;
                         subscriptionMethod = methodNormParameterEntry.Key;
                         break;
                     }
 
-                    if ((normalized.Length == 2) && (normalized[0] == typeof (DataMap[])) &&
-                        (normalized[1] == typeof (DataMap[])))
+                    if ((normalized.Length == 2) && (normalized[0] == typeof(DataMap[])) &&
+                        (normalized[1] == typeof(DataMap[])))
                     {
                         subscriptionMethod = methodNormParameterEntry.Key;
                         isMapArrayDelivery = true;
                         break;
                     }
-                    if ((normalized.Length == 2) && (normalized[0] == typeof (object[][])) &&
-                        (normalized[1] == typeof (object[][])))
+                    if ((normalized.Length == 2) && (normalized[0] == typeof(object[][])) &&
+                        (normalized[1] == typeof(object[][])))
                     {
                         subscriptionMethod = methodNormParameterEntry.Key;
                         isObjectArrayDelivery = true;
@@ -282,20 +287,20 @@ namespace com.espertech.esper.core.service
             if (isMapArrayDelivery)
             {
                 return firstParameterIsEPStatement
-                    ? new ResultDeliveryStrategyMapWStmt(statement, subscriberObject, subscriptionMethod, selectClauseColumns)
-                    : new ResultDeliveryStrategyMap(statement, subscriberObject, subscriptionMethod, selectClauseColumns);
+                    ? new ResultDeliveryStrategyMapWStmt(statement, subscriberObject, subscriptionMethod, selectClauseColumns, engineImportService)
+                    : new ResultDeliveryStrategyMap(statement, subscriberObject, subscriptionMethod, selectClauseColumns, engineImportService);
             }
             else if (isObjectArrayDelivery)
             {
                 return firstParameterIsEPStatement
-                    ? new ResultDeliveryStrategyObjectArrWStmt(statement, subscriberObject, subscriptionMethod)
-                    : new ResultDeliveryStrategyObjectArr(statement, subscriberObject, subscriptionMethod);
+                    ? new ResultDeliveryStrategyObjectArrWStmt(statement, subscriberObject, subscriptionMethod, engineImportService)
+                    : new ResultDeliveryStrategyObjectArr(statement, subscriberObject, subscriptionMethod, engineImportService);
             }
             else if (isTypeArrayDelivery)
             {
                 return firstParameterIsEPStatement
-                    ? new ResultDeliveryStrategyTypeArrWStmt(statement, subscriberObject, subscriptionMethod, parameterTypes[1].GetElementType())
-                    : new ResultDeliveryStrategyTypeArr(statement, subscriberObject, subscriptionMethod, parameterTypes[0].GetElementType());
+                    ? new ResultDeliveryStrategyTypeArrWStmt(statement, subscriberObject, subscriptionMethod, parameterTypes[1].GetElementType(), engineImportService)
+                    : new ResultDeliveryStrategyTypeArr(statement, subscriberObject, subscriptionMethod, parameterTypes[0].GetElementType(), engineImportService);
             }
 
             // Try to find the "start", "end" and "updateRStream" methods
@@ -328,7 +333,7 @@ namespace com.espertech.esper.core.service
                 else
                 {
                     var classes = new Type[parameterTypes.Length + 1];
-                    classes[0] = typeof (EPStatement);
+                    classes[0] = typeof(EPStatement);
                     Array.Copy(parameterTypes, 0, classes, 1, parameterTypes.Length);
                     ValidateNonMatchUpdateRStream(subscriberObject, classes);
                 }
@@ -338,14 +343,14 @@ namespace com.espertech.esper.core.service
             if (isSingleRowMap)
             {
                 convertor = firstParameterIsEPStatement
-                    ? (DeliveryConvertor) new DeliveryConvertorMapWStatement(selectClauseColumns, statement)
-                    : (DeliveryConvertor) new DeliveryConvertorMap(selectClauseColumns);
+                    ? (DeliveryConvertor)new DeliveryConvertorMapWStatement(selectClauseColumns, statement)
+                    : (DeliveryConvertor)new DeliveryConvertorMap(selectClauseColumns);
             }
             else if (isSingleRowObjectArr)
             {
                 convertor = firstParameterIsEPStatement
-                    ? (DeliveryConvertor) new DeliveryConvertorObjectArrWStatement(statement)
-                    : (DeliveryConvertor) DeliveryConvertorObjectArr.INSTANCE;
+                    ? (DeliveryConvertor)new DeliveryConvertorObjectArrWStatement(statement)
+                    : (DeliveryConvertor)DeliveryConvertorObjectArr.INSTANCE;
             }
             else
             {
@@ -354,18 +359,18 @@ namespace com.espertech.esper.core.service
                     var normalizedParameters = updateMethods.Get(subscriptionMethod);
                     convertor = DetermineWideningDeliveryConvertor(
                         firstParameterIsEPStatement, statement, selectClauseTypes, normalizedParameters,
-                        subscriptionMethod);
+                        subscriptionMethod, engineURI);
                 }
                 else
                 {
                     convertor = firstParameterIsEPStatement
-                        ? (DeliveryConvertor) new DeliveryConvertorNullWStatement(statement)
-                        : (DeliveryConvertor) DeliveryConvertorNull.INSTANCE;
+                        ? (DeliveryConvertor)new DeliveryConvertorNullWStatement(statement)
+                        : (DeliveryConvertor)DeliveryConvertorNull.INSTANCE;
                 }
             }
 
             return new ResultDeliveryStrategyImpl(
-                statement, subscriberObject, convertor, subscriptionMethod, startMethod, endMethod, rStreamMethod);
+                statement, subscriberObject, convertor, subscriptionMethod, startMethod, endMethod, rStreamMethod, engineImportService);
         }
 
         private static DeliveryConvertor DetermineWideningDeliveryConvertor(
@@ -373,12 +378,13 @@ namespace com.espertech.esper.core.service
             EPStatement statement,
             Type[] selectClauseTypes,
             Type[] parameterTypes,
-            MethodInfo method)
+            MethodInfo method,
+            string engineURI)
         {
             var needWidener = false;
             for (var i = 0; i < selectClauseTypes.Length; i++)
             {
-                var optionalWidener = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method);
+                var optionalWidener = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method, statement.Name, engineURI);
                 if (optionalWidener != null)
                 {
                     needWidener = true;
@@ -388,24 +394,26 @@ namespace com.espertech.esper.core.service
             if (!needWidener)
             {
                 return firstParameterIsEPStatement
-                    ? (DeliveryConvertor) new DeliveryConvertorNullWStatement(statement)
-                    : (DeliveryConvertor) DeliveryConvertorNull.INSTANCE;
+                    ? (DeliveryConvertor)new DeliveryConvertorNullWStatement(statement)
+                    : (DeliveryConvertor)DeliveryConvertorNull.INSTANCE;
             }
             var wideners = new TypeWidener[selectClauseTypes.Length];
             for (var i = 0; i < selectClauseTypes.Length; i++)
             {
-                wideners[i] = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method);
+                wideners[i] = GetWidener(i, selectClauseTypes[i], parameterTypes[i], method, statement.Name, engineURI);
             }
             return firstParameterIsEPStatement
-                ? (DeliveryConvertor) new DeliveryConvertorWidenerWStatement(wideners, statement)
-                : (DeliveryConvertor) new DeliveryConvertorWidener(wideners);
+                ? (DeliveryConvertor)new DeliveryConvertorWidenerWStatement(wideners, statement)
+                : (DeliveryConvertor)new DeliveryConvertorWidener(wideners);
         }
 
         private static TypeWidener GetWidener(
             int columnNum,
             Type selectClauseType,
             Type parameterType,
-            MethodInfo method)
+            MethodInfo method,
+            string statementName,
+            string engineURI)
         {
             if (selectClauseType == null || parameterType == null)
             {
@@ -419,7 +427,8 @@ namespace com.espertech.esper.core.service
             {
                 return TypeWidenerFactory.GetCheckPropertyAssignType(
                     "Select-Clause Column " + columnNum, selectClauseType, parameterType,
-                    "Method Parameter " + columnNum);
+                    "Method Parameter " + columnNum, false, null, 
+                    statementName, engineURI);
             }
             catch (ExprValidationException e)
             {
@@ -442,7 +451,7 @@ namespace com.espertech.esper.core.service
         private static Type[] GetMethodParameterTypesWithoutEPStatement(MethodInfo method)
         {
             var parameterTypes = method.GetParameterTypes();
-            if (parameterTypes.Length == 0 || parameterTypes[0] != typeof (EPStatement))
+            if (parameterTypes.Length == 0 || parameterTypes[0] != typeof(EPStatement))
             {
                 return parameterTypes;
             }
@@ -454,7 +463,7 @@ namespace com.espertech.esper.core.service
         private static bool IsFirstParameterEPStatement(MethodInfo method)
         {
             var parameterTypes = method.GetParameterTypes();
-            return parameterTypes.Length > 0 && parameterTypes[0] == typeof (EPStatement);
+            return parameterTypes.Length > 0 && parameterTypes[0] == typeof(EPStatement);
         }
     }
 } // end of namespace

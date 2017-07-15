@@ -22,13 +22,14 @@ namespace com.espertech.esper.epl.expression.core
     /// Differs from the between-expression since the value returned by evaluating is a cron-value object.
     /// </summary>
     [Serializable]
-    public class ExprNumberSetRange 
+    public class ExprNumberSetRange
         : ExprNodeBase
         , ExprEvaluator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private ExprEvaluator[] _evaluators;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             return node is ExprNumberSetRange;
         }
-    
+
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
@@ -72,7 +73,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public Type ReturnType
         {
-            get { return typeof (RangeParameter); }
+            get { return typeof(RangeParameter); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)

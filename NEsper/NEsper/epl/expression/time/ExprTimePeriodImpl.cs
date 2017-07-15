@@ -44,9 +44,13 @@ namespace com.espertech.esper.epl.expression.time
         private readonly bool _hasMinute;
         private readonly bool _hasSecond;
         private readonly bool _hasMillisecond;
+        private readonly bool _hasMicrosecond;
+        private readonly TimeAbacus _timeAbacus;
         private bool _hasVariable;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
-        [NonSerialized] private TimePeriodAdder[] _adders;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
+        [NonSerialized]
+        private TimePeriodAdder[] _adders;
 
         /// <summary>
         /// Ctor.
@@ -60,7 +64,20 @@ namespace com.espertech.esper.epl.expression.time
         /// <param name="hasMinute">true if the expression has that part, false if not</param>
         /// <param name="hasSecond">true if the expression has that part, false if not</param>
         /// <param name="hasMillisecond">true if the expression has that part, false if not</param>
-        public ExprTimePeriodImpl(TimeZoneInfo timeZone, bool hasYear, bool hasMonth, bool hasWeek, bool hasDay, bool hasHour, bool hasMinute, bool hasSecond, bool hasMillisecond)
+        /// <param name="hasMicrosecond">if set to <c>true</c> [has microsecond].</param>
+        /// <param name="timeAbacus">The time abacus.</param>
+        public ExprTimePeriodImpl(
+            TimeZoneInfo timeZone,
+            bool hasYear,
+            bool hasMonth,
+            bool hasWeek,
+            bool hasDay,
+            bool hasHour,
+            bool hasMinute,
+            bool hasSecond,
+            bool hasMillisecond,
+            bool hasMicrosecond,
+            TimeAbacus timeAbacus)
         {
             _timeZone = timeZone;
             _hasYear = hasYear;
@@ -71,6 +88,8 @@ namespace com.espertech.esper.epl.expression.time
             _hasMinute = hasMinute;
             _hasSecond = hasSecond;
             _hasMillisecond = hasMillisecond;
+            _hasMicrosecond = hasMicrosecond;
+            _timeAbacus = timeAbacus;
         }
 
         public ExprTimePeriodEvalDeltaConst ConstEvaluator(ExprEvaluatorContext context)
@@ -78,8 +97,8 @@ namespace com.espertech.esper.epl.expression.time
             if (!_hasMonth && !_hasYear)
             {
                 double seconds = EvaluateAsSeconds(null, true, context);
-                long msec = (long) Math.Round(seconds * 1000d);
-                return new ExprTimePeriodEvalDeltaConstMsec(msec);
+                long msec = _timeAbacus.DeltaForSecondsDouble(seconds);
+                return new ExprTimePeriodEvalDeltaConstGivenDelta(msec);
             }
             else
             {
@@ -89,7 +108,7 @@ namespace com.espertech.esper.epl.expression.time
                 {
                     values[i] = _evaluators[i].Evaluate(evaluateParams).AsInt();
                 }
-                return new ExprTimePeriodEvalDeltaConstDateTimeAdd(_adders, values, _timeZone);
+                return new ExprTimePeriodEvalDeltaConstGivenCalAdd(_adders, values, _timeZone, _timeAbacus);
             }
         }
 
@@ -103,6 +122,11 @@ namespace com.espertech.esper.epl.expression.time
             {
                 return new ExprTimePeriodEvalDeltaNonConstDateTimeAdd(_timeZone, this);
             }
+        }
+
+        public TimeAbacus TimeAbacus
+        {
+            get { return _timeAbacus; }
         }
 
         public override ExprEvaluator ExprEvaluator
@@ -160,6 +184,13 @@ namespace com.espertech.esper.epl.expression.time
             get { return _hasMillisecond; }
         }
 
+        /// <summary>Indicator whether the time period has a microsecond part child expression. </summary>
+        /// <value>true for part present, false for not present</value>
+        public bool HasMicrosecond
+        {
+            get { return _hasMicrosecond; }
+        }
+
         /// <summary>Indicator whether the time period has a year part child expression. </summary>
         /// <value>true for part present, false for not present</value>
         public bool HasYear
@@ -195,37 +226,49 @@ namespace com.espertech.esper.epl.expression.time
             {
                 Validate(childNode);
             }
-    
+
             var list = new ArrayDeque<TimePeriodAdder>();
-            if (_hasYear) {
+            if (_hasYear)
+            {
                 list.Add(new TimePeriodAdderYear());
             }
-            if (_hasMonth) {
+            if (_hasMonth)
+            {
                 list.Add(new TimePeriodAdderMonth());
             }
-            if (_hasWeek) {
+            if (_hasWeek)
+            {
                 list.Add(new TimePeriodAdderWeek());
             }
-            if (_hasDay) {
+            if (_hasDay)
+            {
                 list.Add(new TimePeriodAdderDay());
             }
-            if (_hasHour) {
+            if (_hasHour)
+            {
                 list.Add(new TimePeriodAdderHour());
             }
-            if (_hasMinute) {
+            if (_hasMinute)
+            {
                 list.Add(new TimePeriodAdderMinute());
             }
-            if (_hasSecond) {
+            if (_hasSecond)
+            {
                 list.Add(new TimePeriodAdderSecond());
             }
-            if (_hasMillisecond) {
+            if (_hasMillisecond)
+            {
                 list.Add(new TimePeriodAdderMSec());
+            }
+            if (_hasMicrosecond)
+            {
+                list.Add(new TimePeriodAdderUSec());
             }
             _adders = list.ToArray();
 
             return null;
         }
-    
+
         private void Validate(ExprNode expression)
         {
             if (expression == null)
@@ -249,22 +292,22 @@ namespace com.espertech.esper.epl.expression.time
 
         public double EvaluateAsSeconds(EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprTimePeriod(this);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprTimePeriod(this); }
             double seconds = 0;
             for (int i = 0; i < _adders.Length; i++)
             {
                 var result = Eval(_evaluators[i], eventsPerStream, newData, context);
                 if (result == null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTimePeriod(null);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTimePeriod(null); }
                     throw new EPException("Failed to evaluate time period, received a null value for '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(this) + "'");
                 }
                 seconds += _adders[i].Compute(result.Value);
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTimePeriod(seconds);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTimePeriod(seconds); }
             return seconds;
         }
-    
+
         private double? Eval(ExprEvaluator expr, EventBean[] events, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             var value = expr.Evaluate(new EvaluateParams(events, isNewData, exprEvaluatorContext));
@@ -274,57 +317,68 @@ namespace com.espertech.esper.epl.expression.time
             }
             return (value).AsDouble();
         }
-    
+
         public TimePeriod EvaluateGetTimePeriod(EvaluateParams evaluateParams)
         {
             int exprCtr = 0;
 
             int? year = null;
-            if (_hasYear){
+            if (_hasYear)
+            {
                 year = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? month = null;
-            if (_hasMonth) {
+            if (_hasMonth)
+            {
                 month = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? week = null;
-            if (_hasWeek) {
+            if (_hasWeek)
+            {
                 week = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? day = null;
-            if (_hasDay) {
+            if (_hasDay)
+            {
                 day = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? hours = null;
-            if (_hasHour) {
+            if (_hasHour)
+            {
                 hours = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? minutes = null;
             if (_hasMinute)
             {
                 minutes = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? seconds = null;
             if (_hasSecond)
             {
                 seconds = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
-    
+
             int? milliseconds = null;
             if (_hasMillisecond)
             {
-                milliseconds = GetInt(_evaluators[exprCtr].Evaluate(evaluateParams));
+                milliseconds = GetInt(_evaluators[exprCtr++].Evaluate(evaluateParams));
             }
 
-            return new TimePeriod(year, month, week, day, hours, minutes, seconds, milliseconds);
+            int? microseconds = null;
+            if (_hasMicrosecond)
+            {
+                microseconds = GetInt(_evaluators[exprCtr].Evaluate(evaluateParams));
+            }
+
+            return new TimePeriod(year, month, week, day, hours, minutes, seconds, milliseconds, microseconds);
         }
-    
+
         private int? GetInt(Object evaluated)
         {
             if (evaluated == null)
@@ -333,106 +387,137 @@ namespace com.espertech.esper.epl.expression.time
             }
             return (evaluated).AsInt();
         }
-    
+
         public interface TimePeriodAdder
         {
-            double Compute(Double value);
+            double Compute(double value);
             void Add(DateTimeEx dateTime, int value);
+            bool IsMicroseconds { get; }
         }
-    
+
         public class TimePeriodAdderYear : TimePeriodAdder
         {
-            private const double MULTIPLIER = 365*24*60*60;
+            private const double MULTIPLIER = 365 * 24 * 60 * 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime.AddYears(value, DateTimeMathStyle.Java);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderMonth : TimePeriodAdder
         {
-            private const double MULTIPLIER = 30*24*60*60;
+            private const double MULTIPLIER = 30 * 24 * 60 * 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime.AddMonths(value, DateTimeMathStyle.Java);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderWeek : TimePeriodAdder
         {
-            private const double MULTIPLIER = 7*24*60*60;
+            private const double MULTIPLIER = 7 * 24 * 60 * 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime.AddDays(7 * value, DateTimeMathStyle.Java);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderDay : TimePeriodAdder
         {
-            private const double MULTIPLIER = 24*60*60;
+            private const double MULTIPLIER = 24 * 60 * 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime.AddDays(value, DateTimeMathStyle.Java);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderHour : TimePeriodAdder
         {
-            private const double MULTIPLIER = 60*60;
+            private const double MULTIPLIER = 60 * 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime.AddHours(value);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderMinute : TimePeriodAdder
         {
             private const double MULTIPLIER = 60;
 
-            public double Compute(Double value)
+            public double Compute(double value)
             {
-                return value*MULTIPLIER;
+                return value * MULTIPLIER;
             }
 
             public void Add(DateTimeEx dateTime, int value)
             {
                 dateTime = dateTime.AddMinutes(value);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderSecond : TimePeriodAdder
         {
-            public double Compute(Double value)
+            public double Compute(double value)
             {
                 return value;
             }
@@ -441,11 +526,16 @@ namespace com.espertech.esper.epl.expression.time
             {
                 dateTime.AddSeconds(value);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
         }
-    
+
         public class TimePeriodAdderMSec : TimePeriodAdder
         {
-            public double Compute(Double value)
+            public double Compute(double value)
             {
                 return value / 1000d;
             }
@@ -454,11 +544,34 @@ namespace com.espertech.esper.epl.expression.time
             {
                 dateTime.AddMilliseconds(value);
             }
+
+            public bool IsMicroseconds
+            {
+                get { return false; }
+            }
+        }
+
+        public class TimePeriodAdderUSec : TimePeriodAdder
+        {
+            public double Compute(double value)
+            {
+                return value / 1000000d;
+            }
+
+            public void Add(DateTimeEx dateTime, int value)
+            {
+                // no action : DateTimeEx does not add microseconds
+            }
+
+            public bool IsMicroseconds
+            {
+                get { return true; }
+            }
         }
 
         public Type ReturnType
         {
-            get { return typeof (double?); }
+            get { return typeof(double?); }
         }
 
         public override bool IsConstantResult
@@ -522,8 +635,14 @@ namespace com.espertech.esper.epl.expression.time
             if (_hasMillisecond)
             {
                 writer.Write(delimiter);
-                childNodes[exprCtr].ToEPL(writer, Precedence);
+                childNodes[exprCtr++].ToEPL(writer, Precedence);
                 writer.Write(" milliseconds");
+            }
+            if (_hasMicrosecond)
+            {
+                writer.Write(delimiter);
+                childNodes[exprCtr].ToEPL(writer, Precedence);
+                writer.Write(" microseconds");
             }
         }
 
@@ -539,7 +658,7 @@ namespace com.espertech.esper.epl.expression.time
                 return false;
             }
 
-            var other = (ExprTimePeriodImpl) node;
+            var other = (ExprTimePeriodImpl)node;
 
             if (_hasYear != other._hasYear)
             {
@@ -569,7 +688,11 @@ namespace com.espertech.esper.epl.expression.time
             {
                 return false;
             }
-            return (_hasMillisecond == other._hasMillisecond);
+            if (_hasMillisecond != other._hasMillisecond)
+            {
+                return false;
+            }
+            return (_hasMicrosecond == other._hasMicrosecond);
         }
     }
 }

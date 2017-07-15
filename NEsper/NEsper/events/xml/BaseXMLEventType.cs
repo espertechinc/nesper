@@ -260,9 +260,9 @@ namespace com.espertech.esper.events.xml
             return null;
         }
 
-        public override EventBeanReader GetReader()
+        public override EventBeanReader Reader
         {
-            return null;
+            get { return null; }
         }
 
         public override string StartTimestampPropertyName

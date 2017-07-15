@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -15,70 +14,80 @@ namespace com.espertech.esper.client.soda
     /// <summary>
     /// Context dimension descriptor for a start-and-end temporal (single instance) or initiated-terminated (overlapping) context
     /// </summary>
-    [Serializable]
     public class ContextDescriptorInitiatedTerminated : ContextDescriptor
     {
-        private IList<Expression> _optionalDistinctExpressions;
-
-        /// <summary>Ctor. </summary>
-        public ContextDescriptorInitiatedTerminated() {
+        /// <summary>Ctor.</summary>
+        public ContextDescriptorInitiatedTerminated()
+        {
         }
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="startCondition">the condition that starts/initiates a context partition</param>
         /// <param name="endCondition">the condition that ends/terminates a context partition</param>
         /// <param name="overlapping">true for overlapping contexts</param>
         /// <param name="optionalDistinctExpressions">list of distinct-value expressions, can be null</param>
-        public ContextDescriptorInitiatedTerminated(ContextDescriptorCondition startCondition, ContextDescriptorCondition endCondition, bool overlapping, IList<Expression> optionalDistinctExpressions)
+        public ContextDescriptorInitiatedTerminated(
+            ContextDescriptorCondition startCondition,
+            ContextDescriptorCondition endCondition,
+            bool overlapping,
+            IList<Expression> optionalDistinctExpressions)
         {
             StartCondition = startCondition;
             EndCondition = endCondition;
             IsOverlapping = overlapping;
-            _optionalDistinctExpressions = optionalDistinctExpressions;
+            OptionalDistinctExpressions = optionalDistinctExpressions;
         }
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="startCondition">the condition that starts/initiates a context partition</param>
         /// <param name="endCondition">the condition that ends/terminates a context partition</param>
         /// <param name="overlapping">true for overlapping contexts</param>
-        public ContextDescriptorInitiatedTerminated(ContextDescriptorCondition startCondition, ContextDescriptorCondition endCondition, bool overlapping)
+        public ContextDescriptorInitiatedTerminated(
+            ContextDescriptorCondition startCondition,
+            ContextDescriptorCondition endCondition,
+            bool overlapping)
         {
             StartCondition = startCondition;
             EndCondition = endCondition;
             IsOverlapping = overlapping;
         }
 
-        /// <summary>Returns the condition that starts/initiates a context partition </summary>
+        /// <summary>
+        /// Returns the condition that starts/initiates a context partition
+        /// </summary>
         /// <value>start condition</value>
         public ContextDescriptorCondition StartCondition { get; set; }
 
-        /// <summary>Returns the condition that ends/terminates a context partition </summary>
+        /// <summary>
+        /// Returns the condition that ends/terminates a context partition
+        /// </summary>
         /// <value>end condition</value>
         public ContextDescriptorCondition EndCondition { get; set; }
 
-        /// <summary>Returns true for overlapping context, false for non-overlapping. </summary>
+        /// <summary>
+        /// Returns true for overlapping context, false for non-overlapping.
+        /// </summary>
         /// <value>overlap indicator</value>
         public bool IsOverlapping { get; set; }
 
-        /// <summary>Returns the list of expressions providing distinct keys, if any </summary>
+        /// <summary>
+        /// Returns the list of expressions providing distinct keys, if any
+        /// </summary>
         /// <value>distinct expressions</value>
-        public IList<Expression> OptionalDistinctExpressions
-        {
-            get { return _optionalDistinctExpressions; }
-        }
+        public IList<Expression> OptionalDistinctExpressions { get; set; }
 
-        /// <summary>Sets the list of expressions providing distinct keys, if any </summary>
-        /// <param name="optionalDistinctExpressions">distinct expressions</param>
-        public void SetOptionalDistinctExpressions(IList<Expression> optionalDistinctExpressions) {
-            _optionalDistinctExpressions = optionalDistinctExpressions;
-        }
-    
-        public void ToEPL(TextWriter writer, EPStatementFormatter formatter) {
+        public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
+        {
             writer.Write(IsOverlapping ? "initiated by " : "start ");
-            if (_optionalDistinctExpressions != null && _optionalDistinctExpressions.Count > 0) {
-                writer.Write("distinct(");
-                String delimiter = "";
-                foreach (Expression expression in _optionalDistinctExpressions)
+            if (OptionalDistinctExpressions != null && OptionalDistinctExpressions.Count > 0)
+            {
+                writer.Write("Distinct(");
+                string delimiter = "";
+                foreach (Expression expression in OptionalDistinctExpressions)
                 {
                     writer.Write(delimiter);
                     expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
@@ -87,9 +96,12 @@ namespace com.espertech.esper.client.soda
                 writer.Write(") ");
             }
             StartCondition.ToEPL(writer, formatter);
-            writer.Write(" ");
-            writer.Write(IsOverlapping ? "terminated " : "end ");
-            EndCondition.ToEPL(writer, formatter);
+            if (!(EndCondition is ContextDescriptorConditionNever))
+            {
+                writer.Write(" ");
+                writer.Write(IsOverlapping ? "terminated " : "end ");
+                EndCondition.ToEPL(writer, formatter);
+            }
         }
     }
-}
+} // end of namespace

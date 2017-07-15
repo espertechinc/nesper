@@ -18,9 +18,9 @@ namespace com.espertech.esper.pattern
     {
         private readonly EvalFollowedByFactoryNode _factoryNode;
         private readonly EvalNode[] _childNodes;
-    
+
         public EvalFollowedByNode(PatternAgentInstanceContext context, EvalFollowedByFactoryNode factoryNode, EvalNode[] childNodes)
-                    : base(context)
+            : base(context)
         {
             _factoryNode = factoryNode;
             _childNodes = childNodes;
@@ -38,7 +38,8 @@ namespace com.espertech.esper.pattern
 
         public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
         {
-            switch (_factoryNode.OpType) {
+            switch (_factoryNode.OpType)
+            {
                 case EvalFollowedByNodeOpType.NOMAX_PLAIN:
                     return new EvalFollowedByStateNode(parentNode, this);
                 default:

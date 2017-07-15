@@ -15,68 +15,68 @@ using com.espertech.esper.filter;
 
 namespace com.espertech.esper.core.service.multimatch
 {
-	public class MultiMatchHandlerNoSubqueryWDedup : MultiMatchHandler
+    public class MultiMatchHandlerNoSubqueryWDedup : MultiMatchHandler
     {
-	    public static readonly MultiMatchHandlerNoSubqueryWDedup INSTANCE = new MultiMatchHandlerNoSubqueryWDedup();
+        public static readonly MultiMatchHandlerNoSubqueryWDedup INSTANCE = new MultiMatchHandlerNoSubqueryWDedup();
 
-	    private MultiMatchHandlerNoSubqueryWDedup()
+        private MultiMatchHandlerNoSubqueryWDedup()
         {
-	    }
+        }
 
-	    internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> Dedups = ThreadLocalManager.Create(
-	            () => new LinkedHashSet<FilterHandleCallback>());
+        internal static readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> Dedups = ThreadLocalManager.Create(
+                () => new LinkedHashSet<FilterHandleCallback>());
 
-	    public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
-	    {
-	        if (callbacks.Count >= 8)
-	        {
-	            var dedup = Dedups.GetOrCreate();
-	            dedup.Clear();
-	            dedup.AddAll(callbacks);
-	            foreach (var callback in dedup)
-	            {
-	                callback.MatchFound(theEvent, callbacks);
-	            }
-	            dedup.Clear();
-	        }
-	        else
-	        {
-	            var count = 0;
-	            foreach (var callback in callbacks)
-	            {
-	                var haveInvoked = CheckDup(callback, callbacks, count);
-	                if (!haveInvoked)
-	                {
-	                    callback.MatchFound(theEvent, callbacks);
-	                }
-	                count++;
-	            }
-	        }
-	    }
+        public void Handle(ICollection<FilterHandleCallback> callbacks, EventBean theEvent)
+        {
+            if (callbacks.Count >= 8)
+            {
+                var dedup = Dedups.GetOrCreate();
+                dedup.Clear();
+                dedup.AddAll(callbacks);
+                foreach (var callback in dedup)
+                {
+                    callback.MatchFound(theEvent, callbacks);
+                }
+                dedup.Clear();
+            }
+            else
+            {
+                var count = 0;
+                foreach (var callback in callbacks)
+                {
+                    var haveInvoked = CheckDup(callback, callbacks, count);
+                    if (!haveInvoked)
+                    {
+                        callback.MatchFound(theEvent, callbacks);
+                    }
+                    count++;
+                }
+            }
+        }
 
-	    private bool CheckDup(FilterHandleCallback callback, IEnumerable<FilterHandleCallback> callbacks, int count)
-	    {
-	        if (count < 1)
-	        {
-	            return false;
-	        }
+        private bool CheckDup(FilterHandleCallback callback, IEnumerable<FilterHandleCallback> callbacks, int count)
+        {
+            if (count < 1)
+            {
+                return false;
+            }
 
-	        var index = 0;
-	        foreach (var candidate in callbacks)
-	        {
-	            if (candidate == callback)
-	            {
-	                return true;
-	            }
+            var index = 0;
+            foreach (var candidate in callbacks)
+            {
+                if (candidate == callback)
+                {
+                    return true;
+                }
 
-	            index++;
-	            if (index == count)
-	            {
-	                break;
-	            }
-	        }
+                index++;
+                if (index == count)
+                {
+                    break;
+                }
+            }
 
-	        return false;
-	    }
+            return false;
+        }
     }
 } // end of namespace

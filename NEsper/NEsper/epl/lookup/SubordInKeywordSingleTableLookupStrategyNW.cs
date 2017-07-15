@@ -6,13 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.@join.table;
-using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.lookup
@@ -22,39 +21,50 @@ namespace com.espertech.esper.epl.lookup
     /// </summary>
     public class SubordInKeywordSingleTableLookupStrategyNW : SubordTableLookupStrategy
     {
+        /// <summary>Index to look up in.</summary>
+        private readonly PropertyIndexedEventTableSingle _index;
+
         private readonly ExprEvaluator[] _evaluators;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="evaluators">The evaluators.</param>
-        /// <param name="index">is the table carrying the data to lookup into</param>
-        /// <param name="strategyDesc">The strategy desc.</param>
+        private readonly LookupStrategyDesc _strategyDesc;
+    
         public SubordInKeywordSingleTableLookupStrategyNW(ExprEvaluator[] evaluators, PropertyIndexedEventTableSingle index, LookupStrategyDesc strategyDesc)
         {
             _evaluators = evaluators;
-            Index = index;
-            StrategyDesc = strategyDesc;
+            _index = index;
+            _strategyDesc = strategyDesc;
         }
 
-        /// <summary>Returns index to look up in. </summary>
+        /// <summary>
+        /// Returns index to look up in.
+        /// </summary>
         /// <value>index to use</value>
-        public PropertyIndexedEventTableSingle Index { get; private set; }
+        public PropertyIndexedEventTableSingle Index
+        {
+            get { return _index; }
+        }
 
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexSubordLookup(this, Index, null);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QIndexSubordLookup(this, _index, null);
+            }
     
-            ICollection<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(_evaluators, eventsPerStream, context, Index);
+            var result = InKeywordTableLookupUtil.SingleIndexLookup(_evaluators, eventsPerStream, context, _index);
     
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexSubordLookup(result, null);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().AIndexSubordLookup(result, null);
+            }
             return result;
         }
 
-        public LookupStrategyDesc StrategyDesc { get; private set; }
+        public LookupStrategyDesc StrategyDesc
+        {
+            get { return _strategyDesc; }
+        }
 
-        public String ToQueryPlan() {
+        public string ToQueryPlan() {
             return GetType().Name + " evaluators " + ExprNodeUtility.PrintEvaluators(_evaluators);
         }
     }
-}
+} // end of namespace

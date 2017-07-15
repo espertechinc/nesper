@@ -13,90 +13,69 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.events.vaevent
 {
     /// <summary>
-    /// An event bean that represents multiple potentially disparate underlying events and presents
-    /// a unified face across each such types or even any type.
+    /// An event bean that represents multiple potentially disparate underlying events and presents a unified face
+    /// across each such types or even any type.
     /// </summary>
-    public class VariantEventBean : EventBean, VariantEvent
+    public class VariantEventBean
+        : EventBean
+        , VariantEvent
     {
-        private readonly VariantEventType variantEventType;
-        private readonly EventBean underlyingEventBean;
-    
-        /// <summary>Ctor. </summary>
+        private readonly VariantEventType _variantEventType;
+        private readonly EventBean _underlyingEventBean;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="variantEventType">the event type</param>
         /// <param name="underlying">the event</param>
         public VariantEventBean(VariantEventType variantEventType, EventBean underlying)
         {
-            this.variantEventType = variantEventType;
-            this.underlyingEventBean = underlying;
+            _variantEventType = variantEventType;
+            _underlyingEventBean = underlying;
         }
 
-        /// <summary>
-        /// Return the <see cref="EventType"/> instance that describes the set of properties available for this event.
-        /// </summary>
-        /// <value></value>
-        /// <returns> event type
-        /// </returns>
         public EventType EventType
         {
-            get { return variantEventType; }
+            get { return _variantEventType; }
         }
 
-        /// <summary>
-        /// Returns the value of an event property.
-        /// </summary>
-        /// <value></value>
-        /// <returns> the value of a simple property with the specified name.
-        /// </returns>
-        /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
-        public Object this[String property]
+        public Object Get(string property)
         {
-            get
-            {
-                EventPropertyGetter getter = variantEventType.GetGetter(property);
-                return getter != null ? getter.Get(this) : null;
-            }
-        }
-
-
-        /// <summary>
-        /// Returns the value of an event property.  This method is a proxy of the indexer.
-        /// </summary>
-        /// <param name="property">name of the property whose value is to be retrieved</param>
-        /// <returns>
-        /// the value of a simple property with the specified name.
-        /// </returns>
-        /// <throws>  PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed </throws>
-        public object Get(string property)
-        {
-            return this[property];
-        }
-
-        /// <summary>
-        /// Get the underlying data object to this event wrapper.
-        /// </summary>
-        /// <value></value>
-        /// <returns> underlying data object, usually either a Map or a bean instance.
-        /// </returns>
-        public object Underlying
-        {
-            get { return underlyingEventBean.Underlying; }
-        }
-
-        /// <summary>Returns the underlying event. </summary>
-        /// <returns>underlying event</returns>
-        public EventBean UnderlyingEventBean
-        {
-            get { return underlyingEventBean; }
-        }
-
-        public Object GetFragment(String propertyExpression)
-        {
-            EventPropertyGetter getter = variantEventType.GetGetter(propertyExpression);
+            EventPropertyGetter getter = _variantEventType.GetGetter(property);
             if (getter == null)
             {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+                return null;
+            }
+            return getter.Get(this);
+        }
+
+        public object this[string property]
+        {
+            get { return Get(property); }
+        }
+
+        public object Underlying
+        {
+            get { return _underlyingEventBean.Underlying; }
+        }
+
+        /// <summary>
+        /// Returns the underlying event.
+        /// </summary>
+        /// <value>underlying event</value>
+        public EventBean UnderlyingEventBean
+        {
+            get { return _underlyingEventBean; }
+        }
+
+        public Object GetFragment(string propertyExpression)
+        {
+            EventPropertyGetter getter = _variantEventType.GetGetter(propertyExpression);
+            if (getter == null)
+            {
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
             return getter.GetFragment(this);
         }
     }
-}
+} // end of namespace

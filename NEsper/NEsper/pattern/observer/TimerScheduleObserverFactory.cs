@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern.observer
         private const string DATE_NAME = "date";
         private const string PERIOD_NAME = "period";
 
-        private readonly string[] NAMED_PARAMETERS =
+        private static readonly string[] NAMED_PARAMETERS =
         {
             ISO_NAME,
             REPETITIONS_NAME,
@@ -43,14 +43,34 @@ namespace com.espertech.esper.pattern.observer
             PERIOD_NAME
         };
 
-        [NonSerialized] internal MatchedEventConvertor Convertor;
+        [NonSerialized] protected MatchedEventConvertor Convertor;
 
         /// <summary>Convertor.</summary>
-        [NonSerialized] internal ITimerScheduleSpecCompute ScheduleComputer;
+        [NonSerialized] protected TimerScheduleSpecCompute ScheduleComputer;
 
-        internal TimerScheduleSpec Spec;
+        protected TimerScheduleSpec Spec;
 
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
+        public EventObserver MakeObserver(
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator,
+            EvalStateNodeNumber stateNodeId,
+            Object observerState,
+            bool isFilterChildNonQuitting)
+        {
+            return new TimerScheduleObserver(
+                ComputeSpecDynamic(beginState, context), beginState, observerEventEvaluator, isFilterChildNonQuitting);
+        }
+
+        public bool IsNonRestarting
+        {
+            get { return true; }
+        }
+
+        public void SetObserverParameters(
+            IList<ExprNode> parameters,
+            MatchedEventConvertor convertor,
+            ExprValidationContext validationContext)
         {
             Convertor = convertor;
 
@@ -113,7 +133,8 @@ namespace com.espertech.esper.pattern.observer
                                 typeof (string),
                                 typeof (DateTime),
                                 typeof (DateTimeOffset),
-                                typeof (long?)
+                                typeof (long?),
+                                typeof (DateTimeEx)
                             });
                     }
                     if (repetitionsNamedNode != null)
@@ -151,7 +172,8 @@ namespace com.espertech.esper.pattern.observer
                 try
                 {
                     Spec = ScheduleComputer.Compute(
-                        convertor, new MatchedEventMapImpl(convertor.MatchedEventMapMeta), null, validationContext.EngineImportService.TimeZone);
+                        convertor, new MatchedEventMapImpl(convertor.MatchedEventMapMeta), null,
+                        validationContext.EngineImportService.TimeZone, validationContext.EngineImportService.TimeAbacus);
                 }
                 catch (ScheduleParameterException ex)
                 {
@@ -160,24 +182,7 @@ namespace com.espertech.esper.pattern.observer
             }
         }
 
-        public EventObserver MakeObserver(
-            PatternAgentInstanceContext context,
-            MatchedEventMap beginState,
-            ObserverEventEvaluator observerEventEvaluator,
-            EvalStateNodeNumber stateNodeId,
-            object observerState,
-            bool isFilterChildNonQuitting)
-        {
-            return new TimerScheduleObserver(
-                ComputeSpecDynamic(beginState, context), beginState, observerEventEvaluator, isFilterChildNonQuitting);
-        }
-
-        public bool IsNonRestarting()
-        {
-            return true;
-        }
-
-        protected TimerScheduleSpec ComputeSpecDynamic(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public TimerScheduleSpec ComputeSpecDynamic(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (Spec != null)
             {
@@ -185,7 +190,10 @@ namespace com.espertech.esper.pattern.observer
             }
             try
             {
-                return ScheduleComputer.Compute(Convertor, beginState, context.AgentInstanceContext, context.StatementContext.EngineImportService.TimeZone);
+                return ScheduleComputer.Compute(
+                    Convertor, beginState, context.AgentInstanceContext,
+                    context.StatementContext.EngineImportService.TimeZone,
+                    context.StatementContext.EngineImportService.TimeAbacus);
             }
             catch (ScheduleParameterException e)
             {
@@ -193,12 +201,17 @@ namespace com.espertech.esper.pattern.observer
             }
         }
 
-        internal interface ITimerScheduleSpecCompute
+        protected internal interface TimerScheduleSpecCompute
         {
-            TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone);
+            TimerScheduleSpec Compute(
+                MatchedEventConvertor convertor,
+                MatchedEventMap beginState,
+                ExprEvaluatorContext exprEvaluatorContext,
+                TimeZoneInfo timeZone,
+                TimeAbacus timeAbacus);
         }
 
-        internal class TimerScheduleSpecComputeFromExpr : ITimerScheduleSpecCompute
+        private class TimerScheduleSpecComputeFromExpr : TimerScheduleSpecCompute
         {
             private readonly ExprNode _dateNode;
             private readonly ExprTimePeriod _periodNode;
@@ -214,28 +227,46 @@ namespace com.espertech.esper.pattern.observer
                 _periodNode = periodNode;
             }
 
-            public TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone)
+            public TimerScheduleSpec Compute(
+                MatchedEventConvertor convertor,
+                MatchedEventMap beginState,
+                ExprEvaluatorContext exprEvaluatorContext,
+                TimeZoneInfo timeZone,
+                TimeAbacus timeAbacus)
             {
                 DateTimeEx optionalDate = null;
+                long? optionalRemainder = null;
                 if (_dateNode != null)
                 {
-                    object param = PatternExpressionUtil.Evaluate(
+                    Object param = PatternExpressionUtil.Evaluate(
                         NAME_OBSERVER, beginState, _dateNode, convertor, exprEvaluatorContext);
                     if (param is string)
                     {
                         optionalDate = TimerScheduleISO8601Parser.ParseDate((string) param);
                     }
-                    else if (param.IsLong())
+                    else if (param.IsLong() || param.IsInt())
                     {
-                        optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
-                    }
-                    else if (param.IsInt())
-                    {
-                        optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
+                        long msec = param.AsLong();
+                        optionalDate = new DateTimeEx(msec.AsDateTimeOffset(timeZone), timeZone);
+                        optionalRemainder = timeAbacus.CalendarSet(msec, optionalDate);
                     }
                     else if (param is DateTimeOffset || param is DateTime)
                     {
                         optionalDate = new DateTimeEx(param.AsDateTimeOffset(timeZone), timeZone);
+                    }
+                    else if (param is DateTimeEx)
+                    {
+                        optionalDate = (DateTimeEx) param;
+                    }
+                    else if (param == null)
+                    {
+                        throw new EPException(
+                            "Null date-time value returned from " +
+                            ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_dateNode));
+                    }
+                    else
+                    {
+                        throw new EPException("Unrecognized date-time value " + param.GetType());
                     }
                 }
 
@@ -263,11 +294,11 @@ namespace com.espertech.esper.pattern.observer
                     throw new EPException("Required date or time period are both null for " + NAME_OBSERVER);
                 }
 
-                return new TimerScheduleSpec(optionalDate, optionalRepeatCount, optionalTimePeriod);
+                return new TimerScheduleSpec(optionalDate, optionalRemainder, optionalRepeatCount, optionalTimePeriod);
             }
         }
 
-        internal class TimerScheduleSpecComputeISOString : ITimerScheduleSpecCompute
+        private class TimerScheduleSpecComputeISOString : TimerScheduleSpecCompute
         {
             private readonly ExprNode _parameter;
 
@@ -276,7 +307,12 @@ namespace com.espertech.esper.pattern.observer
                 _parameter = parameter;
             }
 
-            public TimerScheduleSpec Compute(MatchedEventConvertor convertor, MatchedEventMap beginState, ExprEvaluatorContext exprEvaluatorContext, TimeZoneInfo timeZone)
+            public TimerScheduleSpec Compute(
+                MatchedEventConvertor convertor,
+                MatchedEventMap beginState,
+                ExprEvaluatorContext exprEvaluatorContext,
+                TimeZoneInfo timeZone,
+                TimeAbacus timeAbacus)
             {
                 object param = PatternExpressionUtil.Evaluate(
                     NAME_OBSERVER, beginState, _parameter, convertor, exprEvaluatorContext);

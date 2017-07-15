@@ -27,13 +27,13 @@ namespace com.espertech.esper.epl.virtualdw
     public class JoinExecTableLookupStrategyVirtualDW : JoinExecTableLookupStrategy
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _namedWindowName;
         private readonly VirtualDataWindowLookup _externalIndex;
         private readonly ExternalEvaluator[] _evaluators;
         private readonly EventBean[] _eventsPerStream;
         private readonly int _lookupStream;
-    
+
         public JoinExecTableLookupStrategyVirtualDW(String namedWindowName, VirtualDataWindowLookup externalIndex, TableLookupKeyDesc keyDescriptor, int lookupStream)
         {
             _namedWindowName = namedWindowName;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.virtualdw
             _evaluators = new ExternalEvaluator[keyDescriptor.Hashes.Count + keyDescriptor.Ranges.Count];
             _eventsPerStream = new EventBean[lookupStream + 1];
             _lookupStream = lookupStream;
-    
+
             var count = 0;
             foreach (var hashKey in keyDescriptor.Hashes)
             {
@@ -51,21 +51,23 @@ namespace com.espertech.esper.epl.virtualdw
             }
             foreach (var rangeKey in keyDescriptor.Ranges)
             {
-                if (rangeKey.RangeType.IsRange()) {
-                    var range = (QueryGraphValueEntryRangeIn) rangeKey;
+                if (rangeKey.RangeType.IsRange())
+                {
+                    var range = (QueryGraphValueEntryRangeIn)rangeKey;
                     var evaluatorStart = range.ExprStart.ExprEvaluator;
                     var evaluatorEnd = range.ExprEnd.ExprEvaluator;
                     _evaluators[count] = new ExternalEvaluatorBtreeRange(evaluatorStart, evaluatorEnd);
                 }
-                else {
-                    var relOp = (QueryGraphValueEntryRangeRelOp) rangeKey;
+                else
+                {
+                    var relOp = (QueryGraphValueEntryRangeRelOp)rangeKey;
                     var evaluator = relOp.Expression.ExprEvaluator;
                     _evaluators[count] = new ExternalEvaluatorHashRelOp(evaluator);
                 }
                 count++;
             }
         }
-    
+
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext context)
         {
             var events = new Mutable<ISet<EventBean>>();
@@ -96,7 +98,7 @@ namespace com.espertech.esper.epl.virtualdw
                 return events.Value;
             }
         }
-    
+
         public String ToQueryPlan()
         {
             return GetType().FullName + " external index " + _externalIndex;
@@ -115,12 +117,12 @@ namespace com.espertech.esper.epl.virtualdw
         internal class ExternalEvaluatorHashRelOp : ExternalEvaluator
         {
             private readonly ExprEvaluator _hashKeysEval;
-    
+
             internal ExternalEvaluatorHashRelOp(ExprEvaluator hashKeysEval)
             {
                 _hashKeysEval = hashKeysEval;
             }
-    
+
             public Object Evaluate(EventBean[] events, ExprEvaluatorContext context)
             {
                 return _hashKeysEval.Evaluate(new EvaluateParams(events, true, context));
@@ -137,7 +139,7 @@ namespace com.espertech.esper.epl.virtualdw
                 _startEval = startEval;
                 _endEval = endEval;
             }
-    
+
             public Object Evaluate(EventBean[] events, ExprEvaluatorContext context)
             {
                 var evaluateParams = new EvaluateParams(events, true, context);

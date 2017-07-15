@@ -87,7 +87,7 @@ namespace com.espertech.esper.epl.view
             EventBeanReader eventBeanReader = null;
             if (eventType is EventTypeSPI)
             {
-                eventBeanReader = ((EventTypeSPI) eventType).GetReader();
+                eventBeanReader = ((EventTypeSPI) eventType).Reader;
             }
             if (eventBeanReader == null)
             {

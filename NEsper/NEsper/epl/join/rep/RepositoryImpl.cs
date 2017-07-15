@@ -14,7 +14,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.epl.join.rep
 {
     /// <summary>
-    /// Implements a repository for join events and lookup results.
+    /// : a repository for join events and lookup results.
     /// </summary>
     public class RepositoryImpl : Repository
     {

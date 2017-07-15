@@ -11,100 +11,91 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
-using com.espertech.esper.epl.@join.exec.composite;
-using com.espertech.esper.epl.@join.plan;
-using com.espertech.esper.epl.@join.rep;
-using com.espertech.esper.epl.@join.table;
+using com.espertech.esper.epl.join.exec.composite;
+using com.espertech.esper.epl.join.plan;
+using com.espertech.esper.epl.join.rep;
+using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.join.exec.@base
 {
     /// <summary>
-    /// Lookup on an nested map structure that represents an index for use with at least one 
-    /// range and possibly multiple ranges and optionally keyed by one or more unique keys. 
-    /// <para/>
-    /// Use the sorted strategy instead if supporting a single range only and no other unique 
-    /// keys are part of the index.
+    /// Lookup on an nested map structure that represents an index for use with at least one range and possibly multiple ranges
+    /// and optionally keyed by one or more unique keys.
+    /// <para>
+    /// Use the sorted strategy instead if supporting a single range only and no other unique keys are part of the index.
+    /// </para>
     /// </summary>
-    public class CompositeTableLookupStrategy : JoinExecTableLookupStrategy
-    {
-        private readonly EventType _eventType;
-        private readonly PropertyCompositeEventTable _index;
-        private readonly CompositeIndexQuery _chain;
-        private readonly IList<QueryGraphValueEntryRange> _rangeKeyPairs;
-        private readonly LookupStrategyDesc _lookupStrategyDesc;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="eventType">event type to expect for lookup</param>
-        /// <param name="lookupStream">The lookup stream.</param>
-        /// <param name="hashKeys">The hash keys.</param>
-        /// <param name="rangeKeyPairs">The range key pairs.</param>
-        /// <param name="index">index to look up in</param>
-        public CompositeTableLookupStrategy(EventType eventType, int lookupStream, IList<QueryGraphValueEntryHashKeyed> hashKeys, IList<QueryGraphValueEntryRange> rangeKeyPairs, PropertyCompositeEventTable index)
-        {
-            _eventType = eventType;
-            _index = index;
-            _rangeKeyPairs = rangeKeyPairs;
-            _chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, index.OptKeyCoercedTypes, rangeKeyPairs, index.OptRangeCoercedTypes);
+    public class CompositeTableLookupStrategy : JoinExecTableLookupStrategy {
+        private readonly EventType eventType;
+        private readonly PropertyCompositeEventTable index;
+        private readonly CompositeIndexQuery chain;
+        private readonly List<QueryGraphValueEntryRange> rangeKeyPairs;
+        private readonly LookupStrategyDesc lookupStrategyDesc;
     
-            var expressionTexts = new ArrayDeque<String>();
-            foreach (var pair in rangeKeyPairs) {
-                var expressions = pair.Expressions;
-                foreach (var node in expressions) {
+        public CompositeTableLookupStrategy(EventType eventType, int lookupStream, List<QueryGraphValueEntryHashKeyed> hashKeys, List<QueryGraphValueEntryRange> rangeKeyPairs, PropertyCompositeEventTable index) {
+            this.eventType = eventType;
+            this.index = index;
+            this.rangeKeyPairs = rangeKeyPairs;
+            chain = CompositeIndexQueryFactory.MakeJoinSingleLookupStream(false, lookupStream, hashKeys, index.OptKeyCoercedTypes, rangeKeyPairs, index.OptRangeCoercedTypes);
+    
+            var expressionTexts = new ArrayDeque<string>();
+            foreach (QueryGraphValueEntryRange pair in rangeKeyPairs) {
+                ExprNode[] expressions = pair.Expressions;
+                foreach (ExprNode node in expressions) {
                     expressionTexts.Add(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(node));
                 }
             }
-            _lookupStrategyDesc = new LookupStrategyDesc(LookupStrategyType.COMPOSITE, expressionTexts.ToArray());
+            lookupStrategyDesc = new LookupStrategyDesc(LookupStrategyType.COMPOSITE, expressionTexts.ToArray());
         }
 
-        /// <summary>Returns event type of the lookup event. </summary>
+        /// <summary>
+        /// Returns event type of the lookup event.
+        /// </summary>
         /// <value>event type of the lookup event</value>
         public EventType EventType
         {
-            get { return _eventType; }
+            get { return eventType; }
         }
 
-        /// <summary>Returns index to look up in. </summary>
+        /// <summary>
+        /// Returns index to look up in.
+        /// </summary>
         /// <value>index to use</value>
         public PropertyCompositeEventTable Index
         {
-            get { return _index; }
+            get { return index; }
         }
 
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext context)
         {
             if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().QIndexJoinLookup(this, _index);
+                InstrumentationHelper.Get().QIndexJoinLookup(this, index);
+                var keys = new List<Object>(2);
+                ICollection<EventBean> resultX = chain.GetCollectKeys(theEvent, index.Index, context, keys, index.PostProcessor);
+                InstrumentationHelper.Get().AIndexJoinLookup(resultX, keys.Count > 1 ? keys.ToArray() : keys[0]);
+                return resultX;
             }
-
-            var keys = new List<Object>(2);
-            var result = _chain.GetCollectKeys(theEvent, _index.IndexTable, context, keys, _index.PostProcessor);
-
-            if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().AIndexJoinLookup(result, keys.Count > 1 ? keys.ToArray() : keys[0]);
-            }
-
-            if (result != null && result.IsEmpty())
+    
+            ISet<EventBean> result = chain.Get(theEvent, index.Index, context, index.PostProcessor);
+            if (result != null && result.IsEmpty()) {
                 return null;
-
+            }
             return result;
         }
 
         public LookupStrategyDesc StrategyDesc
         {
-            get { return _lookupStrategyDesc; }
+            get { return lookupStrategyDesc; }
         }
 
-        public override String ToString()
-        {
-            return "CompositeTableLookupStrategy indexProps=" + CompatExtensions.Render(_rangeKeyPairs.ToArray()) +
-                    " index=(" + _index + ')';
+        public override String ToString() {
+            return string.Format("CompositeTableLookupStrategy indexProps={0} index=({1})", CompatExtensions.Render(rangeKeyPairs), index);
         }
     }
-}
+} // end of namespace

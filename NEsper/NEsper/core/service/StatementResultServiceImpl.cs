@@ -202,8 +202,11 @@ namespace com.espertech.esper.core.service
             _statementResultNaturalStrategy = ResultDeliveryStrategyFactory.Create(
                 _epStatement,
                 _statementListenerSet.Subscriber,
-                _selectClauseTypes, 
-                _selectClauseColumnNames);
+                _selectClauseTypes,
+                _selectClauseColumnNames,
+                _epServiceProvider.URI,
+                _epServiceProvider.EngineImportService
+                );
             _isMakeNatural = true;
         }
 
@@ -280,7 +283,7 @@ namespace com.espertech.esper.core.service
                     {
                         foreach (EventBean theEvent in events.First)
                         {
-                            todeliver.First = new EventBean[] {theEvent};
+                            todeliver.First = new EventBean[] { theEvent };
                             DispatchInternal(todeliver);
                         }
                         todeliver.First = null;
@@ -289,7 +292,7 @@ namespace com.espertech.esper.core.service
                     {
                         foreach (EventBean theEvent in events.Second)
                         {
-                            todeliver.Second = new EventBean[] {theEvent};
+                            todeliver.Second = new EventBean[] { theEvent };
                             DispatchInternal(todeliver);
                         }
                         todeliver.Second = null;

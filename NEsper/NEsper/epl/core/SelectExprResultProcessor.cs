@@ -50,40 +50,41 @@ namespace com.espertech.esper.epl.core
 
         public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QSelectClause(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QSelectClause(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext); }
             if ((isSynthesize) && (!_statementResultService.IsMakeNatural))
             {
-                if (InstrumentationHelper.ENABLED) {
+                if (InstrumentationHelper.ENABLED)
+                {
                     EventBean result = _syntheticProcessor.Process(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
                     InstrumentationHelper.Get().ASelectClause(isNewData, result, null);
                     return result;
                 }
                 return _syntheticProcessor.Process(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
             }
-    
+
             EventBean syntheticEvent = null;
             EventType syntheticEventType = null;
             if (_statementResultService.IsMakeSynthetic || isSynthesize)
             {
                 syntheticEvent = _syntheticProcessor.Process(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
-    
+
                 if (!_statementResultService.IsMakeNatural)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, syntheticEvent, null);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, syntheticEvent, null); }
                     return syntheticEvent;
                 }
-    
+
                 syntheticEventType = _syntheticProcessor.ResultEventType;
             }
-    
+
             if (!_statementResultService.IsMakeNatural)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, null, null);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, null, null); }
                 return null; // neither synthetic nor natural required, be cheap and generate no output event
             }
-    
+
             Object[] parameters = _bindProcessor.Process(eventsPerStream, isNewData, exprEvaluatorContext);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, null, parameters);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASelectClause(isNewData, null, parameters); }
             return new NaturalEventBean(syntheticEventType, parameters, syntheticEvent);
         }
     }

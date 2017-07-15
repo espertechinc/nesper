@@ -39,7 +39,7 @@ namespace com.espertech.esper.support.client
             else
             {
                 config = new Configuration();
-                config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+                config.EngineDefaults.typeof(EventMetaConfig)PropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
                 config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle = AccessorStyleEnum.NATIVE;
                 config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
                 config.EngineDefaults.ExceptionHandlingConfig.AddClass<SupportExceptionHandlerFactoryRethrow>();

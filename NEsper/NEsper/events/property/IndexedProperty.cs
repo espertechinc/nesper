@@ -31,7 +31,7 @@ namespace com.espertech.esper.events.property
     /// Represents an indexed property or array property, ie. an 'value' property with read method getValue(int index)
     /// or a 'array' property via read method Array returning an array.
     /// </summary>
-    public class IndexedProperty : PropertyBase
+    public class IndexedProperty : PropertyBase, PropertyWithIndex
     {
         private readonly int _index;
 
@@ -444,10 +444,10 @@ namespace com.espertech.esper.events.property
             String indexStr = propertyName.Substring(start, end - start);
             return Int32.Parse(indexStr);
         }
-        
+
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, 
-            IDictionary<string, object> nestableTypes, 
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
             EventAdapterService eventAdapterService)
         {
             int propertyIndex;
@@ -490,11 +490,11 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-                if (!((Type) type).IsArray())
+                if (!((Type)type).IsArray())
                 {
                     return null;
                 }
-                Type componentType = ((Type) type).GetElementType();
+                Type componentType = ((Type)type).GetElementType();
                 // its an array
                 return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
                     propertyIndex, _index, eventAdapterService, componentType);

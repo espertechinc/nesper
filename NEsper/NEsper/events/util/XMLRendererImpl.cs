@@ -59,7 +59,8 @@ namespace com.espertech.esper.events.util
 
         public String Render(String rootElementName, EventBean theEvent)
         {
-            if (_options.IsDefaultAsAttribute) {
+            if (_options.IsDefaultAsAttribute)
+            {
                 return RenderAttributeXML(rootElementName, theEvent);
             }
             return RenderElementXML(rootElementName, theEvent);
@@ -124,25 +125,31 @@ namespace com.espertech.esper.events.util
             var buf = new StringBuilder();
 
             GetterPair[] indexProps = meta.IndexProperties;
-            foreach (GetterPair indexProp in indexProps.OrderBy(prop => prop.Name)) {
+            foreach (GetterPair indexProp in indexProps.OrderBy(prop => prop.Name))
+            {
                 var value = indexProp.Getter.Get(theEvent);
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
-                if (value is string) {
+                if (value is string)
+                {
                     continue;
                 }
 
                 var asArray = value as Array;
-                if (asArray == null) {
+                if (asArray == null)
+                {
                     Log.Warn("Property '" + indexProp.Name + "' returned a non-array object");
                     continue;
                 }
 
-                for (int i = 0; i < asArray.Length; i++) {
+                for (int i = 0; i < asArray.Length; i++)
+                {
                     object arrayItem = asArray.GetValue(i);
-                    if (arrayItem == null) {
+                    if (arrayItem == null)
+                    {
                         continue;
                     }
 
@@ -165,7 +172,7 @@ namespace com.espertech.esper.events.util
                         context.DefaultRenderer = indexProp.Output;
                         _rendererMetaOptions.Renderer.Render(context);
                     }
-                    
+
                     buf.Append("</");
                     buf.Append(indexProp.Name);
                     buf.Append('>');
@@ -178,7 +185,8 @@ namespace com.espertech.esper.events.util
             {
                 object value = mappedProp.Getter.Get(theEvent);
 
-                if ((value != null) && (!(value is DataMap))) {
+                if ((value != null) && (!(value is DataMap)))
+                {
                     Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() +
                              " instead");
                     continue;
@@ -188,11 +196,15 @@ namespace com.espertech.esper.events.util
                 buf.Append('<');
                 buf.Append(mappedProp.Name);
 
-                if (value != null) {
-                    var map = (DataMap) value;
-                    if (map.IsNotEmpty()) {
-                        foreach (var entry in map) {
-                            if ((entry.Key == null) || (entry.Value == null)) {
+                if (value != null)
+                {
+                    var map = (DataMap)value;
+                    if (map.IsNotEmpty())
+                    {
+                        foreach (var entry in map)
+                        {
+                            if ((entry.Key == null) || (entry.Value == null))
+                            {
                                 continue;
                             }
 
@@ -200,7 +212,7 @@ namespace com.espertech.esper.events.util
                             buf.Append(entry.Key);
                             buf.Append("=\"");
 
-                            OutputValueRenderer outputValueRenderer = 
+                            OutputValueRenderer outputValueRenderer =
                                 OutputValueRendererFactory.GetOutputValueRenderer(entry.Value.GetType(), _rendererMetaOptions);
 
                             if (_rendererMetaOptions.Renderer == null)
@@ -232,30 +244,36 @@ namespace com.espertech.esper.events.util
             {
                 object value = nestedProp.Getter.GetFragment(theEvent);
 
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
-                if (!nestedProp.IsArray) {
-                    if (!(value is EventBean)) {
+                if (!nestedProp.IsArray)
+                {
+                    if (!(value is EventBean))
+                    {
                         Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean and returned " +
                                  value.GetType() + " instead");
                         buf.Append("null");
                         continue;
                     }
-                    var nestedEventBean = (EventBean) value;
+                    var nestedEventBean = (EventBean)value;
                     RenderAttInner(buf, level, nestedEventBean, nestedProp);
                 }
-                else {
-                    if (!(value is EventBean[])) {
+                else
+                {
+                    if (!(value is EventBean[]))
+                    {
                         Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " +
                                  value.GetType() + " instead");
                         buf.Append("null");
                         continue;
                     }
 
-                    var nestedEventArray = (EventBean[]) value;
-                    for (int i = 0; i < nestedEventArray.Length; i++) {
+                    var nestedEventArray = (EventBean[])value;
+                    for (int i = 0; i < nestedEventArray.Length; i++)
+                    {
                         EventBean arrayItem = nestedEventArray[i];
                         RenderAttInner(buf, level, arrayItem, nestedProp);
                     }
@@ -272,14 +290,15 @@ namespace com.espertech.esper.events.util
             foreach (GetterPair simpleProp in simpleProps.OrderBy(prop => prop.Name))
             {
                 var value = simpleProp.Getter.Get(theEvent);
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
                 buf.Append(delimiter);
                 buf.Append(simpleProp.Name);
                 buf.Append("=\"");
-                
+
                 if (_rendererMetaOptions.Renderer == null)
                 {
                     simpleProp.Output.Render(value, buf);
@@ -292,8 +311,8 @@ namespace com.espertech.esper.events.util
                     context.PropertyValue = value;
                     context.DefaultRenderer = simpleProp.Output;
                     _rendererMetaOptions.Renderer.Render(context);
-                } 
-                
+                }
+
                 buf.Append('"');
             }
 
@@ -325,7 +344,7 @@ namespace com.espertech.esper.events.util
                         context.PropertyValue = value;
                         context.DefaultRenderer = indexProp.Output;
                         _rendererMetaOptions.Renderer.Render(context);
-                    } 
+                    }
 
                     buf.Append('"');
                 }
@@ -334,7 +353,8 @@ namespace com.espertech.esper.events.util
 
         private static void Ident(StringBuilder buf, int level)
         {
-            for (int i = 0; i < level; i++) {
+            for (int i = 0; i < level; i++)
+            {
                 IndentChar(buf);
             }
         }
@@ -349,9 +369,11 @@ namespace com.espertech.esper.events.util
                                             RendererMetaOptions rendererMetaOptions)
         {
             GetterPair[] simpleProps = meta.SimpleProperties;
-            foreach (GetterPair simpleProp in simpleProps.OrderBy(prop => prop.Name)) {
+            foreach (GetterPair simpleProp in simpleProps.OrderBy(prop => prop.Name))
+            {
                 var value = simpleProp.Getter.Get(theEvent);
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
@@ -373,7 +395,7 @@ namespace com.espertech.esper.events.util
                     context.DefaultRenderer = simpleProp.Output;
                     rendererMetaOptions.Renderer.Render(context);
                 }
-                
+
                 buf.Append("</");
                 buf.Append(simpleProp.Name);
                 buf.Append('>');
@@ -385,7 +407,8 @@ namespace com.espertech.esper.events.util
             {
                 object value = indexProp.Getter.Get(theEvent);
 
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
@@ -420,15 +443,18 @@ namespace com.espertech.esper.events.util
                 }
 
                 var asArray = value as Array;
-                if (asArray == null) {
+                if (asArray == null)
+                {
                     Log.Warn("Property '" + indexProp.Name + "' returned a non-array object");
                     continue;
                 }
 
-                for (int i = 0; i < asArray.Length; i++) {
+                for (int i = 0; i < asArray.Length; i++)
+                {
                     object arrayItem = asArray.GetValue(i);
 
-                    if (arrayItem == null) {
+                    if (arrayItem == null)
+                    {
                         continue;
                     }
 
@@ -450,7 +476,7 @@ namespace com.espertech.esper.events.util
                         context.IndexedPropertyIndex = i;
                         context.DefaultRenderer = indexProp.Output;
                         rendererMetaOptions.Renderer.Render(context);
-                    } 
+                    }
 
                     buf.Append("</");
                     buf.Append(indexProp.Name);
@@ -464,7 +490,8 @@ namespace com.espertech.esper.events.util
             {
                 object value = mappedProp.Getter.Get(theEvent);
 
-                if ((value != null) && (!(value is DataMap))) {
+                if ((value != null) && (!(value is DataMap)))
+                {
                     Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() +
                              " instead");
                     continue;
@@ -476,12 +503,16 @@ namespace com.espertech.esper.events.util
                 buf.Append('>');
                 buf.Append(NEWLINE);
 
-                if (value != null) {
-                    var map = (DataMap) value;
-                    if (map.IsNotEmpty()) {
+                if (value != null)
+                {
+                    var map = (DataMap)value;
+                    if (map.IsNotEmpty())
+                    {
                         String localDelimiter = "";
-                        foreach (var entry in map) {
-                            if (entry.Key == null) {
+                        foreach (var entry in map)
+                        {
+                            if (entry.Key == null)
+                            {
                                 continue;
                             }
 
@@ -491,7 +522,8 @@ namespace com.espertech.esper.events.util
                             buf.Append(entry.Key);
                             buf.Append('>');
 
-                            if (entry.Value != null) {
+                            if (entry.Value != null)
+                            {
                                 OutputValueRenderer outputValueRenderer = OutputValueRendererFactory.GetOutputValueRenderer(
                                     entry.Value.GetType(), rendererMetaOptions);
                                 if (rendererMetaOptions.Renderer == null)
@@ -510,7 +542,7 @@ namespace com.espertech.esper.events.util
                                 }
                             }
 
-                            buf.Append('<');
+                            buf.Append("</");
                             buf.Append(entry.Key);
                             buf.Append('>');
                             localDelimiter = NEWLINE;
@@ -530,31 +562,38 @@ namespace com.espertech.esper.events.util
             foreach (NestedGetterPair nestedProp in nestedProps.OrderBy(prop => prop.Name))
             {
                 var value = nestedProp.Getter.GetFragment(theEvent);
-                if (value == null) {
+                if (value == null)
+                {
                     continue;
                 }
 
-                if (!nestedProp.IsArray) {
-                    if (!(value is EventBean)) {
+                if (!nestedProp.IsArray)
+                {
+                    if (!(value is EventBean))
+                    {
                         Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean and returned " +
                                  value.GetType() + " instead");
                         buf.Append("null");
                         continue;
                     }
-                    RenderElementFragment((EventBean) value, buf, level, nestedProp, rendererMetaOptions);
+                    RenderElementFragment((EventBean)value, buf, level, nestedProp, rendererMetaOptions);
                 }
-                else {
-                    if (!(value is EventBean[])) {
+                else
+                {
+                    if (!(value is EventBean[]))
+                    {
                         Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " +
                                  value.GetType() + " instead");
                         buf.Append("null");
                         continue;
                     }
 
-                    var nestedEventArray = (EventBean[]) value;
-                    for (int i = 0; i < nestedEventArray.Length; i++) {
+                    var nestedEventArray = (EventBean[])value;
+                    for (int i = 0; i < nestedEventArray.Length; i++)
+                    {
                         EventBean arrayItem = nestedEventArray[i];
-                        if (arrayItem == null) {
+                        if (arrayItem == null)
+                        {
                             continue;
                         }
                         RenderElementFragment(arrayItem, buf, level, nestedProp, rendererMetaOptions);
@@ -591,11 +630,13 @@ namespace com.espertech.esper.events.util
 
             String inner = RenderAttElements(nestedEventBean, level + 1, nestedProp.Metadata);
 
-            if ((inner == null) || (inner.Trim().Length == 0)) {
+            if ((inner == null) || (inner.Trim().Length == 0))
+            {
                 buf.Append("/>");
                 buf.Append(NEWLINE);
             }
-            else {
+            else
+            {
                 buf.Append(">");
                 buf.Append(NEWLINE);
                 buf.Append(inner);
@@ -610,11 +651,13 @@ namespace com.espertech.esper.events.util
 
         private static String GetFirstWord(String rootElementName)
         {
-            if ((rootElementName == null) || (rootElementName.Trim().Length == 0)) {
+            if ((rootElementName == null) || (rootElementName.Trim().Length == 0))
+            {
                 return rootElementName;
             }
             int index = rootElementName.IndexOf(' ');
-            if (index < 0) {
+            if (index < 0)
+            {
                 return rootElementName;
             }
             return rootElementName.Substring(0, index);

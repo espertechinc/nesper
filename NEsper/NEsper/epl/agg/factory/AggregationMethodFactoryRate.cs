@@ -10,92 +10,106 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryRate : AggregationMethodFactory
-	{
-        protected internal readonly ExprRateAggNode Parent;
-        protected internal readonly bool IsEver;
-        protected internal readonly long IntervalMSec;
-        protected internal readonly TimeProvider TimeProvider;
+    public class AggregationMethodFactoryRate : AggregationMethodFactory
+    {
+        private readonly ExprRateAggNode _parent;
+        private readonly bool _isEver;
+        private readonly long _intervalTime;
+        private readonly TimeProvider _timeProvider;
+        private readonly TimeAbacus _timeAbacus;
 
-	    public AggregationMethodFactoryRate(ExprRateAggNode parent, bool isEver, long intervalMSec, TimeProvider timeProvider)
-	    {
-	        Parent = parent;
-	        IsEver = isEver;
-	        IntervalMSec = intervalMSec;
-	        TimeProvider = timeProvider;
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public Type ResultType
-	    {
-	        get { return typeof (double?); }
-	    }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationMethodFactoryRate(
+            ExprRateAggNode parent,
+            bool isEver,
+            long intervalTime,
+            TimeProvider timeProvider,
+            TimeAbacus timeAbacus)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            _parent = parent;
+            _isEver = isEver;
+            _intervalTime = intervalTime;
+            _timeProvider = timeProvider;
+            _timeAbacus = timeAbacus;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public bool IsAccessAggregation
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            get { return false; }
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public AggregationMethod Make()
-	    {
-	        if (IsEver)
-	        {
-	            return new AggregatorRateEver(IntervalMSec, TimeProvider);
-	        }
-	        else
-	        {
-	            return new AggregatorRate();
-	        }
-	    }
-
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
-
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public Type ResultType
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryRate that = (AggregationMethodFactoryRate) intoTableAgg;
-	        if (IntervalMSec != that.IntervalMSec)
+            get { return typeof (double?); }
+        }
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        {
+            throw new IllegalStateException("Not an access aggregation function");
+        }
+
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        {
+            throw new IllegalStateException("Not an access aggregation function");
+        }
+
+        public AggregationAccessor Accessor
+        {
+            get { throw new IllegalStateException("Not an access aggregation function"); }
+        }
+
+        public AggregationMethod Make()
+        {
+            if (_isEver)
             {
-	            throw new ExprValidationException(string.Format("The size is {0} and provided is {1}", IntervalMSec, that.IntervalMSec));
-	        }
-            service.AggregationMethodFactoryUtil.ValidateAggregationUnbound(!IsEver, !that.IsEver);
-	    }
+                return new AggregatorRateEver(_intervalTime, _timeAbacus.GetOneSecond(), _timeProvider);
+            }
+            else
+            {
+                return new AggregatorRate(_timeAbacus.GetOneSecond());
+            }
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
-
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public ExprAggregateNodeBase AggregationExpression
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
-	}
+            get { return _parent; }
+        }
+
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        {
+            AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
+            AggregationMethodFactoryRate that = (AggregationMethodFactoryRate) intoTableAgg;
+            if (_intervalTime != that._intervalTime)
+            {
+                throw new ExprValidationException(
+                    "The size is " +
+                    _intervalTime +
+                    " and provided is " +
+                    that._intervalTime);
+            }
+            AggregationMethodFactoryUtil.ValidateAggregationUnbound(!_isEver, !that._isEver);
+        }
+
+        public AggregationAgent AggregationStateAgent
+        {
+            get { return null; }
+        }
+
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+    }
 } // end of namespace

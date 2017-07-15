@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
@@ -22,16 +23,18 @@ using com.espertech.esper.events;
 using com.espertech.esper.filter;
 using com.espertech.esper.util;
 
+using Module = com.espertech.esper.client.deploy.Module;
+
 namespace com.espertech.esper.core.deploy
 {
-    /// <summary>
-    /// Deployment administrative implementation.
-    /// </summary>
+    /// <summary>Deployment administrative implementation.</summary>
     public class EPDeploymentAdminImpl : EPDeploymentAdminSPI
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly EPAdministratorSPI _epService;
+        private readonly IReaderWriterLock _eventProcessingRwLock;
         private readonly DeploymentStateService _deploymentStateService;
         private readonly StatementEventTypeRef _statementEventTypeRef;
         private readonly EventAdapterService _eventAdapterService;
@@ -41,27 +44,19 @@ namespace com.espertech.esper.core.deploy
         private readonly ConfigurationEngineDefaults.UndeployRethrowPolicy _undeployRethrowPolicy;
         private readonly ILockable _iLock = LockManager.CreateDefaultLock();
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="epService">administrative SPI</param>
-        /// <param name="deploymentStateService">deployment state maintenance service</param>
-        /// <param name="statementEventTypeRef">maintains statement-eventtype relationship</param>
-        /// <param name="eventAdapterService">event wrap service</param>
-        /// <param name="statementIsolationService">for isolated statement execution</param>
-        /// <param name="optionalStatementIdGenerator">The optional statement id generator.</param>
-        /// <param name="filterService">The filter service.</param>
-        /// <param name="timeZone">The time zone.</param>
-        public EPDeploymentAdminImpl(EPAdministratorSPI epService,
-                                     DeploymentStateService deploymentStateService,
-                                     StatementEventTypeRef statementEventTypeRef,
-                                     EventAdapterService eventAdapterService,
-                                     StatementIsolationService statementIsolationService,
-                                     FilterService filterService,
-                                     TimeZoneInfo timeZone,
-                                     ConfigurationEngineDefaults.UndeployRethrowPolicy undeployRethrowPolicy)
+        public EPDeploymentAdminImpl(
+            EPAdministratorSPI epService,
+            IReaderWriterLock eventProcessingRWLock,
+            DeploymentStateService deploymentStateService,
+            StatementEventTypeRef statementEventTypeRef,
+            EventAdapterService eventAdapterService,
+            StatementIsolationService statementIsolationService,
+            FilterService filterService,
+            TimeZoneInfo timeZone,
+            ConfigurationEngineDefaults.UndeployRethrowPolicy undeployRethrowPolicy)
         {
             _epService = epService;
+            _eventProcessingRwLock = eventProcessingRWLock;
             _deploymentStateService = deploymentStateService;
             _statementEventTypeRef = statementEventTypeRef;
             _eventAdapterService = eventAdapterService;
@@ -70,15 +65,16 @@ namespace com.espertech.esper.core.deploy
             _timeZone = timeZone;
             _undeployRethrowPolicy = undeployRethrowPolicy;
         }
-    
-        public Module Read(Stream stream, String uri)
+
+        public Module Read(Stream stream, string uri)
         {
-            if (Log.IsDebugEnabled) {
+            if (Log.IsDebugEnabled)
+            {
                 Log.Debug("Reading module from input stream");
             }
             return EPLModuleUtil.ReadInternal(stream, uri);
         }
-    
+
         public Module Read(FileInfo file)
         {
             var absolutePath = Path.GetFullPath(file.Name);
@@ -103,209 +99,282 @@ namespace com.espertech.esper.core.deploy
                 }
             }
         }
-    
-        public Module Read(String resource)
+
+        public Module Read(string resource)
         {
-            if (Log.IsDebugEnabled) {
+            if (Log.IsDebugEnabled)
+            {
                 Log.Debug("Reading resource '" + resource + "'");
             }
-            return EPLModuleUtil.ReadResource(resource);
+            return EPLModuleUtil.ReadResource(resource, _eventAdapterService.EngineImportService);
         }
-    
-        public DeploymentResult Deploy(Module module, DeploymentOptions options, String assignedDeploymentId)
+
+        public DeploymentResult Deploy(Module module, DeploymentOptions options, string assignedDeploymentId)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
                 if (_deploymentStateService.GetDeployment(assignedDeploymentId) != null)
                 {
-                    throw new ArgumentException("Assigned deployment id '" + assignedDeploymentId +
-                                                "' is already in use");
+                    throw new ArgumentException(
+                        "Assigned deployment id '" + assignedDeploymentId + "' is already in use");
                 }
-
-                return DeployInternal(module, options, assignedDeploymentId, DateTimeOffsetHelper.Now(_timeZone));
+                return DeployInternal(module, options, assignedDeploymentId, DateTimeEx.GetInstance(_timeZone));
             }
         }
-    
+
         public DeploymentResult Deploy(Module module, DeploymentOptions options)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var deploymentId = _deploymentStateService.NextDeploymentId;
-                return DeployInternal(module, options, deploymentId, DateTimeOffsetHelper.Now(_timeZone));
+                string deploymentId = _deploymentStateService.NextDeploymentId;
+                return DeployInternal(module, options, deploymentId, DateTimeEx.GetInstance(_timeZone));
             }
         }
-    
-        private DeploymentResult DeployInternal(Module module, DeploymentOptions options, String deploymentId, DateTimeOffset addedDate)
+
+        private DeploymentResult DeployInternal(
+            Module module,
+            DeploymentOptions options,
+            string deploymentId,
+            DateTimeEx addedDate)
         {
-            if (options == null) {
+            if (options == null)
+            {
                 options = new DeploymentOptions();
             }
-    
-            if (Log.IsDebugEnabled) {
+
+            options.DeploymentLockStrategy.Acquire(_eventProcessingRwLock);
+            try
+            {
+                return DeployInternalLockTaken(module, options, deploymentId, addedDate);
+            }
+            finally
+            {
+                options.DeploymentLockStrategy.Release(_eventProcessingRwLock);
+            }
+        }
+
+        private DeploymentResult DeployInternalLockTaken(
+            Module module,
+            DeploymentOptions options,
+            string deploymentId,
+            DateTimeEx addedDate)
+        {
+
+            if (Log.IsDebugEnabled)
+            {
                 Log.Debug("Deploying module " + module);
             }
-            IList<String> imports;
-            if (module.Imports != null) {
-                foreach (var imported in module.Imports) {
-                    if (Log.IsDebugEnabled) {
+            IList<string> imports;
+            if (module.Imports != null)
+            {
+                foreach (string imported in module.Imports)
+                {
+                    if (Log.IsDebugEnabled)
+                    {
                         Log.Debug("Adding import " + imported);
                     }
                     _epService.Configuration.AddImport(imported);
                 }
-                imports = new List<String>(module.Imports);
+                imports = new List<string>(module.Imports);
             }
-            else {
-                 imports = Collections.GetEmptyList<string>();
+            else
+            {
+                imports = Collections.GetEmptyList<string>();
             }
-    
-            if (options.IsCompile) {
-                var itemExceptions = new List<DeploymentItemException>();
-                foreach (var item in module.Items) {
-                    if (item.IsCommentOnly) {
+
+            if (options.IsCompile)
+            {
+                var exceptionsX = new List<DeploymentItemException>();
+                foreach (ModuleItem item in module.Items)
+                {
+                    if (item.IsCommentOnly)
+                    {
                         continue;
                     }
-    
-                    try {
+
+                    try
+                    {
                         _epService.CompileEPL(item.Expression);
                     }
-                    catch (Exception ex) {
-                        itemExceptions.Add(new DeploymentItemException(ex.Message, item.Expression, ex, item.LineNumber));
+                    catch (Exception ex)
+                    {
+                        exceptionsX.Add(new DeploymentItemException(ex.Message, item.Expression, ex, item.LineNumber));
                     }
                 }
-    
-                if (itemExceptions.IsNotEmpty()) {
-                    throw BuildException("Compilation failed", module, itemExceptions);
+
+                if (!exceptionsX.IsEmpty())
+                {
+                    throw BuildException("Compilation failed", module, exceptionsX);
                 }
             }
-    
-            if (options.IsCompileOnly) {
+
+            if (options.IsCompileOnly)
+            {
                 return null;
             }
-    
+
             var exceptions = new List<DeploymentItemException>();
             var statementNames = new List<DeploymentInformationItem>();
             var statements = new List<EPStatement>();
-            var eventTypesReferenced = new HashSet<String>();
-    
-            foreach (var item in module.Items) {
-                if (item.IsCommentOnly) {
+            var eventTypesReferenced = new HashSet<string>();
+
+            foreach (ModuleItem item in module.Items)
+            {
+                if (item.IsCommentOnly)
+                {
                     continue;
                 }
-    
-                String statementName = null;
+
+                string statementName = null;
                 Object userObject = null;
-                if (options.StatementNameResolver != null || options.StatementUserObjectResolver != null) {
+                if (options.StatementNameResolver != null || options.StatementUserObjectResolver != null)
+                {
                     var ctx = new StatementDeploymentContext(item.Expression, module, item, deploymentId);
-                    statementName = options.StatementNameResolver != null ? options.StatementNameResolver.GetStatementName(ctx) : null;
-                    userObject = options.StatementUserObjectResolver != null ? options.StatementUserObjectResolver.GetUserObject(ctx) : null;
+                    statementName = options.StatementNameResolver != null
+                        ? options.StatementNameResolver.GetStatementName(ctx)
+                        : null;
+                    userObject = options.StatementUserObjectResolver != null
+                        ? options.StatementUserObjectResolver.GetUserObject(ctx)
+                        : null;
                 }
-    
-                try {
+
+                try
+                {
                     EPStatement stmt;
-                    if (options.IsolatedServiceProvider == null) {
+                    if (options.IsolatedServiceProvider == null)
+                    {
                         stmt = _epService.CreateEPL(item.Expression, statementName, userObject);
-                    } else {
-                        EPServiceProviderIsolated unit = _statementIsolationService.GetIsolationUnit(options.IsolatedServiceProvider, -1);
+                    }
+                    else
+                    {
+                        EPServiceProviderIsolated unit =
+                            _statementIsolationService.GetIsolationUnit(options.IsolatedServiceProvider, -1);
                         stmt = unit.EPAdministrator.CreateEPL(item.Expression, statementName, userObject);
                     }
                     statementNames.Add(new DeploymentInformationItem(stmt.Name, stmt.Text));
                     statements.Add(stmt);
-    
-                    ICollection<String> types = _statementEventTypeRef.GetTypesForStatementName(stmt.Name);
-                    if (types != null) {
+
+                    string[] types = _statementEventTypeRef.GetTypesForStatementName(stmt.Name);
+                    if (types != null)
+                    {
                         eventTypesReferenced.AddAll(types);
                     }
                 }
-                catch (EPException ex) {
+                catch (EPException ex)
+                {
                     exceptions.Add(new DeploymentItemException(ex.Message, item.Expression, ex, item.LineNumber));
-                    if (options.IsFailFast) {
+                    if (options.IsFailFast)
+                    {
                         break;
                     }
                 }
             }
-    
-            if (exceptions.IsNotEmpty()) {
-                if (options.IsRollbackOnFail) {
+
+            if (!exceptions.IsEmpty())
+            {
+                if (options.IsRollbackOnFail)
+                {
                     Log.Debug("Rolling back intermediate statements for deployment");
-                    foreach (var stmt in statements) {
-                        try {
+                    foreach (EPStatement stmt in statements)
+                    {
+                        try
+                        {
                             stmt.Dispose();
                         }
-                        catch (Exception ex) {
+                        catch (Exception ex)
+                        {
                             Log.Debug("Failed to destroy created statement during rollback: " + ex.Message, ex);
                         }
                     }
-                    EPLModuleUtil.UndeployTypes(eventTypesReferenced, _statementEventTypeRef, _eventAdapterService, _filterService);
+                    EPLModuleUtil.UndeployTypes(
+                        eventTypesReferenced, _statementEventTypeRef, _eventAdapterService, _filterService);
                 }
-                var text = "Deployment failed";
-                if (options.IsValidateOnly) {
+                string text = "Deployment failed";
+                if (options.IsValidateOnly)
+                {
                     text = "Validation failed";
                 }
                 throw BuildException(text, module, exceptions);
             }
-    
-            if (options.IsValidateOnly) {
+
+            if (options.IsValidateOnly)
+            {
                 Log.Debug("Rolling back created statements for validate-only");
-                foreach (var stmt in statements) {
-                    try {
+                foreach (EPStatement stmt in statements)
+                {
+                    try
+                    {
                         stmt.Dispose();
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         Log.Debug("Failed to destroy created statement during rollback: " + ex.Message, ex);
                     }
                 }
-                EPLModuleUtil.UndeployTypes(eventTypesReferenced, _statementEventTypeRef, _eventAdapterService, _filterService);
+                EPLModuleUtil.UndeployTypes(
+                    eventTypesReferenced, _statementEventTypeRef, _eventAdapterService, _filterService);
                 return null;
             }
-    
-            var deploymentInfoArr = statementNames.ToArray();
-            var desc = new DeploymentInformation(deploymentId, module, addedDate.TranslateTo(_timeZone), DateTime.Now, deploymentInfoArr, DeploymentState.DEPLOYED);
+
+            DeploymentInformationItem[] deploymentInfoArr = statementNames.ToArray();
+            var desc = new DeploymentInformation(
+                deploymentId, module, addedDate, DateTimeEx.GetInstance(_timeZone), deploymentInfoArr,
+                DeploymentState.DEPLOYED);
             _deploymentStateService.AddUpdateDeployment(desc);
-    
-            if (Log.IsDebugEnabled) {
+
+            if (Log.IsDebugEnabled)
+            {
                 Log.Debug("Module " + module + " was successfully deployed.");
             }
             return new DeploymentResult(desc.DeploymentId, statements.AsReadOnlyList(), imports);
         }
-    
-        private static DeploymentActionException BuildException(String msg, Module module, List<DeploymentItemException> exceptions)
+
+        private DeploymentActionException BuildException(
+            string msg,
+            Module module,
+            List<DeploymentItemException> exceptions)
         {
-            var message = msg;
-            if (module.Name != null) {
+            string message = msg;
+            if (module.Name != null)
+            {
                 message += " in module '" + module.Name + "'";
             }
-            if (module.Uri != null) {
+            if (module.Uri != null)
+            {
                 message += " in module url '" + module.Uri + "'";
             }
-            if (exceptions.Count > 0) {
-                message += " in expression '" + GetAbbreviated(exceptions[0].Expression) + "' : " + exceptions[0].Message;
+            if (exceptions.Count > 0)
+            {
+                message += " in expression '" + GetAbbreviated(exceptions[0].Expression) + "' : " +
+                           exceptions[0].Message;
             }
             return new DeploymentActionException(message, exceptions);
         }
-    
-        private static String GetAbbreviated(String expression) 
+
+        private string GetAbbreviated(string expression)
         {
-            if (expression.Length < 60) {
+            if (expression.Length < 60)
+            {
                 return ReplaceNewline(expression);
             }
-            var subtext = expression.Substring(0, 50) + "...(" + expression.Length + " chars)";
+            string subtext = expression.Substring(0, 50) + "...(" + expression.Length + " chars)";
             return ReplaceNewline(subtext);
         }
-    
-        private static String ReplaceNewline(String text)
+
+        private string ReplaceNewline(string text)
         {
             text = text.RegexReplaceAll("\\n", " ");
             text = text.RegexReplaceAll("\\t", " ");
             text = text.RegexReplaceAll("\\r", " ");
             return text;
         }
-    
-        public Module Parse(String eplModuleText)
+
+        public Module Parse(string eplModuleText)
         {
             return EPLModuleUtil.ParseInternal(eplModuleText, null);
         }
-    
-        public UndeploymentResult UndeployRemove(String deploymentId)
+
+        public UndeploymentResult UndeployRemove(string deploymentId)
         {
             using (_iLock.Acquire())
             {
@@ -313,7 +382,7 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public UndeploymentResult UndeployRemove(String deploymentId, UndeploymentOptions undeploymentOptions)
+        public UndeploymentResult UndeployRemove(string deploymentId, UndeploymentOptions undeploymentOptions)
         {
             using (_iLock.Acquire())
             {
@@ -322,7 +391,7 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public UndeploymentResult Undeploy(String deploymentId)
+        public UndeploymentResult Undeploy(string deploymentId)
         {
             using (_iLock.Acquire())
             {
@@ -330,11 +399,12 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public UndeploymentResult Undeploy(String deploymentId, UndeploymentOptions undeploymentOptions)
+        public UndeploymentResult Undeploy(string deploymentId, UndeploymentOptions undeploymentOptions)
         {
             using (_iLock.Acquire())
             {
-                return UndeployInternal(deploymentId, undeploymentOptions ?? new UndeploymentOptions());
+                return UndeployInternal(
+                    deploymentId, undeploymentOptions ?? new UndeploymentOptions());
             }
         }
 
@@ -349,9 +419,9 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public DeploymentInformation GetDeployment(String deploymentId)
+        public DeploymentInformation GetDeployment(string deploymentId)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
                 return _deploymentStateService.GetDeployment(deploymentId);
             }
@@ -370,19 +440,19 @@ namespace com.espertech.esper.core.deploy
 
         public DeploymentOrder GetDeploymentOrder(ICollection<Module> modules, DeploymentOrderOptions options)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
                 if (options == null)
                 {
                     options = new DeploymentOrderOptions();
                 }
+                string[] deployments = _deploymentStateService.Deployments;
 
-                var deployments = _deploymentStateService.Deployments;
                 var proposedModules = new List<Module>();
                 proposedModules.AddAll(modules);
 
-                ICollection<String> availableModuleNames = new HashSet<String>();
-                foreach (var proposedModule in proposedModules)
+                var availableModuleNames = new HashSet<string>();
+                foreach (Module proposedModule in proposedModules)
                 {
                     if (proposedModule.Name != null)
                     {
@@ -391,11 +461,10 @@ namespace com.espertech.esper.core.deploy
                 }
 
                 // Collect all uses-dependencies of existing modules
-                IDictionary<String, ICollection<String>> usesPerModuleName =
-                    new Dictionary<String, ICollection<String>>();
-                foreach (var deployment in deployments)
+                var usesPerModuleName = new Dictionary<string, ISet<string>>();
+                foreach (string deployment in deployments)
                 {
-                    var info = _deploymentStateService.GetDeployment(deployment);
+                    DeploymentInformation info = _deploymentStateService.GetDeployment(deployment);
                     if (info == null)
                     {
                         continue;
@@ -404,17 +473,17 @@ namespace com.espertech.esper.core.deploy
                     {
                         continue;
                     }
-                    var usesSet = usesPerModuleName.Get(info.Module.Name);
+                    ISet<string> usesSet = usesPerModuleName.Get(info.Module.Name);
                     if (usesSet == null)
                     {
-                        usesSet = new HashSet<String>();
+                        usesSet = new HashSet<string>();
                         usesPerModuleName.Put(info.Module.Name, usesSet);
                     }
                     usesSet.AddAll(info.Module.Uses);
                 }
 
                 // Collect uses-dependencies of proposed modules
-                foreach (var proposedModule in proposedModules)
+                foreach (Module proposedModule in proposedModules)
                 {
 
                     // check uses-dependency is available
@@ -422,7 +491,7 @@ namespace com.espertech.esper.core.deploy
                     {
                         if (proposedModule.Uses != null)
                         {
-                            foreach (var uses in proposedModule.Uses)
+                            foreach (string uses in proposedModule.Uses)
                             {
                                 if (availableModuleNames.Contains(uses))
                                 {
@@ -432,7 +501,7 @@ namespace com.espertech.esper.core.deploy
                                 {
                                     continue;
                                 }
-                                var message = "Module-dependency not found";
+                                string message = "Module-dependency not found";
                                 if (proposedModule.Name != null)
                                 {
                                     message += " as declared by module '" + proposedModule.Name + "'";
@@ -447,20 +516,20 @@ namespace com.espertech.esper.core.deploy
                     {
                         continue;
                     }
-                    var usesSet = usesPerModuleName.Get(proposedModule.Name);
+                    ISet<string> usesSet = usesPerModuleName.Get(proposedModule.Name);
                     if (usesSet == null)
                     {
-                        usesSet = new HashSet<String>();
+                        usesSet = new HashSet<string>();
                         usesPerModuleName.Put(proposedModule.Name, usesSet);
                     }
                     usesSet.AddAll(proposedModule.Uses);
                 }
 
-                var proposedModuleNames = new NullableDictionary<String, SortedSet<int>>();
-                var count = 0;
-                foreach (var proposedModule in proposedModules)
+                var proposedModuleNames = new Dictionary<string, ISet<int>>();
+                int count = 0;
+                foreach (Module proposedModule in proposedModules)
                 {
-                    var moduleNumbers = proposedModuleNames.Get(proposedModule.Name);
+                    ISet<int> moduleNumbers = proposedModuleNames.Get(proposedModule.Name);
                     if (moduleNumbers == null)
                     {
                         moduleNumbers = new SortedSet<int>();
@@ -471,8 +540,8 @@ namespace com.espertech.esper.core.deploy
                 }
 
                 var graph = new DependencyGraph(proposedModules.Count, false);
-                var fromModule = 0;
-                foreach (var proposedModule in proposedModules)
+                int fromModule = 0;
+                foreach (Module proposedModule in proposedModules)
                 {
                     if ((proposedModule.Uses == null) || (proposedModule.Uses.IsEmpty()))
                     {
@@ -480,9 +549,9 @@ namespace com.espertech.esper.core.deploy
                         continue;
                     }
                     var dependentModuleNumbers = new SortedSet<int>();
-                    foreach (var use in proposedModule.Uses)
+                    foreach (string use in proposedModule.Uses)
                     {
-                        var moduleNumbers = proposedModuleNames.Get(use);
+                        ISet<int> moduleNumbers = proposedModuleNames.Get(use);
                         if (moduleNumbers == null)
                         {
                             continue;
@@ -499,9 +568,9 @@ namespace com.espertech.esper.core.deploy
                     var circular = graph.FirstCircularDependency;
                     if (circular != null)
                     {
-                        var message = "";
-                        var delimiter = "";
-                        foreach (var i in circular)
+                        string message = "";
+                        string delimiter = "";
+                        foreach (int i in circular)
                         {
                             message += delimiter;
                             message += "module '" + proposedModules[i].Name + "'";
@@ -516,8 +585,7 @@ namespace com.espertech.esper.core.deploy
                 var ignoreList = new HashSet<int>();
                 while (ignoreList.Count < proposedModules.Count)
                 {
-
-                    // seconardy sort according to the order of listing
+                    // secondary sort according to the order of listing
                     ICollection<int> rootNodes = new SortedSet<int>(
                         new StandardComparer<int>((o1, o2) => -1*o1.CompareTo(o2)));
 
@@ -526,7 +594,7 @@ namespace com.espertech.esper.core.deploy
                     if (rootNodes.IsEmpty())
                     {
                         // circular dependency could cause this
-                        for (var i = 0; i < proposedModules.Count; i++)
+                        for (int i = 0; i < proposedModules.Count; i++)
                         {
                             if (!ignoreList.Contains(i))
                             {
@@ -536,7 +604,7 @@ namespace com.espertech.esper.core.deploy
                         }
                     }
 
-                    foreach (var root in rootNodes)
+                    foreach (int root in rootNodes)
                     {
                         ignoreList.Add(root);
                         reverseDeployList.Add(proposedModules[root]);
@@ -547,18 +615,19 @@ namespace com.espertech.esper.core.deploy
                 return new DeploymentOrder(reverseDeployList);
             }
         }
-    
-        public bool IsDeployed(String moduleName) {
-            using(_iLock.Acquire())
+
+        public bool IsDeployed(string moduleName)
+        {
+            using (_iLock.Acquire())
             {
-                var infos = _deploymentStateService.AllDeployments;
+                DeploymentInformation[] infos = _deploymentStateService.AllDeployments;
                 if (infos == null)
                 {
                     return false;
                 }
-                foreach (var info in infos)
+                foreach (DeploymentInformation info in infos)
                 {
-                    if ((info.Module.Name != null) && (info.Module.Name == moduleName))
+                    if ((info.Module.Name != null) && (info.Module.Name.Equals(moduleName)))
                     {
                         return info.State == DeploymentState.DEPLOYED;
                     }
@@ -566,190 +635,232 @@ namespace com.espertech.esper.core.deploy
                 return false;
             }
         }
-    
-        public DeploymentResult ReadDeploy(Stream stream, String moduleURI, String moduleArchive, Object userObject)
+
+        public DeploymentResult ReadDeploy(Stream stream, string moduleURI, string moduleArchive, Object userObject)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var module = EPLModuleUtil.ReadInternal(stream, moduleURI);
+                Module module = EPLModuleUtil.ReadInternal(stream, moduleURI);
                 return DeployQuick(module, moduleURI, moduleArchive, userObject);
             }
         }
-    
-        public DeploymentResult ReadDeploy(String resource, String moduleURI, String moduleArchive, Object userObject)
+
+        public DeploymentResult ReadDeploy(string resource, string moduleURI, string moduleArchive, Object userObject)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var module = Read(resource);
+                Module module = Read(resource);
                 return DeployQuick(module, moduleURI, moduleArchive, userObject);
             }
         }
-    
-        public DeploymentResult ParseDeploy(String eplModuleText)
+
+        public DeploymentResult ParseDeploy(string eplModuleText)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
                 return ParseDeploy(eplModuleText, null, null, null);
             }
         }
-    
-        public DeploymentResult ParseDeploy(String buffer, String moduleURI, String moduleArchive, Object userObject)
+
+        public DeploymentResult ParseDeploy(string buffer, string moduleURI, string moduleArchive, Object userObject)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var module = EPLModuleUtil.ParseInternal(buffer, moduleURI);
+                Module module = EPLModuleUtil.ParseInternal(buffer, moduleURI);
                 return DeployQuick(module, moduleURI, moduleArchive, userObject);
             }
         }
-    
-        public void Add(Module module, String assignedDeploymentId)
+
+        public void Add(Module module, string assignedDeploymentId)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
                 if (_deploymentStateService.GetDeployment(assignedDeploymentId) != null)
                 {
-                    throw new ArgumentException("Assigned deployment id '" + assignedDeploymentId +
-                                                "' is already in use");
+                    throw new ArgumentException(
+                        "Assigned deployment id '" + assignedDeploymentId + "' is already in use");
                 }
                 AddInternal(module, assignedDeploymentId);
             }
         }
-    
-        public String Add(Module module)
+
+        public string Add(Module module)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var deploymentId = _deploymentStateService.NextDeploymentId;
+                string deploymentId = _deploymentStateService.NextDeploymentId;
                 AddInternal(module, deploymentId);
                 return deploymentId;
             }
         }
-    
-        private void AddInternal(Module module, String deploymentId)
+
+        private void AddInternal(Module module, string deploymentId)
         {
-            var now = DateTimeOffsetHelper.Now(_timeZone);
+
             var desc = new DeploymentInformation(
-                deploymentId, module, now, now, new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+                deploymentId, module, DateTimeEx.GetInstance(_timeZone), DateTimeEx.GetInstance(_timeZone),
+                new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
             _deploymentStateService.AddUpdateDeployment(desc);
         }
-    
-        public DeploymentResult Deploy(String deploymentId, DeploymentOptions options)
+
+        public DeploymentResult Deploy(string deploymentId, DeploymentOptions options)
         {
-            using(_iLock.Acquire())
+            using (_iLock.Acquire())
             {
-                var info = _deploymentStateService.GetDeployment(deploymentId);
+                DeploymentInformation info = _deploymentStateService.GetDeployment(deploymentId);
                 if (info == null)
                 {
                     throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
                 }
                 if (info.State == DeploymentState.DEPLOYED)
                 {
-                    throw new DeploymentStateException("Module by deployment id '" + deploymentId +
-                                                       "' is already in deployed state");
+                    throw new DeploymentStateException(
+                        "Module by deployment id '" + deploymentId + "' is already in deployed state");
                 }
                 GetDeploymentOrder(Collections.SingletonList(info.Module), null);
                 return DeployInternal(info.Module, options, deploymentId, info.AddedDate);
             }
         }
-    
-        public void Remove(String deploymentId)
+
+        public void Remove(string deploymentId)
         {
             using (_iLock.Acquire())
             {
-                var info = _deploymentStateService.GetDeployment(deploymentId);
+                DeploymentInformation info = _deploymentStateService.GetDeployment(deploymentId);
                 if (info == null)
                 {
                     throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
                 }
                 if (info.State == DeploymentState.DEPLOYED)
                 {
-                    throw new DeploymentStateException("Deployment by id '" + deploymentId +
-                                                       "' is in deployed state, please undeploy first");
+                    throw new DeploymentStateException(
+                        "Deployment by id '" + deploymentId + "' is in deployed state, please undeploy first");
                 }
                 _deploymentStateService.Remove(deploymentId);
             }
         }
-    
-        private UndeploymentResult UndeployRemoveInternal(String deploymentId, UndeploymentOptions options)
+
+        private UndeploymentResult UndeployRemoveInternal(string deploymentId, UndeploymentOptions options)
         {
             using (_iLock.Acquire())
             {
-                var info = _deploymentStateService.GetDeployment(deploymentId);
+                DeploymentInformation info = _deploymentStateService.GetDeployment(deploymentId);
                 if (info == null)
                 {
                     throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
                 }
 
-                UndeploymentResult result = info.State == DeploymentState.DEPLOYED
-                    ? UndeployRemoveInternal(info, options)
-                    : new UndeploymentResult(deploymentId, Collections.GetEmptyList<DeploymentInformationItem>());
+                UndeploymentResult result;
+                if (info.State == DeploymentState.DEPLOYED)
+                {
+                    result = UndeployRemoveInternal(info, options);
+                }
+                else
+                {
+                    result = new UndeploymentResult(
+                        deploymentId, Collections.GetEmptyList<DeploymentInformationItem>());
+                }
                 _deploymentStateService.Remove(deploymentId);
                 return result;
             }
         }
 
-        private UndeploymentResult UndeployInternal(String deploymentId, UndeploymentOptions undeploymentOptions)
+        private UndeploymentResult UndeployInternal(string deploymentId, UndeploymentOptions undeploymentOptions)
         {
-            var info = _deploymentStateService.GetDeployment(deploymentId);
-            if (info == null) {
+            undeploymentOptions.GetDeploymentLockStrategy().Acquire(_eventProcessingRwLock);
+            try
+            {
+                return UndeployInternalLockTaken(deploymentId, undeploymentOptions);
+            }
+            finally
+            {
+                undeploymentOptions.GetDeploymentLockStrategy().Release(_eventProcessingRwLock);
+            }
+        }
+
+        private UndeploymentResult UndeployInternalLockTaken(
+            string deploymentId,
+            UndeploymentOptions undeploymentOptions)
+        {
+            DeploymentInformation info = _deploymentStateService.GetDeployment(deploymentId);
+            if (info == null)
+            {
                 throw new DeploymentNotFoundException("Deployment by id '" + deploymentId + "' could not be found");
             }
-            if (info.State == DeploymentState.UNDEPLOYED) {
-                throw new DeploymentStateException("Deployment by id '" + deploymentId + "' is already in undeployed state");
+            if (info.State == DeploymentState.UNDEPLOYED)
+            {
+                throw new DeploymentStateException(
+                    "Deployment by id '" + deploymentId + "' is already in undeployed state");
             }
 
-            var result = UndeployRemoveInternal(info, undeploymentOptions);
-            var updated = new DeploymentInformation(deploymentId, info.Module, info.AddedDate, DateTimeOffsetHelper.Now(_timeZone), new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
+            UndeploymentResult result = UndeployRemoveInternal(info, undeploymentOptions);
+            var updated = new DeploymentInformation(
+                deploymentId, info.Module, info.AddedDate, DateTimeEx.GetInstance(_timeZone),
+                new DeploymentInformationItem[0], DeploymentState.UNDEPLOYED);
             _deploymentStateService.AddUpdateDeployment(updated);
             return result;
         }
 
-        private UndeploymentResult UndeployRemoveInternal(DeploymentInformation info, UndeploymentOptions undeploymentOptions)
+        private UndeploymentResult UndeployRemoveInternal(
+            DeploymentInformation info,
+            UndeploymentOptions undeploymentOptions)
         {
             var reverted = new DeploymentInformationItem[info.Items.Length];
-            for (var i = 0; i < info.Items.Length; i++) {
+            for (int i = 0; i < info.Items.Length; i++)
+            {
                 reverted[i] = info.Items[info.Items.Length - 1 - i];
             }
 
             var revertedStatements = new List<DeploymentInformationItem>();
-            if (undeploymentOptions.IsDestroyStatements) {
-                var referencedTypes = new HashSet<String>();
+            if (undeploymentOptions.IsDestroyStatements())
+            {
+                var referencedTypes = new HashSet<string>();
 
                 Exception firstExceptionEncountered = null;
 
-                foreach (var item in reverted) {
-                    var statement = _epService.GetStatement(item.StatementName);
-                    if (statement == null) {
+                foreach (DeploymentInformationItem item in reverted)
+                {
+                    EPStatement statement = _epService.GetStatement(item.StatementName);
+                    if (statement == null)
+                    {
                         Log.Debug("Deployment id '" + info.DeploymentId + "' statement name '" + item + "' not found");
                         continue;
                     }
                     referencedTypes.AddAll(_statementEventTypeRef.GetTypesForStatementName(statement.Name));
-                    if (statement.IsDisposed) {
+                    if (statement.IsDisposed)
+                    {
                         continue;
                     }
-                    try {
+                    try
+                    {
                         statement.Dispose();
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         Log.Warn("Unexpected exception destroying statement: " + ex.Message, ex);
-                        if (firstExceptionEncountered == null) {
+                        if (firstExceptionEncountered == null)
+                        {
                             firstExceptionEncountered = ex;
                         }
                     }
                     revertedStatements.Add(item);
                 }
-                EPLModuleUtil.UndeployTypes(referencedTypes, _statementEventTypeRef, _eventAdapterService, _filterService);
+                EPLModuleUtil.UndeployTypes(
+                    referencedTypes, _statementEventTypeRef, _eventAdapterService, _filterService);
                 revertedStatements.Reverse();
 
-                if (firstExceptionEncountered != null && _undeployRethrowPolicy == ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST) {
+                if (firstExceptionEncountered != null &&
+                    _undeployRethrowPolicy ==
+                    ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST)
+                {
                     throw firstExceptionEncountered;
                 }
             }
 
             return new UndeploymentResult(info.DeploymentId, revertedStatements);
         }
-        
-        private DeploymentResult DeployQuick(Module module, String moduleURI, String moduleArchive, Object userObject)
+
+        private DeploymentResult DeployQuick(Module module, string moduleURI, string moduleArchive, Object userObject)
         {
             module.Uri = moduleURI;
             module.ArchiveName = moduleArchive;
@@ -758,4 +869,4 @@ namespace com.espertech.esper.core.deploy
             return Deploy(module, null);
         }
     }
-}
+} // end of namespace

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
@@ -15,7 +13,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.plugin;
 using com.espertech.esper.util;
@@ -27,13 +24,14 @@ namespace com.espertech.esper.epl.parse
         public static ExprNode TryResolveAsAggregation(
             EngineImportService engineImportService,
             bool distinct,
-            String functionName,
+            string functionName,
             LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> plugInAggregations,
-            String engineURI)
+            string engineURI)
         {
             try
             {
-                AggregationFunctionFactory aggregationFactory = engineImportService.ResolveAggregationFactory(functionName);
+                AggregationFunctionFactory aggregationFactory =
+                    engineImportService.ResolveAggregationFactory(functionName);
                 return new ExprPlugInAggNode(distinct, aggregationFactory, functionName);
             }
             catch (EngineImportUndefinedException)
@@ -53,13 +51,14 @@ namespace com.espertech.esper.epl.parse
                 PlugInAggregationMultiFunctionFactory factory = plugInAggregations.Map.Get(config);
                 if (factory == null)
                 {
-                    factory = TypeHelper.Instantiate<PlugInAggregationMultiFunctionFactory>(
-                        config.MultiFunctionFactoryClassName);
+                    factory = (PlugInAggregationMultiFunctionFactory) TypeHelper.Instantiate(
+                        typeof (PlugInAggregationMultiFunctionFactory), config.MultiFunctionFactoryClassName,
+                        engineImportService.GetClassForNameProvider());
                     plugInAggregations.Map.Put(config, factory);
                 }
                 factory.AddAggregationFunction(
                     new PlugInAggregationMultiFunctionDeclarationContext(
-                        functionName.ToLower(), distinct, engineURI, config));
+                        functionName.ToLowerInvariant(), distinct, engineURI, config));
                 return new ExprPlugInAggMultiFunctionNode(distinct, config, factory, functionName);
             }
 
@@ -67,4 +66,4 @@ namespace com.espertech.esper.epl.parse
             return engineImportService.ResolveAggExtendedBuiltin(functionName, distinct);
         }
     }
-}
+} // end of namespace

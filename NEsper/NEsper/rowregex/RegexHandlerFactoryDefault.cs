@@ -20,7 +20,7 @@ namespace com.espertech.esper.rowregex
 {
 	public class RegexHandlerFactoryDefault : RegexHandlerFactory
     {
-	    public EventRowRegexNFAViewFactory MakeViewFactory(ViewFactoryChain viewFactoryChain, MatchRecognizeSpec matchRecognizeSpec, AgentInstanceContext agentInstanceContext, bool isUnbound, Attribute[] annotations, ConfigurationEngineDefaults.MatchRecognize matchRecognizeConfigs)
+	    public EventRowRegexNFAViewFactory MakeViewFactory(ViewFactoryChain viewFactoryChain, MatchRecognizeSpec matchRecognizeSpec, AgentInstanceContext agentInstanceContext, bool isUnbound, Attribute[] annotations, ConfigurationEngineDefaults.MatchRecognizeConfig matchRecognizeConfigs)
         {
 	        return new EventRowRegexNFAViewFactory(viewFactoryChain, matchRecognizeSpec, agentInstanceContext, isUnbound, annotations, matchRecognizeConfigs);
 	    }

@@ -27,21 +27,26 @@ namespace com.espertech.esper.epl.expression.funcs
     /// Represents the case-when-then-else control flow function is an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprCaseNode 
+    public class ExprCaseNode
         : ExprNodeBase
         , ExprEvaluator
         , ExprEvaluatorTypableReturn
     {
         private readonly bool _isCase2;
         private Type _resultType;
-        [NonSerialized] private DataMap _mapResultType;
+        [NonSerialized]
+        private DataMap _mapResultType;
         private bool _isNumericResult;
         private bool _mustCoerce;
-    
-        [NonSerialized] private Coercer _coercer;
-        [NonSerialized] private IList<UniformPair<ExprEvaluator>> _whenThenNodeList;
-        [NonSerialized] private ExprEvaluator _optionalCompareExprNode;
-        [NonSerialized] private ExprEvaluator _optionalElseExprNode;
+
+        [NonSerialized]
+        private Coercer _coercer;
+        [NonSerialized]
+        private IList<UniformPair<ExprEvaluator>> _whenThenNodeList;
+        [NonSerialized]
+        private ExprEvaluator _optionalCompareExprNode;
+        [NonSerialized]
+        private ExprEvaluator _optionalElseExprNode;
 
         /// <summary>
         /// Ctor.
@@ -70,11 +75,12 @@ namespace com.espertech.esper.epl.expression.funcs
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             CaseAnalysis analysis = AnalyzeCase();
-    
+
             _whenThenNodeList = new List<UniformPair<ExprEvaluator>>();
             foreach (UniformPair<ExprNode> pair in analysis.WhenThenNodeList)
             {
-                if (!_isCase2) {
+                if (!_isCase2)
+                {
                     if (pair.First.ExprEvaluator.ReturnType.GetBoxedType() != typeof(bool?))
                     {
                         throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
@@ -82,63 +88,75 @@ namespace com.espertech.esper.epl.expression.funcs
                 }
                 _whenThenNodeList.Add(new UniformPair<ExprEvaluator>(pair.First.ExprEvaluator, pair.Second.ExprEvaluator));
             }
-            if (analysis.OptionalCompareExprNode != null) {
+            if (analysis.OptionalCompareExprNode != null)
+            {
                 _optionalCompareExprNode = analysis.OptionalCompareExprNode.ExprEvaluator;
             }
-            if (analysis.OptionalElseExprNode != null) {
+            if (analysis.OptionalElseExprNode != null)
+            {
                 _optionalElseExprNode = analysis.OptionalElseExprNode.ExprEvaluator;
             }
-    
+
             if (_isCase2)
             {
                 ValidateCaseTwo();
             }
-    
+
             // Determine type of each result (then-node and else node) child node expression
             IList<Type> childTypes = new List<Type>();
             IList<IDictionary<String, Object>> childMapTypes = new List<IDictionary<String, Object>>();
             foreach (UniformPair<ExprEvaluator> pair in _whenThenNodeList)
             {
-                if (pair.Second is ExprEvaluatorTypableReturn) {
-                    var typableReturn = (ExprEvaluatorTypableReturn) pair.Second;
+                if (pair.Second is ExprEvaluatorTypableReturn)
+                {
+                    var typableReturn = (ExprEvaluatorTypableReturn)pair.Second;
                     var rowProps = typableReturn.RowProperties;
-                    if (rowProps != null) {
+                    if (rowProps != null)
+                    {
                         childMapTypes.Add(rowProps);
                         continue;
                     }
                 }
                 childTypes.Add(pair.Second.ReturnType);
-    
+
             }
             if (_optionalElseExprNode != null)
             {
-                if (_optionalElseExprNode is ExprEvaluatorTypableReturn) {
-                    var typableReturn = (ExprEvaluatorTypableReturn) _optionalElseExprNode;
+                if (_optionalElseExprNode is ExprEvaluatorTypableReturn)
+                {
+                    var typableReturn = (ExprEvaluatorTypableReturn)_optionalElseExprNode;
                     var rowProps = typableReturn.RowProperties;
-                    if (rowProps != null) {
+                    if (rowProps != null)
+                    {
                         childMapTypes.Add(rowProps);
                     }
-                    else {
+                    else
+                    {
                         childTypes.Add(_optionalElseExprNode.ReturnType);
                     }
                 }
-                else {
+                else
+                {
                     childTypes.Add(_optionalElseExprNode.ReturnType);
                 }
             }
-    
-            if (!childMapTypes.IsEmpty() && !childTypes.IsEmpty()) {
+
+            if (!childMapTypes.IsEmpty() && !childTypes.IsEmpty())
+            {
                 String message = "Case node 'when' expressions require that all results either return a single value or a Map-type (new-operator) value";
                 String check;
                 int count = -1;
-                foreach (UniformPair<ExprEvaluator> pair in _whenThenNodeList) {
+                foreach (UniformPair<ExprEvaluator> pair in _whenThenNodeList)
+                {
                     count++;
-                    if (pair.Second.ReturnType != typeof(DataMap) && pair.Second.ReturnType != null) {
+                    if (pair.Second.ReturnType != typeof(DataMap) && pair.Second.ReturnType != null)
+                    {
                         check = ", check when-condition number " + count;
                         throw new ExprValidationException(message + check);
                     }
                 }
-                if (_optionalElseExprNode != null) {
+                if (_optionalElseExprNode != null)
+                {
                     if (_optionalElseExprNode.ReturnType != typeof(DataMap) && _optionalElseExprNode.ReturnType != null)
                     {
                         check = ", check the else-condition";
@@ -147,10 +165,12 @@ namespace com.espertech.esper.epl.expression.funcs
                 }
                 throw new ExprValidationException(message);
             }
-    
-            if (childMapTypes.IsEmpty()) {
+
+            if (childMapTypes.IsEmpty())
+            {
                 // Determine common denominator type
-                try {
+                try
+                {
                     _resultType = TypeHelper.GetCommonCoercionType(childTypes);
                     if (_resultType.IsNumeric())
                     {
@@ -162,13 +182,15 @@ namespace com.espertech.esper.epl.expression.funcs
                     throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
                 }
             }
-            else {
+            else
+            {
                 _mapResultType = childMapTypes[0];
                 for (int i = 1; i < childMapTypes.Count; i++)
                 {
                     DataMap other = childMapTypes[i];
                     String messageEquals = MapEventType.IsDeepEqualsProperties("Case-when number " + i, _mapResultType, other);
-                    if (messageEquals != null) {
+                    if (messageEquals != null)
+                    {
                         throw new ExprValidationException("Incompatible case-when return types by new-operator in case-when number " + i + ": " + messageEquals);
                     }
                 }
@@ -232,20 +254,22 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public Object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
-            var map = (IDictionary<String, Object>) Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+            var map = (IDictionary<String, Object>)Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
             var row = new Object[map.Count];
             int index = -1;
-            foreach (var entry in _mapResultType) {
+            foreach (var entry in _mapResultType)
+            {
                 index++;
                 row[index] = map.Get(entry.Key);
             }
             return row;
         }
-    
-        public Object[][] EvaluateTypableMulti(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public Object[][] EvaluateTypableMulti(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             return null;    // always single-row
         }
-    
+
         public override bool EqualsNode(ExprNode node)
         {
             var otherExprCaseNode = node as ExprCaseNode;
@@ -253,22 +277,22 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 return false;
             }
-    
+
             return _isCase2 == otherExprCaseNode._isCase2;
         }
-    
+
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             CaseAnalysis analysis;
             try
             {
-                 analysis = AnalyzeCase();
+                analysis = AnalyzeCase();
             }
             catch (ExprValidationException e)
             {
                 throw new Exception(e.Message, e);
             }
-    
+
             writer.Write("case");
             if (_isCase2)
             {
@@ -305,7 +329,7 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 throw new ExprValidationException("Case node must have at least 2 parameters");
             }
-    
+
             IList<UniformPair<ExprNode>> whenThenNodeList = new List<UniformPair<ExprNode>>();
             int numWhenThen = children.Length >> 1;
             for (int i = 0; i < numWhenThen; i++)
@@ -321,8 +345,9 @@ namespace com.espertech.esper.epl.expression.funcs
             }
             return new CaseAnalysis(whenThenNodeList, null, optionalElseExprNode);
         }
-    
-        private CaseAnalysis AnalyzeCaseTwo() {
+
+        private CaseAnalysis AnalyzeCaseTwo()
+        {
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
             //
@@ -331,9 +356,9 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 throw new ExprValidationException("Case node must have at least 3 parameters");
             }
-    
+
             ExprNode optionalCompareExprNode = children[0];
-    
+
             IList<UniformPair<ExprNode>> whenThenNodeList = new List<UniformPair<ExprNode>>();
             int numWhenThen = (children.Length - 1) / 2;
             for (int i = 0; i < numWhenThen; i++)
@@ -347,7 +372,7 @@ namespace com.espertech.esper.epl.expression.funcs
             }
             return new CaseAnalysis(whenThenNodeList, optionalCompareExprNode, optionalElseExprNode);
         }
-    
+
         private void ValidateCaseTwo()
         {
             // validate we can compare result types
@@ -357,11 +382,12 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 comparedTypes.Add(pair.First.ReturnType);
             }
-    
+
             // Determine common denominator type
-            try {
+            try
+            {
                 Type coercionType = TypeHelper.GetCommonCoercionType(comparedTypes);
-    
+
                 // Determine if we need to coerce numbers when one type doesn't match any other type
                 if (coercionType.IsNumeric())
                 {
@@ -384,18 +410,18 @@ namespace com.espertech.esper.epl.expression.funcs
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
         }
-    
+
         private Object EvaluateCaseSyntax1(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             // Case 1 expression example:
             //      case when a=b then x [when c=d then y...] [else y]
-    
+
             Object caseResult = null;
             bool matched = false;
             foreach (UniformPair<ExprEvaluator> p in _whenThenNodeList)
             {
-                var whenResult = (bool?) p.First.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
-    
+                var whenResult = (bool?)p.First.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+
                 // If the 'when'-expression returns true
                 if (whenResult ?? false)
                 {
@@ -404,31 +430,31 @@ namespace com.espertech.esper.epl.expression.funcs
                     break;
                 }
             }
-    
+
             if ((!matched) && (_optionalElseExprNode != null))
             {
                 caseResult = _optionalElseExprNode.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
             }
-    
+
             if (caseResult == null)
             {
                 return null;
             }
-    
+
             if ((caseResult.GetType() != _resultType) && (_isNumericResult))
             {
                 return CoercerFactory.CoerceBoxed(caseResult, _resultType);
             }
             return caseResult;
         }
-    
+
         private Object EvaluateCaseSyntax2(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
 
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
-    
+
             Object checkResult = _optionalCompareExprNode.Evaluate(evaluateParams);
             Object caseResult = null;
             bool matched = false;
@@ -436,30 +462,31 @@ namespace com.espertech.esper.epl.expression.funcs
             foreach (UniformPair<ExprEvaluator> p in _whenThenNodeList)
             {
                 var whenResult = p.First.Evaluate(evaluateParams);
-                if (Compare(checkResult, whenResult)) {
+                if (Compare(checkResult, whenResult))
+                {
                     caseResult = p.Second.Evaluate(evaluateParams);
                     matched = true;
                     break;
                 }
             }
-    
+
             if ((!matched) && (_optionalElseExprNode != null))
             {
                 caseResult = _optionalElseExprNode.Evaluate(evaluateParams);
             }
-    
+
             if (caseResult == null)
             {
                 return null;
             }
-    
+
             if ((caseResult.GetType() != _resultType) && (_isNumericResult))
             {
                 return CoercerFactory.CoerceBoxed(caseResult, _resultType);
             }
             return caseResult;
         }
-    
+
         private bool Compare(Object leftResult, Object rightResult)
         {
             if (leftResult == null)
@@ -470,7 +497,7 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 return false;
             }
-    
+
             if (!_mustCoerce)
             {
                 return leftResult.Equals(rightResult);
@@ -482,8 +509,9 @@ namespace com.espertech.esper.epl.expression.funcs
                 return left.Equals(right);
             }
         }
-    
-        private CaseAnalysis AnalyzeCase() {
+
+        private CaseAnalysis AnalyzeCase()
+        {
             if (_isCase2)
             {
                 return AnalyzeCaseTwo();
@@ -493,7 +521,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 return AnalyzeCaseOne();
             }
         }
-    
+
         public class CaseAnalysis
         {
             public CaseAnalysis(IList<UniformPair<ExprNode>> whenThenNodeList, ExprNode optionalCompareExprNode, ExprNode optionalElseExprNode)
@@ -510,5 +538,5 @@ namespace com.espertech.esper.epl.expression.funcs
             public ExprNode OptionalElseExprNode { get; private set; }
         }
     }
-    
+
 }

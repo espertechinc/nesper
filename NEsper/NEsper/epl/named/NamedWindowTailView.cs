@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
@@ -15,7 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.timer;
@@ -40,7 +38,7 @@ namespace com.espertech.esper.epl.named
             bool prioritized,
             bool parentBatchWindow,
             TimeSourceService timeSourceService,
-            ConfigurationEngineDefaults.Threading threadingConfig)
+            ConfigurationEngineDefaults.ThreadingConfig threadingConfig)
         {
             EventType = eventType;
             NamedWindowMgmtService = namedWindowMgmtService;
@@ -78,7 +76,7 @@ namespace com.espertech.esper.epl.named
 
         public TimeSourceService TimeSourceService { get; protected internal set; }
 
-        public ConfigurationEngineDefaults.Threading ThreadingConfig { get; protected internal set; }
+        public ConfigurationEngineDefaults.ThreadingConfig ThreadingConfig { get; protected internal set; }
 
         public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc)
         {
@@ -89,23 +87,23 @@ namespace com.espertech.esper.epl.named
                         "GetEnumerator not supported on named windows that have a context attached and when that context is not the same as the consuming statement's context");
                 },
                 RemoveConsumer);
-    
+
             // Construct consumer view, allow a callback to this view to remove the consumer
             var audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) != null;
             var consumerView = new NamedWindowConsumerView(
                 ExprNodeUtility.GetEvaluators(consumerDesc.FilterList),
-                consumerDesc.OptPropertyEvaluator, 
-                EventType, 
-                consumerCallback, 
-                consumerDesc.AgentInstanceContext, 
+                consumerDesc.OptPropertyEvaluator,
+                EventType,
+                consumerCallback,
+                consumerDesc.AgentInstanceContext,
                 audit);
-    
+
             // Keep a list of consumer views per statement to accomodate joins and subqueries
             IList<NamedWindowConsumerView> viewsPerStatements = _consumersNonContext.Get(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle);
             if (viewsPerStatements == null)
             {
                 viewsPerStatements = new CopyOnWriteList<NamedWindowConsumerView>();
-    
+
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
                 // without the engine lock
                 var newConsumers = NamedWindowUtil.CreateConsumerMap(IsPrioritized);
@@ -114,10 +112,10 @@ namespace com.espertech.esper.epl.named
                 _consumersNonContext = newConsumers;
             }
             viewsPerStatements.Add(consumerView);
-    
+
             return consumerView;
         }
-    
+
         /// <summary>Called by the consumer view to indicate it was stopped or destroyed, such that the consumer can be deregistered and further dispatches disregard this consumer. </summary>
         /// <param name="namedWindowConsumerView">is the consumer representative view</param>
         public void RemoveConsumer(NamedWindowConsumerView namedWindowConsumerView)

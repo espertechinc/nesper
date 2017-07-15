@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.spec
         /// <param name="windowName">the window name</param>
         /// <param name="viewSpecs">the view definitions</param>
         /// <param name="streamSpecOptions">options such as retain-union etc</param>
-        /// <param name="insert">true for insert-info</param>
+        /// <param name="insert">true for insert-INFO</param>
         /// <param name="insertFilter">optional filter expression</param>
         /// <param name="columns">list of columns, if using column syntax</param>
         /// <param name="asEventTypeName">Name of as event type.</param>

@@ -215,7 +215,7 @@ namespace com.espertech.esper.view.internals
                     }
                 }
             }
-                // post remove stream to all other views
+            // post remove stream to all other views
             else
             {
                 if (oldEvents != null)

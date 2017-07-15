@@ -10,7 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -18,12 +18,14 @@ namespace com.espertech.esper.epl.join.util
 {
     public class QueryPlanIndexHookUtil
     {
-        public static QueryPlanIndexHook GetHook(Attribute[] annotations)
+        public static QueryPlanIndexHook GetHook(Attribute[] annotations, EngineImportService engineImportService)
         {
             try
             {
-                return (QueryPlanIndexHook) TypeHelper.GetAnnotationHook(
-                        annotations, HookType.INTERNAL_QUERY_PLAN, typeof (QueryPlanIndexHook), null);
+                return
+                    (QueryPlanIndexHook)
+                        TypeHelper.GetAnnotationHook(
+                            annotations, HookType.INTERNAL_QUERY_PLAN, typeof (QueryPlanIndexHook), engineImportService);
             }
             catch (ExprValidationException e)
             {
@@ -31,4 +33,4 @@ namespace com.espertech.esper.epl.join.util
             }
         }
     }
-}
+} // end of namespace

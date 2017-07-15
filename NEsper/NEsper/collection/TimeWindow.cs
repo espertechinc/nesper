@@ -122,7 +122,7 @@ namespace com.espertech.esper.collection
         {
             if (_reverseIndex == null)
             {
-                throw new UnsupportedOperationException("Time window does not accept event removal");
+                throw new UnsupportedOperationException("TimeInMillis window does not accept event removal");
             }
             var pair = _reverseIndex.Get(theEvent);
             if (pair != null)

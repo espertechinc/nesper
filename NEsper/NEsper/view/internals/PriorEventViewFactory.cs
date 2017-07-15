@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,63 +16,70 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.prior;
 
 namespace com.espertech.esper.view.internals
 {
     /// <summary>
-    /// Factory for making <seealso cref="PriorEventView"/> instances.
+    /// Factory for making <seealso cref="PriorEventView" /> instances.
     /// </summary>
     public class PriorEventViewFactory : ViewFactory
     {
-        private EventType _eventType;
-    
-        /// <summary>unbound to indicate the we are not receiving remove stream events (unbound stream, stream without child views) therefore must use a different buffer. </summary>
+        /// <summary>
+        /// unbound to indicate the we are not receiving remove stream events (unbound stream, stream without child
+        /// views) therefore must use a different buffer.
+        /// </summary>
         private bool _isUnbound;
-    
+        private EventType _eventType;
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            IList<Object> viewParameters = ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters);
-            if (viewParameters.Count != 1)
+            if (expressionParameters.Count != 1)
             {
                 throw new ViewParameterException("View requires a single parameter indicating unbound or not");
             }
-            _isUnbound = (bool) viewParameters[0];
+            _isUnbound = (bool) ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters[0]);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
         }
-    
-        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext) {
+
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
             return new PriorEventView(agentInstanceViewFactoryContext.PriorViewUpdatedCollection);
         }
-    
-        public ViewUpdatedCollection MakeViewUpdatedCollection(IDictionary<int, IList<ExprPriorNode>> callbacksPerIndex, int agentInstanceId) {
-    
+
+        public ViewUpdatedCollection MakeViewUpdatedCollection(
+            IDictionary<int, IList<ExprPriorNode>> callbacksPerIndex,
+            int agentInstanceId)
+        {
             if (callbacksPerIndex.IsEmpty())
             {
                 throw new IllegalStateException("No resources requested");
             }
-    
+
             // Construct an array of requested prior-event indexes (such as 10th prior event, 8th prior = {10, 8})
-            int[] requested = new int[callbacksPerIndex.Count];
+            var requested = new int[callbacksPerIndex.Count];
             int count = 0;
             foreach (int reqIndex in callbacksPerIndex.Keys)
             {
                 requested[count++] = reqIndex;
             }
-    
+
             // For unbound streams the buffer is strictly rolling new events
             if (_isUnbound)
             {
                 return new PriorEventBufferUnbound(callbacksPerIndex.Keys.Last());
             }
-            // For bound streams (with views posting old and new data), and if only one prior index requested
             else if (requested.Length == 1)
             {
+                // For bound streams (with views posting old and new data), and if only one prior index requested
                 return new PriorEventBufferSingle(requested[0]);
             }
             else
@@ -90,7 +96,7 @@ namespace com.espertech.esper.view.internals
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return false;
         }
@@ -100,4 +106,4 @@ namespace com.espertech.esper.view.internals
             get { return "Prior-Event"; }
         }
     }
-}
+} // end of namespace

@@ -12,7 +12,7 @@ using com.espertech.esper.view.internals;
 namespace com.espertech.esper.epl.join.@base
 {
     /// <summary>
-    /// Implements a method for pre-loading (initializing) join that does not return any events.
+    /// : a method for pre-loading (initializing) join that does not return any events.
     /// </summary>
     public class JoinPreloadMethodNull : JoinPreloadMethod
     {

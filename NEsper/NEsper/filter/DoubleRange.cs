@@ -13,35 +13,35 @@ namespace com.espertech.esper.filter
     /// <summary>Holds a range of double values with a minimum (start) value and a maximum (end) value. </summary>
     public sealed class DoubleRange : Range
     {
-        private readonly int hashCode;
+        private readonly int _hashCode;
 
         /// <summary>Constructor - takes range endpoints. </summary>
         /// <param name="min">is the low endpoint</param>
         /// <param name="max">is the high endpoint</param>
         public DoubleRange(double? min, double? max)
         {
-            this.Min = min;
-            this.Max = max;
+            Min = min;
+            Max = max;
 
             if ((min != null) && (max != null))
             {
                 if (min > max)
                 {
-                    this.Max = min;
-                    this.Min = max;
+                    Max = min;
+                    Min = max;
                 }
             }
 
-            hashCode = 7;
+            _hashCode = 7;
             if (min != null)
             {
-                hashCode = 31*hashCode;
-                hashCode ^= min.GetHashCode();
+                _hashCode *= 31;
+                _hashCode ^= min.GetHashCode();
             }
             if (max != null)
             {
-                hashCode = 31*hashCode;
-                hashCode ^= max.GetHashCode();
+                _hashCode *= 31;
+                _hashCode ^= max.GetHashCode();
             }
         }
 
@@ -83,15 +83,16 @@ namespace com.espertech.esper.filter
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (DoubleRange)) return false;
-            return Equals((DoubleRange) obj);
+            if (obj.GetType() != typeof(DoubleRange)) return false;
+            return Equals((DoubleRange)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((Min.HasValue ? Min.Value.GetHashCode() : 0)*397) ^ (Max.HasValue ? Max.Value.GetHashCode() : 0);
+                return _hashCode;
+                //return ((Min.HasValue ? Min.Value.GetHashCode() : 0) * 397) ^ (Max.HasValue ? Max.Value.GetHashCode() : 0);
             }
         }
 

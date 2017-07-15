@@ -189,7 +189,7 @@ namespace com.espertech.esper.schedule
             _service.Add(10000, _callbacks[1], _slots[0][1]);
             _service.Add(15000, _callbacks[2], _slots[1][0]);
 
-            // Now send a times reflecting various seconds later and check who got a callback
+            // GetInstance send a times reflecting various seconds later and check who got a callback
             _service.Time = startTime + 1000;
             SupportScheduleCallback.SetCallbackOrderNum(0);
             EvaluateSchedule();

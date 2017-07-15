@@ -40,14 +40,14 @@ namespace com.espertech.esper.filter
 
         public override EventEvaluator Get(Object filterConstant)
         {
-            var keyValues = (MultiKeyUntyped) filterConstant;
+            var keyValues = (MultiKeyUntyped)filterConstant;
             return _evaluatorsMap.Get(keyValues);
         }
 
         public override void Put(Object filterConstant, EventEvaluator evaluator)
         {
             // Store evaluator keyed to set of values
-            var keys = (MultiKeyUntyped) filterConstant;
+            var keys = (MultiKeyUntyped)filterConstant;
 
             // make sure to remove the old evaluator for this constant
             var oldEvaluator = _evaluatorsMap.Push(keys, evaluator);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.filter
 
         public override bool Remove(Object filterConstant)
         {
-            var keys = (MultiKeyUntyped) filterConstant;
+            var keys = (MultiKeyUntyped)filterConstant;
 
             // remove the mapping of value set to evaluator
             var eval = _evaluatorsMap.Delete(keys);

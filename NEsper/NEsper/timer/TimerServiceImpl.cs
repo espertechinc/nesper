@@ -21,7 +21,7 @@ namespace com.espertech.esper.timer
 
     public class TimerServiceImpl : TimerService
     {
-        private ITimer _timer ;
+        private ITimer _timer;
         private TimerCallback _timerCallback;
         private EPLTimerTask _timerTask;
         private bool _timerTaskCancelled;
@@ -51,9 +51,12 @@ namespace com.espertech.esper.timer
             get { return _timerTask.EnableStats; }
             set
             {
-                if (value) {
+                if (value)
+                {
                     EnableStats();
-                } else {
+                }
+                else
+                {
                     DisableStats();
                 }
             }
@@ -112,7 +115,7 @@ namespace com.espertech.esper.timer
 
         private void OnTimerElapsed(Object state)
         {
-            if (! _timerTaskCancelled)
+            if (!_timerTaskCancelled)
             {
                 if (_timerCallback != null)
                 {

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -17,36 +16,44 @@ using com.espertech.esper.epl.@join.table;
 namespace com.espertech.esper.epl.lookup
 {
     /// <summary>
-    /// Index lookup strategy for subqueries for in-keyword single-index sided.
+    ///     Index lookup strategy for subqueries for in-keyword single-index sided.
     /// </summary>
     public class SubordInKeywordMultiTableLookupStrategyNW : SubordTableLookupStrategy
     {
-        /// <summary>Index to look up in. </summary>
-        protected readonly PropertyIndexedEventTableSingle[] Indexes;
-    
-        protected readonly ExprEvaluator Evaluator;
-    
-        public LookupStrategyDesc StrategyDesc { get; protected internal set; }
-    
-        /// <summary>Ctor. </summary>
-        public SubordInKeywordMultiTableLookupStrategyNW(ExprEvaluator evaluator, EventTable[] tables, LookupStrategyDesc strategyDesc)
+        private readonly ExprEvaluator _evaluator;
+
+        /// <summary>Index to look up in.</summary>
+        private readonly PropertyIndexedEventTableSingle[] _indexes;
+
+        private readonly LookupStrategyDesc _strategyDesc;
+
+        public SubordInKeywordMultiTableLookupStrategyNW(
+            ExprEvaluator evaluator,
+            EventTable[] tables,
+            LookupStrategyDesc strategyDesc)
         {
-            Evaluator = evaluator;
-            Indexes = new PropertyIndexedEventTableSingle[tables.Length];
-            for (int i = 0; i < tables.Length; i++) {
-                Indexes[i] = (PropertyIndexedEventTableSingle) tables[i];
+            _evaluator = evaluator;
+            _indexes = new PropertyIndexedEventTableSingle[tables.Length];
+            for (int i = 0; i < tables.Length; i++)
+            {
+                _indexes[i] = (PropertyIndexedEventTableSingle) tables[i];
             }
-            StrategyDesc = strategyDesc;
+            _strategyDesc = strategyDesc;
         }
-    
+
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
-            return InKeywordTableLookupUtil.MultiIndexLookup(Evaluator, eventsPerStream, context, Indexes);
+            return InKeywordTableLookupUtil.MultiIndexLookup(_evaluator, eventsPerStream, context, _indexes);
         }
-    
-        public String ToQueryPlan()
+
+        public LookupStrategyDesc StrategyDesc
+        {
+            get { return _strategyDesc; }
+        }
+
+        public string ToQueryPlan()
         {
             return GetType().Name;
         }
     }
-}
+} // end of namespace

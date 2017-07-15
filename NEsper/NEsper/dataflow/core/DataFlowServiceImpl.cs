@@ -311,8 +311,11 @@ namespace com.espertech.esper.dataflow.core
             // determine build order of operators
             ICollection<int> operatorBuildOrder = AnalyzeBuildOrder(operatorDependencies);
 
+            // assure variables
+            servicesContext.VariableService.SetLocalVersion();
+
             // instantiate operators
-            IDictionary<int, object> operators = InstantiateOperators(operatorMetadata, desc, options, servicesContext.EngineImportService);
+            IDictionary<int, object> operators = InstantiateOperators(operatorMetadata, desc, options, statementContext);
 
             // Build graph that references port numbers (port number is simply the method offset number or to-be-generated slot in the list)
             var runtimeEventSender = (EPRuntimeEventSender)_epService.EPRuntime;
@@ -362,37 +365,53 @@ namespace com.espertech.esper.dataflow.core
             }
 
             bool auditStates = AuditEnum.DATAFLOW_TRANSITION.GetAudit(statementContext.Annotations) != null;
-            return new EPDataFlowInstanceImpl(servicesContext.EngineURI, statementContext.StatementName, auditStates, dataFlowName, options.GetDataFlowInstanceUserObject(), options.GetDataFlowInstanceId(), EPDataFlowState.INSTANTIATED, sourceRunnables, operators, operatorBuildOrder, startDesc.StatisticsProvider, options.ParametersURIs);
+            return new EPDataFlowInstanceImpl(
+                servicesContext.EngineURI, statementContext.StatementName, auditStates, dataFlowName,
+                options.GetDataFlowInstanceUserObject(), options.GetDataFlowInstanceId(), EPDataFlowState.INSTANTIATED,
+                sourceRunnables, operators, operatorBuildOrder, startDesc.StatisticsProvider, options.ParametersURIs,
+                statementContext.EngineImportService);
         }
 
-        private static IDictionary<String, EventType> ResolveTypes(CreateDataFlowDesc desc, StatementContext statementContext, EPServicesContext servicesContext)
+        private static IDictionary<String, EventType> ResolveTypes(
+            CreateDataFlowDesc desc,
+            StatementContext statementContext,
+            EPServicesContext servicesContext)
         {
             var types = new Dictionary<String, EventType>();
             foreach (CreateSchemaDesc spec in desc.Schemas)
             {
-                EventType eventType = EventTypeUtility.CreateNonVariantType(true, spec, statementContext.Annotations, statementContext.ConfigSnapshot,
-                                    statementContext.EventAdapterService, servicesContext.EngineImportService);
+                EventType eventType = EventTypeUtility.CreateNonVariantType(
+                    true, spec, statementContext.Annotations, statementContext.ConfigSnapshot,
+                    statementContext.EventAdapterService, servicesContext.EngineImportService);
                 types.Put(spec.SchemaName, eventType);
             }
             return types;
         }
 
-        private IDictionary<int, object> InstantiateOperators(IDictionary<int, OperatorMetadataDescriptor> operatorClasses,
-                                                              CreateDataFlowDesc desc,
-                                                              EPDataFlowInstantiationOptions options,
-                                                              EngineImportService engineImportService)
+        private IDictionary<int, object> InstantiateOperators(
+            IDictionary<int, OperatorMetadataDescriptor> operatorClasses,
+            CreateDataFlowDesc desc,
+            EPDataFlowInstantiationOptions options,
+            StatementContext statementContext)
         {
             var operators = new Dictionary<int, object>();
-            foreach (var operatorEntry in operatorClasses)
-            {
-                var @operator = InstantiateOperator(desc.GraphName, operatorEntry.Key, operatorEntry.Value, desc.Operators[operatorEntry.Key], options, engineImportService);
+            var exprValidationContext = ExprNodeUtility.GetExprValidationContextStatementOnly(statementContext);
+
+            foreach (var operatorEntry in operatorClasses) {
+                var @operator = InstantiateOperator(desc.GraphName, operatorEntry.Key, operatorEntry.Value, desc.Operators[operatorEntry.Key], options, exprValidationContext);
                 operators.Put(operatorEntry.Key, @operator);
             }
 
             return operators;
         }
 
-        private Object InstantiateOperator(String dataFlowName, int operatorNum, OperatorMetadataDescriptor desc, GraphOperatorSpec graphOperator, EPDataFlowInstantiationOptions options, EngineImportService engineImportService)
+        private Object InstantiateOperator(
+            String dataFlowName,
+            int operatorNum,
+            OperatorMetadataDescriptor desc,
+            GraphOperatorSpec graphOperator,
+            EPDataFlowInstantiationOptions options,
+            ExprValidationContext exprValidationContext)
         {
             var operatorObject = desc.OptionalOperatorObject;
             if (operatorObject == null)
@@ -412,7 +431,7 @@ namespace com.espertech.esper.dataflow.core
 
             // inject properties
             var configs = graphOperator.Detail == null ? Collections.EmptyDataMap : graphOperator.Detail.Configs;
-            InjectObjectProperties(dataFlowName, graphOperator.OperatorName, operatorNum, configs, operatorObject, options.GetParameterProvider(), options.ParametersURIs, engineImportService);
+            InjectObjectProperties(dataFlowName, graphOperator.OperatorName, operatorNum, configs, operatorObject, options.GetParameterProvider(), options.ParametersURIs, exprValidationContext);
 
             if (operatorObject is DataFlowOperatorFactory)
             {
@@ -429,14 +448,15 @@ namespace com.espertech.esper.dataflow.core
             return operatorObject;
         }
 
-        private static void InjectObjectProperties(String dataFlowName,
-                                                   String operatorName,
-                                                   int operatorNum,
-                                                   IDictionary<string, object> configs,
-                                                   object instance,
-                                                   EPDataFlowOperatorParameterProvider optionalParameterProvider,
-                                                   IDictionary<string, object> optionalParameterURIs,
-                                                   EngineImportService engineImportService)
+        private static void InjectObjectProperties(
+            String dataFlowName,
+            String operatorName,
+            int operatorNum,
+            IDictionary<string, object> configs,
+            object instance,
+            EPDataFlowOperatorParameterProvider optionalParameterProvider,
+            IDictionary<string, object> optionalParameterURIs,
+            ExprValidationContext exprValidationContext)
         {
             // determine if there is a property holder which holds all properties
             var propertyHolderFields = TypeHelper.FindAnnotatedFields(instance.GetType(), typeof(DataFlowOpPropertyHolderAttribute));
@@ -465,7 +485,9 @@ namespace com.espertech.esper.dataflow.core
             }
 
             // populate either the instance itself or the property-holder
-            PopulateUtil.PopulateObject(operatorName, operatorNum, dataFlowName, configs, propertyInstance, engineImportService, optionalParameterProvider, optionalParameterURIs);
+            PopulateUtil.PopulateObject(
+                operatorName, operatorNum, dataFlowName, configs, propertyInstance, ExprNodeOrigin.DATAFLOW,
+                exprValidationContext, optionalParameterProvider, optionalParameterURIs);
 
             // set holder
             if (propertyHolderFields.IsNotEmpty())
@@ -757,9 +779,9 @@ namespace com.espertech.esper.dataflow.core
                 else
                 {
                     port = new DataFlowOpInputPort(
-                        new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType), 
-                        new HashSet<String>(inputItem.InputStreamNames), 
-                        inputItem.OptionalAsName, 
+                        new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType),
+                        new HashSet<String>(inputItem.InputStreamNames),
+                        inputItem.OptionalAsName,
                         producingPorts[0].HasPunctuation);
                 }
                 inputPorts.Put(inputPortNum, port);
@@ -828,7 +850,7 @@ namespace com.espertech.esper.dataflow.core
                     else
                     {
                         var typeName = outputType.TypeName;
-                        clazz = TypeHelper.GetTypeForSimpleName(typeName);
+                        clazz = TypeHelper.GetTypeForSimpleName(typeName, engineImportService.GetClassForNameProvider());
                         if (clazz == null)
                         {
                             try
@@ -860,7 +882,7 @@ namespace com.espertech.esper.dataflow.core
 
                 var streamName = declaredOutput[outputTypePort].StreamName;
                 var isDeclaredPunctuated = TypeHelper.IsAnnotationListed(
-                    typeof (DataFlowOpProvideSignalAttribute), unwrapAttributes);
+                    typeof(DataFlowOpProvideSignalAttribute), unwrapAttributes);
                 var port = new LogicalChannelProducingPortDeclared(
                     producingOpNum, descriptor.OperatorPrettyPrint, streamName, outputTypePort,
                     new GraphTypeDesc(false, false, eventType), isDeclaredPunctuated);

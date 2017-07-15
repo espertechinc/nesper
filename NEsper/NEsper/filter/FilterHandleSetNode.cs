@@ -80,7 +80,7 @@ namespace com.espertech.esper.filter
         /// <param name="matches">is the list of callbacks to add to for any matches found</param>
         public void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            using(_nodeRwLock.AcquireReadLock())
+            using (_nodeRwLock.AcquireReadLock())
             {
                 if (InstrumentationHelper.ENABLED)
                 {
@@ -92,7 +92,7 @@ namespace com.espertech.esper.filter
 
                 // Ask each of the indizes to match against the attribute values
                 var length = _indizes.Count;
-                for(int ii = 0 ; ii < length ; ii++)
+                for (int ii = 0; ii < length; ii++)
                 {
                     _indizes[ii].MatchEvent(theEvent, matches);
                 }

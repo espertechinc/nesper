@@ -40,18 +40,18 @@ namespace com.espertech.esper.view.window
             {
                 throw new ArgumentException("Illegal argument for size of length window");
             }
-    
+
             AgentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
             _lengthFirstFactory = lengthFirstWindowViewFactory;
             Size = size;
             _indexedEvents = new LinkedHashSet<EventBean>();
         }
-    
+
         public View CloneView()
         {
             return _lengthFirstFactory.MakeView(AgentInstanceViewFactoryContext);
         }
-    
+
         /// <summary>Returns true if the window is empty, or false if not empty. </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
@@ -74,11 +74,11 @@ namespace com.espertech.esper.view.window
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _lengthFirstFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _lengthFirstFactory.ViewName, newData, oldData); }
+
             OneEventCollection newDataToPost = null;
             OneEventCollection oldDataToPost = null;
-    
+
             // add data points to the window as long as its not full, ignoring later events
             if (newData != null)
             {
@@ -96,7 +96,7 @@ namespace com.espertech.esper.view.window
                     }
                 }
             }
-    
+
             if (oldData != null)
             {
                 foreach (EventBean anOldData in oldData)
@@ -113,25 +113,25 @@ namespace com.espertech.esper.view.window
                     }
                 }
             }
-    
+
             // If there are child views, call Update method
             if (HasViews && ((newDataToPost != null) || (oldDataToPost != null)))
             {
                 EventBean[] nd = (newDataToPost != null) ? newDataToPost.ToArray() : null;
                 EventBean[] od = (oldDataToPost != null) ? oldDataToPost.ToArray() : null;
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _lengthFirstFactory.ViewName, nd, od);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _lengthFirstFactory.ViewName, nd, od); }
                 UpdateChildren(nd, od);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
+
         public void InternalHandleRemoved(EventBean anOldData)
         {
             // no action required
         }
-    
+
         public void InternalHandleAdded(EventBean aNewData)
         {
             // no action required
@@ -141,12 +141,12 @@ namespace com.espertech.esper.view.window
         {
             return _indexedEvents.GetEnumerator();
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName + " size=" + Size;
         }
-    
+
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_indexedEvents, true, _lengthFirstFactory.ViewName, null);

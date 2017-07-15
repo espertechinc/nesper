@@ -6,13 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.datetime.calop
 {
 	public class CalendarOpPlusFastAddResult
     {
-        public CalendarOpPlusFastAddResult(long factor, DateTimeOffset scheduled)
+        public CalendarOpPlusFastAddResult(long factor, DateTimeEx scheduled)
         {
 	        Factor = factor;
 	        Scheduled = scheduled;
@@ -20,6 +20,6 @@ namespace com.espertech.esper.epl.datetime.calop
 
 	    public long Factor { get; private set; }
 
-        public DateTimeOffset Scheduled { get; private set; }
+        public DateTimeEx Scheduled { get; private set; }
     }
 } // end of namespace

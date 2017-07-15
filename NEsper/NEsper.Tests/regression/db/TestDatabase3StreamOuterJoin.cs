@@ -31,8 +31,8 @@ namespace com.espertech.esper.regression.db
 
             var configuration = SupportConfigFactory.GetConfiguration();
     
-            configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
-            configuration.EngineDefaults.LoggingConfig.IsEnableADO = true;
+            configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
+            configuration.EngineDefaults.Logging.IsEnableADO = true;
             configuration.AddDatabaseReference("MyDB", configDB);
     
             _epService = EPServiceProviderManager.GetProvider(

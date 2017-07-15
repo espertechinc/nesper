@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -34,7 +34,9 @@ namespace com.espertech.esper.util
                 try
                 {
                     return BinaryFormatter.Deserialize(stream);
-                } catch (TypeLoadException e) {
+                }
+                catch (TypeLoadException e)
+                {
                     throw new IOException("unable to deserialize object", e);
                 }
             }
@@ -109,7 +111,7 @@ namespace com.espertech.esper.util
             return types.Select(GetSerializer).ToArray();
         }
 
-        public static Serializer GetSerializer(Type type) 
+        public static Serializer GetSerializer(Type type)
         {
             if (type == null)
             {
@@ -128,7 +130,7 @@ namespace com.espertech.esper.util
         {
             Debug.Assert(serializers.Length == objects.Length);
 
-            using(var binaryStream = new MemoryStream())
+            using (var binaryStream = new MemoryStream())
             {
                 for (int ii = 0; ii < objects.Length; ii++)
                 {
@@ -139,13 +141,13 @@ namespace com.espertech.esper.util
             }
         }
 
-        public static Object[] Deserialize(int numObjects, byte[] bytes, Serializer[] serializers) 
+        public static Object[] Deserialize(int numObjects, byte[] bytes, Serializer[] serializers)
         {
             Debug.Assert(serializers.Length == numObjects);
 
             using (var binaryStream = new MemoryStream(bytes))
             {
-                var result = serializers.Select(serializer => 
+                var result = serializers.Select(serializer =>
                     serializer.DeserializeAny(binaryStream)).ToArray();
                 return result;
             }

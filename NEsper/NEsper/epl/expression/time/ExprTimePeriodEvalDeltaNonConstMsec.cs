@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
@@ -17,29 +15,46 @@ namespace com.espertech.esper.epl.expression.time
     public class ExprTimePeriodEvalDeltaNonConstMsec : ExprTimePeriodEvalDeltaNonConst
     {
         private readonly ExprTimePeriodImpl _exprTimePeriod;
-    
-        public ExprTimePeriodEvalDeltaNonConstMsec(ExprTimePeriodImpl exprTimePeriod) {
+
+        public ExprTimePeriodEvalDeltaNonConstMsec(ExprTimePeriodImpl exprTimePeriod)
+        {
             this._exprTimePeriod = exprTimePeriod;
         }
-    
-        public long DeltaMillisecondsAdd(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public long DeltaAdd(
+            long currentTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             double d = _exprTimePeriod.EvaluateAsSeconds(eventsPerStream, isNewData, context);
-            return (long) Math.Round(d * 1000d);
+            return _exprTimePeriod.TimeAbacus.DeltaForSecondsDouble(d);
         }
-    
-        public long DeltaMillisecondsSubtract(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return DeltaMillisecondsAdd(currentTime, eventsPerStream, isNewData, context);
+
+        public long DeltaSubtract(
+            long currentTime,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return DeltaAdd(currentTime, eventsPerStream, isNewData, context);
         }
-    
-        public long DeltaMillisecondsUseEngineTime(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext) {
-            return DeltaMillisecondsAdd(0, eventsPerStream, true, agentInstanceContext);
+
+        public long DeltaUseEngineTime(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext)
+        {
+            return DeltaAdd(0, eventsPerStream, true, agentInstanceContext);
         }
-    
-        public ExprTimePeriodEvalDeltaResult DeltaMillisecondsAddWReference(long current, long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            long msec = DeltaMillisecondsAdd(current, eventsPerStream, isNewData, context);
+
+        public ExprTimePeriodEvalDeltaResult DeltaAddWReference(
+            long current,
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            long msec = DeltaAdd(current, eventsPerStream, isNewData, context);
             return new ExprTimePeriodEvalDeltaResult(
-                ExprTimePeriodEvalDeltaConstMsec.DeltaMillisecondsAddWReference(current, reference, msec), 
-                reference);
+                ExprTimePeriodEvalDeltaConstGivenDelta.DeltaAddWReference(current, reference, msec), reference);
         }
     }
-}
+} // end of namespace

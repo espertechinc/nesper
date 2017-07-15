@@ -21,7 +21,15 @@ namespace com.espertech.esper.epl.view
     {
         private readonly OutputStrategyPostProcess _postProcessor;
 
-        public OutputProcessViewDirectDistinctOrAfterPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewDirectDistinctOrAfterFactory parent, OutputStrategyPostProcess postProcessor)
+        public OutputProcessViewDirectDistinctOrAfterPostProcess(
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            AgentInstanceContext agentInstanceContext,
+            ResultSetProcessor resultSetProcessor,
+            long afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewDirectDistinctOrAfterFactory parent,
+            OutputStrategyPostProcess postProcessor)
             : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent)
         {
             _postProcessor = postProcessor;

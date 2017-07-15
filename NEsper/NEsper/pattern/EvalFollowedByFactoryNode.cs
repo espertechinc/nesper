@@ -25,21 +25,25 @@ namespace com.espertech.esper.pattern
     {
         private IList<ExprNode> _optionalMaxExpressions;
         private readonly bool _hasEngineWidePatternCount;
-    
+
         private EvalFollowedByNodeOpType? _opType;
         private int?[] _cachedMaxPerChild;
-        [NonSerialized] private ExprEvaluator[] _cachedMaxEvaluatorPerChild;
+        [NonSerialized]
+        private ExprEvaluator[] _cachedMaxEvaluatorPerChild;
 
-        public EvalFollowedByFactoryNode(IList<ExprNode> optionalMaxExpressions, bool hasEngineWidePatternCount) {
+        public EvalFollowedByFactoryNode(IList<ExprNode> optionalMaxExpressions, bool hasEngineWidePatternCount)
+        {
             _optionalMaxExpressions = optionalMaxExpressions;
             _hasEngineWidePatternCount = hasEngineWidePatternCount;
         }
-    
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
-            if (_opType == null) {
+
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        {
+            if (_opType == null)
+            {
                 InitOpType();
             }
-    
+
             EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(ChildNodes, agentInstanceContext, parentNode);
             return new EvalFollowedByNode(agentInstanceContext, this, children);
         }
@@ -54,37 +58,44 @@ namespace com.espertech.esper.pattern
         {
             return ("EvalFollowedByNode children=" + ChildNodes.Count);
         }
-    
-        protected void InitOpType() {
+
+        protected void InitOpType()
+        {
             bool hasMax = _optionalMaxExpressions != null && !_optionalMaxExpressions.IsEmpty();
-            if (!hasMax) {
+            if (!hasMax)
+            {
                 _opType = _hasEngineWidePatternCount ? EvalFollowedByNodeOpType.NOMAX_POOL : EvalFollowedByNodeOpType.NOMAX_PLAIN;
                 return;
             }
 
             _cachedMaxPerChild = new int?[ChildNodes.Count - 1];
             _cachedMaxEvaluatorPerChild = new ExprEvaluator[ChildNodes.Count - 1];
-    
-            for (int i = 0; i < ChildNodes.Count - 1; i++) {
-                if (_optionalMaxExpressions.Count <= i) {
+
+            for (int i = 0; i < ChildNodes.Count - 1; i++)
+            {
+                if (_optionalMaxExpressions.Count <= i)
+                {
                     continue;
                 }
                 var optionalMaxExpression = _optionalMaxExpressions[i];
-                if (optionalMaxExpression == null) {
+                if (optionalMaxExpression == null)
+                {
                     continue;
                 }
                 if (optionalMaxExpression.IsConstantResult)
                 {
                     var result = optionalMaxExpression.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
-                    if (result != null) {
+                    if (result != null)
+                    {
                         _cachedMaxPerChild[i] = result.AsInt();
                     }
                 }
-                else {
+                else
+                {
                     _cachedMaxEvaluatorPerChild[i] = _optionalMaxExpressions[i].ExprEvaluator;
                 }
             }
-    
+
             _opType = _hasEngineWidePatternCount ? EvalFollowedByNodeOpType.MAX_POOL : EvalFollowedByNodeOpType.MAX_PLAIN;
         }
 
@@ -96,17 +107,20 @@ namespace com.espertech.esper.pattern
         public int GetMax(int position)
         {
             var cached = _cachedMaxPerChild[position];
-            if (cached != null) {
+            if (cached != null)
+            {
                 return cached.Value;  // constant value cached
             }
-    
+
             var cachedExpr = _cachedMaxEvaluatorPerChild[position];
-            if (cachedExpr == null) {
+            if (cachedExpr == null)
+            {
                 return -1;  // no limit defined for this sub-expression
             }
-    
+
             var result = cachedExpr.Evaluate(new EvaluateParams(null, true, null));
-            if (result != null) {
+            if (result != null)
+            {
                 return result.AsInt();
             }
             return -1;  // no limit
@@ -122,21 +136,28 @@ namespace com.espertech.esper.pattern
             get { return true; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
-            if (_optionalMaxExpressions == null || _optionalMaxExpressions.IsEmpty()) {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
+            if (_optionalMaxExpressions == null || _optionalMaxExpressions.IsEmpty())
+            {
                 PatternExpressionUtil.ToPrecedenceFreeEPL(writer, "->", ChildNodes, Precedence);
             }
-            else {
+            else
+            {
                 ChildNodes[0].ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
-                for (int i = 1; i < ChildNodes.Count; i++) {
+                for (int i = 1; i < ChildNodes.Count; i++)
+                {
                     ExprNode optionalMaxExpression = null;
-                    if (_optionalMaxExpressions.Count > (i - 1)) {
+                    if (_optionalMaxExpressions.Count > (i - 1))
+                    {
                         optionalMaxExpression = _optionalMaxExpressions[i - 1];
                     }
-                    if (optionalMaxExpression == null) {
+                    if (optionalMaxExpression == null)
+                    {
                         writer.Write(" -> ");
                     }
-                    else {
+                    else
+                    {
                         writer.Write(" -[");
                         writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(optionalMaxExpression));
                         writer.Write("]> ");

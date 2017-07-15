@@ -15,12 +15,12 @@ namespace com.espertech.esper.epl.datetime.calop
     public class CalendarOpWithMax : CalendarOp
     {
         private readonly CalendarFieldEnum _fieldName;
-    
+
         public CalendarOpWithMax(CalendarFieldEnum fieldName)
         {
             _fieldName = fieldName;
         }
-    
+
         public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             switch (_fieldName)

@@ -30,12 +30,12 @@ namespace com.espertech.esper.epl.join.@base
         {
             _isOuterJoins = outerJoins;
         }
-    
+
         public override void Init(EventBean[][] eventsPerStream)
         {
             // no action
         }
-    
+
         public override void Destroy()
         {
             // no action
@@ -47,7 +47,7 @@ namespace com.espertech.esper.epl.join.@base
             ExprEvaluatorContext exprEvaluatorContext)
         {
             NewResults.Clear();
-    
+
             // We add and remove data in one call to each index.
             // Most indexes will add first then remove as newdata and olddata may contain the same event.
             // Unique indexes may remove then add.
@@ -61,7 +61,8 @@ namespace com.espertech.esper.epl.join.@base
             }
 
             // for outer joins, execute each query strategy
-            if (_isOuterJoins) {
+            if (_isOuterJoins)
+            {
                 for (int i = 0; i < newDataPerStream.Length; i++)
                 {
                     if (newDataPerStream[i] != null)
@@ -71,29 +72,35 @@ namespace com.espertech.esper.epl.join.@base
                 }
             }
             // handle all-inner joins by executing the smallest number of event's query strategy
-            else {
+            else
+            {
                 int minStream = -1;
                 int minStreamCount = -1;
-                for (int i = 0; i < newDataPerStream.Length; i++) {
-                    if (newDataPerStream[i] != null) {
-                        if(newDataPerStream[i].Length == 0) {
+                for (int i = 0; i < newDataPerStream.Length; i++)
+                {
+                    if (newDataPerStream[i] != null)
+                    {
+                        if (newDataPerStream[i].Length == 0)
+                        {
                             minStream = -1;
                             break;
                         }
-                        if (newDataPerStream[i].Length > minStreamCount) {
+                        if (newDataPerStream[i].Length > minStreamCount)
+                        {
                             minStream = i;
                             minStreamCount = newDataPerStream[i].Length;
                         }
                     }
                 }
-                if (minStream != -1) {
+                if (minStream != -1)
+                {
                     QueryStrategies[minStream].Lookup(newDataPerStream[minStream], NewResults, exprEvaluatorContext);
                 }
             }
-    
+
             return new UniformPair<ISet<MultiKey<EventBean>>>(NewResults, OldResults);
         }
-    
+
         public override ISet<MultiKey<EventBean>> StaticJoin()
         {
             // no action

@@ -238,7 +238,7 @@ namespace com.espertech.esper.script
         }
 
         /// <summary>
-        /// Creates the compiler info.
+        /// Creates the compiler INFO.
         /// </summary>
         /// <param name="language">The language.</param>
         /// <returns></returns>

@@ -8,25 +8,30 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
-using com.espertech.esper.epl.join.@base;
-using com.espertech.esper.epl.join.pollindex;
-using com.espertech.esper.epl.join.table;
+using com.espertech.esper.epl.@join.@base;
+using com.espertech.esper.epl.@join.exec.@base;
+using com.espertech.esper.epl.@join.pollindex;
+using com.espertech.esper.epl.@join.table;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.join.exec.@base
 {
     /// <summary>
-    /// Execution node for executing a join or outer join against a historical data source, using an lookup 
-    /// strategy for looking up into cached indexes, and an indexing strategy for indexing poll results for 
-    /// future lookups.
+    /// Execution node for executing a join or outer join against a historical data source,
+    /// using an lookup strategy for looking up into cached indexes, and an indexing strategy for indexing poll results
+    /// for future lookups.
     /// </summary>
-    public class HistoricalDataExecNode : ExecNode
-    {
+    public class HistoricalDataExecNode : ExecNode{
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    
         private readonly EventBean[][] _lookupRows1Event;
         private readonly int _numStreams;
         private readonly HistoricalEventViewable _historicalEventViewable;
@@ -34,7 +39,9 @@ namespace com.espertech.esper.epl.join.exec.@base
         private readonly HistoricalIndexLookupStrategy _indexLookupStrategy;
         private readonly int _historicalStreamNumber;
     
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="historicalEventViewable">the view of the historical</param>
         /// <param name="indexingStrategy">the strategy to index poll result for future use</param>
         /// <param name="indexLookupStrategy">the strategy to use past indexed results</param>
@@ -52,34 +59,29 @@ namespace com.espertech.esper.epl.join.exec.@base
             _lookupRows1Event[0] = new EventBean[numStreams];
         }
     
-        public override void Process(EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
-        {
+        public override void Process(EventBean lookupEvent, EventBean[] prefillPath, ICollection<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext) {
             _lookupRows1Event[0] = prefillPath;
             EventTable[][] indexPerLookupRow = _historicalEventViewable.Poll(_lookupRows1Event, _indexingStrategy, exprEvaluatorContext);
-
-            foreach (EventTable[] index in indexPerLookupRow)
-            {
+    
+            foreach (EventTable[] index in indexPerLookupRow) {
                 // Using the index, determine a subset of the whole indexed table to process, unless
                 // the strategy is a full table scan
                 IEnumerator<EventBean> subsetIter = _indexLookupStrategy.Lookup(lookupEvent, index, exprEvaluatorContext);
     
-                if (subsetIter != null)
-                {
+                if (subsetIter != null) {
                     // Add each row to the join result or, for outer joins, run through the outer join filter
-                    for (;subsetIter.MoveNext();)
-                    {
-                        EventBean[] resultRow = new EventBean[_numStreams];
+                    for (; subsetIter.HasNext(); ) {
+                        var resultRow = new EventBean[_numStreams];
                         Array.Copy(prefillPath, 0, resultRow, 0, _numStreams);
-                        resultRow[_historicalStreamNumber] = subsetIter.Current;
+                        resultRow[_historicalStreamNumber] = subsetIter.Next();
                         result.Add(resultRow);
                     }
                 }
             }
         }
     
-        public override void Print(IndentWriter writer)
-        {
-            writer.WriteLine("HistoricalDataExecNode");
+        public override void Print(IndentWriter writer) {
+            writer.Println("HistoricalDataExecNode");
         }
     }
-}
+} // end of namespace

@@ -15,10 +15,12 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.expression.subquery
 {
+    using RelationalComputer = Func<object, object, bool>;
+
     /// <summary>Strategy for subselects with "&gt;/&lt;/&lt;=/&gt;= ALL". </summary>
     public class SubselectEvalStrategyRelOpAll : SubselectEvalStrategy
     {
-        private readonly RelationalOpEnumExtensions.Computer _computer;
+        private readonly RelationalComputer _computer;
         private readonly ExprEvaluator _valueExpr;
         private readonly ExprEvaluator _selectClauseExpr;
         private readonly ExprEvaluator _filterExpr;
@@ -28,7 +30,7 @@ namespace com.espertech.esper.epl.expression.subquery
         /// <param name="valueExpr">LHS</param>
         /// <param name="selectClause">select or null</param>
         /// <param name="filterExpr">filter or null</param>
-        public SubselectEvalStrategyRelOpAll(RelationalOpEnumExtensions.Computer computer, ExprEvaluator valueExpr, ExprEvaluator selectClause, ExprEvaluator filterExpr)
+        public SubselectEvalStrategyRelOpAll(RelationalComputer computer, ExprEvaluator valueExpr, ExprEvaluator selectClause, ExprEvaluator filterExpr)
         {
             _computer = computer;
             _valueExpr = valueExpr;

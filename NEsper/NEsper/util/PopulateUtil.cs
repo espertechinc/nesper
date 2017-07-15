@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Reflection;
 
 using com.espertech.esper.client.dataflow;
@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.annotations;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 using com.espertech.esper.events.bean;
@@ -25,95 +24,49 @@ using com.espertech.esper.events.property;
 
 namespace com.espertech.esper.util
 {
-    using Map = IDictionary<string, object>;
-
     public class PopulateUtil {
-        private const String CLASS_PROPERTY_NAME = "class";
-
-        private const String ENVIRONMENT_PROPERTIES_NAME = "env";
+        private static readonly string CLASS_PROPERTY_NAME = "class";
+        private static readonly string SYSTEM_PROPETIES_NAME = "systemProperties".ToLowerInvariant();
     
-        public static Object InstantiatePopulateObject(IDictionary<String, Object> objectProperties, Type topClass, EngineImportService engineImportService)
-        {
-            var applicableClass = topClass;
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
+        public static Object InstantiatePopulateObject(IDictionary<string, Object> objectProperties, Type topClass, ExprNodeOrigin exprNodeOrigin, ExprValidationContext exprValidationContext) {
+    
+            Type applicableClass = topClass;
             if (topClass.IsInterface) {
-                applicableClass = FindInterfaceImplementation(objectProperties, topClass, engineImportService);
+                applicableClass = FindInterfaceImplementation(objectProperties, topClass, exprValidationContext.EngineImportService);
             }
     
             Object top;
-            try
-            {
-                top = TypeHelper.Instantiate(applicableClass);
-            }
-            catch (TypeLoadException e)
-            {
-                throw new ExprValidationException(
-                    GetMessageExceptionInstantiating(applicableClass), e);
-            }
-            catch (TypeInstantiationException e)
-            {
-                if (e.InnerException is MissingMethodException)
-                {
-                    throw new ExprValidationException(
-                        GetMessageExceptionInstantiating(applicableClass), e);
-                }
-                else if (e.InnerException is MemberAccessException)
-                {
-                    throw new ExprValidationException(
-                        "Illegal access to construct class " + applicableClass.FullName + ": " + e.InnerException.Message, e.InnerException);
-                }
-                else if (e.InnerException is TargetInvocationException)
-                {
-                    throw new ExprValidationException(
-                        "Exception instantiating class " + applicableClass.FullName + ": " + e.InnerException.InnerException.Message, e.InnerException.InnerException);
-                }
-                else
-                {
-                    throw new ExprValidationException(
-                        "Exception instantiating class " + applicableClass.FullName + ": " + e.InnerException.Message, e.InnerException);
-                }
-            }
-            catch (MemberAccessException e)
-            {
-                throw new ExprValidationException("Illegal access to construct class " + applicableClass.FullName + ": " + e.Message, e);
-            }
-            catch (Exception e)
-            {
-                throw new ExprValidationException("Exception instantiating class " + applicableClass.FullName + ": " + e.Message, e);
+            try {
+                top = applicableClass.NewInstance();
+            } catch (RuntimeException e) {
+                throw new ExprValidationException("Exception instantiating class " + applicableClass.Name + ": " + e.Message, e);
+            } catch (InstantiationException e) {
+                throw new ExprValidationException(GetMessageExceptionInstantiating(applicableClass), e);
+            } catch (IllegalAccessException e) {
+                throw new ExprValidationException("Illegal access to construct class " + applicableClass.Name + ": " + e.Message, e);
             }
     
-            PopulateObject(topClass.Name, 0, topClass.Name, objectProperties, top, engineImportService, null, null);
+            PopulateObject(topClass.SimpleName, 0, topClass.SimpleName, objectProperties, top, exprNodeOrigin, exprValidationContext, null, null);
     
             return top;
         }
-
-        public static void PopulateObject(String operatorName,
-                                          int operatorNum,
-                                          String dataFlowName,
-                                          IDictionary<String, Object> objectProperties,
-                                          Object top,
-                                          EngineImportService engineImportService,
-                                          EPDataFlowOperatorParameterProvider optionalParameterProvider,
-                                          IDictionary<String, Object> optionalParameterURIs)
-        {
-            var applicableClass = top.GetType();
-            var writables = PropertyHelper.GetWritableProperties(applicableClass);
-            var annotatedFields = TypeHelper.FindAnnotatedFields(applicableClass, typeof(DataFlowOpParameterAttribute));
-            var annotatedMethods = TypeHelper.FindAnnotatedMethods(applicableClass, typeof(DataFlowOpParameterAttribute));
+    
+        public static void PopulateObject(string operatorName, int operatorNum, string dataFlowName, IDictionary<string, Object> objectProperties, Object top, ExprNodeOrigin exprNodeOrigin, ExprValidationContext exprValidationContext, EPDataFlowOperatorParameterProvider optionalParameterProvider, IDictionary<string, Object> optionalParameterURIs)
+                {
+            Type applicableClass = top.Class;
+            ISet<WriteablePropertyDescriptor> writables = PropertyHelper.GetWritableProperties(applicableClass);
+            ISet<Field> annotatedFields = TypeHelper.FindAnnotatedFields(top.Class, typeof(DataFlowOpParameter));
+            ISet<Method> annotatedMethods = TypeHelper.FindAnnotatedMethods(top.Class, typeof(DataFlowOpParameter));
     
             // find catch-all methods
-            var catchAllMethods = new LinkedHashSet<MethodInfo>();
+            var catchAllMethods = new LinkedHashSet<Method>();
             if (annotatedMethods != null) {
-                foreach (var method in annotatedMethods)
-                {
-                    var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
-                        typeof (DataFlowOpParameterAttribute),
-                        method.GetCustomAttributes(true).Cast<Attribute>().ToArray())[0];
-                    if (anno.All)
-                    {
-                        var parameterTypes = method.GetParameterTypes();
-                        if ((parameterTypes.Length == 2) &&
-                            (parameterTypes[0] == typeof(String)) && 
-                            (parameterTypes[1] == typeof(Object))) {
+                foreach (Method method in annotatedMethods) {
+                    DataFlowOpParameter anno = (DataFlowOpParameter) TypeHelper.GetAnnotations(typeof(DataFlowOpParameter), method.DeclaredAnnotations)[0];
+                    if (anno.All()) {
+                        if (method.ParameterTypes.Length == 2 && method.ParameterTypes[0] == typeof(string) && method.ParameterTypes[1] == typeof(Object)) {
                             catchAllMethods.Add(method);
                             continue;
                         }
@@ -123,148 +76,104 @@ namespace com.espertech.esper.util
             }
     
             // map provided values
-            foreach (var property in objectProperties)
-            {
-                var found = false;
-                var propertyName = property.Key;
+            foreach (var property in objectProperties) {
+                bool found = false;
+                string propertyName = property.Key;
     
                 // invoke catch-all setters
-                foreach (var method in catchAllMethods)
-                {
+                foreach (Method method in catchAllMethods) {
                     try {
-                        method.Invoke(top, new Object[] {propertyName, property.Value});
-                    }
-                    catch (MemberAccessException e)
-                    {
+                        method.Invoke(top, new Object[]{propertyName, property.Value});
+                    } catch (IllegalAccessException e) {
                         throw new ExprValidationException("Illegal access invoking method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + method.Name, e);
-                    }
-                    catch (TargetInvocationException e)
-                    {
-                        throw new ExprValidationException("Exception invoking method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + method.Name + ": " + e.InnerException.Message, e);
+                    } catch (InvocationTargetException e) {
+                        throw new ExprValidationException("Exception invoking method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + method.Name + ": " + e.TargetException.Message, e);
                     }
                     found = true;
                 }
     
-                if (propertyName.ToLower() == CLASS_PROPERTY_NAME) {
+                if (propertyName.ToLowerInvariant().Equals(CLASS_PROPERTY_NAME)) {
                     continue;
                 }
     
                 // use the writeable property descriptor (appropriate setter method) from writing the property
-                var descriptor = FindDescriptor(applicableClass, propertyName, writables);
+                WriteablePropertyDescriptor descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
-                    var coerceProperty = CoerceProperty(propertyName, applicableClass, property.Value, descriptor.PropertyType, engineImportService, false, true);
+                    Object coerceProperty = CoerceProperty(propertyName, applicableClass, property.Value, descriptor.Type, exprNodeOrigin, exprValidationContext, false, true);
     
                     try {
-                        descriptor.WriteMethod.Invoke(top, new Object[] {coerceProperty});
-                    }
-                    catch (ArgumentException e) {
+                        descriptor.WriteMethod.Invoke(top, new Object[]{coerceProperty});
+                    } catch (ArgumentException e) {
                         throw new ExprValidationException("Illegal argument invoking setter method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + descriptor.WriteMethod.Name + " provided value " + coerceProperty, e);
-                    }
-                    catch (MemberAccessException e) {
+                    } catch (IllegalAccessException e) {
                         throw new ExprValidationException("Illegal access invoking setter method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + descriptor.WriteMethod.Name, e);
-                    }
-                    catch (TargetInvocationException e) {
-                        throw new ExprValidationException("Exception invoking setter method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + descriptor.WriteMethod.Name + ": " + e.InnerException.Message, e);
+                    } catch (InvocationTargetException e) {
+                        throw new ExprValidationException("Exception invoking setter method for property '" + propertyName + "' for class " + applicableClass.Name + " method " + descriptor.WriteMethod.Name + ": " + e.TargetException.Message, e);
                     }
                     continue;
                 }
-
-                // in .NET, it's common to name fields with an underscore prefix, this modified
-                // notation is preserved in the modPropertyName
-                var modPropertyName = "_" + propertyName;
-                // find the field annotated with <seealso cref="GraphOpProperty" />
-                foreach (var annotatedField in annotatedFields)
-                {
-                    var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
-                        typeof (DataFlowOpParameterAttribute),
-                        annotatedField.GetCustomAttributes(true).Cast<Attribute>().ToArray())[0];
-                    if ((anno.Name == propertyName) || (annotatedField.Name == propertyName) || (annotatedField.Name == modPropertyName))
-                    {
-                        var coerceProperty = CoerceProperty(
-                            propertyName, applicableClass, property.Value, annotatedField.FieldType, engineImportService,
-                            true, true);
-                        try
-                        {
-                            annotatedField.SetValue(top, coerceProperty);
-                        }
-                        catch (Exception e)
-                        {
-                            throw new ExprValidationException(
-                                "Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
+    
+                // find the field annotated with {@link @GraphOpProperty}
+                foreach (Field annotatedField in annotatedFields) {
+                    DataFlowOpParameter anno = (DataFlowOpParameter) TypeHelper.GetAnnotations(typeof(DataFlowOpParameter), annotatedField.DeclaredAnnotations)[0];
+                    if (anno.Name().Equals(propertyName) || annotatedField.Name.Equals(propertyName)) {
+                        Object coerceProperty = CoerceProperty(propertyName, applicableClass, property.Value, annotatedField.Type, exprNodeOrigin, exprValidationContext, true, true);
+                        try {
+                            annotatedField.Accessible = true;
+                            annotatedField.Set(top, coerceProperty);
+                        } catch (Exception e) {
+                            throw new ExprValidationException("Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
                         }
                         found = true;
                         break;
                     }
                 }
-
                 if (found) {
                     continue;
                 }
     
-                throw new ExprValidationException("Failed to find writable property '" + propertyName + "' for class " + applicableClass);
+                throw new ExprValidationException("Failed to find writable property '" + propertyName + "' for class " + applicableClass.Name);
             }
     
             // second pass: if a parameter URI - value pairs were provided, check that
             if (optionalParameterURIs != null) {
-                foreach (var annotatedField in annotatedFields) {
+                foreach (Field annotatedField in annotatedFields) {
                     try {
-                        var uri = operatorName + "/" + annotatedField.Name;
+                        annotatedField.Accessible = true;
+                        string uri = operatorName + "/" + annotatedField.Name;
                         if (optionalParameterURIs.ContainsKey(uri)) {
-                            var value = optionalParameterURIs.Get(uri);
-                            annotatedField.SetValue(top, value);
+                            Object value = optionalParameterURIs.Get(uri);
+                            annotatedField.Set(top, value);
                             if (Log.IsDebugEnabled) {
                                 Log.Debug("Found parameter '" + uri + "' for data flow " + dataFlowName + " setting " + value);
                             }
-                        }
-                        else {
+                        } else {
                             if (Log.IsDebugEnabled) {
                                 Log.Debug("Not found parameter '" + uri + "' for data flow " + dataFlowName);
                             }
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         throw new ExprValidationException("Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
                     }
                 }
-
-                foreach (var method in annotatedMethods)
-                {
-                    //var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations<DataFlowOpParameterAttribute>(method.GetCustomAttributes(false))[0];
-
-                    var anno = method.GetCustomAttributes(typeof (DataFlowOpParameterAttribute), false)
-                        .Cast<DataFlowOpParameterAttribute>()
-                        .First();
-
-                    if (anno.All)
-                    {
-                        var parameterTypes = method.GetParameterTypes();
-                        if (parameterTypes.Length == 2 && parameterTypes[0] == typeof(string) && parameterTypes[1] == typeof(object))
-                        {
-                            foreach (var entry in optionalParameterURIs)
-                            {
-                                var uri = new Uri(entry.Key, UriKind.RelativeOrAbsolute);
-                                var elements = URIUtil.ParsePathElements(uri);
-                                if (elements.Length < 2)
-                                {
-                                    throw new ExprValidationException(string.Format("Failed to parse URI '{0}', expected 'operator_name/property_name' format", entry.Key));
+    
+                foreach (Method method in annotatedMethods) {
+                    DataFlowOpParameter anno = (DataFlowOpParameter) TypeHelper.GetAnnotations(typeof(DataFlowOpParameter), method.DeclaredAnnotations)[0];
+                    if (anno.All()) {
+                        if (method.ParameterTypes.Length == 2 && method.ParameterTypes[0] == typeof(string) && method.ParameterTypes[1] == typeof(Object)) {
+                            foreach (var entry in optionalParameterURIs) {
+                                string[] elements = URIUtil.ParsePathElements(URI.Create(entry.Key));
+                                if (elements.Length < 2) {
+                                    throw new ExprValidationException("Failed to parse URI '" + entry.Key + "', expected " +
+                                            "'operator_name/property_name' format");
                                 }
-                                if (elements[0] == operatorName)
-                                {
-                                    try
-                                    {
-                                        method.Invoke(top, new Object[] {elements[1], entry.Value});
-                                    }
-                                    catch (ArgumentException e)
-                                    {
-                                        throw new ExprValidationException("Illegal argument invoking setter method for property '" + entry.Key + "' for class " + applicableClass.Name + " method " + method.Name, e);
-                                    }
-                                    catch (MemberAccessException e)
-                                    {
-                                        throw new ExprValidationException("Illegal access invoking setter method for property '" + entry.Key + "' for class " + applicableClass.Name + " method " + method.Name, e);
-                                    }
-                                    catch (TargetInvocationException e)
-                                    {
-                                        throw new ExprValidationException("Exception invoking setter method for property '" + entry.Key + "' for class " + applicableClass.Name + " method " + method.Name + ": " + e.InnerException.Message, e);
+                                if (elements[0].Equals(operatorName)) {
+                                    try {
+                                        method.Invoke(top, new Object[]{elements[1], entry.Value});
+                                    } catch (IllegalAccessException e) {
+                                        throw new ExprValidationException("Illegal access invoking method for property '" + entry.Key + "' for class " + applicableClass.Name + " method " + method.Name, e);
+                                    } catch (InvocationTargetException e) {
+                                        throw new ExprValidationException("Exception invoking method for property '" + entry.Key + "' for class " + applicableClass.Name + " method " + method.Name + ": " + e.TargetException.Message, e);
                                     }
                                 }
                             }
@@ -272,33 +181,27 @@ namespace com.espertech.esper.util
                     }
                 }
             }
-
+    
             // third pass: if a parameter provider is provided, use that
             if (optionalParameterProvider != null) {
-                foreach (var annotatedField in annotatedFields) {
+    
+                foreach (Field annotatedField in annotatedFields) {
                     try {
-                        var provided = annotatedField.GetValue(top);
-                        var value = optionalParameterProvider.Provide(new EPDataFlowOperatorParameterProviderContext(operatorName, annotatedField.Name, top, operatorNum, provided, dataFlowName));
-                        if ((value == null) && (annotatedField.Name.StartsWith("_")))
-                        {
-                            value = optionalParameterProvider.Provide(new EPDataFlowOperatorParameterProviderContext(operatorName, annotatedField.Name.Substring(1), top, operatorNum, provided, dataFlowName));
+                        annotatedField.Accessible = true;
+                        Object provided = annotatedField.Get(top);
+                        Object value = optionalParameterProvider.Provide(new EPDataFlowOperatorParameterProviderContext(operatorName, annotatedField.Name, top, operatorNum, provided, dataFlowName));
+                        if (value != null) {
+                            annotatedField.Set(top, value);
                         }
-
-                        if (value != null)
-                        {
-                            annotatedField.SetValue(top, value);
-                        }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         throw new ExprValidationException("Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
                     }
                 }
             }
         }
     
-        private static Type FindInterfaceImplementation(IDictionary<String, Object> properties, Type topClass, EngineImportService engineImportService)
-        {
-            var message = "Failed to find implementation for interface " + topClass.FullName;
+        private static Type FindInterfaceImplementation(IDictionary<string, Object> properties, Type topClass, EngineImportService engineImportService) {
+            string message = "Failed to find implementation for interface " + topClass.Name;
     
             // Allow to populate the special "class" field
             if (!properties.ContainsKey(CLASS_PROPERTY_NAME)) {
@@ -306,20 +209,16 @@ namespace com.espertech.esper.util
             }
     
             Type clazz = null;
-            var className = (String) properties.Get(CLASS_PROPERTY_NAME);
-            try
-            {
-                clazz = TypeHelper.ResolveType(className);
-            }
-            catch (TypeLoadException e) {
+            string className = (string) properties.Get(CLASS_PROPERTY_NAME);
+            try {
+                clazz = TypeHelper.GetClassForName(className, engineImportService.ClassForNameProvider);
+            } catch (ClassNotFoundException e) {
     
                 if (!className.Contains(".")) {
-                    className = topClass.Namespace + "." + className;
-                    try
-                    {
-                        clazz = TypeHelper.ResolveType(className);
-                    }
-                    catch (TypeLoadException ex) {
+                    className = topClass.Package.Name + "." + className;
+                    try {
+                        clazz = TypeHelper.GetClassForName(className, engineImportService.ClassForNameProvider);
+                    } catch (ClassNotFoundException ex) {
                     }
                 }
     
@@ -333,122 +232,115 @@ namespace com.espertech.esper.util
             }
             return clazz;
         }
-
-        public static void PopulateSpecCheckParameters(PopulateFieldWValueDescriptor[] descriptors, IDictionary<String, Object> jsonRaw, Object spec, EngineImportService engineImportService)
-        {
+    
+        public static void PopulateSpecCheckParameters(PopulateFieldWValueDescriptor[] descriptors, IDictionary<string, Object> jsonRaw, Object spec, ExprNodeOrigin exprNodeOrigin, ExprValidationContext exprValidationContext)
+                {
             // lowercase keys
-            var lowerCaseJsonRaw = new LinkedHashMap<String, Object>();
+            var lowerCaseJsonRaw = new LinkedHashMap<string, Object>();
             foreach (var entry in jsonRaw) {
-                lowerCaseJsonRaw.Put(entry.Key.ToLower(), entry.Value);
+                lowerCaseJsonRaw.Put(entry.Key.ToLowerInvariant(), entry.Value);
             }
             jsonRaw = lowerCaseJsonRaw;
-
+    
             // apply values
             foreach (PopulateFieldWValueDescriptor desc in descriptors) {
-                Object value = jsonRaw.Delete(desc.PropertyName.ToLower());
-                Object coerced = CoerceProperty(desc.PropertyName, desc.ContainerType, value, desc.FieldType, engineImportService, desc.IsForceNumeric, false);
-                desc.Setter.Invoke(coerced);
+                Object value = jsonRaw.Remove(desc.PropertyName.ToLowerInvariant());
+                Object coerced = CoerceProperty(desc.PropertyName, desc.ContainerType, value, desc.FieldType, exprNodeOrigin, exprValidationContext, desc.IsForceNumeric, false);
+                desc.Setter.Set(coerced);
             }
-
+    
             // should not have remaining parameters
             if (!jsonRaw.IsEmpty()) {
-                throw new ExprValidationException("Unrecognized parameter '" + jsonRaw.Keys.First() + "'");
+                throw new ExprValidationException("Unrecognized parameter '" + jsonRaw.KeySet().GetEnumerator().Next() + "'");
             }
         }
     
-        public static Object CoerceProperty(String propertyName, Type containingType, Object value, Type type, EngineImportService engineImportService, bool forceNumeric, bool includeClassNameInEx) 
-        {
+        public static Object CoerceProperty(string propertyName, Type containingType, Object value, Type type, ExprNodeOrigin exprNodeOrigin, ExprValidationContext exprValidationContext, bool forceNumeric, bool includeClassNameInEx) {
             if (value is ExprNode && type != typeof(ExprNode)) {
                 if (value is ExprIdentNode) {
-                    var identNode = (ExprIdentNode) value;
+                    ExprIdentNode identNode = (ExprIdentNode) value;
                     Property prop;
                     try {
-                        prop = PropertyParser.ParseAndWalk(identNode.FullUnresolvedName);
-                    }
-                    catch (Exception ex) {
+                        prop = PropertyParser.ParseAndWalkLaxToSimple(identNode.FullUnresolvedName);
+                    } catch (Exception ex) {
                         throw new ExprValidationException("Failed to parse property '" + identNode.FullUnresolvedName + "'");
                     }
                     if (!(prop is MappedProperty)) {
                         throw new ExprValidationException("Unrecognized property '" + identNode.FullUnresolvedName + "'");
                     }
-                    var mappedProperty = (MappedProperty) prop;
-                    if (mappedProperty.PropertyNameAtomic.ToLower() == ENVIRONMENT_PROPERTIES_NAME)
-                    {
-                        return Environment.GetEnvironmentVariable(mappedProperty.Key);
+                    MappedProperty mappedProperty = (MappedProperty) prop;
+                    if (mappedProperty.PropertyNameAtomic.ToLowerInvariant().Equals(SYSTEM_PROPETIES_NAME)) {
+                        return System.GetProperty(mappedProperty.Key);
                     }
-                }
-                else {
-                    var exprNode = (ExprNode) value;
-                    var evaluator = exprNode.ExprEvaluator;
+                } else {
+                    ExprNode exprNode = (ExprNode) value;
+                    ExprNode validated = ExprNodeUtility.GetValidatedSubtree(exprNodeOrigin, exprNode, exprValidationContext);
+                    exprValidationContext.VariableService.SetLocalVersion();
+                    ExprEvaluator evaluator = validated.ExprEvaluator;
                     if (evaluator == null) {
                         throw new ExprValidationException("Failed to evaluate expression '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode) + "'");
                     }
-                    value = evaluator.Evaluate(new EvaluateParams(null, true, null));
+                    value = evaluator.Evaluate(null, true, null);
                 }
             }
     
             if (value == null) {
                 return null;
             }
-            if (value.GetType() == type) {
+            if (value.Class == type) {
                 return value;
             }
-            if (value.GetType().IsAssignmentCompatible(type)) {
-                if (forceNumeric && value.GetBoxedType() != type.GetBoxedType() && type.IsNumeric() && value.GetType().IsNumeric()) {
-                    value = CoercerFactory.CoerceBoxed(value, type.GetBoxedType());
+            if (TypeHelper.IsAssignmentCompatible(value.Class, type)) {
+                if (forceNumeric && TypeHelper.GetBoxedType(value.Class) != TypeHelper.GetBoxedType(type) && TypeHelper.IsNumeric(type) && TypeHelper.IsNumeric(value.Class)) {
+                    value = TypeHelper.CoerceBoxed((Number) value, TypeHelper.GetBoxedType(type));
                 }
                 return value;
             }
-            if (TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), type)) {
+            if (TypeHelper.IsSubclassOrImplementsInterface(value.Class, type)) {
                 return value;
             }
             if (type.IsArray) {
-                if (!(value.GetType().IsGenericCollection())) {
-                    string detail = "expects an array but receives a value of type " + value.GetType().FullName;
+                if (!(value is Collection)) {
+                    string detail = "expects an array but receives a value of type " + value.Class.Name;
                     throw new ExprValidationException(GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
                 }
-
-                var items = value.UnwrapIntoArray<object>();
-                var coercedArray = Array.CreateInstance(type.GetElementType(), items.Length);
-                for (var i = 0; i < items.Length; i++) {
-                    var coercedValue = CoerceProperty(propertyName + " (array element)", type, items[i], type.GetElementType(), engineImportService, false, includeClassNameInEx);
-                    coercedArray.SetValue(coercedValue, i);
+                Object[] items = ((Collection) value).ToArray();
+                Object coercedArray = Array.NewInstance(type.ComponentType, items.Length);
+                for (int i = 0; i < items.Length; i++) {
+                    Object coercedValue = CoerceProperty(propertyName + " (array element)", type, items[i], type.ComponentType, exprNodeOrigin, exprValidationContext, false, includeClassNameInEx);
+                    Array.Set(coercedArray, i, coercedValue);
                 }
                 return coercedArray;
             }
             if (!(value is Map)) {
-                string detail = "expects an " + TypeHelper.GetTypeNameFullyQualPretty(type) + " but receives a value of type " + value.GetType().FullName;
+                string detail = "expects an " + TypeHelper.GetTypeNameFullyQualPretty(type) + " but receives a value of type " + value.Class.Name;
                 throw new ExprValidationException(GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }
-            var props = (IDictionary<String, Object>) value;
-            return InstantiatePopulateObject(props, type, engineImportService);
+            IDictionary<string, Object> props = (IDictionary<string, Object>) value;
+            return InstantiatePopulateObject(props, type, exprNodeOrigin, exprValidationContext);
         }
-
-        private static String GetExceptionText(String propertyName, Type containingType, bool includeClassNameInEx, String detailText)
-        {
-            String msg = "Property '" + propertyName + "'";
-            if (includeClassNameInEx)
-            {
+    
+        private static string GetExceptionText(string propertyName, Type containingType, bool includeClassNameInEx, string detailText) {
+            string msg = "Property '" + propertyName + "'";
+            if (includeClassNameInEx) {
                 msg += " of class " + TypeHelper.GetTypeNameFullyQualPretty(containingType);
             }
             msg += " " + detailText;
             return msg;
         }
-
-        private static WriteablePropertyDescriptor FindDescriptor(Type clazz, String propertyName, ICollection<WriteablePropertyDescriptor> writables)
-        {
-            foreach (var desc in writables) {
-                if (desc.PropertyName.ToLower() == propertyName.ToLower()) {
+    
+        private static WriteablePropertyDescriptor FindDescriptor(Type clazz, string propertyName, ISet<WriteablePropertyDescriptor> writables)
+                {
+            foreach (WriteablePropertyDescriptor desc in writables) {
+                if (desc.PropertyName.ToLowerInvariant().Equals(propertyName.ToLowerInvariant())) {
                     return desc;
                 }
             }
             return null;
         }
     
-        private static String GetMessageExceptionInstantiating(Type clazz) {
-            return "Exception instantiating class " + clazz.FullName + ", please make sure the class has a public no-arg constructor (and for inner classes is declared static)";
+        private static string GetMessageExceptionInstantiating(Type clazz) {
+            return "Exception instantiating class " + clazz.Name + ", please make sure the class has a public no-arg constructor (and for inner classes is declared static)";
         }
-
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
-}
+} // end of namespace

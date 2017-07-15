@@ -73,7 +73,7 @@ namespace com.espertech.esper.epl.db
             }
         }
 
-        private static readonly PollResultIndexingStrategy _iteratorIndexingStrategy = new IteratorIndexingStrategy();
+        private static readonly PollResultIndexingStrategy ITERATOR_INDEXING_STRATEGY = new IteratorIndexingStrategy();
 
         /// <summary>
         /// Returns the a set of stream numbers of all streams that provide
@@ -180,12 +180,12 @@ namespace com.espertech.esper.epl.db
 
             var count = 0;
             var validationContext = new ExprValidationContext(
-                streamTypeService, engineImportService, 
+                streamTypeService, engineImportService,
                 statementContext.StatementExtensionServicesContext, null,
                 timeProvider, variableService, tableService,
                 exprEvaluatorContext, eventAdapterService,
-                statementContext.StatementName, 
-                statementContext.StatementId, 
+                statementContext.StatementName,
+                statementContext.StatementId,
                 statementContext.Annotations, null,
                 scriptingService, false, false, true, false, null, false);
 
@@ -253,18 +253,19 @@ namespace com.espertech.esper.epl.db
                 // try the threadlocal iteration cache, if set
                 if (localDataCache != null)
                 {
-                    result = localDataCache.GetCached(lookupValues);
+                    result = localDataCache.GetCached(lookupValues, lookupValues.Length);
                 }
 
                 // try the connection cache
                 if (result == null)
                 {
-                    var multi = _dataCache.GetCached(lookupValues);
-                    if (multi != null) {
+                    var multi = _dataCache.GetCached(lookupValues, lookupValues.Length);
+                    if (multi != null)
+                    {
                         result = multi;
                         if (localDataCache != null)
                         {
-                            localDataCache.PutCached(lookupValues, result);
+                            localDataCache.PutCached(lookupValues, lookupValues.Length, result);
                         }
                     }
                 }
@@ -296,11 +297,11 @@ namespace com.espertech.esper.epl.db
                         resultPerInputRow[row] = indexTable;
 
                         // save in cache
-                        _dataCache.PutCached(lookupValues, indexTable);
+                        _dataCache.PutCached(lookupValues, lookupValues.Length, indexTable);
 
                         if (localDataCache != null)
                         {
-                            localDataCache.PutCached(lookupValues, indexTable);
+                            localDataCache.PutCached(lookupValues, lookupValues.Length, indexTable);
                         }
                     }
                     catch (EPException)
@@ -389,7 +390,7 @@ namespace com.espertech.esper.epl.db
         /// </returns>
         public IEnumerator<EventBean> GetEnumerator()
         {
-            var result = Poll(NULL_ROWS, _iteratorIndexingStrategy, _exprEvaluatorContext);
+            var result = Poll(NULL_ROWS, ITERATOR_INDEXING_STRATEGY, _exprEvaluatorContext);
 
             foreach (var tableList in result)
             {

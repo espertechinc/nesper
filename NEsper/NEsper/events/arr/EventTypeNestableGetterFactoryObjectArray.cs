@@ -153,12 +153,17 @@ namespace com.espertech.esper.events.arr
 
         public EventPropertyGetterMapped GetPropertyProvidedGetterMap(IDictionary<String, Object> nestableTypes, String mappedPropertyName, MappedProperty mappedProperty, EventAdapterService eventAdapterService)
         {
-            return (EventPropertyGetterMapped) mappedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
+            return (EventPropertyGetterMapped)mappedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
         }
 
         public EventPropertyGetterIndexed GetPropertyProvidedGetterIndexed(IDictionary<String, Object> nestableTypes, String indexedPropertyName, IndexedProperty indexedProperty, EventAdapterService eventAdapterService)
         {
-            return (EventPropertyGetterIndexed) indexedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
+            return (EventPropertyGetterIndexed)indexedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
+        }
+
+        public EventPropertyGetter GetGetterNestedPropertyProvidedGetterDynamic(IDictionary<String, Object> nestableTypes, String propertyName, EventPropertyGetter nestedGetter, EventAdapterService eventAdapterService)
+        {
+            return null; // this case is not supported
         }
     }
 }

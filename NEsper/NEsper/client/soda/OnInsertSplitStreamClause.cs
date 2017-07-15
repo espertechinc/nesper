@@ -30,14 +30,14 @@ namespace com.espertech.esper.client.soda
         {
             return new OnInsertSplitStreamClause(isFirst, items);
         }
-    
+
         /// <summary>Creates an split-stream on-insert clause considering only the first where-clause that matches. </summary>
         /// <returns>split-stream on-insert clause</returns>
         public static OnInsertSplitStreamClause Create()
         {
             return new OnInsertSplitStreamClause(true, new List<OnInsertSplitStreamItem>());
         }
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="isFirst">indicator whether only the first where-clause is to match or all where-clauses.</param>
         /// <param name="items">tuples of insert-into, select and where-clauses.</param>
@@ -46,7 +46,7 @@ namespace com.espertech.esper.client.soda
             IsFirst = isFirst;
             Items = items;
         }
-    
+
         /// <summary>Renders the clause in textual representation. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">for NewLine-whitespace formatting</param>
@@ -55,17 +55,25 @@ namespace com.espertech.esper.client.soda
             String delimiter = "";
             foreach (OnInsertSplitStreamItem item in Items)
             {
-                writer.Write(delimiter);
                 item.InsertInto.ToEPL(writer, formatter, true);
                 item.SelectClause.ToEPL(writer, formatter, true, false);
+                if (item.PropertySelects != null)
+                {
+                    writer.Write(" from ");
+                    ContainedEventSelect.ToEPL(writer, formatter, item.PropertySelects);
+                    if (item.PropertySelectsStreamName != null)
+                    {
+                        writer.Write(" as ");
+                        writer.Write(item.PropertySelectsStreamName);
+                    }
+                }
                 if (item.WhereClause != null)
                 {
                     writer.Write(" where ");
                     item.WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
-                delimiter = " ";
             }
-    
+
             if (!IsFirst)
             {
                 writer.Write(" output all");

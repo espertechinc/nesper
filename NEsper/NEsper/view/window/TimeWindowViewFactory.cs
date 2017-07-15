@@ -10,49 +10,40 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.view.window
 {
-    /// <summary>
-    /// Factory for <seealso cref="TimeWindowView"/>.
-    /// </summary>
-    public class TimeWindowViewFactory : DataWindowViewFactory, DataWindowViewWithPrevious
+    /// <summary>Factory for <seealso cref="TimeWindowView" />.</summary>
+    public class TimeWindowViewFactory
+        : DataWindowViewFactory
+        , DataWindowViewWithPrevious
     {
-        /// <summary>Number of msec before expiry. </summary>
-        private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
-    
         private EventType _eventType;
-    
-        public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
-        {
-            if (expressionParameters.Count != 1)
-            {
-                throw new ViewParameterException(ViewParamMessage);
-            }
+        private ExprTimePeriodEvalDeltaConstFactory _timeDeltaComputationFactory;
 
-            _timeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
-                ViewName, viewFactoryContext.StatementContext, expressionParameters[0], ViewParamMessage, 0);
-        }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+        public ExprTimePeriodEvalDeltaConstFactory TimeDeltaComputationFactory
         {
-            _eventType = parentEventType;
+            get { return _timeDeltaComputationFactory; }
         }
-    
-        public Object MakePreviousGetter()
+
+        private string ViewParamMessage
         {
-            return new RandomAccessByIndexGetter();
+            get { return ViewName + " view requires a single numeric or time period parameter"; }
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
-            return new TimeWindowView(agentInstanceViewFactoryContext, this, _timeDeltaComputation, randomAccess);
+            ExprTimePeriodEvalDeltaConst timeDeltaComputation = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceViewFactoryContext.AgentInstanceContext);
+            ViewUpdatedCollection randomAccess =
+                agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
+                    .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            return new TimeWindowView(agentInstanceViewFactoryContext, this, timeDeltaComputation, randomAccess);
         }
 
         public EventType EventType
@@ -60,36 +51,52 @@ namespace com.espertech.esper.view.window
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is TimeWindowView))
             {
                 return false;
             }
-    
+
             var myView = (TimeWindowView) view;
-            if (!_timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
+            ExprTimePeriodEvalDeltaConst delta = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceContext);
+            if (!delta.EqualsTimePeriod(myView.TimeDeltaComputation))
             {
                 return false;
             }
-    
+
             // For reuse of the time window it doesn't matter if it provides random access or not
             return myView.IsEmpty();
         }
 
         public string ViewName
         {
-            get { return "Time"; }
+            get { return "TimeInMillis"; }
         }
 
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
+        public Object MakePreviousGetter()
         {
-            get { return _timeDeltaComputation; }
+            return new RandomAccessByIndexGetter();
         }
 
-        private string ViewParamMessage
+        public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            get { return ViewName + " view requires a single numeric or time period parameter"; }
+            if (expressionParameters.Count != 1)
+            {
+                throw new ViewParameterException(ViewParamMessage);
+            }
+            _timeDeltaComputationFactory = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
+                ViewName, viewFactoryContext.StatementContext, expressionParameters[0], ViewParamMessage, 0);
+        }
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
+        {
+            _eventType = parentEventType;
         }
     }
-}
+} // end of namespace

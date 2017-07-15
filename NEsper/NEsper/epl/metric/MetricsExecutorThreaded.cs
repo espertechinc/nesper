@@ -18,19 +18,19 @@ namespace com.espertech.esper.epl.metric
     public class MetricsExecutorThreaded : MetricsExecutor
     {
         private readonly IExecutorService _threadPool;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         public MetricsExecutorThreaded(String engineURI)
         {
             _threadPool = new DedicatedExecutorService("Metrics", 1);
         }
-    
+
         public void Execute(MetricExec execution, MetricExecutionContext executionContext)
         {
             _threadPool.Submit(() => execution.Execute(executionContext));
         }
-    
+
         public void Dispose()
         {
             _threadPool.Shutdown();

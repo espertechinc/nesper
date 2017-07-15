@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.table.onaction
         private readonly ResultSetProcessor _resultSetProcessor;
         private readonly bool _audit;
         private readonly bool _deleteAndSelect;
-    
+
         public TableOnSelectView(SubordWMatchExprLookupStrategy lookupStrategy, TableStateInstance rootView, ExprEvaluatorContext exprEvaluatorContext, TableMetadata metadata,
                                  TableOnSelectViewFactory parent, ResultSetProcessor resultSetProcessor, bool audit, bool deleteAndSelect)
             : base(lookupStrategy, rootView, exprEvaluatorContext, metadata, deleteAndSelect)
@@ -41,42 +41,44 @@ namespace com.espertech.esper.epl.table.onaction
             _audit = audit;
             _deleteAndSelect = deleteAndSelect;
         }
-    
+
         public override void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QInfraOnAction(OnTriggerType.ON_SELECT, triggerEvents, matchingEvents);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QInfraOnAction(OnTriggerType.ON_SELECT, triggerEvents, matchingEvents); }
+
             EventBean[] newData;
-    
+
             // clear state from prior results
             _resultSetProcessor.Clear();
-    
+
             // build join result
             // use linked hash set to retain order of join results for last/first/window to work most intuitively
             ISet<MultiKey<EventBean>> newEvents = NamedWindowOnSelectView.BuildJoinResult(triggerEvents, matchingEvents);
-    
+
             // process matches
             UniformPair<EventBean[]> pair = _resultSetProcessor.ProcessJoinResult(newEvents, Collections.GetEmptySet<MultiKey<EventBean>>(), false);
             newData = (pair != null ? pair.First : null);
-    
-            if (_parent.IsDistinct) {
+
+            if (_parent.IsDistinct)
+            {
                 newData = EventBeanUtility.GetDistinctByProp(newData, _parent.EventBeanReader);
             }
-    
+
             if (_parent.InternalEventRouter != null)
             {
                 if (newData != null)
                 {
                     for (int i = 0; i < newData.Length; i++)
                     {
-                        if (_audit) {
+                        if (_audit)
+                        {
                             AuditPath.AuditInsertInto(ExprEvaluatorContext.EngineURI, ExprEvaluatorContext.StatementName, newData[i]);
                         }
                         _parent.InternalEventRouter.Route(newData[i], _parent.StatementHandle, _parent.InternalEventRouteDest, ExprEvaluatorContext, false);
                     }
                 }
             }
-    
+
             // The on-select listeners receive the events selected
             if ((newData != null) && (newData.Length > 0))
             {
@@ -86,18 +88,20 @@ namespace com.espertech.esper.epl.table.onaction
                     UpdateChildren(newData, null);
                 }
             }
-    
+
             // clear state from prior results
             _resultSetProcessor.Clear();
-    
+
             // Events to delete are indicated via old data
-            if (_deleteAndSelect) {
-                foreach (EventBean @event in matchingEvents) {
+            if (_deleteAndSelect)
+            {
+                foreach (EventBean @event in matchingEvents)
+                {
                     TableStateInstance.DeleteEvent(@event);
                 }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraOnAction();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraOnAction(); }
         }
 
         public override EventType EventType

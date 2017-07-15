@@ -29,7 +29,7 @@ namespace com.espertech.esper.regression.epl
         public void SetUp()
         {
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = true;
             config.AddEventType(typeof(SupportBeanInt));
 
             ConfigurationMethodRef configMethod = new ConfigurationMethodRef();

@@ -48,7 +48,7 @@ namespace com.espertech.esper.support.core
             get { return null; }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
             get { return null; }
         }

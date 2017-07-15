@@ -7,7 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.client.annotation
 {
@@ -171,4 +176,4 @@ namespace com.espertech.esper.client.annotation
                 .Any(listItem => listItem == lookedForValue);
         }
     }
-}
+} // end of namespace

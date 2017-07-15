@@ -7,122 +7,91 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Globalization;
+using System.Collections.Generic;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.type;
 
 namespace com.espertech.esper.util
 {
     /// <summary>
-    /// A factory for creating an instance of a parser that parses a String and returns a target type.
+    /// A factory for creating an instance of a parser that parses a string and returns a target type.
     /// </summary>
-    public class SimpleTypeParserFactory
-    {
+    public class SimpleTypeParserFactory {
         /// <summary>
-        /// Returns a parsers for the String value using the given built-in class for parsing.
+        /// Returns a parsers for the string value using the given Java built-in class for parsing.
         /// </summary>
-        /// <param name="type">is the type to parse the value to</param>
+        /// <param name="clazz">is the class to parse the value to</param>
         /// <returns>value matching the type passed in</returns>
-        public static SimpleTypeParser GetParser(Type type)
-        {
-            Type typeBoxed = TypeHelper.GetBoxedType(type);
-
-            if (typeBoxed == typeof (string))
-            {
-                return value => value;
+        public static SimpleTypeParser GetParser(Type clazz) {
+            Type classBoxed = TypeHelper.GetBoxedType(clazz);
+    
+            if (classBoxed == typeof(string)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (value) => {
+                        return value;
+                    };
+                };
             }
-            if (typeBoxed == typeof (char?))
-            {
-                return value => value[0];
+            if (classBoxed == typeof(Character)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (value) => {
+                        return Value.CharAt(0);
+                    };
+                };
             }
-            if (typeBoxed == typeof (bool?))
-            {
-                return value => Boolean.Parse(value);
+            if (classBoxed == typeof(bool?)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return BoolValue.ParseString(text.ToLowerInvariant().Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (Guid?))
-            {
-                return value => new Guid(value);
+            if (classBoxed == typeof(Byte)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return ByteValue.ParseString(text.Trim());
+                    };
+                };
             }
-
-            // -- Integers
-            if (typeBoxed == typeof (byte?))
-            {
-                return delegate(String value) {
-                           value = value.Trim();
-                           if (value.StartsWith("0x")) {
-                               return Byte.Parse(value.Substring(2), NumberStyles.HexNumber);
-                           }
-
-                           return Byte.Parse(value.Trim());
-                       };
+            if (classBoxed == typeof(Short)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return ShortValue.ParseString(text.Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (sbyte?))
-            {
-                return value => SByte.Parse(value.Trim());
+            if (classBoxed == typeof(long)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return LongValue.ParseString(text.Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (short?))
-            {
-                return value => Int16.Parse(value);
+            if (classBoxed == typeof(Float)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return FloatValue.ParseString(text.Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (ushort?))
-            {
-                return value => UInt16.Parse(value);
+            if (classBoxed == typeof(double?)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return DoubleValue.ParseString(text.Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (int?))
-            {
-                return value => Int32.Parse(value);
+            if (classBoxed == typeof(int?)) {
+                return new ProxySimpleTypeParser() {
+                    ProcParse = (text) => {
+                        return IntValue.ParseString(text.Trim());
+                    };
+                };
             }
-            if (typeBoxed == typeof (uint?))
-            {
-                return value => UInt32.Parse(value);
-            }
-            if (typeBoxed == typeof (long?))
-            {
-                return delegate(String value)
-                           {
-                               value = value.TrimEnd('l', 'L', ' ');
-                               return Int64.Parse(value);
-                           };
-            }
-            if (typeBoxed == typeof (ulong?))
-            {
-                return delegate(String value)
-                           {
-                               value = value.TrimEnd('l', 'L', ' ');
-                               return UInt64.Parse(value);
-                           };
-            }
-
-            // -- Floating Point
-            if (typeBoxed == typeof (float?))
-            {
-                return delegate(String value)
-                           {
-                               value = value.TrimEnd('f', 'F', ' ');
-                               return Single.Parse(value);
-                           };
-            }
-            if (typeBoxed == typeof (double?))
-            {
-                return delegate(String value)
-                           {
-                               value = value.TrimEnd('f', 'F', 'd', 'D', ' ');
-                               return Double.Parse(value);
-                           };
-            }
-            if (typeBoxed == typeof (decimal?))
-            {
-                return delegate(String value)
-                           {
-                               value = value.TrimEnd('f', 'F', 'd', 'D', 'M', 'm', ' ');
-                               return Decimal.Parse(value);
-                           };
-            }
-
-            var untyped = Nullable.GetUnderlyingType(typeBoxed);
-            if ((untyped != null) && untyped.IsEnum) {
-                return value => Enum.Parse(untyped, value, true);
-            }
-
             return null;
         }
     }
-}
+} // end of namespace

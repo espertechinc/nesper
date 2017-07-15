@@ -64,7 +64,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             var resultType = result.GetType();
             if (result is ICollection<T>)
             {
-                return (ICollection<T>) result;
+                return (ICollection<T>)result;
             }
 
             if (resultType.IsGenericCollection() || resultType is IEnumerable)

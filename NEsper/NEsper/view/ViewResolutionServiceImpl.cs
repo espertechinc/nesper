@@ -7,120 +7,86 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
 
+using com.espertech.esper.collection;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.virtualdw;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.view
 {
     /// <summary>
     /// Resolves view namespace and name to view factory class, using configuration.
     /// </summary>
-    public class ViewResolutionServiceImpl : ViewResolutionService
-    {
+    public class ViewResolutionServiceImpl : ViewResolutionService {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly PluggableObjectRegistry _viewObjects;
-        private readonly String _optionalNamedWindowName;
-        private readonly Type _virtualDataWindowViewFactory;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="viewObjects">is the view objects to use for resolving views, can be both built-in and plug-in views.</param>
-        /// <param name="optionalNamedWindowName">Name of the optional named window.</param>
-        /// <param name="virtualDataWindowViewFactory">The virtual data window view factory.</param>
-        public ViewResolutionServiceImpl(PluggableObjectRegistry viewObjects, String optionalNamedWindowName, Type virtualDataWindowViewFactory)
-        {
-            _viewObjects = viewObjects;
-            _optionalNamedWindowName = optionalNamedWindowName;
-            _virtualDataWindowViewFactory = virtualDataWindowViewFactory;
+        private readonly PluggableObjectRegistry viewObjects;
+        private readonly string optionalNamedWindowName;
+        private readonly Type virtualDataWindowViewFactory;
+    
+        public ViewResolutionServiceImpl(PluggableObjectRegistry viewObjects, string optionalNamedWindowName, Type virtualDataWindowViewFactory) {
+            this.viewObjects = viewObjects;
+            this.optionalNamedWindowName = optionalNamedWindowName;
+            this.virtualDataWindowViewFactory = virtualDataWindowViewFactory;
         }
     
-        public ViewFactory Create(String nameSpace, String name)
-        {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug(".create Creating view factory, namespace=" + nameSpace + " name=" + name);
+        public ViewFactory Create(string nameSpace, string name) {
+            if (Log.IsDebugEnabled) {
+                Log.Debug(".create Creating view factory, @namespace =" + nameSpace + " name=" + name);
             }
-
+    
             Type viewFactoryClass = null;
-
-            var pair = _viewObjects.Lookup(nameSpace, name);
-            if (pair != null)
-            {
-                if (pair.Second.PluggableType == PluggableObjectType.VIEW )
-                {
+    
+            Pair<Type, PluggableObjectEntry> pair = viewObjects.Lookup(nameSpace, name);
+            if (pair != null) {
+                if (pair.Second.Type == PluggableObjectType.VIEW) {
                     // Handle named windows in a configuration that always declares a system-wide virtual view factory
-                    if (_optionalNamedWindowName != null && _virtualDataWindowViewFactory != null) {
-                        return new VirtualDWViewFactoryImpl(_virtualDataWindowViewFactory, _optionalNamedWindowName, null);
+                    if (optionalNamedWindowName != null && virtualDataWindowViewFactory != null) {
+                        return new VirtualDWViewFactoryImpl(virtualDataWindowViewFactory, optionalNamedWindowName, null);
                     }
     
                     viewFactoryClass = pair.First;
-                }
-                else if (pair.Second.PluggableType == PluggableObjectType.VIRTUALDW)
-                {
-                    if (_optionalNamedWindowName == null) {
+                } else if (pair.Second.Type == PluggableObjectType.VIRTUALDW) {
+                    if (optionalNamedWindowName == null) {
                         throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
                     }
-                    return new VirtualDWViewFactoryImpl(pair.First, _optionalNamedWindowName, pair.Second.CustomConfigs);
-                }
-                else
-                {
+                    return new VirtualDWViewFactoryImpl(pair.First, optionalNamedWindowName, pair.Second.CustomConfigs);
+                } else {
                     throw new ViewProcessingException("Invalid object type '" + pair.Second + "' for view '" + name + "'");
                 }
             }
     
-            if (viewFactoryClass == null)
-            {
-                String message = "View name '" + nameSpace + ":" + name + "' is not a known view name";
+            if (viewFactoryClass == null) {
+                string message = nameSpace == null ?
+                        "View name '" + name + "' is not a known view name" :
+                        "View name '" + nameSpace + ":" + name + "' is not a known view name";
                 throw new ViewProcessingException(message);
             }
     
             ViewFactory viewFactory;
-            try
-            {
-                viewFactory = (ViewFactory) Activator.CreateInstance(viewFactoryClass);
+            try {
+                viewFactory = (ViewFactory) viewFactoryClass.NewInstance();
     
-                if (Log.IsDebugEnabled)
-                {
+                if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated view");
                 }
-            }
-            catch (InvalidCastException e)
-            {
-                String message = "Error casting view factory instance to " + typeof(ViewFactory).FullName + " interface for view '" + name + "'";
+            } catch (ClassCastException e) {
+                string message = "Error casting view factory instance to " + typeof(ViewFactory).Name + " interface for view '" + name + "'";
+                throw new ViewProcessingException(message, e);
+            } catch (IllegalAccessException e) {
+                string message = "Error invoking view factory constructor for view '" + name;
+                message += "', no invocation access for Type.newInstance";
+                throw new ViewProcessingException(message, e);
+            } catch (InstantiationException e) {
+                string message = "Error invoking view factory constructor for view '" + name;
+                message += "' using Type.newInstance";
                 throw new ViewProcessingException(message, e);
             }
-            catch (TypeInstantiationException ex)
-            {
-                String message = "Error invoking view factory constructor for view '" + name;
-                message += "' using Activator.CreateInstance";
-                throw new ViewProcessingException(message, ex);
-            }
-            catch (TargetInvocationException ex)
-            {
-                String message = "Error invoking view factory constructor for view '" + name;
-                message += "' using Activator.CreateInstance";
-                throw new ViewProcessingException(message, ex);
-            }
-            catch (MethodAccessException ex)
-            {
-                String message = "Error invoking view factory constructor for view '" + name;
-                message += "', no invocation access for Activator.CreateInstance";
-                throw new ViewProcessingException(message, ex);
-            }
-            catch (MemberAccessException ex)
-            {
-                String message = "Error invoking view factory constructor for view '" + name;
-                message += "', no invocation access for Activator.CreateInstance";
-                throw new ViewProcessingException(message, ex);
-            }
-
+    
             return viewFactory;
         }
     }
-}
+} // end of namespace

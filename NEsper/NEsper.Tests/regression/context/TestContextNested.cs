@@ -1386,7 +1386,7 @@ namespace com.espertech.esper.regression.context
 	        configuration.AddEventType<SupportBean_S0>();
 	        configuration.AddEventType<SupportBean_S1>();
 	        configuration.AddEventType("SupportBean_S2", typeof(SupportBean_S2));
-	        configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+	        configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
 	        configuration.EngineDefaults.ExecutionConfig.IsAllowIsolatedService = true;
 	        var epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 	        epService.Initialize();

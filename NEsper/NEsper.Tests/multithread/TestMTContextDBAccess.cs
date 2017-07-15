@@ -29,7 +29,7 @@ namespace com.espertech.esper.multithread
         public void SetUp()
         {
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.LoggingConfig.IsEnableADO = true;
+            configuration.EngineDefaults.Logging.IsEnableADO = true;
             configuration.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder = false;
 
             var configDB = new ConfigurationDBRef();

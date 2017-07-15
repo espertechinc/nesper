@@ -272,7 +272,7 @@ namespace com.espertech.esper.core.context.subselect
         {
             if (_subSelectHolder.StreamSpecCompiled is NamedWindowConsumerStreamSpec)
             {
-                var namedSpec = (NamedWindowConsumerStreamSpec) _subSelectHolder.StreamSpecCompiled;
+                var namedSpec = (NamedWindowConsumerStreamSpec)_subSelectHolder.StreamSpecCompiled;
                 NamedWindowProcessor processor = services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
                 if (processor == null)
                 {
@@ -319,7 +319,7 @@ namespace com.espertech.esper.core.context.subselect
                 else
                 {
                     eventsInWindow = new List<EventBean>();
-                    for (IEnumerator<EventBean> it = consumerView.GetEnumerator(); it.MoveNext();)
+                    for (IEnumerator<EventBean> it = consumerView.GetEnumerator(); it.MoveNext(); )
                     {
                         eventsInWindow.Add(it.Current);
                     }
@@ -327,7 +327,7 @@ namespace com.espertech.esper.core.context.subselect
                 EventBean[] newEvents = eventsInWindow.ToArray();
                 if (subselectView != null)
                 {
-                    ((View) subselectView).Update(newEvents, null);
+                    ((View)subselectView).Update(newEvents, null);
                 }
                 if (eventIndex != null)
                 {

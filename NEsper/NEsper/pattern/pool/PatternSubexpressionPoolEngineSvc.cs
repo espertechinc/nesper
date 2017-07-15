@@ -91,7 +91,7 @@ namespace com.espertech.esper.pattern.pool
                     _poolCount.DecrementAndGet();
                     return false;
                 }
-                
+
                 return true;
             }
             if ((ExecutionPathDebugLog.IsEnabled) && Log.IsDebugEnabled)

@@ -9,14 +9,21 @@
 using System;
 
 using com.espertech.esper.dataflow.util;
+using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.dataflow.core
 {
     public class EPDataFlowEmitter1Stream1TargetPassAlong
         : EPDataFlowEmitter1Stream1TargetBase
     {
-        public EPDataFlowEmitter1Stream1TargetPassAlong(int operatorNum, DataFlowSignalManager signalManager, SignalHandler signalHandler, EPDataFlowEmitterExceptionHandler exceptionHandler, ObjectBindingPair target)
-            : base(operatorNum, signalManager, signalHandler, exceptionHandler, target)
+        public EPDataFlowEmitter1Stream1TargetPassAlong(
+            int operatorNum,
+            DataFlowSignalManager signalManager,
+            SignalHandler signalHandler,
+            EPDataFlowEmitterExceptionHandler exceptionHandler,
+            ObjectBindingPair target,
+            EngineImportService engineImportService)
+            : base(operatorNum, signalManager, signalHandler, exceptionHandler, target, engineImportService)
         {
         }
 

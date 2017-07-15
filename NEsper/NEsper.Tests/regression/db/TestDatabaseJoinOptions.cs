@@ -178,7 +178,7 @@ namespace com.espertech.esper.regression.db
         {
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddDatabaseReference("MyDB", configOracle);
-            configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
     
             return configuration;
         }

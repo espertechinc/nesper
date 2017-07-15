@@ -53,7 +53,8 @@ namespace com.espertech.esper.collection
             }
 
             var other = obj as InterchangeablePair<FirstT, SecondT>;
-            if (other == null) {
+            if (other == null)
+            {
                 return false;
             }
 
@@ -84,9 +85,9 @@ namespace com.espertech.esper.collection
             var h2 = o2.GetHashCode();
 
             if (h1 > h2)
-                return h1*397 ^ h2;
+                return h1 * 397 ^ h2;
             else
-                return h2*397 ^ h1;
+                return h2 * 397 ^ h1;
         }
 
         /// <summary>

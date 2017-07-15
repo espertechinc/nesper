@@ -47,6 +47,6 @@ namespace com.espertech.esper.pattern.observer
             Object observerState,
             bool isFilterChildNonQuitting);
 
-        bool IsNonRestarting();
+        bool IsNonRestarting { get; }
     }
 }

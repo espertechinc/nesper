@@ -10,41 +10,38 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.pattern.observer
 {
-    /// <summary>
-    /// Factory for making observer instances.
-    /// </summary>
+    /// <summary>Factory for making observer instances.</summary>
     [Serializable]
     public class TimerIntervalObserverFactory
-        : ObserverFactory
-        , MetaDefItem
+        : ObserverFactory,
+          MetaDefItem
     {
         private const string NAME = "Timer-interval observer";
 
-        /// <summary>Convertor to events-per-stream. </summary>
-        [NonSerialized] private MatchedEventConvertor _convertor;
-
-        /// <summary>Parameters. </summary>
+        /// <summary>Parameters.</summary>
         private ExprNode _parameter;
 
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
+        /// <summary>Convertor to events-per-stream.</summary>
+        [NonSerialized] private MatchedEventConvertor _convertor;
+
+        public void SetObserverParameters(
+            IList<ExprNode> parameters,
+            MatchedEventConvertor convertor,
+            ExprValidationContext validationContext)
         {
             ObserverParameterUtil.ValidateNoNamedParameters(NAME, parameters);
             const string errorMessage = NAME + " requires a single numeric or time period parameter";
-
             if (parameters.Count != 1)
             {
                 throw new ObserverParameterException(errorMessage);
             }
-
-            if (parameters[0] is ExprTimePeriod)
+            if (!(parameters[0] is ExprTimePeriod))
             {
                 var returnType = parameters[0].ExprEvaluator.ReturnType;
                 if (!returnType.IsNumeric())
@@ -57,33 +54,26 @@ namespace com.espertech.esper.pattern.observer
             _convertor = convertor;
         }
 
-        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeDelta(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
             if (_parameter is ExprTimePeriod)
             {
-                ExprTimePeriod timePeriod = (ExprTimePeriod)_parameter;
-                return timePeriod.NonconstEvaluator().DeltaMillisecondsUseEngineTime(
-                    _convertor.Convert(beginState), context.AgentInstanceContext);
+                var timePeriod = (ExprTimePeriod) _parameter;
+                return timePeriod.NonconstEvaluator()
+                    .DeltaUseEngineTime(_convertor.Convert(beginState), context.AgentInstanceContext);
             }
             else
             {
-                var result = _parameter.ExprEvaluator.Evaluate(new EvaluateParams(_convertor.Convert(beginState), true, context.AgentInstanceContext));
+                var result = _parameter.ExprEvaluator.Evaluate(
+                    new EvaluateParams(_convertor.Convert(beginState), true, context.AgentInstanceContext));
                 if (result == null)
                 {
                     throw new EPException("Null value returned for guard expression");
                 }
-
-                if (result.IsFloatingPointNumber())
-                {
-                    return (long)Math.Round(1000d * result.AsDouble());
-                }
-                else
-                {
-                    return 1000 * result.AsLong();
-                }
+                return context.StatementContext.TimeAbacus.DeltaForSecondsNumber(result);
             }
         }
-        
+
         public EventObserver MakeObserver(
             PatternAgentInstanceContext context,
             MatchedEventMap beginState,
@@ -92,13 +82,12 @@ namespace com.espertech.esper.pattern.observer
             Object observerState,
             bool isFilterChildNonQuitting)
         {
-            return new TimerIntervalObserver(
-                ComputeMilliseconds(beginState, context), beginState, observerEventEvaluator);
+            return new TimerIntervalObserver(ComputeDelta(beginState, context), beginState, observerEventEvaluator);
         }
 
-        public bool IsNonRestarting()
+        public bool IsNonRestarting
         {
-            return false;
+            get { return false; }
         }
     }
-}
+} // end of namespace

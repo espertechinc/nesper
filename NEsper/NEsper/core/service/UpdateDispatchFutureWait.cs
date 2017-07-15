@@ -29,7 +29,7 @@ namespace com.espertech.esper.core.service
         private UpdateDispatchFutureWait _later;
         private volatile bool _isCompleted;
         private readonly long _msecTimeout;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="view">is the blocking dispatch view through which to execute a dispatch</param>
         /// <param name="earlier">is the older future</param>
@@ -40,7 +40,7 @@ namespace com.espertech.esper.core.service
             _earlier = earlier;
             _msecTimeout = msecTimeout;
         }
-    
+
         /// <summary>Ctor - use for the first future to indicate completion. </summary>
         public UpdateDispatchFutureWait()
         {
@@ -60,23 +60,23 @@ namespace com.espertech.esper.core.service
         {
             _later = later;
         }
-    
+
         public void Execute()
         {
             if (!_earlier._isCompleted)
             {
-                lock(this)
+                lock (this)
                 {
                     if (!_earlier._isCompleted)
                     {
-                        Monitor.Wait(this, (int) _msecTimeout);
+                        Monitor.Wait(this, (int)_msecTimeout);
                     }
                 }
             }
-    
+
             _view.Execute();
             _isCompleted = true;
-    
+
             if (_later != null)
             {
                 lock (_later)

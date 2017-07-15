@@ -19,17 +19,17 @@ namespace com.espertech.esper.view.internals
     /// <summary>
     /// Factory for union-views.
     /// </summary>
-    public class UnionViewFactory 
+    public class UnionViewFactory
         : ViewFactory
         , DataWindowViewFactory
         , ViewFactoryContainer
     {
         /// <summary>The event type. </summary>
         private EventType _parentEventType;
-    
+
         /// <summary>The view factories. </summary>
         private IList<ViewFactory> _viewFactories;
-    
+
         /// <summary>Ctor. Dependencies injected after reflective instantiation. </summary>
         public UnionViewFactory()
         {
@@ -54,11 +54,11 @@ namespace com.espertech.esper.view.internals
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters)
         {
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             bool hasAsymetric = false;
@@ -68,7 +68,8 @@ namespace com.espertech.esper.view.internals
                 views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
                 hasAsymetric |= viewFactory is AsymetricDataWindowViewFactory;
             }
-            if (hasAsymetric) {
+            if (hasAsymetric)
+            {
                 return new UnionAsymetricView(agentInstanceViewFactoryContext, this, _parentEventType, views);
             }
             return new UnionView(agentInstanceViewFactoryContext, this, _parentEventType, views);
@@ -79,7 +80,7 @@ namespace com.espertech.esper.view.internals
             get { return _parentEventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return false;
         }

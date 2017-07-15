@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.script
         {
             var scriptArgs = new ScriptArgs();
             var bindings = new Dictionary<string, object>();
-            bindings.Put(ExprNodeScript.CONTEXT_BINDING_NAME, evaluateParams.ExprEvaluatorContext.AgentInstanceScriptContext);
+            bindings.Put(ExprNodeScript.CONTEXT_BINDING_NAME, evaluateParams.ExprEvaluatorContext.AllocateAgentInstanceScriptContext);
             for (int i = 0; i < Names.Length; i++)
             {
                 bindings.Put(Names[i], Parameters[i].Evaluate(evaluateParams));

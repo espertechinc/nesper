@@ -12,8 +12,9 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.core.context.stmt
@@ -74,27 +75,52 @@ namespace com.espertech.esper.core.context.stmt
             _services.Array[agentInstanceId].SetCurrentAccess(groupKey, agentInstanceId, null);
         }
 
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return _services.Array[agentInstanceId];
+        }
+
         public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
         {
             _services.Array[exprEvaluatorContext.AgentInstanceId].ClearResults(exprEvaluatorContext);
         }
 
-        public Object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object GetValue(
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return _services.Array[agentInstanceId].GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
+            return _services.Array[agentInstanceId].GetValue(
+                column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            return _services.Array[context.AgentInstanceId].GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
+            return _services.Array[context.AgentInstanceId].GetCollectionOfEvents(
+                column, eventsPerStream, isNewData, context);
         }
 
-        public ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<Object> GetCollectionScalar(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
-            return _services.Array[context.AgentInstanceId].GetCollectionScalar(column, eventsPerStream, isNewData, context);
+            return _services.Array[context.AgentInstanceId].GetCollectionScalar(
+                column, eventsPerStream, isNewData, context);
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return _services.Array[context.AgentInstanceId].GetEventBean(column, eventsPerStream, isNewData, context);
         }
@@ -128,9 +154,9 @@ namespace com.espertech.esper.core.context.stmt
         {
             return _services.Array[exprEvaluatorContext.AgentInstanceId].GetGroupKeys(exprEvaluatorContext);
         }
- 
+
         public void Stop()
         {
         }
     }
-}
+} // end of namespace

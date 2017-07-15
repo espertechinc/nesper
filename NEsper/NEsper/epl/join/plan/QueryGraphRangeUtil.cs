@@ -15,12 +15,12 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.epl.join.plan
 {
     /// <summary>
-    /// Property lists stored as a value for each stream-to-stream relationship, for use by 
-    /// <see cref="com.espertech.esper.epl.join.plan.QueryGraph" />
+    ///     Property lists stored as a value for each stream-to-stream relationship, for use by
+    ///     <seealso cref="com.espertech.esper.epl.join.plan.QueryGraph" />.
     /// </summary>
     public class QueryGraphRangeUtil
     {
-        private static readonly IDictionary<MultiKeyUntyped, QueryGraphRangeConsolidateDesc> opsTable =
+        private static readonly IDictionary<MultiKeyUntyped, QueryGraphRangeConsolidateDesc> OPS_TABLE =
             new Dictionary<MultiKeyUntyped, QueryGraphRangeConsolidateDesc>();
 
         static QueryGraphRangeUtil()
@@ -34,19 +34,24 @@ namespace com.espertech.esper.epl.join.plan
         private static void Add(QueryGraphRangeEnum opOne, QueryGraphRangeEnum opTwo, QueryGraphRangeEnum range)
         {
             MultiKeyUntyped keyOne = GetKey(opOne, opTwo);
-            opsTable[keyOne] = new QueryGraphRangeConsolidateDesc(range, false);
+            OPS_TABLE.Put(keyOne, new QueryGraphRangeConsolidateDesc(range, false));
             MultiKeyUntyped keyRev = GetKey(opTwo, opOne);
-            opsTable[keyRev] = new QueryGraphRangeConsolidateDesc(range, true);
+            OPS_TABLE.Put(keyRev, new QueryGraphRangeConsolidateDesc(range, true));
         }
 
         private static MultiKeyUntyped GetKey(QueryGraphRangeEnum op1, QueryGraphRangeEnum op2)
         {
-            return new MultiKeyUntyped(new Object[] { op1, op2 });
+            return new MultiKeyUntyped(
+                new Object[]
+                {
+                    op1,
+                    op2
+                });
         }
 
         public static QueryGraphRangeConsolidateDesc GetCanConsolidate(QueryGraphRangeEnum op1, QueryGraphRangeEnum op2)
         {
-            return opsTable.Get(GetKey(op1, op2));
+            return OPS_TABLE.Get(GetKey(op1, op2));
         }
     }
-}
+} // end of namespace

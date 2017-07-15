@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.pattern
@@ -20,22 +21,28 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalOrStateNode : EvalStateNode, Evaluator
     {
-        protected readonly EvalOrNode EvalOrNode;
-        protected readonly EvalStateNode[] ChildNodes;
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly EvalOrNode _evalOrNode;
+        private readonly EvalStateNode[] _childNodes;
     
-        /// <summary>Constructor. </summary>
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalOrNode">is the factory node associated to the state</param>
-        public EvalOrStateNode(Evaluator parentNode, EvalOrNode evalOrNode) 
-            : base(parentNode)
+        public EvalOrStateNode(Evaluator parentNode, EvalOrNode evalOrNode)
+            :  base(parentNode)
         {
-            ChildNodes = new EvalStateNode[evalOrNode.ChildNodes.Length];
-            EvalOrNode = evalOrNode;
+            _childNodes = new EvalStateNode[evalOrNode.ChildNodes.Length];
+            _evalOrNode = evalOrNode;
         }
     
-        public override void RemoveMatch(ISet<EventBean> matchEvent) {
-            foreach (EvalStateNode node in ChildNodes) {
-                if (node != null) {
+        public override void RemoveMatch(ISet<EventBean> matchEvent)
+        {
+            foreach (EvalStateNode node in _childNodes)
+            {
+                if (node != null)
+                {
                     node.RemoveMatch(matchEvent);
                 }
             }
@@ -43,83 +50,92 @@ namespace com.espertech.esper.pattern
 
         public override EvalNode FactoryNode
         {
-            get { return EvalOrNode; }
+            get { return _evalOrNode; }
         }
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternOrStart(EvalOrNode, beginState);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QPatternOrStart(_evalOrNode, beginState);
+            }
             // In an "or" expression we need to create states for all child expressions/listeners,
             // since all are going to be started
             int count = 0;
-            foreach (EvalNode node in EvalOrNode.ChildNodes)
-            {
+            foreach (EvalNode node in _evalOrNode.ChildNodes) {
                 EvalStateNode childState = node.NewState(this, null, 0L);
-                ChildNodes[count++] = childState;
+                _childNodes[count++] = childState;
             }
     
             // In an "or" expression we start all child listeners
-            EvalStateNode[] childNodeCopy = new EvalStateNode[ChildNodes.Length];
-            Array.Copy(ChildNodes, 0, childNodeCopy, 0, ChildNodes.Length);
-            foreach (EvalStateNode child in childNodeCopy)
-            {
+            var childNodeCopy = new EvalStateNode[_childNodes.Length];
+            Array.Copy(_childNodes, 0, childNodeCopy, 0, _childNodes.Length);
+            foreach (EvalStateNode child in childNodeCopy) {
                 child.Start(beginState);
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternOrStart();}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().APatternOrStart();
+            }
         }
     
-        public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternOrEvaluateTrue(EvalOrNode, matchEvent);}
+        public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QPatternOrEvaluateTrue(_evalOrNode, matchEvent);
+            }
             // If one of the children quits, the whole or expression turns true and all subexpressions must quit
-            if (isQuitted)
-            {
-                for (int i = 0; i < ChildNodes.Length; i++) {
-                    if (ChildNodes[i] == fromNode) {
-                        ChildNodes[i] = null;
+            if (isQuitted) {
+                for (int i = 0; i < _childNodes.Length; i++) {
+                    if (_childNodes[i] == fromNode) {
+                        _childNodes[i] = null;
                     }
                 }
                 QuitInternal();     // Quit the remaining listeners
             }
     
-            ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternOrEvaluateTrue(isQuitted);}
+            this.ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted);
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().APatternOrEvaluateTrue(isQuitted);
+            }
         }
     
-        public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternOrEvalFalse(EvalOrNode);}
-            for (int i = 0; i < ChildNodes.Length; i++) {
-                if (ChildNodes[i] == fromNode) {
-                    ChildNodes[i] = null;
+        public void EvaluateFalse(EvalStateNode fromNode, bool restartable) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QPatternOrEvalFalse(_evalOrNode);
+            }
+            for (int i = 0; i < _childNodes.Length; i++) {
+                if (_childNodes[i] == fromNode) {
+                    _childNodes[i] = null;
                 }
             }
     
             bool allEmpty = true;
-            for (int i = 0; i < ChildNodes.Length; i++) {
-                if (ChildNodes[i] != null) {
+            for (int i = 0; i < _childNodes.Length; i++) {
+                if (_childNodes[i] != null) {
                     allEmpty = false;
                     break;
                 }
             }
     
             if (allEmpty) {
-                ParentEvaluator.EvaluateFalse(this, true);
+                this.ParentEvaluator.EvaluateFalse(this, true);
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternOrEvalFalse();}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().APatternOrEvalFalse();
+            }
         }
     
-        public override void Quit()
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternOrQuit(EvalOrNode);}
+        public override void Quit() {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QPatternOrQuit(_evalOrNode);
+            }
             QuitInternal();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternOrQuit();}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().APatternOrQuit();
+            }
         }
     
-        public override void Accept(EvalStateNodeVisitor visitor)
-        {
-            visitor.VisitOr(EvalOrNode.FactoryNode, this);
-            foreach (EvalStateNode node in ChildNodes) {
+        public override void Accept(EvalStateNodeVisitor visitor) {
+            visitor.VisitOr(_evalOrNode.FactoryNode, this);
+            foreach (EvalStateNode node in _childNodes) {
                 if (node != null) {
                     node.Accept(visitor);
                 }
@@ -146,20 +162,17 @@ namespace com.espertech.esper.pattern
             get { return false; }
         }
 
-        public override String ToString()
-        {
+        public override String ToString() {
             return "EvalOrStateNode";
         }
     
-        private void QuitInternal()
-        {
-            foreach (EvalStateNode child in ChildNodes)
-            {
+        private void QuitInternal() {
+            foreach (EvalStateNode child in _childNodes) {
                 if (child != null) {
                     child.Quit();
                 }
             }
-            ChildNodes.Fill((EvalStateNode) null);
+            CompatExtensions.Fill(_childNodes, (EvalStateNode) null);
         }
     }
-}
+} // end of namespace

@@ -31,19 +31,23 @@ namespace com.espertech.esper.core.start
     public class EPStatementStartMethodHelperPrior
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        public static PriorEventViewFactory FindPriorViewFactory(IList<ViewFactory> factories) {
+
+        public static PriorEventViewFactory FindPriorViewFactory(IList<ViewFactory> factories)
+        {
             ViewFactory factoryFound = null;
-            foreach (var factory in factories) {
-                if (factory is PriorEventViewFactory) {
+            foreach (var factory in factories)
+            {
+                if (factory is PriorEventViewFactory)
+                {
                     factoryFound = factory;
                     break;
                 }
             }
-            if (factoryFound == null) {
+            if (factoryFound == null)
+            {
                 throw new EPException("Failed to find 'prior'-handling view factory");  // was verified earlier, should not occur
             }
-            return (PriorEventViewFactory) factoryFound;
+            return (PriorEventViewFactory)factoryFound;
         }
 
         public static PriorEventViewFactory GetPriorEventViewFactory(
@@ -58,11 +62,11 @@ namespace com.espertech.esper.core.start
                 var @namespace = ViewEnum.PRIOR_EVENT_VIEW.GetNamespace();
                 var name = ViewEnum.PRIOR_EVENT_VIEW.GetName();
                 var factory = statementContext.ViewResolutionService.Create(@namespace, name);
-    
+
                 var context = new ViewFactoryContext(statementContext, streamNum, @namespace, name, isSubquery, subqueryNumber, false);
-                factory.SetViewParameters(context, ((ExprNode) new ExprConstantNodeImpl(unboundStream)).AsSingleton());
-    
-                return (PriorEventViewFactory) factory;
+                factory.SetViewParameters(context, ((ExprNode)new ExprConstantNodeImpl(unboundStream)).AsSingleton());
+
+                return (PriorEventViewFactory)factory;
             }
             catch (ViewProcessingException ex)
             {
@@ -75,26 +79,30 @@ namespace com.espertech.esper.core.start
                 throw new EPException(text, ex);
             }
         }
-    
-        public static IDictionary<ExprPriorNode, ExprPriorEvalStrategy> CompilePriorNodeStrategies(ViewResourceDelegateVerified viewResourceDelegate, AgentInstanceViewFactoryChainContext[] viewFactoryChainContexts) {
-    
-            if (!viewResourceDelegate.HasPrior) {
+
+        public static IDictionary<ExprPriorNode, ExprPriorEvalStrategy> CompilePriorNodeStrategies(ViewResourceDelegateVerified viewResourceDelegate, AgentInstanceViewFactoryChainContext[] viewFactoryChainContexts)
+        {
+
+            if (!viewResourceDelegate.HasPrior)
+            {
                 return new Dictionary<ExprPriorNode, ExprPriorEvalStrategy>();
             }
-    
+
             IDictionary<ExprPriorNode, ExprPriorEvalStrategy> strategies = new Dictionary<ExprPriorNode, ExprPriorEvalStrategy>();
-    
-            for (var streamNum = 0; streamNum < viewResourceDelegate.PerStream.Length; streamNum++) {
+
+            for (var streamNum = 0; streamNum < viewResourceDelegate.PerStream.Length; streamNum++)
+            {
                 var viewUpdatedCollection = viewFactoryChainContexts[streamNum].PriorViewUpdatedCollection;
                 var callbacksPerIndex = viewResourceDelegate.PerStream[streamNum].PriorRequests;
                 HandlePrior(viewUpdatedCollection, callbacksPerIndex, strategies);
             }
-    
+
             return strategies;
         }
-    
-        private static void HandlePrior(ViewUpdatedCollection viewUpdatedCollection, IDictionary<int, IList<ExprPriorNode>> callbacksPerIndex, IDictionary<ExprPriorNode, ExprPriorEvalStrategy> strategies) {
-    
+
+        private static void HandlePrior(ViewUpdatedCollection viewUpdatedCollection, IDictionary<int, IList<ExprPriorNode>> callbacksPerIndex, IDictionary<ExprPriorNode, ExprPriorEvalStrategy> strategies)
+        {
+
             // Since an expression such as "prior(2, price), prior(8, price)" translates
             // into {2, 8} the relative index is {0, 1}.
             // Map the expression-supplied index to a relative viewUpdatedCollection-known index via wrapper
@@ -107,20 +115,22 @@ namespace com.espertech.esper.core.start
                     ExprPriorEvalStrategy strategy;
                     if (viewUpdatedCollection is RelativeAccessByEventNIndex)
                     {
-                        var relativeAccess = (RelativeAccessByEventNIndex) viewUpdatedCollection;
+                        var relativeAccess = (RelativeAccessByEventNIndex)viewUpdatedCollection;
                         var impl = new PriorEventViewRelAccess(relativeAccess, relativeIndex);
                         strategy = new ExprPriorEvalStrategyRelativeAccess(impl);
                     }
                     else
                     {
-                        if (viewUpdatedCollection is RandomAccessByIndex) {
-                            strategy = new ExprPriorEvalStrategyRandomAccess((RandomAccessByIndex) viewUpdatedCollection);
+                        if (viewUpdatedCollection is RandomAccessByIndex)
+                        {
+                            strategy = new ExprPriorEvalStrategyRandomAccess((RandomAccessByIndex)viewUpdatedCollection);
                         }
-                        else {
-                            strategy = new ExprPriorEvalStrategyRelativeAccess((RelativeAccessByEventNIndex) viewUpdatedCollection);
+                        else
+                        {
+                            strategy = new ExprPriorEvalStrategyRelativeAccess((RelativeAccessByEventNIndex)viewUpdatedCollection);
                         }
                     }
-    
+
                     strategies.Put(callback, strategy);
                 }
                 relativeIndex++;

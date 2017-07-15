@@ -192,7 +192,7 @@ namespace com.espertech.esper.regression.client
             Assert.IsTrue((((EPStatementSPI)stmt).IsNameProvided));
             RunAssertion(stmt);
             stmt.Dispose();
-            var name = (NameAttribute)AnnotationUtil.FindAttribute(stmt.Annotations, typeof(NameAttribute));
+            var name = (NameAttribute)AnnotationUtil.FindAnnotation(stmt.Annotations, typeof(NameAttribute));
             Assert.AreEqual("MyTestStmt", name.Value);
 
             // try lowercase
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regression.client
 
             // NoLock
             stmt = _epService.EPAdministrator.CreateEPL("@NoLock select * from Bean");
-            Assert.NotNull(AnnotationUtil.FindAttribute(stmt.Annotations.ToArray(), typeof(NoLockAttribute)));
+            Assert.NotNull(AnnotationUtil.FindAnnotation(stmt.Annotations.ToArray(), typeof(NoLockAttribute)));
             Assert.AreEqual(1, AnnotationUtil.FindAttributes(stmt.Annotations.ToArray(), typeof(NoLockAttribute)).Count);
         
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }

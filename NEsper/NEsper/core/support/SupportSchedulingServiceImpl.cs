@@ -17,103 +17,103 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.core.support
 {
-	public class SupportSchedulingServiceImpl : SchedulingService
-	{
-	    private readonly IDictionary<long, ScheduleHandle> _added = new Dictionary<long, ScheduleHandle>();
-	    private long _currentTime;
+    public class SupportSchedulingServiceImpl : SchedulingService
+    {
+        private readonly IDictionary<long, ScheduleHandle> _added = new Dictionary<long, ScheduleHandle>();
+        private long _currentTime;
 
-	    public IDictionary<long, ScheduleHandle> Added
-	    {
-	        get { return _added; }
-	    }
+        public IDictionary<long, ScheduleHandle> Added
+        {
+            get { return _added; }
+        }
 
-	    public void EvaluateLock()
-	    {
-	    }
+        public void EvaluateLock()
+        {
+        }
 
-	    public void EvaluateUnLock()
-	    {
-	    }
+        public void EvaluateUnLock()
+        {
+        }
 
-	    public void Add(long afterMSec, ScheduleHandle callback, long slot)
-	    {
-	        Log.Debug(".add Not implemented, afterMSec=" + afterMSec + " callback=" + callback.GetType().Name);
-	        _added.Put(afterMSec, callback);
-	    }
+        public void Add(long afterTime, ScheduleHandle callback, long slot)
+        {
+            Log.Debug(".add Not implemented, afterTime=" + afterTime + " callback=" + callback.GetType().Name);
+            _added.Put(afterTime, callback);
+        }
 
-	    public void Remove(ScheduleHandle callback, long scheduleSlot)
-	    {
-	        Log.Debug(".remove Not implemented, callback=" + callback.GetType().Name);
-	    }
+        public void Remove(ScheduleHandle callback, long scheduleSlot)
+        {
+            Log.Debug(".remove Not implemented, callback=" + callback.GetType().Name);
+        }
 
-	    public long Time
-	    {
-	        get
-	        {
-	            Log.Debug(".getTime Time is " + _currentTime);
-	            return this._currentTime;
-	        }
-	        set
-	        {
-	            Log.Debug(".setTime Setting new time, currentTime=" + value);
-	            this._currentTime = value;
-	        }
-	    }
+        public long Time
+        {
+            get
+            {
+                Log.Debug(".getTime Time is " + _currentTime);
+                return this._currentTime;
+            }
+            set
+            {
+                Log.Debug(".setTime Setting new time, currentTime=" + value);
+                this._currentTime = value;
+            }
+        }
 
-	    public void Evaluate(ICollection<ScheduleHandle> handles)
-	    {
-	        Log.Debug(".evaluate Not implemented");
-	    }
+        public void Evaluate(ICollection<ScheduleHandle> handles)
+        {
+            Log.Debug(".evaluate Not implemented");
+        }
 
-	    public ScheduleBucket AllocateBucket()
-	    {
-	        return new ScheduleBucket(0);
-	    }
+        public ScheduleBucket AllocateBucket()
+        {
+            return new ScheduleBucket(0);
+        }
 
-	    public static void EvaluateSchedule(SchedulingService service)
-	    {
-	        ICollection<ScheduleHandle> handles = new LinkedList<ScheduleHandle>();
-	        service.Evaluate(handles);
+        public static void EvaluateSchedule(SchedulingService service)
+        {
+            ICollection<ScheduleHandle> handles = new LinkedList<ScheduleHandle>();
+            service.Evaluate(handles);
 
-	        foreach (ScheduleHandle handle in handles)
-	        {
-	            if (handle is EPStatementHandleCallback)
-	            {
-	                EPStatementHandleCallback callback = (EPStatementHandleCallback) handle;
-	                callback.ScheduleCallback.ScheduledTrigger(null);
-	            }
-	            else
-	            {
-	                ScheduleHandleCallback cb = (ScheduleHandleCallback) handle;
-	                cb.ScheduledTrigger(null);
-	            }
-	        }
-	    }
+            foreach (var handle in handles)
+            {
+                if (handle is EPStatementHandleCallback)
+                {
+                    var callback = (EPStatementHandleCallback)handle;
+                    callback.ScheduleCallback.ScheduledTrigger(null);
+                }
+                else
+                {
+                    var cb = (ScheduleHandleCallback)handle;
+                    cb.ScheduledTrigger(null);
+                }
+            }
+        }
 
-	    public void Dispose()
-	    {
-	    }
+        public void Dispose()
+        {
+        }
 
-	    public int TimeHandleCount
-	    {
-	        get { throw new NotImplementedException(); }
-	    }
+        public int TimeHandleCount
+        {
+            get { throw new NotImplementedException(); }
+        }
 
-	    public long? FurthestTimeHandle
-	    {
-	        get { throw new NotImplementedException(); }
-	    }
+        public long? FurthestTimeHandle
+        {
+            get { throw new NotImplementedException(); }
+        }
 
-	    public int ScheduleHandleCount
-	    {
-	        get { throw new NotImplementedException(); }
-	    }
+        public int ScheduleHandleCount
+        {
+            get { throw new NotImplementedException(); }
+        }
 
-	    public bool IsScheduled(ScheduleHandle scheduleHandle)
-	    {
-	        return false;
-	    }
+        public bool IsScheduled(ScheduleHandle scheduleHandle)
+        {
+            return false;
+        }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	}
+    }
 } // end of namespace

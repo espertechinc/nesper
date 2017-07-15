@@ -72,7 +72,7 @@ namespace com.espertech.esper.plugin
         /// Also called when a new EPL statement is created with an unseen event type name and the
         /// URIs for resolution have been configured.
         /// </summary>
-        /// <param name="acceptTypeContext">provides the URI specified for resolving the type, and configuration info.</param>
+        /// <param name="acceptTypeContext">provides the URI specified for resolving the type, and configuration INFO.</param>
         /// <returns>
         /// true to accept the type, false such that another event representation may handle the type request
         /// </returns>
@@ -82,7 +82,7 @@ namespace com.espertech.esper.plugin
         /// Returns the event type handler that provides the event type and, upon request, event sender,
         /// for this type.
         /// </summary>
-        /// <param name="eventTypeContext">provides the URI specified for resolving the type, and configuration info.</param>
+        /// <param name="eventTypeContext">provides the URI specified for resolving the type, and configuration INFO.</param>
         /// <returns>provides event type and event sender</returns>
         PlugInEventTypeHandler GetTypeHandler(PlugInEventTypeHandlerContext eventTypeContext);
 

@@ -28,7 +28,7 @@ namespace com.espertech.esper.events.property
     /// Represents a mapped property or array property, ie. an 'value' property with read method 
     /// GetValue(int index) or a 'array' property via read method GetArray() returning an array.
     /// </summary>
-    public class MappedProperty : PropertyBase
+    public class MappedProperty : PropertyBase, PropertyWithKey
     {
         private readonly String _key;
 
@@ -275,8 +275,8 @@ namespace com.espertech.esper.events.property
         }
 
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, 
-            IDictionary<string, object> nestableTypes, 
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
             EventAdapterService eventAdapterService)
         {
             int index;

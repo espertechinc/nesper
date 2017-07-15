@@ -154,7 +154,7 @@ namespace com.espertech.esper.schedule
                 return false;
             }
 
-            var other = (ScheduleSpec) otherObject;
+            var other = (ScheduleSpec)otherObject;
             if (_unitValues.Count != other._unitValues.Count)
             {
                 return false;

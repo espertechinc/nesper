@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.core
     public abstract class MethodPollingExecStrategyBase : PollExecStrategy
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         protected readonly EventAdapterService EventAdapterService;
         protected readonly FastMethod Method;
         protected readonly EventType EventType;
@@ -57,30 +57,31 @@ namespace com.espertech.esper.epl.core
             VariableName = variableName;
             VariableService = variableService;
         }
-    
+
         protected abstract IList<EventBean> HandleResult(Object invocationResult);
-    
+
         protected bool CheckNonNullArrayValue(Object value)
         {
-            if (value == null) {
+            if (value == null)
+            {
                 Log.Warn("Expected non-null return result from method '" + Method.Name + "', but received null array element value");
                 return false;
             }
             return true;
         }
-    
+
         public void Start()
         {
         }
-    
+
         public void Done()
         {
         }
-    
+
         public void Dispose()
         {
         }
-    
+
         public IList<EventBean> Poll(Object[] lookupValues, ExprEvaluatorContext exprEvaluatorContext)
         {
             switch (Strategy)
@@ -110,7 +111,7 @@ namespace com.espertech.esper.epl.core
             }
             if (target is EventBean)
             {
-                target = ((EventBean) target).Underlying;
+                target = ((EventBean)target).Underlying;
             }
             return InvokeInternal(lookupValues, target);
         }

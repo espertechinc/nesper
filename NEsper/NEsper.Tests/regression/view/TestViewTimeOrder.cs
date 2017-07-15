@@ -385,13 +385,13 @@ namespace com.espertech.esper.regression.view
         [Test]
         public void TestInvalid()
         {
-            Assert.AreEqual("Error starting statement: Error attaching view to event stream: Invalid parameter expression 0 for Time-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(bump, 10 sec)]",
+            Assert.AreEqual("Error starting statement: Error attaching view to event stream: Invalid parameter expression 0 for TimeInMillis-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(bump, 10 sec)]",
                     TryInvalid("select * from " + typeof(SupportBeanTimestamp).FullName + ".ext:time_order(bump, 10 sec)"));
     
-            Assert.AreEqual("Error starting statement: Error attaching view to event stream: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(10 sec)]",
+            Assert.AreEqual("Error starting statement: Error attaching view to event stream: TimeInMillis-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(10 sec)]",
                     TryInvalid("select * from " + typeof(SupportBeanTimestamp).FullName + ".ext:time_order(10 sec)"));
 
-            Assert.AreEqual("Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(timestamp, abc)]",
+            Assert.AreEqual("Error starting statement: Error attaching view to event stream: Invalid parameter expression 1 for TimeInMillis-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(timestamp, abc)]",
                     TryInvalid("select * from " + typeof(SupportBeanTimestamp).FullName + ".ext:time_order(timestamp, abc)"));
         }
     

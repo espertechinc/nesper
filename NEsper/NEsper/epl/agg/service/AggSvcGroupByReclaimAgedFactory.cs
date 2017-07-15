@@ -12,7 +12,6 @@ using com.espertech.esper.client.annotation;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.type;
@@ -75,7 +74,9 @@ namespace com.espertech.esper.epl.agg.service
         {
             AggSvcGroupByReclaimAgedEvalFunc max = EvaluationFunctionMaxAge.Make(agentInstanceContext);
             AggSvcGroupByReclaimAgedEvalFunc freq = EvaluationFunctionFrequency.Make(agentInstanceContext);
-            return new AggSvcGroupByReclaimAgedImpl(Evaluators, Aggregators, Accessors, AccessAggregations, IsJoin, max, freq);
+            return new AggSvcGroupByReclaimAgedImpl(
+                Evaluators, Aggregators, Accessors, AccessAggregations, IsJoin, max, freq,
+                agentInstanceContext.StatementContext.TimeAbacus);
         }
     
         private AggSvcGroupByReclaimAgedEvalFuncFactory GetEvaluationFunction(VariableService variableService, String hintValue, String optionalContextName)

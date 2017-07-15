@@ -100,7 +100,7 @@ namespace com.espertech.esper.view
             // wrap view factories into the union view factory and handle a group-by, if present
             if ((isRetainUnion || isRetainIntersection) && dataWindowCount > 1)
             {
-                viewFactories = GetRetainViewFactories(parentEventType, viewFactories, isRetainUnion,  context);
+                viewFactories = GetRetainViewFactories(parentEventType, viewFactories, isRetainUnion, context);
             }
 
             return new ViewFactoryChain(parentEventType, viewFactories);
@@ -160,14 +160,14 @@ namespace com.espertech.esper.view
             ViewFactory retainPolicy;
             if (isUnion)
             {
-                UnionViewFactory viewFactory = (UnionViewFactory) context.ViewResolutionService.Create("internal", "union");
+                UnionViewFactory viewFactory = (UnionViewFactory)context.ViewResolutionService.Create("internal", "union");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;
             }
             else
             {
-                IntersectViewFactory viewFactory = (IntersectViewFactory) context.ViewResolutionService.Create("internal", "intersect");
+                IntersectViewFactory viewFactory = (IntersectViewFactory)context.ViewResolutionService.Create("internal", "intersect");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;
@@ -177,9 +177,9 @@ namespace com.espertech.esper.view
             nonRetainViewFactories.Add(retainPolicy);
             if (groupByViewFactory != null)
             {
-                nonRetainViewFactories.Insert(0, (ViewFactory) groupByViewFactory);
+                nonRetainViewFactories.Insert(0, (ViewFactory)groupByViewFactory);
                 nonRetainViewFactories.AddAll(derivedValueViews);
-                nonRetainViewFactories.Add((ViewFactory) mergeViewFactory);
+                nonRetainViewFactories.Add((ViewFactory)mergeViewFactory);
             }
             else
             {
@@ -198,11 +198,13 @@ namespace com.espertech.esper.view
             // Attempt to find existing views under the stream that match specs.
             // The viewSpecList may have been changed by this method.
             Pair<Viewable, IList<View>> resultPair;
-            if (hasPreviousNode) {
+            if (hasPreviousNode)
+            {
                 resultPair = new Pair<Viewable, IList<View>>(eventStreamViewable, Collections.GetEmptyList<View>());
             }
-            else {
-                resultPair = ViewServiceHelper.MatchExistingViews(eventStreamViewable, viewFactories);
+            else
+            {
+                resultPair = ViewServiceHelper.MatchExistingViews(eventStreamViewable, viewFactories, viewFactoryChainContext.AgentInstanceContext);
             }
 
             Viewable parentViewable = resultPair.First;
@@ -226,7 +228,7 @@ namespace com.espertech.esper.view
             {
                 if (view is InitializableView)
                 {
-                    InitializableView initView = (InitializableView) view;
+                    InitializableView initView = (InitializableView)view;
                     initView.Initialize();
                 }
             }

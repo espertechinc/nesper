@@ -961,7 +961,7 @@ namespace com.espertech.esper.util
                 return true;
             }
 
-            ICollection<Type> widenings = MethodResolver.WideningConversions.Get(declarationType);
+            ICollection<Type> widenings = MethodResolver.WIDENING_CONVERSIONS.Get(declarationType);
             if (widenings != null)
             {
                 return widenings.Contains(invocationType);
@@ -1722,7 +1722,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>Method to check if a given class, and its superclasses and interfaces (deep), implement a given interface or extend a given class.</summary>
-        /// <param name="extendorOrImplementor">is the class to inspects its extends and implements clauses</param>
+        /// <param name="extendorOrImplementor">is the class to inspects its : and : clauses</param>
         /// <param name="extendedOrImplemented">is the potential interface, or superclass, to check</param>
         /// <returns>true if such interface is implemented by type of the clazz or its superclasses orextends by type interface and superclasses (deep check)</returns>
         public static bool IsSubclassOrImplementsInterface(Type extendorOrImplementor, Type extendedOrImplemented)
@@ -1764,7 +1764,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>
-        /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
+        /// Looks up the given class and checks that it : or : the required interface,and instantiates an object.
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="type">of the class to load, check type and instantiate</param>
@@ -1812,7 +1812,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>
-        /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
+        /// Looks up the given class and checks that it : or : the required interface,and instantiates an object.
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="typeName">of the class to load, check type and instantiate</param>
@@ -2049,7 +2049,7 @@ namespace com.espertech.esper.util
         /// <summary>
         /// Returns the generic type parameter of a return value by a field, property or method.
         /// </summary>
-        /// <param name="memberInfo">The member info.</param>
+        /// <param name="memberInfo">The member INFO.</param>
         /// <param name="isAllowNull">if set to <c>true</c> [is allow null].</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnType(MemberInfo memberInfo, bool isAllowNull)
@@ -2066,7 +2066,7 @@ namespace com.espertech.esper.util
         /// Returns the second generic type parameter of a return value by a field or
         /// method.
         /// </summary>
-        /// <param name="memberInfo">The member info.</param>
+        /// <param name="memberInfo">The member INFO.</param>
         /// <param name="isAllowNull">whether null is allowed as a return value or expected typeof(object)</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnTypeMap(MemberInfo memberInfo, bool isAllowNull)
@@ -2197,7 +2197,7 @@ namespace com.espertech.esper.util
         /// <summary>Returns the generic type parameter of a return value by a field or method. </summary>
         /// <param name="method">method or null if field</param>
         /// <param name="field">field or null if method</param>
-        /// <param name="isAllowNull">whether null is allowed as a return value or expected Object.class</param>
+        /// <param name="isAllowNull">whether null is allowed as a return value or expected typeof(Object)</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnType(MethodInfo method, FieldInfo field, bool isAllowNull)
         {

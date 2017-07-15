@@ -9,48 +9,47 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.view
 {
-    public class ViewFactoryTimePeriodHelper
-    {
-        public static ExprTimePeriodEvalDeltaConst ValidateAndEvaluateTimeDelta(String viewName,
-                                                                               StatementContext statementContext,
-                                                                               ExprNode expression,
-                                                                               String expectedMessage,
-                                                                               int expressionNumber)
-        {
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(statementContext.EngineURI, false);
-            ExprTimePeriodEvalDeltaConst timeDelta;
+    public class ViewFactoryTimePeriodHelper {
+        public static ExprTimePeriodEvalDeltaConstFactory ValidateAndEvaluateTimeDeltaFactory(string viewName,
+                                                                                              StatementContext statementContext,
+                                                                                              ExprNode expression,
+                                                                                              string expectedMessage,
+                                                                                              int expressionNumber)
+                {
+            var streamTypeService = new StreamTypeServiceImpl(statementContext.EngineURI, false);
+            ExprTimePeriodEvalDeltaConstFactory factory;
             if (expression is ExprTimePeriod) {
                 ExprTimePeriod validated = (ExprTimePeriod) ViewFactorySupport.ValidateExpr(viewName, statementContext, expression, streamTypeService, expressionNumber);
-                timeDelta = validated.ConstEvaluator(new ExprEvaluatorContextStatement(statementContext, false));
-            }
-            else {
-                var result = ViewFactorySupport.ValidateAndEvaluateExpr(viewName, statementContext, expression, streamTypeService, expressionNumber);
-                if (!result.IsNumber()) {
+                factory = validated.ConstEvaluator(new ExprEvaluatorContextStatement(statementContext, false));
+            } else {
+                ExprNode validated = ViewFactorySupport.ValidateExpr(viewName, statementContext, expression, streamTypeService, expressionNumber);
+                ExprEvaluator secondsEvaluator = validated.ExprEvaluator;
+                Type returnType = TypeHelper.GetBoxedType(secondsEvaluator.Type);
+                if (!TypeHelper.IsNumeric(returnType)) {
                     throw new ViewParameterException(expectedMessage);
                 }
-
-                long millisecondsBeforeExpiry;
-                if (TypeHelper.IsFloatingPointNumber(result)) {
-                    millisecondsBeforeExpiry = (long) Math.Round(1000d * result.AsDouble());
+                if (validated.IsConstantResult) {
+                    Number time = (Number) ViewFactorySupport.Evaluate(secondsEvaluator, 0, viewName, statementContext);
+                    if (!ExprTimePeriodUtil.ValidateTime(time, statementContext.TimeAbacus)) {
+                        throw new ViewParameterException(ExprTimePeriodUtil.GetTimeInvalidMsg(viewName, "view", time));
+                    }
+                    long msec = statementContext.TimeAbacus.DeltaForSecondsNumber(time);
+                    factory = new ExprTimePeriodEvalDeltaConstGivenDelta(msec);
+                } else {
+                    factory = new ExprTimePeriodEvalDeltaConstFactoryMsec(secondsEvaluator, statementContext.TimeAbacus);
                 }
-                else {
-                    millisecondsBeforeExpiry = 1000 * result.AsLong();
-                }
-                timeDelta = new ExprTimePeriodEvalDeltaConstMsec(millisecondsBeforeExpiry);
             }
-            if (timeDelta.DeltaMillisecondsAdd(0) < 1) {
-                throw new ViewParameterException(viewName + " view requires a size of at least 1 msec");
-            }
-            return timeDelta;
+            return factory;
         }
     }
-}
+} // end of namespace

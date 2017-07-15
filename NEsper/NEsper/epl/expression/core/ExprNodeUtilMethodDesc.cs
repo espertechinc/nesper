@@ -9,6 +9,11 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+
 using XLR8.CGLib;
 
 namespace com.espertech.esper.epl.expression.core
@@ -20,13 +25,15 @@ namespace com.espertech.esper.epl.expression.core
             Type[] paramTypes,
             ExprEvaluator[] childEvals,
             MethodInfo reflectionMethod,
-            FastMethod fastMethod)
+            FastMethod fastMethod,
+            EventType optionalEventType)
         {
             IsAllConstants = allConstants;
             ParamTypes = paramTypes;
             ChildEvals = childEvals;
             ReflectionMethod = reflectionMethod;
             FastMethod = fastMethod;
+            OptionalEventType = optionalEventType;
         }
 
         public bool IsAllConstants { get; private set; }
@@ -38,5 +45,7 @@ namespace com.espertech.esper.epl.expression.core
         public MethodInfo ReflectionMethod { get; private set; }
 
         public FastMethod FastMethod { get; private set; }
+
+        public EventType OptionalEventType { get; private set; }
     }
-}
+} // end of namespace

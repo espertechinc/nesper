@@ -19,41 +19,62 @@ namespace com.espertech.esper.epl.spec
     /// Specification object for historical data poll via database SQL statement.
     /// </summary>
     [Serializable]
-    public class MethodStreamSpec 
+    public class MethodStreamSpec
         : StreamSpecBase
         , StreamSpecRaw
         , StreamSpecCompiled
         , MetaDefItem
     {
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="optionalStreamName">is the stream name or null if none defined</param>
         /// <param name="viewSpecs">is an list of view specifications</param>
         /// <param name="ident">the prefix in the clause</param>
         /// <param name="className">the class name</param>
         /// <param name="methodName">the method name</param>
         /// <param name="expressions">the parameter expressions</param>
-        public MethodStreamSpec(String optionalStreamName, ViewSpec[] viewSpecs, String ident, String className, String methodName, IList<ExprNode> expressions)
-            : base(optionalStreamName, viewSpecs, new StreamSpecOptions())
+        /// <param name="eventTypeName">event type name if provided</param>
+        public MethodStreamSpec(
+            string optionalStreamName,
+            ViewSpec[] viewSpecs,
+            string ident,
+            string className,
+            string methodName,
+            IList<ExprNode> expressions,
+            string eventTypeName)
+            : base(optionalStreamName, viewSpecs, StreamSpecOptions.DEFAULT)
         {
             Ident = ident;
             ClassName = className;
             MethodName = methodName;
             Expressions = expressions;
+            EventTypeName = eventTypeName;
         }
 
-        /// <summary>Returns the prefix (method) for the method invocation syntax. </summary>
+        /// <summary>
+        /// Returns the prefix (method) for the method invocation syntax.
+        /// </summary>
         /// <value>identifier</value>
         public string Ident { get; private set; }
 
-        /// <summary>Returns the class name. </summary>
+        /// <summary>
+        /// Returns the class name.
+        /// </summary>
         /// <value>class name</value>
         public string ClassName { get; private set; }
 
-        /// <summary>Returns the method name. </summary>
+        /// <summary>
+        /// Returns the method name.
+        /// </summary>
         /// <value>method name</value>
         public string MethodName { get; private set; }
 
-        /// <summary>Returns the parameter expressions. </summary>
+        public string EventTypeName { get; private set; }
+
+        /// <summary>
+        /// Returns the parameter expressions.
+        /// </summary>
         /// <value>parameter expressions</value>
         public IList<ExprNode> Expressions { get; private set; }
 
@@ -78,4 +99,4 @@ namespace com.espertech.esper.epl.spec
             return this;
         }
     }
-}
+} // end of namespace

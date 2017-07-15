@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.db
             // Turn this cache setting off to turn off indexing since without cache there is no point in indexing.
             configDB.LRUCache = 100000;
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddDatabaseReference("MyDB", configDB);
 
             _epServiceRetained = EPServiceProviderManager.GetProvider("TestDatabaseJoinRetained", configuration);

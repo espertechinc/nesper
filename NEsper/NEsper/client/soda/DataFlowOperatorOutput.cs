@@ -34,7 +34,7 @@ namespace com.espertech.esper.client.soda
         public string StreamName { get; set; }
 
         /// <summary>Returns output port type information </summary>
-        /// <value>type info</value>
+        /// <value>type INFO</value>
         public IList<DataFlowOperatorOutputType> TypeInfo { get; set; }
     }
 }

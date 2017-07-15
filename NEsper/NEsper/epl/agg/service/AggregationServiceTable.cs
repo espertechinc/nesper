@@ -8,11 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO.Ports;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
 
@@ -21,9 +19,10 @@ namespace com.espertech.esper.epl.agg.service
     public class AggregationServiceTable : AggregationService
     {
         private readonly TableStateInstance _tableState;
-    
-        public AggregationServiceTable(TableStateInstance tableState) {
-            this._tableState = tableState;
+
+        public AggregationServiceTable(TableStateInstance tableState)
+        {
+            _tableState = tableState;
         }
 
         public TableStateInstance TableState
@@ -31,31 +30,44 @@ namespace com.espertech.esper.epl.agg.service
             get { return _tableState; }
         }
 
-        public void ApplyEnter(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext) {
+        public void ApplyEnter(
+            EventBean[] eventsPerStream,
+            Object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             throw HandleNotSupported();
         }
-    
-        public void ApplyLeave(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public void ApplyLeave(
+            EventBean[] eventsPerStream,
+            Object optionalGroupKeyPerRow,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             throw HandleNotSupported();
         }
-    
-        public void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel) {
+
+        public void SetCurrentAccess(Object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
+        {
             throw HandleNotSupported();
         }
-    
-        public void ClearResults(ExprEvaluatorContext exprEvaluatorContext) {
+
+        public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
+        {
             throw HandleNotSupported();
         }
-    
-        public void SetRemovedCallback(AggregationRowRemovedCallback callback) {
+
+        public void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
             throw HandleNotSupported();
         }
-    
-        public void Accept(AggregationServiceVisitor visitor) {
+
+        public void Accept(AggregationServiceVisitor visitor)
+        {
             // no action
         }
-    
-        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
+
+        public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
             // no action
         }
 
@@ -64,35 +76,65 @@ namespace com.espertech.esper.epl.agg.service
             get { return false; }
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public Object GetValue(
+            int column,
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             throw HandleNotSupported();
         }
-    
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public ICollection<EventBean> GetCollectionOfEvents(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             throw HandleNotSupported();
         }
-    
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public EventBean GetEventBean(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             throw HandleNotSupported();
         }
-    
-        public object GetGroupKey(int agentInstanceId) {
+
+        public Object GetGroupKey(int agentInstanceId)
+        {
             throw HandleNotSupported();
         }
-    
-        public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
+
+        public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
             throw HandleNotSupported();
         }
-    
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public ICollection<Object> GetCollectionScalar(
+            int column,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             throw HandleNotSupported();
         }
-    
-        private UnsupportedOperationException HandleNotSupported() {
+
+        private UnsupportedOperationException HandleNotSupported()
+        {
             return new UnsupportedOperationException("Operation not supported, aggregation server for reporting only");
         }
 
-        public void Stop() {
+        public void Stop()
+        {
+        }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
         }
     }
-}
+} // end of namespace

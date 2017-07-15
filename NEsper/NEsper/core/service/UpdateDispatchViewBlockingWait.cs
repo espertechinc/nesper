@@ -20,7 +20,7 @@ namespace com.espertech.esper.core.service
     {
         private UpdateDispatchFutureWait _currentFutureWait;
         private readonly long _msecTimeout;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
@@ -31,19 +31,20 @@ namespace com.espertech.esper.core.service
             _currentFutureWait = new UpdateDispatchFutureWait(); // use a completed future as a start
             _msecTimeout = msecTimeout;
         }
-    
-        public override void Update(EventBean[] newData, EventBean[] oldData) {
+
+        public override void Update(EventBean[] newData, EventBean[] oldData)
+        {
             NewResult(new UniformPair<EventBean[]>(newData, oldData));
         }
-    
+
         public override void NewResult(UniformPair<EventBean[]> results)
         {
             StatementResultService.Indicate(results);
-    
+
             if (!IsDispatchWaiting.Value)
             {
                 UpdateDispatchFutureWait nextFutureWait;
-                lock(this)
+                lock (this)
                 {
                     nextFutureWait = new UpdateDispatchFutureWait(this, _currentFutureWait, _msecTimeout);
                     _currentFutureWait.SetLater(nextFutureWait);

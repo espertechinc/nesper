@@ -28,7 +28,7 @@ namespace com.espertech.esper.regression.datetime
         public void SetUp() {
     
             Configuration config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             _listener = new SupportUpdateListener();

@@ -48,7 +48,7 @@ namespace com.espertech.esper.core
             _dispatchService = new DispatchServiceImpl();
 
             _statementResultService = new StatementResultServiceImpl(
-                "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading()));
+                "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()));
             _statementResultService.SetUpdateListeners(listenerSet, false);
             _statementResultService.SetSelectClause(new Type[1], new String[1], false, new ExprEvaluator[1], new SupportExprEvaluatorContext(null));
             _statementResultService.SetContext(new SupportEPStatementSPI(), null, false, false, false, false, null);

@@ -83,7 +83,7 @@ namespace com.espertech.esper.events.bean
         /// Returns an enum indicating the type of property: simple, mapped, indexed.
         /// </summary>
         /// <returns>
-        /// enum with property type info
+        /// enum with property type INFO
         /// </returns>
         public EventPropertyType? PropertyType
         {

@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.named
 	public interface NamedWindowDispatchService
 	{
 	    NamedWindowProcessor CreateProcessor(string name, NamedWindowMgmtServiceImpl namedWindowMgmtService, NamedWindowDispatchService namedWindowDispatchService, string contextName, EventType eventType, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized, bool isEnableSubqueryIndexShare, bool enableQueryPlanLog, MetricReportingService metricReportingService, bool isBatchingDataWindow, bool isVirtualDataWindow, ICollection<string> optionalUniqueKeyProps, string eventTypeAsName, StatementContext statementContextCreateWindow);
-	    NamedWindowTailView CreateTailView(EventType eventType, NamedWindowMgmtService namedWindowMgmtService, NamedWindowDispatchService namedWindowDispatchService, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, bool prioritized, bool parentBatchWindow, string contextName, TimeSourceService timeSourceService, ConfigurationEngineDefaults.Threading threadingConfig);
+	    NamedWindowTailView CreateTailView(EventType eventType, NamedWindowMgmtService namedWindowMgmtService, NamedWindowDispatchService namedWindowDispatchService, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, bool prioritized, bool parentBatchWindow, string contextName, TimeSourceService timeSourceService, ConfigurationEngineDefaults.ThreadingConfig threadingConfig);
 
 	    /// <summary>
 	    /// Dispatch events of the insert and remove stream of named windows to consumers, as part of the

@@ -19,13 +19,11 @@ namespace com.espertech.esper.pattern
     {
         private readonly bool _auditPattern;
         private readonly bool _auditPatternInstance;
-        private readonly String _patternExpr;
-        [NonSerialized]
-        private readonly EvalAuditInstanceCount _instanceCount;
+        private readonly string _patternExpr;
+        [NonSerialized] private readonly EvalAuditInstanceCount _instanceCount;
         private readonly bool _filterChildNonQuitting;
-
-        public EvalAuditFactoryNode(bool auditPattern, bool auditPatternInstance, String patternExpr, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting)
-        {
+    
+        public EvalAuditFactoryNode(bool auditPattern, bool auditPatternInstance, string patternExpr, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting) {
             _auditPattern = auditPattern;
             _auditPatternInstance = auditPatternInstance;
             _patternExpr = patternExpr;
@@ -33,45 +31,35 @@ namespace com.espertech.esper.pattern
             _filterChildNonQuitting = filterChildNonQuitting;
         }
     
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
-        {
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalAuditNode(agentInstanceContext, this, child);
         }
-
-        public bool IsAuditPattern
-        {
-            get { return _auditPattern; }
+    
+        public bool IsAuditPattern() {
+            return _auditPattern;
         }
-
-        public string PatternExpr
-        {
-            get { return _patternExpr; }
+    
+        public string GetPatternExpr() {
+            return _patternExpr;
         }
-
-        public override String ToString()
-        {
-            return ("EvalAuditFactoryNode children=" + ChildNodes.Count);
+    
+        public override String ToString() {
+            return "EvalAuditFactoryNode children=" + ChildNodes.Count;
         }
-
-        public void DecreaseRefCount(EvalAuditStateNode current, PatternContext patternContext)
-        {
-            if (!_auditPatternInstance)
-            {
+    
+        public void DecreaseRefCount(EvalAuditStateNode current, PatternContext patternContext) {
+            if (!_auditPatternInstance) {
                 return;
             }
-            _instanceCount.DecreaseRefCount(
-                ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
+            _instanceCount.DecreaseRefCount(ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
         }
-
-        public void IncreaseRefCount(EvalAuditStateNode current, PatternContext patternContext)
-        {
-            if (!_auditPatternInstance)
-            {
+    
+        public void IncreaseRefCount(EvalAuditStateNode current, PatternContext patternContext) {
+            if (!_auditPatternInstance) {
                 return;
             }
-            _instanceCount.IncreaseRefCount(
-                ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
+            _instanceCount.IncreaseRefCount(ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
         }
 
         public override bool IsFilterChildNonQuitting
@@ -84,7 +72,8 @@ namespace com.espertech.esper.pattern
             get { return ChildNodes[0].IsStateful; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
             ChildNodes[0].ToEPL(writer, Precedence);
         }
 
@@ -93,4 +82,4 @@ namespace com.espertech.esper.pattern
             get { return ChildNodes[0].Precedence; }
         }
     }
-}
+} // end of namespace

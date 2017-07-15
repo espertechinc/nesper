@@ -286,9 +286,9 @@ namespace com.espertech.esper.compat.threading
         
         #region ISerializable Members
 #if false
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        public void GetObjectData(SerializationInfo INFO, StreamingContext context)
         {
-            info.AddValue("m_dataFactory", m_dataFactory, typeof(FactoryDelegate<T>));
+            INFO.AddValue("m_dataFactory", m_dataFactory, typeof(FactoryDelegate<T>));
         }
 #endif
         #endregion

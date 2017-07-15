@@ -17,7 +17,7 @@ namespace com.espertech.esper.pattern
     public class EvalMatchUntilNode : EvalNodeBase
     {
         public EvalMatchUntilNode(PatternAgentInstanceContext context, EvalMatchUntilFactoryNode factoryNode, EvalNode childNodeSub, EvalNode childNodeUntil)
-                    : base(context)
+            : base(context)
         {
             FactoryNode = factoryNode;
             ChildNodeSub = childNodeSub;

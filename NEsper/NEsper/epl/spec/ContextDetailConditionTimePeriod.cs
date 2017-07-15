@@ -39,7 +39,7 @@ namespace com.espertech.esper.epl.spec
         public long GetExpectedEndTime(AgentInstanceContext agentInstanceContext)
         {
             var current = agentInstanceContext.StatementContext.TimeProvider.Time;
-            var msec = TimePeriod.NonconstEvaluator().DeltaMillisecondsAdd(current, null, true, agentInstanceContext);
+            var msec = TimePeriod.NonconstEvaluator().DeltaAdd(current, null, true, agentInstanceContext);
             return current + msec;
         }
     }

@@ -7,6 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.client.deploy
 {
@@ -14,31 +19,43 @@ namespace com.espertech.esper.client.deploy
     /// Options for use in undeployment of a module to control the behavior of the undeploy operation.
     /// </summary>
     [Serializable]
-    public class UndeploymentOptions
-    {
+    public class UndeploymentOptions  {
+    
+        private bool destroyStatements = true;
+        private DeploymentLockStrategy deploymentLockStrategy = DeploymentLockStrategyDefault.INSTANCE;
+    
         /// <summary>
         /// Returns indicator whether undeploy will destroy any associated statements (true by default).
         /// </summary>
-        /// <value>
+        /// <returns>
         /// flag indicating whether undeploy also destroys associated statements
-        /// </value>
-        public bool IsDestroyStatements { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UndeploymentOptions"/> class.
-        /// </summary>
-        public UndeploymentOptions()
-        {
-            IsDestroyStatements = true;
+        /// </returns>
+        public bool IsDestroyStatements() {
+            return destroyStatements;
         }
-
+    
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndeploymentOptions"/> class.
+        /// Sets indicator whether undeploy will destroy any associated statements.
         /// </summary>
-        /// <param name="isDestroyStatements">if set to <c>true</c> [is destroy statements].</param>
-        public UndeploymentOptions(bool isDestroyStatements)
-        {
-            IsDestroyStatements = isDestroyStatements;
+        /// <param name="destroyStatements">flag indicating whether undeploy also destroys associated statements</param>
+        public void SetDestroyStatements(bool destroyStatements) {
+            this.destroyStatements = destroyStatements;
+        }
+    
+        /// <summary>
+        /// Return the deployment lock strategy, the default is <seealso cref="DeploymentLockStrategyDefault" />
+        /// </summary>
+        /// <returns>lock strategy</returns>
+        public DeploymentLockStrategy GetDeploymentLockStrategy() {
+            return deploymentLockStrategy;
+        }
+    
+        /// <summary>
+        /// Sets the deployment lock strategy, the default is <seealso cref="DeploymentLockStrategyDefault" />
+        /// </summary>
+        /// <param name="deploymentLockStrategy">lock strategy</param>
+        public void SetDeploymentLockStrategy(DeploymentLockStrategy deploymentLockStrategy) {
+            this.deploymentLockStrategy = deploymentLockStrategy;
         }
     }
-}
+} // end of namespace

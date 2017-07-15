@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.parse
     {
         public static FilterSpecRaw WalkFilterSpec(EsperEPL2GrammarParser.EventFilterExpressionContext ctx, PropertyEvalSpec propertyEvalSpec, IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-            var eventName = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
+            var eventName = ASTUtil.UnescapeClassIdent(typeof(ctx)Identifier());
             var exprNodes = ctx.expressionList() != null ? ASTExprHelper.ExprCollectSubNodes(ctx.expressionList(), 0, astExprNodeMap) : new List<ExprNode>(1);
             return new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         }

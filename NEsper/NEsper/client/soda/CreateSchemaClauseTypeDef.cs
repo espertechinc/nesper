@@ -23,6 +23,9 @@ namespace com.espertech.esper.client.soda
 
         /// <summary>Object-array underlying type. </summary>
         OBJECTARRAY,
+        
+        /// <summary>Avro-array underlying type.</summary>
+        AVRO,
 
         /// <summary>Undefined (system default) underlying type. </summary>
         NONE
@@ -48,6 +51,11 @@ namespace com.espertech.esper.client.soda
                 case CreateSchemaClauseTypeDef.OBJECTARRAY:
                     writer.Write(" objectarray");
                     break;
+                case CreateSchemaClauseTypeDef.AVRO:
+                    writer.Write(" avro");
+                    break;
+                default:
+                    throw new ArgumentException("invalid value", "typeDef");
             }
         }
     }

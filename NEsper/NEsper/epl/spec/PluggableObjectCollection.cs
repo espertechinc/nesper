@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.util;
+using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.epl.spec
 {
@@ -39,20 +39,28 @@ namespace com.espertech.esper.epl.spec
         /// <param name="configurationPlugInViews">is a list of configured plug-in view objects.</param>
         /// <param name="configurationPlugInVirtualDW">The configuration plug in virtual DW.</param>
         /// <throws>ConfigurationException if the configured views don't resolve</throws>
-        public void AddViews(IList<ConfigurationPlugInView> configurationPlugInViews, IList<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDW)
+        public void AddViews(
+            IList<ConfigurationPlugInView> configurationPlugInViews,
+            IList<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDW,
+            EngineImportService engineImportService)
         {
-            InitViews(configurationPlugInViews);
-            InitVirtualDW(configurationPlugInVirtualDW);
+            InitViews(configurationPlugInViews, engineImportService);
+            InitVirtualDW(configurationPlugInVirtualDW, engineImportService);
         }
-    
-        /// <summary>Add a plug-in pattern object. </summary>
+
+        /// <summary>
+        /// Add a plug-in pattern object.
+        /// </summary>
         /// <param name="configPattern">is a list of configured plug-in pattern objects.</param>
+        /// <param name="engineImportService">The engine import service.</param>
         /// <throws>ConfigurationException if the configured patterns don't resolve</throws>
-        public void AddPatternObjects(IList<ConfigurationPlugInPatternObject> configPattern)
+        public void AddPatternObjects(
+            IList<ConfigurationPlugInPatternObject> configPattern,
+            EngineImportService engineImportService)
         {
-            InitPatterns(configPattern);
+            InitPatterns(configPattern, engineImportService);
         }
-    
+
         /// <summary>Add the plug-in objects for another collection. </summary>
         /// <param name="other">is the collection to add</param>
         public void AddObjects(PluggableObjectCollection other)
@@ -65,7 +73,7 @@ namespace com.espertech.esper.epl.spec
                     namespaceMap = new Dictionary<String, Pair<Type, PluggableObjectEntry>>();
                     Pluggables.Put(entry.Key, namespaceMap);
                 }
-    
+
                 foreach (var name in entry.Value.Keys)
                 {
                     if (namespaceMap.ContainsKey(name))
@@ -74,11 +82,11 @@ namespace com.espertech.esper.epl.spec
                                     "' by name '" + name + "'");
                     }
                 }
-    
+
                 namespaceMap.PutAll(entry.Value);
             }
         }
-    
+
         /// <summary>Add a single object to the collection. </summary>
         /// <param name="namespace">is the object's namespace</param>
         /// <param name="name">is the object's name</param>
@@ -108,30 +116,43 @@ namespace com.espertech.esper.epl.spec
             namespaceMap.Put(name, new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, configuration)));
         }
 
-        private void InitViews(IEnumerable<ConfigurationPlugInView> configurationPlugInViews)
+        private void InitViews(IEnumerable<ConfigurationPlugInView> configurationPlugInViews, EngineImportService engineImportService)
         {
-            if (configurationPlugInViews == null) {
+            if (configurationPlugInViews == null)
+            {
                 return;
             }
-    
-            foreach (var entry in configurationPlugInViews) {
-                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, PluggableObjectType.VIEW, null);
+
+            foreach (var entry in configurationPlugInViews)
+            {
+                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, PluggableObjectType.VIEW, null, engineImportService);
             }
         }
-    
-        private void InitVirtualDW(IEnumerable<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDataWindows)
+
+        private void InitVirtualDW(
+            IEnumerable<ConfigurationPlugInVirtualDataWindow> configurationPlugInVirtualDataWindows,
+            EngineImportService engineImportService)
         {
-            if (configurationPlugInVirtualDataWindows == null) {
+            if (configurationPlugInVirtualDataWindows == null)
+            {
                 return;
             }
-    
-            foreach (var entry in configurationPlugInVirtualDataWindows) {
-                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, PluggableObjectType.VIRTUALDW, entry.Config);
+
+            foreach (var entry in configurationPlugInVirtualDataWindows)
+            {
+                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, PluggableObjectType.VIRTUALDW, entry.Config, engineImportService);
             }
         }
-    
-        private void HandleAddPluggableObject(String factoryClassName, String @namespace, String name, PluggableObjectType type, Object optionalCustomConfig) {
-    
+
+        private void HandleAddPluggableObject(
+            String factoryClassName,
+            String @namespace,
+            String name,
+            PluggableObjectType type,
+            Object optionalCustomConfig,
+            EngineImportService engineImportService)
+        {
+
             if (factoryClassName == null)
             {
                 throw new ConfigurationException("Factory class name has not been supplied for object '" + name + "'");
@@ -145,7 +166,7 @@ namespace com.espertech.esper.epl.spec
                 throw new ConfigurationException("Name has not been supplied for object in namespace '" + @namespace + "'");
             }
 
-            var clazz = TypeHelper.ResolveType(factoryClassName, false);
+            var clazz = engineImportService.GetClassForNameProvider().ClassForName(factoryClassName);
             if (clazz == null)
             {
                 throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");
@@ -159,34 +180,38 @@ namespace com.espertech.esper.epl.spec
             }
             namespaceMap.Put(name, new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, optionalCustomConfig)));
         }
-    
-        private void InitPatterns(IEnumerable<ConfigurationPlugInPatternObject> configEntries)
+
+        private void InitPatterns(IEnumerable<ConfigurationPlugInPatternObject> configEntries, EngineImportService engineImportService)
         {
             if (configEntries == null)
             {
                 return;
             }
-    
+
             foreach (var entry in configEntries)
             {
-                if (entry.PatternObjectType == null) {
+                if (entry.PatternObjectType == null)
+                {
                     throw new ConfigurationException("Pattern object type has not been supplied for object '" + entry.Name + "'");
                 }
-    
+
                 PluggableObjectType typeEnum;
-                if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD) {
-                    typeEnum =  PluggableObjectType.PATTERN_GUARD;
+                if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD)
+                {
+                    typeEnum = PluggableObjectType.PATTERN_GUARD;
                 }
-                else if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER) {
-                    typeEnum =  PluggableObjectType.PATTERN_OBSERVER;
+                else if (entry.PatternObjectType == ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER)
+                {
+                    typeEnum = PluggableObjectType.PATTERN_OBSERVER;
                 }
-                else {
+                else
+                {
                     throw new ArgumentException("Pattern object type '" + entry.PatternObjectType + "' not known");
                 }
-    
-                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, typeEnum, null);
+
+                HandleAddPluggableObject(entry.FactoryClassName, entry.Namespace, entry.Name, typeEnum, null, engineImportService);
             }
         }
-    
+
     }
 }

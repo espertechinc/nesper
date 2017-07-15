@@ -10,68 +10,70 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.pattern.guard
 {
-    /// <summary>
-    /// Factory for <seealso cref="TimerWithinGuard" /> instances.
-    /// </summary>
+    /// <summary>Factory for <seealso cref="TimerWithinGuard" /> instances.</summary>
     [Serializable]
-    public class TimerWithinGuardFactory : GuardFactory, MetaDefItem
+    public class TimerWithinGuardFactory
+        : GuardFactory
+          ,
+          MetaDefItem
     {
-        /// <summary>Number of milliseconds. </summary>
-        protected ExprNode MillisecondsExpr;
-    
-        /// <summary>For converting matched-events maps to events-per-stream. </summary>
-        [NonSerialized] protected MatchedEventConvertor Convertor;
-    
+        /// <summary>Number of milliseconds.</summary>
+        private ExprNode _timeExpr;
+
+        /// <summary>For converting matched-events maps to events-per-stream.</summary>
+        [NonSerialized] private MatchedEventConvertor _convertor;
+
         public void SetGuardParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor)
         {
-            String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
+            const string errorMessage = "Timer-within guard requires a single numeric or time period parameter";
             if (parameters.Count != 1)
             {
                 throw new GuardParameterException(errorMessage);
             }
-    
-            if (!parameters[0].ExprEvaluator.ReturnType.IsNumeric())
+
+            if (!TypeHelper.IsNumeric(parameters[0].ExprEvaluator.ReturnType))
             {
                 throw new GuardParameterException(errorMessage);
             }
-    
-            Convertor = convertor;
-            MillisecondsExpr = parameters[0];
+
+            _convertor = convertor;
+            _timeExpr = parameters[0];
         }
 
-        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
+        public long ComputeTime(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
-            if (MillisecondsExpr is ExprTimePeriod)
+            if (_timeExpr is ExprTimePeriod)
             {
-                ExprTimePeriod timePeriod = (ExprTimePeriod) MillisecondsExpr;
+                var timePeriod = (ExprTimePeriod) _timeExpr;
                 return timePeriod.NonconstEvaluator()
-                    .DeltaMillisecondsUseEngineTime(Convertor.Convert(beginState), context.AgentInstanceContext);
+                    .DeltaUseEngineTime(_convertor.Convert(beginState), context.AgentInstanceContext);
             }
             else
             {
-                Object millisecondVal = PatternExpressionUtil.Evaluate(
-                    "Timer-within guard", beginState, MillisecondsExpr, Convertor, context.AgentInstanceContext);
-
-                if (millisecondVal == null)
+                var time = PatternExpressionUtil.Evaluate(
+                    "Timer-within guard", beginState, _timeExpr, _convertor, context.AgentInstanceContext);
+                if (time == null)
                 {
                     throw new EPException("Timer-within guard expression returned a null-value");
                 }
-
-                return (long) Math.Round(1000d*millisecondVal.AsDouble());
+                return context.StatementContext.TimeAbacus.DeltaForSecondsNumber(time);
             }
         }
 
-        public Guard MakeGuard(PatternAgentInstanceContext context, MatchedEventMap matchedEventMap, Quitable quitable, EvalStateNodeNumber stateNodeId, Object guardState)
+        public Guard MakeGuard(
+            PatternAgentInstanceContext context,
+            MatchedEventMap matchedEventMap,
+            Quitable quitable,
+            EvalStateNodeNumber stateNodeId,
+            Object guardState)
         {
-            return new TimerWithinGuard(ComputeMilliseconds(matchedEventMap, context), quitable);
+            return new TimerWithinGuard(ComputeTime(matchedEventMap, context), quitable);
         }
     }
-}
+} // end of namespace

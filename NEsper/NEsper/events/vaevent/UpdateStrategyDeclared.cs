@@ -31,7 +31,7 @@ namespace com.espertech.esper.events.vaevent
                                           RevisionTypeDesc typesDesc)
         {
             EventBean underlyingEvent = revisionEvent.UnderlyingFullOrDelta;
-    
+
             // Previously-seen full event
             if (isBaseEventType)
             {
@@ -45,7 +45,7 @@ namespace com.espertech.esper.events.vaevent
                 else
                 {
                     changeSetValues = revisionState.Overlays;
-                    if (changeSetValues == null)    // optimization - the full event sets it to null, deltas all get a new one
+                    if (changeSetValues == null)
                     {
                         changeSetValues = new NullableObject<Object>[spec.ChangesetPropertyNames.Length];
                     }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.events.vaevent
                     {
                         changeSetValues = ArrayCopy(changeSetValues);   // preserve the last revisions
                     }
-    
+
                     // reset properties not contributed by any delta, leaving all delta-contributed properties in place
                     bool[] changesetPropertyDeltaContributed = spec.ChangesetPropertyDeltaContributed;
                     for (int i = 0; i < changesetPropertyDeltaContributed.Length; i++)
@@ -72,8 +72,8 @@ namespace com.espertech.esper.events.vaevent
             else
             {
                 NullableObject<Object>[] changeSetValues = revisionState.Overlays;
-    
-                if (changeSetValues == null)    // optimization - the full event sets it to null, deltas all get a new one
+
+                if (changeSetValues == null)
                 {
                     changeSetValues = new NullableObject<Object>[spec.ChangesetPropertyNames.Length];
                 }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.events.vaevent
                 {
                     changeSetValues = ArrayCopy(changeSetValues);   // preserve the last revisions
                 }
-    
+
                 // apply all properties of the delta event
                 int[] indexes = typesDesc.ChangesetPropertyIndex;
                 EventPropertyGetter[] getters = typesDesc.ChangesetPropertyGetters;
@@ -91,9 +91,9 @@ namespace com.espertech.esper.events.vaevent
                     Object value = getters[i].Get(underlyingEvent);
                     changeSetValues[index] = new NullableObject<Object>(value);
                 }
-    
+
                 revisionState.Overlays = changeSetValues;
-            }        
+            }
         }
     }
 }

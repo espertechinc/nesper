@@ -18,6 +18,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.dataflow.annotations;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.dataflow.core
@@ -28,10 +29,10 @@ namespace com.espertech.esper.dataflow.core
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static DataflowStartDesc Realize(
-            String dataFlowName,
+            string dataFlowName,
             IDictionary<int, Object> operators,
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
-            ICollection<int> operatorBuildOrder,
+            ISet<int> operatorBuildOrder,
             IList<LogicalChannelBinding> bindings,
             DataFlowSignalManager dataFlowSignalManager,
             EPDataFlowInstantiationOptions options,
@@ -39,31 +40,31 @@ namespace com.espertech.esper.dataflow.core
             StatementContext statementContext)
         {
             // First pass: inject runtime context
-            IDictionary<int, EPDataFlowEmitter> runtimeContexts = new Dictionary<int, EPDataFlowEmitter>();
+            var runtimeContexts = new Dictionary<int?, EPDataFlowEmitter>();
             OperatorStatisticsProvider statisticsProvider = null;
             if (options.IsOperatorStatistics())
             {
                 statisticsProvider = new OperatorStatisticsProvider(operatorMetadata);
             }
 
-            bool audit = AuditEnum.DATAFLOW_OP.GetAudit(statementContext.Annotations) != null;
-            foreach (int producerOpNum in operatorBuildOrder)
+            var audit = AuditEnum.DATAFLOW_OP.GetAudit(statementContext.Annotations) != null;
+            foreach (var producerOpNum in operatorBuildOrder)
             {
-                String operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
+                var operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug("Generating runtime context for " + operatorPrettyPrint);
                 }
 
                 // determine the number of output streams
-                Object producingOp = operators.Get(producerOpNum);
-                int numOutputStreams = operatorMetadata.Get(producerOpNum).OperatorSpec.Output.Items.Count;
-                IList<ObjectBindingPair>[] targets = GetOperatorConsumersPerStream(
+                var producingOp = operators.Get(producerOpNum);
+                var numOutputStreams = operatorMetadata.Get(producerOpNum).OperatorSpec.Output.Items.Count;
+                var targets = GetOperatorConsumersPerStream(
                     numOutputStreams, producerOpNum, operators, operatorMetadata, bindings);
 
-                EPDataFlowEmitter runtimeContext = GenerateRuntimeContext(
+                var runtimeContext = GenerateRuntimeContext(
                     statementContext.EngineURI, statementContext.StatementName, audit, dataFlowName, producerOpNum,
-                    operatorPrettyPrint, dataFlowSignalManager, targets, options);
+                    operatorPrettyPrint, dataFlowSignalManager, targets, options, statementContext.EngineImportService);
 
                 if (options.IsOperatorStatistics())
                 {
@@ -76,17 +77,17 @@ namespace com.espertech.esper.dataflow.core
             }
 
             // Second pass: hook punctuation such that it gets forwarded
-            foreach (int producerOpNum in operatorBuildOrder)
+            foreach (var producerOpNum in operatorBuildOrder)
             {
-                String operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
+                var operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug("Handling signals for " + operatorPrettyPrint);
                 }
 
                 // determine consumers that receive punctuation
-                ICollection<int> consumingOperatorsWithPunctuation = new HashSet<int>();
-                foreach (LogicalChannelBinding binding in bindings)
+                var consumingOperatorsWithPunctuation = new HashSet<int?>();
+                foreach (var binding in bindings)
                 {
                     if (!binding.LogicalChannel.OutputPort.HasPunctuation ||
                         binding.LogicalChannel.OutputPort.ProducingOpNum != producerOpNum)
@@ -99,7 +100,7 @@ namespace com.espertech.esper.dataflow.core
                 // hook up a listener for each
                 foreach (int consumerPunc in consumingOperatorsWithPunctuation)
                 {
-                    EPDataFlowEmitter context = runtimeContexts.Get(consumerPunc);
+                    var context = runtimeContexts.Get(consumerPunc);
                     if (context == null)
                     {
                         continue;
@@ -107,7 +108,7 @@ namespace com.espertech.esper.dataflow.core
                     dataFlowSignalManager.AddSignalListener(
                         producerOpNum, new ProxyDataFlowSignalListener
                         {
-                            ProcSignal = context.SubmitSignal
+                            ProcSignal = signal => context.SubmitSignal(signal)
                         });
                 }
             }
@@ -129,12 +130,12 @@ namespace com.espertech.esper.dataflow.core
             }
 
             var submitTargets = new IList<ObjectBindingPair>[numOutputStreams];
-            for (int i = 0; i < numOutputStreams; i++)
+            for (var i = 0; i < numOutputStreams; i++)
             {
                 submitTargets[i] = new List<ObjectBindingPair>();
             }
 
-            foreach (LogicalChannelBinding binding in channelsForProducer)
+            foreach (var binding in channelsForProducer)
             {
                 var consumingOp = binding.LogicalChannel.ConsumingOpNum;
                 var @operator = operators.Get(consumingOp);
@@ -149,7 +150,8 @@ namespace com.espertech.esper.dataflow.core
         private static SignalHandler GetSignalHandler(
             int producerNum,
             Object target,
-            LogicalChannelBindingMethodDesc consumingSignalBindingDesc)
+            LogicalChannelBindingMethodDesc consumingSignalBindingDesc,
+            EngineImportService engineImportService)
         {
             if (consumingSignalBindingDesc == null)
             {
@@ -159,14 +161,14 @@ namespace com.espertech.esper.dataflow.core
             {
                 if (consumingSignalBindingDesc.BindingType is LogicalChannelBindingTypePassAlong)
                 {
-                    return new SignalHandlerDefaultWInvoke(target, consumingSignalBindingDesc.Method);
+                    return new SignalHandlerDefaultWInvoke(
+                        target, consumingSignalBindingDesc.Method, engineImportService);
                 }
                 else if (consumingSignalBindingDesc.BindingType is LogicalChannelBindingTypePassAlongWStream)
                 {
-                    var streamInfo =
-                        (LogicalChannelBindingTypePassAlongWStream) consumingSignalBindingDesc.BindingType;
+                    var streamInfo = (LogicalChannelBindingTypePassAlongWStream) consumingSignalBindingDesc.BindingType;
                     return new SignalHandlerDefaultWInvokeStream(
-                        target, consumingSignalBindingDesc.Method, streamInfo.StreamNum);
+                        target, consumingSignalBindingDesc.Method, engineImportService, streamInfo.StreamNum);
                 }
                 else
                 {
@@ -177,18 +179,19 @@ namespace com.espertech.esper.dataflow.core
         }
 
         private static SubmitHandler GetSubmitHandler(
-            String engineURI,
-            String statementName,
+            string engineURI,
+            string statementName,
             bool audit,
-            String dataflowName,
+            string dataflowName,
             int producerOpNum,
-            String operatorPrettyPrint,
+            string operatorPrettyPrint,
             DataFlowSignalManager dataFlowSignalManager,
             ObjectBindingPair target,
-            EPDataFlowExceptionHandler optionalExceptionHandler)
+            EPDataFlowExceptionHandler optionalExceptionHandler,
+            EngineImportService engineImportService)
         {
             var signalHandler = GetSignalHandler(
-                producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc);
+                producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc, engineImportService);
 
             var receivingOpNum = target.Binding.LogicalChannel.ConsumingOpNum;
             var receivingOpPretty = target.Binding.LogicalChannel.ConsumingOpPrettyPrint;
@@ -201,35 +204,37 @@ namespace com.espertech.esper.dataflow.core
             if (bindingType is LogicalChannelBindingTypePassAlong)
             {
                 return new EPDataFlowEmitter1Stream1TargetPassAlong(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, engineImportService);
             }
             else if (bindingType is LogicalChannelBindingTypePassAlongWStream)
             {
                 var type = (LogicalChannelBindingTypePassAlongWStream) bindingType;
                 return new EPDataFlowEmitter1Stream1TargetPassAlongWStream(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, type.StreamNum);
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, type.StreamNum,
+                    engineImportService);
             }
             else if (bindingType is LogicalChannelBindingTypeUnwind)
             {
                 return new EPDataFlowEmitter1Stream1TargetUnwind(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target);
+                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, engineImportService);
             }
             else
             {
-                throw new UnsupportedOperationException(string.Format("Unsupported binding type '{0}'", bindingType));
+                throw new UnsupportedOperationException("Unsupported binding type '" + bindingType + "'");
             }
         }
 
         private static EPDataFlowEmitter GenerateRuntimeContext(
-            String engineURI,
-            String statementName,
+            string engineURI,
+            string statementName,
             bool audit,
-            String dataflowName,
+            string dataflowName,
             int producerOpNum,
-            String operatorPrettyPrint,
+            string operatorPrettyPrint,
             DataFlowSignalManager dataFlowSignalManager,
-            IList<ObjectBindingPair>[] targetsPerStream,
-            EPDataFlowInstantiationOptions options)
+            List<ObjectBindingPair>[] targetsPerStream,
+            EPDataFlowInstantiationOptions options,
+            EngineImportService engineImportService)
         {
             // handle no targets
             if (targetsPerStream == null)
@@ -240,7 +245,7 @@ namespace com.espertech.esper.dataflow.core
             // handle single-stream case
             if (targetsPerStream.Length == 1)
             {
-                IList<ObjectBindingPair> targets = targetsPerStream[0];
+                var targets = targetsPerStream[0];
 
                 // handle single-stream single target case
                 if (targets.Count == 1)
@@ -248,35 +253,36 @@ namespace com.espertech.esper.dataflow.core
                     var target = targets[0];
                     return GetSubmitHandler(
                         engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, target, options.GetExceptionHandler());
+                        dataFlowSignalManager, target, options.ExceptionHandler, engineImportService);
                 }
 
                 var handlers = new SubmitHandler[targets.Count];
-                for (int i = 0; i < handlers.Length; i++)
+                for (var i = 0; i < handlers.Length; i++)
                 {
                     handlers[i] = GetSubmitHandler(
                         engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, targets[i], options.GetExceptionHandler());
+                        dataFlowSignalManager, targets[i], options.ExceptionHandler, engineImportService);
                 }
                 return new EPDataFlowEmitter1StreamNTarget(producerOpNum, dataFlowSignalManager, handlers);
             }
-                // handle multi-stream case
             else
             {
+                // handle multi-stream case
                 var handlersPerStream = new SubmitHandler[targetsPerStream.Length][];
-                for (int streamNum = 0; streamNum < targetsPerStream.Length; streamNum++)
+                for (var streamNum = 0; streamNum < targetsPerStream.Length; streamNum++)
                 {
                     var handlers = new SubmitHandler[targetsPerStream[streamNum].Count];
                     handlersPerStream[streamNum] = handlers;
-                    for (int i = 0; i < handlers.Length; i++)
+                    for (var i = 0; i < handlers.Length; i++)
                     {
                         handlers[i] = GetSubmitHandler(
                             engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                            dataFlowSignalManager, targetsPerStream[streamNum][i], options.GetExceptionHandler());
+                            dataFlowSignalManager, targetsPerStream[streamNum][i], options.ExceptionHandler,
+                            engineImportService);
                     }
                 }
                 return new EPDataFlowEmitterNStreamNTarget(producerOpNum, dataFlowSignalManager, handlersPerStream);
             }
         }
     }
-}
+} // end of namespace

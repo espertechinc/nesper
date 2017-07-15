@@ -8,19 +8,20 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.epl.core.eval
 {
     public class EvalInsertNoWildcardSingleColCoercionBean
-        : EvalBaseFirstProp,
-          SelectExprProcessor
+        : EvalBaseFirstProp
+        , SelectExprProcessor
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public EvalInsertNoWildcardSingleColCoercionBean(SelectExprContext selectExprContext,
-                                                         EventType resultEventType)
+        public EvalInsertNoWildcardSingleColCoercionBean(SelectExprContext selectExprContext, EventType resultEventType)
             : base(selectExprContext, resultEventType)
         {
         }
@@ -30,4 +31,4 @@ namespace com.espertech.esper.epl.core.eval
             return base.EventAdapterService.AdapterForTypedObject(result, base.ResultEventType);
         }
     }
-}
+} // end of namespace

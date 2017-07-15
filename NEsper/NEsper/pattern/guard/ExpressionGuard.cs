@@ -7,71 +7,55 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.pattern;
 
 namespace com.espertech.esper.pattern.guard
 {
     /// <summary>
-    /// Guard implementation that keeps a timer instance and quits when the timer expired, and 
-    /// also keeps a count of the number of matches so far, checking both count and timer, 
-    /// letting all <seealso cref="com.espertech.esper.pattern.MatchedEventMap"/> instances 
-    /// pass until then.
+    /// Guard implementation that keeps a timer instance and quits when the timer expired,
+    /// and also keeps a count of the number of matches so far, checking both count and timer,
+    /// letting all <seealso cref="com.espertech.esper.pattern.MatchedEventMap" /> instances pass until then.
     /// </summary>
-    public class ExpressionGuard : Guard
-    {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    public class ExpressionGuard : Guard {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly Quitable _quitable;
-        private readonly MatchedEventConvertor _convertor;
-        private readonly ExprEvaluator _expression;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="convertor">The convertor.</param>
-        /// <param name="expression">The expression.</param>
-        /// <param name="quitable">to use to indicate that the gaurd quitted</param>
-        public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, Quitable quitable)
-        {
-            _quitable = quitable;
-            _convertor = convertor;
-            _expression = expression;
+        private readonly Quitable quitable;
+        private readonly MatchedEventConvertor convertor;
+        private readonly ExprEvaluator expression;
+    
+        public ExpressionGuard(MatchedEventConvertor convertor, ExprEvaluator expression, Quitable quitable) {
+            this.quitable = quitable;
+            this.convertor = convertor;
+            this.expression = expression;
         }
     
-        public void StartGuard()
-        {
+        public void StartGuard() {
         }
     
-        public bool Inspect(MatchedEventMap matchEvent)
-        {
-            EventBean[] eventsPerStream = _convertor.Convert(matchEvent);
+        public bool Inspect(MatchedEventMap matchEvent) {
+            EventBean[] eventsPerStream = convertor.Convert(matchEvent);
     
-            try
-            {
-                var evaluateParams = new EvaluateParams(eventsPerStream, true, _quitable.Context.AgentInstanceContext);
-                var result = _expression.Evaluate(evaluateParams);
+            try {
+                Object result = expression.Evaluate(eventsPerStream, true, quitable.Context.AgentInstanceContext);
                 if (result == null) {
                     return false;
                 }
     
-                if (true.Equals(result))
-                {
+                if (result.Equals(bool?.TRUE)) {
                     return true;
                 }
     
-                _quitable.GuardQuit();
+                quitable.GuardQuit();
                 return false;
-            }
-            catch (Exception ex)
-            {
-                String message = "Failed to evaluate expression for pattern-guard for statement '" + _quitable.Context.PatternContext.StatementName + "'";
-                if (ex.Message != null)
-                {
+            } catch (RuntimeException ex) {
+                string message = "Failed to evaluate expression for pattern-guard for statement '" + quitable.Context.PatternContext.StatementName + "'";
+                if (ex.Message != null) {
                     message += ": " + ex.Message;
                 }
                 Log.Error(message, ex);
@@ -79,13 +63,11 @@ namespace com.espertech.esper.pattern.guard
             }
         }
     
-        public void StopGuard()
-        {
+        public void StopGuard() {
         }
     
-        public void Accept(EventGuardVisitor visitor)
-        {
+        public void Accept(EventGuardVisitor visitor) {
             visitor.VisitGuard(0);
         }
     }
-}
+} // end of namespace

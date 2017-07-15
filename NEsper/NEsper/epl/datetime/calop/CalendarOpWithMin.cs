@@ -17,15 +17,15 @@ namespace com.espertech.esper.epl.datetime.calop
     public class CalendarOpWithMin : CalendarOp
     {
         private readonly CalendarFieldEnum _fieldName;
-    
+
         public CalendarOpWithMin(CalendarFieldEnum fieldName)
         {
             _fieldName = fieldName;
         }
-    
+
         public void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
-            switch(_fieldName)
+            switch (_fieldName)
             {
                 case CalendarFieldEnum.MILLISEC:
                     dateTime.Set(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, 0);

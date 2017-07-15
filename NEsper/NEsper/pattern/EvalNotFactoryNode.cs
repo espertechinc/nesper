@@ -9,26 +9,28 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.compat.logging;
+
 namespace com.espertech.esper.pattern
 {
     /// <summary>
     /// This class represents an 'not' operator in the evaluation tree representing any event expressions.
     /// </summary>
-    public class EvalNotFactoryNode : EvalNodeFactoryBase
-    {
-        public EvalNotFactoryNode()
-        {
+    public class EvalNotFactoryNode : EvalNodeFactoryBase{
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
+        protected EvalNotFactoryNode() {
         }
-
+    
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(this.ChildNodes, agentInstanceContext, parentNode);
             return new EvalNotNode(agentInstanceContext, this, child);
         }
-
+    
         public override String ToString()
         {
-            return "EvalNotNode children=" + ChildNodes.Count;
+            return "EvalNotNode children=" + this.ChildNodes.Count;
         }
 
         public override bool IsFilterChildNonQuitting
@@ -52,4 +54,4 @@ namespace com.espertech.esper.pattern
             get { return PatternExpressionPrecedenceEnum.UNARY; }
         }
     }
-}
+} // end of namespace

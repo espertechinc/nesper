@@ -53,8 +53,8 @@ namespace com.espertech.esper.filter
 
         public object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] events = (EventBean[]) matchedEvents.GetMatchingEventAsObjectByTag(_resultEventAsName);
-    
+            EventBean[] events = (EventBean[])matchedEvents.GetMatchingEventAsObjectByTag(_resultEventAsName);
+
             if (events == null)
             {
                 Log.Warn("Matching events for tag '" + _resultEventAsName + "' returned a null result, using null value in filter criteria, for statement '" + _statementName + "'");
@@ -65,7 +65,7 @@ namespace com.espertech.esper.filter
                 Log.Warn("Matching events for tag '" + _resultEventAsName + "' returned no result for index " + _resultEventIndex + " at array length " + events.Length + ", using null value in filter criteria, for statement '" + _statementName + "'");
                 return null;
             }
-            
+
             var value = events[_resultEventIndex].Get(_resultEventProperty);
             if (value == null)
             {
@@ -92,30 +92,30 @@ namespace com.espertech.esper.filter
         {
             return "resultEventProp=" + _resultEventAsName + '.' + _resultEventProperty;
         }
-    
+
         public override bool Equals(Object obj)
         {
             if (this == obj)
             {
                 return true;
             }
-    
+
             if (!(obj is RangeValueEventPropIndexed))
             {
                 return false;
             }
-    
-            RangeValueEventPropIndexed other = (RangeValueEventPropIndexed) obj;
-            if ( (other._resultEventAsName.Equals(this._resultEventAsName)) &&
+
+            RangeValueEventPropIndexed other = (RangeValueEventPropIndexed)obj;
+            if ((other._resultEventAsName.Equals(this._resultEventAsName)) &&
                  (other._resultEventProperty.Equals(this._resultEventProperty) &&
                  (other._resultEventIndex == _resultEventIndex)))
             {
                 return true;
             }
-    
+
             return false;
         }
-    
+
         public override int GetHashCode()
         {
             return _resultEventProperty.GetHashCode();

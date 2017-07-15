@@ -172,7 +172,7 @@ namespace com.espertech.esper.epl.view
             }
 
             var result = false;
-            var output = (bool?) evaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, _agentInstanceContext));
+            var output = (bool?)evaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, _agentInstanceContext));
             if ((output != null) && (output.Value))
             {
                 result = true;
@@ -252,11 +252,11 @@ namespace com.espertech.esper.epl.view
         private void PopulateBuiltinProps()
         {
             OutputConditionExpressionTypeUtil.Populate(
-                _builtinProperties.Properties, 
-                _totalNewEventsCount, 
-                _totalOldEventsCount, 
-                _totalNewEventsSum, 
-                _totalOldEventsSum, 
+                _builtinProperties.Properties,
+                _totalNewEventsCount,
+                _totalOldEventsCount,
+                _totalNewEventsSum,
+                _totalOldEventsSum,
                 _lastOutputTimestamp);
         }
     }

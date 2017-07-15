@@ -6,26 +6,42 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.client.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.events.avro;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.support
 {
-	public class SupportEventAdapterService
-	{
-	    private static EventAdapterService _eventAdapterService;
+    public class SupportEventAdapterService {
+        private static EventAdapterService _eventAdapterService;
+    
+        static SupportEventAdapterService()
+        {
+            _eventAdapterService = Allocate();
+        }
+    
+        public static void Reset() {
+            _eventAdapterService = Allocate();
+        }
+    
+        public static EventAdapterService GetService() {
+            return _eventAdapterService;
+        }
+    
+        private static EventAdapterService Allocate() {
+            EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
+            try {
+                avroHandler = (EventAdapterAvroHandler) TypeHelper.Instantiate(typeof(EventAdapterAvroHandler), EventAdapterAvroHandler.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
+            } catch {
+            }
 
-	    static SupportEventAdapterService()
-	    {
-	        _eventAdapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5);
-	    }
-
-	    public static void Reset()
-	    {
-	        _eventAdapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5);
-	    }
-	    public static EventAdapterService GetService()
-	    {
-	        return _eventAdapterService;
-	    }
-	}
+            return new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, avroHandler, SupportEngineImportServiceFactory.Make());
+        }
+    }
 } // end of namespace

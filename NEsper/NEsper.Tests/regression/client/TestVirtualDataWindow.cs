@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.client
             _listener = new SupportUpdateListener();
 
             var configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddPlugInVirtualDataWindow("test", "vdw", typeof(SupportVirtualDWFactory).FullName);
             configuration.AddPlugInVirtualDataWindow("invalid", "invalid", typeof(InvalidTypeForTest).FullName);
             configuration.AddPlugInVirtualDataWindow("test", "testnoindex", typeof(SupportVirtualDWInvalidFactory).FullName);

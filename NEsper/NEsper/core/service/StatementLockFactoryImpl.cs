@@ -30,7 +30,7 @@ namespace com.espertech.esper.core.service
     
         public IReaderWriterLock GetStatementLock(String statementName, Attribute[] annotations, bool stateless)
         {
-            bool foundNoLock = AnnotationUtil.FindAttribute(annotations, typeof(NoLockAttribute)) != null;
+            bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLockAttribute)) != null;
             if (_disableLocking || foundNoLock || stateless)
             {
                 return ReaderWriterLockManager.VoidLock();

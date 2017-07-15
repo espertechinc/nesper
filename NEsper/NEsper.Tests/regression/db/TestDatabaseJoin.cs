@@ -37,7 +37,7 @@ namespace com.espertech.esper.regression.db
             configDB.ConnectionTransactionIsolation = IsolationLevel.Serializable;
 
             Configuration configuration = SupportConfigFactory.GetConfiguration();
-            configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
             configuration.AddDatabaseReference("MyDB", configDB);
 
             _epService = EPServiceProviderManager.GetProvider("TestDatabaseJoinRetained", configuration);

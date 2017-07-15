@@ -10,18 +10,20 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.events
 {
     /// <summary>
-    /// Reader implementation that utilizes event property getters and thereby works
-    /// with all event types regardsless of whether a type returns an event reader when
-    /// asked for.
+    /// Reader implementation that utilizes event property getters and thereby works with all
+    /// event types regardsless of whether a type returns an event reader when asked for.
     /// </summary>
     public class EventBeanReaderDefaultImpl : EventBeanReader
     {
-        private EventPropertyGetter[] gettersArray;
-    
+        private readonly EventPropertyGetter[] _gettersArray;
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -30,25 +32,25 @@ namespace com.espertech.esper.events
         {
             var properties = eventType.PropertyNames;
             var getters = new List<EventPropertyGetter>();
-            foreach (String property in properties)
+            foreach (var property in properties)
             {
-                EventPropertyGetter getter = eventType.GetGetter(property);
+                var getter = eventType.GetGetter(property);
                 if (getter != null)
                 {
                     getters.Add(getter);
                 }
             }
-            gettersArray = getters.ToArray();
+            _gettersArray = getters.ToArray();
         }
-    
+
         public Object[] Read(EventBean theEvent)
         {
-            var values = new Object[gettersArray.Length];
-            for (int i = 0; i < gettersArray.Length; i++)
+            var values = new Object[_gettersArray.Length];
+            for (var i = 0; i < _gettersArray.Length; i++)
             {
-                values[i] = gettersArray[i].Get(theEvent);
+                values[i] = _gettersArray[i].Get(theEvent);
             }
             return values;
         }
     }
-}
+} // end of namespace

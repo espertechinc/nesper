@@ -79,7 +79,7 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Serialization constructor
         /// </summary>
-        /// <param name="info">The info.</param>
+        /// <param name="info">The INFO.</param>
         /// <param name="context">The context.</param>
 
         public LinkedHashSet(SerializationInfo info, StreamingContext context)

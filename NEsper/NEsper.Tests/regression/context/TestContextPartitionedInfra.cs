@@ -38,7 +38,7 @@ namespace com.espertech.esper.regression.context
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportBean_S0>();
             configuration.AddEventType<SupportBean_S1>();
-            configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
             epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(epService, this.GetType(), GetType().FullName);}

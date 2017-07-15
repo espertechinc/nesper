@@ -41,7 +41,7 @@ namespace com.espertech.esper.regression.db
 	        configDB.SetExpiryTimeCache(60, 120);
 
 	        Configuration configuration = SupportConfigFactory.GetConfiguration();
-	        configuration.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+	        configuration.EngineDefaults.Logging.IsEnableQueryPlan = true;
 	        configuration.AddDatabaseReference("MyDB", configDB);
 
 	        _epService = EPServiceProviderManager.GetDefaultProvider(configuration);

@@ -35,7 +35,7 @@ namespace com.espertech.esper.epl.named
         private readonly PropertyEvaluator _optPropertyEvaluator;
         private readonly FlushedEventBuffer _optPropertyContainedBuffer;
         private readonly bool _audit;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -60,15 +60,17 @@ namespace com.espertech.esper.epl.named
             _exprEvaluatorContext = exprEvaluatorContext;
             _audit = audit;
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (_audit) {
-                if (AuditPath.IsAuditEnabled) {
+            if (_audit)
+            {
+                if (AuditPath.IsAuditEnabled)
+                {
                     AuditPath.AuditLog(_exprEvaluatorContext.EngineURI, _exprEvaluatorContext.StatementName, AuditEnum.STREAM, _eventType.Name + " insert {" + EventBeanUtility.Summarize(newData) + "} remove {" + EventBeanUtility.Summarize(oldData) + "}");
                 }
             }
-    
+
             // if we have a filter for the named window,
             if (_filterList.Length != 0)
             {
@@ -76,41 +78,45 @@ namespace com.espertech.esper.epl.named
                 newData = PassFilter(newData, true, _exprEvaluatorContext, eventPerStream);
                 oldData = PassFilter(oldData, false, _exprEvaluatorContext, eventPerStream);
             }
-    
-            if (_optPropertyEvaluator != null) {
+
+            if (_optPropertyEvaluator != null)
+            {
                 newData = GetUnpacked(newData);
                 oldData = GetUnpacked(oldData);
             }
-    
+
             if ((newData != null) || (oldData != null))
             {
                 UpdateChildren(newData, oldData);
             }
         }
-    
+
         private EventBean[] GetUnpacked(EventBean[] data)
         {
-            if (data == null) {
+            if (data == null)
+            {
                 return null;
             }
-            if (data.Length == 0) {
+            if (data.Length == 0)
+            {
                 return data;
             }
-    
-            for (int i = 0; i < data.Length; i++) {
+
+            for (int i = 0; i < data.Length; i++)
+            {
                 EventBean[] unpacked = _optPropertyEvaluator.GetProperty(data[i], _exprEvaluatorContext);
                 _optPropertyContainedBuffer.Add(unpacked);
             }
             return _optPropertyContainedBuffer.GetAndFlush();
         }
-    
+
         private EventBean[] PassFilter(EventBean[] eventData, bool isNewData, ExprEvaluatorContext exprEvaluatorContext, EventBean[] eventPerStream)
         {
             if ((eventData == null) || (eventData.Length == 0))
             {
                 return null;
             }
-    
+
             OneEventCollection filtered = null;
             foreach (EventBean theEvent in eventData)
             {
@@ -118,14 +124,14 @@ namespace com.espertech.esper.epl.named
                 bool pass = true;
                 foreach (ExprEvaluator filter in _filterList)
                 {
-                    var result = (bool?) filter.Evaluate(new EvaluateParams(eventPerStream, isNewData, exprEvaluatorContext));
+                    var result = (bool?)filter.Evaluate(new EvaluateParams(eventPerStream, isNewData, exprEvaluatorContext));
                     if (result == null || !result.Value)
                     {
                         pass = false;
                         break;
                     }
                 }
-    
+
                 if (pass)
                 {
                     if (filtered == null)
@@ -135,7 +141,7 @@ namespace com.espertech.esper.epl.named
                     filtered.Add(theEvent);
                 }
             }
-    
+
             if (filtered == null)
             {
                 return null;
@@ -162,7 +168,7 @@ namespace com.espertech.esper.epl.named
                 _consumerCallback,
                 _exprEvaluatorContext);
         }
-    
+
         public void Stop()
         {
             _consumerCallback.Stopped(this);

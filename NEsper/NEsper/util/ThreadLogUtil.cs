@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Runtime.InteropServices;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 
@@ -19,27 +21,32 @@ namespace com.espertech.esper.util
     /// <summary>
     /// Utility class for logging threading-related messages.
     /// <para>
-    /// Prints thread information and lock-specific info.
+    /// Prints thread information and lock-specific INFO.
     /// </para>
     /// </summary>
     public class ThreadLogUtil
     {
-        /// <summary>Set trace log level.</summary>
+        /// <summary>Enable TRACE logging.</summary>
+        public static readonly bool ENABLED_TRACE = false;
+
+        /// <summary>Enable INFO logging.</summary>
+        public static readonly bool ENABLED_INFO = false;
+
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>Set TRACE log level.</summary>
         public static int TRACE = 0;
 
-        /// <summary>Set info log level.</summary>
+        /// <summary>Set INFO log level.</summary>
         public static int INFO = 1;
 
-        /// <summary>Enable trace logging.</summary>
-        public const bool ENABLED_TRACE = false;
-
-        /// <summary>Enable info logging.</summary>
-        public const Boolean ENABLED_INFO = false;
-
-        /// <summary>If enabled, logs for trace level the given objects and text</summary>
+        /// <summary>
+        /// If enabled, logs for TRACE level the given objects and text
+        /// </summary>
         /// <param name="text">to log</param>
         /// <param name="objects">to write</param>
-        public static void Trace(String text, params Object[] objects)
+        public static void Trace(string text, params Object[] objects)
         {
             if (!ENABLED_TRACE)
             {
@@ -48,10 +55,12 @@ namespace com.espertech.esper.util
             Write(text, objects);
         }
 
-        /// <summary>If enabled, logs for info level the given objects and text</summary>
+        /// <summary>
+        /// If enabled, logs for INFO level the given objects and text
+        /// </summary>
         /// <param name="text">to log</param>
         /// <param name="objects">to write</param>
-        public static void Info(String text, params Object[] objects)
+        public static void Info(string text, params Object[] objects)
         {
             if (!ENABLED_INFO)
             {
@@ -60,28 +69,18 @@ namespace com.espertech.esper.util
             Write(text, objects);
         }
 
-        /// <summary>Logs the lock and action.</summary>
+        /// <summary>
+        /// Logs the lock and action.
+        /// </summary>
         /// <param name="lockAction">is the action towards the lock</param>
-        /// <param name="lockObj">is the lock instance</param>
-        public static void TraceLock(String lockAction, Object lockObj)
+        /// <param name="lock">is the lock instance</param>
+        public static void TraceLock(string lockAction, IReaderWriterLock @lock)
         {
             if (!ENABLED_TRACE)
             {
                 return;
             }
-            Write(lockAction + " " + GetLockInfo(lockObj));
-        }
-
-        /// <summary>Logs the lock and action.</summary>
-        /// <param name="lockAction">is the action towards the lock</param>
-        /// <param name="lockObj">is the lock instance</param>
-        public static void TraceLock(String lockAction, IReaderWriterLock @lockObj)
-        {
-            if (!ENABLED_TRACE)
-            {
-                return;
-            }
-            Write(lockAction + " " + GetLockInfo(lockObj));
+            Write(lockAction + " " + GetLockInfo(@lock));
         }
 
         private static String GetLockInfo(Object lockObj)
@@ -96,7 +95,7 @@ namespace com.espertech.esper.util
         {
             String lockid = String.Format("RWLock@{0:X}", lockObj.GetHashCode());
             return lockid +
-                //" readLockCount=" + lockObj.ReadLockCount +
+                   //" readLockCount=" + lockObj.ReadLockCount +
                    " isWriteLocked=" + lockObj.IsWriterLockHeld;
         }
 
@@ -126,7 +125,5 @@ namespace com.espertech.esper.util
         {
             Log.Info(".write Thread " + Thread.CurrentThread.ManagedThreadId + " " + text);
         }
-
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
-} // End of namespace
+} // end of namespace

@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 namespace com.espertech.esper.collection
 {
     /// <summary>
-    /// FIFOHashSet is a collection that implements "set" principals.  Members of a set
+    /// FIFOHashSet is a collection that : "set" principals.  Members of a set
     /// are unique and can only occur once.  Additionally, iteration of the set is
     /// governed by first-in first-out principal.  This means that the order in which
     /// items are added to the set is preserved through iteration.

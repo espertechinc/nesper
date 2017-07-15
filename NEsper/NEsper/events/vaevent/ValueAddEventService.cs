@@ -64,7 +64,7 @@ namespace com.espertech.esper.events.vaevent
         /// <param name="namedWindowName">name of window</param>
         /// <param name="typeName">name to use</param>
         /// <param name="statementStopService">for handling stops</param>
-        /// <param name="eventAdapterService">for event type info</param>
+        /// <param name="eventAdapterService">for event type INFO</param>
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
         /// <returns>revision event type</returns>
         EventType CreateRevisionType(String namedWindowName,

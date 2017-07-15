@@ -16,44 +16,47 @@ using com.espertech.esper.epl.@join.table;
 
 namespace com.espertech.esper.epl.lookup
 {
-    /// <summary>
-    /// Index lookup strategy for subqueries.
-    /// </summary>
+    /// <summary>Index lookup strategy for subqueries.</summary>
     public class SubordInKeywordMultiTableLookupStrategy : SubordTableLookupStrategy
     {
-        /// <summary>Index to look up in. </summary>
-        protected readonly PropertyIndexedEventTableSingle[] Indexes;
-    
-        protected readonly ExprEvaluator Evaluator;
-        private readonly LookupStrategyDesc _strategyDesc;
+        private readonly ExprEvaluator _evaluator;
         private readonly EventBean[] _events;
-    
-        /// <summary>Ctor. </summary>
-        public SubordInKeywordMultiTableLookupStrategy(int numStreamsOuter, ExprEvaluator evaluator, EventTable[] tables, LookupStrategyDesc strategyDesc)
+
+        /// <summary>Index to look up in.</summary>
+        private readonly PropertyIndexedEventTableSingle[] _indexes;
+
+        private readonly LookupStrategyDesc strategyDesc;
+
+        public SubordInKeywordMultiTableLookupStrategy(
+            int numStreamsOuter,
+            ExprEvaluator evaluator,
+            EventTable[] tables,
+            LookupStrategyDesc strategyDesc)
         {
-            Evaluator = evaluator;
-            _strategyDesc = strategyDesc;
+            _evaluator = evaluator;
+            this.strategyDesc = strategyDesc;
             _events = new EventBean[numStreamsOuter + 1];
-            Indexes = new PropertyIndexedEventTableSingle[tables.Length];
-            for (int i = 0; i < tables.Length; i++) {
-                Indexes[i] = (PropertyIndexedEventTableSingle) tables[i];
+            _indexes = new PropertyIndexedEventTableSingle[tables.Length];
+            for (int i = 0; i < tables.Length; i++)
+            {
+                _indexes[i] = (PropertyIndexedEventTableSingle) tables[i];
             }
         }
-    
+
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context)
         {
             Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
-            return InKeywordTableLookupUtil.MultiIndexLookup(Evaluator, _events, context, Indexes);
+            return InKeywordTableLookupUtil.MultiIndexLookup(_evaluator, _events, context, _indexes);
         }
 
         public LookupStrategyDesc StrategyDesc
         {
-            get { return _strategyDesc; }
+            get { return strategyDesc; }
         }
 
-        public String ToQueryPlan()
+        public string ToQueryPlan()
         {
             return GetType().Name;
         }
     }
-}
+} // end of namespace

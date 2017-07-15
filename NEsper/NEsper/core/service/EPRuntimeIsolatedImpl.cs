@@ -20,8 +20,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.filter;
 using com.espertech.esper.schedule;
 using com.espertech.esper.util;
@@ -34,7 +32,7 @@ namespace com.espertech.esper.core.service
     /// <summary>
     /// Implementation for isolated runtime.
     /// </summary>
-    public class EPRuntimeIsolatedImpl 
+    public class EPRuntimeIsolatedImpl
         : EPRuntimeIsolatedSPI
         , InternalEventRouteDest
         , EPRuntimeEventSender
@@ -132,9 +130,9 @@ namespace com.espertech.esper.core.service
             _unisolatedServices = unisolatedSvc;
             _threadWorkQueue = new ThreadWorkQueue();
 
-            _isSubselectPreeval = unisolatedSvc.EngineSettingsService.EngineSettings.ExpressionConfig.IsSelfSubselectPreeval;
-            _isPrioritized = unisolatedSvc.EngineSettingsService.EngineSettings.ExecutionConfig.IsPrioritized;
-            _isLatchStatementInsertStream = unisolatedSvc.EngineSettingsService.EngineSettings.ThreadingConfig.IsInsertIntoDispatchPreserveOrder;
+            _isSubselectPreeval = unisolatedSvc.EngineSettingsService.EngineSettings.Expression.IsSelfSubselectPreeval;
+            _isPrioritized = unisolatedSvc.EngineSettingsService.EngineSettings.Execution.IsPrioritized;
+            _isLatchStatementInsertStream = unisolatedSvc.EngineSettingsService.EngineSettings.Threading.IsInsertIntoDispatchPreserveOrder;
 
             _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
         }
@@ -143,7 +141,7 @@ namespace com.espertech.esper.core.service
         {
             if (theEvent == null)
             {
-                Log.Fatal(".SendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
@@ -163,7 +161,7 @@ namespace com.espertech.esper.core.service
         {
             if (element == null)
             {
-                Log.Fatal(".SendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
@@ -181,7 +179,7 @@ namespace com.espertech.esper.core.service
         {
             if (document == null)
             {
-                Log.Fatal(".SendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
@@ -202,7 +200,7 @@ namespace com.espertech.esper.core.service
         {
             if (document == null)
             {
-                Log.Fatal(".SendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
@@ -328,7 +326,7 @@ namespace com.espertech.esper.core.service
             {
                 var current = (CurrentTimeEvent)theEvent;
 
-                currentTime = current.TimeInMillis;
+                currentTime = current.Time;
                 if (currentTime == _services.SchedulingService.Time)
                 {
                     Log.Warn("Duplicate time event received for currentTime {0}", currentTime);
@@ -349,7 +347,7 @@ namespace com.espertech.esper.core.service
 
             // handle time span
             var span = (CurrentTimeSpanEvent)theEvent;
-            var targetTime = span.TargetTimeInMillis;
+            var targetTime = span.TargetTime;
             var optionalResolution = span.OptionalResolution;
             currentTime = _services.SchedulingService.Time;
 
@@ -424,7 +422,7 @@ namespace com.espertech.esper.core.service
                 {
                     ProcessScheduleHandles(handles);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     handles.Clear();
                     throw;
@@ -464,7 +462,7 @@ namespace com.espertech.esper.core.service
             // sort multiple matches for the event into statements
             var stmtCallbacks = SchedulePerStmt;
             stmtCallbacks.Clear();
-            for (int i = 0; i < entryCount; i++)    // need to use the size of the collection
+            for (int i = 0; i < entryCount; i++)
             {
                 var handleCallback = (EPStatementHandleCallback)matchArray[i];
                 var handle = handleCallback.AgentInstanceHandle;
@@ -752,7 +750,7 @@ namespace com.espertech.esper.core.service
                 }
                 catch (Exception ex)
                 {
-                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
+                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
                 }
                 finally
                 {
@@ -786,7 +784,7 @@ namespace com.espertech.esper.core.service
                 }
                 catch (Exception ex)
                 {
-                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS);
+                    _unisolatedServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
                 }
                 finally
                 {

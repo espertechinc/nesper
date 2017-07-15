@@ -8,14 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.core.context.mgr
 {
     public class ContextControllerHashedGetterHashMultiple : EventPropertyGetter
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ExprEvaluator[] _evaluators;
         private readonly int _granularity;
 
@@ -29,16 +33,18 @@ namespace com.espertech.esper.core.context.mgr
             _granularity = granularity;
         }
 
-        #region EventPropertyGetter Members
-
         public Object Get(EventBean eventBean)
         {
-            var events = new[] {eventBean};
+            var events = new EventBean[]
+            {
+                eventBean
+            };
+            var evaluateParams = new EvaluateParams(events, true, null);
 
             int hashCode = 0;
             for (int i = 0; i < _evaluators.Length; i++)
             {
-                Object result = _evaluators[i].Evaluate(new EvaluateParams(events, true, null));
+                object result = _evaluators[i].Evaluate(evaluateParams);
                 if (result == null)
                 {
                     continue;
@@ -69,7 +75,5 @@ namespace com.espertech.esper.core.context.mgr
         {
             return null;
         }
-
-        #endregion
     }
-}
+} // end of namespace

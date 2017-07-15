@@ -6,9 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.subquery;
+using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 
@@ -17,8 +22,8 @@ namespace com.espertech.esper.epl.spec.util
     public class StatementSpecCompiledAnalyzer {
     
         public static StatementSpecCompiledAnalyzerResult AnalyzeFilters(StatementSpecCompiled spec) {
-            IList<FilterSpecCompiled> filters = new List<FilterSpecCompiled>();
-            IList<NamedWindowConsumerStreamSpec> namedWindows = new List<NamedWindowConsumerStreamSpec>();
+            var filters = new List<FilterSpecCompiled>();
+            var namedWindows = new List<NamedWindowConsumerStreamSpec>();
     
             AddFilters(spec.StreamSpecs, filters, namedWindows);
     
@@ -29,7 +34,7 @@ namespace com.espertech.esper.epl.spec.util
             return new StatementSpecCompiledAnalyzerResult(filters, namedWindows);
         }
     
-        private static void AddFilters(StreamSpecCompiled[] streams, IList<FilterSpecCompiled> filters, IList<NamedWindowConsumerStreamSpec> namedWindows) {
+        private static void AddFilters(StreamSpecCompiled[] streams, List<FilterSpecCompiled> filters, List<NamedWindowConsumerStreamSpec> namedWindows) {
             foreach (StreamSpecCompiled compiled in streams) {
                 if (compiled is FilterStreamSpecCompiled) {
                     FilterStreamSpecCompiled c = (FilterStreamSpecCompiled) compiled;
@@ -37,10 +42,9 @@ namespace com.espertech.esper.epl.spec.util
                 }
                 if (compiled is PatternStreamSpecCompiled) {
                     PatternStreamSpecCompiled r = (PatternStreamSpecCompiled) compiled;
-                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes((r.EvalFactoryNode));
-                    IList<EvalFilterFactoryNode> filterNodes = evalNodeAnalysisResult.FilterNodes;
-                    foreach (EvalFilterFactoryNode filterNode in filterNodes)
-                    {
+                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(r.EvalFactoryNode);
+                    List<EvalFilterFactoryNode> filterNodes = evalNodeAnalysisResult.FilterNodes;
+                    foreach (EvalFilterFactoryNode filterNode in filterNodes) {
                         filters.Add(filterNode.FilterSpec);
                     }
                 }
@@ -50,4 +54,4 @@ namespace com.espertech.esper.epl.spec.util
             }
         }
     }
-}
+} // end of namespace

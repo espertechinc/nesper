@@ -11,37 +11,37 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertWildcardSSWrapper
-        : EvalBaseMap
-        , SelectExprProcessor
+    public class EvalInsertWildcardSSWrapper : EvalBaseMap, SelectExprProcessor
     {
-        public EvalInsertWildcardSSWrapper(SelectExprContext selectExprContext,
-                                           EventType resultEventType)
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
+        public EvalInsertWildcardSSWrapper(SelectExprContext selectExprContext, EventType resultEventType)
             : base(selectExprContext, resultEventType)
         {
         }
-
+    
         // In case of a wildcard and single stream that is itself a
         // wrapper bean, we also need to add the map properties
-        public override EventBean ProcessSpecific(IDictionary<String, Object> props,
-                                                  EventBean[] eventsPerStream,
-                                                  bool isNewData,
-                                                  bool isSynthesize,
-                                                  ExprEvaluatorContext exprEvaluatorContext)
+        public override EventBean ProcessSpecific(
+            IDictionary<string, Object> props,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var wrapper = (DecoratingEventBean) eventsPerStream[0];
             if (wrapper != null)
             {
-                IDictionary<String, Object> map = wrapper.DecoratingProperties;
-                if ((ExprNodes.Length == 0) && (map.IsNotEmpty()))
+                IDictionary<string, Object> map = wrapper.DecoratingProperties;
+                if ((base.ExprNodes.Length == 0) && (!map.IsEmpty()))
                 {
-                    props = new Dictionary<String, Object>(map);
+                    props = new Dictionary<string, Object>(map);
                 }
                 else
                 {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.core.eval
 
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
             // Wrapping it even when not adding properties is very inexpensive.
-            return EventAdapterService.AdapterForTypedWrapper(theEvent, props, ResultEventType);
+            return base.EventAdapterService.AdapterForTypedWrapper(theEvent, props, base.ResultEventType);
         }
     }
-}
+} // end of namespace

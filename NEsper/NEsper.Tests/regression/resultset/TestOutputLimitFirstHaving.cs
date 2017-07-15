@@ -27,8 +27,8 @@ namespace com.espertech.esper.regression.resultset
 	    public void SetUp()
         {
 	        var config = SupportConfigFactory.GetConfiguration();
-            config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
-	        config.EngineDefaults.LoggingConfig.IsEnableTimerDebug = false;
+            config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
+	        config.EngineDefaults.Logging.IsEnableTimerDebug = false;
 	        _epService = EPServiceProviderManager.GetDefaultProvider(config);
 	        _epService.Initialize();
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, this.GetType(), this.GetType().FullName);}

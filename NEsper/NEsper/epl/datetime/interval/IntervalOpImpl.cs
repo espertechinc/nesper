@@ -14,57 +14,69 @@ using com.espertech.esper.compat;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.datetime.interval
 {
-    public class IntervalOpImpl : IntervalOp {
-    
+    public class IntervalOpImpl : IntervalOp
+    {
+
         private readonly ExprEvaluator _evaluatorTimestamp;
-    
+
         private readonly int _parameterStreamNum;
         private readonly String _parameterPropertyStart;
         private readonly String _parameterPropertyEnd;
-    
+
         private readonly IntervalOpEval _intervalOpEval;
-    
-        public IntervalOpImpl(DatetimeMethodEnum method, String methodNameUse, StreamTypeService streamTypeService, IList<ExprNode> expressions)
+
+        public IntervalOpImpl(
+            DatetimeMethodEnum method,
+            String methodNameUse,
+            StreamTypeService streamTypeService,
+            IList<ExprNode> expressions,
+            TimeZone timeZone,
+            TimeAbacus timeAbacus)
         {
             ExprEvaluator evaluatorEndTimestamp = null;
             Type timestampType;
-    
-            if (expressions[0] is ExprStreamUnderlyingNode) {
-                var und = (ExprStreamUnderlyingNode) expressions[0];
+
+            if (expressions[0] is ExprStreamUnderlyingNode)
+            {
+                var und = (ExprStreamUnderlyingNode)expressions[0];
                 _parameterStreamNum = und.StreamId;
                 EventType type = streamTypeService.EventTypes[_parameterStreamNum];
                 _parameterPropertyStart = type.StartTimestampPropertyName;
-                if (_parameterPropertyStart == null) {
+                if (_parameterPropertyStart == null)
+                {
                     throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter is event type '" + type.Name + "', however no timestamp property has been defined for this event type");
                 }
-    
+
                 timestampType = type.GetPropertyType(_parameterPropertyStart);
                 EventPropertyGetter getter = type.GetGetter(_parameterPropertyStart);
                 _evaluatorTimestamp = new ExprEvaluatorStreamLongProp(_parameterStreamNum, getter);
-    
-                if (type.EndTimestampPropertyName != null) {
+
+                if (type.EndTimestampPropertyName != null)
+                {
                     _parameterPropertyEnd = type.EndTimestampPropertyName;
                     EventPropertyGetter getterEndTimestamp = type.GetGetter(type.EndTimestampPropertyName);
                     evaluatorEndTimestamp = new ExprEvaluatorStreamLongProp(_parameterStreamNum, getterEndTimestamp);
                 }
-                else {
+                else
+                {
                     _parameterPropertyEnd = _parameterPropertyStart;
                 }
             }
-            else {
+            else
+            {
                 _evaluatorTimestamp = expressions[0].ExprEvaluator;
                 timestampType = _evaluatorTimestamp.ReturnType;
 
                 String unresolvedPropertyName = null;
                 if (expressions[0] is ExprIdentNode)
                 {
-                    var identNode = (ExprIdentNode) expressions[0];
+                    var identNode = (ExprIdentNode)expressions[0];
                     _parameterStreamNum = identNode.StreamId;
                     _parameterPropertyStart = identNode.ResolvedPropertyName;
                     _parameterPropertyEnd = _parameterPropertyStart;
@@ -110,21 +122,27 @@ namespace com.espertech.esper.epl.datetime.interval
                     }
                 }
             }
-    
-            IntervalComputer intervalComputer = IntervalComputerFactory.Make(method, expressions);
-    
+
+            IntervalComputer intervalComputer = IntervalComputerFactory.Make(method, expressions, timeAbacus);
+
             // evaluation without end timestamp
             var timestampTypeBoxed = timestampType != null ? timestampType.GetBoxedType() : timestampType;
             if (evaluatorEndTimestamp == null)
             {
-                if (timestampTypeBoxed == typeof(DateTime?) || timestampTypeBoxed == typeof (DateTimeOffset?))
+                if (timestampTypeBoxed == typeof(DateTime?) || timestampTypeBoxed == typeof(DateTimeOffset?))
                 {
                     _intervalOpEval = new IntervalOpEvalCal(intervalComputer);
                 }
-                else if (timestampTypeBoxed == typeof(long?)) {
+                else if (timestampTypeBoxed == typeof(DateTimeEx))
+                {
+                    _intervalOpEval = new IntervalOpEvalDateTimeEx(intervalComputer);
+                }
+                else if (timestampTypeBoxed == typeof(long?))
+                {
                     _intervalOpEval = new IntervalOpEvalLong(intervalComputer);
                 }
-                else {
+                else
+                {
                     throw new ArgumentException("Invalid interval first parameter type '" + timestampType + "'");
                 }
             }
@@ -134,11 +152,16 @@ namespace com.espertech.esper.epl.datetime.interval
                 {
                     _intervalOpEval = new IntervalOpEvalCalWithEnd(intervalComputer, evaluatorEndTimestamp);
                 }
+                else if (timestampTypeBoxed == typeof(DateTimeEx))
+                {
+                    _intervalOpEval = new IntervalOpEvalDateTimeExWithEnd(intervalComputer, evaluatorEndTimestamp);
+                }
                 else if (timestampTypeBoxed == typeof(long?))
                 {
                     _intervalOpEval = new IntervalOpEvalLongWithEnd(intervalComputer, evaluatorEndTimestamp);
                 }
-                else {
+                else
+                {
                     throw new ArgumentException("Invalid interval first parameter type '" + timestampType + "'");
                 }
             }
@@ -152,61 +175,71 @@ namespace com.espertech.esper.epl.datetime.interval
         /// <param name="currentParameters">The current parameters.</param>
         /// <param name="inputDesc">The input desc.</param>
         /// <returns></returns>
-        public ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(EventType[] typesPerStream,
-                                                                     DatetimeMethodEnum currentMethod,
-                                                                     IList<ExprNode> currentParameters,
-                                                                     ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             // with intervals is not currently query planned
-            if (currentParameters.Count > 1) {
+            if (currentParameters.Count > 1)
+            {
                 return null;
             }
-    
+
             // Get input (target)
             int targetStreamNum;
             String targetPropertyStart;
             String targetPropertyEnd;
-            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream) {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
+            if (inputDesc is ExprDotNodeFilterAnalyzerInputStream)
+            {
+                var targetStream = (ExprDotNodeFilterAnalyzerInputStream)inputDesc;
                 targetStreamNum = targetStream.StreamNum;
                 EventType targetType = typesPerStream[targetStreamNum];
                 targetPropertyStart = targetType.StartTimestampPropertyName;
                 targetPropertyEnd = targetType.EndTimestampPropertyName ?? targetPropertyStart;
             }
-            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp) {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputProp) inputDesc;
+            else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp)
+            {
+                var targetStream = (ExprDotNodeFilterAnalyzerInputProp)inputDesc;
                 targetStreamNum = targetStream.StreamNum;
                 targetPropertyStart = targetStream.PropertyName;
                 targetPropertyEnd = targetStream.PropertyName;
             }
-            else {
+            else
+            {
                 return null;
             }
-    
+
             // check parameter info
-            if (_parameterPropertyStart == null) {
+            if (_parameterPropertyStart == null)
+            {
                 return null;
             }
-    
+
             return new ExprDotNodeFilterAnalyzerDTIntervalDesc(currentMethod, typesPerStream,
                     targetStreamNum, targetPropertyStart, targetPropertyEnd,
                     _parameterStreamNum, _parameterPropertyStart, _parameterPropertyEnd);
         }
-    
-        public Object Evaluate(long startTs, long endTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public Object Evaluate(long startTs, long endTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        {
             Object parameter = _evaluatorTimestamp.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
-            if (parameter == null) {
+            if (parameter == null)
+            {
                 return parameter;
             }
-    
+
             return _intervalOpEval.Evaluate(startTs, endTs, parameter, eventsPerStream, isNewData, context);
         }
-    
-        public interface IntervalOpEval {
+
+        public interface IntervalOpEval
+        {
             Object Evaluate(long startTs, long endTs, Object parameter, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
         }
-    
-        public abstract class IntervalOpEvalDateBase : IntervalOpEval {
+
+        public abstract class IntervalOpEvalDateBase : IntervalOpEval
+        {
             protected readonly IntervalComputer IntervalComputer;
 
             public abstract object Evaluate(long startTs,
@@ -216,83 +249,122 @@ namespace com.espertech.esper.epl.datetime.interval
                                             bool isNewData,
                                             ExprEvaluatorContext context);
 
-            public IntervalOpEvalDateBase(IntervalComputer intervalComputer) {
+            public IntervalOpEvalDateBase(IntervalComputer intervalComputer)
+            {
                 IntervalComputer = intervalComputer;
             }
         }
-    
-        public class IntervalOpEvalLong : IntervalOpEvalDateBase {
-    
+
+        public class IntervalOpEvalLong : IntervalOpEvalDateBase
+        {
             public IntervalOpEvalLong(IntervalComputer intervalComputer)
-                            : base(intervalComputer)
+                : base(intervalComputer)
             {
             }
-    
+
             public override Object Evaluate(long startTs, long endTs, Object parameter, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
             {
-                var time = ((long?) parameter).GetValueOrDefault();
+                var time = ((long?)parameter).GetValueOrDefault();
                 return IntervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
             }
         }
-    
-        public class IntervalOpEvalCal : IntervalOpEvalDateBase {
-    
+
+        public class IntervalOpEvalCal : IntervalOpEvalDateBase
+        {
             public IntervalOpEvalCal(IntervalComputer intervalComputer)
-                            : base(intervalComputer)
+                : base(intervalComputer)
             {
             }
-    
+
             public override Object Evaluate(long startTs, long endTs, Object parameter, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
             {
                 long time = parameter.AsDateTimeOffset().TimeInMillis();
                 return IntervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
             }
         }
-    
-        public abstract class IntervalOpEvalDateWithEndBase : IntervalOpEval {
+
+        public class IntervalOpEvalDateTimeEx : IntervalOpEvalDateBase
+        {
+            public IntervalOpEvalDateTimeEx(IntervalComputer intervalComputer)
+                : base(intervalComputer)
+            {
+            }
+
+            public override Object Evaluate(long startTs, long endTs, Object parameter, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
+                var time = ((DateTimeEx) parameter).TimeInMillis;
+                return IntervalComputer.Compute(startTs, endTs, time, time, eventsPerStream, isNewData, context);
+            }
+        }
+
+        public abstract class IntervalOpEvalDateWithEndBase : IntervalOpEval
+        {
             protected readonly IntervalComputer IntervalComputer;
             private readonly ExprEvaluator _evaluatorEndTimestamp;
-    
-            protected IntervalOpEvalDateWithEndBase(IntervalComputer intervalComputer, ExprEvaluator evaluatorEndTimestamp) {
+
+            protected IntervalOpEvalDateWithEndBase(IntervalComputer intervalComputer, ExprEvaluator evaluatorEndTimestamp)
+            {
                 IntervalComputer = intervalComputer;
                 _evaluatorEndTimestamp = evaluatorEndTimestamp;
             }
-    
+
             public abstract Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-    
-            public Object Evaluate(long startTs, long endTs, Object parameterStartTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+            public Object Evaluate(long startTs, long endTs, Object parameterStartTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
                 Object paramEndTs = _evaluatorEndTimestamp.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
-                if (paramEndTs == null) {
+                if (paramEndTs == null)
+                {
                     return null;
                 }
                 return Evaluate(startTs, endTs, parameterStartTs, paramEndTs, eventsPerStream, isNewData, context);
             }
         }
-    
-        public class IntervalOpEvalLongWithEnd : IntervalOpEvalDateWithEndBase {
-    
+
+        public class IntervalOpEvalLongWithEnd : IntervalOpEvalDateWithEndBase
+        {
+
             public IntervalOpEvalLongWithEnd(IntervalComputer intervalComputer, ExprEvaluator evaluatorEndTimestamp)
-                            : base(intervalComputer, evaluatorEndTimestamp)
+                : base(intervalComputer, evaluatorEndTimestamp)
             {
             }
-    
-            public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+            public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
                 return IntervalComputer.Compute(startTs, endTs, parameterStartTs.AsLong(), parameterEndTs.AsLong(), eventsPerStream, isNewData, context);
             }
         }
-    
-        public class IntervalOpEvalCalWithEnd : IntervalOpEvalDateWithEndBase {
-    
+
+        public class IntervalOpEvalCalWithEnd : IntervalOpEvalDateWithEndBase
+        {
             public IntervalOpEvalCalWithEnd(IntervalComputer intervalComputer, ExprEvaluator evaluatorEndTimestamp)
-                            : base(intervalComputer, evaluatorEndTimestamp)
+                : base(intervalComputer, evaluatorEndTimestamp)
             {
             }
-    
-            public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+            public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
                 return IntervalComputer.Compute(
-                    startTs, endTs, 
+                    startTs, endTs,
                     parameterStartTs.AsDateTimeOffset().TimeInMillis(),
                     parameterEndTs.AsDateTimeOffset().TimeInMillis(),
+                    eventsPerStream, isNewData, context);
+            }
+        }
+
+        public class IntervalOpEvalDateTimeExWithEnd : IntervalOpEvalDateWithEndBase
+        {
+            public IntervalOpEvalDateTimeExWithEnd(IntervalComputer intervalComputer, ExprEvaluator evaluatorEndTimestamp)
+                : base(intervalComputer, evaluatorEndTimestamp)
+            {
+            }
+
+            public override Object Evaluate(long startTs, long endTs, Object parameterStartTs, Object parameterEndTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            {
+                return IntervalComputer.Compute(
+                    startTs, endTs,
+                    ((DateTimeEx) parameterStartTs).TimeInMillis,
+                    ((DateTimeEx) parameterEndTs).TimeInMillis,
                     eventsPerStream, isNewData, context);
             }
         }

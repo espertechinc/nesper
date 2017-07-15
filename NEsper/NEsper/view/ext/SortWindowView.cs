@@ -72,7 +72,7 @@ namespace com.espertech.esper.view.ext
             _sortWindowSize = sortWindowSize;
             _optionalSortedRandomAccess = optionalSortedRandomAccess;
             AgentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
-    
+
             var comparator = CollectionUtil.GetComparator(sortCriteriaEvaluators, isSortUsingCollator, _isDescendingValues);
             _sortedEvents = new OrderedDictionary<Object, Object>(comparator);
         }
@@ -114,10 +114,10 @@ namespace com.espertech.esper.view.ext
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _sortWindowViewFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _sortWindowViewFactory.ViewName, newData, oldData); }
+
             OneEventCollection removedEvents = null;
-    
+
             // Remove old data
             if (oldData != null)
             {
@@ -129,7 +129,8 @@ namespace com.espertech.esper.view.ext
                     if (result)
                     {
                         _eventCount--;
-                        if (removedEvents == null) {
+                        if (removedEvents == null)
+                        {
                             removedEvents = new OneEventCollection();
                         }
                         removedEvents.Add(oldDataItem);
@@ -137,7 +138,7 @@ namespace com.espertech.esper.view.ext
                     }
                 }
             }
-    
+
             // Add new data
             if (newData != null)
             {
@@ -150,7 +151,7 @@ namespace com.espertech.esper.view.ext
                     InternalHandleAdd(sortValues, newDataItem);
                 }
             }
-    
+
             // Remove data that sorts to the bottom of the window
             if (_eventCount > _sortWindowSize)
             {
@@ -160,24 +161,29 @@ namespace com.espertech.esper.view.ext
                     // Remove the last element of the last key - sort order is key and then natural order of arrival
                     var lastKey = _sortedEvents.Keys.Last();
                     var lastEntry = _sortedEvents.Get(lastKey);
-                    if (lastEntry is IList<EventBean>) {
-                        var events = (IList<EventBean>) lastEntry;
+                    if (lastEntry is IList<EventBean>)
+                    {
+                        var events = (IList<EventBean>)lastEntry;
                         var theEvent = events.Delete(events.Count - 1);  // remove oldest event, newest events are first in list
                         _eventCount--;
-                        if (events.IsEmpty()) {
+                        if (events.IsEmpty())
+                        {
                             _sortedEvents.Remove(lastKey);
                         }
-                        if (removedEvents == null) {
+                        if (removedEvents == null)
+                        {
                             removedEvents = new OneEventCollection();
                         }
                         removedEvents.Add(theEvent);
                         InternalHandleRemoved(lastKey, theEvent);
                     }
-                    else {
-                        var theEvent = (EventBean) lastEntry;
+                    else
+                    {
+                        var theEvent = (EventBean)lastEntry;
                         _eventCount--;
                         _sortedEvents.Remove(lastKey);
-                        if (removedEvents == null) {
+                        if (removedEvents == null)
+                        {
                             removedEvents = new OneEventCollection();
                         }
                         removedEvents.Add(theEvent);
@@ -185,13 +191,13 @@ namespace com.espertech.esper.view.ext
                     }
                 }
             }
-    
+
             // If there are child views, fireStatementStopped Update method
             if (_optionalSortedRandomAccess != null)
             {
                 _optionalSortedRandomAccess.Refresh(_sortedEvents, _eventCount, _sortWindowSize);
             }
-    
+
             if (HasViews)
             {
                 EventBean[] expiredArr = null;
@@ -199,28 +205,30 @@ namespace com.espertech.esper.view.ext
                 {
                     expiredArr = removedEvents.ToArray();
                 }
-    
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _sortWindowViewFactory.ViewName, newData, expiredArr);}
+
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _sortWindowViewFactory.ViewName, newData, expiredArr); }
                 UpdateChildren(newData, expiredArr);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
-        public void InternalHandleAdd(Object sortValues, EventBean newDataItem) {
+
+        public void InternalHandleAdd(Object sortValues, EventBean newDataItem)
+        {
             // no action required
         }
-    
-        public void InternalHandleRemoved(Object sortValues, EventBean oldDataItem) {
+
+        public void InternalHandleRemoved(Object sortValues, EventBean oldDataItem)
+        {
             // no action required
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return new SortWindowEnumerator(_sortedEvents);
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName +
@@ -228,7 +236,7 @@ namespace com.espertech.esper.view.ext
                     " isDescending=" + CompatExtensions.Render(_isDescendingValues) +
                     " sortWindowSize=" + _sortWindowSize;
         }
-    
+
         protected Object GetSortValues(EventBean theEvent)
         {
             var evaluateParams = new EvaluateParams(_eventsPerStream, true, AgentInstanceViewFactoryContext);
@@ -240,12 +248,12 @@ namespace com.espertech.esper.view.ext
             }
 
             var result = new Object[_sortCriteriaExpressions.Length];
-        	var count = 0;
-        	foreach (var expr in _sortCriteriaEvaluators)
-        	{
-        	    result[count++] = expr.Evaluate(evaluateParams);
-        	}
-        	return new MultiKeyUntyped(result);
+            var count = 0;
+            foreach (var expr in _sortCriteriaEvaluators)
+            {
+                result[count++] = expr.Evaluate(evaluateParams);
+            }
+            return new MultiKeyUntyped(result);
         }
 
         /// <summary>
@@ -260,7 +268,7 @@ namespace com.espertech.esper.view.ext
             }
             return _sortedEvents.IsEmpty();
         }
-    
+
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_sortedEvents, false, _sortWindowViewFactory.ViewName, _eventCount, null);

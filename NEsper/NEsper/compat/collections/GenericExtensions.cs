@@ -197,7 +197,7 @@ namespace com.espertech.esper.compat.collections
 
                 if (!CollectionAccessorTable.TryGetValue(t, out accessor))
                 {
-                    // Scan the object and make sure that it implements the collection interface
+                    // Scan the object and make sure that it : the collection interface
                     var rawInterface = FindGenericInterface(t, typeof(ICollection<>));
                     if (rawInterface == null) {
                         accessor = null;

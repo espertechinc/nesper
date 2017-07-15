@@ -35,7 +35,7 @@ namespace com.espertech.esper.epl.spec
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly FilterSpecRaw _rawFilterSpec;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="rawFilterSpec">is unvalidated filter specification</param>
         /// <param name="viewSpecs">is the view definition</param>
@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.spec
         {
             _rawFilterSpec = rawFilterSpec;
         }
-    
+
         /// <summary>Default ctor. </summary>
         public FilterStreamSpecRaw()
         {
@@ -81,67 +81,68 @@ namespace com.espertech.esper.epl.spec
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(ExprNodeOrigin.FILTER, _rawFilterSpec.FilterExpressions, streamTypeServiceX, context, null, null);
                 return new TableQueryStreamSpec(OptionalStreamName, ViewSpecs, Options, eventName, validatedNodes);
             }
-    
+
             // Could be a named window
             if (context.NamedWindowMgmtService.IsNamedWindow(eventName))
             {
                 var namedWindowType = context.NamedWindowMgmtService.GetProcessor(eventName).TailView.EventType;
-                streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] { optionalStreamName }, new bool[] { true }, context.EngineURI, false);
-    
+                streamTypeService = new StreamTypeServiceImpl(new EventType[] { namedWindowType }, new String[] { optionalStreamName }, new bool[] { true }, context.EngineURI, false);
+
                 var validatedNodes = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER, _rawFilterSpec.FilterExpressions, streamTypeService, context, null, null);
-    
+
                 PropertyEvaluator optionalPropertyEvaluator = null;
                 if (_rawFilterSpec.OptionalPropertyEvalSpec != null)
                 {
                     optionalPropertyEvaluator =
                         PropertyEvaluatorFactory.MakeEvaluator(
                             _rawFilterSpec.OptionalPropertyEvalSpec, namedWindowType, OptionalStreamName,
-                            context.EventAdapterService, 
-                            context.EngineImportService, 
+                            context.EventAdapterService,
+                            context.EngineImportService,
                             context.TimeProvider,
-                            context.VariableService, 
+                            context.VariableService,
                             context.ScriptingService,
                             context.TableService,
-                            context.EngineURI, 
+                            context.EngineURI,
                             context.StatementId,
-                            context.StatementName, 
-                            context.Annotations, assignedTypeNumberStack, 
+                            context.StatementName,
+                            context.Annotations, assignedTypeNumberStack,
                             context.ConfigSnapshot,
                             context.NamedWindowMgmtService,
                             context.StatementExtensionServicesContext);
                 }
-                eventTypeReferences.Add(((EventTypeSPI) namedWindowType).Metadata.PrimaryName);
+                eventTypeReferences.Add(((EventTypeSPI)namedWindowType).Metadata.PrimaryName);
                 return new NamedWindowConsumerStreamSpec(eventName, OptionalStreamName, ViewSpecs, validatedNodes, Options, optionalPropertyEvaluator);
             }
-    
+
             EventType eventType = null;
-    
+
             if (context.ValueAddEventService.IsRevisionTypeName(eventName))
             {
                 eventType = context.ValueAddEventService.GetValueAddUnderlyingType(eventName);
-                eventTypeReferences.Add(((EventTypeSPI) eventType).Metadata.PrimaryName);
+                eventTypeReferences.Add(((EventTypeSPI)eventType).Metadata.PrimaryName);
             }
-    
+
             if (eventType == null)
             {
                 eventType = ResolveType(context.EngineURI, eventName, context.EventAdapterService, context.PlugInTypeResolutionURIs);
-                if (eventType is EventTypeSPI) {
-                    eventTypeReferences.Add(((EventTypeSPI) eventType).Metadata.PrimaryName);
+                if (eventType is EventTypeSPI)
+                {
+                    eventTypeReferences.Add(((EventTypeSPI)eventType).Metadata.PrimaryName);
                 }
             }
-    
+
             // Validate all nodes, make sure each returns a bool and types are good;
             // Also decompose all AND super nodes into individual expressions
-            streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {base.OptionalStreamName}, new bool[] {true}, context.EngineURI, false);
-    
+            streamTypeService = new StreamTypeServiceImpl(new EventType[] { eventType }, new String[] { base.OptionalStreamName }, new bool[] { true }, context.EngineURI, false);
+
             var spec = FilterSpecCompiler.MakeFilterSpec(eventType, eventName, _rawFilterSpec.FilterExpressions, _rawFilterSpec.OptionalPropertyEvalSpec,
                     null, null,  // no tags
                     streamTypeService, OptionalStreamName, context, assignedTypeNumberStack);
-    
+
             return new FilterStreamSpecCompiled(spec, ViewSpecs, OptionalStreamName, Options);
         }
-    
+
         /// <summary>Resolves a given event name to an event type. </summary>
         /// <param name="eventName">is the name to resolve</param>
         /// <param name="eventAdapterService">for resolving event types</param>
@@ -152,19 +153,19 @@ namespace com.espertech.esper.epl.spec
         public static EventType ResolveType(String engineURI, String eventName, EventAdapterService eventAdapterService, IList<Uri> optionalResolutionURIs)
         {
             var eventType = eventAdapterService.GetEventTypeByName(eventName);
-    
+
             // may already be known
             if (eventType != null)
             {
                 return eventType;
             }
-    
+
             var engineURIQualifier = engineURI;
             if (engineURI == null || EPServiceProviderConstants.DEFAULT_ENGINE_URI.Equals(engineURI))
             {
-                engineURIQualifier = EPServiceProviderConstants.DEFAULT_ENGINE_URI__QUALIFIER;
+                engineURIQualifier = EPServiceProviderConstants.DEFAULT_ENGINE_URI_QUALIFIER;
             }
-    
+
             // The event name can be prefixed by the engine URI, i.e. "select * from default.MyEvent"
             if (eventName.StartsWith(engineURIQualifier))
             {
@@ -173,20 +174,20 @@ namespace com.espertech.esper.epl.spec
                 {
                     var eventNameURI = eventName.Substring(0, indexDot);
                     var eventNameRemainder = eventName.Substring(indexDot + 1);
-    
+
                     if (engineURIQualifier.Equals(eventNameURI))
                     {
                         eventType = eventAdapterService.GetEventTypeByName(eventNameRemainder);
                     }
                 }
             }
-    
+
             // may now be known
             if (eventType != null)
             {
                 return eventType;
             }
-    
+
             // The type is not known yet, attempt to add as an object type with the same name
             String message = null;
             try
@@ -198,7 +199,7 @@ namespace com.espertech.esper.epl.spec
                 Log.Debug(".resolveType Event type named '" + eventName + "' not resolved as Type event");
                 message = "Failed to resolve event type: " + ex.Message;
             }
-    
+
             // Attempt to use plug-in event types
             try
             {
@@ -209,7 +210,7 @@ namespace com.espertech.esper.epl.spec
                 Log.Debug(".resolveType Event type named '" + eventName + "' not resolved by plug-in event representations");
                 // remains unresolved
             }
-    
+
             if (eventType == null)
             {
                 throw new ExprValidationException(message);

@@ -33,7 +33,7 @@ namespace com.espertech.esper.view.window
     /// <para/>
     /// The view starts the first interval when the view is created.
     /// </summary>
-    public class TimeLengthBatchView 
+    public class TimeLengthBatchView
         : ViewSupport
         , CloneableView
         , StoppableView
@@ -49,7 +49,7 @@ namespace com.espertech.esper.view.window
         private readonly bool _isStartEager;
         private readonly ViewUpdatedCollection _viewUpdatedCollection;
         private readonly long _scheduleSlot;
-    
+
         // Current running parameters
         private List<EventBean> _lastBatch = null;
         private List<EventBean> _currentBatch = new List<EventBean>();
@@ -82,18 +82,18 @@ namespace com.espertech.esper.view.window
             _isStartEager = isStartEager;
             _viewUpdatedCollection = viewUpdatedCollection;
             _isForceOutput = forceOutput;
-    
+
             _scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
-    
+
             // schedule the first callback
             if (isStartEager)
             {
                 ScheduleCallback(0);
             }
-    
+
             agentInstanceContext.AddTerminationCallback(Stop);
         }
-    
+
         public View CloneView()
         {
             return _timeLengthBatchViewFactory.MakeView(_agentInstanceContext);
@@ -178,17 +178,17 @@ namespace com.espertech.esper.view.window
                 SendBatch(false);
             }
         }
-    
+
         public void InternalHandleAdded(EventBean newEvent)
         {
             // no action required
         }
-    
+
         public void InternalHandleRemoved(EventBean eventBean)
         {
             // no action required
         }
-    
+
         /// <summary>
         /// This method updates child views and clears the batch of events. We cancel and 
         /// old callback and schedule a new callback at this time if there were events in 
@@ -211,7 +211,7 @@ namespace com.espertech.esper.view.window
                     _callbackScheduledTime = null;
                 }
             }
-    
+
             // If there are child views and the batch was filled, fireStatementStopped Update method
             if (HasViews)
             {
@@ -226,7 +226,7 @@ namespace com.espertech.esper.view.window
                 {
                     oldData = _lastBatch.ToArray();
                 }
-    
+
                 // Post new data (current batch) and old data (prior batch)
                 if (_viewUpdatedCollection != null)
                 {
@@ -242,19 +242,19 @@ namespace com.espertech.esper.view.window
                     }
                 }
             }
-    
+
             // Only if there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
             if (((_currentBatch.IsNotEmpty()) || ((_lastBatch != null) && (_lastBatch.IsNotEmpty()))) || (_isForceOutput))
             {
                 ScheduleCallback(0);
             }
-    
+
             // Flush and roll
             _lastBatch = _currentBatch;
             _currentBatch = new List<EventBean>();
         }
-    
+
         /// <summary>Returns true if the window is empty, or false if not empty. </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
@@ -268,18 +268,18 @@ namespace com.espertech.esper.view.window
             }
             return _currentBatch.IsEmpty();
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return _currentBatch.GetEnumerator();
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName +
                     " numberOfEvents=" + _numberOfEvents;
         }
-    
+
         protected void ScheduleCallback(long delta)
         {
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback
@@ -291,22 +291,22 @@ namespace com.espertech.esper.view.window
             };
             _handle = new EPStatementHandleCallback(_agentInstanceContext.EpStatementAgentInstanceHandle, callback);
             var currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            var scheduled = _timeDeltaComputation.DeltaMillisecondsAdd(currentTime) - delta;
+            var scheduled = _timeDeltaComputation.DeltaAdd(currentTime) - delta;
             _agentInstanceContext.StatementContext.SchedulingService.Add(scheduled, _handle, _scheduleSlot);
             _callbackScheduledTime = _agentInstanceContext.StatementContext.SchedulingService.Time + scheduled;
         }
-    
+
         public void StopView()
         {
             StopSchedule();
             _agentInstanceContext.RemoveTerminationCallback(Stop);
         }
-    
+
         public void Stop()
         {
             StopSchedule();
         }
-    
+
         public void StopSchedule()
         {
             if (_handle != null)
@@ -314,7 +314,7 @@ namespace com.espertech.esper.view.window
                 _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
             }
         }
-    
+
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(_lastBatch, true, _timeLengthBatchViewFactory.ViewName, null);

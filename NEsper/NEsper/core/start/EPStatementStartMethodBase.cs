@@ -9,7 +9,6 @@
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.util;
@@ -21,11 +20,10 @@ namespace com.espertech.esper.core.start
     /// </summary>
     public abstract class EPStatementStartMethodBase : EPStatementStartMethod
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
-    
+        private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
+
         internal readonly StatementSpecCompiled _statementSpec;
-    
+
         protected EPStatementStartMethodBase(StatementSpecCompiled statementSpec)
         {
             _statementSpec = statementSpec;
@@ -42,35 +40,40 @@ namespace com.espertech.esper.core.start
             bool isNewStatement,
             bool isRecoveringStatement,
             bool isRecoveringResilient);
-    
+
         public EPStatementStartResult Start(EPServicesContext services, StatementContext statementContext, bool isNewStatement, bool isRecoveringStatement, bool isRecoveringResilient)
         {
             statementContext.VariableService.SetLocalVersion();    // get current version of variables
-    
-            bool queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
-            if (queryPlanLogging && QueryPlanLog.IsInfoEnabled) {
-                QueryPlanLog.Info("Query plans for statement '" + statementContext.StatementName + "' expression '" + statementContext.Expression + "'");
+
+            bool queryPlanLogging = services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
+            if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled)
+            {
+                QUERY_PLAN_LOG.Info("Query plans for statement '" + statementContext.StatementName + "' expression '" + statementContext.Expression + "'");
             }
-            
+
             // validate context - may not exist
-            if (_statementSpec.OptionalContextName != null && statementContext.ContextDescriptor == null) {
+            if (_statementSpec.OptionalContextName != null && statementContext.ContextDescriptor == null)
+            {
                 throw new ExprValidationException("Context by name '" + _statementSpec.OptionalContextName + "' has not been declared");
             }
-    
+
             return StartInternal(services, statementContext, isNewStatement, isRecoveringStatement, isRecoveringResilient);
         }
-    
-        protected EPStatementAgentInstanceHandle GetDefaultAgentInstanceHandle(StatementContext statementContext) {
+
+        protected EPStatementAgentInstanceHandle GetDefaultAgentInstanceHandle(StatementContext statementContext)
+        {
             return new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion(), statementContext.FilterFaultHandlerFactory);
         }
-    
-        protected AgentInstanceContext GetDefaultAgentInstanceContext(StatementContext statementContext) {
+
+        protected AgentInstanceContext GetDefaultAgentInstanceContext(StatementContext statementContext)
+        {
             EPStatementAgentInstanceHandle handle = GetDefaultAgentInstanceHandle(statementContext);
             return new AgentInstanceContext(statementContext, handle, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, null, statementContext.DefaultAgentInstanceScriptContext);
         }
-    
-        protected bool IsQueryPlanLogging(EPServicesContext services) {
-            return services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
+
+        protected bool IsQueryPlanLogging(EPServicesContext services)
+        {
+            return services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
         }
     }
 }

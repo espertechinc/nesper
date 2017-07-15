@@ -328,7 +328,7 @@ namespace com.espertech.esper.regression.nwtable
                     "Invalid table expression 'aggvar_grouped_int[0].a.b [select aggvar_grouped_int[0].a.b from SupportBean]");
             // invalid use in non-contextual evaluation
             SupportMessageAssertUtil.TryInvalid(_epService, "select * from SupportBean.win:time(aggvar_ungrouped.total sec)",
-                    "Error starting statement: Error in view 'win:time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here [select * from SupportBean.win:time(aggvar_ungrouped.total sec)]");
+                    "Error starting statement: Error in view 'win:time', Invalid parameter expression 0 for TimeInMillis view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here [select * from SupportBean.win:time(aggvar_ungrouped.total sec)]");
             // indexed property expression but not an aggregtion-type variable
             _epService.EPAdministrator.CreateEPL("create objectarray schema MyEvent(abc int[])");
             SupportMessageAssertUtil.TryInvalid(_epService, "select abc[5*5] from MyEvent",

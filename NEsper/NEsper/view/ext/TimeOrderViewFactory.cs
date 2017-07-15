@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
@@ -18,84 +19,110 @@ using com.espertech.esper.view.window;
 
 namespace com.espertech.esper.view.ext
 {
-	/// <summary>
-	/// Factory for views for time-ordering events.
-	/// </summary>
-	public class TimeOrderViewFactory
+    /// <summary>Factory for views for time-ordering events.</summary>
+    public class TimeOrderViewFactory
         : DataWindowViewFactory
         , DataWindowViewWithPrevious
-	{
-	    private IList<ExprNode> _viewParameters;
+    {
+        /// <summary>The timestamp expression.</summary>
+        private ExprNode _timestampExpression;
 
-	    /// <summary>
-	    /// The timestamp expression.
-	    /// </summary>
-	    protected ExprNode timestampExpression;
+        private ExprEvaluator _timestampExpressionEvaluator;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
-	    {
-	        _viewParameters = expressionParameters;
-	    }
+        /// <summary>The interval to wait for newer events to arrive.</summary>
+        private ExprTimePeriodEvalDeltaConstFactory _timeDeltaComputationFactory;
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
-	    {
-	        var validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
+        private IList<ExprNode> _viewParameters;
+        private EventType _eventType;
 
-	        if (_viewParameters.Count != 2) {
-	            throw new ViewParameterException(ViewParamMessage);
-	        }
-
-	        if (!validated[0].ExprEvaluator.ReturnType.IsNumeric()) {
-	            throw new ViewParameterException(ViewParamMessage);
-	        }
-	        timestampExpression = validated[0];
-	        TimeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(ViewName, statementContext, _viewParameters[1], ViewParamMessage, 1);
-	        TimestampExpressionEvaluator = timestampExpression.ExprEvaluator;
-	        EventType = parentEventType;
-	    }
-
-	    public object MakePreviousGetter()
+        public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-	        return new RandomAccessByIndexGetter();
-	    }
+            _viewParameters = expressionParameters;
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
-	    {
-	        var sortedRandomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);
-	        return new TimeOrderView(agentInstanceViewFactoryContext, this, timestampExpression, timestampExpression.ExprEvaluator, TimeDeltaComputation, sortedRandomAccess);
-	    }
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
+        {
+            var validated = ViewFactorySupport.Validate(
+                ViewName, parentEventType, statementContext, _viewParameters, true);
 
-	    public EventType EventType { get; private set; }
+            if (_viewParameters.Count != 2)
+            {
+                throw new ViewParameterException(ViewParamMessage);
+            }
 
-	    public bool CanReuse(View view)
-	    {
-	        if (!(view is TimeOrderView))
-	        {
-	            return false;
-	        }
+            if (!validated[0].ExprEvaluator.ReturnType.IsNumeric())
+            {
+                throw new ViewParameterException(ViewParamMessage);
+            }
+            _timestampExpression = validated[0];
+            _timeDeltaComputationFactory = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
+                ViewName, statementContext, _viewParameters[1], ViewParamMessage, 1);
+            _timestampExpressionEvaluator = _timestampExpression.ExprEvaluator;
+            _eventType = parentEventType;
+        }
 
-	        var other = (TimeOrderView) view;
-	        if ((!TimeDeltaComputation.EqualsTimePeriod(other.TimeDeltaComputation)) ||
-	            (!ExprNodeUtility.DeepEquals(other.TimestampExpression, timestampExpression)))
-	        {
-	            return false;
-	        }
+        public Object MakePreviousGetter()
+        {
+            return new RandomAccessByIndexGetter();
+        }
 
-	        return other.IsEmpty();
-	    }
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        {
+            var timeDeltaComputation = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceViewFactoryContext.AgentInstanceContext);
+            var sortedRandomAccess =
+                agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
+                    .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);
+            return new TimeOrderView(
+                agentInstanceViewFactoryContext, this, _timestampExpression, _timestampExpression.ExprEvaluator,
+                timeDeltaComputation, sortedRandomAccess);
+        }
 
-	    public string ViewName
-	    {
-	        get { return "Time-Order"; }
-	    }
+        public EventType EventType
+        {
+            get { return _eventType; }
+        }
 
-	    public ExprEvaluator TimestampExpressionEvaluator { get; protected set; }
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
+        {
+            if (!(view is TimeOrderView))
+            {
+                return false;
+            }
 
-	    public ExprTimePeriodEvalDeltaConst TimeDeltaComputation { get; protected set; }
+            var other = (TimeOrderView) view;
+            var timeDeltaComputation = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceContext);
+            if ((!timeDeltaComputation.EqualsTimePeriod(other.TimeDeltaComputation)) ||
+                (!ExprNodeUtility.DeepEquals(other.TimestampExpression, _timestampExpression)))
+            {
+                return false;
+            }
 
-	    private string ViewParamMessage
-	    {
-	        get { return ViewName + " view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size"; }
-	    }
-	}
+            return other.IsEmpty();
+        }
+
+        public string ViewName
+        {
+            get { return "TimeInMillis-Order"; }
+        }
+
+        public ExprEvaluator TimestampExpressionEvaluator
+        {
+            get { return _timestampExpressionEvaluator; }
+        }
+
+        private string ViewParamMessage
+        {
+            get
+            {
+                return ViewName +
+                       " view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size";
+            }
+        }
+    }
 } // end of namespace

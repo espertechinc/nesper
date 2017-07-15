@@ -85,7 +85,7 @@ namespace com.espertech.esper.epl.virtualdw
             SubordPropPlan joinDesc,
             bool forceTableScan)
         {
-            var noopTable = (VirtualDWEventTable) eventTable;
+            var noopTable = (VirtualDWEventTable)eventTable;
             for (var i = 0; i < noopTable.BtreeAccess.Count; i++)
             {
                 noopTable.BtreeAccess[i].Operator = rangeKeys[i].RangeInfo.RangeType.GetStringOp().FromOpString();
@@ -146,13 +146,13 @@ namespace com.espertech.esper.epl.virtualdw
 
         public JoinExecTableLookupStrategy GetJoinLookupStrategy(
             String accessedByStmtName,
-            int accessedByStmtId, 
-            Attribute[] accessedByStmtAnnotations, 
-            EventTable[] eventTables, 
-            TableLookupKeyDesc keyDescriptor, 
+            int accessedByStmtId,
+            Attribute[] accessedByStmtAnnotations,
+            EventTable[] eventTables,
+            TableLookupKeyDesc keyDescriptor,
             int lookupStreamNum)
         {
-            var noopTable = (VirtualDWEventTable) eventTables[0];
+            var noopTable = (VirtualDWEventTable)eventTables[0];
             for (var i = 0; i < noopTable.HashAccess.Count; i++)
             {
                 var hashKey = keyDescriptor.Hashes[i];
@@ -167,12 +167,12 @@ namespace com.espertech.esper.epl.virtualdw
                 if (range is QueryGraphValueEntryRangeRelOp)
                 {
                     rangeField.LookupValueType =
-                        ((QueryGraphValueEntryRangeRelOp) range).Expression.ExprEvaluator.ReturnType;
+                        ((QueryGraphValueEntryRangeRelOp)range).Expression.ExprEvaluator.ReturnType;
                 }
                 else
                 {
                     rangeField.LookupValueType =
-                        ((QueryGraphValueEntryRangeIn) range).ExprStart.ExprEvaluator.ReturnType;
+                        ((QueryGraphValueEntryRangeIn)range).ExprStart.ExprEvaluator.ReturnType;
                 }
             }
 
@@ -217,10 +217,10 @@ namespace com.espertech.esper.epl.virtualdw
             RangeIndexLookupValue[] rangeValues,
             Attribute[] annotations)
         {
-            var noopTable = (VirtualDWEventTable) eventTable;
+            var noopTable = (VirtualDWEventTable)eventTable;
             for (var i = 0; i < noopTable.BtreeAccess.Count; i++)
             {
-                var range = (RangeIndexLookupValueRange) rangeValues[i];
+                var range = (RangeIndexLookupValueRange)rangeValues[i];
                 var op = range.Operator.GetStringOp().FromOpString();
                 noopTable.BtreeAccess[i].Operator = op;
             }
@@ -237,7 +237,7 @@ namespace com.espertech.esper.epl.virtualdw
                 var rangeValue = rangeValues[j].Value;
                 if (rangeValue is Range)
                 {
-                    var range = (Range) rangeValue;
+                    var range = (Range)rangeValue;
                     keys[j + offset] = new VirtualDataWindowKeyRange(range.LowEndpoint, range.HighEndpoint);
                     noopTable.BtreeAccess[j].LookupValueType = range.LowEndpoint == null
                         ? null

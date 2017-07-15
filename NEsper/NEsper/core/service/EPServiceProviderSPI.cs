@@ -124,9 +124,9 @@ namespace com.espertech.esper.core.service
         ScriptingService ScriptingService { get; }
 
         void SetConfiguration(Configuration configuration);
-    
+
         void PostInitialize();
-    
+
         void Initialize(long? currentTime);
     }
 
@@ -136,6 +136,6 @@ namespace com.espertech.esper.core.service
         public static readonly String DEFAULT_ENGINE_URI = "default";
 
         /// <summary>For the default provider instance, which carries a "default" provider URI, the property name qualification and stream name qualification may use "default". </summary>
-        public static readonly String DEFAULT_ENGINE_URI__QUALIFIER = "default";
+        public static readonly String DEFAULT_ENGINE_URI_QUALIFIER = "default";
     }
 }

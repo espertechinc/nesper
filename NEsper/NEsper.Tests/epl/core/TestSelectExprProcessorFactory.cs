@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.core
 	public class TestSelectExprProcessorFactory 
 	{
 	    private readonly StatementResultService _statementResultService = new StatementResultServiceImpl(
-            "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading()));
+            "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()));
 	    private readonly SelectExprEventTypeRegistry _selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(
             "abc", new StatementEventTypeRefImpl());
 

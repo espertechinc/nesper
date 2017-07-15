@@ -15,7 +15,7 @@ namespace com.espertech.esper.client.annotation
     {
         public ExternalDWSettingAttribute()
         {
-            Iterable = true;
+            IEnumerable = true;
             FunctionLookupCompleted = string.Empty;
         }
 
@@ -24,7 +24,7 @@ namespace com.espertech.esper.client.annotation
         /// </summary>
         /// <value><c>true</c> if iterable; otherwise, <c>false</c>.</value>
         /// <returns>iterable flag</returns>
-        public bool Iterable { get; set; }
+        public bool IEnumerable { get; set; }
 
         /// <summary>
         /// Function name to invoke when a lookup completed.

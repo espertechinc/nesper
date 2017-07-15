@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using com.espertech.esper.epl.core;
+
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
@@ -35,55 +37,59 @@ namespace com.espertech.esper.core.service
         /// <param name="statement">the statement.</param>
         /// <param name="subscriber">is the subscriber to deliver to</param>
         /// <param name="method">the method to invoke</param>
-        public ResultDeliveryStrategyObjectArr(EPStatement statement, Object subscriber, MethodInfo method)
+        public ResultDeliveryStrategyObjectArr(EPStatement statement, Object subscriber, MethodInfo method, EngineImportService engineImportService)
         {
             _statement = statement;
             _subscriber = subscriber;
             _fastMethod = FastClass.CreateMethod(method);
         }
-    
+
         public virtual void Execute(UniformPair<EventBean[]> result)
         {
             Object[][] newData;
             Object[][] oldData;
-    
-            if (result == null) {
+
+            if (result == null)
+            {
                 newData = null;
                 oldData = null;
             }
-            else {
+            else
+            {
                 newData = Convert(result.First);
                 oldData = Convert(result.Second);
             }
-    
-            var paramList = new Object[] {newData, oldData};
-            try {
+
+            var paramList = new Object[] { newData, oldData };
+            try
+            {
                 _fastMethod.Invoke(_subscriber, paramList);
             }
-            catch (TargetInvocationException e) {
+            catch (TargetInvocationException e)
+            {
                 ResultDeliveryStrategyImpl.Handle(_statement.Name, Log, e, paramList, _subscriber, _fastMethod);
             }
         }
-    
+
         internal Object[][] Convert(EventBean[] events)
         {
             if ((events == null) || (events.Length == 0))
             {
                 return null;
             }
-    
+
             var result = new Object[events.Length][];
             var length = 0;
             for (var i = 0; i < result.Length; i++)
             {
                 if (events[i] is NaturalEventBean)
                 {
-                    var natural = (NaturalEventBean) events[i];
+                    var natural = (NaturalEventBean)events[i];
                     result[length] = natural.Natural;
                     length++;
                 }
             }
-    
+
             if (length == 0)
             {
                 return null;

@@ -30,14 +30,16 @@ namespace com.espertech.esper.core.service
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly string _engineURI;
         private readonly IDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>> _preprocessors;
         private readonly IDictionary<UpdateDesc, IRDescEntry> _descriptors;
         private bool _hasPreprocessing;
         private InsertIntoListener _insertIntoListener;
-    
+
         /// <summary>Ctor. </summary>
-        public InternalEventRouterImpl()
+        public InternalEventRouterImpl(String engineURI)
         {
+            _engineURI = engineURI;
             _hasPreprocessing = false;
             _preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
             _descriptors = new LinkedHashMap<UpdateDesc, IRDescEntry>();
@@ -64,50 +66,61 @@ namespace com.espertech.esper.core.service
             set { _insertIntoListener = value; }
         }
 
-        public void Route(EventBean theEvent, EPStatementHandle statementHandle, InternalEventRouteDest routeDest, ExprEvaluatorContext exprEvaluatorContext, bool addToFront)
+        public void Route(
+            EventBean theEvent,
+            EPStatementHandle statementHandle,
+            InternalEventRouteDest routeDest,
+            ExprEvaluatorContext exprEvaluatorContext,
+            bool addToFront)
         {
             if (!_hasPreprocessing)
             {
-                if (_insertIntoListener != null) {
+                if (_insertIntoListener != null)
+                {
                     bool route = _insertIntoListener.Inserted(theEvent, statementHandle);
-                    if (route) {
+                    if (route)
+                    {
                         routeDest.Route(theEvent, statementHandle, addToFront);
                     }
                 }
-                else {
+                else
+                {
                     routeDest.Route(theEvent, statementHandle, addToFront);
                 }
                 return;
             }
-    
+
             EventBean preprocessed = GetPreprocessedEvent(theEvent, exprEvaluatorContext);
             if (preprocessed != null)
             {
-                if (_insertIntoListener != null) {
+                if (_insertIntoListener != null)
+                {
                     bool route = _insertIntoListener.Inserted(theEvent, statementHandle);
-                    if (route) {
+                    if (route)
+                    {
                         routeDest.Route(preprocessed, statementHandle, addToFront);
                     }
                 }
-                else {
+                else
+                {
                     routeDest.Route(preprocessed, statementHandle, addToFront);
                 }
             }
         }
-    
+
         public InternalEventRouterDesc GetValidatePreprocessing(EventType eventType, UpdateDesc desc, Attribute[] annotations)
         {
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("Validating route preprocessing for type '" + eventType.Name + "'");
             }
-    
+
             if (!(eventType is EventTypeSPI))
             {
                 throw new ExprValidationException("Update statements require the event type to implement the " + typeof(EventTypeSPI) + " interface");
             }
 
-            var eventTypeSPI = (EventTypeSPI) eventType;
+            var eventTypeSPI = (EventTypeSPI)eventType;
             var wideners = new TypeWidener[desc.Assignments.Count];
             var properties = new List<String>();
             for (int i = 0; i < desc.Assignments.Count; i++)
@@ -126,23 +139,23 @@ namespace com.espertech.esper.core.service
                 }
 
                 wideners[i] = TypeWidenerFactory.GetCheckPropertyAssignType(
-                    ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(assignmentPair.Second), 
+                    ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(assignmentPair.Second),
                     assignmentPair.Second.ExprEvaluator.ReturnType,
-                    writableProperty.PropertyType,
-                    assignmentPair.First);
+                    writableProperty.PropertyType, assignmentPair.First,
+                    false, null, null, _engineURI);
                 properties.Add(assignmentPair.First);
             }
-    
+
             // check copy-able
             var copyMethod = eventTypeSPI.GetCopyMethod(properties.ToArray());
             if (copyMethod == null)
             {
                 throw new ExprValidationException("The update-clause requires the underlying event representation to support copy (via Serializable by default)");
             }
-    
+
             return new InternalEventRouterDesc(desc, copyMethod, wideners, eventType, annotations);
         }
-    
+
         public void AddPreprocessing(InternalEventRouterDesc internalEventRouterDesc, InternalRoutePreprocessView outputView, IReaderWriterLock agentInstanceLock, bool hasSubselect)
         {
             lock (this)
@@ -155,7 +168,7 @@ namespace com.espertech.esper.core.service
                 _hasPreprocessing = true;
             }
         }
-    
+
         public void RemovePreprocessing(EventType eventType, UpdateDesc desc)
         {
             lock (this)
@@ -164,10 +177,10 @@ namespace com.espertech.esper.core.service
                 {
                     Log.Info("Removing route preprocessing for type '" + eventType.Name);
                 }
-    
+
                 // remove all preprocessors for this type as well as any known child types
                 RemovePreprocessors(eventType);
-    
+
                 _descriptors.Remove(desc);
                 if (_descriptors.IsEmpty())
                 {
@@ -176,7 +189,7 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         private EventBean GetPreprocessedEvent(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {
             NullableObject<InternalEventRouterPreprocessor> processor = _preprocessors.Get(theEvent.EventType);
@@ -188,7 +201,7 @@ namespace com.espertech.esper.core.service
                     _preprocessors.Put(theEvent.EventType, processor);
                 }
             }
-    
+
             if (processor.Value == null)
             {
                 return theEvent;
@@ -198,16 +211,17 @@ namespace com.espertech.esper.core.service
                 return processor.Value.Process(theEvent, exprEvaluatorContext);
             }
         }
-    
+
         private void RemovePreprocessors(EventType eventType)
         {
             _preprocessors.Remove(eventType);
-    
+
             // find each child type entry
             foreach (EventType type in _preprocessors.Keys)
             {
                 if (type.DeepSuperTypes != null)
                 {
+                    // TODO: can be minimized
                     foreach (var dtype in type.DeepSuperTypes.Where(dtype => dtype == eventType))
                     {
                         _preprocessors.Remove(type);
@@ -215,12 +229,12 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         private NullableObject<InternalEventRouterPreprocessor> Initialize(EventType eventType)
         {
-            var eventTypeSPI = (EventTypeSPI) eventType;
+            var eventTypeSPI = (EventTypeSPI)eventType;
             var desc = new List<InternalEventRouterEntry>();
-    
+
             // determine which ones to process for this types, and what priority and drop
             var eventPropertiesWritten = new HashSet<String>();
             foreach (var entry in _descriptors)
@@ -236,12 +250,12 @@ namespace com.espertech.esper.core.service
                         }
                     }
                 }
-    
+
                 if (!applicable)
                 {
                     continue;
                 }
-    
+
                 var priority = 0;
                 var isDrop = false;
                 var annotations = entry.Value.Annotations;
@@ -249,14 +263,14 @@ namespace com.espertech.esper.core.service
                 {
                     if (annotations[i] is PriorityAttribute)
                     {
-                        priority = ((PriorityAttribute) annotations[i]).Value;
+                        priority = ((PriorityAttribute)annotations[i]).Value;
                     }
                     if (annotations[i] is DropAttribute)
                     {
                         isDrop = true;
                     }
                 }
-    
+
                 var properties = new List<String>();
                 var expressions = new ExprNode[entry.Key.Assignments.Count];
                 for (int i = 0; i < entry.Key.Assignments.Count; i++)
@@ -271,7 +285,7 @@ namespace com.espertech.esper.core.service
                 var writer = eventTypeSPI.GetWriter(properties.ToArray());
                 desc.Add(new InternalEventRouterEntry(priority, isDrop, entry.Key.OptionalWhereClause, expressions, writer, entry.Value.Wideners, entry.Value.OutputView, entry.Value.AgentInstanceLock, entry.Value.HasSubselect));
             }
-    
+
             var copyMethod = eventTypeSPI.GetCopyMethod(eventPropertiesWritten.ToArray());
             if (copyMethod == null)
             {
@@ -279,7 +293,7 @@ namespace com.espertech.esper.core.service
             }
             return new NullableObject<InternalEventRouterPreprocessor>(new InternalEventRouterPreprocessor(copyMethod, desc));
         }
-    
+
         private class IRDescEntry
         {
             private readonly InternalEventRouterDesc _internalEventRouterDesc;

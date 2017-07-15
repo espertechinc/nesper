@@ -8,11 +8,14 @@
 
 namespace com.espertech.esper.epl.expression.time
 {
-    public interface ExprTimePeriodEvalDeltaConst
+    public interface ExprTimePeriodEvalDeltaConst : ExprTimePeriodEvalDeltaConstFactory
     {
-        long DeltaMillisecondsAdd(long fromTime);
-        long DeltaMillisecondsSubtract(long fromTime);
-        ExprTimePeriodEvalDeltaResult DeltaMillisecondsAddWReference(long fromTime, long reference);
+        long DeltaAdd(long fromTime);
+
+        long DeltaSubtract(long fromTime);
+
+        ExprTimePeriodEvalDeltaResult DeltaAddWReference(long fromTime, long reference);
+
         bool EqualsTimePeriod(ExprTimePeriodEvalDeltaConst timeDeltaComputation);
     }
-}
+} // end of namespace

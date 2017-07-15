@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.epl
             config.AddEventType("MapS0", typeInfo);
             config.AddEventType("MapS1", typeInfo);
 
-            config.EngineDefaults.LoggingConfig.IsEnableQueryPlan = true;
+            config.EngineDefaults.Logging.IsEnableQueryPlan = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(config);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }

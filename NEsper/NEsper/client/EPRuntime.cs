@@ -100,7 +100,7 @@ namespace com.espertech.esper.client
         /// Reset number of events received and emitted
         /// </summary>
         void ResetStats();
-    
+
         /// <summary>
         /// Route the event object back to the event stream processing runtime for internal
         /// dispatching, to avoid the possibility of a stack overflow due to nested calls to
@@ -132,7 +132,7 @@ namespace com.espertech.esper.client
         ///     enabled the SendEvent method should be used by listeners instead.
         /// </para>
         /// </summary>
-        /// <param name="map">map that contains event property values. Keys are expected to be of type string while valuescan be of any type. Keys and values should match those declared via Configuration for the given eventTypeName. </param>
+        /// <param name="map">map that contains event property values. Keys are expected to be of type string while value scan be of any type. Keys and values should match those declared via Configuration for the given eventTypeName. </param>
         /// <param name="eventTypeName">the name for Map event type that was previously configured</param>
         /// <throws>EPException - when the processing of the event leads to an error</throws>
         void Route(DataMap map, string eventTypeName);
@@ -190,7 +190,7 @@ namespace com.espertech.esper.client
         /// <param name="node">is the DOM node as an event</param>
         /// <throws>EPException is thrown when the processing of the event lead to an error</throws>
         void Route(XmlNode node);
-    
+
         /// <summary>
         /// Gets or sets a listener to receive events that are unmatched by any statement.
         /// <para/>
@@ -355,7 +355,7 @@ namespace com.espertech.esper.client
         /// </returns>
         /// <throws>EventTypeException thrown to indicate that the URI list was invalid</throws>
         EventSender GetEventSender(Uri[] uris);
-    
+
         /// <summary>
         /// Execute an on-demand query.
         /// <para/>
@@ -381,7 +381,7 @@ namespace com.espertech.esper.client
         /// Execute an on-demand query. &lt;p&gt; On-demand queries are EPL queries that execute 
         /// non-continuous fire-and-forget queries against named windows. 
         /// </summary>
-        /// <param name="model">is the EPL query to execute, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
+        /// <param name="model">is the EPL query to execute, obtain a model object using <see cref="EPAdministrator.CompileEPL(String)" /> or via the API </param>
         /// <returns>query result</returns>
         EPOnDemandQueryResult ExecuteQuery(EPStatementObjectModel model);
 
@@ -389,7 +389,7 @@ namespace com.espertech.esper.client
         /// For use with named windows that have a context declared and that may therefore have multiple context
         /// partitions, allows to target context partitions for query execution selectively.
         /// </summary>
-        /// <param name="model">is the EPL query to execute, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
+        /// <param name="model">is the EPL query to execute, obtain a model object using <see cref="EPAdministrator.CompileEPL(String)" /> or via the API </param>
         /// <param name="contextPartitionSelectors">selects context partitions to consider</param>
         /// <returns>result</returns>
         EPOnDemandQueryResult ExecuteQuery(EPStatementObjectModel model, ContextPartitionSelector[] contextPartitionSelectors);
@@ -404,21 +404,23 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Prepare an unparameterized on-demand query before execution and for repeated execution.
         /// </summary>
-        /// <param name="model">is the EPL query to prepare, obtain a model object using {@link EPAdministrator#compileEPL(String)}or via the API </param>
+        /// <param name="model">is the EPL query to prepare, obtain a model object using <see cref="EPAdministrator.CompileEPL(String)" /> or via the API </param>
         /// <returns>proxy to execute upon, that also provides the event type of the returned results</returns>
         EPOnDemandPreparedQuery PrepareQuery(EPStatementObjectModel model);
 
         /// <summary>
         /// Prepare a parameterized on-demand query for repeated parameter setting and execution. Set all values on the 
-        /// returned holder then execute using {@link #executeQuery(EPOnDemandPreparedQueryParameterized)}.
+        /// returned holder then execute using <see cref="ExecuteQuery(EPOnDemandPreparedQueryParameterized)" />.
         /// </summary>
         /// <param name="epl">to prepare</param>
         /// <returns>parameter holder upon which to set values</returns>
         EPOnDemandPreparedQueryParameterized PrepareQueryWithParameters(String epl);
 
         /// <summary>
-        /// Execute an on-demand parameterized query. &lt;p&gt; On-demand queries are EPL queries that 
-        /// execute non-continuous fire-and-forget queries against named windows.
+        /// Execute an on-demand parameterized query.
+        /// <para>
+        /// On-demand queries are EPL queries that execute non-continuous fire-and-forget queries against named windows.
+        /// </para>
         /// </summary>
         /// <param name="parameterizedQuery">contains the query and parameter values</param>
         /// <returns>query result</returns>
@@ -468,5 +470,36 @@ namespace com.espertech.esper.client
         /// </summary>
         /// <value>clocking indicator</value>
         bool IsExternalClockingEnabled { get; }
+
+        /// <summary>
+        /// Send an event represented by a Avro GenericData.Record to the event stream processing runtime.
+        /// <para>
+        /// Use the route method for sending events into the runtime from within UpdateListener code,
+        /// to avoid the possibility of a stack overflow due to nested calls to sendEvent
+        /// (except with the outbound-threading configuration), see <see cref="RouteAvro" />.
+        /// </para>
+        /// </summary>
+        /// <param name="avroGenericDataDotRecord">is the event to sent to the runtime</param>
+        /// <param name="avroEventTypeName">event type name</param>
+        /// <exception cref="EPException">is thrown when the processing of the event lead to an error</exception>
+        void SendEventAvro(object avroGenericDataDotRecord, string avroEventTypeName);
+
+        /// <summary>
+        /// Route the event object back to the event stream processing runtime for internal dispatching,
+        /// to avoid the possibility of a stack overflow due to nested calls to sendEvent.
+        /// The route event is processed just like it was sent to the runtime, that is any
+        /// active expressions seeking that event receive it. The routed event has priority over other
+        /// events sent to the runtime. In a single-threaded application the routed event is
+        /// processed before the next event is sent to the runtime through the
+        /// EPRuntime.sendEvent method.
+        /// <para>
+        /// Note: when outbound-threading is enabled, the thread delivering to listeners
+        /// is not the thread processing the original event. Therefore with outbound-threading
+        /// enabled the sendEvent method should be used by listeners instead.
+        /// </para>
+        /// </summary>
+        /// <param name="avroGenericDataDotRecord">is the event to sent to the runtime</param>
+        /// <param name="avroEventTypeName">event type name</param>
+        void RouteAvro(object avroGenericDataDotRecord, string avroEventTypeName);
     }
 }

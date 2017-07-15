@@ -7,105 +7,97 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
-using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.metrics.instrumentation;
-using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.internals
 {
     /// <summary>
     /// Handler for split-stream evaluating the first where-clause matching select-clause.
     /// </summary>
-    public class RouteResultViewHandlerFirst : RouteResultViewHandler
+    public class RouteResultViewHandlerFirst : RouteResultViewHandlerBase
     {
-        private readonly InternalEventRouter _internalEventRouter;
-        private readonly TableStateInstance[] _tableStateInstances;
-        private readonly bool[] _isNamedWindowInsert;
-        private readonly EPStatementHandle _epStatementHandle;
-        private readonly ResultSetProcessor[] _processors;
-        private readonly ExprEvaluator[] _whereClauses;
-        private readonly EventBean[] _eventsPerStream = new EventBean[1];
-        private readonly AgentInstanceContext _agentInstanceContext;
-        private readonly bool _audit;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="epStatementHandle">handle</param>
-        /// <param name="internalEventRouter">routes generated events</param>
-        /// <param name="tableStateInstances"></param>
-        /// <param name="isNamedWindowInsert">The is named window insert.</param>
-        /// <param name="processors">select clauses</param>
-        /// <param name="whereClauses">where clauses</param>
-        /// <param name="agentInstanceContext">agent instance context</param>
-        public RouteResultViewHandlerFirst(EPStatementHandle epStatementHandle, InternalEventRouter internalEventRouter, TableStateInstance[] tableStateInstances, bool[] isNamedWindowInsert, ResultSetProcessor[] processors, ExprEvaluator[] whereClauses, AgentInstanceContext agentInstanceContext)
+        public RouteResultViewHandlerFirst(
+            EPStatementHandle epStatementHandle,
+            InternalEventRouter internalEventRouter,
+            TableStateInstance[] tableStateInstances,
+            EPStatementStartMethodOnTriggerItem[] items,
+            ResultSetProcessor[] processors,
+            ExprEvaluator[] whereClauses,
+            AgentInstanceContext agentInstanceContext)
+            : base(
+                epStatementHandle, internalEventRouter, tableStateInstances, items, processors, whereClauses,
+                agentInstanceContext)
         {
-            _internalEventRouter = internalEventRouter;
-            _tableStateInstances = tableStateInstances;
-            _isNamedWindowInsert = isNamedWindowInsert;
-            _epStatementHandle = epStatementHandle;
-            _processors = processors;
-            _whereClauses = whereClauses;
-            _agentInstanceContext = agentInstanceContext;
-            _audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.StatementContext.Annotations) != null;
         }
-    
-        public bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override bool Handle(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QSplitStream(false, theEvent, _whereClauses);}
-    
-            int index = -1;
-            _eventsPerStream[0] = theEvent;
-    
-            for (int i = 0; i < _whereClauses.Length; i++)
+            if (InstrumentationHelper.ENABLED)
             {
-                if (_whereClauses[i] == null)
-                {
-                    index = i;
-                    break;
-                }
-    
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QSplitStreamWhere(i);}
-                var pass = (bool?) _whereClauses[i].Evaluate(new EvaluateParams(_eventsPerStream, true, exprEvaluatorContext));
-                if ((pass != null) && (pass.Value))
-                {
-                    index = i;
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASplitStreamWhere(pass.Value);}
-                    break;
-                }
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASplitStreamWhere(pass.Value); }
+                InstrumentationHelper.Get().QSplitStream(false, theEvent, WhereClauses);
             }
-    
+
+            int index = -1;
+
+            for (int i = 0; i < WhereClauses.Length; i++)
+            {
+                EPStatementStartMethodOnTriggerItem item = Items[i];
+                EventsPerStream[0] = theEvent;
+
+                // handle no contained-event evaluation
+                if (item.PropertyEvaluator == null)
+                {
+                    bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
+                    if (pass)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                else
+                {
+                    // need to get contained events first
+                    EventBean[] containeds = Items[i].PropertyEvaluator.GetProperty(
+                        EventsPerStream[0], exprEvaluatorContext);
+                    if (containeds == null || containeds.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (EventBean contained in containeds)
+                    {
+                        EventsPerStream[0] = contained;
+                        bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
+                        if (pass)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index != -1)
+                    {
+                        break;
+                    }
+                }
+            }
+
             if (index != -1)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QSplitStreamRoute(index);}
-                UniformPair<EventBean[]> result = _processors[index].ProcessViewResult(_eventsPerStream, null, false);
-                if ((result != null) && (result.First != null) && (result.First.Length > 0))
-                {
-                    if (_audit) {
-                        AuditPath.AuditInsertInto(_agentInstanceContext.EngineURI, _agentInstanceContext.StatementName, result.First[0]);
-                    }
-                    if (_tableStateInstances[index] != null)
-                    {
-                        _tableStateInstances[index].AddEventUnadorned(result.First[0]);
-                    }
-                    else
-                    {
-                        _internalEventRouter.Route(result.First[0], _epStatementHandle, _agentInstanceContext.StatementContext.InternalEventEngineRouteDest, _agentInstanceContext, _isNamedWindowInsert[index]);
-                    }
-                }
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASplitStreamRoute();}
+                MayRouteCurrentEvent(index, exprEvaluatorContext);
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ASplitStream(false, index != -1);}
+
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().ASplitStream(false, index != -1);
+            }
             return index != -1;
         }
     }
-}
+} // end of namespace

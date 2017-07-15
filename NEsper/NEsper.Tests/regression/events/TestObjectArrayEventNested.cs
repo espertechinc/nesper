@@ -357,7 +357,7 @@ namespace com.espertech.esper.regression.events
             EPAssertionUtil.AssertProps(received, "f1,f2".Split(','),
                     new Object[]{"1ma0", "B1"});
     
-            // assert type info
+            // assert type INFO
             var stmt = epService.EPAdministrator.CreateEPL(("select * from NestedObjectArr"));
             var eventType = stmt.EventType;
     

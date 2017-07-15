@@ -12,33 +12,43 @@ using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.spec
 {
-    /// <summary>
-    /// Split-stream description.
-    /// </summary>
+    /// <summary>Split-stream description.</summary>
     [Serializable]
-    public class OnTriggerSplitStream 
+    public class OnTriggerSplitStream
     {
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="insertInto">the insert-into clause</param>
         /// <param name="selectClause">the select-clause</param>
+        /// <param name="fromClause">the from-clause</param>
         /// <param name="whereClause">where-expression or null</param>
-        public OnTriggerSplitStream(InsertIntoDesc insertInto, SelectClauseSpecRaw selectClause, ExprNode whereClause)
+        public OnTriggerSplitStream(InsertIntoDesc insertInto, SelectClauseSpecRaw selectClause, OnTriggerSplitStreamFromClause fromClause, ExprNode whereClause)
         {
             InsertInto = insertInto;
             SelectClause = selectClause;
+            FromClause = fromClause;
             WhereClause = whereClause;
         }
 
-        /// <summary>Returns the insert-into clause. </summary>
+        /// <summary>
+        /// Returns the insert-into clause.
+        /// </summary>
         /// <value>insert-into</value>
-        public InsertIntoDesc InsertInto { get; set; }
+        public InsertIntoDesc InsertInto { get; private set; }
 
-        /// <summary>Returns the select clause. </summary>
+        /// <summary>
+        /// Returns the select clause.
+        /// </summary>
         /// <value>select</value>
         public SelectClauseSpecRaw SelectClause { get; private set; }
 
-        /// <summary>Returns the where clause or null if not defined </summary>
+        /// <summary>
+        /// Returns the where clause or null if not defined
+        /// </summary>
         /// <value>where clause</value>
         public ExprNode WhereClause { get; private set; }
+
+        public OnTriggerSplitStreamFromClause FromClause { get; private set; }
     }
-}
+} // end of namespace

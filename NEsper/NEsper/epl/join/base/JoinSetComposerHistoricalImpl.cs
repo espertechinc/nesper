@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.join.@base
         private readonly bool _allowInitIndex;
         private readonly EventTable[][] _repositories;
         private readonly QueryStrategy[] _queryStrategies;
-    
+
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
         private readonly ISet<MultiKey<EventBean>> _oldResults = new LinkedHashSet<MultiKey<EventBean>>();
         private readonly ISet<MultiKey<EventBean>> _newResults = new LinkedHashSet<MultiKey<EventBean>>();
@@ -79,7 +79,7 @@ namespace com.espertech.esper.epl.join.@base
             {
                 return;
             }
-    
+
             for (var i = 0; i < eventsPerStream.Length; i++)
             {
                 if ((eventsPerStream[i] != null) && (_repositories[i] != null))
@@ -91,14 +91,14 @@ namespace com.espertech.esper.epl.join.@base
                 }
             }
         }
-    
+
         public void Destroy()
         {
             if (_repositories == null)
             {
                 return;
             }
-    
+
             for (var i = 0; i < _repositories.Length; i++)
             {
                 if (_repositories[i] != null)
@@ -110,52 +110,53 @@ namespace com.espertech.esper.epl.join.@base
                 }
             }
         }
-    
+
         public UniformPair<ISet<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionHistorical();}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionHistorical(); }
+
             _oldResults.Clear();
             _newResults.Clear();
-    
+
             // join old data
             for (var i = 0; i < oldDataPerStream.Length; i++)
             {
                 if (oldDataPerStream[i] != null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(false, i, oldDataPerStream[i]);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(false, i, oldDataPerStream[i]); }
                     _queryStrategies[i].Lookup(oldDataPerStream[i], _oldResults, exprEvaluatorContext);
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy();}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy(); }
                 }
             }
-    
+
             if (_repositories != null)
             {
                 // We add and remove data in one call to each index.
                 // Most indexes will add first then remove as newdata and olddata may contain the same event.
                 // Unique indexes may remove then add.
-                for (var stream = 0; stream < newDataPerStream.Length; stream++) {
+                for (var stream = 0; stream < newDataPerStream.Length; stream++)
+                {
                     for (var j = 0; j < _repositories[stream].Length; j++)
                     {
-                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStepUpdIndex(stream, newDataPerStream[stream], oldDataPerStream[stream]);}
+                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStepUpdIndex(stream, newDataPerStream[stream], oldDataPerStream[stream]); }
                         _repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream]);
-                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStepUpdIndex();}
+                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStepUpdIndex(); }
                     }
                 }
             }
-    
+
             // join new data
             for (var i = 0; i < newDataPerStream.Length; i++)
             {
                 if (newDataPerStream[i] != null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(true, i, newDataPerStream[i]);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(true, i, newDataPerStream[i]); }
                     _queryStrategies[i].Lookup(newDataPerStream[i], _newResults, exprEvaluatorContext);
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy();}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy(); }
                 }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionHistorical(_newResults, _oldResults);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionHistorical(_newResults, _oldResults); }
             return new UniformPair<ISet<MultiKey<EventBean>>>(_newResults, _oldResults);
         }
 
@@ -177,13 +178,13 @@ namespace com.espertech.esper.epl.join.@base
         {
             var result = new LinkedHashSet<MultiKey<EventBean>>();
             var lookupEvents = new EventBean[1];
-    
+
             // Assign a local cache for the thread's evaluation of the join
             // This ensures that if a SQL/method generates a row for a result set based on an input parameter, the event instance is the same
             // in the join, and thus the same row does not appear twice.
             var caches = new DataCacheClearableMap[_queryStrategies.Length];
             AssignThreadLocalCache(_streamViews, caches);
-    
+
             // perform join
             try
             {
@@ -192,17 +193,17 @@ namespace com.espertech.esper.epl.join.@base
                 {
                     if (_streamViews[stream] is HistoricalEventViewable)
                     {
-                        var historicalViewable = (HistoricalEventViewable) _streamViews[stream];
+                        var historicalViewable = (HistoricalEventViewable)_streamViews[stream];
                         if (historicalViewable.HasRequiredStreams)
                         {
                             continue;
                         }
-    
+
                         // there may not be a query strategy since only a full outer join may need to consider all rows
                         if (_queryStrategies[stream] != null)
                         {
                             var streamEvents = historicalViewable.GetEnumerator();
-                            for (;streamEvents.MoveNext();)
+                            for (; streamEvents.MoveNext(); )
                             {
                                 lookupEvents[0] = streamEvents.Current;
                                 _queryStrategies[stream].Lookup(lookupEvents, result, _staticEvalExprEvaluatorContext);
@@ -215,7 +216,7 @@ namespace com.espertech.esper.epl.join.@base
                         for (; streamEvents.MoveNext(); )
                         {
                             lookupEvents[0] = streamEvents.Current;
-                            _queryStrategies[stream].Lookup(lookupEvents, result,_staticEvalExprEvaluatorContext);
+                            _queryStrategies[stream].Lookup(lookupEvents, result, _staticEvalExprEvaluatorContext);
                         }
                     }
                 }
@@ -224,34 +225,35 @@ namespace com.espertech.esper.epl.join.@base
             {
                 DeassignThreadLocalCache(_streamViews, caches);
             }
-    
+
             return result;
         }
-    
-        public void VisitIndexes(StatementAgentInstancePostLoadIndexVisitor visitor) {
+
+        public void VisitIndexes(StatementAgentInstancePostLoadIndexVisitor visitor)
+        {
             visitor.Visit(_repositories);
         }
-    
+
         private void AssignThreadLocalCache(Viewable[] streamViews, DataCacheClearableMap[] caches)
         {
             for (var stream = 0; stream < streamViews.Length; stream++)
             {
                 if (streamViews[stream] is HistoricalEventViewable)
                 {
-                    var historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                    var historicalViewable = (HistoricalEventViewable)streamViews[stream];
                     caches[stream] = new DataCacheClearableMap();
                     historicalViewable.DataCacheThreadLocal.Value = caches[stream];
                 }
             }
         }
-    
+
         private void DeassignThreadLocalCache(Viewable[] streamViews, DataCacheClearableMap[] caches)
         {
             for (var stream = 0; stream < streamViews.Length; stream++)
             {
                 if (streamViews[stream] is HistoricalEventViewable)
                 {
-                    var historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                    var historicalViewable = (HistoricalEventViewable)streamViews[stream];
                     historicalViewable.DataCacheThreadLocal.Value = null;
                     caches[stream].Clear();
                 }

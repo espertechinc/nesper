@@ -45,7 +45,7 @@ namespace com.espertech.esper.regression.client
             configuration.AddEventType("SupportBean", typeof (SupportBean));
             configuration.AddEventType("SupportBean_ST0", typeof (SupportBean_ST0));
             configuration.AddEventType("SupportBean_ST1", typeof (SupportBean_ST1));
-            configuration.EngineDefaults.LoggingConfig.AuditPattern = "[%u] [%s] [%c] %m";
+            configuration.EngineDefaults.Logging.AuditPattern = "[%u] [%s] [%c] %m";
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
 

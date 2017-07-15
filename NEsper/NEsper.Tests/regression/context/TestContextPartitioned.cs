@@ -39,7 +39,7 @@ namespace com.espertech.esper.regression.context
             var configuration = SupportConfigFactory.GetConfiguration();
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportBean_S0>();
-            configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = true;
             _epService = EPServiceProviderManager.GetDefaultProvider(configuration);
             _epService.Initialize();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(_epService, GetType(), GetType().FullName); }
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regression.context
             var filtered = new MySelectorFilteredPartitioned(new Object[] {"E2"});
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(filtered), stmt.GetSafeEnumerator(filtered), fields, new Object[][]{new Object[] {"E2", 41}});
     
-            // test always-false filter - compare context partition info
+            // test always-false filter - compare context partition INFO
             var filteredFalse = new MySelectorFilteredPartitioned(null);
             Assert.IsFalse(stmt.GetEnumerator(filteredFalse).MoveNext());
             EPAssertionUtil.AssertEqualsAnyOrder(new Object[]{new Object[]{"E1"}, new Object[]{"E2"}}, filteredFalse.Contexts.ToArray());
