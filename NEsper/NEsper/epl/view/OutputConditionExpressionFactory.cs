@@ -21,10 +21,18 @@ using com.espertech.esper.events;
 namespace com.espertech.esper.epl.view
 {
     /// <summary>
-    /// Output condition for output rate limiting that handles when-then expressions for controlling output.
+    ///     Output condition for output rate limiting that handles when-then expressions for controlling output.
     /// </summary>
     public class OutputConditionExpressionFactory : OutputConditionFactory
     {
+        private readonly ExprEvaluator _andWhenTerminatedExpressionNodeEval;
+        private readonly EventType _builtinPropertiesEventType;
+        private readonly bool _isStartConditionOnCreation;
+        private readonly ISet<string> _variableNames;
+        private readonly VariableReadWritePackage _variableReadWritePackage;
+        private readonly VariableReadWritePackage _variableReadWritePackageAfterTerminated;
+        private readonly ExprEvaluator _whenExpressionNodeEval;
+
         public OutputConditionExpressionFactory(
             ExprNode whenExpressionNode,
             IList<OnTriggerSetAssignment> assignments,
@@ -33,87 +41,119 @@ namespace com.espertech.esper.epl.view
             IList<OnTriggerSetAssignment> afterTerminateAssignments,
             bool isStartConditionOnCreation)
         {
-            WhenExpressionNodeEval = whenExpressionNode.ExprEvaluator;
-            AndWhenTerminatedExpressionNodeEval = andWhenTerminatedExpr != null ? andWhenTerminatedExpr.ExprEvaluator : null;
-            IsStartConditionOnCreation = isStartConditionOnCreation;
-    
+            _whenExpressionNodeEval = whenExpressionNode.ExprEvaluator;
+            _andWhenTerminatedExpressionNodeEval = andWhenTerminatedExpr != null ? andWhenTerminatedExpr.ExprEvaluator : null;
+            _isStartConditionOnCreation = isStartConditionOnCreation;
+
             // determine if using variables
-            var variableVisitor = new ExprNodeVariableVisitor();
+            var variableVisitor = new ExprNodeVariableVisitor(statementContext.VariableService);
             whenExpressionNode.Accept(variableVisitor);
-            VariableNames = variableVisitor.VariableNames;
-    
+            _variableNames = variableVisitor.VariableNames;
+
             // determine if using properties
             bool containsBuiltinProperties = ContainsBuiltinProperties(whenExpressionNode);
-            if (!containsBuiltinProperties && assignments != null) {
-                foreach (OnTriggerSetAssignment assignment in assignments) {
-                    if (ContainsBuiltinProperties(assignment.Expression)) {
+            if (!containsBuiltinProperties && assignments != null)
+            {
+                foreach (OnTriggerSetAssignment assignment in assignments)
+                {
+                    if (ContainsBuiltinProperties(assignment.Expression))
+                    {
                         containsBuiltinProperties = true;
                     }
                 }
             }
-            if (!containsBuiltinProperties && AndWhenTerminatedExpressionNodeEval != null) {
+            if (!containsBuiltinProperties && _andWhenTerminatedExpressionNodeEval != null)
+            {
                 containsBuiltinProperties = ContainsBuiltinProperties(andWhenTerminatedExpr);
             }
-            if (!containsBuiltinProperties && afterTerminateAssignments != null) {
-                foreach (OnTriggerSetAssignment assignment in afterTerminateAssignments) {
-                    if (ContainsBuiltinProperties(assignment.Expression)) {
+            if (!containsBuiltinProperties && afterTerminateAssignments != null)
+            {
+                foreach (OnTriggerSetAssignment assignment in afterTerminateAssignments)
+                {
+                    if (ContainsBuiltinProperties(assignment.Expression))
+                    {
                         containsBuiltinProperties = true;
                     }
                 }
             }
-    
+
             if (containsBuiltinProperties)
             {
-                BuiltinPropertiesEventType = GetBuiltInEventType(statementContext.EventAdapterService);
+                _builtinPropertiesEventType = GetBuiltInEventType(statementContext.EventAdapterService);
             }
-    
-            if (assignments != null) {
-                VariableReadWritePackage = new VariableReadWritePackage(assignments, statementContext.VariableService, statementContext.EventAdapterService);
+
+            if (assignments != null)
+            {
+                _variableReadWritePackage = new VariableReadWritePackage(
+                    assignments, statementContext.VariableService, statementContext.EventAdapterService);
             }
-            else{
-                VariableReadWritePackage = null;
+            else
+            {
+                _variableReadWritePackage = null;
             }
-    
-            if (afterTerminateAssignments != null) {
-                VariableReadWritePackageAfterTerminated = new VariableReadWritePackage(afterTerminateAssignments, statementContext.VariableService, statementContext.EventAdapterService);
+
+            if (afterTerminateAssignments != null)
+            {
+                _variableReadWritePackageAfterTerminated = new VariableReadWritePackage(
+                    afterTerminateAssignments, statementContext.VariableService, statementContext.EventAdapterService);
             }
-            else {
-                VariableReadWritePackageAfterTerminated = null;
+            else
+            {
+                _variableReadWritePackageAfterTerminated = null;
             }
         }
-    
-        public OutputCondition Make(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback) {
-            return new OutputConditionExpression(outputCallback, agentInstanceContext, this, IsStartConditionOnCreation);
+
+        public OutputCondition Make(AgentInstanceContext agentInstanceContext, OutputCallback outputCallback)
+        {
+            return new OutputConditionExpression(outputCallback, agentInstanceContext, this, _isStartConditionOnCreation);
         }
 
-        public ExprEvaluator WhenExpressionNodeEval { get; private set; }
-
-        public ExprEvaluator AndWhenTerminatedExpressionNodeEval { get; private set; }
-
-        public VariableReadWritePackage VariableReadWritePackage { get; private set; }
-
-        public VariableReadWritePackage VariableReadWritePackageAfterTerminated { get; private set; }
-
-        public EventType BuiltinPropertiesEventType { get; private set; }
-
-        public ICollection<string> VariableNames { get; private set; }
-
-        public bool IsStartConditionOnCreation { get; set; }
-
-        /// <summary>Build the event type for built-in properties. </summary>
+        /// <summary>
+        ///     Build the event type for built-in properties.
+        /// </summary>
         /// <param name="eventAdapterService">event adapters</param>
         /// <returns>event type</returns>
         public static EventType GetBuiltInEventType(EventAdapterService eventAdapterService)
         {
             return eventAdapterService.CreateAnonymousObjectArrayType(
-                typeof(OutputConditionExpressionFactory).FullName, OutputConditionExpressionTypeUtil.TYPEINFO);
+                typeof (OutputConditionExpressionFactory).FullName, OutputConditionExpressionTypeUtil.TYPEINFO);
         }
-    
-        private static bool ContainsBuiltinProperties(ExprNode expr)
+
+        public ExprEvaluator WhenExpressionNodeEval
+        {
+            get { return _whenExpressionNodeEval; }
+        }
+
+        public ExprEvaluator AndWhenTerminatedExpressionNodeEval
+        {
+            get { return _andWhenTerminatedExpressionNodeEval; }
+        }
+
+        public VariableReadWritePackage VariableReadWritePackage
+        {
+            get { return _variableReadWritePackage; }
+        }
+
+        public VariableReadWritePackage VariableReadWritePackageAfterTerminated
+        {
+            get { return _variableReadWritePackageAfterTerminated; }
+        }
+
+        public EventType BuiltinPropertiesEventType
+        {
+            get { return _builtinPropertiesEventType; }
+        }
+
+        public ISet<string> VariableNames
+        {
+            get { return _variableNames; }
+        }
+
+        private bool ContainsBuiltinProperties(ExprNode expr)
         {
             var propertyVisitor = new ExprNodeIdentifierVisitor(false);
             expr.Accept(propertyVisitor);
-            return propertyVisitor.ExprProperties.IsNotEmpty();
+            return !propertyVisitor.ExprProperties.IsEmpty();
         }
     }
-}
+} // end of namespace

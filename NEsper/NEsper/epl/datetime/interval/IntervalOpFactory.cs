@@ -12,15 +12,22 @@ using System.Collections.Generic;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.datetime.interval
 {
     public class IntervalOpFactory : OpFactory
     {
-        public IntervalOp GetOp(StreamTypeService streamTypeService, DatetimeMethodEnum method, String methodNameUsed, IList<ExprNode> parameters, ExprEvaluator[] evaluators)
+        public IntervalOp GetOp(
+            StreamTypeService streamTypeService,
+            DatetimeMethodEnum method,
+            string methodNameUsed,
+            IList<ExprNode> parameters,
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus)
         {
-            return new IntervalOpImpl(method, methodNameUsed, streamTypeService, parameters);
+
+            return new IntervalOpImpl(method, methodNameUsed, streamTypeService, parameters, timeZone, timeAbacus);
         }
     }
-}
+} // end of namespace

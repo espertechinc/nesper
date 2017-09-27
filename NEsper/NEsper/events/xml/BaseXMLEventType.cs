@@ -156,7 +156,7 @@ namespace com.espertech.esper.events.xml
                         fragmentFactory);
                     var returnType = SchemaUtil.ToReturnType(
                         property.ResultType,
-                        property.OptionalCastToType);
+                        property.OptionalCastToType.GetBoxedType());
                     var indexType = returnType.GetIndexType();
                     var isIndexed = indexType != null;
 
@@ -260,9 +260,9 @@ namespace com.espertech.esper.events.xml
             return null;
         }
 
-        public override EventBeanReader GetReader()
+        public override EventBeanReader Reader
         {
-            return null;
+            get { return null; }
         }
 
         public override string StartTimestampPropertyName

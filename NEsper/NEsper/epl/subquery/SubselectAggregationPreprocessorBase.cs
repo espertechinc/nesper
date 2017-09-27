@@ -13,47 +13,52 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.subquery
 {
     public abstract class SubselectAggregationPreprocessorBase
     {
-        protected readonly AggregationService AggregationService;
-        protected readonly ExprEvaluator FilterExpr;
-        protected readonly ExprEvaluator[] GroupKeys;
+        private readonly AggregationService _aggregationService;
+        private readonly ExprEvaluator _filterEval;
+        private readonly ExprEvaluator[] _groupKeys;
 
-        protected SubselectAggregationPreprocessorBase(
-            AggregationService aggregationService,
-            ExprEvaluator filterExpr,
-            ExprEvaluator[] groupKeys)
+        protected SubselectAggregationPreprocessorBase(AggregationService aggregationService, ExprEvaluator filterEval, ExprEvaluator[] groupKeys)
         {
-            AggregationService = aggregationService;
-            FilterExpr = filterExpr;
-            GroupKeys = groupKeys;
+            _aggregationService = aggregationService;
+            _filterEval = filterEval;
+            _groupKeys = groupKeys;
         }
 
-        public abstract void Evaluate(
-            EventBean[] eventsPerStream,
-            ICollection<EventBean> matchingEvents,
-            ExprEvaluatorContext exprEvaluatorContext);
+        public AggregationService AggregationService
+        {
+            get { return _aggregationService; }
+        }
 
-        protected Object GenerateGroupKey(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public ExprEvaluator FilterEval
+        {
+            get { return _filterEval; }
+        }
+
+        public ExprEvaluator[] GroupKeys
+        {
+            get { return _groupKeys; }
+        }
+
+        public abstract void Evaluate(EventBean[] eventsPerStream, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext);
+    
+        protected Object GenerateGroupKey(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
-            if (GroupKeys.Length == 1)
+            if (_groupKeys.Length == 1)
             {
-                return GroupKeys[0].Evaluate(evaluateParams);
+                return _groupKeys[0].Evaluate(evaluateParams);
             }
-            var keys = new Object[GroupKeys.Length];
-            for (int i = 0; i < GroupKeys.Length; i++)
+            var keys = new Object[_groupKeys.Length];
+            for (int i = 0; i < _groupKeys.Length; i++)
             {
-                keys[i] = GroupKeys[i].Evaluate(evaluateParams);
+                keys[i] = _groupKeys[i].Evaluate(evaluateParams);
             }
             return new MultiKeyUntyped(keys);
         }
     }
-}
+} // end of namespace

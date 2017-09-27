@@ -24,7 +24,7 @@ namespace com.espertech.esper.schedule
         public void TestValidate()
         {
             // Test all units missing
-            IDictionary<ScheduleUnit, SortedSet<int>> unitValues = new Dictionary<ScheduleUnit, SortedSet<int>>();
+            IDictionary<ScheduleUnit, ICollection<int>> unitValues = new Dictionary<ScheduleUnit, ICollection<int>>();
             AssertInvalid(unitValues);
     
             // Test one unit missing
@@ -53,7 +53,7 @@ namespace com.espertech.esper.schedule
         [Test]
         public void TestCompress()
         {
-            IDictionary<ScheduleUnit, SortedSet<int>> unitValues = new Dictionary<ScheduleUnit, SortedSet<int>>();
+            IDictionary<ScheduleUnit, ICollection<int>> unitValues = new Dictionary<ScheduleUnit, ICollection<int>>();
             unitValues = (new ScheduleSpec()).UnitValues;
     
             // Populate Month with all valid values
@@ -68,8 +68,8 @@ namespace com.espertech.esper.schedule
             ScheduleSpec spec = new ScheduleSpec(unitValues, null, null, null);
             Assert.IsTrue(spec.UnitValues.Get(ScheduleUnit.MONTHS) == null);
         }
-    
-        private void AssertInvalid(IDictionary<ScheduleUnit, SortedSet<int>> unitValues)
+
+        private void AssertInvalid(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
         {
             try
             {

@@ -121,7 +121,7 @@ namespace com.espertech.esper.view.internals
             get { return _parentEventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return false;
         }

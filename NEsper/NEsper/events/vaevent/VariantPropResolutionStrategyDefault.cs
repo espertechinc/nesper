@@ -22,7 +22,7 @@ namespace com.espertech.esper.events.vaevent
     {
         private int currentPropertyNumber;
         private readonly VariantPropertyGetterCache propertyGetterCache;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -31,7 +31,7 @@ namespace com.espertech.esper.events.vaevent
         {
             propertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
         }
-    
+
         public VariantPropertyDesc ResolveProperty(String propertyName, EventType[] variants)
         {
             bool existsInAll = true;
@@ -45,13 +45,13 @@ namespace com.espertech.esper.events.vaevent
                     existsInAll = false;
                     continue;
                 }
-    
+
                 if (commonType == null)
                 {
                     commonType = type;
                     continue;
                 }
-    
+
                 // compare types
                 if (type == commonType)
                 {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.events.vaevent
                     commonType = commonType.GetBoxedType();
                     continue;
                 }
-    
+
                 // coercion
                 if (type.IsNumeric())
                 {
@@ -88,7 +88,7 @@ namespace com.espertech.esper.events.vaevent
                     var supersForType = new FIFOHashSet<Type>();
                     TypeHelper.GetBase(type, supersForType);
                     supersForType.Remove(typeof(Object));
-    
+
                     if (supersForType.Contains(commonType))
                     {
                         continue;   // type, or : common type
@@ -98,12 +98,12 @@ namespace com.espertech.esper.events.vaevent
                         commonType = type;  // common type : type
                         continue;
                     }
-    
+
                     // find common interface or type both implement
                     var supersForCommonType = new FIFOHashSet<Type>();
                     TypeHelper.GetBase(commonType, supersForCommonType);
                     supersForCommonType.Remove(typeof(Object));
-    
+
                     // Take common classes first, ignoring interfaces
                     bool found = false;
                     foreach (Type superClassType in supersForType)
@@ -128,25 +128,25 @@ namespace com.espertech.esper.events.vaevent
                         }
                     }
                 }
-    
+
                 commonType = typeof(Object);
             }
-    
+
             if (!existsInAll)
             {
                 return null;
             }
-    
+
             if (commonType == null)
             {
                 return null;
             }
-    
+
             // property numbers should start at zero since the serve as array index
             var assignedPropertyNumber = currentPropertyNumber;
             currentPropertyNumber++;
             propertyGetterCache.AddGetters(assignedPropertyNumber, propertyName);
-    
+
             EventPropertyGetter getter;
             if (mustCoerce)
             {
@@ -181,12 +181,13 @@ namespace com.espertech.esper.events.vaevent
                     }
                 };
             }
-            else {
+            else
+            {
                 getter = new ProxyEventPropertyGetter
                 {
                     ProcGet = eventBean =>
                     {
-                        var variant = (VariantEvent) eventBean;
+                        var variant = (VariantEvent)eventBean;
                         var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
                         if (propertyGetter == null)
                         {
@@ -197,7 +198,7 @@ namespace com.espertech.esper.events.vaevent
                     ProcGetFragment = eventBean => null,
                     ProcIsExistsProperty = eventBean =>
                     {
-                        var variant = (VariantEvent) eventBean;
+                        var variant = (VariantEvent)eventBean;
                         var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
                         if (propertyGetter == null)
                         {

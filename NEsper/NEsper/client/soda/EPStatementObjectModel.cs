@@ -46,7 +46,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="insertInto">specifies the insert-into-clause, or null to indicate that the clause is absent</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel _InsertInto(InsertIntoClause insertInto)
+        public EPStatementObjectModel SetInsertInto(InsertIntoClause insertInto)
         {
             InsertInto = insertInto;
             return this;
@@ -86,7 +86,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="fromClause">specifies the from-clause, the from-clause cannot be null and must be set</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel From(FromClause fromClause)
+        public EPStatementObjectModel SetFrom(FromClause fromClause)
         {
             FromClause = fromClause;
             return this;
@@ -103,7 +103,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="whereClause">specifies the where-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel Where(Expression whereClause)
+        public EPStatementObjectModel SetWhere(Expression whereClause)
         {
             WhereClause = whereClause;
             return this;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="groupByClause">specifies the group-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel GroupBy(GroupByClause groupByClause)
+        public EPStatementObjectModel SetGroupBy(GroupByClause groupByClause)
         {
             GroupByClause = groupByClause;
             return this;
@@ -137,7 +137,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="havingClause">specifies the having-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel Having(Expression havingClause)
+        public EPStatementObjectModel SetHaving(Expression havingClause)
         {
             HavingClause = havingClause;
             return this;
@@ -154,7 +154,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="orderByClause">specifies the order-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel OrderBy(OrderByClause orderByClause)
+        public EPStatementObjectModel SetOrderBy(OrderByClause orderByClause)
         {
             OrderByClause = orderByClause;
             return this;
@@ -171,12 +171,12 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="outputLimitClause">specifies the output-rate-limiting-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel OutputLimit(OutputLimitClause outputLimitClause)
+        public EPStatementObjectModel SetOutputLimit(OutputLimitClause outputLimitClause)
         {
             OutputLimitClause = outputLimitClause;
             return this;
         }
-    
+
         /// <summary>
         /// Renders the object model in it's EPL syntax textual representation.
         /// </summary>
@@ -188,26 +188,28 @@ namespace com.espertech.esper.client.soda
             ToEPL(new EPStatementFormatter(false), writer);
             return writer.ToString();
         }
-    
+
         /// <summary>
         /// Rendering using the provided writer.
         /// </summary>
         /// <param name="writer">to use</param>
-        public void ToEPL(TextWriter writer) {
+        public void ToEPL(TextWriter writer)
+        {
             ToEPL(new EPStatementFormatter(false), writer);
         }
-    
+
         /// <summary>
         /// Rendering using the provided formatter.
         /// </summary>
         /// <param name="formatter">to use</param>
         /// <returns>rendered string</returns>
-        public string ToEPL(EPStatementFormatter formatter) {
+        public string ToEPL(EPStatementFormatter formatter)
+        {
             var writer = new StringWriter();
             ToEPL(formatter, writer);
             return writer.ToString();
         }
-    
+
         /// <summary>
         /// Renders the object model in it's EPL syntax textual representation, using a whitespace-formatter as provided.
         /// </summary>
@@ -219,13 +221,14 @@ namespace com.espertech.esper.client.soda
             AnnotationPart.ToEPL(writer, Annotations, formatter);
             ExpressionDeclaration.ToEPL(writer, ExpressionDeclarations, formatter);
             ScriptExpression.ToEPL(writer, ScriptExpressions, formatter);
-    
-            if (ContextName != null) {
+
+            if (ContextName != null)
+            {
                 formatter.BeginContext(writer);
                 writer.Write("context ");
                 writer.Write(ContextName);
             }
-    
+
             if (CreateIndex != null)
             {
                 formatter.BeginCreateIndex(writer);
@@ -254,21 +257,23 @@ namespace com.espertech.esper.client.soda
             {
                 formatter.BeginCreateWindow(writer);
                 CreateWindow.ToEPL(writer);
-    
+
                 if (FromClause != null)
                 {
-                    var fs = (FilterStream) FromClause.Streams[0];
-                    if (fs.IsRetainUnion) {
+                    var fs = (FilterStream)FromClause.Streams[0];
+                    if (fs.IsRetainUnion)
+                    {
                         writer.Write(" retain-union");
                     }
                 }
-    
+
                 writer.Write(" as ");
                 if ((SelectClause == null) || (SelectClause.SelectList.IsEmpty()) && !CreateWindow.Columns.IsEmpty())
                 {
                     CreateWindow.ToEPLCreateTablePart(writer);
                 }
-                else {
+                else
+                {
                     SelectClause.ToEPL(writer, formatter, false, false);
                     FromClause.ToEPL(writer, formatter);
                     CreateWindow.ToEPLInsertPart(writer);
@@ -293,7 +298,7 @@ namespace com.espertech.esper.client.soda
                 CreateDataFlow.ToEPL(writer, formatter);
                 return;
             }
-    
+
             var displayWhereClause = true;
             if (UpdateClause != null)
             {
@@ -305,7 +310,7 @@ namespace com.espertech.esper.client.soda
                 formatter.BeginOnTrigger(writer);
                 writer.Write("on ");
                 FromClause.Streams[0].ToEPL(writer, formatter);
-    
+
                 if (OnExpr is OnDeleteClause)
                 {
                     formatter.BeginOnDelete(writer);
@@ -320,7 +325,7 @@ namespace com.espertech.esper.client.soda
                 }
                 else if (OnExpr is OnSelectClause)
                 {
-                    var onSelect = (OnSelectClause) OnExpr;
+                    var onSelect = (OnSelectClause)OnExpr;
                     if (InsertInto != null)
                     {
                         InsertInto.ToEPL(writer, formatter, true);
@@ -331,18 +336,18 @@ namespace com.espertech.esper.client.soda
                 }
                 else if (OnExpr is OnSetClause)
                 {
-                    var onSet = (OnSetClause) OnExpr;
+                    var onSet = (OnSetClause)OnExpr;
                     onSet.ToEPL(writer, formatter);
                 }
                 else if (OnExpr is OnMergeClause)
                 {
-                    var merge = (OnMergeClause) OnExpr;
+                    var merge = (OnMergeClause)OnExpr;
                     merge.ToEPL(writer, WhereClause, formatter);
                     displayWhereClause = false;
                 }
                 else
                 {
-                    var split = (OnInsertSplitStreamClause) OnExpr;
+                    var split = (OnInsertSplitStreamClause)OnExpr;
                     InsertInto.ToEPL(writer, formatter, true);
                     SelectClause.ToEPL(writer, formatter, true, false);
                     if (WhereClause != null)
@@ -356,10 +361,11 @@ namespace com.espertech.esper.client.soda
             }
             else
             {
-                if (IntoTableClause != null) {
+                if (IntoTableClause != null)
+                {
                     IntoTableClause.ToEPL(writer);
                 }
-    
+
                 if (SelectClause == null)
                 {
                     throw new IllegalStateException("Select-clause has not been defined");
@@ -368,44 +374,52 @@ namespace com.espertech.esper.client.soda
                 {
                     throw new IllegalStateException("From-clause has not been defined");
                 }
-    
-                if (FireAndForgetClause is FireAndForgetUpdate) {
-                    var update = (FireAndForgetUpdate) FireAndForgetClause;
+
+                if (FireAndForgetClause is FireAndForgetUpdate)
+                {
+                    var update = (FireAndForgetUpdate)FireAndForgetClause;
                     writer.Write("update ");
                     FromClause.ToEPLOptions(writer, formatter, false);
                     writer.Write(" ");
                     UpdateClause.RenderEPLAssignments(writer, update.Assignments);
                 }
-                else if (FireAndForgetClause is FireAndForgetInsert) {
-                    var insert = (FireAndForgetInsert) FireAndForgetClause;
+                else if (FireAndForgetClause is FireAndForgetInsert)
+                {
+                    var insert = (FireAndForgetInsert)FireAndForgetClause;
                     InsertInto.ToEPL(writer, formatter, true);
-                    if (insert.IsUseValuesKeyword) {
+                    if (insert.IsUseValuesKeyword)
+                    {
                         writer.Write(" values (");
                         var delimiter = "";
-                        foreach (var element in SelectClause.SelectList) {
+                        foreach (var element in SelectClause.SelectList)
+                        {
                             writer.Write(delimiter);
                             element.ToEPLElement(writer);
                             delimiter = ", ";
                         }
                         writer.Write(")");
                     }
-                    else {
+                    else
+                    {
                         SelectClause.ToEPL(writer, formatter, true, false);
                     }
                 }
-                else if (FireAndForgetClause is FireAndForgetDelete) {
+                else if (FireAndForgetClause is FireAndForgetDelete)
+                {
                     writer.Write("delete ");
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
-                else {
-                    if (InsertInto != null) {
+                else
+                {
+                    if (InsertInto != null)
+                    {
                         InsertInto.ToEPL(writer, formatter, true);
                     }
                     SelectClause.ToEPL(writer, formatter, true, false);
                     FromClause.ToEPLOptions(writer, formatter, true);
                 }
             }
-    
+
             if (MatchRecognizeClause != null)
             {
                 MatchRecognizeClause.ToEPL(writer);
@@ -446,7 +460,8 @@ namespace com.espertech.esper.client.soda
                 writer.Write("limit ");
                 RowLimitClause.ToEPL(writer);
             }
-            if (ForClause != null) {
+            if (ForClause != null)
+            {
                 formatter.BeginFor(writer);
                 ForClause.ToEPL(writer);
             }

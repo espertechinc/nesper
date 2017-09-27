@@ -29,6 +29,7 @@ namespace com.espertech.esper.core.context.util
         private readonly MappedEventBean _agentInstanceProperties;
         private StatementContextCPPair _statementContextCPPair;
         private Object _terminationCallbacks;
+        private AgentInstanceScriptContext _agentInstanceScriptContext;
 
         public AgentInstanceContext(
             StatementContext statementContext,
@@ -43,7 +44,7 @@ namespace com.espertech.esper.core.context.util
             AgentInstanceId = agentInstanceId;
             AgentInstanceFilterProxy = agentInstanceFilterProxy;
             _agentInstanceProperties = agentInstanceProperties;
-            AgentInstanceScriptContext = agentInstanceScriptContext;
+            AllocateAgentInstanceScriptContext = agentInstanceScriptContext;
             _terminationCallbacks = null;
         }
 
@@ -52,7 +53,19 @@ namespace com.espertech.esper.core.context.util
 
         public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle { get; private set; }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext { get; private set; }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
+        {
+            get
+            {
+                if (_agentInstanceScriptContext == null)
+                {
+                    _agentInstanceScriptContext = AgentInstanceScriptContext.From(StatementContext.EventAdapterService);
+                }
+
+                return _agentInstanceScriptContext;
+            }
+            private set { _agentInstanceScriptContext = value; }
+        }
 
         public TimeProvider TimeProvider
         {
@@ -116,9 +129,9 @@ namespace com.espertech.esper.core.context.util
                 }
                 else if (_terminationCallbacks is ICollection<StopCallback>)
                 {
-                    return (ICollection<StopCallback>) _terminationCallbacks;
+                    return (ICollection<StopCallback>)_terminationCallbacks;
                 }
-                return Collections.SingletonList((StopCallback) _terminationCallbacks);
+                return Collections.SingletonList((StopCallback)_terminationCallbacks);
             }
         }
 
@@ -135,11 +148,11 @@ namespace com.espertech.esper.core.context.util
             }
             else if (_terminationCallbacks is ICollection<StopCallback>)
             {
-                ((ICollection<StopCallback>) _terminationCallbacks).Add(callback);
+                ((ICollection<StopCallback>)_terminationCallbacks).Add(callback);
             }
             else
             {
-                var cb = (StopCallback) _terminationCallbacks;
+                var cb = (StopCallback)_terminationCallbacks;
                 var q = new HashSet<StopCallback>();
                 q.Add(cb);
                 q.Add(callback);
@@ -159,7 +172,7 @@ namespace com.espertech.esper.core.context.util
             }
             else if (_terminationCallbacks is ICollection<StopCallback>)
             {
-                ((ICollection<StopCallback>) _terminationCallbacks).Remove(callback);
+                ((ICollection<StopCallback>)_terminationCallbacks).Remove(callback);
             }
             else if (ReferenceEquals(_terminationCallbacks, callback))
             {

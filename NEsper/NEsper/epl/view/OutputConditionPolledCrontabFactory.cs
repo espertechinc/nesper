@@ -18,76 +18,88 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.epl.view
 {
-	/// <summary>
-	/// Output condition handling crontab-at schedule output.
-	/// </summary>
-	public sealed class OutputConditionPolledCrontabFactory : OutputConditionPolledFactory
-	{
-	    private readonly ExprEvaluator[] _expressions;
+    /// <summary>Output condition handling crontab-at schedule output.</summary>
+    public sealed class OutputConditionPolledCrontabFactory : OutputConditionPolledFactory
+    {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-	    public OutputConditionPolledCrontabFactory(IList<ExprNode> scheduleSpecExpressionList, StatementContext statementContext)
-	    {
-	        var validationContext = new ExprValidationContext(
-	            new StreamTypeServiceImpl(statementContext.EngineURI, false),
-                statementContext.EngineImportService,
+        private readonly ExprEvaluator[] _expressions;
+
+        public OutputConditionPolledCrontabFactory(
+            IList<ExprNode> scheduleSpecExpressionList,
+            StatementContext statementContext)
+        {
+            var validationContext = new ExprValidationContext(
+                new StreamTypeServiceImpl(statementContext.EngineURI, false),
+                statementContext.EngineImportService, 
                 statementContext.StatementExtensionServicesContext, null, 
                 statementContext.SchedulingService, 
                 statementContext.VariableService, 
-                statementContext.TableService,
-	            new ExprEvaluatorContextStatement(statementContext, false),
+                statementContext.TableService, 
+                new ExprEvaluatorContextStatement(statementContext, false), 
                 statementContext.EventAdapterService,
-	            statementContext.StatementName, 
-                statementContext.StatementId, 
+                statementContext.StatementName,
+                statementContext.StatementId,
                 statementContext.Annotations,
-	            statementContext.ContextDescriptor, 
+                statementContext.ContextDescriptor,
                 statementContext.ScriptingService,
                 false, false, false, false, null, false);
-	        _expressions = new ExprEvaluator[scheduleSpecExpressionList.Count];
-	        var count = 0;
-	        foreach (var parameters in scheduleSpecExpressionList) {
-	            var node = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.OUTPUTLIMIT, parameters, validationContext);
-	            _expressions[count++] = node.ExprEvaluator;
-	        }
-	    }
+            
+            _expressions = new ExprEvaluator[scheduleSpecExpressionList.Count];
 
-	    public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext) {
-	        ScheduleSpec scheduleSpec;
-	        try {
-	            var scheduleSpecParameterList = Evaluate(_expressions, agentInstanceContext);
-	            scheduleSpec = ScheduleSpecUtil.ComputeValues(scheduleSpecParameterList);
-	        }
-	        catch (ScheduleParameterException e) {
-	            throw new ArgumentException("Invalid schedule specification : " + e.Message, e);
-	        }
-	        var state = new OutputConditionPolledCrontabState(scheduleSpec, null, 0);
-	        return new OutputConditionPolledCrontab(agentInstanceContext, state);
-	    }
-
-	    public OutputConditionPolled MakeFromState(AgentInstanceContext agentInstanceContext, OutputConditionPolledState state) {
-	        return new OutputConditionPolledCrontab(agentInstanceContext, (OutputConditionPolledCrontabState) state);
-	    }
-
-	    private static object[] Evaluate(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext)
-	    {
-            var evaluateParams = new EvaluateParams(null, true, exprEvaluatorContext);
-            var results = new object[parameters.Length];
-	        var count = 0;
-	        foreach (var expr in parameters)
+            int count = 0;
+            foreach (ExprNode parameters in scheduleSpecExpressionList)
             {
-	            try
-	            {
-	                results[count] = expr.Evaluate(evaluateParams);
-	                count++;
-	            }
-	            catch (Exception ex) {
-	                var message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " + ex.Message;
-	                Log.Error(message, ex);
-	                throw new ArgumentException(message);
-	            }
-	        }
-	        return results;
-	    }
+                ExprNode node = ExprNodeUtility.GetValidatedSubtree(
+                    ExprNodeOrigin.OUTPUTLIMIT, parameters, validationContext);
+                _expressions[count++] = node.ExprEvaluator;
+            }
+        }
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	}
+        private static Object[] Evaluate(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var results = new Object[parameters.Length];
+            var count = 0;
+            var evaluateParams = new EvaluateParams(null, true, exprEvaluatorContext);
+            foreach (ExprEvaluator expr in parameters)
+            {
+                try
+                {
+                    results[count] = expr.Evaluate(evaluateParams);
+                    count++;
+                }
+                catch (Exception ex)
+                {
+                    string message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " +
+                                     ex.Message;
+                    Log.Error(message, ex);
+                    throw new ArgumentException(message);
+                }
+            }
+            return results;
+        }
+
+        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        {
+            ScheduleSpec scheduleSpec;
+            try
+            {
+                Object[] scheduleSpecParameterList = Evaluate(_expressions, agentInstanceContext);
+                scheduleSpec = ScheduleSpecUtil.ComputeValues(scheduleSpecParameterList);
+            }
+            catch (ScheduleParameterException e)
+            {
+                throw new ArgumentException("Invalid schedule specification : " + e.Message, e);
+            }
+            var state = new OutputConditionPolledCrontabState(scheduleSpec, null, 0);
+            return new OutputConditionPolledCrontab(agentInstanceContext, state);
+        }
+
+        public OutputConditionPolled MakeFromState(
+            AgentInstanceContext agentInstanceContext,
+            OutputConditionPolledState state)
+        {
+            return new OutputConditionPolledCrontab(agentInstanceContext, (OutputConditionPolledCrontabState) state);
+        }
+    }
 } // end of namespace

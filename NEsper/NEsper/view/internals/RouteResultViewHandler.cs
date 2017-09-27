@@ -8,7 +8,6 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.view.internals
 {

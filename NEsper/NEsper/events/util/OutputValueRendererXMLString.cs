@@ -23,10 +23,10 @@ namespace com.espertech.esper.events.util
                 buf.Append("null");
                 return;
             }
-    
+
             XmlEncode(o.ToString(), buf, true);
         }
-    
+
         /// <summary>
         /// XML-Encode the passed string.
         /// </summary>
@@ -39,17 +39,17 @@ namespace com.espertech.esper.events.util
             {
                 return;
             }
-    
+
             char c;
             int i;
             int len = s.Length;
             String t;
-    
+
             for (i = 0; i < len; i += 1)
             {
                 c = s[i];
                 // replace literal values with entities
-    
+
                 if (c == '&')
                 {
                     sb.Append("&amp;");
@@ -74,7 +74,7 @@ namespace com.espertech.esper.events.util
                 {
                     if ((c < ' ') && (isEncodeSpecialChar))
                     {
-                        t = "000" + ((short) c).ToString("x2");
+                        t = "000" + ((short)c).ToString("x2");
                         sb.Append("\\u");
                         sb.Append(t.Substring(t.Length - 4));
                     }

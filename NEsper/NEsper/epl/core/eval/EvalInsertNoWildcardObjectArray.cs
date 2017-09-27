@@ -10,20 +10,32 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertNoWildcardObjectArray : EvalBaseObjectArr, SelectExprProcessor
+    public class EvalInsertNoWildcardObjectArray
+        : EvalBase,
+          SelectExprProcessor
     {
         public EvalInsertNoWildcardObjectArray(SelectExprContext selectExprContext, EventType resultEventType)
             : base(selectExprContext, resultEventType)
         {
         }
-    
-        public override EventBean ProcessSpecific(Object[] props, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+        public EventBean Process(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return base.EventAdapterService.AdapterForTypedObjectArray(props, base.ResultEventType);
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
+            var result = new Object[base.ExprNodes.Length];
+            for (int i = 0; i < base.ExprNodes.Length; i++)
+            {
+                result[i] = base.ExprNodes[i].Evaluate(evaluateParams);
+            }
+
+            return base.EventAdapterService.AdapterForTypedObjectArray(result, base.ResultEventType);
         }
     }
-}
+} // end of namespace

@@ -16,14 +16,14 @@ namespace com.espertech.esper.epl.agg.util
     public class AggregationGroupByLocalGroupLevel
     {
         public AggregationGroupByLocalGroupLevel(
-            ExprNode[] partitionExpr,
+            IList<ExprNode> partitionExpr,
             IList<AggregationServiceAggExpressionDesc> expressions)
         {
             PartitionExpr = partitionExpr;
             Expressions = expressions;
         }
 
-        public ExprNode[] PartitionExpr { get; private set; }
+        public IList<ExprNode> PartitionExpr { get; private set; }
 
         public IList<AggregationServiceAggExpressionDesc> Expressions { get; private set; }
     }

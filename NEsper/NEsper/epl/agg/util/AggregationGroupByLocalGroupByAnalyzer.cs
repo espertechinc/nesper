@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.agg.util
             for (int i = 0; i < localGroupDesc.Levels.Length; i++)
             {
                 AggregationGroupByLocalGroupLevel levelDesc = localGroupDesc.Levels[i];
-                if (levelDesc.PartitionExpr.Length == 0)
+                if (levelDesc.PartitionExpr.Count == 0)
                 {
                     optionalTopLevel = GetLevel(
                         -1, levelDesc, evaluators, prototypes, accessAggregations, columns,
@@ -54,11 +54,13 @@ namespace com.espertech.esper.epl.agg.util
             for (int i = 0; i < localGroupDesc.Levels.Length; i++)
             {
                 AggregationGroupByLocalGroupLevel levelDesc = localGroupDesc.Levels[i];
-                if (levelDesc.PartitionExpr.Length == 0)
+                if (levelDesc.PartitionExpr.Count == 0)
                 {
                     continue;
                 }
-                var isDefaultLevel = groupByExpressions != null && ExprNodeUtility.DeepEqualsIgnoreDupAndOrder(groupByExpressions, levelDesc.PartitionExpr);
+                bool isDefaultLevel = groupByExpressions != null &&
+                                      ExprNodeUtility.DeepEqualsIgnoreDupAndOrder(
+                                          groupByExpressions, levelDesc.PartitionExpr);
                 if (isDefaultLevel)
                 {
                     AggregationLocalGroupByLevel level = GetLevel(
@@ -73,7 +75,7 @@ namespace com.espertech.esper.epl.agg.util
             for (int i = 0; i < localGroupDesc.Levels.Length; i++)
             {
                 AggregationGroupByLocalGroupLevel levelDesc = localGroupDesc.Levels[i];
-                if (levelDesc.PartitionExpr.Length == 0)
+                if (levelDesc.PartitionExpr.Count == 0)
                 {
                     continue;
                 }
@@ -120,8 +122,8 @@ namespace com.espertech.esper.epl.agg.util
             bool defaultLevel,
             AggregationAccessorSlotPair[] accessors)
         {
-            ExprNode[] partitionExpr = level.PartitionExpr;
-            ExprEvaluator[] partitionEvaluators = ExprNodeUtility.GetEvaluators(partitionExpr);
+            var partitionExpr = level.PartitionExpr;
+            var partitionEvaluators = ExprNodeUtility.GetEvaluators(partitionExpr);
 
             IList<ExprEvaluator> methodEvaluators = new List<ExprEvaluator>();
             IList<AggregationMethodFactory> methodFactories = new List<AggregationMethodFactory>();

@@ -8,38 +8,58 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
     public class ReformatOpToMillisec : ReformatOp
     {
+        private readonly TimeZoneInfo timeZone;
+    
+        public ReformatOpToMillisec(TimeZoneInfo timeZone) 
+        {
+            this.timeZone = timeZone;
+        }
+    
         public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return ts;
         }
+    
+        public Object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return d.UtcMillis();
+        }
 
-        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
             return d.TimeInMillis();
         }
 
+        public Object Evaluate(DateTimeEx dtx, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return dtx.TimeInMillis;
+        }
+    
         public Type ReturnType
         {
-            get { return typeof(long?); }
+            get { return typeof (long); }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,
-                                           DatetimeMethodEnum currentMethod,
-                                           ICollection<ExprNode> currentParameters,
-                                           ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             return null;
         }
     }
-}
+} // end of namespace

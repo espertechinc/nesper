@@ -13,13 +13,13 @@ namespace com.espertech.esper.client.util
     /// <summary>Renderer for an event into the JSON textual format. <para />A renderer is dedicated to rendering only a certain type of events and subtypes of that type, as the render cache type metadata and prepares structures to enable fast rendering. <para />For rendering events of different types, use a quick-access method in <seealso cref="EventRenderer" />. </summary>
     public interface JSONEventRenderer
     {
-        /// <summary>Render a given event in the JSON format. </summary>
+        /// <summary>RenderAny a given event in the JSON format. </summary>
         /// <param name="title">the JSON root title</param>
         /// <param name="theEvent">the event to render</param>
         /// <returns>JSON formatted text</returns>
         String Render(String title, EventBean theEvent);
     
-        /// <summary>Render a given event in the JSON format. </summary>
+        /// <summary>RenderAny a given event in the JSON format. </summary>
         /// <param name="theEvent">the event to render</param>
         /// <returns>JSON formatted text</returns>
         String Render(EventBean theEvent);

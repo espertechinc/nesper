@@ -17,25 +17,30 @@ namespace com.espertech.esper.pattern
 {
     public class PatternLevelAnnotationUtil
     {
-        private readonly static String DISCARDPARTIALSONMATCH = "DiscardPartialsOnMatch";
-        private readonly static String SUPPRESSOVERLAPPINGMATCHES = "SuppressOverlappingMatches";
-    
-        public static AnnotationPart[] AnnotationsFromSpec(PatternStreamSpecRaw pattern) {
-            ArrayDeque<AnnotationPart> parts = null;
-    
-            if (pattern.IsDiscardPartialsOnMatch) {
+        private const string DISCARDPARTIALSONMATCH = "DiscardPartialsOnMatch";
+        private const string SUPPRESSOVERLAPPINGMATCHES = "SuppressOverlappingMatches";
+
+        public static AnnotationPart[] AnnotationsFromSpec(PatternStreamSpecRaw pattern)
+        {
+            Deque<AnnotationPart> parts = null;
+
+            if (pattern.IsDiscardPartialsOnMatch)
+            {
                 parts = new ArrayDeque<AnnotationPart>();
                 parts.Add(new AnnotationPart(DISCARDPARTIALSONMATCH));
             }
-    
-            if (pattern.IsSuppressSameEventMatches) {
-                if (parts == null) {
+
+            if (pattern.IsSuppressSameEventMatches)
+            {
+                if (parts == null)
+                {
                     parts = new ArrayDeque<AnnotationPart>();
                 }
                 parts.Add(new AnnotationPart(SUPPRESSOVERLAPPINGMATCHES));
             }
-    
-            if (parts == null) {
+
+            if (parts == null)
+            {
                 return null;
             }
             return parts.ToArray();
@@ -43,8 +48,9 @@ namespace com.espertech.esper.pattern
 
         public static PatternLevelAnnotationFlags AnnotationsToSpec(AnnotationPart[] parts)
         {
-            PatternLevelAnnotationFlags flags = new PatternLevelAnnotationFlags();
-            if (parts == null) {
+            var flags = new PatternLevelAnnotationFlags();
+            if (parts == null)
+            {
                 return flags;
             }
             foreach (AnnotationPart part in parts)
@@ -53,17 +59,21 @@ namespace com.espertech.esper.pattern
             }
             return flags;
         }
-    
-        public static void ValidateSetFlags(PatternLevelAnnotationFlags flags, String annotation) {
-            if (annotation.ToLower().Equals(DISCARDPARTIALSONMATCH.ToLower())) {
+
+        public static void ValidateSetFlags(PatternLevelAnnotationFlags flags, string annotation)
+        {
+            if (string.Equals(annotation, DISCARDPARTIALSONMATCH, StringComparison.InvariantCultureIgnoreCase))
+            {
                 flags.IsDiscardPartialsOnMatch = true;
             }
-            else if (annotation.ToLower().Equals(SUPPRESSOVERLAPPINGMATCHES.ToLower())) {
+            else if (string.Equals(annotation, SUPPRESSOVERLAPPINGMATCHES, StringComparison.InvariantCultureIgnoreCase))
+            {
                 flags.IsSuppressSameEventMatches = true;
             }
-            else {
+            else
+            {
                 throw new ArgumentException("Unrecognized pattern-level annotation '" + annotation + "'");
             }
         }
     }
-}
+} // end of namespace

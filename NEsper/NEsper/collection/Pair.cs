@@ -11,37 +11,37 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.collection
 {
-	/// <summary>
-	/// General-purpose pair of values of any type. The pair only equals another pair if
-	/// the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
-	/// and the first pair second object equals the second pair second object.
-	/// </summary>
+    /// <summary>
+    /// General-purpose pair of values of any type. The pair only equals another pair if
+    /// the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
+    /// and the first pair second object equals the second pair second object.
+    /// </summary>
     [Serializable]
     public sealed class Pair<TFirst, TSecond>
-	{
-	    /// <summary>
-	    /// Gets or sets the first value within pair.
-	    /// </summary>
-	    /// <value>The first.</value>
-	    public TFirst First;
+    {
+        /// <summary>
+        /// Gets or sets the first value within pair.
+        /// </summary>
+        /// <value>The first.</value>
+        public TFirst First;
 
-	    /// <summary>
-	    /// Gets or sets the second value within pair.
-	    /// </summary>
-	    /// <value>The second.</value>
-	    public TSecond Second;
+        /// <summary>
+        /// Gets or sets the second value within pair.
+        /// </summary>
+        /// <value>The second.</value>
+        public TSecond Second;
 
-	    /// <summary>
+        /// <summary>
         /// Construct pair of values.
         /// </summary>
         /// <param name="first">is the first value</param>
         /// <param name="second">is the second value</param>
-		
-		public Pair(TFirst first, TSecond second)
-		{
-			First = first;
-			Second = second;
-		}
+
+        public Pair(TFirst first, TSecond second)
+        {
+            First = first;
+            Second = second;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Pair&lt;TFirst, TSecond&gt;"/> class.
@@ -60,14 +60,14 @@ namespace com.espertech.esper.collection
         /// <returns>
         /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
         /// </returns>
-		public override bool Equals(Object obj)
-		{
-			if (this == obj)
-			{
-				return true;
-			}
-			
-			var other = obj as Pair<TFirst,TSecond>;
+        public override bool Equals(Object obj)
+        {
+            if (this == obj)
+            {
+                return true;
+            }
+
+            var other = obj as Pair<TFirst, TSecond>;
             if (other == null)
             {
                 return false;
@@ -76,7 +76,7 @@ namespace com.espertech.esper.collection
             return
                 Equals(First, other.First) &&
                 Equals(Second, other.Second);
-		}
+        }
 
         /// <summary>
         /// Serves as a hash function for a particular type.
@@ -84,15 +84,15 @@ namespace com.espertech.esper.collection
         /// <returns>
         /// A hash code for the current <see cref="T:System.Object"></see>.
         /// </returns>
-		public override int GetHashCode()
-		{
+        public override int GetHashCode()
+        {
             Object o1 = First;
             Object o2 = Second;
 
             return
-                (o1 != null ? o1.GetHashCode() * 397 : 0) +
+                (o1 != null ? o1.GetHashCode() * 397 : 0) ^
                 (o2 != null ? o2.GetHashCode() : 0);
-		}
+        }
 
         /// <summary>
         /// Returns a <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
@@ -100,9 +100,9 @@ namespace com.espertech.esper.collection
         /// <returns>
         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </returns>
-		public override String ToString()
-		{
-			return "Pair [" + First + ':' + Second + ']';
-		}
-	}
+        public override String ToString()
+        {
+            return "Pair [" + First + ':' + Second + ']';
+        }
+    }
 }

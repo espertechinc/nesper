@@ -39,7 +39,7 @@ namespace com.espertech.esper.core.start
     {
         private static readonly ILog QueryPlanLog = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly StatementSpecCompiled _statementSpec;
         private readonly ResultSetProcessor _resultSetProcessor;
         private readonly FireAndForgetProcessor[] _processors;
@@ -65,73 +65,83 @@ namespace com.espertech.esper.core.start
             EPServicesContext services,
             StatementContext statementContext)
         {
-            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
-            if (queryPlanLogging) {
+            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
+            if (queryPlanLogging)
+            {
                 QueryPlanLog.Info("Query plans for Fire-and-forget query '" + statementContext.Expression + "'");
             }
-    
+
             _hasTableAccess = (statementSpec.TableNodes != null && statementSpec.TableNodes.Length > 0);
-            foreach (var streamSpec in statementSpec.StreamSpecs) {
+            foreach (var streamSpec in statementSpec.StreamSpecs)
+            {
                 _hasTableAccess |= streamSpec is TableQueryStreamSpec;
             }
-    
+
             _statementSpec = statementSpec;
             _services = services;
-    
+
             EPPreparedExecuteMethodHelper.ValidateFAFQuery(statementSpec);
-    
+
             var numStreams = statementSpec.StreamSpecs.Length;
             var typesPerStream = new EventType[numStreams];
             var namesPerStream = new string[numStreams];
             _processors = new FireAndForgetProcessor[numStreams];
             _agentInstanceContext = new AgentInstanceContext(statementContext, null, -1, null, null, statementContext.DefaultAgentInstanceScriptContext);
-    
+
             // resolve types and processors
-            for (var i = 0; i < numStreams; i++) {
+            for (var i = 0; i < numStreams; i++)
+            {
                 var streamSpec = statementSpec.StreamSpecs[i];
                 _processors[i] = FireAndForgetProcessorFactory.ValidateResolveProcessor(streamSpec, services);
-    
+
                 string streamName = _processors[i].NamedWindowOrTableName;
-                if (streamSpec.OptionalStreamName != null) {
+                if (streamSpec.OptionalStreamName != null)
+                {
                     streamName = streamSpec.OptionalStreamName;
                 }
                 namesPerStream[i] = streamName;
                 typesPerStream[i] = _processors[i].EventTypeResultSetProcessor;
             }
-    
+
             // compile filter to optimize access to named window
             _filters = new FilterSpecCompiled[numStreams];
-            if (statementSpec.FilterRootNode != null) {
+            if (statementSpec.FilterRootNode != null)
+            {
                 var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
-                for (var i = 0; i < numStreams; i++) {
-                    try {
+                for (var i = 0; i < numStreams; i++)
+                {
+                    try
+                    {
                         var types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new bool[numStreams], services.EngineURI, false);
                         _filters[i] = FilterSpecCompiler.MakeFilterSpec(typesPerStream[i], namesPerStream[i],
                                 Collections.SingletonList(statementSpec.FilterRootNode), null,
                                 tagged, tagged, types,
                                 null, statementContext, Collections.SingletonList(i));
                     }
-                    catch (Exception ex) {
+                    catch (Exception ex)
+                    {
                         Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
                     }
                 }
             }
-    
+
             // obtain result set processor
             var isIStreamOnly = new bool[namesPerStream.Length];
             CompatExtensions.Fill(isIStreamOnly, true);
             StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, services.EngineURI, true);
             EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec, statementContext, typeService, null);
-    
+
             var resultSetProcessorPrototype = ResultSetProcessorFactoryFactory.GetProcessorPrototype(statementSpec, statementContext, typeService, null, new bool[0], true, ContextPropertyRegistryImpl.EMPTY_REGISTRY, null, services.ConfigSnapshot, services.ResultSetProcessorHelperFactory, true, false);
             _resultSetProcessor = EPStatementStartMethodHelperAssignExpr.GetAssignResultSetProcessor(_agentInstanceContext, resultSetProcessorPrototype, false, null, true);
 
             if (statementSpec.SelectClauseSpec.IsDistinct)
             {
-                if (_resultSetProcessor.ResultEventType is EventTypeSPI) {
-                    _eventBeanReader = ((EventTypeSPI) _resultSetProcessor.ResultEventType).GetReader();
+                if (_resultSetProcessor.ResultEventType is EventTypeSPI)
+                {
+                    _eventBeanReader = ((EventTypeSPI)_resultSetProcessor.ResultEventType).Reader;
                 }
-                if (_eventBeanReader == null) {
+                if (_eventBeanReader == null)
+                {
                     _eventBeanReader = new EventBeanReaderDefaultImpl(_resultSetProcessor.ResultEventType);
                 }
             }
@@ -150,20 +160,22 @@ namespace com.espertech.esper.core.start
             {
                 var streamJoinAnalysisResult = new StreamJoinAnalysisResult(numStreams);
                 CompatExtensions.Fill(streamJoinAnalysisResult.NamedWindow, true);
-                for (var i = 0; i < numStreams; i++) {
+                for (var i = 0; i < numStreams; i++)
+                {
                     var processorInstance = _processors[i].GetProcessorInstance(_agentInstanceContext);
-                    if (_processors[i].IsVirtualDataWindow) {
+                    if (_processors[i].IsVirtualDataWindow)
+                    {
                         streamJoinAnalysisResult.ViewExternal[i] = agentInstanceContext => processorInstance.VirtualDataWindow;
                     }
                     var uniqueIndexes = _processors[i].GetUniqueIndexes(processorInstance);
                     streamJoinAnalysisResult.UniqueKeys[i] = uniqueIndexes;
                 }
-    
+
                 var hasAggregations = !resultSetProcessorPrototype.AggregationServiceFactoryDesc.Expressions.IsEmpty();
 
                 _joinSetComposerPrototype = JoinSetComposerPrototypeFactory.MakeComposerPrototype(null, -1,
                     statementSpec.OuterJoinDescList, statementSpec.FilterRootNode, typesPerStream, namesPerStream,
-                    streamJoinAnalysisResult, queryPlanLogging, statementContext, new HistoricalViewableDesc(numStreams), 
+                    streamJoinAnalysisResult, queryPlanLogging, statementContext, new HistoricalViewableDesc(numStreams),
                     _agentInstanceContext, false, hasAggregations, services.TableService, true,
                     services.EventTableIndexService.AllowInitIndex(false));
             }
@@ -184,49 +196,57 @@ namespace com.espertech.esper.core.start
         /// <returns>query results</returns>
         public EPPreparedQueryResult Execute(ContextPartitionSelector[] contextPartitionSelectors)
         {
-            try {
+            try
+            {
                 var numStreams = _processors.Length;
-    
-                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != numStreams) {
+
+                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != numStreams)
+                {
                     throw new ArgumentException("Number of context partition selectors does not match the number of named windows in the from-clause");
                 }
-    
+
                 // handle non-context case
-                if (_statementSpec.OptionalContextName == null) {
-    
+                if (_statementSpec.OptionalContextName == null)
+                {
+
                     ICollection<EventBean>[] snapshots = new ICollection<EventBean>[numStreams];
-                    for (var i = 0; i < numStreams; i++) {
-    
+                    for (var i = 0; i < numStreams; i++)
+                    {
+
                         var selector = contextPartitionSelectors == null ? null : contextPartitionSelectors[i];
                         snapshots[i] = GetStreamFilterSnapshot(i, selector);
                     }
-    
+
                     _resultSetProcessor.Clear();
                     return Process(snapshots);
                 }
-    
+
                 IList<ContextPartitionResult> contextPartitionResults = new List<ContextPartitionResult>();
                 var singleSelector = contextPartitionSelectors != null && contextPartitionSelectors.Length > 0 ? contextPartitionSelectors[0] : null;
-    
+
                 // context partition runtime query
                 ICollection<int> agentInstanceIds = EPPreparedExecuteMethodHelper.GetAgentInstanceIds(
                     _processors[0], singleSelector, _services.ContextManagementService, _statementSpec.OptionalContextName);
-    
+
                 // collect events and agent instances
-                foreach (int agentInstanceId in agentInstanceIds) {
+                foreach (int agentInstanceId in agentInstanceIds)
+                {
                     var processorInstance = _processors[0].GetProcessorInstanceContextById(agentInstanceId);
-                    if (processorInstance != null) {
+                    if (processorInstance != null)
+                    {
                         EPPreparedExecuteTableHelper.AssignTableAccessStrategies(_services, _statementSpec.TableNodes, processorInstance.AgentInstanceContext);
                         var coll = processorInstance.SnapshotBestEffort(this, _filters[0], _statementSpec.Annotations);
                         contextPartitionResults.Add(new ContextPartitionResult(coll, processorInstance.AgentInstanceContext));
                     }
                 }
-    
+
                 // process context partitions
                 var events = new ArrayDeque<EventBean[]>();
-                foreach (var contextPartitionResult in contextPartitionResults) {
+                foreach (var contextPartitionResult in contextPartitionResults)
+                {
                     var snapshot = contextPartitionResult.Events;
-                    if (_statementSpec.FilterRootNode != null) {
+                    if (_statementSpec.FilterRootNode != null)
+                    {
                         snapshot = GetFiltered(snapshot, Collections.SingletonList(_statementSpec.FilterRootNode));
                     }
 
@@ -244,49 +264,57 @@ namespace com.espertech.esper.core.start
 
                     _resultSetProcessor.AgentInstanceContext = contextPartitionResult.Context;
                     var results = _resultSetProcessor.ProcessViewResult(rows, null, true);
-                    if (results != null && results.First != null && results.First.Length > 0) {
+                    if (results != null && results.First != null && results.First.Length > 0)
+                    {
                         events.Add(results.First);
                     }
                 }
                 return new EPPreparedQueryResult(_resultSetProcessor.ResultEventType, EventBeanUtility.Flatten(events));
             }
-            finally {
-                if (_hasTableAccess) {
+            finally
+            {
+                if (_hasTableAccess)
+                {
                     _services.TableService.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }
             }
         }
-    
+
         private ICollection<EventBean> GetStreamFilterSnapshot(int streamNum, ContextPartitionSelector contextPartitionSelector)
         {
             var streamSpec = _statementSpec.StreamSpecs[streamNum];
             IList<ExprNode> filterExpressions = Collections.GetEmptyList<ExprNode>();
-            if (streamSpec is NamedWindowConsumerStreamSpec) {
-                var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            if (streamSpec is NamedWindowConsumerStreamSpec)
+            {
+                var namedSpec = (NamedWindowConsumerStreamSpec)streamSpec;
                 filterExpressions = namedSpec.FilterExpressions;
             }
-            else {
-                var tableSpec = (TableQueryStreamSpec) streamSpec;
+            else
+            {
+                var tableSpec = (TableQueryStreamSpec)streamSpec;
                 filterExpressions = tableSpec.FilterExpressions;
             }
-    
+
             var fireAndForgetProcessor = _processors[streamNum];
-    
+
             // handle the case of a single or matching agent instance
             var processorInstance = fireAndForgetProcessor.GetProcessorInstance(_agentInstanceContext);
-            if (processorInstance != null) {
+            if (processorInstance != null)
+            {
                 EPPreparedExecuteTableHelper.AssignTableAccessStrategies(_services, _statementSpec.TableNodes, _agentInstanceContext);
                 return GetStreamSnapshotInstance(streamNum, filterExpressions, processorInstance);
             }
-    
+
             // context partition runtime query
             var contextPartitions = EPPreparedExecuteMethodHelper.GetAgentInstanceIds(fireAndForgetProcessor, contextPartitionSelector, _services.ContextManagementService, fireAndForgetProcessor.ContextName);
-    
+
             // collect events
             var events = new ArrayDeque<EventBean>();
-            foreach (int agentInstanceId in contextPartitions) {
+            foreach (int agentInstanceId in contextPartitions)
+            {
                 processorInstance = fireAndForgetProcessor.GetProcessorInstanceContextById(agentInstanceId);
-                if (processorInstance != null) {
+                if (processorInstance != null)
+                {
                     var coll = processorInstance.SnapshotBestEffort(this, _filters[streamNum], _statementSpec.Annotations);
                     events.AddAll(coll);
                 }
@@ -300,16 +328,17 @@ namespace com.espertech.esper.core.start
             FireAndForgetInstance processorInstance)
         {
             var coll = processorInstance.SnapshotBestEffort(this, _filters[streamNum], _statementSpec.Annotations);
-            if (filterExpressions.Count != 0) {
+            if (filterExpressions.Count != 0)
+            {
                 coll = GetFiltered(coll, filterExpressions);
             }
             return coll;
         }
-    
+
         private EPPreparedQueryResult Process(ICollection<EventBean>[] snapshots)
         {
             var numStreams = _processors.Length;
-    
+
             UniformPair<EventBean[]> results;
             if (numStreams == 1)
             {
@@ -323,24 +352,28 @@ namespace com.espertech.esper.core.start
             else
             {
                 var viewablePerStream = new Viewable[numStreams];
-                for (var i = 0; i < numStreams; i++) {
+                for (var i = 0; i < numStreams; i++)
+                {
                     var instance = _processors[i].GetProcessorInstance(_agentInstanceContext);
-                    if (instance == null) {
+                    if (instance == null)
+                    {
                         throw new UnsupportedOperationException("Joins against named windows that are under context are not supported");
                     }
                     viewablePerStream[i] = instance.TailViewInstance;
                 }
-    
+
                 var joinSetComposerDesc = _joinSetComposerPrototype.Create(viewablePerStream, true, _agentInstanceContext, false);
                 var joinComposer = joinSetComposerDesc.JoinSetComposer;
                 JoinSetFilter joinFilter;
-                if (joinSetComposerDesc.PostJoinFilterEvaluator != null) {
+                if (joinSetComposerDesc.PostJoinFilterEvaluator != null)
+                {
                     joinFilter = new JoinSetFilter(joinSetComposerDesc.PostJoinFilterEvaluator);
                 }
-                else {
+                else
+                {
                     joinFilter = null;
                 }
-    
+
                 var oldDataPerStream = new EventBean[numStreams][];
                 var newDataPerStream = new EventBean[numStreams][];
                 for (var i = 0; i < numStreams; i++)
@@ -348,25 +381,26 @@ namespace com.espertech.esper.core.start
                     newDataPerStream[i] = snapshots[i].ToArray();
                 }
                 var result = joinComposer.Join(newDataPerStream, oldDataPerStream, _agentInstanceContext);
-                if (joinFilter != null) {
+                if (joinFilter != null)
+                {
                     joinFilter.Process(result.First, null, _agentInstanceContext);
                 }
                 results = _resultSetProcessor.ProcessJoinResult(result.First, null, true);
             }
-    
+
             if (_statementSpec.SelectClauseSpec.IsDistinct)
             {
                 results.First = EventBeanUtility.GetDistinctByProp(results.First, _eventBeanReader);
             }
-    
+
             return new EPPreparedQueryResult(_resultSetProcessor.ResultEventType, results.First);
         }
-    
+
         private ICollection<EventBean> GetFiltered(ICollection<EventBean> snapshot, IList<ExprNode> filterExpressions)
         {
             var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count + 1, 16));
             var visitable = snapshot as IVisitable<EventBean>;
-            ExprNodeUtility.ApplyFilterExpressions(snapshot, filterExpressions, _agentInstanceContext, deque);
+            ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, filterExpressions, _agentInstanceContext, deque);
             return deque;
         }
 
@@ -389,7 +423,7 @@ namespace com.espertech.esper.core.start
         {
             private readonly ICollection<EventBean> _events;
             private readonly AgentInstanceContext _context;
-    
+
             internal ContextPartitionResult(ICollection<EventBean> events, AgentInstanceContext context)
             {
                 _events = events;

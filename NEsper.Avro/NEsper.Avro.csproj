@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FF1F81C2-1E8F-44DA-A659-710C4A65A234}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NEsper.Avro</RootNamespace>
+    <AssemblyName>NEsper.Avro</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;X86</DefineConstants>
+    <NoWarn>0162,0168,1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;X86</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>0162,0168,1591</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;X64</DefineConstants>
+    <NoWarn>0162,0168,1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;X64</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>0162,0168,1591</NoWarn>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Avro, Version=0.9.0.0, Culture=neutral, PublicKeyToken=b1248d7eeb9d0814, processorArchitecture=MSIL">
+      <HintPath>..\packages\Apache.Avro.1.7.7.2\lib\Avro.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.3.5.8\lib\35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\AvroConstant.cs" />
+    <Compile Include="Extensions\GenericRecordExtensions.cs" />
+    <Compile Include="Extensions\SchemaBuilder.cs" />
+    <Compile Include="Extensions\SchemaExtensions.cs" />
+    <Compile Include="Core\AvroEventBeanCopyMethod.cs" />
+    <Compile Include="Core\AvroEventPropertyGetter.cs" />
+    <Compile Include="Core\AvroEventType.cs" />
+    <Compile Include="Core\AvroFieldDescriptor.cs" />
+    <Compile Include="Core\AvroFieldUtil.cs" />
+    <Compile Include="Core\AvroFragmentTypeUtil.cs" />
+    <Compile Include="Core\AvroGenericDataBackedEventBean.cs" />
+    <Compile Include="Core\AvroGenericDataEventBean.cs" />
+    <Compile Include="Core\AvroPropertyUtil.cs" />
+    <Compile Include="Core\AvroSchemaUtil.cs" />
+    <Compile Include="Core\AvroTypeDesc.cs" />
+    <Compile Include="Core\AvroTypeUtil.cs" />
+    <Compile Include="Core\AvroTypeWidenerCustomizerDefault.cs" />
+    <Compile Include="Core\AvroTypeWidenerCustomizerWHook.cs" />
+    <Compile Include="Core\BiConsumer.cs" />
+    <Compile Include="Core\EventAdapterAvroHandlerBase.cs" />
+    <Compile Include="Core\EventAdapterAvroHandlerImpl.cs" />
+    <Compile Include="Core\EventBeanFactoryAvro.cs" />
+    <Compile Include="Core\EventBeanManufacturerAvro.cs" />
+    <Compile Include="Extensions\SchemaReducer.cs" />
+    <Compile Include="Extensions\TypeBuilder.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterDynamicPoly.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterStringIndexed.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterIndexed.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterIndexedDynamic.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterIndexedRuntimeKeyed.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterMapped.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterMappedDynamic.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterMappedRuntimeKeyed.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedDynamicPoly.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedDynamicSimple.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedIndexed.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedIndexRooted.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedIndexRootedMultilevel.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedMapped.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedMultiLevel.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedPoly.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterNestedSimple.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterSimple.cs" />
+    <Compile Include="Getter\AvroEventBeanGetterSimpleDynamic.cs" />
+    <Compile Include="IO\JsonDecoder.cs" />
+    <Compile Include="IO\SchemaToJsonEncoder.cs" />
+    <Compile Include="IO\GenericRecordToJsonConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectExprRep\EvalSelectNoWildcardAvro.cs" />
+    <Compile Include="SelectExprRep\SelectExprJoinWildcardProcessorAvro.cs" />
+    <Compile Include="SelectExprRep\SelectExprProcessorEvalAvroArrayCoercer.cs" />
+    <Compile Include="SelectExprRep\SelectExprProcessorEvalAvroMapToAvro.cs" />
+    <Compile Include="SelectExprRep\SelectExprProcessorEvalByGetterFragmentAvro.cs" />
+    <Compile Include="SelectExprRep\SelectExprProcessorEvalByGetterFragmentAvroArray.cs" />
+    <Compile Include="SelectExprRep\SelectExprProcessorRepresentationFactoryAvro.cs" />
+    <Compile Include="Util\Support\SupportAvroUtil.cs" />
+    <Compile Include="Writer\AvroEventBeanPropertyWriter.cs" />
+    <Compile Include="Writer\AvroEventBeanPropertyWriterIndexedProp.cs" />
+    <Compile Include="Writer\AvroEventBeanPropertyWriterMapProp.cs" />
+    <Compile Include="Writer\AvroEventBeanWriterPerProp.cs" />
+    <Compile Include="Writer\AvroEventBeanWriterSimpleProps.cs" />
+    <Compile Include="Writer\AvroRecastFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NEsper\NEsper\NEsper.csproj">
+      <Project>{3D317245-CDE5-4E0E-9590-D7CBA2257D9C}</Project>
+      <Name>NEsper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

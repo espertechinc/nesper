@@ -22,13 +22,15 @@ namespace com.espertech.esper.epl.expression.ops
     public class ExprLikeNode : ExprNodeBase, ExprEvaluator
     {
         private readonly bool _isNot;
-    
+
         private bool _isNumericValue;
         private bool _isConstantPattern;
-    
-        [NonSerialized] private LikeUtil _likeUtil;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
-    
+
+        [NonSerialized]
+        private LikeUtil _likeUtil;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
+
         /// <summary>Ctor. </summary>
         /// <param name="not">is true if this is a "not like", or false if just a like</param>
         public ExprLikeNode(bool not)
@@ -43,12 +45,12 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if ((ChildNodes.Length != 2) && (ChildNodes.Length != 3))
+            if ((ChildNodes.Count != 2) && (ChildNodes.Count != 3))
             {
                 throw new ExprValidationException("The 'like' operator requires 2 (no escape) or 3 (with escape) child expressions");
             }
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
-    
+
             // check eval child node - can be String or numeric
             Type evalChildType = _evaluators[0].ReturnType;
             _isNumericValue = evalChildType.IsNumeric();
@@ -56,7 +58,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 throw new ExprValidationException("The 'like' operator requires a String or numeric type left-hand expression");
             }
-    
+
             // check pattern child node
             ExprEvaluator patternChildNode = _evaluators[1];
             Type patternChildType = patternChildNode.ReturnType;
@@ -68,9 +70,9 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 _isConstantPattern = true;
             }
-    
+
             // check escape character node
-            if (ChildNodes.Length == 3)
+            if (ChildNodes.Count == 3)
             {
                 ExprEvaluator escapeChildNode = _evaluators[2];
                 if (escapeChildNode.ReturnType != typeof(String))
@@ -84,7 +86,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public Type ReturnType
         {
-            get { return typeof (bool?); }
+            get { return typeof(bool?); }
         }
 
         public override bool IsConstantResult
@@ -94,20 +96,20 @@ namespace com.espertech.esper.epl.expression.ops
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprLike(this);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprLike(this); }
             if (_likeUtil == null)
             {
-                var patternVal = (string) _evaluators[1].Evaluate(evaluateParams);
+                var patternVal = (string)_evaluators[1].Evaluate(evaluateParams);
                 if (patternVal == null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null); }
                     return null;
                 }
                 string escape = "\\";
                 char? escapeCharacter = null;
-                if (ChildNodes.Length == 3)
+                if (ChildNodes.Count == 3)
                 {
-                    escape = (String) _evaluators[2].Evaluate(evaluateParams);
+                    escape = (String)_evaluators[2].Evaluate(evaluateParams);
                 }
                 if (escape.Length > 0)
                 {
@@ -119,10 +121,10 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 if (!_isConstantPattern)
                 {
-                    var patternVal = (string) _evaluators[1].Evaluate(evaluateParams);
+                    var patternVal = (string)_evaluators[1].Evaluate(evaluateParams);
                     if (patternVal == null)
                     {
-                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null);}
+                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null); }
                         return null;
                     }
                     _likeUtil.ResetPattern(patternVal);
@@ -132,35 +134,35 @@ namespace com.espertech.esper.epl.expression.ops
             var evalValue = _evaluators[0].Evaluate(evaluateParams);
             if (evalValue == null)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(null); }
                 return null;
             }
-    
+
             if (_isNumericValue)
             {
                 evalValue = evalValue.ToString();
             }
-    
-            var result = _likeUtil.Compare( (String) evalValue);
-    
+
+            var result = _likeUtil.Compare((String)evalValue);
+
             if (_isNot)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(!result);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(!result); }
                 return !result;
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(result);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprLike(result); }
             return result;
         }
-    
+
         public override bool EqualsNode(ExprNode node)
         {
             if (!(node is ExprLikeNode))
             {
                 return false;
             }
-    
-            var other = (ExprLikeNode) node;
+
+            var other = (ExprLikeNode)node;
             return _isNot == other._isNot;
         }
 
@@ -177,7 +179,7 @@ namespace com.espertech.esper.epl.expression.ops
             writer.Write(" like ");
             childNodes[1].ToEPL(writer, Precedence);
 
-            if (childNodes.Length == 3)
+            if (childNodes.Count == 3)
             {
                 writer.Write(" escape ");
                 childNodes[2].ToEPL(writer, Precedence);

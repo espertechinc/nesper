@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using XLR8.CGLib;
@@ -23,7 +24,7 @@ namespace com.espertech.esper.events.bean
     public class EventBeanManufacturerBean : EventBeanManufacturer
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-     
+
         private readonly BeanInstantiator _beanInstantiator;
         private readonly BeanEventType _beanEventType;
         private readonly EventAdapterService _service;
@@ -31,7 +32,7 @@ namespace com.espertech.esper.events.bean
         private readonly MethodInfo[] _writeMethodsReflection;
         private readonly bool _hasPrimitiveTypes;
         private readonly bool[] _primitiveType;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="beanEventType">target type</param>
         /// <param name="service">factory for events</param>
@@ -40,49 +41,54 @@ namespace com.espertech.esper.events.bean
         /// <throws>EventBeanManufactureException if the write method lookup fail</throws>
         public EventBeanManufacturerBean(BeanEventType beanEventType,
                                          EventAdapterService service,
-                                         WriteablePropertyDescriptor[] properties,
+                                         IList<WriteablePropertyDescriptor> properties,
                                          EngineImportService engineImportService)
         {
             _beanEventType = beanEventType;
             _service = service;
-    
+
             _beanInstantiator = BeanInstantiatorFactory.MakeInstantiator(beanEventType, engineImportService);
 
-            _writeMethodsReflection = new MethodInfo[properties.Length];
-            if (beanEventType.FastClass != null) {
-                _writeMethodsFastClass = new FastMethod[properties.Length];
+            _writeMethodsReflection = new MethodInfo[properties.Count];
+            if (beanEventType.FastClass != null)
+            {
+                _writeMethodsFastClass = new FastMethod[properties.Count];
             }
-            else {
+            else
+            {
                 _writeMethodsFastClass = null;
             }
-    
+
             bool primitiveTypeCheck = false;
-            _primitiveType = new bool[properties.Length];
-            for (int i = 0; i < properties.Length; i++)
+            _primitiveType = new bool[properties.Count];
+            for (int i = 0; i < properties.Count; i++)
             {
                 _writeMethodsReflection[i] = properties[i].WriteMethod;
-                if (beanEventType.FastClass != null) {
+                if (beanEventType.FastClass != null)
+                {
                     _writeMethodsFastClass[i] = beanEventType.FastClass.GetMethod(properties[i].WriteMethod);
                 }
-    
+
                 _primitiveType[i] = properties[i].PropertyType.IsPrimitive;
                 primitiveTypeCheck |= _primitiveType[i];
             }
             _hasPrimitiveTypes = primitiveTypeCheck;
         }
-    
+
         public EventBean Make(Object[] propertyValues)
         {
             Object outObject = MakeUnderlying(propertyValues);
             return _service.AdapterForTypedObject(outObject, _beanEventType);
         }
-    
+
         public Object MakeUnderlying(Object[] propertyValues)
         {
             Object outObject = _beanInstantiator.Instantiate();
-    
-            if (_writeMethodsFastClass != null) {
-                if (!_hasPrimitiveTypes) {
+
+            if (_writeMethodsFastClass != null)
+            {
+                if (!_hasPrimitiveTypes)
+                {
                     var parameters = new Object[1];
                     for (int i = 0; i < _writeMethodsFastClass.Length; i++)
                     {
@@ -102,8 +108,10 @@ namespace com.espertech.esper.events.bean
                     Object[] parameters = new Object[1];
                     for (int i = 0; i < _writeMethodsFastClass.Length; i++)
                     {
-                        if (_primitiveType[i]) {
-                            if (propertyValues[i] == null) {
+                        if (_primitiveType[i])
+                        {
+                            if (propertyValues[i] == null)
+                            {
                                 continue;
                             }
                         }
@@ -119,9 +127,11 @@ namespace com.espertech.esper.events.bean
                     }
                 }
             }
-            else {
-    
-                if (!_hasPrimitiveTypes) {
+            else
+            {
+
+                if (!_hasPrimitiveTypes)
+                {
                     Object[] parameters = new Object[1];
                     for (int i = 0; i < _writeMethodsReflection.Length; i++)
                     {
@@ -147,8 +157,10 @@ namespace com.espertech.esper.events.bean
                     Object[] parameters = new Object[1];
                     for (int i = 0; i < _writeMethodsReflection.Length; i++)
                     {
-                        if (_primitiveType[i]) {
-                            if (propertyValues[i] == null) {
+                        if (_primitiveType[i])
+                        {
+                            if (propertyValues[i] == null)
+                            {
                                 continue;
                             }
                         }
@@ -168,7 +180,7 @@ namespace com.espertech.esper.events.bean
                     }
                 }
             }
-    
+
             return outObject;
         }
 
@@ -181,8 +193,9 @@ namespace com.espertech.esper.events.bean
                     _beanEventType.UnderlyingType.Name + "' : " + ex.Message;
             Log.Error(message, ex);
         }
-    
-        private void Handle(MemberAccessException ex, String methodName) {
+
+        private void Handle(MemberAccessException ex, String methodName)
+        {
             String message = "Unexpected exception encountered invoking setter-method '" + methodName + "' on class '" +
                     _beanEventType.UnderlyingType.Name + "' : " + ex.Message;
             Log.Error(message, ex);

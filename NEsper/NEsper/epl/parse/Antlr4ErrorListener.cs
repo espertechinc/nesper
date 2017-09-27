@@ -6,22 +6,23 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Reflection;
+
 using Antlr4.Runtime;
 using Antlr4.Runtime.Atn;
 using Antlr4.Runtime.Dfa;
+using Antlr4.Runtime.Sharpen;
 
 using com.espertech.esper.compat.logging;
-
-using Sharpen;
 
 namespace com.espertech.esper.epl.parse
 {
     public class Antlr4ErrorListener<T> : IAntlrErrorListener<T>
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        public static Antlr4ErrorListener<T> INSTANCE = new Antlr4ErrorListener<T>();
-    
+        public static readonly Antlr4ErrorListener<T> INSTANCE = new Antlr4ErrorListener<T>();
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private Antlr4ErrorListener()
         {
         }
@@ -71,4 +72,4 @@ namespace com.espertech.esper.epl.parse
             Log.Debug("reportContextSensitivity");
         }
     }
-}
+} // end of namespace

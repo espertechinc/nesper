@@ -8,7 +8,10 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.expression.dot;
+using com.espertech.esper.epl.variable;
 
 namespace com.espertech.esper.epl.expression.visitor
 {
@@ -17,34 +20,62 @@ namespace com.espertech.esper.epl.expression.visitor
     /// </summary>
     public class ExprNodeVariableVisitor : ExprNodeVisitor
     {
-        /// <summary> Returns the set of variable names encoountered.</summary>
-        /// <returns>variable names</returns>
-        public ISet<string> VariableNames { get; private set; }
+        private readonly VariableService _variableService;
+        private ISet<string> _variableNames;
 
-        /// <summary>Returns true if the visitor finds a variable value.</summary>
-        /// <returns>true for variable present in expression</returns>
-        public bool HasVariables { get; private set; }
-        
+        public ExprNodeVariableVisitor(VariableService variableService)
+        {
+            _variableService = variableService;
+        }
+
         public bool IsVisit(ExprNode exprNode)
         {
             return true;
         }
 
-        public void Visit(ExprNode exprNode)
+        /// <summary>
+        /// Returns true if the visitor finds a variable value.
+        /// </summary>
+        /// <value>true for variable present in expression</value>
+        public bool HasVariables
         {
-            if (!(exprNode is ExprVariableNode))
-            {
-                return;
-            }
-            HasVariables = true;
-
-            var variableNode = (ExprVariableNode)exprNode;
-            if (VariableNames == null)
-            {
-                VariableNames = new HashSet<string>();
-            }
-            VariableNames.Add(variableNode.VariableName);
+            get { return _variableNames != null && !_variableNames.IsEmpty(); }
         }
 
+        public void Visit(ExprNode exprNode)
+        {
+            if (exprNode is ExprDotNode)
+            {
+                var exprDotNode = (ExprDotNode) exprNode;
+                var variableName = exprDotNode.IsVariableOpGetName(_variableService);
+                if (variableName != null)
+                {
+                    AddVariableName(variableName);
+                }
+            }
+            if (exprNode is ExprVariableNode)
+            {
+                var variableNode = (ExprVariableNode) exprNode;
+                AddVariableName(variableNode.VariableName);
+            }
+        }
+
+        /// <summary>
+        /// Returns the set of variable names encoountered.
+        /// </summary>
+        /// <value>variable names</value>
+        public ISet<string> VariableNames
+        {
+            get { return _variableNames; }
+        }
+
+        private void AddVariableName(string name)
+        {
+            if (_variableNames == null)
+            {
+                _variableNames = new HashSet<string>();
+            }
+            _variableNames.Add(name);
+        }
     }
-} // End of namespace
+} // end of namespace

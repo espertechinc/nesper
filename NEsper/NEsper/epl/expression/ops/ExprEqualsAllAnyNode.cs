@@ -93,7 +93,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             // Must have 2 child nodes
             var childNodes = ChildNodes;
-            if (childNodes.Length < 1)
+            if (childNodes.Count < 1)
             {
                 throw new IllegalStateException("Equals group node does not have 1 or more parameters");
             }
@@ -112,12 +112,12 @@ namespace com.espertech.esper.epl.expression.ops
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
 
-            _transformList = new Func<object, object>[childNodes.Length];
+            _transformList = new Func<object, object>[childNodes.Count];
 
             var comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             _hasCollectionOrArray = false;
-            for (int i = 1; i < childNodes.Length; i++)
+            for (int i = 1; i < childNodes.Count; i++)
             {
                 Type propType = _evaluators[i].ReturnType;
                 if (propType.IsArray)
@@ -180,9 +180,9 @@ namespace com.espertech.esper.epl.expression.ops
         public object Evaluate(EvaluateParams evaluateParams)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprEqualsAnyOrAll(this); }
-            var result = (bool?) EvaluateInternal(evaluateParams);
+            var result = (bool?)EvaluateInternal(evaluateParams);
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprEqualsAnyOrAll(result); }
-            return result; 
+            return result;
         }
 
         public object EvaluateInternal(EvaluateParams evaluateParams)
@@ -220,7 +220,7 @@ namespace com.espertech.esper.epl.expression.ops
             var children = ChildNodes;
             if (IsNot)
             {
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 if ((len > 0) && (leftResult == null))
                 {
                     return null;
@@ -266,7 +266,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 if ((len > 0) && (leftResult == null))
                 {
                     return null;
@@ -317,7 +317,7 @@ namespace com.espertech.esper.epl.expression.ops
             var children = ChildNodes;
             if (IsNot)
             {
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 bool hasNonNullRow = false;
                 bool hasNullRow = false;
                 for (int i = 1; i <= len; i++)
@@ -431,7 +431,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 bool hasNonNullRow = false;
                 bool hasNullRow = false;
                 for (int i = 1; i <= len; i++)
@@ -553,7 +553,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 bool hasNonNullRow = false;
                 bool hasNullRow = false;
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 for (int i = 1; i <= len; i++)
                 {
                     Object rightResult = _evaluators[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
@@ -597,7 +597,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Return true on the first equal.
             else
             {
-                int len = children.Length - 1;
+                int len = children.Count - 1;
                 if ((len > 0) && (leftResult == null))
                 {
                     return null;
@@ -649,7 +649,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Return true on the first not-equal.
             if (IsNot)
             {
-                int len = childNodes.Length - 1;
+                int len = childNodes.Count - 1;
                 bool hasNonNullRow = false;
                 bool hasNullRow = false;
                 for (int i = 1; i <= len; i++)
@@ -767,7 +767,7 @@ namespace com.espertech.esper.epl.expression.ops
             // Return true on the first equal.
             else
             {
-                int len = childNodes.Length - 1;
+                int len = childNodes.Count - 1;
                 bool hasNonNullRow = false;
                 bool hasNullRow = false;
                 for (int i = 1; i <= len; i++)
@@ -912,7 +912,7 @@ namespace com.espertech.esper.epl.expression.ops
             writer.Write("(");
 
             String delimiter = "";
-            for (int i = 0; i < children.Length - 1; i++)
+            for (int i = 0; i < children.Count - 1; i++)
             {
                 writer.Write(delimiter);
                 children[i + 1].ToEPL(writer, Precedence);

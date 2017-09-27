@@ -13,7 +13,9 @@ using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.util;
@@ -24,45 +26,64 @@ namespace com.espertech.esper.core.context.factory
 {
     public class StatementAgentInstanceFactoryOnTriggerSplit : StatementAgentInstanceFactoryOnTriggerBase
     {
-        private readonly StatementAgentInstanceFactoryOnTriggerSplitDesc _splitDesc;
+        private readonly EPStatementStartMethodOnTriggerItem[] _items;
         private readonly EventType _activatorResultEventType;
-        private readonly string[] _insertIntoTableNames;
-    
-        public StatementAgentInstanceFactoryOnTriggerSplit(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection, StatementAgentInstanceFactoryOnTriggerSplitDesc splitDesc, EventType activatorResultEventType, string[] insertIntoTableNames)
+
+        public StatementAgentInstanceFactoryOnTriggerSplit(
+            StatementContext statementContext,
+            StatementSpecCompiled statementSpec,
+            EPServicesContext services,
+            ViewableActivator activator,
+            SubSelectStrategyCollection subSelectStrategyCollection,
+            EPStatementStartMethodOnTriggerItem[] items,
+            EventType activatorResultEventType)
             : base(statementContext, statementSpec, services, activator, subSelectStrategyCollection)
         {
-            _splitDesc = splitDesc;
+            _items = items;
             _activatorResultEventType = activatorResultEventType;
-            _insertIntoTableNames = insertIntoTableNames;
         }
-    
-        public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient)
+
+        public override OnExprViewResult DetermineOnExprView(
+            AgentInstanceContext agentInstanceContext,
+            IList<StopCallback> stopCallbacks,
+            bool isRecoveringReslient)
         {
-            var processors = new ResultSetProcessor[_splitDesc.ProcessorFactories.Length];
-            for (var i = 0; i < processors.Length; i++) {
-                var factory = _splitDesc.ProcessorFactories[i];
-                var processor = factory.ResultSetProcessorFactory.Instantiate(null, null, agentInstanceContext);
+            var processors = new ResultSetProcessor[_items.Length];
+            for (int i = 0; i < processors.Length; i++)
+            {
+                ResultSetProcessorFactoryDesc factory = _items[i].FactoryDesc;
+                ResultSetProcessor processor = factory.ResultSetProcessorFactory.Instantiate(
+                    null, null, agentInstanceContext);
                 processors[i] = processor;
             }
-    
+
             var tableStateInstances = new TableStateInstance[processors.Length];
-            for (var i = 0; i < _insertIntoTableNames.Length; i++) {
-                var tableName = _insertIntoTableNames[i];
-                if (tableName != null) {
-                    tableStateInstances[i] = agentInstanceContext.StatementContext.TableService.GetState(tableName, agentInstanceContext.AgentInstanceId);
+            for (int i = 0; i < _items.Length; i++)
+            {
+                string tableName = _items[i].InsertIntoTableNames;
+                if (tableName != null)
+                {
+                    tableStateInstances[i] = agentInstanceContext.StatementContext.TableService.GetState(
+                        tableName, agentInstanceContext.AgentInstanceId);
                 }
             }
-            var desc = (OnTriggerSplitStreamDesc) StatementSpec.OnTriggerDesc;
-            View view = new RouteResultView(
-                desc.IsFirst, _activatorResultEventType, StatementContext.EpStatementHandle,
-                Services.InternalEventRouter, tableStateInstances, _splitDesc.NamedWindowInsert, processors,
-                _splitDesc.WhereClauses, agentInstanceContext);
+
+            var whereClauseEvals = new ExprEvaluator[_items.Length];
+            for (int i = 0; i < _items.Length; i++)
+            {
+                whereClauseEvals[i] = _items[i].WhereClause == null ? null : _items[i].WhereClause.ExprEvaluator;
+            }
+
+            var desc = (OnTriggerSplitStreamDesc) base.StatementSpec.OnTriggerDesc;
+            var view = new RouteResultView(
+                desc.IsFirst, _activatorResultEventType, base.StatementContext.EpStatementHandle, base.Services.InternalEventRouter,
+                tableStateInstances, _items, processors, whereClauseEvals, agentInstanceContext);
             return new OnExprViewResult(view, null);
         }
-    
+
         public override View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView)
         {
             return onExprView;
         }
     }
-}
+} // end of namespace

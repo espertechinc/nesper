@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.events;
@@ -19,7 +20,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.script
 {
     [Serializable]
-    public abstract class ExprNodeScriptEvalBase 
+    public abstract class ExprNodeScriptEvalBase
         : ExprEvaluator
         , ExprEvaluatorEnumeration
     {
@@ -28,20 +29,30 @@ namespace com.espertech.esper.epl.script
         protected readonly String[] Names;
         protected readonly ExprEvaluator[] Parameters;
         private readonly Type _returnType;
+        protected readonly EventType EventTypeCollection;
         protected readonly Coercer Coercer;
 
-        protected ExprNodeScriptEvalBase(String scriptName, String statementName, String[] names, ExprEvaluator[] parameters, Type returnType)
+        protected ExprNodeScriptEvalBase(
+            String scriptName,
+            String statementName,
+            String[] names,
+            ExprEvaluator[] parameters,
+            Type returnType,
+            EventType eventTypeCollection)
         {
             ScriptName = scriptName;
             StatementName = statementName;
             Names = names;
             Parameters = parameters;
             _returnType = returnType;
-    
-            if (returnType.IsNumeric()) {
+            EventTypeCollection = eventTypeCollection;
+
+            if (returnType.IsNumeric())
+            {
                 Coercer = CoercerFactory.GetCoercer(returnType.GetBoxedType());
             }
-            else {
+            else
+            {
                 Coercer = null;
             }
         }
@@ -53,12 +64,18 @@ namespace com.espertech.esper.epl.script
 
         public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
         {
-            return null;
+            return EventTypeCollection;
         }
-    
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return null;
+            var result = Evaluate(evaluateParams);
+            if (result == null)
+            {
+                return null;
+            }
+
+            return result.Unwrap<EventBean>();
         }
 
         public Type ComponentTypeCollection
@@ -73,10 +90,11 @@ namespace com.espertech.esper.epl.script
             }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            var result = Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
-            if (result == null) {
+            var result = Evaluate(evaluateParams);
+            if (result == null)
+            {
                 return null;
             }
 
@@ -92,13 +110,13 @@ namespace com.espertech.esper.epl.script
 
             throw new ArgumentException("invalid result type returned from evaluate; expected array");
         }
-    
+
         public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
         {
             return null;
         }
-    
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

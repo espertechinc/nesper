@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
@@ -17,35 +18,33 @@ using com.espertech.esper.epl.expression.core;
 namespace com.espertech.esper.view.window
 {
     /// <summary>
-    /// Factory for <seealso cref="com.espertech.esper.view.window.KeepAllView"/>.
+    ///     Factory for <seealso cref="com.espertech.esper.view.window.KeepAllView" />.
     /// </summary>
-    public class KeepAllViewFactory : DataWindowViewFactory, DataWindowViewWithPrevious
+    public class KeepAllViewFactory
+        : DataWindowViewFactory
+        , DataWindowViewWithPrevious
     {
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            var viewParameters = ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters);
-            if (viewParameters.Count != 0)
-            {
-                String errorMessage = ViewName + " view requires an empty parameter list";
-                throw new ViewParameterException(errorMessage);
-            }
+            ViewFactorySupport.ValidateNoParameters(ViewName, expressionParameters);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
         }
-    
-        public Object MakePreviousGetter()
-        {
-            return new RandomAccessByIndexGetter();
-        }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext); 
+            ViewUpdatedCollection randomAccess =
+                agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
+                    .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
             return new KeepAllView(agentInstanceViewFactoryContext, this, randomAccess);
         }
 
@@ -54,19 +53,25 @@ namespace com.espertech.esper.view.window
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is KeepAllView))
             {
                 return false;
             }
 
-            return ((KeepAllView) view).IsEmpty();
+            var myView = (KeepAllView) view;
+            return myView.IsEmpty();
         }
 
         public string ViewName
         {
             get { return "Keep-All"; }
         }
+
+        public Object MakePreviousGetter()
+        {
+            return new RandomAccessByIndexGetter();
+        }
     }
-}
+} // end of namespace

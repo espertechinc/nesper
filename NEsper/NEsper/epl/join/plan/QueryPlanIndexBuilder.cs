@@ -27,13 +27,13 @@ namespace com.espertech.esper.epl.join.plan
     public class QueryPlanIndexBuilder
     {
         /// <summary>
-        /// Build index specification from navigability info.
+        /// Build index specification from navigability INFO.
         /// <para/>
         /// Looks at each stream and determines which properties in the stream must be indexed
         /// in order for other streams to look up into the stream. Determines the unique set of
         /// properties to avoid building duplicate indexes on the same set of properties.
         /// </summary>
-        /// <param name="queryGraph">navigability info</param>
+        /// <param name="queryGraph">navigability INFO</param>
         /// <param name="typePerStream">The type per stream.</param>
         /// <param name="indexedStreamsUniqueProps">The indexed streams unique props.</param>
         /// <returns>query index specs for each stream</returns>

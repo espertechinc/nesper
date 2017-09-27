@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
@@ -16,6 +14,6 @@ namespace com.espertech.esper.epl.datetime.calop
 {
     public interface CalendarOp
     {
-        void Evaluate(DateTimeEx dateTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        void Evaluate(DateTimeEx cal, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
     }
-}
+} // end of namespace

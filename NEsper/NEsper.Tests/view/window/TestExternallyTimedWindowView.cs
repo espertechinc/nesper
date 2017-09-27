@@ -14,10 +14,10 @@ using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -34,7 +34,7 @@ namespace com.espertech.esper.view.window
         {
             // Set up timed window view and a test child view, set the time window size to 1 second
             ExprNode node = SupportExprNodeFactory.MakeIdentNodeBean("LongPrimitive");
-            _myView = new ExternallyTimedWindowView(new ExternallyTimedWindowViewFactory(), node, node.ExprEvaluator, new ExprTimePeriodEvalDeltaConstMsec(1000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            _myView = new ExternallyTimedWindowView(new ExternallyTimedWindowViewFactory(), node, node.ExprEvaluator, new ExprTimePeriodEvalDeltaConstGivenDelta(1000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
             _childView = new SupportBeanClassView(typeof(SupportBean));
             _myView.AddView(_childView);
         }
@@ -42,7 +42,7 @@ namespace com.espertech.esper.view.window
         [Test]
         public void TestIncorrectUse() {
             try {
-                _myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.MakeIdentNodeBean("TheString"), null, new ExprTimePeriodEvalDeltaConstMsec(0), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+                _myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.MakeIdentNodeBean("TheString"), null, new ExprTimePeriodEvalDeltaConstGivenDelta(0), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
             } catch (ArgumentException ex) {
                 // Expected exception
             }

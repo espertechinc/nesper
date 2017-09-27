@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.epl.expression.core;
 
@@ -15,11 +16,11 @@ namespace com.espertech.esper.epl.expression.baseagg
 	[Serializable]
     public class ExprAggregateLocalGroupByDesc
     {
-	    public ExprAggregateLocalGroupByDesc(ExprNode[] partitionExpressions)
+	    public ExprAggregateLocalGroupByDesc(IList<ExprNode> partitionExpressions)
         {
 	        PartitionExpressions = partitionExpressions;
 	    }
 
-	    public ExprNode[] PartitionExpressions { get; private set; }
+	    public IList<ExprNode> PartitionExpressions { get; private set; }
     }
 } // end of namespace

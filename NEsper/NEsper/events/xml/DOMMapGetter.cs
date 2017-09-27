@@ -47,7 +47,8 @@ namespace com.espertech.esper.events.xml
         public Object Get(EventBean eventBean)
         {
             var asXNode = eventBean.Underlying as XNode;
-            if (asXNode == null) {
+            if (asXNode == null)
+            {
                 var node = eventBean.Underlying as XmlNode;
                 return node == null ? null : GetValueAsNode(node);
             }
@@ -58,33 +59,40 @@ namespace com.espertech.esper.events.xml
         public bool IsExistsProperty(EventBean eventBean)
         {
             var asXNode = eventBean.Underlying as XElement;
-            if (asXNode == null) {
+            if (asXNode == null)
+            {
                 var node = eventBean.Underlying as XmlNode;
-                if (node == null) {
+                if (node == null)
+                {
                     return false;
                 }
 
                 XmlNodeList list = node.ChildNodes;
-                for (int i = 0; i < list.Count; i++) {
+                for (int i = 0; i < list.Count; i++)
+                {
                     XmlNode childNode = list.Item(i);
-                    if (childNode == null) {
+                    if (childNode == null)
+                    {
                         continue;
                     }
 
-                    if (childNode.NodeType != XmlNodeType.Element) {
+                    if (childNode.NodeType != XmlNodeType.Element)
+                    {
                         continue;
                     }
 
-                    string elementName = childNode.LocalName ?? childNode.Name;
-                    if (_propertyMap != elementName) {
+                    if (childNode.Name != _propertyMap)
+                    {
                         continue;
                     }
 
-                    XmlNode attribute = childNode.Attributes.GetNamedItem(_mapKey);
-                    if (attribute == null) {
+                    XmlNode attribute = childNode.Attributes.GetNamedItem("id");
+                    if (attribute == null)
+                    {
                         continue;
                     }
-                    if (attribute.InnerText != _mapKey) {
+                    if (attribute.InnerText != _mapKey)
+                    {
                         continue;
                     }
 
@@ -122,7 +130,8 @@ namespace com.espertech.esper.events.xml
 
         public Object GetValueAsFragment(XmlNode node)
         {
-            if (_fragmentFactory == null) {
+            if (_fragmentFactory == null)
+            {
                 return null;
             }
 
@@ -144,23 +153,29 @@ namespace com.espertech.esper.events.xml
         public XmlNode GetValueAsNode(XmlNode node)
         {
             XmlNodeList list = node.ChildNodes;
-            for (int i = 0; i < list.Count; i++) {
+            for (int i = 0; i < list.Count; i++)
+            {
                 XmlNode childNode = list.Item(i);
-                if (childNode == null) {
+                if (childNode == null)
+                {
                     continue;
                 }
-                if (childNode.NodeType != XmlNodeType.Element) {
+                if (childNode.NodeType != XmlNodeType.Element)
+                {
                     continue;
                 }
-                if (childNode.Name != _propertyMap) {
+                if (childNode.Name != _propertyMap)
+                {
                     continue;
                 }
 
                 XmlNode attribute = childNode.Attributes.GetNamedItem("id");
-                if (attribute == null) {
+                if (attribute == null)
+                {
                     continue;
                 }
-                if (attribute.InnerText != _mapKey) {
+                if (attribute.InnerText != _mapKey)
+                {
                     continue;
                 }
 
@@ -172,7 +187,8 @@ namespace com.espertech.esper.events.xml
         public XObject GetValueAsNode(XObject node)
         {
             var element = node as XElement;
-            if (element != null) {
+            if (element != null)
+            {
                 var list = element.Elements().Where(e => e.Name.LocalName == _propertyMap);
                 return (from subElement in list
                         let attribute = subElement.Attributes(XName.Get("id")).FirstOrDefault()

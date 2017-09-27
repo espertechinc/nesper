@@ -10,7 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.support.schedule;
+using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.supportunit.schedule;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 
@@ -81,8 +82,8 @@ namespace com.espertech.esper.schedule
             Assert.IsTrue(_service.IsScheduled(_callbacks[0]));
             _service.Add(100, _callbacks[0], _slots[0][0]);
 
-            _service.Add(ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), _service.Time, TimeZoneInfo.Local), _callbacks[1], _slots[0][0]);
-            _service.Add(ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), _service.Time, TimeZoneInfo.Local), _callbacks[1], _slots[0][0]);
+            _service.Add(ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), _service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE), _callbacks[1], _slots[0][0]);
+            _service.Add(ScheduleComputeHelper.ComputeNextOccurance(new ScheduleSpec(), _service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE), _callbacks[1], _slots[0][0]);
         }
 
         [Test]
@@ -179,17 +180,17 @@ namespace com.espertech.esper.schedule
             spec.AddValue(ScheduleUnit.MINUTES, 27);
             spec.AddValue(ScheduleUnit.SECONDS, 20);
 
-            _service.Add(ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, _service.Time, TimeZoneInfo.Local), _callbacks[3], _slots[1][1]);
+            _service.Add(ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, _service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE), _callbacks[3], _slots[1][1]);
 
             spec.AddValue(ScheduleUnit.SECONDS, 15);
-            _service.Add(ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, _service.Time, TimeZoneInfo.Local), _callbacks[4], _slots[2][0]);
+            _service.Add(ScheduleComputeHelper.ComputeDeltaNextOccurance(spec, _service.Time, TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE), _callbacks[4], _slots[2][0]);
 
             // Add some more callbacks
             _service.Add(5000, _callbacks[0], _slots[0][0]);
             _service.Add(10000, _callbacks[1], _slots[0][1]);
             _service.Add(15000, _callbacks[2], _slots[1][0]);
 
-            // Now send a times reflecting various seconds later and check who got a callback
+            // GetInstance send a times reflecting various seconds later and check who got a callback
             _service.Time = startTime + 1000;
             SupportScheduleCallback.SetCallbackOrderNum(0);
             EvaluateSchedule();

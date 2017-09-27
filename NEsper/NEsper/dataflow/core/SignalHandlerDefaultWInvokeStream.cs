@@ -10,17 +10,16 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client.dataflow;
-
+using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.dataflow.core
 {
     public class SignalHandlerDefaultWInvokeStream : SignalHandlerDefaultWInvoke
     {
-
         private readonly int _streamNum;
 
-        public SignalHandlerDefaultWInvokeStream(Object target, MethodInfo method, int streamNum)
-            : base(target, method)
+        public SignalHandlerDefaultWInvokeStream(Object target, MethodInfo method, EngineImportService engineImportService, int streamNum)
+            : base(target, method, engineImportService)
         {
             _streamNum = streamNum;
         }

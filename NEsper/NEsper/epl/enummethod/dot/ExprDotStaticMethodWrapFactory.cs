@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression;
@@ -21,23 +22,31 @@ namespace com.espertech.esper.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapFactory
     {
-        public static ExprDotStaticMethodWrap Make(MethodInfo method,
-                                                   EventAdapterService eventAdapterService,
-                                                   IList<ExprChainedSpec> modifiedChain)
+        public static ExprDotStaticMethodWrap Make(
+            MethodInfo method,
+            EventAdapterService eventAdapterService,
+            IList<ExprChainedSpec> modifiedChain,
+            string optionalEventTypeName)
         {
             if (modifiedChain.IsEmpty() || (!modifiedChain[0].Name.IsEnumerationMethod()))
             {
                 return null;
             }
 
+
             if (method.ReturnType.IsArray)
             {
                 var componentType = method.ReturnType.GetElementType();
+                if (componentType == typeof(EventBean))
+                {
+                    EventType eventType = RequireEventType(method, eventAdapterService, optionalEventTypeName);
+                    return new ExprDotStaticMethodWrapEventBeanArr(eventType);
+                }
                 if (componentType == null || componentType.IsBuiltinDataType())
                 {
                     return new ExprDotStaticMethodWrapArrayScalar(method.Name, componentType);
                 }
-                var type = (BeanEventType)eventAdapterService.AddBeanType(componentType.Name, componentType, false, false, false);
+                var type = (BeanEventType)eventAdapterService.AddBeanType(componentType.GetDefaultTypeName(), componentType, false, false, false);
                 return new ExprDotStaticMethodWrapArrayEvents(eventAdapterService, type);
             }
 
@@ -55,14 +64,24 @@ namespace com.espertech.esper.epl.enummethod.dot
             if (method.ReturnType.IsGenericEnumerable())
             {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
+                if (genericType == typeof(EventBean))
+                {
+                    EventType eventType = RequireEventType(method, eventAdapterService, optionalEventTypeName);
+                    return new ExprDotStaticMethodWrapEventBeanColl(eventType);
+                }
                 if (genericType == null || genericType.IsBuiltinDataType())
                 {
                     return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType);
                 }
-                var type = (BeanEventType)eventAdapterService.AddBeanType(genericType.Name, genericType, false, false, false);
+                var type = (BeanEventType)eventAdapterService.AddBeanType(genericType.GetDefaultTypeName(), genericType, false, false, false);
                 return new ExprDotStaticMethodWrapIterableEvents(eventAdapterService, type);
             }
             return null;
+        }
+
+        private static EventType RequireEventType(MethodInfo method, EventAdapterService eventAdapterService, string optionalEventTypeName) 
+        {
+            return EventTypeUtility.RequireEventType("Method", method.Name, eventAdapterService, optionalEventTypeName);
         }
     }
 }

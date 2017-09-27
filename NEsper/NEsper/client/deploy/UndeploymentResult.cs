@@ -30,7 +30,7 @@ namespace com.espertech.esper.client.deploy
         public string DeploymentId { get; private set; }
 
         /// <summary>Statement-level undeploy information. </summary>
-        /// <value>statement info</value>
+        /// <value>statement INFO</value>
         public IList<DeploymentInformationItem> StatementInfo { get; private set; }
     }
 }

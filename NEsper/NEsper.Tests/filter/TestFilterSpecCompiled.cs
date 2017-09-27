@@ -11,10 +11,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.pattern;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.filter;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.filter;
 using com.espertech.esper.util;
 
 using NUnit.Framework;

@@ -12,7 +12,7 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Shortcut-evaluator for use with POCO-backed events only.
+    /// Shortcut-evaluator for use with PONO-backed events only.
     /// </summary>
     public interface BeanEventPropertyGetter : EventPropertyGetter
     {

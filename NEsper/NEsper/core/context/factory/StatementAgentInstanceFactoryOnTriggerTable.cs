@@ -34,7 +34,7 @@ namespace com.espertech.esper.core.context.factory
         private readonly OutputProcessViewFactory _outputProcessViewFactory;
         private readonly TableOnViewFactory _onExprFactory;
         private readonly SubordinateWMatchExprQueryPlanResult _queryPlanResult;
-    
+
         public StatementAgentInstanceFactoryOnTriggerTable(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, ExprNode validatedJoin, TableOnViewFactory onExprFactory, EventType activatorResultEventType, TableMetadata tableMetadata, ResultSetProcessorFactoryDesc outputResultSetProcessorPrototype, OutputProcessViewFactory outputProcessViewFactory)
             : base(statementContext, statementSpec, services, activator, subSelectStrategyCollection)
         {
@@ -42,60 +42,66 @@ namespace com.espertech.esper.core.context.factory
             _onExprFactory = onExprFactory;
             _outputResultSetProcessorPrototype = outputResultSetProcessorPrototype;
             _outputProcessViewFactory = outputProcessViewFactory;
-    
+
             var pair = StatementAgentInstanceFactoryOnTriggerNamedWindow.GetIndexHintPair(statementContext, statementSpec);
             var indexHint = pair.IndexHint;
             var excludePlanHint = pair.ExcludePlanHint;
-    
+
             _queryPlanResult = SubordinateQueryPlanner.PlanOnExpression(
                     validatedJoin, activatorResultEventType, indexHint, true, -1, excludePlanHint,
                     false, tableMetadata.EventTableIndexMetadataRepo, tableMetadata.InternalEventType,
                     tableMetadata.UniqueKeyProps, true, statementContext.StatementName, statementContext.StatementId, statementContext.Annotations);
-            if (_queryPlanResult.IndexDescs != null) {
-                for (var i = 0; i < _queryPlanResult.IndexDescs.Length; i++) {
+            if (_queryPlanResult.IndexDescs != null)
+            {
+                for (var i = 0; i < _queryPlanResult.IndexDescs.Length; i++)
+                {
                     tableMetadata.AddIndexReference(_queryPlanResult.IndexDescs[i].IndexName, statementContext.StatementName);
                 }
             }
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(tableMetadata.IsQueryPlanLogging, TableServiceImpl.QueryPlanLog,
-                    _queryPlanResult, statementContext.Annotations);
+                    _queryPlanResult, statementContext.Annotations, statementContext.EngineImportService);
         }
 
         public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringReslient)
         {
-            var onTriggerWindowDesc = (OnTriggerWindowDesc) StatementSpec.OnTriggerDesc;
-    
+            var onTriggerWindowDesc = (OnTriggerWindowDesc)StatementSpec.OnTriggerDesc;
+
             // get result set processor and aggregation services
             var pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext, false, null);
-    
+
             var state = Services.TableService.GetState(onTriggerWindowDesc.WindowName, agentInstanceContext.AgentInstanceId);
             EventTable[] indexes;
-            if (_queryPlanResult.IndexDescs == null) {
+            if (_queryPlanResult.IndexDescs == null)
+            {
                 indexes = null;
             }
-            else {
+            else
+            {
                 indexes = new EventTable[_queryPlanResult.IndexDescs.Length];
-                for (var i = 0; i < indexes.Length; i++) {
+                for (var i = 0; i < indexes.Length; i++)
+                {
                     indexes[i] = state.IndexRepository.GetIndexByDesc(_queryPlanResult.IndexDescs[i].IndexMultiKey);
                 }
             }
             var strategy = _queryPlanResult.Factory.Realize(indexes, agentInstanceContext, state.IterableTableScan, null);
             var onExprBaseView = _onExprFactory.Make(strategy, state, agentInstanceContext, pair.First);
-    
+
             return new OnExprViewResult(onExprBaseView, pair.Second);
         }
-    
+
         public override View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView)
         {
             if ((StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_DELETE) ||
-                    (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_UPDATE) ||
-                    (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_MERGE)) {
-    
+                (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_UPDATE) ||
+                (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_MERGE))
+            {
+
                 var outputResultSetProcessor = _outputResultSetProcessorPrototype.ResultSetProcessorFactory.Instantiate(null, null, agentInstanceContext);
                 View outputView = _outputProcessViewFactory.MakeView(outputResultSetProcessor, agentInstanceContext);
                 onExprView.AddView(outputView);
                 return outputView;
             }
-    
+
             return onExprView;
         }
     }

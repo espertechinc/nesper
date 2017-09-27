@@ -43,7 +43,7 @@ namespace com.espertech.esper.view.internals
         private readonly EventBean[][] _oldEventsPerView;
         private readonly RefCountedSet<EventBean> _unionWindow;
         private readonly IList<EventBean> _removalEvents = new List<EventBean>();
-    
+
         private bool _isHasRemovestreamData;
         private bool _isRetainObserverEvents;
         private bool _isDiscardObserverEvents;
@@ -67,7 +67,7 @@ namespace com.espertech.esper.view.internals
             _views = viewList.ToArray();
             _unionWindow = new RefCountedSet<EventBean>();
             _oldEventsPerView = new EventBean[viewList.Count][];
-            
+
             for (int i = 0; i < viewList.Count; i++)
             {
                 var view = new LastPostObserverView(i);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.view.internals
                 _views[i].AddView(view);
                 view.Observer = this;
             }
-    
+
             // recover
             for (int i = 0; i < _views.Length; i++)
             {
@@ -96,7 +96,7 @@ namespace com.espertech.esper.view.internals
         {
             return _unionViewFactory.MakeView(_agentInstanceViewFactoryContext);
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             using (Instrument.With(
@@ -222,24 +222,24 @@ namespace com.espertech.esper.view.internals
         {
             return _unionWindow.Keys.GetEnumerator();
         }
-    
+
         public void NewData(int streamId, EventBean[] newEvents, EventBean[] oldEvents)
         {
             if ((oldEvents == null) || (_isDiscardObserverEvents))
             {
                 return;
             }
-    
+
             if (_isRetainObserverEvents)
             {
                 _oldEventsPerView[streamId] = oldEvents;
                 _isHasRemovestreamData = true;
                 return;
             }
-    
+
             // handle time-based removal
             IList<EventBean> removedEvents = null;
-    
+
             // remove events for union, if the last event was removed then add it
             foreach (EventBean old in oldEvents)
             {
@@ -254,7 +254,7 @@ namespace com.espertech.esper.view.internals
                     removedEvents.Add(old);
                 }
             }
-    
+
             if (removedEvents != null)
             {
                 EventBean[] removed = removedEvents.ToArray();

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 

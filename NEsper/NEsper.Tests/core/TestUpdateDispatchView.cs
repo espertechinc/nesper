@@ -17,8 +17,9 @@ using com.espertech.esper.dispatch;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.metric;
-using com.espertech.esper.support.core;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.core;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
@@ -48,7 +49,7 @@ namespace com.espertech.esper.core
             _dispatchService = new DispatchServiceImpl();
 
             _statementResultService = new StatementResultServiceImpl(
-                "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading()));
+                "name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig()));
             _statementResultService.SetUpdateListeners(listenerSet, false);
             _statementResultService.SetSelectClause(new Type[1], new String[1], false, new ExprEvaluator[1], new SupportExprEvaluatorContext(null));
             _statementResultService.SetContext(new SupportEPStatementSPI(), null, false, false, false, false, null);

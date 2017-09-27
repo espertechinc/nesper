@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
 using com.espertech.esper.util;
 
@@ -38,7 +37,13 @@ namespace com.espertech.esper.filter
         /// <param name="isMustCoerce">indicates on whether numeric coercion must be performed</param>
         /// <param name="coercionType">indicates the numeric coercion type to use</param>
         /// <param name="statementName">Name of the statement.</param>
-        public InSetOfValuesEventPropIndexed(String resultEventAsName, int resultEventindex, String resultEventProperty, bool isMustCoerce, Type coercionType, String statementName)
+        public InSetOfValuesEventPropIndexed(
+            String resultEventAsName,
+            int resultEventindex,
+            String resultEventProperty,
+            bool isMustCoerce,
+            Type coercionType,
+            String statementName)
         {
             _resultEventAsName = resultEventAsName;
             _resultEventProperty = resultEventProperty;
@@ -47,11 +52,21 @@ namespace com.espertech.esper.filter
             _isMustCoerce = isMustCoerce;
             _statementName = statementName;
         }
-    
+
+        public Type ReturnType
+        {
+            get { return _coercionType; }
+        }
+
+        public bool IsConstant
+        {
+            get { return false; }
+        }
+
         public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
         {
-            EventBean[] events = (EventBean[]) matchedEvents.GetMatchingEventAsObjectByTag(_resultEventAsName);
-    
+            EventBean[] events = (EventBean[])matchedEvents.GetMatchingEventAsObjectByTag(_resultEventAsName);
+
             Object value = null;
             if (events == null)
             {
@@ -65,7 +80,7 @@ namespace com.espertech.esper.filter
             {
                 value = events[_resultEventIndex].Get(_resultEventProperty);
             }
-    
+
             // Coerce if necessary
             if (_isMustCoerce)
             {
@@ -111,8 +126,8 @@ namespace com.espertech.esper.filter
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (InSetOfValuesEventPropIndexed)) return false;
-            return Equals((InSetOfValuesEventPropIndexed) obj);
+            if (obj.GetType() != typeof(InSetOfValuesEventPropIndexed)) return false;
+            return Equals((InSetOfValuesEventPropIndexed)obj);
         }
 
         /// <summary>
@@ -126,7 +141,7 @@ namespace com.espertech.esper.filter
         {
             unchecked
             {
-                return ((_resultEventAsName != null ? _resultEventAsName.GetHashCode() : 0)*397) ^ (_resultEventProperty != null ? _resultEventProperty.GetHashCode() : 0);
+                return ((_resultEventAsName != null ? _resultEventAsName.GetHashCode() : 0) * 397) ^ (_resultEventProperty != null ? _resultEventProperty.GetHashCode() : 0);
             }
         }
     }

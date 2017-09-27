@@ -16,32 +16,38 @@ namespace com.espertech.esper.pattern
     /// <summary>
     /// Helper producing a repository of built-in pattern objects.
     /// </summary>
-	public class PatternObjectHelper
-	{
+    public class PatternObjectHelper
+    {
+        private static PluggableObjectCollection _builtinPatternObjects;
+
         static PatternObjectHelper()
-	    {
-	        BuiltinPatternObjects = new PluggableObjectCollection();
+        {
+            BuiltinPatternObjects = new PluggableObjectCollection();
             foreach (GuardEnum guardEnum in EnumHelper.GetValues<GuardEnum>())
-	        {
-	            BuiltinPatternObjects.AddObject(
-                    guardEnum.GetNamespace(), 
-                    guardEnum.GetName(), 
-                    guardEnum.GetClazz(), 
+            {
+                _builtinPatternObjects.AddObject(
+                    guardEnum.GetNamespace(),
+                    guardEnum.GetName(),
+                    guardEnum.GetClazz(),
                     PluggableObjectType.PATTERN_GUARD);
-	        }
+            }
 
             foreach (ObserverEnum observerEnum in EnumHelper.GetValues<ObserverEnum>())
-	        {
-	            BuiltinPatternObjects.AddObject(
+            {
+                _builtinPatternObjects.AddObject(
                     observerEnum.GetNamespace(),
                     observerEnum.GetName(),
-                    observerEnum.GetImplementationType(), 
+                    observerEnum.GetImplementationType(),
                     PluggableObjectType.PATTERN_OBSERVER);
-	        }
-	    }
+            }
+        }
 
         /// <summary>Returns the built-in pattern objects.</summary>
         /// <returns>collection of built-in pattern objects.</returns>
-        public static PluggableObjectCollection BuiltinPatternObjects { get; private set; }
-	}
+        public static PluggableObjectCollection BuiltinPatternObjects
+        {
+            get { return _builtinPatternObjects; }
+            private set { _builtinPatternObjects = value; }
+        }
+    }
 } // End of namespace

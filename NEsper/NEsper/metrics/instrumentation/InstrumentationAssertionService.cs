@@ -14,7 +14,7 @@ namespace com.espertech.esper.metrics.instrumentation
 {
     public interface InstrumentationAssertionService
     {
-        void StartTest(EPServiceProvider engine, Type clazz, String testName);
+        void StartTest(EPServiceProvider engine, Type testClass, string testName);
         void EndTest();
     }
-}
+} // end of namespace

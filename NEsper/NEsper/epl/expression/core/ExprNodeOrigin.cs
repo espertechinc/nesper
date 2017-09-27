@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.ComponentModel;
 
 namespace com.espertech.esper.epl.expression.core
 {
@@ -23,6 +22,7 @@ namespace com.espertech.esper.epl.expression.core
         CONTEXTDISTINCT,
         CONTEXTCONDITION,
         VARIABLEASSIGN,
+        DATAFLOW,
         DATAFLOWBEACON,
         DATAFLOWFILTER,
         UPDATEASSIGN,
@@ -61,9 +61,9 @@ namespace com.espertech.esper.epl.expression.core
 
     public static class ExprNodeOriginExtensions
     {
-        public static string GetClauseName(this ExprNodeOrigin origin)
+        public static string GetClauseName(this ExprNodeOrigin enumValue)
         {
-            switch (origin)
+            switch (enumValue)
             {
                 case ExprNodeOrigin.SELECT:
                     return ("select-clause");
@@ -85,6 +85,8 @@ namespace com.espertech.esper.epl.expression.core
                     return ("context condition");
                 case ExprNodeOrigin.VARIABLEASSIGN:
                     return ("variable-assignment");
+                case ExprNodeOrigin.DATAFLOW:
+                    return ("dataflow operator");
                 case ExprNodeOrigin.DATAFLOWBEACON:
                     return ("beacon dataflow operator");
                 case ExprNodeOrigin.DATAFLOWFILTER:
@@ -155,7 +157,7 @@ namespace com.espertech.esper.epl.expression.core
                     return ("hint");
             }
 
-            throw new ArgumentException();
+            throw new ArgumentException("invalid value for enumValue", "enumValue");
         }
     }
-}
+} // end of namespace

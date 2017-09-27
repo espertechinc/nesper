@@ -19,7 +19,7 @@ namespace com.espertech.esper.core.thread
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private readonly Object _event;
         private readonly EPRuntimeImpl _runtime;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="theEvent">to process</param>
         /// <param name="runtime">to process event</param>
@@ -28,7 +28,7 @@ namespace com.espertech.esper.core.thread
             _event = theEvent;
             _runtime = runtime;
         }
-    
+
         public void Run()
         {
             try

@@ -14,24 +14,31 @@ using com.espertech.esper.events.map;
 namespace com.espertech.esper.events.arr
 {
     /// <summary>A getter that works on EventBean events residing within a Map as an event property. </summary>
-    public class ObjectArrayNestedEntryPropertyGetterArrayMap : ObjectArrayNestedEntryPropertyGetterBase {
-    
+    public class ObjectArrayNestedEntryPropertyGetterArrayMap : ObjectArrayNestedEntryPropertyGetterBase
+    {
         private readonly int _index;
         private readonly MapEventPropertyGetter _getter;
-    
+
         public ObjectArrayNestedEntryPropertyGetterArrayMap(int propertyIndex, EventType fragmentType, EventAdapterService eventAdapterService, int index, MapEventPropertyGetter getter)
             : base(propertyIndex, fragmentType, eventAdapterService)
         {
             _index = index;
             _getter = getter;
         }
-    
-        public override Object HandleNestedValue(Object value) {
+
+        public override Object HandleNestedValue(Object value)
+        {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMap(value, _index, _getter);
         }
-    
-        public override Object HandleNestedValueFragment(Object value) {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithMapFragment(value, _index, _getter, EventAdapterService, FragmentType);
+
+        public override Object HandleNestedValueFragment(Object value)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapFragment(value, _index, _getter, base.EventAdapterService, base.FragmentType);
+        }
+
+        public override bool HandleNestedValueExists(Object value)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExists(value, _index, _getter);
         }
     }
 }

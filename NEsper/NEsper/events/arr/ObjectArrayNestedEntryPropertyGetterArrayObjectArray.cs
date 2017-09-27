@@ -12,24 +12,31 @@ using com.espertech.esper.client;
 
 namespace com.espertech.esper.events.arr
 {
-    public class ObjectArrayNestedEntryPropertyGetterArrayObjectArray : ObjectArrayNestedEntryPropertyGetterBase {
-    
+    public class ObjectArrayNestedEntryPropertyGetterArrayObjectArray : ObjectArrayNestedEntryPropertyGetterBase
+    {
         private readonly int _index;
         private readonly ObjectArrayEventPropertyGetter _getter;
-    
+
         public ObjectArrayNestedEntryPropertyGetterArrayObjectArray(int propertyIndex, EventType fragmentType, EventAdapterService eventAdapterService, int index, ObjectArrayEventPropertyGetter getter)
             : base(propertyIndex, fragmentType, eventAdapterService)
         {
             _index = index;
             _getter = getter;
         }
-    
-        public override Object HandleNestedValue(Object value) {
+
+        public override Object HandleNestedValue(Object value)
+        {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArray(value, _index, _getter);
         }
-    
-        public override Object HandleNestedValueFragment(Object value) {
-            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragment(value, _index, _getter, FragmentType, EventAdapterService);
+
+        public override Object HandleNestedValueFragment(Object value)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragment(value, _index, _getter, base.FragmentType, base.EventAdapterService);
+        }
+        
+        public override bool HandleNestedValueExists(Object value)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayExists(value, _index, _getter);
         }
     }
 }

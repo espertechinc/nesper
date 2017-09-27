@@ -24,10 +24,10 @@ namespace com.espertech.esper.core.context.mgr
     public class ContextManagementServiceImpl : ContextManagementService
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly IDictionary<String, ContextManagerEntry> _contexts;
         private readonly ICollection<String> _destroyedContexts = new HashSet<String>();
-    
+
         public ContextManagementServiceImpl()
         {
             _contexts = new Dictionary<String, ContextManagerEntry>();
@@ -36,8 +36,10 @@ namespace com.espertech.esper.core.context.mgr
         public void AddContextSpec(EPServicesContext servicesContext, AgentInstanceContext agentInstanceContext, CreateContextDesc contextDesc, bool isRecoveringResilient, EventType statementResultEventType)
         {
             var mgr = _contexts.Get(contextDesc.ContextName);
-            if (mgr != null) {
-                if (_destroyedContexts.Contains(contextDesc.ContextName)) {
+            if (mgr != null)
+            {
+                if (_destroyedContexts.Contains(contextDesc.ContextName))
+                {
                     throw new ExprValidationException("Context by name '" + contextDesc.ContextName + "' is still referenced by statements and may not be changed");
                 }
                 throw new ExprValidationException("Context by name '" + contextDesc.ContextName + "' already exists");
@@ -45,9 +47,9 @@ namespace com.espertech.esper.core.context.mgr
 
             var factoryServiceContext = new ContextControllerFactoryServiceContext(contextDesc.ContextName, servicesContext, contextDesc.ContextDetail, agentInstanceContext, isRecoveringResilient, statementResultEventType);
             var contextManager = servicesContext.ContextManagerFactoryService.Make(contextDesc.ContextDetail, factoryServiceContext);
-    
+
             factoryServiceContext.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.FilterFaultHandler = contextManager;
-    
+
             _contexts.Put(contextDesc.ContextName, new ContextManagerEntry(contextManager));
         }
 
@@ -59,39 +61,43 @@ namespace com.espertech.esper.core.context.mgr
         public ContextDescriptor GetContextDescriptor(String contextName)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
+            if (entry == null)
+            {
                 return null;
             }
             return entry.ContextManager.ContextDescriptor;
         }
-    
+
         public ContextManager GetContextManager(String contextName)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
             return entry == null ? null : entry.ContextManager;
         }
-    
+
         public void AddStatement(String contextName, ContextControllerStatementBase statement, bool isRecoveringResilient)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
+            if (entry == null)
+            {
                 throw new ExprValidationException(GetNotDecaredText(contextName));
             }
             entry.AddStatement(statement.StatementContext.StatementId);
             entry.ContextManager.AddStatement(statement, isRecoveringResilient);
         }
-    
+
         public void DestroyedStatement(String contextName, String statementName, int statementId)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
+            if (entry == null)
+            {
                 Log.Warn("Dispose statement for statement '" + statementName + "' failed to locate corresponding context manager '" + contextName + "'");
                 return;
             }
             entry.RemoveStatement(statementId);
             entry.ContextManager.DestroyStatement(statementName, statementId);
-            
-            if (entry.StatementCount == 0 && _destroyedContexts.Contains(contextName)) {
+
+            if (entry.StatementCount == 0 && _destroyedContexts.Contains(contextName))
+            {
                 DestroyContext(contextName, entry);
             }
         }
@@ -99,19 +105,21 @@ namespace com.espertech.esper.core.context.mgr
         public void StoppedStatement(String contextName, String statementName, int statementId, String epl, ExceptionHandlingService exceptionHandlingService)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
-            if (entry == null) {
+            if (entry == null)
+            {
                 Log.Warn("Stop statement for statement '" + statementName + "' failed to locate corresponding context manager '" + contextName + "'");
                 return;
             }
-            try {
+            try
+            {
                 entry.ContextManager.StopStatement(statementName, statementId);
             }
             catch (Exception ex)
             {
-                exceptionHandlingService.HandleException(ex, statementName, epl, ExceptionHandlerExceptionType.STOP);
+                exceptionHandlingService.HandleException(ex, statementName, epl, ExceptionHandlerExceptionType.STOP, null);
             }
         }
-    
+
         public void DestroyedContext(String contextName)
         {
             ContextManagerEntry entry = _contexts.Get(contextName);
@@ -130,7 +138,7 @@ namespace com.espertech.esper.core.context.mgr
                 _destroyedContexts.Add(contextName);
             }
         }
-    
+
         private void DestroyContext(String contextName, ContextManagerEntry entry)
         {
             entry.ContextManager.SafeDestroy();

@@ -77,7 +77,7 @@ namespace com.espertech.esper.compat.threading
             return disposableTrack;
         }
 
-        public IDisposable Acquire(int msec)
+        public IDisposable Acquire(long msec)
         {
             var timeLockRequested = PerformanceObserver.MicroTime;
             var disposableLock = _subLock.Acquire(msec);
@@ -93,10 +93,10 @@ namespace com.espertech.esper.compat.threading
             return disposableTrack;
         }
 
-        public IDisposable Acquire(bool releaseLock, int? msec = null)
+        public IDisposable Acquire(bool releaseLock, long? msec = null)
         {
             var timeLockRequested = PerformanceObserver.MicroTime;
-            var disposableLock = _subLock.Acquire(releaseLock, msec);
+            var disposableLock = _subLock.Acquire(releaseLock, msec: msec);
             var timeLockAcquired = PerformanceObserver.MicroTime;
             var disposableTrack = new TrackedDisposable(
                 delegate

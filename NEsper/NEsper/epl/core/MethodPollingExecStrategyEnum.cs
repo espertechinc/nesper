@@ -6,12 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+
 namespace com.espertech.esper.epl.core
 {
-	public enum MethodPollingExecStrategyEnum
-	{
-	    TARGET_CONST,
-	    TARGET_VAR,
-	    TARGET_VAR_CONTEXT
-	}
+    public enum MethodPollingExecStrategyEnum {
+        TARGET_CONST,
+        TARGET_VAR,
+        TARGET_VAR_CONTEXT,
+        TARGET_SCRIPT
+    }
 } // end of namespace

@@ -9,13 +9,14 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -54,11 +55,12 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new Object[] { "Symbol", "Feed" }));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new Object[]{"Symbol", "Feed"}));
             _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, _parents);
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsFalse(_factory.CanReuse(new MergeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesMD("Symbol"), null, true)));
-            Assert.IsTrue(_factory.CanReuse(new MergeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesMD("Symbol", "Feed"), null, true)));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new MergeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesMD("Symbol"), null, true), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new MergeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), SupportExprNodeFactory.MakeIdentNodesMD("Symbol", "Feed"), null, true), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object[] parameters)
@@ -70,7 +72,7 @@ namespace com.espertech.esper.view.std
                 factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, _parents);
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }

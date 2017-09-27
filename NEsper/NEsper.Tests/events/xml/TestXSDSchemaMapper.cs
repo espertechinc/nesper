@@ -43,7 +43,7 @@ namespace com.espertech.esper.events.xml
             Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
             String schemaUri = uri.ToString();
 
-            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null);
             Assert.That(model.Components.Count, Is.EqualTo(1));
 
             SchemaElementComplex simpleEvent = model.Components[0];
@@ -218,7 +218,7 @@ namespace com.espertech.esper.events.xml
             Uri uri = ResourceManager.ResolveResourceURL("regression/schemaWithExtensions.xsd");
             String schemaUri = uri.ToString();
 
-            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null);
 
             SchemaElementComplex complexEvent = model.Components[0];
             VerifyComplexElement(complexEvent, "complexEvent", false);

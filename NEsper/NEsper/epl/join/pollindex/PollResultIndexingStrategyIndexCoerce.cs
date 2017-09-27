@@ -24,15 +24,15 @@ namespace com.espertech.esper.epl.join.pollindex
     {
         private readonly int _streamNum;
         private readonly EventType _eventType;
-        private readonly String[] _propertyNames;
-        private readonly Type[] _coercionTypes;
+        private readonly IList<String> _propertyNames;
+        private readonly IList<Type> _coercionTypes;
     
         /// <summary>Ctor. </summary>
         /// <param name="streamNum">is the stream number of the indexed stream</param>
         /// <param name="eventType">is the event type of the indexed stream</param>
         /// <param name="propertyNames">is the property names to be indexed</param>
         /// <param name="coercionTypes">is the types to coerce to for keys and values</param>
-        public PollResultIndexingStrategyIndexCoerce(int streamNum, EventType eventType, String[] propertyNames, Type[] coercionTypes)
+        public PollResultIndexingStrategyIndexCoerce(int streamNum, EventType eventType, IList<string> propertyNames, IList<Type> coercionTypes)
         {
             _streamNum = streamNum;
             _eventType = eventType;

@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.core
         public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
             EventBean theEvent = eventsPerStream[_streamNum];
             if (theEvent != null) {
-                return _tableMetadata.EventToPublic.ConvertToUnd(theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+                return _tableMetadata.EventToPublic.ConvertToUnd(theEvent, new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
             }
             return null;
         }

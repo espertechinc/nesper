@@ -18,19 +18,19 @@ namespace com.espertech.esper.compat.threading
         /// </summary>
         public string Id;
         /// <summary>
-        /// Time lock was requested.
+        /// TimeInMillis lock was requested.
         /// </summary>
         public long RequestTime;
         /// <summary>
-        /// Time lock was acquired.
+        /// TimeInMillis lock was acquired.
         /// </summary>
         public long AcquireTime;
         /// <summary>
-        /// Time lock was released.
+        /// TimeInMillis lock was released.
         /// </summary>
         public long ReleaseTime;
         /// <summary>
-        /// Stack trace associated with lock.
+        /// Stack TRACE associated with lock.
         /// </summary>
         public StackTrace StackTrace;
     }

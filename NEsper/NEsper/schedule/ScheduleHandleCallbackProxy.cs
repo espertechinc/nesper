@@ -8,9 +8,11 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using Castle.DynamicProxy;
+
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.util;
 
@@ -18,22 +20,31 @@ namespace com.espertech.esper.schedule
 {
     public class ScheduleHandleCallbackProxy : IInterceptor
     {
-
-        private static readonly MethodInfo Target = typeof(ScheduleHandleCallback).GetMethod("ScheduledTrigger");
+        private static readonly MethodInfo ScheduledTriggerMethod = typeof(ScheduleHandleCallback).GetMethod("ScheduledTrigger");
 
         private readonly String _engineURI;
         private readonly String _statementName;
         private readonly ScheduleHandleCallback _scheduleHandleCallback;
 
-        public static Object NewInstance(String engineURI, String statementName, ScheduleHandleCallback scheduleHandleCallback)
+        public static ScheduleHandleCallback NewInstance(String engineURI, String statementName, ScheduleHandleCallback scheduleHandleCallback)
         {
             var generator = new ProxyGenerator();
-            return generator.CreateInterfaceProxyWithoutTarget(
-                typeof(ScheduleHandleCallback),
-                scheduleHandleCallback.GetType().GetInterfaces(),
-                new ScheduleHandleCallbackProxy(engineURI, statementName, scheduleHandleCallback));
+            var interfaces = scheduleHandleCallback
+                .GetType()
+                .GetInterfaces()
+                .Where(ii => ii != typeof(IProxyTargetAccessor))
+                .ToArray();
+
+            return (ScheduleHandleCallback) generator.CreateInterfaceProxyWithoutTarget(
+                typeof(ScheduleHandleCallback), interfaces, new ScheduleHandleCallbackProxy(engineURI, statementName, scheduleHandleCallback));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduleHandleCallbackProxy"/> class.
+        /// </summary>
+        /// <param name="engineURI">The engine URI.</param>
+        /// <param name="statementName">Name of the statement.</param>
+        /// <param name="scheduleHandleCallback">The schedule handle callback.</param>
         public ScheduleHandleCallbackProxy(String engineURI, String statementName, ScheduleHandleCallback scheduleHandleCallback)
         {
             _engineURI = engineURI;
@@ -47,7 +58,7 @@ namespace com.espertech.esper.schedule
         /// <param name="invocation">The invocation.</param>
         public void Intercept(IInvocation invocation)
         {
-            if (invocation.Method == Target)
+            if (invocation.Method == ScheduledTriggerMethod)
             {
                 if (AuditPath.IsAuditEnabled)
                 {

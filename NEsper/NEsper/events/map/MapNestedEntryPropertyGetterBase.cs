@@ -54,7 +54,7 @@ namespace com.espertech.esper.events.map
             return GetMap(BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean));
         }
 
-        public bool IsExistsProperty(EventBean eventBean)
+        public virtual bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }

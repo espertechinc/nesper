@@ -37,13 +37,10 @@ namespace com.espertech.esper.client.scopetest
             if (nunitAssertionType != null)
             {
                 var asFastClass = FastClass.Create(nunitAssertionType);
-                if (asFastClass != null)
+                var asFastMethod = asFastClass?.GetMethod("Fail", new Type[] { typeof(string) });
+                if (asFastMethod != null)
                 {
-                    var asFastMethod = asFastClass.GetMethod("Fail", new Type[] { typeof(string) });
-                    if (asFastMethod != null)
-                    {
-                        AssertFail = message => asFastMethod.InvokeStatic(message);
-                    }
+                    AssertFail = message => asFastMethod.InvokeStatic(message);
                 }
             }
         }

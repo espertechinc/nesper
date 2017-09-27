@@ -14,6 +14,7 @@ using System.Linq;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -27,10 +28,11 @@ namespace com.espertech.esper.epl.expression.funcs
     public class ExprInstanceofNode : ExprNodeBase, ExprEvaluator
     {
         private readonly String[] _classIdentifiers;
-    
+
         private Type[] _classes;
         private readonly CopyOnWriteList<Pair<Type, Boolean>> _resultCache = new CopyOnWriteList<Pair<Type, Boolean>>();
-        [NonSerialized] private ExprEvaluator _evaluator;
+        [NonSerialized]
+        private ExprEvaluator _evaluator;
 
         private readonly ILockable _oLock;
 
@@ -49,7 +51,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 1)
+            if (ChildNodes.Count != 1)
             {
                 throw new ExprValidationException("Instanceof node must have 1 child expression node supplying the expression to test");
             }
@@ -57,11 +59,12 @@ namespace com.espertech.esper.epl.expression.funcs
             {
                 throw new ExprValidationException("Instanceof node must have 1 or more class identifiers to verify type against");
             }
-    
+
             _evaluator = ChildNodes[0].ExprEvaluator;
 
-            var classList = GetClassSet(_classIdentifiers);
-            using(_oLock.Acquire()) {
+            var classList = GetClassSet(_classIdentifiers, validationContext.EngineImportService);
+            using (_oLock.Acquire())
+            {
                 _classes = classList.ToArray();
             }
 
@@ -75,7 +78,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public Type ReturnType
         {
-            get { return typeof (bool?); }
+            get { return typeof(bool?); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
@@ -88,7 +91,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprInstanceof(false); }
                 return false;
             }
-    
+
             // return cached value
             foreach (var pair in _resultCache)
             {
@@ -98,12 +101,12 @@ namespace com.espertech.esper.epl.expression.funcs
                     return pair.Second;
                 }
             }
-    
+
             var @out = CheckAddType(result.GetType());
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprInstanceof(@out);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprInstanceof(@out); }
             return @out;
         }
-    
+
         // Checks type and adds to cache
         private bool? CheckAddType(Type type)
         {
@@ -173,7 +176,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return _classIdentifiers; }
         }
 
-        private ICollection<Type> GetClassSet(String[] classIdentifiers)
+        private ICollection<Type> GetClassSet(string[] classIdentifiers, EngineImportService engineImportService)
         {
             var classList = new HashSet<Type>();
             foreach (String className in classIdentifiers)
@@ -186,17 +189,17 @@ namespace com.espertech.esper.epl.expression.funcs
                     classList.Add(clazz.GetBoxedType());
                     continue;
                 }
-    
+
                 // try to look up the class, not a primitive type name
                 try
                 {
-                    clazz = TypeHelper.ResolveType(className.Trim());
+                    clazz = TypeHelper.GetClassForName(className.Trim(), engineImportService.GetClassForNameProvider());
                 }
                 catch (TypeLoadException e)
                 {
                     throw new ExprValidationException("Class as listed in is function by name '" + className + "' cannot be loaded", e);
                 }
-    
+
                 // Add primitive and boxed types, or type itself if not built-in
                 classList.Add(clazz.GetPrimitiveType());
                 classList.Add(clazz.GetBoxedType());

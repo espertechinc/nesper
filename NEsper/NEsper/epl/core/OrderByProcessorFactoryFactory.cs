@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
@@ -36,9 +34,9 @@ namespace com.espertech.esper.epl.core
         /// <param name="rowLimitSpec">specification for row limit, or null if no row limit is defined</param>
         /// <param name="variableService">for retrieving variable state for use with row limiting</param>
         /// <param name="isSortUsingCollator">for string value sorting using compare or Collator</param>
-        /// <param name="optionalContextName">Name of the optional context.</param>
+        /// <param name="optionalContextName">context name</param>
+        /// <exception cref="com.espertech.esper.epl.expression.core.ExprValidationException">when validation of expressions fails</exception>
         /// <returns>ordering processor instance</returns>
-        /// <throws><seealso cref="ExprValidationException" /> when validation of expressions fails</throws>
         public static OrderByProcessorFactory GetProcessor(
             IList<SelectClauseExprCompiledSpec> selectionList,
             ExprNode[] groupByNodes,
@@ -46,17 +44,15 @@ namespace com.espertech.esper.epl.core
             RowLimitSpec rowLimitSpec,
             VariableService variableService,
             bool isSortUsingCollator,
-            String optionalContextName)
-    	{
-    		// Get the order by expression nodes
-    		IList<ExprNode> orderByNodes = orderByList.Select(element => element.ExprNode).ToList();
+            string optionalContextName)
+        {
+            // Get the order by expression nodes
+            var orderByNodes = orderByList.Select(element => element.ExprNode).ToList();
 
             // No order-by clause
-    		if(orderByList.IsEmpty())
-    		{
-    			Log.Debug(".getProcessor Using no _orderByProcessor");
-                if (rowLimitSpec != null)
-                {
+            if (orderByList.IsEmpty()) {
+                Log.Debug(".GetProcessor Using no OrderByProcessor");
+                if (rowLimitSpec != null) {
                     var rowLimitProcessorFactory = new RowLimitProcessorFactory(rowLimitSpec, variableService, optionalContextName);
                     return new OrderByProcessorRowLimitOnlyFactory(rowLimitProcessorFactory);
                 }
@@ -64,53 +60,49 @@ namespace com.espertech.esper.epl.core
             }
     
             // Determine aggregate functions used in select, if any
-            IList<ExprAggregateNode> selectAggNodes = new List<ExprAggregateNode>();
-            foreach (var element in selectionList)
-            {
+            var selectAggNodes = new List<ExprAggregateNode>();
+            foreach (SelectClauseExprCompiledSpec element in selectionList) {
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(element.SelectExpression, selectAggNodes);
             }
     
-    		// Get all the aggregate functions occuring in the order-by clause
-            IList<ExprAggregateNode> orderAggNodes = new List<ExprAggregateNode>();
-            foreach (var orderByNode in orderByNodes)
-            {
+            // Get all the aggregate functions occuring in the order-by clause
+            var orderAggNodes = new List<ExprAggregateNode>();
+            foreach (ExprNode orderByNode in orderByNodes) {
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(orderByNode, orderAggNodes);
             }
     
-    		ValidateOrderByAggregates(selectAggNodes, orderAggNodes);
+            ValidateOrderByAggregates(selectAggNodes, orderAggNodes);
     
             // Tell the order-by processor whether to compute group-by
             // keys if they are not present
-        	var needsGroupByKeys = !selectionList.IsEmpty() && !orderAggNodes.IsEmpty();
+            bool needsGroupByKeys = !selectionList.IsEmpty() && !orderAggNodes.IsEmpty();
     
             Log.Debug(".getProcessor Using OrderByProcessorImpl");
             var orderByProcessorFactory = new OrderByProcessorFactoryImpl(orderByList, groupByNodes, needsGroupByKeys, isSortUsingCollator);
-            if (rowLimitSpec == null)
-            {
+            if (rowLimitSpec == null) {
                 return orderByProcessorFactory;
-            }
-            else
-            {
+            } else {
                 var rowLimitProcessorFactory = new RowLimitProcessorFactory(rowLimitSpec, variableService, optionalContextName);
                 return new OrderByProcessorOrderedLimitFactory(orderByProcessorFactory, rowLimitProcessorFactory);
             }
-    	}
-
-        private static void ValidateOrderByAggregates(
-            IList<ExprAggregateNode> selectAggNodes,
-            IList<ExprAggregateNode> orderAggNodes)
+        }
+    
+        private static void ValidateOrderByAggregates(IList<ExprAggregateNode> selectAggNodes, IList<ExprAggregateNode> orderAggNodes)
         {
             // Check that the order-by clause doesn't contain
             // any aggregate functions not in the select expression
-            foreach (var orderAgg in orderAggNodes)
-            {
-                var inSelect = selectAggNodes.Any(selectAgg => ExprNodeUtility.DeepEquals(selectAgg, orderAgg));
-                if (!inSelect)
-                {
-                    throw new ExprValidationException(
-                        "Aggregate functions in the order-by clause must also occur in the select expression");
+            foreach (ExprAggregateNode orderAgg in orderAggNodes) {
+                bool inSelect = false;
+                foreach (ExprAggregateNode selectAgg in selectAggNodes) {
+                    if (ExprNodeUtility.DeepEquals(selectAgg, orderAgg)) {
+                        inSelect = true;
+                        break;
+                    }
+                }
+                if (!inSelect) {
+                    throw new ExprValidationException("Aggregate functions in the order-by clause must also occur in the select expression");
                 }
             }
         }
     }
-}
+} // end of namespace

@@ -41,7 +41,22 @@ namespace com.espertech.esper.client.scopetest
             _newDataList = new List<EventBean[]>();
             _oldDataList = new List<EventBean[]>();
         }
-    
+
+        /// <summary>
+        /// For multiple listeners, return the invoked flags and reset each listener
+        /// </summary>
+ 
+        public static bool[] GetInvokedFlagsAndReset(SupportUpdateListener[] listeners)
+        {
+            bool[] invoked = new bool[listeners.Length];
+            for (int i = 0; i < listeners.Length; i++)
+            {
+                invoked[i] = listeners[i].IsInvokedAndReset();
+            }
+            return invoked;
+        }
+
+
         /// <summary>Wait for the listener invocation for up to the given number of milliseconds. </summary>
         /// <param name="msecWait">to wait</param>
         /// <throws>RuntimeException when no results were received</throws>
@@ -127,7 +142,7 @@ namespace com.espertech.esper.client.scopetest
                 _isInvoked = true;
             }
         }
-    
+
         /// <summary>Reset listener, clearing all associated state. </summary>
         public void Reset()
         {
@@ -170,7 +185,7 @@ namespace com.espertech.esper.client.scopetest
                 return lastNew;
             }
         }
-    
+
         /// <summary>Returns the last array of events (insert stream) that were received and resets the listener. </summary>
         /// <returns>insert stream events or null if either a null value was received or when no events have been received since the last reset</returns>
         public EventBean[] GetAndResetLastOldData()
@@ -182,7 +197,7 @@ namespace com.espertech.esper.client.scopetest
                 return lastOld;
             }
         }
-    
+
         /// <summary>Asserts that exactly one insert stream event was received and no remove stream events, resets the listener clearing all state and returns the received event. </summary>
         /// <returns>single insert-stream event</returns>
         public EventBean AssertOneGetNewAndReset()
@@ -206,7 +221,7 @@ namespace com.espertech.esper.client.scopetest
                 return lastNew;
             }
         }
-    
+
         /// <summary>Asserts that exactly one remove stream event was received and no insert stream events, resets the listener clearing all state and returns the received event. </summary>
         /// <returns>single remove-stream event</returns>
         public EventBean AssertOneGetOldAndReset()
@@ -230,7 +245,7 @@ namespace com.espertech.esper.client.scopetest
                 return lastNew;
             }
         }
-    
+
         /// <summary>Asserts that exactly one insert stream event and exactly one remove stream event was received, resets the listener clearing all state and returns the received events as a pair. </summary>
         /// <returns>pair of insert-stream and remove-stream events</returns>
         public UniformPair<EventBean> AssertPairGetIRAndReset()
@@ -259,7 +274,7 @@ namespace com.espertech.esper.client.scopetest
                 return new UniformPair<EventBean>(lastNew, lastOld);
             }
         }
-    
+
         /// <summary>Asserts that exactly one insert stream event was received not checking remove stream data, and returns the received event. </summary>
         /// <returns>single insert-stream event</returns>
         public EventBean AssertOneGetNew()
@@ -279,7 +294,7 @@ namespace com.espertech.esper.client.scopetest
                 return _lastNewData[0];
             }
         }
-    
+
         /// <summary>Asserts that exactly one remove stream event was received not checking insert stream data, and returns the received event. </summary>
         /// <returns>single remove-stream event</returns>
         public EventBean AssertOneGetOld()
@@ -354,7 +369,7 @@ namespace com.espertech.esper.client.scopetest
                 return Flatten(_newDataList);
             }
         }
-    
+
         /// <summary>Returns an event array that represents all remove-stream events received so far. </summary>
         /// <returns>event array</returns>
         public EventBean[] GetOldDataListFlattened()
@@ -364,15 +379,16 @@ namespace com.espertech.esper.client.scopetest
                 return Flatten(_oldDataList);
             }
         }
-    
+
         private static EventBean[] Flatten(IEnumerable<EventBean[]> list)
         {
             return list.Where(events => events != null).SelectMany(events => events).ToArray();
         }
-    
+
         /// <summary>Returns a pair of insert and remove stream event arrays considering the last invocation only, asserting that only a single invocation occured, and resetting the listener. </summary>
         /// <returns>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</returns>
-        public UniformPair<EventBean[]> AssertInvokedAndReset() {
+        public UniformPair<EventBean[]> AssertInvokedAndReset()
+        {
             lock (this)
             {
                 ScopeTestHelper.AssertTrue("Listener invocation not received but expected", _isInvoked);
@@ -384,7 +400,7 @@ namespace com.espertech.esper.client.scopetest
                 return new UniformPair<EventBean[]>(newEvents, oldEvents);
             }
         }
-    
+
         /// <summary>Returns a pair of insert and remove stream event arrays considering the all invocations. </summary>
         /// <returns>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</returns>
         public UniformPair<EventBean[]> GetDataListsFlattened()
@@ -393,8 +409,8 @@ namespace com.espertech.esper.client.scopetest
             {
                 return new UniformPair<EventBean[]>(Flatten(_newDataList), Flatten(_oldDataList));
             }
-        }    
-    
+        }
+
         /// <summary>Returns a pair of insert and remove stream event arrays considering the all invocations, and resets the listener. </summary>
         /// <returns>pair of event arrays, the first in the pair is the insert stream data, the second in the pair is the remove stream data</returns>
         public UniformPair<EventBean[]> GetAndResetDataListsFlattened()

@@ -22,7 +22,8 @@ namespace com.espertech.esper.pattern
     public class EvalGuardFactoryNode : EvalNodeFactoryBase
     {
         private readonly PatternGuardSpec _patternGuardSpec;
-        [NonSerialized] private GuardFactory _guardFactory;
+        [NonSerialized]
+        private GuardFactory _guardFactory;
 
         /// <summary>Constructor. </summary>
         /// <param name="patternGuardSpec">factory for guard construction</param>

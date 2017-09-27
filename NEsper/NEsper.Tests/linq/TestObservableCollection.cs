@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.linq
                 Assert.AreSame(observableCollection[0], eventA);
             }
 
-            using (var statement = _serviceProvider.EPAdministrator.CreateEPL("@IterableUnbound select * from MiniBean.win:length(10)"))
+            using (var statement = _serviceProvider.EPAdministrator.CreateEPL("@IterableUnbound select * from MiniBean#length(10)"))
             {
                 var observableCollectionA = statement.AsObservableCollection<MiniBean>();
                 var observableCollectionB = statement.AsObservableCollection<SupportBean>();
@@ -115,7 +115,7 @@ namespace com.espertech.esper.linq
                 Assert.AreEqual(observableCollection[0].TheString, "B");
             }
 
-            using (var statement = _serviceProvider.EPAdministrator.CreateEPL("@IterableUnbound select * from MapBean.win:length(10)"))
+            using (var statement = _serviceProvider.EPAdministrator.CreateEPL("@IterableUnbound select * from MapBean#length(10)"))
             {
                 var observableCollectionA = statement.AsObservableCollection<MiniBean>();
                 var observableCollectionB = statement.AsObservableCollection<SupportBean>();

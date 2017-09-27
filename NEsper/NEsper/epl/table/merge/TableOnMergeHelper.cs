@@ -26,9 +26,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.table.merge
 {
-    /// <summary>
-    /// Factory for handles for updates/inserts/deletes/select
-    /// </summary>
+    /// <summary>Factory for handles for updates/inserts/deletes/select</summary>
     public class TableOnMergeHelper
     {
         private readonly IList<TableOnMergeMatch> _matched;
@@ -51,7 +49,7 @@ namespace com.espertech.esper.epl.table.merge
             var hasInsertIntoTableAction = false;
             var hasUpdateAction = false;
             foreach (var matchedItem in onTriggerDesc.Items) {
-                IList<TableOnMergeAction> actions = new List<TableOnMergeAction>();
+                var actions = new List<TableOnMergeAction>();
                 foreach (var item in matchedItem.Actions) {
                     try {
                         if (item is OnTriggerMergeActionInsert) {
@@ -59,39 +57,34 @@ namespace com.espertech.esper.epl.table.merge
                             var action = SetupInsert(tableMetadata, internalEventRouter, count, insertDesc, triggeringEventType, triggeringStreamName, statementContext);
                             actions.Add(action);
                             hasInsertIntoTableAction = action.IsInsertIntoBinding;
-                        }
-                        else if (item is OnTriggerMergeActionUpdate) {
+                        } else if (item is OnTriggerMergeActionUpdate) {
                             var updateDesc = (OnTriggerMergeActionUpdate) item;
-                            var updateHelper = EventBeanUpdateHelperFactory.Make(tableMetadata.TableName, tableMetadata.InternalEventType, updateDesc.Assignments, onTriggerDesc.OptionalAsName, triggeringEventType, false);
+                            var updateHelper = EventBeanUpdateHelperFactory.Make(tableMetadata.TableName, tableMetadata.InternalEventType, updateDesc.Assignments, onTriggerDesc.OptionalAsName, triggeringEventType, false, statementContext.StatementName, statementContext.EngineURI, statementContext.EventAdapterService);
                             var filterEval = updateDesc.OptionalWhereClause == null ? null : updateDesc.OptionalWhereClause.ExprEvaluator;
                             var tableUpdateStrategy = statementContext.TableService.GetTableUpdateStrategy(tableMetadata, updateHelper, true);
                             var upd = new TableOnMergeActionUpd(filterEval, tableUpdateStrategy);
                             actions.Add(upd);
                             statementContext.TableService.AddTableUpdateStrategyReceiver(tableMetadata, statementContext.StatementName, upd, updateHelper, true);
                             hasUpdateAction = true;
-                        }
-                        else if (item is OnTriggerMergeActionDelete) {
+                        } else if (item is OnTriggerMergeActionDelete) {
                             var deleteDesc = (OnTriggerMergeActionDelete) item;
                             var filterEval = deleteDesc.OptionalWhereClause == null ? null : deleteDesc.OptionalWhereClause.ExprEvaluator;
                             actions.Add(new TableOnMergeActionDel(filterEval));
                             hasDeleteAction = true;
-                        }
-                        else {
+                        } else {
                             throw new ArgumentException("Invalid type of merge item '" + item.GetType() + "'");
                         }
                         count++;
-                    }
-                    catch (ExprValidationException ex) {
+                    } catch (ExprValidationException ex) {
                         var isNot = item is OnTriggerMergeActionInsert;
-                        var message = "Validation failed in when-" + (isNot?"not-":"") + "matched (clause " + count + "): " + ex.Message;
+                        var message = "Validation failed in when-" + (isNot ? "not-" : "") + "matched (clause " + count + "): " + ex.Message;
                         throw new ExprValidationException(message, ex);
                     }
                 }
     
                 if (matchedItem.IsMatchedUnmatched) {
                     _matched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
-                }
-                else {
+                } else {
                     _unmatched.Add(new TableOnMergeMatch(matchedItem.OptionalMatchCond, actions));
                 }
             }
@@ -101,9 +94,10 @@ namespace com.espertech.esper.epl.table.merge
         }
     
         private TableOnMergeActionIns SetupInsert(TableMetadata tableMetadata, InternalEventRouter internalEventRouter, int selectClauseNumber, OnTriggerMergeActionInsert desc, EventType triggeringEventType, string triggeringStreamName, StatementContext statementContext)
-        {
-            // Compile insert-into info
-            var streamName = desc.OptionalStreamName != null ? desc.OptionalStreamName : tableMetadata.TableName;
+                {
+    
+            // Compile insert-into INFO
+            var streamName = desc.OptionalStreamName ?? tableMetadata.TableName;
             var insertIntoDesc = InsertIntoDesc.FromColumns(streamName, desc.Columns);
             EventType insertIntoTargetType = streamName.Equals(tableMetadata.TableName) ? tableMetadata.InternalEventType : null;
     
@@ -112,37 +106,28 @@ namespace com.espertech.esper.epl.table.merge
                 triggeringStreamName = UuidGenerator.Generate();
             }
             var selectNoWildcard = NamedWindowOnMergeHelper.CompileSelectNoWildcard(triggeringStreamName, desc.SelectClauseCompiled);
-
+    
             // Set up event types for select-clause evaluation: The first type does not contain anything as its the named window row which is not present for insert
-            EventType dummyTypeNoProperties = new MapEventType(EventTypeMetadata.CreateAnonymous("merge_named_window_insert"), "merge_named_window_insert", 0, null, Collections.GetEmptyMap<string, object>(), null, null, null);
-            var eventTypes = new EventType[] {dummyTypeNoProperties, triggeringEventType};
-            var streamNames = new string[] {UuidGenerator.Generate(), triggeringStreamName};
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventTypes, streamNames, new bool[1], statementContext.EngineURI, false);
+            var dummyTypeNoProperties = new MapEventType(EventTypeMetadata.CreateAnonymous("merge_named_window_insert", ApplicationType.MAP), "merge_named_window_insert", 0, null, Collections.EmptyDataMap, null, null, null);
+            var eventTypes = new EventType[]{dummyTypeNoProperties, triggeringEventType};
+            var streamNames = new string[]{UuidGenerator.Generate(), triggeringStreamName};
+            var streamTypeService = new StreamTypeServiceImpl(eventTypes, streamNames, new bool[1], statementContext.EngineURI, false);
     
             // Get select expr processor
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(statementContext.StatementName, statementContext.StatementEventTypeRef);
             var exprEvaluatorContext = new ExprEvaluatorContextStatement(statementContext, false);
-            var insertHelper = SelectExprProcessorFactory.GetProcessor(
-                Collections.SingletonList(selectClauseNumber),
-                selectNoWildcard.ToArray(), false, insertIntoDesc, insertIntoTargetType, null, streamTypeService,
-                statementContext.EventAdapterService,
-                statementContext.StatementResultService, 
-                statementContext.ValueAddEventService, 
-                selectExprEventTypeRegistry,
-                statementContext.EngineImportService, 
-                exprEvaluatorContext, 
-                statementContext.VariableService, 
-                statementContext.ScriptingService,
-                statementContext.TableService,
-                statementContext.TimeProvider, 
-                statementContext.EngineURI, 
-                statementContext.StatementId, 
-                statementContext.StatementName, 
-                statementContext.Annotations,
-                statementContext.ContextDescriptor,
-                statementContext.ConfigSnapshot, null,
-                statementContext.NamedWindowMgmtService, null, null, 
-                statementContext.StatementExtensionServicesContext);
+            var insertHelper =
+                SelectExprProcessorFactory.GetProcessor(
+                    Collections.SingletonList(selectClauseNumber),
+                    selectNoWildcard.ToArray(), false, insertIntoDesc, insertIntoTargetType, null, streamTypeService,
+                    statementContext.EventAdapterService, statementContext.StatementResultService,
+                    statementContext.ValueAddEventService, selectExprEventTypeRegistry,
+                    statementContext.EngineImportService, exprEvaluatorContext, statementContext.VariableService,
+                    statementContext.ScriptingService, statementContext.TableService, statementContext.TimeProvider, 
+                    statementContext.EngineURI, statementContext.StatementId, statementContext.StatementName, 
+                    statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ConfigSnapshot, null,
+                    statementContext.NamedWindowMgmtService, null, null,
+                    statementContext.StatementExtensionServicesContext);
             var filterEval = desc.OptionalWhereClause == null ? null : desc.OptionalWhereClause.ExprEvaluator;
     
             var routerToUser = streamName.Equals(tableMetadata.TableName) ? null : internalEventRouter;
@@ -165,4 +150,4 @@ namespace com.espertech.esper.epl.table.merge
             get { return _requiresWriteLock; }
         }
     }
-}
+} // end of namespace

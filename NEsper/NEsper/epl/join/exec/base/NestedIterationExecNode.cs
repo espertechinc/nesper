@@ -10,20 +10,19 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.join.exec.@base
 {
     /// <summary>
-    /// Execution node that performs a nested iteration over all child nodes. 
-    /// <para/>
-    /// Each child node under this node typically represents a table lookup. The 
-    /// implementation 'hops' from the first child to the next recursively for each row 
-    /// returned by a child.
-    /// <para/>
-    /// It passes a '_prototype' row (prefillPath) to each new child which contains the 
-    /// current partial event set.
+    /// Execution node that performs a nested iteration over all child nodes.
+    /// <para>
+    /// Each child node under this node typically represents a table lookup. The implementation
+    /// 'hops' from the first child to the next recursively for each row returned by a child.
+    /// </para>
+    /// <para>
+    /// It passes a 'prototype' row (prefillPath) to each new child which contains the current partial event set.
+    /// </para>
     /// </summary>
     public class NestedIterationExecNode : ExecNode
     {
@@ -31,15 +30,19 @@ namespace com.espertech.esper.epl.join.exec.@base
         private readonly int[] _nestedStreams;
         private int _nestingOrderLength;
     
-        /// <summary>Ctor. </summary>
-        /// <param name="nestedStreams">array of integers defining order of streams in nested join.</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="nestedStreams">- array of integers defining order of streams in nested join.</param>
         public NestedIterationExecNode(int[] nestedStreams)
         {
             _nestedStreams = nestedStreams;
             _childNodes = new List<ExecNode>();
         }
     
-        /// <summary>Add a child node. </summary>
+        /// <summary>
+        /// Add a child node.
+        /// </summary>
         /// <param name="childNode">to add</param>
         public void AddChildNode(ExecNode childNode)
         {
@@ -52,54 +55,48 @@ namespace com.espertech.esper.epl.join.exec.@base
             RecursiveNestedJoin(lookupEvent, 0, prefillPath, result, exprEvaluatorContext);
         }
     
-        /// <summary>Recursive method to run through all child nodes and, for each result set tuple returned by a child node, execute the inner child of the child node until there are no inner child nodes. </summary>
-        /// <param name="lookupEvent">current event to use for lookup by child node</param>
-        /// <param name="nestingOrderIndex">index within the child nodes indicating what nesting level we are at</param>
-        /// <param name="currentPath">_prototype result row to use by child nodes for generating result rows</param>
-        /// <param name="result">result tuple rows to be populated</param>
+        /// <summary>
+        /// Recursive method to run through all child nodes and, for each result set tuple returned
+        /// by a child node, execute the inner child of the child node until there are no inner child nodes.
+        /// </summary>
+        /// <param name="lookupEvent">- current event to use for lookup by child node</param>
+        /// <param name="nestingOrderIndex">- index within the child nodes indicating what nesting level we are at</param>
+        /// <param name="currentPath">- prototype result row to use by child nodes for generating result rows</param>
+        /// <param name="result">- result tuple rows to be populated</param>
         /// <param name="exprEvaluatorContext">context for expression evalauation</param>
         protected void RecursiveNestedJoin(EventBean lookupEvent, int nestingOrderIndex, EventBean[] currentPath, ICollection<EventBean[]> result, ExprEvaluatorContext exprEvaluatorContext)
         {
             var nestedResult = new List<EventBean[]>();
             var nestedExecNode = _childNodes[nestingOrderIndex];
             nestedExecNode.Process(lookupEvent, currentPath, nestedResult, exprEvaluatorContext);
-            bool isLastStream = (nestingOrderIndex == _nestingOrderLength - 1);
-
-            unchecked
-            {
-                var nestedResultCount = nestedResult.Count;
-
-                // This is not the last nesting level so no result rows are added. Invoke next nesting level for
-                // each event found.
-                if (!isLastStream)
+            var isLastStream = nestingOrderIndex == _nestingOrderLength - 1;
+    
+            // This is not the last nesting level so no result rows are added. Invoke next nesting level for
+            // each event found.
+            if (!isLastStream) {
+                for (int ii = 0; ii < nestedResult.Count; ii++)
                 {
-                    for (int ii = 0; ii < nestedResultCount; ii++)
-                    {
-                        EventBean[] row = nestedResult[ii];
-                        EventBean lookup = row[_nestedStreams[nestingOrderIndex]];
-                        RecursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result, exprEvaluatorContext);
-                    }
-                    return;
+                    var row = nestedResult[ii];
+                    EventBean lookup = row[_nestedStreams[nestingOrderIndex]];
+                    RecursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result, exprEvaluatorContext);
                 }
-
-                // Loop to add result rows
-                for (int ii = 0; ii < nestedResultCount; ii++)
-                {
-                    result.Add(nestedResult[ii]);
-                }
+                return;
+            }
+    
+            // Loop to add result rows
+            for(int ii = 0; ii < nestedResult.Count; ii++) {
+                result.Add(nestedResult[ii]);
             }
         }
     
-        public override void Print(IndentWriter writer)
-        {
+        public override void Print(IndentWriter writer) {
             writer.WriteLine("NestedIterationExecNode");
             writer.IncrIndent();
     
-            foreach (ExecNode child in _childNodes)
-            {
+            foreach (ExecNode child in _childNodes) {
                 child.Print(writer);
             }
             writer.DecrIndent();
         }
     }
-}
+} // end of namespace

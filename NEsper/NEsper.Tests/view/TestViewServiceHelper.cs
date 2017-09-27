@@ -11,14 +11,12 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.view;
 using com.espertech.esper.view.stat;
 using com.espertech.esper.view.std;
 using com.espertech.esper.view.window;
@@ -90,9 +88,10 @@ namespace com.espertech.esper.view
 	    {
 	        SupportStreamImpl stream = new SupportStreamImpl(TEST_CLASS, 10);
 	        IList<ViewFactory> viewFactories = SupportViewSpecFactory.MakeFactoryListOne(stream.EventType);
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
 
 	        // No views under stream, no matches
-	        Pair<Viewable, IList<View>> result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            Pair<Viewable, IList<View>> result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 	        Assert.AreEqual(stream, result.First);
 	        Assert.AreEqual(3, viewFactories.Count);
 	        Assert.AreEqual(0, result.Second.Count);
@@ -100,7 +99,7 @@ namespace com.espertech.esper.view
 	        // One top view under the stream that doesn't match
 	        SupportBeanClassView testView = new SupportBeanClassView(TEST_CLASS);
 	        stream.AddView(new FirstElementView(null));
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(stream, result.First);
 	        Assert.AreEqual(3, viewFactories.Count);
@@ -109,7 +108,7 @@ namespace com.espertech.esper.view
 	        // Another top view under the stream that doesn't matche again
 	        testView = new SupportBeanClassView(TEST_CLASS);
 	        stream.AddView(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), null, 999, null));
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(stream, result.First);
 	        Assert.AreEqual(3, viewFactories.Count);
@@ -118,7 +117,7 @@ namespace com.espertech.esper.view
 	        // One top view under the stream that does actually match
 	        LengthWindowView myLengthWindowView = new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), null, 1000, null);
 	        stream.AddView(myLengthWindowView);
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(myLengthWindowView, result.First);
 	        Assert.AreEqual(2, viewFactories.Count);
@@ -133,7 +132,7 @@ namespace com.espertech.esper.view
 	        factory.EventType = type;
 	        factory.FieldExpression = SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed");
 	        myLengthWindowView.AddView(new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()));
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 	        Assert.AreEqual(1, result.Second.Count);
 	        Assert.AreEqual(myLengthWindowView, result.Second[0]);
 	        Assert.AreEqual(myLengthWindowView, result.First);
@@ -146,7 +145,7 @@ namespace com.espertech.esper.view
 	        factoryTwo.FieldExpression = SupportExprNodeFactory.MakeIdentNodeBean("IntPrimitive");
 	        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(factoryTwo, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
 	        myLengthWindowView.AddView(myUnivarView);
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(myUnivarView, result.First);
 	        Assert.AreEqual(1, viewFactories.Count);
@@ -155,7 +154,7 @@ namespace com.espertech.esper.view
 	        viewFactories = SupportViewSpecFactory.MakeFactoryListOne(stream.EventType);
 	        LastElementView lastElementView = new LastElementView(null);
 	        myUnivarView.AddView(lastElementView);
-	        result = ViewServiceHelper.MatchExistingViews(stream, viewFactories);
+            result = ViewServiceHelper.MatchExistingViews(stream, viewFactories, agentInstanceContext);
 
 	        Assert.AreEqual(lastElementView, result.First);
 	        Assert.AreEqual(0, viewFactories.Count);

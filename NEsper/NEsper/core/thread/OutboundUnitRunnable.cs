@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
+
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
@@ -15,19 +15,21 @@ using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.core.thread
 {
-    /// <summary>Outbound unit. </summary>
+    /// <summary>Outbound unit.</summary>
     public class OutboundUnitRunnable
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly UniformPair<EventBean[]> _events;
         private readonly StatementResultServiceImpl _statementResultService;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="events">to dispatch</param>
         /// <param name="statementResultService">handles result indicate</param>
-        public OutboundUnitRunnable(UniformPair<EventBean[]> events,
-                                    StatementResultServiceImpl statementResultService)
+        public OutboundUnitRunnable(UniformPair<EventBean[]> events, StatementResultServiceImpl statementResultService)
         {
             _events = events;
             _statementResultService = statementResultService;
@@ -45,4 +47,4 @@ namespace com.espertech.esper.core.thread
             }
         }
     }
-}
+} // end of namespace

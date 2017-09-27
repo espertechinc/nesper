@@ -103,7 +103,7 @@ namespace com.espertech.esper.events.bean
         {
             if (clazz == null)
             {
-                throw new ArgumentException("Null value passed as class");
+                throw new ArgumentNullException(nameof(clazz), "Null value passed as class");
             }
 
             BeanEventType eventType;
@@ -119,7 +119,7 @@ namespace com.espertech.esper.events.bean
                 }
 
                 // Check if we have a legacy type definition for this class
-                ConfigurationEventTypeLegacy legacyDef = _typeToLegacyConfigs.Get(clazz.FullName);
+                ConfigurationEventTypeLegacy legacyDef = _typeToLegacyConfigs.Get(clazz.AssemblyQualifiedName);
                 if ((legacyDef == null) && (_defaultAccessorStyle != AccessorStyleEnum.NATIVE))
                 {
                     legacyDef = new ConfigurationEventTypeLegacy();
@@ -135,9 +135,9 @@ namespace com.espertech.esper.events.bean
             return eventType;
         }
 
-        public ConfigurationEventTypeLegacy GetClassToLegacyConfigs(String className)
+        public ConfigurationEventTypeLegacy GetClassToLegacyConfigs(String assemblyQualifiedTypeName)
         {
-            return _typeToLegacyConfigs.Get(className);
+            return _typeToLegacyConfigs.Get(assemblyQualifiedTypeName);
         }
     }
 }

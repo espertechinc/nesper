@@ -12,29 +12,36 @@ using com.espertech.esper.client;
 
 namespace com.espertech.esper.epl.core
 {
-    /// <summary>
-    /// Provides information about a single-row function.
-    /// </summary>
+    /// <summary>Provides information about a single-row function.</summary>
     [Serializable]
-    public class EngineImportSingleRowDesc 
+    public class EngineImportSingleRowDesc
     {
-        public EngineImportSingleRowDesc(String className, String methodName, ValueCache valueCache, FilterOptimizable filterOptimizable, bool rethrowExceptions)
+        public EngineImportSingleRowDesc(
+            string className,
+            string methodName,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
+            bool rethrowExceptions,
+            string optionalEventTypeName)
         {
             ClassName = className;
             MethodName = methodName;
             ValueCache = valueCache;
             FilterOptimizable = filterOptimizable;
-            RethrowExceptions = rethrowExceptions;
+            IsRethrowExceptions = rethrowExceptions;
+            OptionalEventTypeName = optionalEventTypeName;
         }
 
         public string ClassName { get; private set; }
 
         public string MethodName { get; private set; }
 
-        public ValueCache ValueCache { get; private set; }
+        public ValueCacheEnum ValueCache { get; private set; }
 
-        public FilterOptimizable FilterOptimizable { get; private set; }
+        public FilterOptimizableEnum FilterOptimizable { get; private set; }
 
-        public Boolean RethrowExceptions { get; private set; }
+        public bool IsRethrowExceptions { get; private set; }
+
+        public string OptionalEventTypeName { get; private set; }
     }
-}
+} // end of namespace

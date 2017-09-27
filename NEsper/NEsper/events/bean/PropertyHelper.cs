@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -53,7 +54,7 @@ namespace com.espertech.esper.events.bean
                 return new ReflectionPropMethodGetter(method, eventAdapterService);
             }
         }
-    
+
         /// <summary>
         /// Introspects the given class and returns event property descriptors for each
         /// property found in the class itself, it's superclasses and all interfaces this class
@@ -63,15 +64,15 @@ namespace com.espertech.esper.events.bean
         /// <returns>
         /// list of properties
         /// </returns>
-        public static List<InternalEventPropDescriptor> GetProperties(Type type)
+        public static IList<InternalEventPropDescriptor> GetProperties(Type type)
         {
             // Determine all interfaces implemented and the interface's parent interfaces if any
             ICollection<Type> propertyOrigClasses = new HashSet<Type>();
             GetImplementedInterfaceParents(type, propertyOrigClasses);
-    
+
             // Add class itself
             propertyOrigClasses.Add(type);
-    
+
             // Get the set of property names for all classes
             return GetPropertiesForTypes(propertyOrigClasses);
         }
@@ -113,34 +114,36 @@ namespace com.espertech.esper.events.bean
         {
             ICollection<WriteablePropertyDescriptor> result = new HashSet<WriteablePropertyDescriptor>();
 
-            foreach (var type in propertyTypes) {
+            foreach (var type in propertyTypes)
+            {
                 AddIntrospectPropertiesWritable(type, result);
             }
 
             return result;
         }
 
-        private static List<InternalEventPropDescriptor> GetPropertiesForTypes(IEnumerable<Type> propertyClasses)
+        private static IList<InternalEventPropDescriptor> GetPropertiesForTypes(IEnumerable<Type> propertyClasses)
         {
-        	var result = new List<InternalEventPropDescriptor>();
+            var result = new List<InternalEventPropDescriptor>();
             foreach (var type in propertyClasses)
             {
                 var magicType = MagicType.GetCachedType(type);
 
-                foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null)) {
+                foreach (SimpleMagicPropertyInfo propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null))
+                {
                     result.Add(new InternalEventPropDescriptor(
                                    propertyInfo.Name,
                                    propertyInfo.GetMethod,
                                    propertyInfo.EventPropertyType));
                 }
             }
-    
+
             RemoveDuplicateProperties(result);
             RemoveCLRProperties(result);
-    
+
             return result;
         }
-    
+
         /// <summary>
         /// Remove language specific properties from the given list of property
         /// descriptors.
@@ -149,20 +152,23 @@ namespace com.espertech.esper.events.bean
         public static void RemoveCLRProperties(IList<InternalEventPropDescriptor> properties)
         {
             var toRemove = new List<InternalEventPropDescriptor>();
-    
+
             // add removed entries to separate list
-            foreach (var desc in properties) {
-                if (desc.DeclaringType == typeof(object)) {
+            foreach (var desc in properties)
+            {
+                if (desc.DeclaringType == typeof(object))
+                {
                     toRemove.Add(desc);
                 }
             }
-    
+
             // remove
-            foreach (var desc in toRemove) {
+            foreach (var desc in toRemove)
+            {
                 properties.Remove(desc);
             }
         }
-    
+
         /// <summary>
         /// Removed duplicate properties using the property name to find unique properties.
         /// </summary>
@@ -171,7 +177,7 @@ namespace com.espertech.esper.events.bean
         {
             var set = new Dictionary<String, InternalEventPropDescriptor>();
             var toRemove = new List<InternalEventPropDescriptor>();
-    
+
             // add duplicates to separate list
             foreach (var desc in properties)
             {
@@ -182,14 +188,14 @@ namespace com.espertech.esper.events.bean
                 }
                 set.Put(desc.PropertyName, desc);
             }
-    
+
             // remove duplicates
             foreach (InternalEventPropDescriptor desc in toRemove)
             {
                 properties.Remove(desc);
             }
         }
-    
+
         private static void AddIntrospectPropertiesWritable(Type clazz, ICollection<WriteablePropertyDescriptor> result)
         {
             MagicType magic = MagicType.GetCachedType(clazz);
@@ -201,6 +207,25 @@ namespace com.espertech.esper.events.bean
                                magicProperty.PropertyType,
                                magicProperty.SetMethod));
             }
+        }
+
+        public static String GetGetterMethodName(String propertyName)
+        {
+            return GetGetterSetterMethodName(propertyName, "Get");
+        }
+
+        public static String GetSetterMethodName(String propertyName)
+        {
+            return GetGetterSetterMethodName(propertyName, "Set");
+        }
+
+        private static String GetGetterSetterMethodName(String propertyName, String operation)
+        {
+            var writer = new StringWriter();
+            writer.Write(operation);
+            writer.Write(Char.ToUpperInvariant(propertyName[0]));
+            writer.Write(propertyName.Substring(1));
+            return writer.ToString();
         }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

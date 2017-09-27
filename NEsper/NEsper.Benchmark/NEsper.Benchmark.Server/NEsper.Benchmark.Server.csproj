@@ -55,7 +55,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -127,9 +127,9 @@
       <Project>{2cce8dfe-1adb-43df-a473-49330a1e2945}</Project>
       <Name>NEsper.Tests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\NEsper\NEsper.net45.csproj">
-      <Project>{3D317245-CDE5-4E0E-9590-D7CBA2257D9C}</Project>
-      <Name>NEsper.net45</Name>
+    <ProjectReference Include="..\..\NEsper\NEsper.csproj">
+      <Project>{3d317245-cde5-4e0e-9590-d7cba2257d9c}</Project>
+      <Name>NEsper</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEsper.Benchmark.Common\NEsper.Benchmark.Common.csproj">
       <Project>{2F3B9DDE-42E8-4AE3-A6F9-114CCEE291E2}</Project>

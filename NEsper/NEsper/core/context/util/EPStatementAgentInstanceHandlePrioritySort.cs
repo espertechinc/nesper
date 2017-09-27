@@ -15,7 +15,7 @@ namespace com.espertech.esper.core.context.util
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EPStatementHandlePrioritySort"/> class.
+        /// Initializes a new instance of the <see cref="EPStatementAgentInstanceHandlePrioritySort"/> class.
         /// </summary>
         /// <param name="useGreaterThanOrEqual">if set to <c>true</c> [use greater than or equal].</param>
         public EPStatementAgentInstanceHandlePrioritySort(bool useGreaterThanOrEqual)

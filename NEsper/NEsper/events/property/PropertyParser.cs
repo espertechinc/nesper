@@ -32,15 +32,30 @@ namespace com.espertech.esper.events.property
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly ILockable StaticLock =
             LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private static ISet<string> _keywordCache;
-    
-        public static Property ParseAndWalk(string property, bool isRootedDynamic) {
+
+        public static Property ParseAndWalk(string property, bool isRootedDynamic)
+        {
             return Walk(Parse(property), isRootedDynamic);
         }
-    
-        public static Property ParseAndWalk(string property) {
-            return Walk(Parse(property), false);
+
+        /// <summary>
+        /// Parses property.
+        /// For cases when the property is not following the property syntax assume we act lax and assume its a simple property.
+        /// </summary>
+        /// <param name="property">property to parse</param>
+        /// <returns>property or SimpleProperty if the property cannot be parsed</returns>
+        public static Property ParseAndWalkLaxToSimple(String property)
+        {
+            try
+            {
+                return Walk(Parse(property), false);
+            }
+            catch (PropertyAccessException)
+            {
+                return new SimpleProperty(property);
+            }
         }
 
         /// <summary>
@@ -53,25 +68,27 @@ namespace com.espertech.esper.events.property
         /// </returns>
         public static Property Walk(EsperEPL2GrammarParser.StartEventPropertyRuleContext tree, bool isRootedDynamic)
         {
-            if (tree.eventProperty().eventPropertyAtomic().Length == 1) {
+            if (tree.eventProperty().eventPropertyAtomic().Length == 1)
+            {
                 return MakeProperty(tree.eventProperty().eventPropertyAtomic(0), isRootedDynamic);
             }
-    
+
             var propertyRoot = tree.eventProperty();
-    
+
             IList<Property> properties = new List<Property>();
             var isRootedInDynamic = isRootedDynamic;
             foreach (var atomic in propertyRoot.eventPropertyAtomic())
             {
                 var property = MakeProperty(atomic, isRootedInDynamic);
-                if (property is DynamicSimpleProperty) {
+                if (property is DynamicSimpleProperty)
+                {
                     isRootedInDynamic = true;
                 }
                 properties.Add(property);
             }
             return new NestedProperty(properties);
         }
-    
+
         /// <summary>
         /// Parses a given property name returning an AST.
         /// </summary>
@@ -80,13 +97,15 @@ namespace com.espertech.esper.events.property
         public static EsperEPL2GrammarParser.StartEventPropertyRuleContext Parse(string propertyName)
         {
             ICharStream input;
-            try {
+            try
+            {
                 input = new NoCaseSensitiveStream(propertyName);
             }
-            catch (IOException ex) {
+            catch (IOException ex)
+            {
                 throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
             }
-    
+
             var lex = ParseHelper.NewLexer(input);
             var tokens = new CommonTokenStream(lex);
             try
@@ -104,88 +123,104 @@ namespace com.espertech.esper.events.property
 
             var g = ParseHelper.NewParser(tokens);
             EsperEPL2GrammarParser.StartEventPropertyRuleContext r;
-    
-            try {
-                 r = g.startEventPropertyRule();
+
+            try
+            {
+                r = g.startEventPropertyRule();
             }
-            catch (RecognitionException e) {
+            catch (RecognitionException e)
+            {
                 return HandleRecognitionEx(e, tokens, propertyName, g);
             }
-            catch (Exception e) {
-                if (Log.IsDebugEnabled) {
+            catch (Exception e)
+            {
+                if (Log.IsDebugEnabled)
+                {
                     Log.Debug("Error parsing property expression [" + propertyName + "]", e);
                 }
-                if (e.InnerException is RecognitionException) {
-                    return HandleRecognitionEx( (RecognitionException) e.InnerException, tokens, propertyName, g);
+                if (e.InnerException is RecognitionException)
+                {
+                    return HandleRecognitionEx((RecognitionException)e.InnerException, tokens, propertyName, g);
                 }
-                else {
+                else
+                {
                     throw;
                 }
             }
-    
+
             return r;
         }
-    
+
         private static EsperEPL2GrammarParser.StartEventPropertyRuleContext HandleRecognitionEx(RecognitionException e, CommonTokenStream tokens, string propertyName, EsperEPL2GrammarParser g)
         {
             // Check for keywords and escape each, parse again
             var escapedPropertyName = EscapeKeywords(tokens);
-    
+
             ICharStream inputEscaped;
-            try {
+            try
+            {
                 inputEscaped = new NoCaseSensitiveStream(escapedPropertyName);
             }
-            catch (IOException ex) {
+            catch (IOException ex)
+            {
                 throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
             }
-    
+
             var lexEscaped = ParseHelper.NewLexer(inputEscaped);
             var tokensEscaped = new CommonTokenStream(lexEscaped);
             var gEscaped = ParseHelper.NewParser(tokensEscaped);
-    
-            try {
+
+            try
+            {
                 return gEscaped.startEventPropertyRule();
             }
             catch
             {
             }
-    
+
             throw ExceptionConvertor.ConvertProperty(e, propertyName, true, g);
         }
 
         private static string EscapeKeywords(CommonTokenStream tokens)
         {
-            using(StaticLock.Acquire()) {   
-                if (_keywordCache == null) {
+            using (StaticLock.Acquire())
+            {
+                if (_keywordCache == null)
+                {
                     _keywordCache = new HashSet<string>();
                     var keywords = ParseHelper.NewParser(tokens).GetKeywords();
-                    foreach (var keyword in keywords) {
-                        if (keyword[0] == '\'' && keyword[keyword.Length - 1] == '\'') {
+                    foreach (var keyword in keywords)
+                    {
+                        if (keyword[0] == '\'' && keyword[keyword.Length - 1] == '\'')
+                        {
                             _keywordCache.Add(keyword.Substring(1, keyword.Length - 2));
                         }
                     }
                 }
-    
+
                 var writer = new StringWriter();
                 foreach (var token in tokens.GetTokens()) // Call getTokens first before invoking tokens.size! ANTLR problem
                 {
-                    if (token.Type == EsperEPL2GrammarLexer.Eof) {
+                    if (token.Type == EsperEPL2GrammarLexer.Eof)
+                    {
                         break;
                     }
-                    var isKeyword = _keywordCache.Contains(token.Text.ToLower());
-                    if (isKeyword) {
+                    var isKeyword = _keywordCache.Contains(token.Text.ToLowerInvariant());
+                    if (isKeyword)
+                    {
                         writer.Write('`');
                         writer.Write(token.Text);
                         writer.Write('`');
                     }
-                    else {
+                    else
+                    {
                         writer.Write(token.Text);
                     }
                 }
                 return writer.ToString();
             }
         }
-    
+
         /// <summary>
         /// Returns true if the property is a dynamic property.
         /// </summary>
@@ -196,63 +231,79 @@ namespace com.espertech.esper.events.property
             IList<EsperEPL2GrammarParser.EventPropertyAtomicContext> ctxs = ast.eventProperty().eventPropertyAtomic();
             return ctxs.Any(ctx => ctx.q != null || ctx.q1 != null);
         }
-    
+
         private static Property MakeProperty(EsperEPL2GrammarParser.EventPropertyAtomicContext atomic, bool isRootedInDynamic)
         {
             var prop = ASTUtil.UnescapeDot(atomic.eventPropertyIdent().GetText());
-            if (prop.Length == 0) {
+            if (prop.Length == 0)
+            {
                 throw new PropertyAccessException("Invalid zero-length string provided as an event property name");
             }
-            if (atomic.lb != null) {
+            if (atomic.lb != null)
+            {
                 var index = IntValue.ParseString(atomic.ni.GetText());
-                if (!isRootedInDynamic && atomic.q == null) {
+                if (!isRootedInDynamic && atomic.q == null)
+                {
                     return new IndexedProperty(prop, index);
                 }
-                else {
+                else
+                {
                     return new DynamicIndexedProperty(prop, index);
                 }
             }
-            else if (atomic.lp != null) {
+            else if (atomic.lp != null)
+            {
                 var key = StringValue.ParseString(atomic.s.Text);
-                if (!isRootedInDynamic && atomic.q == null) {
+                if (!isRootedInDynamic && atomic.q == null)
+                {
                     return new MappedProperty(prop, key);
                 }
-                else {
+                else
+                {
                     return new DynamicMappedProperty(prop, key);
                 }
             }
-            else {
-                if (!isRootedInDynamic && atomic.q1 == null) {
+            else
+            {
+                if (!isRootedInDynamic && atomic.q1 == null)
+                {
                     return new SimpleProperty(prop);
                 }
-                else {
+                else
+                {
                     return new DynamicSimpleProperty(prop);
                 }
             }
         }
-    
-        public static string UnescapeBacktick(string unescapedPropertyName) {
-            if (unescapedPropertyName.StartsWith("`") && unescapedPropertyName.EndsWith("`")) {
+
+        public static string UnescapeBacktick(string unescapedPropertyName)
+        {
+            if (unescapedPropertyName.StartsWith("`") && unescapedPropertyName.EndsWith("`"))
+            {
                 return unescapedPropertyName.Substring(1, unescapedPropertyName.Length - 2);
             }
-    
-            if (!unescapedPropertyName.Contains("`")) {
+
+            if (!unescapedPropertyName.Contains("`"))
+            {
                 return unescapedPropertyName;
             }
-    
+
             // parse and render
-            var property = PropertyParser.ParseAndWalk(unescapedPropertyName);
-            if (property is NestedProperty) {
+            var property = PropertyParser.ParseAndWalkLaxToSimple(unescapedPropertyName);
+            if (property is NestedProperty)
+            {
                 var writer = new StringWriter();
                 property.ToPropertyEPL(writer);
                 return writer.ToString();
             }
-    
+
             return unescapedPropertyName;
         }
-    
-        public static bool IsNestedPropertyWithNonSimpleLead(EsperEPL2GrammarParser.EventPropertyContext ctx) {
-            if (ctx.eventPropertyAtomic().Length == 1) {
+
+        public static bool IsNestedPropertyWithNonSimpleLead(EsperEPL2GrammarParser.EventPropertyContext ctx)
+        {
+            if (ctx.eventPropertyAtomic().Length == 1)
+            {
                 return false;
             }
             var atomic = ctx.eventPropertyAtomic()[0];

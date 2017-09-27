@@ -7,23 +7,34 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
+using com.espertech.esper.compat;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.datetime.eval
 {
     public class DatetimeLongCoercerFactory
     {
-        private static readonly DatetimeLongCoercerLong DatetimeLongCoercerLong = new DatetimeLongCoercerLong();
-        private static readonly DatetimeLongCoercerDate DatetimeLongCoercerDate = new DatetimeLongCoercerDate();
+        private static readonly DatetimeLongCoercerLong DATETIME_LONG_COERCER_LONG = new DatetimeLongCoercerLong();
+        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME = new DatetimeLongCoercerDateTime();
+        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME_OFFSET = new DatetimeLongCoercerDateTime();
+        private static readonly DatetimeLongCoercerDateTimeEx DATETIME_LONG_COERCER_DTX = new DatetimeLongCoercerDateTimeEx();
 
-        public static DatetimeLongCoercer GetCoercer(Type clazz)
+        public static DatetimeLongCoercer GetCoercer(Type clazz, TimeZoneInfo timeZone)
         {
-            clazz = clazz.GetBoxedType();
-            if (clazz == typeof(DateTime?) || clazz == typeof(DateTimeOffset?))
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTime)))
             {
-                return DatetimeLongCoercerDate;
+                return DATETIME_LONG_COERCER_DATETIME;
             }
-            return DatetimeLongCoercerLong;
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTimeOffset)))
+            {
+                return DATETIME_LONG_COERCER_DATETIME_OFFSET;
+            }
+            if (TypeHelper.IsSubclassOrImplementsInterface(clazz, typeof (DateTimeEx)))
+            {
+                return DATETIME_LONG_COERCER_DTX;
+            }
+            return DATETIME_LONG_COERCER_LONG;
         }
     }
-}
+} // end of namespace

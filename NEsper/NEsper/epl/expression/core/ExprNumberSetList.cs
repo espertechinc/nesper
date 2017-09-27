@@ -23,13 +23,14 @@ namespace com.espertech.esper.epl.expression.core
     /// Expression for use within crontab to specify a list of values.
     /// </summary>
     [Serializable]
-    public class ExprNumberSetList 
+    public class ExprNumberSetList
         : ExprNodeBase
         , ExprEvaluator
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private ExprEvaluator[] _evaluators;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
 
         public override ExprEvaluator ExprEvaluator
         {
@@ -41,7 +42,7 @@ namespace com.espertech.esper.epl.expression.core
             String delimiter = "";
 
             writer.Write('[');
-            for (int ii = 0; ii < ChildNodes.Length; ii++)
+            for (int ii = 0; ii < ChildNodes.Count; ii++)
             {
                 ExprNode expr = ChildNodes[ii];
                 writer.Write(delimiter);
@@ -65,7 +66,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             return (node is ExprNumberSetList);
         }
-    
+
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // all nodes must either be int, frequency or range
@@ -88,7 +89,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public Type ReturnType
         {
-            get { return typeof (ListParameter); }
+            get { return typeof(ListParameter); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
@@ -104,16 +105,16 @@ namespace com.espertech.esper.epl.expression.core
                 }
                 if ((value is FrequencyParameter) || (value is RangeParameter))
                 {
-                    parameters.Add((NumberSetParameter) value);
+                    parameters.Add((NumberSetParameter)value);
                     continue;
                 }
-    
+
                 int intValue = value.AsInt();
                 parameters.Add(new IntParameter(intValue));
             }
             if (parameters.IsEmpty())
             {
-                Log.Warn("Empty list of values in list parameter, using upper bounds");
+                Log.Warn("EmptyFalse list of values in list parameter, using upper bounds");
                 parameters.Add(new IntParameter(int.MaxValue));
             }
             return new ListParameter(parameters);

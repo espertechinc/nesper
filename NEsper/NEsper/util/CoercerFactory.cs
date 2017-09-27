@@ -47,6 +47,8 @@ namespace com.espertech.esper.util
                 (itemToCoerce => Convert.ToSByte(itemToCoerce));
             CoercerTable[typeof (BigInteger?)] =
                 (itemToCoerce => itemToCoerce.AsBigInteger());
+            CoercerTable[typeof (string)] =
+                (itemToCoerce => Convert.ToString(itemToCoerce));
         }
 
         /// <summary>

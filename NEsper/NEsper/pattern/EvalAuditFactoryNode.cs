@@ -19,12 +19,16 @@ namespace com.espertech.esper.pattern
     {
         private readonly bool _auditPattern;
         private readonly bool _auditPatternInstance;
-        private readonly String _patternExpr;
-        [NonSerialized]
-        private readonly EvalAuditInstanceCount _instanceCount;
+        private readonly string _patternExpr;
+        [NonSerialized] private readonly EvalAuditInstanceCount _instanceCount;
         private readonly bool _filterChildNonQuitting;
 
-        public EvalAuditFactoryNode(bool auditPattern, bool auditPatternInstance, String patternExpr, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting)
+        public EvalAuditFactoryNode(
+            bool auditPattern,
+            bool auditPatternInstance,
+            string patternExpr,
+            EvalAuditInstanceCount instanceCount,
+            bool filterChildNonQuitting)
         {
             _auditPattern = auditPattern;
             _auditPatternInstance = auditPatternInstance;
@@ -32,7 +36,7 @@ namespace com.espertech.esper.pattern
             _instanceCount = instanceCount;
             _filterChildNonQuitting = filterChildNonQuitting;
         }
-    
+
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
@@ -49,9 +53,8 @@ namespace com.espertech.esper.pattern
             get { return _patternExpr; }
         }
 
-        public override String ToString()
-        {
-            return ("EvalAuditFactoryNode children=" + ChildNodes.Count);
+        public override String ToString() {
+            return "EvalAuditFactoryNode children=" + ChildNodes.Count;
         }
 
         public void DecreaseRefCount(EvalAuditStateNode current, PatternContext patternContext)
@@ -84,7 +87,8 @@ namespace com.espertech.esper.pattern
             get { return ChildNodes[0].IsStateful; }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
             ChildNodes[0].ToEPL(writer, Precedence);
         }
 
@@ -93,4 +97,4 @@ namespace com.espertech.esper.pattern
             get { return ChildNodes[0].Precedence; }
         }
     }
-}
+} // end of namespace

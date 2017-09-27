@@ -10,7 +10,8 @@ using System.Xml;
 using System.Xml.XPath;
 
 using com.espertech.esper.client;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -46,7 +47,7 @@ namespace com.espertech.esper.events.xml
                 "\t</nested3>\n" +
                 "</simpleEvent>";
 
-        private EventBean _event;
+        private EventBean _theEvent;
 
         [SetUp]
         public void SetUp()
@@ -59,40 +60,41 @@ namespace com.espertech.esper.events.xml
             config.AddXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathResultType.Number);
 
             var eventType = new SimpleXMLEventType(null, 1, config, SupportEventAdapterService.Service);
-            _event = new XMLEventBean(simpleDoc.DocumentElement, eventType);
+            _theEvent = new XMLEventBean(simpleDoc.DocumentElement, eventType);
         }
 
         [Test]
         public void TestSimpleProperies()
         {
-            Assert.AreEqual("SAMPLE_V6", _event.Get("prop4"));
+            Assert.AreEqual("SAMPLE_V6", _theEvent.Get("prop4"));
+            Assert.True(_theEvent.EventType.IsProperty("window(*)"));
         }
 
         [Test]
         public void TestNestedProperties()
         {
-            Assert.AreEqual("true", _event.Get("nested1.prop2"));
+            Assert.AreEqual("true", _theEvent.Get("nested1.prop2"));
         }
 
         [Test]
         public void TestMappedProperties()
         {
-            Assert.AreEqual("SAMPLE_V8", _event.Get("nested3.nested4('a').prop5[1]"));
-            Assert.AreEqual("SAMPLE_V10", _event.Get("nested3.nested4('c').prop5[0]"));
+            Assert.AreEqual("SAMPLE_V8", _theEvent.Get("nested3.nested4('a').prop5[1]"));
+            Assert.AreEqual("SAMPLE_V10", _theEvent.Get("nested3.nested4('c').prop5[0]"));
         }
 
         [Test]
         public void TestIndexedProperties()
         {
-            Assert.AreEqual("5", _event.Get("nested1.nested2.prop3[2]"));
-            Assert.AreEqual(typeof(string), _event.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
+            Assert.AreEqual("5", _theEvent.Get("nested1.nested2.prop3[2]"));
+            Assert.AreEqual(typeof(string), _theEvent.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
         [Test]
         public void TestCustomProperty()
         {
-            Assert.AreEqual(typeof(double?), _event.EventType.GetPropertyType("customProp"));
-            Assert.AreEqual(3.0d, _event.Get("customProp"));
+            Assert.AreEqual(typeof(double?), _theEvent.EventType.GetPropertyType("customProp"));
+            Assert.AreEqual(3.0d, _theEvent.Get("customProp"));
         }
     }
 }

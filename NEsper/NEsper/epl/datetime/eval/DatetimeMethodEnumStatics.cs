@@ -14,8 +14,8 @@ namespace com.espertech.esper.epl.datetime.eval
 {
     public class DatetimeMethodEnumStatics
     {
-        public static readonly OpFactory CalendarOpFactory = new CalendarOpFactory();
-        public static readonly OpFactory ReformatOpFactory = new ReformatOpFactory();
-        public static readonly OpFactory IntervalOpFactory = new IntervalOpFactory();
+        public static readonly OpFactory CALENDAR_OP_FACTORY = new CalendarOpFactory();
+        public static readonly OpFactory REFORMAT_OP_FACTORY = new ReformatOpFactory();
+        public static readonly OpFactory INTERVAL_OP_FACTORY = new IntervalOpFactory();
     }
-}
+} // end of namespace

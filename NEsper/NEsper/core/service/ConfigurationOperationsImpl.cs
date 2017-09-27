@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
+using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.start;
@@ -31,9 +31,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>
-    /// Provides runtime engine configuration operations.
-    /// </summary>
+    /// <summary>Provides runtime engine configuration operations.</summary>
     public class ConfigurationOperationsImpl : ConfigurationOperations
     {
         private readonly EventAdapterService _eventAdapterService;
@@ -50,39 +48,23 @@ namespace com.espertech.esper.core.service
         private readonly PatternSubexpressionPoolEngineSvc _patternSubexpressionPoolSvc;
         private readonly MatchRecognizeStatePoolEngineSvc _matchRecognizeStatePoolEngineSvc;
         private readonly TableService _tableService;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="eventAdapterService">is the event wrapper and type service</param>
-        /// <param name="eventTypeIdGenerator">The event type id generator.</param>
-        /// <param name="engineImportService">for imported aggregation functions and static functions</param>
-        /// <param name="variableService">provides access to variable values</param>
-        /// <param name="engineSettingsService">some engine settings are writable</param>
-        /// <param name="valueAddEventService">Update event handling</param>
-        /// <param name="metricReportingService">for metric reporting</param>
-        /// <param name="statementEventTypeRef">statement to event type reference holding</param>
-        /// <param name="statementVariableRef">statement to variable reference holding</param>
-        /// <param name="plugInViews">The plug in views.</param>
-        /// <param name="filterService">The filter service.</param>
-        /// <param name="patternSubexpressionPoolSvc">The pattern subexpression pool SVC.</param>
-        /// <param name="tableService">The table service.</param>
-        public ConfigurationOperationsImpl(
-            EventAdapterService eventAdapterService,
-            EventTypeIdGenerator eventTypeIdGenerator,
-            EngineImportService engineImportService,
-            VariableService variableService,
-            EngineSettingsService engineSettingsService,
-            ValueAddEventService valueAddEventService,
-            MetricReportingService metricReportingService,
-            StatementEventTypeRef statementEventTypeRef,
-            StatementVariableRef statementVariableRef,
-            PluggableObjectCollection plugInViews,
-            FilterService filterService,
-            PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
-            MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc, 
-            TableService tableService)
-        {
+        private readonly IDictionary<string, Object> _transientConfiguration;
+    
+        public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
+                                           EventTypeIdGenerator eventTypeIdGenerator,
+                                           EngineImportService engineImportService,
+                                           VariableService variableService,
+                                           EngineSettingsService engineSettingsService,
+                                           ValueAddEventService valueAddEventService,
+                                           MetricReportingService metricReportingService,
+                                           StatementEventTypeRef statementEventTypeRef,
+                                           StatementVariableRef statementVariableRef,
+                                           PluggableObjectCollection plugInViews,
+                                           FilterService filterService,
+                                           PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc,
+                                           MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc,
+                                           TableService tableService,
+                                           IDictionary<string, Object> transientConfiguration) {
             _eventAdapterService = eventAdapterService;
             _eventTypeIdGenerator = eventTypeIdGenerator;
             _engineImportService = engineImportService;
@@ -97,113 +79,73 @@ namespace com.espertech.esper.core.service
             _patternSubexpressionPoolSvc = patternSubexpressionPoolSvc;
             _matchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             _tableService = tableService;
+            _transientConfiguration = transientConfiguration;
         }
     
-        public void AddEventTypeAutoName(String @namespace)
-        {
-            _eventAdapterService.AddAutoNamePackage(@namespace);
+        public void AddEventTypeAutoName(string javaPackageName) {
+            _eventAdapterService.AddAutoNamePackage(javaPackageName);
         }
     
-        public void AddPlugInView(String @namespace, String name, String viewFactoryClass)
-        {
+        public void AddPlugInView(string @namespace, string name, string viewFactoryClass) {
             var configurationPlugInView = new ConfigurationPlugInView();
             configurationPlugInView.Namespace = @namespace;
             configurationPlugInView.Name = name;
             configurationPlugInView.FactoryClassName = viewFactoryClass;
             _plugInViews.AddViews(
-                Collections.SingletonList(configurationPlugInView),
-                Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>());
+                Collections.SingletonList<ConfigurationPlugInView>(configurationPlugInView), 
+                Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), 
+                _engineImportService);
         }
-
-        public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config)
-        {
-            try
-            {
+    
+        public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config) {
+            try {
                 _engineImportService.AddAggregationMultiFunction(config);
-            }
-            catch (EngineImportException e)
-            {
+            } catch (EngineImportException e) {
                 throw new ConfigurationException(e.Message, e);
             }
         }
-
-        /// <summary>
-        /// Adds a plug-in aggregation function given a EPL function name and an aggregation factory class name.
-        /// <para />
-        /// The same function name cannot be added twice.
-        /// </summary>
-        /// <param name="functionName">is the new aggregation function name for use in EPL</param>
-        /// <param name="aggregationFactoryClassName">is the fully-qualified class name of the class implementing the aggregation function factory interface <seealso cref="AggregationFunctionFactory" /></param>
-        /// <exception cref="ConfigurationException"></exception>
-        /// <throws>ConfigurationException is thrown to indicate a problem adding the aggregation function</throws>
-        public void AddPlugInAggregationFunctionFactory(String functionName, String aggregationFactoryClassName)
-        {
-            try
-            {
+    
+        public void AddPlugInAggregationFunctionFactory(string functionName, string aggregationFactoryClassName) {
+            try {
                 var desc = new ConfigurationPlugInAggregationFunction(functionName, aggregationFactoryClassName);
                 _engineImportService.AddAggregation(functionName, desc);
-            }
-            catch (EngineImportException e)
-            {
+            } catch (EngineImportException e) {
                 throw new ConfigurationException(e.Message, e);
             }
         }
-
-        /// <summary>
-        /// Adds a plug-in aggregation function given a EPL function name and an aggregation factory class name.
-        /// <para />
-        /// The same function name cannot be added twice.
-        /// </summary>
-        /// <param name="functionName">is the new aggregation function name for use in EPL</param>
-        /// <param name="aggregationFactoryType">Type of the aggregation factory.  Must implement <seealso cref="AggregationFunctionFactory"/></param>
-        /// <throws>ConfigurationException is thrown to indicate a problem adding the aggregation function</throws>
-        public void AddPlugInAggregationFunctionFactory(String functionName, Type aggregationFactoryType)
-        {
-            AddPlugInAggregationFunctionFactory(functionName, aggregationFactoryType.AssemblyQualifiedName);
+    
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, false, null);
         }
-
-        /// <summary>
-        /// Adds the plug in aggregation function factory.
-        /// </summary>
-        /// <typeparam name="T">Type of the aggregation factory.  Must implement <seealso cref="AggregationFunctionFactory"/></typeparam>
-        /// <param name="functionName">Name of the function.</param>
-        public void AddPlugInAggregationFunctionFactory<T>(String functionName) where T : AggregationFunctionFactory
-        {
-            AddPlugInAggregationFunctionFactory(functionName, typeof(T).AssemblyQualifiedName);
+    
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED, false, null);
         }
-
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName)
+    
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, FilterOptimizableEnum filterOptimizable) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable, false, null);
+        }
+    
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, null);
+        }
+    
+        public void AddPlugInSingleRowFunction(ConfigurationPlugInSingleRowFunction config)
         {
             InternalAddPlugInSingleRowFunction(
-                functionName, className, methodName, ValueCache.DISABLED, FilterOptimizable.ENABLED, false);
+                config.Name,
+                config.FunctionClassName, 
+                config.FunctionMethodName,
+                config.ValueCache,
+                config.FilterOptimizable, 
+                config.IsRethrowExceptions, 
+                config.EventTypeName);
         }
-
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName, ValueCache valueCache)
-        {
-            InternalAddPlugInSingleRowFunction(
-                functionName, className, methodName, valueCache, FilterOptimizable.ENABLED, false);
-        }
-
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName, FilterOptimizable filterOptimizable)
-        {
-            InternalAddPlugInSingleRowFunction(
-                functionName, className, methodName, ValueCache.DISABLED, filterOptimizable, false);
-        }
-
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName, ValueCache valueCache, FilterOptimizable filterOptimizable, bool rethrowExceptions)
-        {
-            InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions);
-        }
-
-        private void InternalAddPlugInSingleRowFunction(String functionName, String className, String methodName, ValueCache valueCache, FilterOptimizable filterOptimizable, bool rethrowExceptions)
-        {
-            try
-            {
-                _engineImportService.AddSingleRow(
-                    functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions);
-            }
-            catch (EngineImportException e)
-            {
+    
+        private void InternalAddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string optionalEventTypeName) {
+            try {
+                _engineImportService.AddSingleRow(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, optionalEventTypeName);
+            } catch (EngineImportException e) {
                 throw new ConfigurationException(e.Message, e);
             }
         }
@@ -266,7 +208,7 @@ namespace com.espertech.esper.core.service
                 AddImport(importParts[0], importParts[1]);
             }
         }
-    
+
         public void AddImport(Type importClass)
         {
             if (importClass.IsNested)
@@ -277,347 +219,263 @@ namespace com.espertech.esper.core.service
 
         public void AddImport<T>()
         {
-            AddImport(typeof (T));
+            AddImport(typeof(T));
         }
 
         public void AddNamespaceImport<T>()
         {
-            var importClass = typeof (T);
+            var importClass = typeof(T);
             if (importClass.IsNested)
                 AddImport(importClass.DeclaringType.FullName, null);
             else
                 AddImport(importClass.Namespace, null);
         }
 
-        public bool IsEventTypeExists(String eventTypeName)
+        public bool IsEventTypeExists(string eventTypeName)
         {
             return _eventAdapterService.GetEventTypeByName(eventTypeName) != null;
         }
 
-        public void AddEventType(String eventTypeName, String nativeEventTypeName)
+        public void AddEventType<T>(String eventTypeName)
         {
-            CheckTableExists(eventTypeName);
-
-            try
-            {
-                _eventAdapterService.AddBeanType(eventTypeName, nativeEventTypeName, false, false, true, true);
-            }
-            catch (EventAdapterException t)
-            {
-                throw new ConfigurationException(t.Message, t);
-            }
-        }
-    
-        public void AddEventType(String eventTypeName, Type eventType)
-        {
-            CheckTableExists(eventTypeName);
-
-            try
-            {
-                _eventAdapterService.AddBeanType(eventTypeName, eventType, false, true, true);
-            }
-            catch (EventAdapterException t)
-            {
-                throw new ConfigurationException(t.Message, t);
-            }
-        }
-    
-        public void AddEventType(Type eventType)
-        {
-            CheckTableExists(eventType.Name);
-
-            try
-            {
-                _eventAdapterService.AddBeanType(eventType.Name, eventType, false, true, true);
-            }
-            catch (EventAdapterException t)
-            {
-                throw new ConfigurationException(t.Message, t);
-            }
-        }
-
-        public void AddEventType<T>(string eventTypeName)
-        {
-            AddEventType(eventTypeName, typeof(T));
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName);
         }
 
         public void AddEventType<T>()
         {
-            AddEventType(typeof(T));
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName);
         }
-    
-        public void AddEventType(String eventTypeName, Properties typeMap)
+
+        public void AddEventType(string eventTypeName, string eventTypeTypeName)
         {
             CheckTableExists(eventTypeName);
+            try {
+                _eventAdapterService.AddBeanType(eventTypeName, eventTypeTypeName, false, false, true, true);
+            } catch (EventAdapterException t) {
+                throw new ConfigurationException(t.Message, t);
+            }
+        }
 
-            var types = TypeHelper.GetClassObjectFromPropertyTypeNames(typeMap);
-            try
-            {
+        public void AddEventType(string eventTypeName, Type eventType)
+        {
+            CheckTableExists(eventTypeName);
+            try {
+                _eventAdapterService.AddBeanType(eventTypeName, eventType, false, true, true);
+            } catch (EventAdapterException t) {
+                throw new ConfigurationException(t.Message, t);
+            }
+        }
+    
+        public void AddEventType(Type eventType) {
+            CheckTableExists(eventType.Name);
+            try {
+                _eventAdapterService.AddBeanType(eventType.Name, eventType, false, true, true);
+            } catch (EventAdapterException t) {
+                throw new ConfigurationException(t.Message, t);
+            }
+        }
+    
+        public void AddEventType(string eventTypeName, Properties typeMap) {
+            CheckTableExists(eventTypeName);
+            IDictionary<string, Object> types = TypeHelper.GetClassObjectFromPropertyTypeNames(
+                typeMap, _engineImportService.GetClassForNameProvider());
+            try {
                 _eventAdapterService.AddNestableMapType(eventTypeName, types, null, false, true, true, false, false);
-            }
-            catch (EventAdapterException t)
-            {
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
     
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap)
-        {
+        public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap) {
             CheckTableExists(eventTypeName);
-
-            try
-            {
-                IDictionary<String, Object> compiledProperties = EventTypeUtility.CompileMapTypeProperties(typeMap, _eventAdapterService);
+            try {
+                IDictionary<string, Object> compiledProperties = EventTypeUtility.CompileMapTypeProperties(typeMap, _eventAdapterService);
                 _eventAdapterService.AddNestableMapType(eventTypeName, compiledProperties, null, false, true, true, false, false);
-            }
-            catch (EventAdapterException t)
-            {
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
     
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap, String[] superTypes)
-        {
+        public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap, string[] superTypes) {
             CheckTableExists(eventTypeName);
-
             ConfigurationEventTypeMap optionalConfig = null;
-            if ((superTypes != null) && (superTypes.Length > 0))
-            {
+            if ((superTypes != null) && (superTypes.Length > 0)) {
                 optionalConfig = new ConfigurationEventTypeMap();
                 optionalConfig.SuperTypes.AddAll(superTypes);
             }
     
-            try
-            {
+            try {
                 _eventAdapterService.AddNestableMapType(eventTypeName, typeMap, optionalConfig, false, true, true, false, false);
-            }
-            catch (EventAdapterException t)
-            {
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
     
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap, ConfigurationEventTypeMap mapConfig)
-        {
+        public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap, ConfigurationEventTypeMap mapConfig) {
             CheckTableExists(eventTypeName);
-
-            try
-            {
+            try {
                 _eventAdapterService.AddNestableMapType(eventTypeName, typeMap, mapConfig, false, true, true, false, false);
-            }
-            catch (EventAdapterException t)
-            {
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
-
-        public void AddEventType(String eventTypeName, String[] propertyNames, Object[] propertyTypes) 
-        {
+    
+        public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes) {
             AddEventType(eventTypeName, propertyNames, propertyTypes, null);
         }
-
-        public void AddEventType(String eventTypeName, String[] propertyNames, Object[] propertyTypes, ConfigurationEventTypeObjectArray optionalConfiguration)
-        {
+    
+        public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes, ConfigurationEventTypeObjectArray optionalConfiguration) {
             CheckTableExists(eventTypeName);
-
-            try
-            {
-                LinkedHashMap<String, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames,
-                                                                                                         propertyTypes);
-                IDictionary<String, Object> compiledProperties =
-                    EventTypeUtility.CompileMapTypeProperties(propertyTypesMap, _eventAdapterService);
-                _eventAdapterService.AddNestableObjectArrayType(eventTypeName, compiledProperties, optionalConfiguration,
-                                                                false, true, true, false, false, false, null);
-            }
-            catch (EventAdapterException t)
-            {
+            try {
+                var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+                var compiledProperties = EventTypeUtility.CompileMapTypeProperties(propertyTypesMap, _eventAdapterService);
+                _eventAdapterService.AddNestableObjectArrayType(eventTypeName, compiledProperties, optionalConfiguration, false, true, true, false, false, false, null);
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
-
-        public void AddEventType(String eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
-        {
-            SchemaModel schemaModel = null;
-
+    
+        public void AddEventType(string eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc) {
             CheckTableExists(eventTypeName);
-
-            if ((xmlDOMEventTypeDesc.SchemaResource != null) || (xmlDOMEventTypeDesc.SchemaText != null))
-            {
-                try
-                {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText);
-                }
-                catch (Exception ex)
-                {
+            SchemaModel schemaModel = null;
+    
+            if ((xmlDOMEventTypeDesc.SchemaResource != null) || (xmlDOMEventTypeDesc.SchemaText != null)) {
+                try {
+                    schemaModel = XSDSchemaMapper.LoadAndMap(xmlDOMEventTypeDesc.SchemaResource, xmlDOMEventTypeDesc.SchemaText, _engineImportService);
+                } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }
             }
     
-            try
-            {
+            try {
                 _eventAdapterService.AddXMLDOMType(eventTypeName, xmlDOMEventTypeDesc, schemaModel, false);
-            }
-            catch (EventAdapterException t)
-            {
+            } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
             }
         }
 
-        public void AddVariable<T>(string variableName, T initializationValue)
+        public void AddVariable<TValue>(string variableName, TValue initializationValue)
         {
-            AddVariable(variableName, typeof (T), initializationValue);
+            AddVariable(variableName, typeof(TValue).FullName, initializationValue, false);
         }
 
-        public void AddVariable(String variableName, Type type, Object initializationValue)
-        {
-            AddVariable(variableName, type.GetBoxedType().FullName, initializationValue, false);
+        public void AddVariable(string variableName, Type type, Object initializationValue) {
+            AddVariable(variableName, type.FullName, initializationValue, false);
         }
     
-        public void AddVariable(String variableName, String eventTypeName, Object initializationValue)
-        {
+        public void AddVariable(string variableName, string eventTypeName, Object initializationValue) {
             AddVariable(variableName, eventTypeName, initializationValue, false);
         }
     
-        public void AddVariable(String variableName, String type, Object initializationValue, bool constant)
-        {
-            try
-            {
-                var arrayType = TypeHelper.IsGetArrayType(type);
+        public void AddVariable(string variableName, string type, Object initializationValue, bool constant) {
+            try {
+                Pair<string, bool> arrayType = TypeHelper.IsGetArrayType(type);
                 _variableService.CreateNewVariable(null, variableName, arrayType.First, constant, arrayType.Second, false, initializationValue, _engineImportService);
                 _variableService.AllocateVariableState(variableName, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
                 _statementVariableRef.AddConfiguredVariable(variableName);
-            }
-            catch (VariableExistsException e)
-            {
+            } catch (VariableExistsException e) {
                 throw new ConfigurationException("Error creating variable: " + e.Message, e);
-            }
-            catch (VariableTypeException e)
-            {
+            } catch (VariableTypeException e) {
                 throw new ConfigurationException("Error creating variable: " + e.Message, e);
             }
         }
-
-        public void AddPlugInEventType(string eventTypeName, IList<Uri> resolutionURIs, object initializer)
-        {
-            try
+    
+        public void AddPlugInEventType(string eventTypeName, Uri[] resolutionURIs, object initializer) {
+            if (initializer == null)
             {
-                _eventAdapterService.AddPlugInEventType(eventTypeName, resolutionURIs, initializer);
+                throw new ArgumentNullException("initializer");
             }
-            catch (EventAdapterException e)
+
+            if (!initializer.GetType().IsSerializable)
             {
+                throw new ArgumentException("initializer is not serializable", "initializer");
+            }
+
+            try {
+                _eventAdapterService.AddPlugInEventType(eventTypeName, resolutionURIs, initializer);
+            } catch (EventAdapterException e) {
                 throw new ConfigurationException("Error adding plug-in event type: " + e.Message, e);
             }
         }
 
         public IList<Uri> PlugInEventTypeResolutionURIs
         {
-            set { _engineSettingsService.PlugInEventTypeResolutionURIs = value; }
             get { return _engineSettingsService.PlugInEventTypeResolutionURIs; }
+            set { _engineSettingsService.PlugInEventTypeResolutionURIs = value; }
         }
 
-        public void AddRevisionEventType(String revisionEventTypeName, ConfigurationRevisionEventType revisionEventTypeConfig)
-        {
-            CheckTableExists(revisionEventTypeName);
-            _valueAddEventService.AddRevisionEventType(revisionEventTypeName, revisionEventTypeConfig, _eventAdapterService);
+        public void AddRevisionEventType(string revisioneventTypeName, ConfigurationRevisionEventType revisionEventTypeConfig) {
+            CheckTableExists(revisioneventTypeName);
+            _valueAddEventService.AddRevisionEventType(revisioneventTypeName, revisionEventTypeConfig, _eventAdapterService);
         }
     
-        public void AddVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig)
-        {
-            CheckTableExists(variantEventTypeName);
-            _valueAddEventService.AddVariantStream(variantEventTypeName, variantStreamConfig, _eventAdapterService, _eventTypeIdGenerator);
+        public void AddVariantStream(string varianteventTypeName, ConfigurationVariantStream variantStreamConfig) {
+            CheckTableExists(varianteventTypeName);
+            _valueAddEventService.AddVariantStream(varianteventTypeName, variantStreamConfig, _eventAdapterService, _eventTypeIdGenerator);
         }
     
-        public void UpdateMapEventType(String mapeventTypeName, IDictionary<String, Object> typeMap)
-        {
-            try
-            {
+        public void UpdateMapEventType(string mapeventTypeName, IDictionary<string, Object> typeMap) {
+            try {
                 _eventAdapterService.UpdateMapEventType(mapeventTypeName, typeMap);
-            }
-            catch (EventAdapterException e)
-            {
+            } catch (EventAdapterException e) {
                 throw new ConfigurationException("Error updating Map event type: " + e.Message, e);
             }
         }
-
-        public void UpdateObjectArrayEventType(String objectArrayEventTypeName, String[] propertyNames, Object[] propertyTypes)
-        {
-            try
-            {
-                LinkedHashMap<String, Object> typeMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+    
+        public void UpdateObjectArrayEventType(string objectArrayEventTypeName, string[] propertyNames, Object[] propertyTypes) {
+            try {
+                var typeMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
                 _eventAdapterService.UpdateObjectArrayEventType(objectArrayEventTypeName, typeMap);
-            }
-            catch (EventAdapterException e)
-            {
+            } catch (EventAdapterException e) {
                 throw new ConfigurationException("Error updating Object-array event type: " + e.Message, e);
             }
         }
     
-        public void ReplaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config)
-        {
+        public void ReplaceXMLEventType(string xmlEventTypeName, ConfigurationEventTypeXMLDOM config) {
             SchemaModel schemaModel = null;
-            if (config.SchemaResource != null || config.SchemaText != null)
-            {
-                try
-                {
-                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText);
-                }
-                catch (Exception ex)
-                {
+            if (config.SchemaResource != null || config.SchemaText != null) {
+                try {
+                    schemaModel = XSDSchemaMapper.LoadAndMap(config.SchemaResource, config.SchemaText, _engineImportService);
+                } catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
                 }
             }
     
-            try
-            {
+            try {
                 _eventAdapterService.ReplaceXMLEventType(xmlEventTypeName, config, schemaModel);
-            }
-            catch (EventAdapterException e)
-            {
+            } catch (EventAdapterException e) {
                 throw new ConfigurationException("Error updating XML event type: " + e.Message, e);
             }
         }
     
-        public void SetMetricsReportingInterval(String stmtGroupName, long newInterval)
-        {
+        public void SetMetricsReportingInterval(string stmtGroupName, long newInterval) {
             try
             {
                 _metricReportingService.SetMetricsReportingInterval(stmtGroupName, newInterval);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new ConfigurationException("Error updating interval for metric reporting: " + e.Message, e);
             }
         }
     
     
-        public void SetMetricsReportingStmtEnabled(String statementName)
-        {
-            try
-            {
+        public void SetMetricsReportingStmtEnabled(string statementName) {
+            try {
                 _metricReportingService.SetMetricsReportingStmtEnabled(statementName);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new ConfigurationException("Error enabling metric reporting for statement: " + e.Message, e);
             }
         }
     
-        public void SetMetricsReportingStmtDisabled(String statementName)
-        {
-            try
-            {
+        public void SetMetricsReportingStmtDisabled(string statementName) {
+            try {
                 _metricReportingService.SetMetricsReportingStmtDisabled(statementName);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 throw new ConfigurationException("Error enabling metric reporting for statement: " + e.Message, e);
             }
         }
     
-        public void SetMetricsReportingEnabled()
-        {
-            try
-            {
+        public void SetMetricsReportingEnabled() {
+            try {
                 _metricReportingService.SetMetricsReportingEnabled();
             }
             catch (Exception e)
@@ -626,10 +484,8 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        public void SetMetricsReportingDisabled()
-        {
-            try
-            {
+        public void SetMetricsReportingDisabled() {
+            try {
                 _metricReportingService.SetMetricsReportingDisabled();
             }
             catch (Exception e)
@@ -638,28 +494,24 @@ namespace com.espertech.esper.core.service
             }
         }
     
-        public bool IsVariantStreamExists(String name)
-        {
+        public bool IsVariantStreamExists(string name) {
             ValueAddEventProcessor processor = _valueAddEventService.GetValueAddProcessor(name);
-            if (processor == null)
-            {
+            if (processor == null) {
                 return false;
             }
             return processor.ValueAddEventType is VariantEventType;
         }
     
-        public bool RemoveEventType(String name, bool force)
-        {
+        public bool RemoveEventType(string name, bool force) {
             if (!force) {
-                ICollection<String> statements = _statementEventTypeRef.GetStatementNamesForType(name);
-                if ((statements != null) && (statements.IsNotEmpty())) {
+                var statements = _statementEventTypeRef.GetStatementNamesForType(name);
+                if ((statements != null) && (!statements.IsEmpty())) {
                     throw new ConfigurationException("Event type '" + name + "' is in use by one or more statements");
                 }
             }
     
             EventType type = _eventAdapterService.GetEventTypeByName(name);
-            if (type == null)
-            {
+            if (type == null) {
                 return false;
             }
     
@@ -669,18 +521,16 @@ namespace com.espertech.esper.core.service
             return true;
         }
     
-        public bool RemoveVariable(String name, bool force)
-        {
+        public bool RemoveVariable(string name, bool force) {
             if (!force) {
-                ICollection<String> statements = _statementVariableRef.GetStatementNamesForVar(name);
-                if ((statements != null) && (statements.IsNotEmpty())) {
+                var statements = _statementVariableRef.GetStatementNamesForVar(name);
+                if ((statements != null) && (!statements.IsEmpty())) {
                     throw new ConfigurationException("Variable '" + name + "' is in use by one or more statements");
                 }
             }
-
-            var reader = _variableService.GetReader(name, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
-            if (reader == null)
-            {
+    
+            VariableReader reader = _variableService.GetReader(name, EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
+            if (reader == null) {
                 return false;
             }
     
@@ -690,28 +540,23 @@ namespace com.espertech.esper.core.service
             return true;
         }
     
-        public ICollection<String> GetEventTypeNameUsedBy(String name)
-        {
-            ICollection<String> statements = _statementEventTypeRef.GetStatementNamesForType(name);
-            if ((statements == null) || (statements.IsEmpty()))
-            {
-                return Collections.GetEmptyList<string>();
+        public ICollection<string> GetEventTypeNameUsedBy(string name) {
+            var statements = _statementEventTypeRef.GetStatementNamesForType(name);
+            if ((statements == null) || (statements.IsEmpty())) {
+                return Collections.GetEmptySet<string>();
             }
             return statements.AsReadOnlyCollection();
         }
     
-        public ICollection<String> GetVariableNameUsedBy(String variableName)
-        {
-            ICollection<String> statements = _statementVariableRef.GetStatementNamesForVar(variableName);
-            if ((statements == null) || (statements.IsEmpty()))
-            {
-                return Collections.GetEmptyList<string>();
+        public ICollection<string> GetVariableNameUsedBy(string variableName) {
+            ICollection<string> statements = _statementVariableRef.GetStatementNamesForVar(variableName);
+            if ((statements == null) || (statements.IsEmpty())) {
+                return Collections.GetEmptySet<string>();
             }
             return statements.AsReadOnlyCollection();
         }
     
-        public EventType GetEventType(String eventTypeName)
-        {
+        public EventType GetEventType(string eventTypeName) {
             return _eventAdapterService.GetEventTypeByName(eventTypeName);
         }
 
@@ -720,36 +565,49 @@ namespace com.espertech.esper.core.service
             get { return _eventAdapterService.AllTypes; }
         }
 
-        public void AddEventType(String eventTypeName, String eventType, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
-            CheckTableExists(eventTypeName);
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
 
-            try {
-                IDictionary<String, ConfigurationEventTypeLegacy> map = new Dictionary<String, ConfigurationEventTypeLegacy>();
-                map.Put(eventType, legacyEventTypeDesc);
-                _eventAdapterService.TypeLegacyConfigs = map;
-                _eventAdapterService.AddBeanType(eventTypeName, eventType, false, false, false, true);
+        public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            // To ensure proper usage, we have to convert the type to its assembly qualified name.
+            try
+            {
+                eventClass = TypeHelper.ResolveType(eventClass, true).AssemblyQualifiedName;
             }
-            catch (EventAdapterException ex) {
+            catch (TypeLoadException ex)
+            {
+                throw new ConfigurationException("Failed to add legacy event type definition for type '" + eventTypeName + "': " + ex.Message, ex);
+            }
+
+            CheckTableExists(eventTypeName);
+            try {
+                var map = new Dictionary<string, ConfigurationEventTypeLegacy>();
+                map.Put(eventClass, legacyEventTypeDesc);
+                _eventAdapterService.TypeLegacyConfigs = map;
+                _eventAdapterService.AddBeanType(eventTypeName, eventClass, false, false, false, true);
+            } catch (EventAdapterException ex) {
                 throw new ConfigurationException("Failed to add legacy event type definition for type '" + eventTypeName + "': " + ex.Message, ex);
             }
         }
-
-        private void CheckTableExists(String eventTypeName)
-        {
-            try
-            {
+    
+        private void CheckTableExists(string eventTypeName) {
+            try {
                 EPLValidationUtil.ValidateTableExists(_tableService, eventTypeName);
-            }
-            catch (ExprValidationException ex)
-            {
+            } catch (ExprValidationException ex) {
                 throw new ConfigurationException(ex.Message, ex);
             }
         }
 
         public long PatternMaxSubexpressions
         {
-            get { return _patternSubexpressionPoolSvc.PatternMaxSubexpressions.GetValueOrDefault(); }
             set
             {
                 if (_patternSubexpressionPoolSvc != null)
@@ -761,17 +619,6 @@ namespace com.espertech.esper.core.service
 
         public long? MatchRecognizeMaxStates
         {
-            get
-            {
-                if (_matchRecognizeStatePoolEngineSvc != null)
-                {
-                    return _matchRecognizeStatePoolEngineSvc.MatchRecognizeMaxStates;
-                }
-                else
-                {
-                    return null;
-                }
-            }
             set
             {
                 if (_matchRecognizeStatePoolEngineSvc != null)
@@ -780,5 +627,19 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
+
+        public IDictionary<string, object> TransientConfiguration
+        {
+            get { return _transientConfiguration; }
+        }
+
+        public void AddEventTypeAvro(string eventTypeName, ConfigurationEventTypeAvro avro) {
+            CheckTableExists(eventTypeName);
+            try {
+                _eventAdapterService.AddAvroType(eventTypeName, avro, false, true, true, false, false);
+            } catch (EventAdapterException t) {
+                throw new ConfigurationException(t.Message, t);
+            }
+        }
     }
-}
+} // end of namespace

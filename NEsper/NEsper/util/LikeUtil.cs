@@ -228,7 +228,7 @@ namespace com.espertech.esper.util
 
             for (int i = 0; i < _iLen - 1; i++)
             {
-                if ((_wildCardType[i] == PERCENT_CHAR) && 
+                if ((_wildCardType[i] == PERCENT_CHAR) &&
                     (_wildCardType[i + 1] == UNDERSCORE_CHAR))
                 {
                     _wildCardType[i] = UNDERSCORE_CHAR;

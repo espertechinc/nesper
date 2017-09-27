@@ -86,7 +86,7 @@ namespace com.espertech.esper.epl.expression.table
             if (state == null) {
                 return null;
             }
-            return _accessor.GetValue(state, eventsPerStream, isNewData, exprEvaluatorContext);
+            return _accessor.GetValue(state, new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
         }
     
         public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
@@ -94,13 +94,13 @@ namespace com.espertech.esper.epl.expression.table
             return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeCollection(eventAdapterService, statementId);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            AggregationState state = GetState(eventsPerStream);
+            AggregationState state = GetState(evaluateParams.EventsPerStream);
             if (state == null) {
                 return null;
             }
-            return _accessor.GetEnumerableEvents(state, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvents(state, evaluateParams);
         }
 
         public Type ComponentTypeCollection
@@ -108,13 +108,13 @@ namespace com.espertech.esper.epl.expression.table
             get { return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).ComponentTypeCollection; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            AggregationState state = GetState(eventsPerStream);
+            AggregationState state = GetState(evaluateParams.EventsPerStream);
             if (state == null) {
                 return null;
             }
-            return _accessor.GetEnumerableScalar(state, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableScalar(state, evaluateParams);
         }
     
         public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
@@ -122,13 +122,13 @@ namespace com.espertech.esper.epl.expression.table
             return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeSingle(eventAdapterService, statementId);
         }
     
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            AggregationState state = GetState(eventsPerStream);
+            AggregationState state = GetState(evaluateParams.EventsPerStream);
             if (state == null) {
                 return null;
             }
-            return _accessor.GetEnumerableEvent(state, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvent(state, evaluateParams);
         }
     
         public override void ToPrecedenceFreeEPL(TextWriter writer)

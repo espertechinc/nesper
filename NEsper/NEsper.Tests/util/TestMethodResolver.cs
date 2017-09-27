@@ -10,8 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.epl.core; 
-using com.espertech.esper.regression.client;
+using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -138,16 +139,18 @@ namespace com.espertech.esper.util
                 false,
                 MathContext.DECIMAL32,
                 TimeZoneInfo.Local,
+                TimeAbacusMilliseconds.INSTANCE,
                 new ConfigurationEngineDefaults.ThreadingProfile(), 
+                null,
                 null);
 
-            var targetType = typeof(SupportAggMFFunc);
-            var targetMethod = "GetName";
+            var targetType = typeof(SupportBean);
+            var targetMethod = "GetNameExtended";
             var args = new Type[0];
 
             var method = methodResolver.ResolveMethod(targetType, targetMethod, args, null, null);
             Assert.That(method, Is.Not.Null);
-            Assert.That(method.DeclaringType, Is.EqualTo(typeof(SupportAggMFFuncExtensions)));
+            Assert.That(method.DeclaringType, Is.EqualTo(typeof(SupportBeanExtensions)));
             Assert.That(method.Name, Is.EqualTo(targetMethod));
             Assert.That(method.IsExtensionMethod(), Is.True);
         }

@@ -31,14 +31,14 @@ namespace com.espertech.esper.compat.threading
         /// <param name="releaseLock"></param>
         /// <param name="msec"></param>
         /// <returns></returns>
-        IDisposable Acquire(bool releaseLock, int? msec = null);
+        IDisposable Acquire(bool releaseLock, long? msec = null);
 
         /// <summary>
         /// Acquires the specified msec.
         /// </summary>
         /// <param name="msec">The msec.</param>
         /// <returns></returns>
-        IDisposable Acquire(int msec);
+        IDisposable Acquire(long msec);
 
         /// <summary>
         /// Provides a temporary release of the lock if it is acquired.  When the

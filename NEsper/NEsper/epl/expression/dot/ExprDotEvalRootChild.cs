@@ -31,7 +31,15 @@ namespace com.espertech.esper.epl.expression.dot
 	    private readonly ExprDotEval[] _evalIteratorEventBean;
 	    private readonly ExprDotEval[] _evalUnpacking;
 
-	    public ExprDotEvalRootChild(bool hasEnumerationMethod, ExprDotNode dotNode, ExprEvaluator rootNodeEvaluator, ExprEvaluatorEnumeration rootLambdaEvaluator, EPType typeInfo, ExprDotEval[] evalIteratorEventBean, ExprDotEval[] evalUnpacking, bool checkedUnpackEvent) 
+	    public ExprDotEvalRootChild(
+            bool hasEnumerationMethod,
+            ExprDotNode dotNode,
+            ExprEvaluator rootNodeEvaluator,
+            ExprEvaluatorEnumeration rootLambdaEvaluator,
+            EPType typeInfo,
+            ExprDotEval[] evalIteratorEventBean,
+            ExprDotEval[] evalUnpacking,
+            bool checkedUnpackEvent) 
         {
 	        _dotNode = dotNode;
 	        if (rootLambdaEvaluator != null)
@@ -99,24 +107,24 @@ namespace com.espertech.esper.epl.expression.dot
 	        return inner;
 	    }
 
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-	        var inner = _innerEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            var inner = _innerEvaluator.EvaluateGetROCollectionEvents(evaluateParams);
 	        if (inner != null) {
 	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprDotChain(_innerEvaluator.TypeInfo, inner, _evalUnpacking);}
-	            inner = ExprDotNodeUtility.EvaluateChain(_evalIteratorEventBean, inner, eventsPerStream, isNewData, context).UnwrapWithNulls<EventBean>();
+                inner = ExprDotNodeUtility.EvaluateChain(_evalIteratorEventBean, inner, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext).Unwrap<EventBean>(true);
 	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprDotChain();}
 	            return inner;
 	        }
 	        return null;
 	    }
 
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+	    public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-	        var inner = _innerEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            var inner = _innerEvaluator.EvaluateGetROCollectionScalar(evaluateParams);
 	        if (inner != null) {
 	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprDotChain(_innerEvaluator.TypeInfo, inner, _evalUnpacking);}
-	            inner = ExprDotNodeUtility.EvaluateChain(_evalIteratorEventBean, inner, eventsPerStream, isNewData, context).UnwrapWithNulls<object>();
+                inner = ExprDotNodeUtility.EvaluateChain(_evalIteratorEventBean, inner, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext).Unwrap<object>(true);
 	            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprDotChain();}
                 return inner;
 	        }
@@ -138,7 +146,7 @@ namespace com.espertech.esper.epl.expression.dot
 	        return null;
 	    }
 
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+	    public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
 	        return null;
 	    }

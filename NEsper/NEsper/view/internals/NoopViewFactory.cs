@@ -15,37 +15,38 @@ using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.view.internals
 {
-	public class NoopViewFactory
+    public class NoopViewFactory
         : DataWindowViewFactory
     {
-	    private EventType _eventType;
+        private EventType _eventType;
 
-	    public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters)
+        public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> viewParameters)
         {
-	    }
+        }
 
-	    public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
-	        _eventType = parentEventType;
-	    }
+            _eventType = parentEventType;
+        }
 
-	    public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
+        public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-	        return new NoopView(this);
-	    }
+            return new NoopView(this);
+        }
 
-	    public virtual EventType EventType
-	    {
-	        get { return _eventType; }
-	    }
+        public virtual EventType EventType
+        {
+            get { return _eventType; }
+        }
 
-	    public bool CanReuse(View view) {
-	        return false;
-	    }
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
+        {
+            return false;
+        }
 
-	    public string ViewName
-	    {
-	        get { return "noop"; }
-	    }
+        public string ViewName
+        {
+            get { return "noop"; }
+        }
     }
 } // end of namespace

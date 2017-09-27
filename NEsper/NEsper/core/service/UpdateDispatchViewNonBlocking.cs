@@ -29,11 +29,12 @@ namespace com.espertech.esper.core.service
             : base(statementResultServiceImpl, dispatchService)
         {
         }
-    
-        public override void Update(EventBean[] newData, EventBean[] oldData) {
+
+        public override void Update(EventBean[] newData, EventBean[] oldData)
+        {
             NewResult(new UniformPair<EventBean[]>(newData, oldData));
         }
-    
+
         public override void NewResult(UniformPair<EventBean[]> results)
         {
             StatementResultService.Indicate(results);
@@ -43,7 +44,7 @@ namespace com.espertech.esper.core.service
                 IsDispatchWaiting.Value = true;
             }
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

@@ -37,7 +37,7 @@ namespace com.espertech.esper.linq
             expressionList.AddRange(
                 sortCriteria.Select(s => s.ToSodaExpression()));
 
-            return esperQuery.FilterView(() => View.Create("ext", "sort", expressionList));
+            return esperQuery.FilterView(() => View.Create("sort", expressionList));
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace com.espertech.esper.linq
         /// <exception cref="System.ArgumentException">at least one property must be provided</exception>
         public static EsperQuery<T> TimeOrdered<T>(this EsperQuery<T> esperQuery, string property, TimeSpan timePeriod)
         {
-            return esperQuery.FilterView(() => View.Create("ext", "time_order", 
+            return esperQuery.FilterView(() => View.Create("time_order", 
                 new PropertyValueExpression(property),
                 timePeriod.ToTimePeriodExpression()));
         }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.linq
             expressionList.AddRange(
                 sortCriteria.Select(s => s.ToSodaExpression()));
 
-            return esperQuery.FilterView(() => View.Create("ext", "rank", expressionList));
+            return esperQuery.FilterView(() => View.Create("rank", expressionList));
         }
     }
 }

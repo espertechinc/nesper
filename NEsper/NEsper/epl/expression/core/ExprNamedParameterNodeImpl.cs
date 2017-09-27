@@ -33,11 +33,12 @@ namespace com.espertech.esper.epl.expression.core
         {
 	        writer.Write(_parameterName);
 	        writer.Write(":");
-	        if (ChildNodes.Length > 1) {
+	        if (ChildNodes.Count > 1) {
 	            writer.Write("(");
 	        }
 	        ExprNodeUtility.ToExpressionStringParameterList(ChildNodes, writer);
-	        if (ChildNodes.Length > 1) {
+            if (ChildNodes.Count > 1)
+            {
 	            writer.Write(")");
 	        }
 	    }

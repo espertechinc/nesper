@@ -25,13 +25,13 @@ namespace com.espertech.esper.events.vaevent
     {
         /// <summary>Map of revision event name and revision compiled specification. </summary>
         protected readonly IDictionary<String, RevisionSpec> SpecificationsByRevisionName;
-    
+
         /// <summary>Map of named window name and processor. </summary>
         protected readonly IDictionary<String, ValueAddEventProcessor> ProcessorsByNamedWindow;
-    
+
         /// <summary>Map of revision event stream and variant stream processor. </summary>
         protected readonly IDictionary<String, ValueAddEventProcessor> VariantProcessors;
-    
+
         /// <summary>Ctor. </summary>
         public ValueAddEventServiceImpl()
         {
@@ -62,13 +62,13 @@ namespace com.espertech.esper.events.vaevent
                 AddVariantStream(entry.Key, entry.Value, eventAdapterService, eventTypeIdGenerator);
             }
         }
-    
+
         public void AddRevisionEventType(String revisioneventTypeName, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
         {
             RevisionSpec specification = ValidateRevision(revisioneventTypeName, config, eventAdapterService);
             SpecificationsByRevisionName.Put(revisioneventTypeName, specification);
         }
-    
+
         public void AddVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
         {
             var variantSpec = ValidateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.events.vaevent
             eventAdapterService.AddTypeByName(variantStreamname, processor.ValueAddEventType);
             VariantProcessors.Put(variantStreamname, processor);
         }
-    
+
         /// <summary>Validate the variant stream definition. </summary>
         /// <param name="variantStreamname">the stream name</param>
         /// <param name="variantStreamConfig">the configuration information</param>
@@ -91,7 +91,7 @@ namespace com.espertech.esper.events.vaevent
                     throw new ConfigurationException("Invalid variant stream configuration, no event type name has been added and default type variance requires at least one type, for name '" + variantStreamname + "'");
                 }
             }
-    
+
             ICollection<EventType> types = new LinkedHashSet<EventType>();
             foreach (String typeName in variantStreamConfig.VariantTypeNames)
             {
@@ -102,11 +102,11 @@ namespace com.espertech.esper.events.vaevent
                 }
                 types.Add(type);
             }
-    
+
             EventType[] eventTypes = types.ToArray();
             return new VariantSpec(variantStreamname, eventTypes, variantStreamConfig.TypeVariance);
         }
-    
+
         public EventType CreateRevisionType(String namedWindowName, String name, StatementStopService statementStopService, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
         {
             RevisionSpec spec = SpecificationsByRevisionName.Get(name);
@@ -119,11 +119,11 @@ namespace com.espertech.esper.events.vaevent
             {
                 processor = new VAERevisionProcessorMerge(name, spec, statementStopService, eventAdapterService, eventTypeIdGenerator);
             }
-    
+
             ProcessorsByNamedWindow.Put(namedWindowName, processor);
             return processor.ValueAddEventType;
         }
-    
+
         public ValueAddEventProcessor GetValueAddProcessor(String name)
         {
             ValueAddEventProcessor proc = ProcessorsByNamedWindow.Get(name);
@@ -133,21 +133,22 @@ namespace com.espertech.esper.events.vaevent
             }
             return VariantProcessors.Get(name);
         }
-    
+
         public EventType GetValueAddUnderlyingType(String name)
         {
             RevisionSpec spec = SpecificationsByRevisionName.Get(name);
-            if (spec == null) {
+            if (spec == null)
+            {
                 return null;
             }
             return spec.BaseEventType;
         }
-    
+
         public bool IsRevisionTypeName(String revisionTypeName)
         {
             return SpecificationsByRevisionName.ContainsKey(revisionTypeName);
         }
-    
+
         /// <summary>Valiate the revision configuration. </summary>
         /// <param name="revisioneventTypeName">name of revision types</param>
         /// <param name="config">configures revision type</param>
@@ -160,12 +161,12 @@ namespace com.espertech.esper.events.vaevent
             {
                 throw new ConfigurationException("Required base event type name is not set in the configuration for revision event type '" + revisioneventTypeName + "'");
             }
-    
+
             if (config.NameBaseEventTypes.Count > 1)
             {
                 throw new ConfigurationException("Only one base event type name may be added to revision event type '" + revisioneventTypeName + "', multiple base types are not yet supported");
             }
-    
+
             // get base types
             String baseeventTypeName = config.NameBaseEventTypes.FirstOrDefault();
             EventType baseEventType = eventAdapterService.GetEventTypeByName(baseeventTypeName);
@@ -173,7 +174,7 @@ namespace com.espertech.esper.events.vaevent
             {
                 throw new ConfigurationException("Could not locate event type for name '" + baseeventTypeName + "' in the configuration for revision event type '" + revisioneventTypeName + "'");
             }
-    
+
             // get name types
             var deltaTypes = new EventType[config.NameDeltaEventTypes.Count];
             var deltaNames = new String[config.NameDeltaEventTypes.Count];
@@ -189,20 +190,20 @@ namespace com.espertech.esper.events.vaevent
                 deltaNames[count] = deltaName;
                 count++;
             }
-    
+
             // the key properties must be set
             if ((config.KeyPropertyNames == null) || (config.KeyPropertyNames.Length == 0))
             {
                 throw new ConfigurationException("Required key properties are not set in the configuration for revision event type '" + revisioneventTypeName + "'");
             }
-    
+
             // make sure the key properties exist the base type and all delta types
             CheckKeysExist(baseEventType, baseeventTypeName, config.KeyPropertyNames, revisioneventTypeName);
             for (int i = 0; i < deltaTypes.Length; i++)
             {
                 CheckKeysExist(deltaTypes[i], deltaNames[i], config.KeyPropertyNames, revisioneventTypeName);
             }
-    
+
             // key property names shared between base and delta must have the same type
             String[] keyPropertyNames = PropertyUtility.CopyAndSort(config.KeyPropertyNames);
             foreach (String key in keyPropertyNames)
@@ -217,7 +218,7 @@ namespace com.espertech.esper.events.vaevent
                     }
                 }
             }
-    
+
             // In the "declared" type the change set properties consist of only :
             //   (base event type properties) minus (key properties) minus (properties only on base event type)
             if (config.PropertyRevision == PropertyRevisionEnum.OVERLAY_DECLARED)
@@ -243,10 +244,10 @@ namespace com.espertech.esper.events.vaevent
                         baseEventOnlyProperties.Add(nonKey);
                     }
                 }
-    
+
                 String[] changesetProperties = changesetPropertyNames.ToArray();
                 String[] baseEventOnlyPropertyNames = baseEventOnlyProperties.ToArray();
-    
+
                 // verify that all changeset properties match event type
                 foreach (String changesetProperty in changesetProperties)
                 {
@@ -260,7 +261,7 @@ namespace com.espertech.esper.events.vaevent
                         }
                     }
                 }
-    
+
                 return new RevisionSpec(config.PropertyRevision, baseEventType, deltaTypes, deltaNames, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
             }
             else
@@ -272,10 +273,10 @@ namespace com.espertech.esper.events.vaevent
                 {
                     allProperties.AddAll(deltaType.PropertyNames);
                 }
-    
+
                 String[] allPropertiesArr = allProperties.ToArray();
                 String[] changesetProperties = PropertyUtility.UniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
-    
+
                 // All properties must have the same type, if a property exists for any given type
                 bool hasContributedByDelta = false;
                 bool[] contributedByDelta = new bool[changesetProperties.Length];
@@ -302,18 +303,18 @@ namespace com.espertech.esper.events.vaevent
                             {
                                 throw new ConfigurationException("Property named '" + property + "' does not have the same type for base and delta types of revision event type '" + revisioneventTypeName + "'");
                             }
-    
+
                         }
                         typeTemp = dtypeProperty;
                     }
                     count++;
                 }
-    
+
                 // Compile changeset
                 return new RevisionSpec(config.PropertyRevision, baseEventType, deltaTypes, deltaNames, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
             }
         }
-    
+
         private static void CheckKeysExist(EventType baseEventType, String name, IEnumerable<string> keyProperties, String revisioneventTypeName)
         {
             IList<string> propertyNames = baseEventType.PropertyNames;

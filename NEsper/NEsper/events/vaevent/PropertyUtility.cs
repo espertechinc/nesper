@@ -39,7 +39,8 @@ namespace com.espertech.esper.events.vaevent
             }
 
             var keys = new Object[keyPropertyGetters.Length];
-            for (int i = 0; i < keys.Length; i++) {
+            for (int i = 0; i < keys.Length; i++)
+            {
                 keys[i] = keyPropertyGetters[i].Get(theEvent);
             }
             return new MultiKeyUntyped(keys);
@@ -55,8 +56,10 @@ namespace com.espertech.esper.events.vaevent
                                                                           String[] keyProperties)
         {
             IDictionary<EventType, RevisionTypeDesc> perType = new Dictionary<EventType, RevisionTypeDesc>();
-            foreach (PropertyGroupDesc group in groups) {
-                foreach (EventType type in group.Types.Keys) {
+            foreach (PropertyGroupDesc group in groups)
+            {
+                foreach (EventType type in group.Types.Keys)
+                {
                     EventPropertyGetter[] changesetGetters = GetGetters(type, changesetProperties);
                     EventPropertyGetter[] keyGetters = GetGetters(type, keyProperties);
                     var pair = new RevisionTypeDesc(keyGetters, changesetGetters, group);
@@ -72,15 +75,19 @@ namespace com.espertech.esper.events.vaevent
         public static IDictionary<String, int[]> GetGroupsPerProperty(PropertyGroupDesc[] groups)
         {
             IDictionary<String, int[]> groupsNumsPerProp = new Dictionary<String, int[]>();
-            foreach (PropertyGroupDesc group in groups) {
-                foreach (String property in group.Properties) {
+            foreach (PropertyGroupDesc group in groups)
+            {
+                foreach (String property in group.Properties)
+                {
                     int[] value = groupsNumsPerProp.Get(property);
-                    if (value == null) {
+                    if (value == null)
+                    {
                         value = new int[1];
                         groupsNumsPerProp.Put(property, value);
                         value[0] = group.GroupNum;
                     }
-                    else {
+                    else
+                    {
                         var copy = new int[value.Length + 1];
                         Array.Copy(value, 0, copy, 0, value.Length);
                         copy[value.Length] = group.GroupNum;
@@ -100,7 +107,8 @@ namespace com.espertech.esper.events.vaevent
         public static PropertyGroupDesc[] AnalyzeGroups(String[] allProperties, EventType[] deltaEventTypes,
                                                         String[] names)
         {
-            if (deltaEventTypes.Length != names.Length) {
+            if (deltaEventTypes.Length != names.Length)
+            {
                 throw new ArgumentException("Delta event type number and name number of elements don't match");
             }
             allProperties = CopyAndSort(allProperties);
@@ -108,9 +116,11 @@ namespace com.espertech.esper.events.vaevent
             var result = new LinkedHashMap<MultiKey<String>, PropertyGroupDesc>();
             var currentGroupNum = 0;
 
-            for (int i = 0; i < deltaEventTypes.Length; i++) {
+            for (int i = 0; i < deltaEventTypes.Length; i++)
+            {
                 MultiKey<String> props = GetPropertiesContributed(deltaEventTypes[i], allProperties);
-                if (props.Array.Length == 0) {
+                if (props.Array.Length == 0)
+                {
                     Log.Warn("Event type named '" + names[i] +
                              "' does not contribute (or override) any properties of the revision event type");
                     continue;
@@ -118,12 +128,14 @@ namespace com.espertech.esper.events.vaevent
 
                 PropertyGroupDesc propertyGroup = result.Get(props);
                 IDictionary<EventType, String> typesForGroup;
-                if (propertyGroup == null) {
+                if (propertyGroup == null)
+                {
                     typesForGroup = new Dictionary<EventType, String>();
                     propertyGroup = new PropertyGroupDesc(currentGroupNum++, typesForGroup, props.Array);
                     result.Put(props, propertyGroup);
                 }
-                else {
+                else
+                {
                     typesForGroup = propertyGroup.Types;
                 }
                 typesForGroup.Put(deltaEventTypes[i], names[i]);
@@ -131,7 +143,8 @@ namespace com.espertech.esper.events.vaevent
 
             PropertyGroupDesc[] array = Collections.ToArray(result.Values);
 
-            if (Log.IsDebugEnabled) {
+            if (Log.IsDebugEnabled)
+            {
                 Log.Debug(".analyzeGroups " + array.Render());
             }
             return array;
@@ -141,8 +154,10 @@ namespace com.espertech.esper.events.vaevent
                                                                  ICollection<string> allPropertiesSorted)
         {
             var props = new SortedSet<String>();
-            foreach (String property in deltaEventType.PropertyNames) {
-                if (allPropertiesSorted.Contains(property)) {
+            foreach (String property in deltaEventType.PropertyNames)
+            {
+                if (allPropertiesSorted.Contains(property))
+                {
                     props.Add(property);
                 }
             }
@@ -166,7 +181,8 @@ namespace com.espertech.esper.events.vaevent
         public static EventPropertyGetter[] GetGetters(EventType eventType, String[] propertyNames)
         {
             var getters = new EventPropertyGetter[propertyNames.Length];
-            for (int i = 0; i < getters.Length; i++) {
+            for (int i = 0; i < getters.Length; i++)
+            {
                 getters[i] = eventType.GetGetter(propertyNames[i]);
             }
             return getters;
@@ -191,7 +207,8 @@ namespace com.espertech.esper.events.vaevent
             return uniqueArr;
         }
 
-        public static PropertyAccessException GetMismatchException(MethodInfo method, Object @object, InvalidCastException e) {
+        public static PropertyAccessException GetMismatchException(MethodInfo method, Object @object, InvalidCastException e)
+        {
             return GetMismatchException(method.DeclaringType, @object, e);
         }
 
@@ -217,11 +234,13 @@ namespace com.espertech.esper.events.vaevent
             throw new PropertyAccessException(message, e);
         }
 
-        public static PropertyAccessException GetIllegalAccessException(FieldInfo field, MemberAccessException e) {
+        public static PropertyAccessException GetIllegalAccessException(FieldInfo field, MemberAccessException e)
+        {
             return GetAccessExceptionField(field, e);
         }
 
-        public static PropertyAccessException GetIllegalArgumentException(FieldInfo field, ArgumentException e) {
+        public static PropertyAccessException GetIllegalArgumentException(FieldInfo field, ArgumentException e)
+        {
             return GetAccessExceptionField(field, e);
         }
 
@@ -236,14 +255,17 @@ namespace com.espertech.esper.events.vaevent
         {
             String classNameExpected = TypeHelper.GetTypeNameFullyQualPretty(declared);
             String classNameReceived;
-            if (@object != null) {
+            if (@object != null)
+            {
                 classNameReceived = TypeHelper.GetTypeNameFullyQualPretty(@object.GetType());
             }
-            else {
+            else
+            {
                 classNameReceived = "null";
             }
 
-            if (classNameExpected.Equals(classNameReceived)) {
+            if (classNameExpected.Equals(classNameReceived))
+            {
                 classNameExpected = TypeHelper.GetTypeNameFullyQualPretty(declared);
                 classNameReceived = @object != null ? TypeHelper.GetTypeNameFullyQualPretty(@object.GetType()) : "null";
             }
@@ -262,7 +284,8 @@ namespace com.espertech.esper.events.vaevent
             return GetAccessExceptionMethod(method, e);
         }
 
-        private static PropertyAccessException GetAccessExceptionMethod(MethodInfo method, Exception e) {
+        private static PropertyAccessException GetAccessExceptionMethod(MethodInfo method, Exception e)
+        {
             Type declaring = method.DeclaringType;
             String message = "Failed to invoke method " + method.Name + " on class " + TypeHelper.GetTypeNameFullyQualPretty(declaring) + ": " + e.Message;
             throw new PropertyAccessException(message, e);

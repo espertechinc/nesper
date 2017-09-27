@@ -13,7 +13,7 @@ using System.Threading;
 namespace com.espertech.esper.compat.threading
 {
     /// <summary>
-    /// Implements a simple spinLock algorithm.  The spinLock will attempt
+    /// : a simple spinLock algorithm.  The spinLock will attempt
     /// to exchange a value atomically.  If the exchange can not be done then
     /// the spinLock will enter a loop for a maximum amount of time as
     /// specified.  In the loop it will use a spinWait to allow the CPU to

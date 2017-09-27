@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.util;
 
@@ -22,7 +23,7 @@ namespace com.espertech.esper.epl.expression.core
     [Serializable]
     public abstract class ExprNodeBase : ExprNode
     {
-        private ExprNode[] _childNodes;
+        private IList<ExprNode> _childNodes;
     
         /// <summary>Constructor creates a list of child nodes. </summary>
         protected ExprNodeBase()
@@ -73,15 +74,25 @@ namespace com.espertech.esper.epl.expression.core
     
         public virtual void AddChildNode(ExprNode childNode)
         {
-            _childNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddSingle(_childNodes, childNode);
+            if (_childNodes.IsReadOnly)
+            {
+                _childNodes = new List<ExprNode>(_childNodes);
+            }
+             
+            _childNodes.Add(childNode);
         }
     
         public virtual void AddChildNodes(ICollection<ExprNode> childNodeColl)
         {
-            _childNodes = (ExprNode[]) CollectionUtil.ArrayExpandAddElements(_childNodes, childNodeColl);
+            if (_childNodes.IsReadOnly)
+            {
+                _childNodes = new List<ExprNode>(_childNodes);
+            }
+
+            _childNodes.AddAll(childNodeColl);
         }
 
-        public virtual ExprNode[] ChildNodes
+        public virtual IList<ExprNode> ChildNodes
         {
             get { return _childNodes; }
             set { _childNodes = value; }

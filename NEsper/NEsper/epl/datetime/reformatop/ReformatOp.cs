@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
@@ -18,14 +19,22 @@ namespace com.espertech.esper.epl.datetime.reformatop
 {
     public interface ReformatOp
     {
-        object Evaluate(
-            long ts, 
-            EventBean[] eventsPerStream, 
-            bool newData, 
+        Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext);
+
+        Object Evaluate(
+            DateTime d,
+            EventBean[] eventsPerStream,
+            bool newData,
             ExprEvaluatorContext exprEvaluatorContext);
 
-        object Evaluate(
+        Object Evaluate(
             DateTimeOffset d,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        Object Evaluate(
+            DateTimeEx dtx,
             EventBean[] eventsPerStream,
             bool newData,
             ExprEvaluatorContext exprEvaluatorContext);
@@ -35,7 +44,7 @@ namespace com.espertech.esper.epl.datetime.reformatop
         ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
             EventType[] typesPerStream,
             DatetimeMethodEnum currentMethod,
-            ICollection<ExprNode> currentParameters,
+            IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc);
     }
-}
+} // end of namespace

@@ -838,7 +838,7 @@ namespace com.espertech.esper.compat.magic
         }
 
         /// <summary>
-        /// Gets or sets the next magic property info that shares the same
+        /// Gets or sets the next magic property INFO that shares the same
         /// name.
         /// </summary>
         /// <value>The next.</value>

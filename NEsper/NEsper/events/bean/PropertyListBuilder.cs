@@ -17,8 +17,6 @@ namespace com.espertech.esper.events.bean
     /// <para/>
     /// Introspect the clazz and deterime exposed event properties.
     /// </summary>
-    /// <param name="clazz">to introspect</param>
-    /// <returns>list of event property descriptors</returns>
 
     public interface PropertyListBuilder
     {

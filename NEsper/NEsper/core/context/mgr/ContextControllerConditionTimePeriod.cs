@@ -94,8 +94,9 @@ namespace com.espertech.esper.core.context.mgr
                     _agentInstanceContext.StatementContext.FilterFaultHandlerFactory);
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
 
-            long msec = _spec.TimePeriod.NonconstEvaluator().DeltaMillisecondsUseEngineTime(null, _agentInstanceContext) - timeOffset;
-            _agentInstanceContext.StatementContext.SchedulingService.Add(msec, _scheduleHandle, _scheduleSlot);
+
+            long timeDelta = _spec.TimePeriod.NonconstEvaluator().DeltaUseEngineTime(null, _agentInstanceContext) - timeOffset;
+            _agentInstanceContext.StatementContext.SchedulingService.Add(timeDelta, _scheduleHandle, _scheduleSlot);
         }
 
         private void EndContextCallback()

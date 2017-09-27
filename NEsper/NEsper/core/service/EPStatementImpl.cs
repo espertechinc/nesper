@@ -41,7 +41,6 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
         /// <param name="expressionNoAnnotations">expression text witout annotations</param>
         /// <param name="isPattern">is true to indicate this is a pure pattern expression</param>
         /// <param name="dispatchService">for dispatching events to listeners to the statement</param>
@@ -348,11 +347,11 @@ namespace com.espertech.esper.core.service
             StatementContext.VariableService.SetLocalVersion();
             if (_parentView == null)
             {
-                return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+                return EnumerationHelper<EventBean>.Empty();
             }
 
             IEnumerator<EventBean> theEnumerator;
-            
+
             if (StatementContext.ContextDescriptor != null)
             {
                 theEnumerator = StatementContext.ContextDescriptor.GetEnumerator(StatementContext.StatementId);
@@ -434,7 +433,7 @@ namespace com.espertech.esper.core.service
                 {
                     return GetSafeEnumeratorWTableImpl(
                         instanceLockHandler,
-                        _parentView.GetEnumerator(), 
+                        _parentView.GetEnumerator(),
                         StatementContext.TableExprEvaluatorContext);
                 }
 
@@ -481,7 +480,7 @@ namespace com.espertech.esper.core.service
                 {
                     yield return enumerator.Current;
                 }
-            } 
+            }
             finally
             {
                 instanceLockHandler.Dispose();
@@ -531,7 +530,7 @@ namespace com.espertech.esper.core.service
             {
                 if (value is EPSubscriber)
                 {
-                    _statementListenerSet.Subscriber = (EPSubscriber) value;
+                    _statementListenerSet.Subscriber = (EPSubscriber)value;
                 }
                 else
                 {
@@ -560,7 +559,7 @@ namespace com.espertech.esper.core.service
         {
             get { return _dispatchChildView; }
         }
-        
+
         public void Dispose()
         {
             if (State == EPStatementState.DESTROYED)

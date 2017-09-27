@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.table.onaction
             {
                 theEvent = ((NaturalEventBean) theEvent).OptionalSynthetic;
             }
-            _coll.Add(_tableMetadata.EventToPublic.Convert(theEvent, eventsPerStream, isNewData, context));
+            _coll.Add(_tableMetadata.EventToPublic.Convert(theEvent, new EvaluateParams(eventsPerStream, isNewData, context)));
         }
     }
 }

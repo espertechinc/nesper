@@ -27,11 +27,11 @@ namespace com.espertech.esper.schedule
         /// If the same callback (equals) was already added before, the method will not add a new
         /// callback or change the existing callback to a new time, but throw an exception.
         /// </summary>
-        /// <param name="afterMSec">number of millisec to get a callback</param>
+        /// <param name="afterTime">number of millisec to get a callback</param>
         /// <param name="handle">to add</param>
         /// <param name="slot">allows ordering of concurrent callbacks</param>
         /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
-	    void Add(long afterMSec, ScheduleHandle handle, long slot);
+	    void Add(long afterTime, ScheduleHandle handle, long slot);
 
         /// <summary>
         /// Remove a callback.

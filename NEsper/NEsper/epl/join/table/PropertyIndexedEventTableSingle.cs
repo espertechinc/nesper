@@ -76,7 +76,7 @@ namespace com.espertech.esper.epl.join.table
 	    /// Allow null passed instead of an empty array.
 	    /// </summary>
 	    /// <param name="events">to add</param>
-	    /// <throws>IllegalArgumentException if the event was already existed in the index</throws>
+	    /// <throws>ArgumentException if the event was already existed in the index</throws>
         public virtual void Add(EventBean[] events)
 	    {
 	        if (events != null) {
@@ -100,7 +100,7 @@ namespace com.espertech.esper.epl.join.table
 	    /// Remove events.
 	    /// </summary>
 	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
-	    /// <throws>IllegalArgumentException when the event could not be removed as its not in the index</throws>
+	    /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
         public virtual void Remove(EventBean[] events)
 	    {
 	        if (events != null) {

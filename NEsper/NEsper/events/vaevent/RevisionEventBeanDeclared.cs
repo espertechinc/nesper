@@ -72,7 +72,7 @@ namespace com.espertech.esper.events.vaevent
 
         public object Underlying
         {
-            get { return typeof (RevisionEventBeanDeclared); }
+            get { return typeof(RevisionEventBeanDeclared); }
         }
 
         public Object GetFragment(String propertyExpression)
@@ -80,18 +80,18 @@ namespace com.espertech.esper.events.vaevent
             EventPropertyGetter getter = RevisionEventType.GetGetter(propertyExpression);
             if (getter == null)
             {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
             return getter.GetFragment(this);
         }
-    
+
         /// <summary>Returns a versioned value. </summary>
         /// <param name="parameters">getter parameters</param>
         /// <returns>value</returns>
         public Object GetVersionedValue(RevisionGetterParameters parameters)
         {
             RevisionBeanHolder holderMostRecent = null;
-    
+
             if (Holders != null)
             {
                 foreach (int numSet in parameters.PropertyGroups)
@@ -113,16 +113,17 @@ namespace com.espertech.esper.events.vaevent
                     }
                 }
             }
-    
+
             // none found, use last full event
             if (holderMostRecent == null)
             {
-                if (LastBaseEvent == null) {
+                if (LastBaseEvent == null)
+                {
                     return null;
                 }
                 return parameters.BaseGetter.Get(LastBaseEvent);
             }
-    
+
             return holderMostRecent.GetValueForProperty(parameters.PropertyNumber);
         }
     }

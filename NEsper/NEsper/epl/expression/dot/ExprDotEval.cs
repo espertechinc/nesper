@@ -16,7 +16,8 @@ namespace com.espertech.esper.epl.expression.dot
 {
     public interface ExprDotEval
     {
-        Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object Evaluate(object target, EvaluateParams evaluateParams);
+        //Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
         EPType TypeInfo { get; }
         void Visit(ExprDotEvalVisitor visitor);
     }

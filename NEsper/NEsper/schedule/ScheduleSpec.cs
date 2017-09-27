@@ -28,7 +28,7 @@ namespace com.espertech.esper.schedule
     {
         // Per unit hold the set of valid integer values, or null if wildcarded.
         // The seconds unit is optional.
-        private readonly IDictionary<ScheduleUnit, SortedSet<int>> _unitValues;
+        private readonly IDictionary<ScheduleUnit, ICollection<int>> _unitValues;
         private String _optionalTimeZone;
         private readonly CronParameter _optionalDayOfMonthOperator;
         private readonly CronParameter _optionalDayOfWeekOperator;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.schedule
         /// <param name="optionalDayOfMonthOperator">The optional day of month operator.</param>
         /// <param name="optionalDayOfWeekOperator">The optional day of week operator.</param>
         /// <throws>ArgumentException - if validation of value set per unit fails</throws>
-        public ScheduleSpec(IDictionary<ScheduleUnit, SortedSet<int>> unitValues, String optionalTimeZone, CronParameter optionalDayOfMonthOperator, CronParameter optionalDayOfWeekOperator)
+        public ScheduleSpec(IDictionary<ScheduleUnit, ICollection<int>> unitValues, String optionalTimeZone, CronParameter optionalDayOfMonthOperator, CronParameter optionalDayOfWeekOperator)
         {
             Validate(unitValues);
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.schedule
         /// </summary>
         public ScheduleSpec()
         {
-            _unitValues = new Dictionary<ScheduleUnit, SortedSet<int>>();
+            _unitValues = new Dictionary<ScheduleUnit, ICollection<int>>();
             _unitValues.Put(ScheduleUnit.MINUTES, null);
             _unitValues.Put(ScheduleUnit.HOURS, null);
             _unitValues.Put(ScheduleUnit.DAYS_OF_MONTH, null);
@@ -82,7 +82,7 @@ namespace com.espertech.esper.schedule
         /// Return map of ordered set of valid schedule values for minute, hour, day, month etc. units
         /// </summary>
         /// <value>map of 5 or 6 entries each with a set of integers</value>
-        public IDictionary<ScheduleUnit, SortedSet<int>> UnitValues
+        public IDictionary<ScheduleUnit, ICollection<int>> UnitValues
         {
             get { return _unitValues; }
         }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.schedule
         /// <param name="value">to add</param>
         public void AddValue(ScheduleUnit element, int value)
         {
-            SortedSet<int> set = _unitValues.Get(element);
+            var set = _unitValues.Get(element);
             if (set == null)
             {
                 set = new SortedSet<int>();
@@ -154,7 +154,7 @@ namespace com.espertech.esper.schedule
                 return false;
             }
 
-            var other = (ScheduleSpec) otherObject;
+            var other = (ScheduleSpec)otherObject;
             if (_unitValues.Count != other._unitValues.Count)
             {
                 return false;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.schedule
         /// I.e. reduce 0,1,2,3,4,5,6 for week value to 'null' indicating the wildcard.
         /// </summary>
         /// <param name="unitValues">is the set of valid values per unit</param>
-        internal static void Compress(IDictionary<ScheduleUnit, SortedSet<int>> unitValues)
+        internal static void Compress(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
         {
             var termList = new List<ScheduleUnit>();
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.schedule
 
         /// <summary>Validate units and their value sets. </summary>
         /// <param name="unitValues">is the set of valid values per unit</param>
-        internal static void Validate(IDictionary<ScheduleUnit, SortedSet<int>> unitValues)
+        internal static void Validate(IDictionary<ScheduleUnit, ICollection<int>> unitValues)
         {
             if ((!unitValues.ContainsKey(ScheduleUnit.MONTHS)) ||
                 (!unitValues.ContainsKey(ScheduleUnit.DAYS_OF_WEEK)) ||
@@ -258,7 +258,7 @@ namespace com.espertech.esper.schedule
                     continue;
                 }
 
-                SortedSet<int> values = unitValues.Get(unit);
+                ICollection<int> values = unitValues.Get(unit);
                 foreach (int? value in values)
                 {
                     if ((value < unit.Min()) || (value > unit.Max()))

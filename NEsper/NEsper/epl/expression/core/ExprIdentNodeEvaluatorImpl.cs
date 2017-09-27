@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             _streamNum = streamNum;
             _propertyGetter = propertyGetter;
-            _propertyType = propertyType.GetBoxedType();
+            _propertyType = propertyType; // .GetBoxedType();
             _identNode = identNode;
         }
 

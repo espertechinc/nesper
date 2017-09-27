@@ -63,7 +63,7 @@ namespace com.espertech.esper.view.window
         {
             return _dataWindowViewFactory.MakeView(AgentInstanceContext);
         }
-    
+
         /// <summary>
         /// Returns true if the window is empty, or false if not empty.
         /// </summary>
@@ -72,135 +72,154 @@ namespace com.espertech.esper.view.window
         {
             return _window.IsEmpty();
         }
-    
+
         public override void ScheduleCallback()
         {
             Expire(null, null);
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _dataWindowViewFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _dataWindowViewFactory.ViewName, newData, oldData); }
+
             // add data points to the window
             if (newData != null)
             {
-                foreach (EventBean newEvent in newData) {
+                foreach (EventBean newEvent in newData)
+                {
                     var pair = new ExpressionWindowTimestampEventPair(AgentInstanceContext.TimeProvider.Time, newEvent);
                     _window.Add(pair);
                     InternalHandleAdd(pair);
                 }
-    
-                if (AggregationService != null) {
+
+                if (AggregationService != null)
+                {
                     AggregationService.ApplyEnter(newData, null, AgentInstanceContext);
                 }
             }
-    
-            if (oldData != null) {
+
+            if (oldData != null)
+            {
                 _window.RemoveWhere(
                    pair => oldData.Any(anOldData => pair.TheEvent == anOldData),
                    pair => InternalHandleRemoved(pair));
 
-                if (AggregationService != null) {
+                if (AggregationService != null)
+                {
                     AggregationService.ApplyLeave(oldData, null, AgentInstanceContext);
                 }
             }
-    
+
             // expire events
             Expire(newData, oldData);
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
-        public void InternalHandleRemoved(ExpressionWindowTimestampEventPair pair) {
+
+        public void InternalHandleRemoved(ExpressionWindowTimestampEventPair pair)
+        {
             // no action required
         }
-    
-        public void InternalHandleExpired(ExpressionWindowTimestampEventPair pair) {
+
+        public void InternalHandleExpired(ExpressionWindowTimestampEventPair pair)
+        {
             // no action required
         }
-    
-        public void InternalHandleAdd(ExpressionWindowTimestampEventPair pair) {
+
+        public void InternalHandleAdd(ExpressionWindowTimestampEventPair pair)
+        {
             // no action required
         }
-    
+
         // Called based on schedule evaluation registered when a variable changes (new data is null).
         // Called when new data arrives.
-        private void Expire(EventBean[] newData, EventBean[] oldData) {
-    
+        private void Expire(EventBean[] newData, EventBean[] oldData)
+        {
+
             OneEventCollection expired = null;
-            if (oldData != null) {
+            if (oldData != null)
+            {
                 expired = new OneEventCollection();
                 expired.Add(oldData);
             }
             int expiredCount = 0;
-            if (!_window.IsEmpty()) {
+            if (!_window.IsEmpty())
+            {
                 ExpressionWindowTimestampEventPair newest = _window.Last;
-    
-                while (true) {
+
+                while (true)
+                {
                     ExpressionWindowTimestampEventPair first = _window.First;
-    
+
                     bool pass = CheckEvent(first, newest, expiredCount);
-                    if (!pass) {
-                        if (expired == null) {
-                             expired = new OneEventCollection();
+                    if (!pass)
+                    {
+                        if (expired == null)
+                        {
+                            expired = new OneEventCollection();
                         }
                         EventBean removed = _window.RemoveFirst().TheEvent;
                         expired.Add(removed);
-                        if (AggregationService != null) {
+                        if (AggregationService != null)
+                        {
                             _removedEvents[0] = removed;
                             AggregationService.ApplyLeave(_removedEvents, null, AgentInstanceContext);
                         }
                         expiredCount++;
                         InternalHandleExpired(first);
                     }
-                    else {
+                    else
+                    {
                         break;
                     }
-    
-                    if (_window.IsEmpty()) {
-                        if (AggregationService != null) {
+
+                    if (_window.IsEmpty())
+                    {
+                        if (AggregationService != null)
+                        {
                             AggregationService.ClearResults(AgentInstanceContext);
                         }
                         break;
                     }
                 }
             }
-    
+
             // Check for any events that get pushed out of the window
             EventBean[] expiredArr = null;
             if (expired != null)
             {
                 expiredArr = expired.ToArray();
             }
-    
+
             // update event buffer for access by expressions, if any
             if (ViewUpdatedCollection != null)
             {
                 ViewUpdatedCollection.Update(newData, expiredArr);
             }
-    
+
             // If there are child views, call update method
             if (HasViews)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _dataWindowViewFactory.ViewName, newData, expiredArr);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _dataWindowViewFactory.ViewName, newData, expiredArr); }
                 UpdateChildren(newData, expiredArr);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
             }
         }
-    
+
         private bool CheckEvent(ExpressionWindowTimestampEventPair first, ExpressionWindowTimestampEventPair newest, int numExpired)
         {
             ExpressionViewOAFieldEnumExtensions.Populate(BuiltinEventProps.Properties, _window.Count, first.Timestamp, newest.Timestamp,
                     this, numExpired, first.TheEvent, newest.TheEvent);
             EventsPerStream[0] = first.TheEvent;
-    
-            foreach (AggregationServiceAggExpressionDesc aggregateNode in AggregateNodes) {
+
+            foreach (AggregationServiceAggExpressionDesc aggregateNode in AggregateNodes)
+            {
                 aggregateNode.AssignFuture(AggregationService);
             }
-    
+
             var result = ExpiryExpression.Evaluate(new EvaluateParams(EventsPerStream, true, AgentInstanceContext));
-            if (result == null) {
+            if (result == null)
+            {
                 return false;
             }
             return true.Equals(result);
@@ -211,10 +230,12 @@ namespace com.espertech.esper.view.window
             return new ExpressionWindowTimestampEventPairEnumerator(
                 _window.GetEnumerator());
         }
-    
+
         // Handle variable updates by scheduling a re-evaluation with timers
-        public override void Update(Object newValue, Object oldValue) {
-            if (!AgentInstanceContext.StatementContext.SchedulingService.IsScheduled(ScheduleHandle)) {
+        public override void Update(Object newValue, Object oldValue)
+        {
+            if (!AgentInstanceContext.StatementContext.SchedulingService.IsScheduled(ScheduleHandle))
+            {
                 AgentInstanceContext.StatementContext.SchedulingService.Add(0, ScheduleHandle, ScheduleSlot);
             }
         }
@@ -224,7 +245,8 @@ namespace com.espertech.esper.view.window
             get { return _window; }
         }
 
-        public override void VisitView(ViewDataVisitor viewDataVisitor) {
+        public override void VisitView(ViewDataVisitor viewDataVisitor)
+        {
             viewDataVisitor.VisitPrimary(_window, true, _dataWindowViewFactory.ViewName, null);
         }
 

@@ -9,6 +9,10 @@
 using System;
 using System.Text;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
+
 namespace com.espertech.esper.client.scopetest
 {
     /// <summary>
@@ -33,7 +37,7 @@ namespace com.espertech.esper.client.scopetest
                 Fail(message);
             }
         }
-    
+
         /// <summary>Assert a condition is true. </summary>
         /// <param name="condition">to assert</param>
         public static void AssertTrue(bool condition)
@@ -44,110 +48,187 @@ namespace com.espertech.esper.client.scopetest
         /// <summary>Assert a condition is true. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="condition">to assert</param>
-        public static void AssertTrue(String message, bool condition) {
-            if (!condition) {
+        public static void AssertTrue(String message, bool condition)
+        {
+            if (!condition)
+            {
                 Fail(message);
             }
         }
-    
+
+        private static bool AreCollectionsEqual(Object expected, Object actual)
+        {
+            var magicExpected = MagicMarker.GetCollectionFactory(expected.GetType())
+                .Invoke(expected);
+            var magicActual = MagicMarker.GetCollectionFactory(actual.GetType())
+                .Invoke(actual);
+            if (magicExpected.Count == magicActual.Count)
+            {
+                using (var magicExpectedEnum = magicExpected.GetEnumerator())
+                {
+                    using (var magicActualEnum = magicActual.GetEnumerator())
+                    {
+                        while (true)
+                        {
+                            var mvExpected = magicExpectedEnum.MoveNext();
+                            var mvActual = magicActualEnum.MoveNext();
+                            if (mvExpected && mvActual)
+                            {
+                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current))
+                                {
+                                    break;
+                                }
+                            }
+                            else if (!mvExpected && !mvActual)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                throw new IllegalStateException("collection has been modified");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>Assert that two values equal. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertEquals(String message, Object expected, Object actual) {
-    		if (expected == null && actual == null) {
-    			return;
+        public static void AssertEquals(String message, Object expected, Object actual)
+        {
+            if (expected == null && actual == null)
+            {
+                return;
             }
-    		if (expected != null && expected.Equals(actual)) {
-    			return;
+            if (expected != null && expected.Equals(actual))
+            {
+                return;
             }
-    		FailNotEquals(message, expected, actual);
+            if (expected != null && actual != null)
+            {
+                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection())
+                {
+                    if (AreCollectionsEqual(expected, actual))
+                    {
+                        return;
+                    }
+                }
+            }
+            FailNotEquals(message, expected, actual);
         }
-    
+
         /// <summary>Assert that two values equal. </summary>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertEquals(Object expected, Object actual) {
+        public static void AssertEquals(Object expected, Object actual)
+        {
             AssertEquals(null, expected, actual);
         }
-    
+
         /// <summary>Fail assertion. </summary>
-        public static void Fail() {
+        public static void Fail()
+        {
             Fail(null);
         }
-    
+
         /// <summary>Assert that two values are the same. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertSame(String message, Object expected, Object actual) {
-            if (expected == actual) {
+        public static void AssertSame(String message, Object expected, Object actual)
+        {
+            if (expected == actual)
+            {
                 return;
             }
             FailNotSame(message, expected, actual);
         }
-    
+
         /// <summary>Assert that two values are the same. </summary>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void AssertSame(Object expected, Object actual) {
-            if (expected == actual) {
+        public static void AssertSame(Object expected, Object actual)
+        {
+            if (expected == actual)
+            {
                 return;
             }
             FailNotSame(null, expected, actual);
         }
-    
+
         /// <summary>Assert that a value is null. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="object">the object to check</param>
-        public static void AssertNull(String message, Object @object) {
+        public static void AssertNull(String message, Object @object)
+        {
             AssertTrue(message, @object == null);
         }
-    
+
         /// <summary>Assert that a value is not null. </summary>
         /// <param name="object">the object to check</param>
-        public static void AssertNotNull(Object @object) {
+        public static void AssertNotNull(Object @object)
+        {
             AssertTrue(@object != null);
         }
-    
+
+        /// <summary>
+        /// Assert that a value is not null.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="object">the object to check</param>
+        public static void AssertNotNull(String message, Object @object)
+        {
+            AssertTrue(message, @object != null);
+        }
+
         /// <summary>Assert that a value is null. </summary>
         /// <param name="object">the object to check</param>
-        public static void AssertNull(Object @object) {
+        public static void AssertNull(Object @object)
+        {
             AssertTrue(@object == null);
         }
-    
+
         /// <summary>Fail assertion formatting a message for not-same. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void FailNotSame(String message, Object expected, Object actual) {
+        public static void FailNotSame(String message, Object expected, Object actual)
+        {
             Fail(Format(message, expected, actual, true));
         }
-    
+
         /// <summary>Fail assertion formatting a message for not-equals. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
         /// <param name="actual">actual value</param>
-        public static void FailNotEquals(String message, Object expected, Object actual) {
+        public static void FailNotEquals(String message, Object expected, Object actual)
+        {
             Fail(Format(message, expected, actual, false));
         }
-    
+
         /// <summary>Fail assertion. </summary>
         /// <param name="message">an optional message</param>
         public static void Fail(String message)
         {
             AssertProxy.Fail(message);
         }
-    
+
         private static String Format(String message, Object expected, Object actual, bool isSame)
         {
             var buf = new StringBuilder();
-            if (!string.IsNullOrEmpty(message)) {
+            if (!string.IsNullOrEmpty(message))
+            {
                 buf.Append(message);
                 buf.Append(' ');
             }
             buf.Append("expected");
-            if (isSame) {
+            if (isSame)
+            {
                 buf.Append(" same");
             }
             buf.Append(":<");

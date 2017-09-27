@@ -25,19 +25,19 @@ namespace com.espertech.esper.core.start
             : base(statementSpec)
         {
         }
-    
+
         public override EPStatementStartResult StartInternal(EPServicesContext services, StatementContext statementContext, bool isNewStatement, bool isRecoveringStatement, bool isRecoveringResilient)
         {
             var createGraphDesc = StatementSpec.CreateGraphDesc;
             var agentInstanceContext = GetDefaultAgentInstanceContext(statementContext);
-    
+
             // define output event type
             var typeName = "EventType_Graph_" + createGraphDesc.GraphName;
             var resultType = services.EventAdapterService.CreateAnonymousMapType(typeName, Collections.GetEmptyMap<String, Object>(), true);
-    
+
             services.DataFlowService.AddStartGraph(createGraphDesc, statementContext, services, agentInstanceContext, isNewStatement);
-    
-            var stopMethod = new ProxyEPStatementStopMethod(() => 
+
+            var stopMethod = new ProxyEPStatementStopMethod(() =>
                 services.DataFlowService.StopGraph(createGraphDesc.GraphName));
 
             var destroyMethod = new ProxyEPStatementDestroyMethod(() =>

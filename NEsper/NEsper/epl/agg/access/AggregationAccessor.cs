@@ -30,48 +30,37 @@ namespace com.espertech.esper.epl.agg.access
         /// Use the #getEnumerableEvent to return a single events.
         /// </summary>
         /// <param name="state">aggregation state, downcast as needed</param>
-        /// <param name="eventsPerStream">The events per stream.</param>
-        /// <param name="isNewData">The new data indicator.</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <param name="evalParams">the evaluation parameters.</param>
         /// <returns>
         /// return value
         /// </returns>
-        object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object GetValue(AggregationState state, EvaluateParams evalParams);
 
         /// <summary>
         /// Return the aggregation state value consisting of a collection of events.
         /// </summary>
         /// <param name="state">aggregation state, downcast as needed</param>
-        /// <param name="eventsPerStream">The events per stream.</param>
-        /// <param name="isNewData">The new data indicator./param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
-        /// <returns>
-        /// return collection of events or null or empty collection
-        /// </returns>
-        ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        /// <param name="evalParams">the evaluation parameters.</param>
+        ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams);
 
         /// <summary>
         /// Return the aggregation state value consisting of a single event.
         /// </summary>
         /// <param name="state">aggregation state, downcast as needed</param>
-        /// <param name="eventsPerSteam">The events per steam.</param>
-        /// <param name="isNewData">The new data indicator.</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <param name="evalParams">the evaluation parameters.</param>
         /// <returns>
         /// return event or null
         /// </returns>
-        EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerSteam, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams);
 
         /// <summary>
         /// Return the aggregation state value consisting of a collection of scalar values.
         /// </summary>
         /// <param name="state">aggregation state, downcast as needed</param>
-        /// <param name="eventsPerSteam">The events per steam.</param>
-        /// <param name="isNewData">The new data indicator.</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <param name="evalParams">the evaluation parameters.</param>
         /// <returns>
         /// return collection of scalar or null or empty collection
         /// </returns>
-        ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams);
     }
 }

@@ -22,17 +22,17 @@ namespace com.espertech.esper.pattern
     {
         protected readonly EvalFollowedByNode EvalFollowedByNode;
         protected readonly Dictionary<EvalStateNode, int> Nodes;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalFollowedByNode">is the factory node associated to the state</param>
-        public EvalFollowedByStateNode(Evaluator parentNode, EvalFollowedByNode evalFollowedByNode) 
+        public EvalFollowedByStateNode(Evaluator parentNode, EvalFollowedByNode evalFollowedByNode)
             : base(parentNode)
         {
             EvalFollowedByNode = evalFollowedByNode;
             Nodes = new Dictionary<EvalStateNode, int>();
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             PatternConsumptionUtil.ChildNodeRemoveMatches(matchEvent, Nodes.Keys);
@@ -56,7 +56,7 @@ namespace com.espertech.esper.pattern
                     childState.Start(beginState);
                 });
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
             int index;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.pattern
                 }
 
                 // If the match came from the very last filter, need to escalate
-                int numChildNodes = EvalFollowedByNode.ChildNodes.Length;
+                int numChildNodes = EvalFollowedByNode.ChildNodes.Count;
                 if (index == (numChildNodes - 1))
                 {
                     if (Nodes.IsEmpty())
@@ -91,7 +91,7 @@ namespace com.espertech.esper.pattern
 
                     ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted[0]);
                 }
-                    // Else start a new sub-expression for the next-in-line filter
+                // Else start a new sub-expression for the next-in-line filter
                 else
                 {
                     EvalNode child = EvalFollowedByNode.ChildNodes[index + 1];
@@ -101,7 +101,7 @@ namespace com.espertech.esper.pattern
                 }
             }
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
             Instrument.With(
@@ -119,18 +119,18 @@ namespace com.espertech.esper.pattern
                     }
                 });
         }
-    
+
         public override void Quit()
         {
             if (Nodes.IsEmpty())
             {
                 return;
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFollowedByQuit(EvalFollowedByNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFollowedByQuit(EvalFollowedByNode); }
             QuitInternal();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFollowedByQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFollowedByQuit(); }
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitFollowedBy(EvalFollowedByNode.FactoryNode, this, Nodes);
@@ -164,7 +164,7 @@ namespace com.espertech.esper.pattern
         {
             return "EvalFollowedByStateNode nodes=" + Nodes.Count;
         }
-    
+
         private void QuitInternal()
         {
             foreach (EvalStateNode child in Nodes.Keys)

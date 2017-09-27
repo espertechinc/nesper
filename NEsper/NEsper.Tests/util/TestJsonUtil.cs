@@ -9,11 +9,9 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.epl.agg.factory;
-using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
@@ -22,21 +20,18 @@ namespace com.espertech.esper.util
     [TestFixture]
     public class TestJsonUtil
     {
-        private EngineImportService _engineImportService;
+        private ExprValidationContext _exprValidationContext;
     
         [SetUp]
         public void SetUp()
         {
-            _engineImportService = new EngineImportServiceImpl(
-                false, false, false, false, null, TimeZoneInfo.Local,
-                ConfigurationEngineDefaults.ThreadingProfile.NORMAL, 
-                AggregationFactoryFactoryDefault.INSTANCE);
+            _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty();
         }
     
         [TearDown]
         public void TearDown()
         {
-            _engineImportService = null;
+            _exprValidationContext = null;
         }
     
         [Test]
@@ -46,7 +41,7 @@ namespace com.espertech.esper.util
             Container result;
     
             json = "{'name':'c0', 'def': {'DefString':'a', 'DefBoolPrimitive':true, 'Defintprimitive':10, 'Defintboxed':20}}";
-            result = (Container) JsonUtil.ParsePopulate(json, typeof(Container), _engineImportService);
+            result = (Container)JsonUtil.ParsePopulate(json, typeof(Container), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.AreEqual("c0", result.Name);
             Assert.AreEqual((int?) 20, result.Def.DefIntBoxed);
             Assert.AreEqual("a", result.Def.DefString);
@@ -54,34 +49,34 @@ namespace com.espertech.esper.util
             Assert.AreEqual(true, result.Def.DefBoolPrimitive);
     
             json = "{\"name\":\"c1\",\"abc\":{'class':'TestJsonUtil+BImpl', \"bIdOne\":\"bidentone\",\"bIdTwo\":\"bidenttwo\"}}";
-            result = (Container) JsonUtil.ParsePopulate(json, typeof(Container), _engineImportService);
+            result = (Container)JsonUtil.ParsePopulate(json, typeof(Container), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.AreEqual("c1", result.Name);
             var bimpl = (BImpl) result.Abc;
             Assert.AreEqual("bidentone", bimpl.BIdOne);
             Assert.AreEqual("bidenttwo", bimpl.BIdTwo);
     
             json = "{\"name\":\"c2\",\"abc\":{'class':'com.espertech.esper.util.TestJsonUtil+AImpl'}}";
-            result = (Container) JsonUtil.ParsePopulate(json, typeof(Container), _engineImportService);
+            result = (Container)JsonUtil.ParsePopulate(json, typeof(Container), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.AreEqual("c2", result.Name);
             Assert.IsTrue(result.Abc is AImpl);
     
             json = "{'booleanArray': [true, false, true], 'integerArray': [1], 'objectArray': [1, 'abc']}";
-            var defOne = (DEF) JsonUtil.ParsePopulate(json, typeof(DEF), _engineImportService);
+            var defOne = (DEF)JsonUtil.ParsePopulate(json, typeof(DEF), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             EPAssertionUtil.AssertEqualsExactOrder(new bool[] {true, false, true}, defOne.BooleanArray);
             EPAssertionUtil.AssertEqualsExactOrder(new Object[] {1}, defOne.IntegerArray);
             EPAssertionUtil.AssertEqualsExactOrder(new Object[] {1, "abc"}, defOne.ObjectArray);
     
             json = "{defString:'a'}";
-            var defTwo = (DEF) JsonUtil.ParsePopulate(json, typeof(DEF), _engineImportService);
+            var defTwo = (DEF)JsonUtil.ParsePopulate(json, typeof(DEF), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.IsNull(defTwo.ObjectArray);
     
             json = "{'objectArray':[]}";
-            var defThree = (DEF) JsonUtil.ParsePopulate(json, typeof(DEF), _engineImportService);
+            var defThree = (DEF)JsonUtil.ParsePopulate(json, typeof(DEF), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.AreEqual(0, defThree.ObjectArray.Length);
     
             // note: notation for "field: value" does not require quotes around the field name
             json = "{objectArray:[ [1,2] ]}";
-            defThree = (DEF) JsonUtil.ParsePopulate(json, typeof(DEF), _engineImportService);
+            defThree = (DEF)JsonUtil.ParsePopulate(json, typeof(DEF), ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
             Assert.AreEqual(1, defThree.ObjectArray.Length);
             EPAssertionUtil.AssertEqualsExactOrder(new Object[]{1, 2}, (ICollection<object>) defThree.ObjectArray[0]);
         }
@@ -136,7 +131,7 @@ namespace com.espertech.esper.util
         {
             try
             {
-                JsonUtil.ParsePopulate(json, container, _engineImportService);
+                JsonUtil.ParsePopulate(json, container, ExprNodeOrigin.SCRIPTPARAMS, _exprValidationContext);
                 Assert.Fail();
             }
             catch (ExprValidationException ex)
@@ -144,7 +139,7 @@ namespace com.espertech.esper.util
                 Assert.AreEqual(expected, ex.Message);
             }
         }
-    
+
         public class Container
         {
             public Container()

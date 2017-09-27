@@ -23,7 +23,7 @@ namespace com.espertech.esper.epl.core
 
 	    private readonly IList<EventBean> _eventsOld = new List<EventBean>(2);
 	    private readonly IList<EventBean> _eventsNew = new List<EventBean>(2);
-	    private readonly IDictionary<object, EventBean[]> _repsPerGroup = new LinkedHashMap<object, EventBean[]>();
+	    private readonly IDictionary<object, EventBean[]> _repsPerGroup = new Dictionary<object, EventBean[]>();
 	    private readonly ISet<object> _lastSeenKeys = new HashSet<object>();
 
 	    public ResultSetProcessorAggregateGroupedOutputAllHelperImpl(ResultSetProcessorAggregateGrouped processor) {

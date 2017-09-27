@@ -53,15 +53,14 @@ namespace com.espertech.esper.linq
         /// <summary>
         /// Boilerplate for creating views on filter streams.  Make your own if you'd like.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TIn">The type of the in.</typeparam>
+        /// <typeparam name="TOut">The type of the out.</typeparam>
         /// <param name="esperQuery">The esper query.</param>
         /// <param name="viewFactory">The viewFactory.</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentException">
-        /// no stream available to use for window
+        /// <exception cref="System.ArgumentException">no stream available to use for window
         /// or
-        /// no stream available to use for window
-        /// </exception>
+        /// no stream available to use for window</exception>
         public static EsperQuery<TOut> FilterView<TIn, TOut>(this EsperQuery<TIn> esperQuery, Func<View> viewFactory)
         {
             var parentObjectModel = esperQuery.ObjectModel;

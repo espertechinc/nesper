@@ -8,8 +8,6 @@
 
 using System;
 
-using Castle.Core.Internal;
-
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.util;
@@ -44,7 +42,7 @@ namespace com.espertech.esper.core.start
         {
             if (_callbacks != null)
             {
-                _callbacks.ForEach(
+                _callbacks.Visit(
                     destroyCallback =>
                     {
                         try

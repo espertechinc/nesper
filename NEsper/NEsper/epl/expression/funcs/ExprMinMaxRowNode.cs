@@ -52,12 +52,12 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("MinMax node must have at least 2 parameters");
             }
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
-    
+
             foreach (ExprEvaluator child in _evaluators)
             {
                 var childType = child.ReturnType;
@@ -66,24 +66,24 @@ namespace com.espertech.esper.epl.expression.funcs
                     throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", childType.FullName));
                 }
             }
-    
+
             // Determine result type, set up compute function
             var childTypeOne = _evaluators[0].ReturnType;
             var childTypeTwo = _evaluators[1].ReturnType;
             _resultType = childTypeOne.GetArithmaticCoercionType(childTypeTwo);
-    
-            for (int i = 2; i < ChildNodes.Length; i++)
+
+            for (int i = 2; i < ChildNodes.Count; i++)
             {
                 _resultType = _resultType.GetArithmaticCoercionType(_evaluators[i].ReturnType);
             }
-    
-            if (_resultType == typeof (decimal) || _resultType == typeof(decimal?))
+
+            if (_resultType == typeof(decimal) || _resultType == typeof(decimal?))
             {
                 _computer = Equals(_minMaxTypeEnum, MinMaxTypeEnum.MAX)
                     ? MinMaxTypeEnumExtensions.CreateMaxDecimalComputer(_evaluators)
                     : MinMaxTypeEnumExtensions.CreateMinDecimalComputer(_evaluators);
             }
-            else if (_resultType == typeof (BigInteger) || _resultType == typeof(BigInteger?))
+            else if (_resultType == typeof(BigInteger) || _resultType == typeof(BigInteger?))
             {
                 _computer = Equals(_minMaxTypeEnum, MinMaxTypeEnum.MAX)
                     ? MinMaxTypeEnumExtensions.CreateMaxBigIntComputer(_evaluators)
@@ -139,7 +139,7 @@ namespace com.espertech.esper.epl.expression.funcs
             writer.Write(',');
             ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
 
-            for (int i = 2; i < ChildNodes.Length; i++)
+            for (int i = 2; i < ChildNodes.Count; i++)
             {
                 writer.Write(',');
                 ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);

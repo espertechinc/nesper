@@ -17,22 +17,24 @@ using com.espertech.esper.type;
 namespace com.espertech.esper.schedule
 {
     /// <summary>
-    /// Utility for computing from a set of parameter objects a schedule specification 
-    /// carry a crontab-like schedule definition.
+    /// Utility for computing from a set of parameter objects a schedule specification carry a
+    /// crontab-like schedule definition.
     /// </summary>
     public class ScheduleSpecUtil
     {
-        /// <summary>Compute from parameters a crontab schedule. </summary>
+        /// <summary>
+        /// Compute from parameters a crontab schedule.
+        /// </summary>
         /// <param name="args">parameters</param>
+        /// <exception cref="ScheduleParameterException">if the parameters are invalid</exception>
         /// <returns>crontab schedule</returns>
-        /// <throws>ScheduleParameterException if the parameters are invalid</throws>
         public static ScheduleSpec ComputeValues(Object[] args)
         {
-            if (args.Length <= 4 || args.Length >= 8) {
-                throw new ScheduleParameterException("Invalid number of crontab parameters, expecting between 5 and 7 parameters, received " + args.Length);
+            if (args.Length <= 4 || args.Length >= 8)
+            {
+                throw new ScheduleParameterException(GetExpressionCountException(args.Length));
             }
-
-            var unitMap = new Dictionary<ScheduleUnit, SortedSet<int>>();
+            var unitMap = new Dictionary<ScheduleUnit, ICollection<int>>();
             var minutes = args[0];
             var hours = args[1];
             var daysOfMonth = args[2];
@@ -40,11 +42,11 @@ namespace com.espertech.esper.schedule
             var daysOfWeek = args[4];
             unitMap.Put(ScheduleUnit.MINUTES, ComputeValues(minutes, ScheduleUnit.MINUTES));
             unitMap.Put(ScheduleUnit.HOURS, ComputeValues(hours, ScheduleUnit.HOURS));
-
             var resultMonths = ComputeValues(months, ScheduleUnit.MONTHS);
             if (daysOfWeek is CronParameter && daysOfMonth is CronParameter)
             {
-                throw new ScheduleParameterException("Invalid combination between days of week and days of month fields for timer:at");
+                throw new ScheduleParameterException(
+                    "Invalid combination between days of week and days of month fields for timer:at");
             }
             if (resultMonths != null && resultMonths.Count == 1 && (resultMonths.First().IsInt()))
             {
@@ -52,11 +54,11 @@ namespace com.espertech.esper.schedule
                 CronParameter parameter = null;
                 if (daysOfMonth is CronParameter)
                 {
-                    parameter = ((CronParameter) daysOfMonth);
+                    parameter = (CronParameter) daysOfMonth;
                 }
                 else if (daysOfWeek is CronParameter)
                 {
-                    parameter = ((CronParameter) daysOfWeek);
+                    parameter = (CronParameter) daysOfWeek;
                 }
                 if (parameter != null)
                 {
@@ -75,7 +77,8 @@ namespace com.espertech.esper.schedule
                 {
                     if (resultDaysOfMonth != null)
                     {
-                        throw new ScheduleParameterException("Invalid combination between days of week and days of month fields for timer:at");
+                        throw new ScheduleParameterException(
+                            "Invalid combination between days of week and days of month fields for timer:at");
                     }
                     resultDaysOfMonth = resultDaysOfWeek;
                     resultDaysOfWeek = null;
@@ -85,7 +88,8 @@ namespace com.espertech.esper.schedule
             {
                 if (resultDaysOfWeek != null)
                 {
-                    throw new ScheduleParameterException("Invalid combination between days of week and days of month fields for timer:at");
+                    throw new ScheduleParameterException(
+                        "Invalid combination between days of week and days of month fields for timer:at");
                 }
             }
             unitMap.Put(ScheduleUnit.DAYS_OF_WEEK, resultDaysOfWeek);
@@ -95,52 +99,65 @@ namespace com.espertech.esper.schedule
             {
                 unitMap.Put(ScheduleUnit.SECONDS, ComputeValues(args[5], ScheduleUnit.SECONDS));
             }
-            String timezone = null;
-            if (args.Length > 6) {
-                if (!(args[6] is WildcardParameter)) {
-                    if (!(args[6] is String)) {
-                        throw new ScheduleParameterException("Invalid timezone parameter '" + args[6] + "' for timer:at, expected a string-type value");
+            string timezone = null;
+            if (args.Length > 6)
+            {
+                if (!(args[6] is WildcardParameter))
+                {
+                    if (!(args[6] is string))
+                    {
+                        throw new ScheduleParameterException(
+                            "Invalid timezone parameter '" + args[6] + "' for timer:at, expected a string-type value");
                     }
-                    timezone = (String) args[6];
+                    timezone = (string) args[6];
                 }
             }
-            CronParameter optionalDayOfMonthOp = GetOptionalSpecialOp(daysOfMonth);
-            CronParameter optionalDayOfWeekOp = GetOptionalSpecialOp(daysOfWeek);
+            var optionalDayOfMonthOp = GetOptionalSpecialOp(daysOfMonth);
+            var optionalDayOfWeekOp = GetOptionalSpecialOp(daysOfWeek);
             return new ScheduleSpec(unitMap, timezone, optionalDayOfMonthOp, optionalDayOfWeekOp);
         }
-    
-        private static CronParameter GetOptionalSpecialOp(Object unitParameter) {
-            if (!(unitParameter is CronParameter)) {
+
+        public static string GetExpressionCountException(int length)
+        {
+            return "Invalid number of crontab parameters, expecting between 5 and 7 parameters, received " + length;
+        }
+
+        private static CronParameter GetOptionalSpecialOp(Object unitParameter)
+        {
+            if (!(unitParameter is CronParameter))
+            {
                 return null;
             }
             return (CronParameter) unitParameter;
         }
-    
-        private static SortedSet<int> ComputeValues(Object unitParameter, ScheduleUnit unit)
+
+        private static ICollection<int> ComputeValues(Object unitParameter, ScheduleUnit unit)
         {
-            if (unitParameter.IsInt())
+            ICollection<int> result;
+            if (unitParameter is int)
             {
-                var resultSet = new SortedSet<int>();
-                resultSet.Add(unitParameter.AsInt());
-                return resultSet;
+                result = new SortedSet<int>();
+                result.Add((int) unitParameter);
+                return result;
             }
-    
+
             // cron parameters not handled as number sets
-            if (unitParameter is CronParameter) {
+            if (unitParameter is CronParameter)
+            {
                 return null;
             }
-    
+
             var numberSet = (NumberSetParameter) unitParameter;
             if (numberSet.IsWildcard(unit.Min(), unit.Max()))
             {
                 return null;
             }
 
-            var result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
+            result = numberSet.GetValuesInRange(unit.Min(), unit.Max());
             var resultSorted = new SortedSet<int>();
             resultSorted.AddAll(result);
-    
+
             return resultSorted;
         }
     }
-}
+} // end of namespace

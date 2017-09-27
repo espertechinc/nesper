@@ -24,8 +24,13 @@ namespace com.espertech.esper.epl.table.onaction
     public class TableOnMergeView : TableOnViewBase
     {
         private readonly TableOnMergeViewFactory parent;
-    
-        public TableOnMergeView(SubordWMatchExprLookupStrategy lookupStrategy, TableStateInstance rootView, ExprEvaluatorContext exprEvaluatorContext, TableMetadata metadata, TableOnMergeViewFactory parent)
+
+        public TableOnMergeView(
+            SubordWMatchExprLookupStrategy lookupStrategy,
+            TableStateInstance rootView,
+            ExprEvaluatorContext exprEvaluatorContext,
+            TableMetadata metadata,
+            TableOnMergeViewFactory parent)
             : base(lookupStrategy, rootView, exprEvaluatorContext, metadata, parent.OnMergeHelper.IsRequiresWriteLock)
         {
             this.parent = parent;
@@ -69,8 +74,8 @@ namespace com.espertech.esper.epl.table.onaction
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraMergeWhenThens(false);}
                 }
             }
-            else {
-    
+            else
+            {
                 IList<TableOnMergeMatch> matched = parent.OnMergeHelper.Matched;
     
                 foreach (EventBean triggerEvent in triggerEvents) {

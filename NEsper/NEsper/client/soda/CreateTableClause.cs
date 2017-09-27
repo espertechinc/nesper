@@ -69,7 +69,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        /// Render create-table clause
+        /// RenderAny create-table clause
         /// </summary>
         /// <param name="writer">to render to</param>
         public void ToEPL(TextWriter writer)

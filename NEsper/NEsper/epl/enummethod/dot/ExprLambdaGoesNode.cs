@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -20,16 +22,16 @@ namespace com.espertech.esper.epl.enummethod.dot
     /// Represents the case-when-then-else control flow function is an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprLambdaGoesNode
+    public class ExprLambdaGoesNode 
         : ExprNodeBase
         , ExprEvaluator
         , ExprDeclaredOrLambdaNode
     {
         private readonly IList<string> _goesToNames;
 
-        public ExprLambdaGoesNode(IList<String> goesToNames)
+        public ExprLambdaGoesNode(IList<string> goesToNames)
         {
-            _goesToNames = goesToNames;
+            this._goesToNames = goesToNames;
         }
 
         public bool IsValidated
@@ -47,8 +49,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             get { return this; }
         }
 
-        public override ExprNode Validate(ExprValidationContext validationContext)
-        {
+        public override ExprNode Validate(ExprValidationContext validationContext) {
             throw new UnsupportedOperationException();
         }
 
@@ -67,13 +68,16 @@ namespace com.espertech.esper.epl.enummethod.dot
             throw new UnsupportedOperationException();
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
+            throw new UnsupportedOperationException();
+        }
+    
+        public override bool EqualsNode(ExprNode node) {
             return false;
         }
-
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
-        {
+    
+        public override void ToPrecedenceFreeEPL(TextWriter writer) {
         }
 
         public override ExprPrecedenceEnum Precedence
@@ -81,4 +85,6 @@ namespace com.espertech.esper.epl.enummethod.dot
             get { return ExprPrecedenceEnum.MINIMUM; }
         }
     }
-}
+    
+    
+} // end of namespace

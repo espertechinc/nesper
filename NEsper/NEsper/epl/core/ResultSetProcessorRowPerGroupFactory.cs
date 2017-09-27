@@ -92,7 +92,8 @@ namespace com.espertech.esper.epl.core
             AggregationService aggregationService,
             AgentInstanceContext agentInstanceContext)
         {
-            if (_noDataWindowSingleSnapshot && !_isHistoricalOnly) {
+            if (_noDataWindowSingleSnapshot && !_isHistoricalOnly)
+            {
                 return new ResultSetProcessorRowPerGroupUnbound(
                     this, _selectExprProcessor, orderByProcessor, aggregationService, agentInstanceContext);
             }

@@ -41,20 +41,20 @@ namespace com.espertech.esper.filter
             _exprNodeEval = exprNode.ExprEvaluator;
             _evaluatorContext = evaluatorContext;
         }
-    
+
         /// <summary>Evaluate the bool expression given the event as a stream zero event. </summary>
         /// <param name="theEvent">is the stream zero event (current event)</param>
         /// <returns>bool result of the expression</returns>
         public virtual bool Evaluate(EventBean theEvent)
         {
-            return EvaluatePerStream(new EventBean[] {theEvent});
+            return EvaluatePerStream(new EventBean[] { theEvent });
         }
-    
+
         protected virtual bool EvaluatePerStream(EventBean[] eventsPerStream)
         {
             try
             {
-                var result = (bool?) _exprNodeEval.Evaluate(new EvaluateParams(eventsPerStream, true, _evaluatorContext));
+                var result = (bool?)_exprNodeEval.Evaluate(new EvaluateParams(eventsPerStream, true, _evaluatorContext));
                 if (result == null)
                 {
                     return false;

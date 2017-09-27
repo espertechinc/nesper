@@ -7,9 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -21,7 +20,7 @@ namespace com.espertech.esper.epl.expression.table
             string tableName,
             Type[] providedTypes,
             string providedName,
-            ExprNode[] providedExpr,
+            IList<ExprNode> providedExpr,
             Type[] expectedTypes,
             string expectedName)
         {

@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.parse
     public class ExceptionConvertor
     {
         protected const string END_OF_INPUT_TEXT = "end-of-input";
-    
+
         /// <summary>
         /// Converts from a syntax error to a nice statement exception.
         /// </summary>
@@ -38,7 +38,7 @@ namespace com.espertech.esper.epl.parse
             var pair = Convert(e, expression, addPleaseCheck, parser);
             return new EPStatementSyntaxException(pair.First, pair.Second);
         }
-    
+
         /// <summary>
         /// Converts from a syntax error to a nice property exception.
         /// </summary>
@@ -52,7 +52,7 @@ namespace com.espertech.esper.epl.parse
             var pair = Convert(e, expression, addPleaseCheck, parser);
             return new PropertyAccessException(pair.First, pair.Second);
         }
-    
+
         /// <summary>
         /// Converts from a syntax error to a nice exception.
         /// </summary>
@@ -86,32 +86,37 @@ namespace com.espertech.esper.epl.parse
                 {
                     tAfter = tokenStream.Get(tIndex + 1);
                 }
-                if (tIndex - 1 >= 0) {
+                if (tIndex - 1 >= 0)
+                {
                     tBefore = tokenStream.Get(tIndex - 1);
                 }
-                if (tIndex - 2 >= 0) {
+                if (tIndex - 2 >= 0)
+                {
                     tBeforeBefore = tokenStream.Get(tIndex - 2);
                 }
             }
             else
             {
-                if (tokenStream.Size >= 1) {
+                if (tokenStream.Size >= 1)
+                {
                     tBeforeBefore = tokenStream.Get(tokenStream.Size - 1);
                 }
-                if (tokenStream.Size >= 2) {
+                if (tokenStream.Size >= 2)
+                {
                     tBefore = tokenStream.Get(tokenStream.Size - 2);
                 }
                 t = tokenStream.Get(tokenStream.Size - 1);
             }
-    
+
             IToken tEnd = null;
-            if (tokenStream.Size > 0) {
+            if (tokenStream.Size > 0)
+            {
                 tEnd = tokenStream.Get(tokenStream.Size - 1);
             }
-    
+
             var positionInfo = GetPositionInfo(t);
             var token = t.Type == EsperEPL2GrammarParser.Eof ? "end-of-input" : "'" + t.Text + "'";
-    
+
             var stack = parser.GetParaphrases();
             var check = "";
             var isSelect = stack.Count == 1 && stack.Peek().Equals("select clause");
@@ -120,7 +125,7 @@ namespace com.espertech.esper.epl.parse
                 var delimiter = "";
                 var checkList = new StringBuilder();
                 checkList.Append(", please check the ");
-                while(stack.Count != 0)
+                while (stack.Count != 0)
                 {
                     checkList.Append(delimiter);
                     checkList.Append(stack.Pop());
@@ -128,7 +133,7 @@ namespace com.espertech.esper.epl.parse
                 }
                 check = checkList.ToString();
             }
-    
+
             // check if token is a reserved keyword
             var keywords = parser.GetKeywords();
             var reservedKeyword = false;
@@ -158,23 +163,25 @@ namespace com.espertech.esper.epl.parse
                     token += " ('" + tBefore.Text + "' is a reserved keyword)";
                     reservedKeyword = true;
                 }
-                else if (tEnd != null && keywords.Contains("'" + tEnd.Text.ToLower() + "'")) {
+                else if (tEnd != null && keywords.Contains("'" + tEnd.Text.ToLower() + "'"))
+                {
                     token += " ('" + tEnd.Text + "' is a reserved keyword)";
                     reservedKeyword = true;
                 }
             }
-    
+
             // special handling for the select-clause "as" keyword, which is required
-            if (isSelect && !reservedKeyword) {
+            if (isSelect && !reservedKeyword)
+            {
                 check += GetSelectClauseAsText(tBeforeBefore, t);
             }
-    
+
             message = "Incorrect syntax near " + token + positionInfo + check;
             if (e is NoViableAltException || e is LexerNoViableAltException || CheckForInputMismatchWithNoExpected(e))
             {
                 var nvaeToken = e.OffendingToken;
                 var nvaeTokenType = nvaeToken != null ? nvaeToken.Type : EsperEPL2GrammarLexer.Eof;
-    
+
                 if (nvaeTokenType == EsperEPL2GrammarLexer.Eof)
                 {
                     if (token.Equals(END_OF_INPUT_TEXT))
@@ -210,7 +217,7 @@ namespace com.espertech.esper.epl.parse
                         {
                             IToken next = tokenStream.Get(currentIndex);
                             currentIndex++;
-    
+
                             var quotedToken = "'" + next.Text + "'";
                             if (parser.GetKeywords().Contains(quotedToken))
                             {
@@ -224,8 +231,8 @@ namespace com.espertech.esper.epl.parse
             }
             else if (e is InputMismatchException)
             {
-                var mismatched = (InputMismatchException) e;
-    
+                var mismatched = (InputMismatchException)e;
+
                 string expected;
                 var expectedTokens = mismatched.GetExpectedTokens().ToList();
                 if (expectedTokens.Count > 1)
@@ -236,7 +243,8 @@ namespace com.espertech.esper.epl.parse
                     for (var i = 0; i < expectedTokens.Count; i++)
                     {
                         writer.Write(delimiter);
-                        if (i > 5) {
+                        if (i > 5)
+                        {
                             writer.Write("...");
                             writer.Write(expectedTokens.Count - 5);
                             writer.Write(" more");
@@ -248,28 +256,31 @@ namespace com.espertech.esper.epl.parse
                     writer.Write("}");
                     expected = writer.ToString();
                 }
-                else {
+                else
+                {
                     expected = GetTokenText(parser, expectedTokens[0]);
                 }
-    
+
                 var offendingTokenType = mismatched.OffendingToken.Type;
                 var unexpected = GetTokenText(parser, offendingTokenType);
-    
+
                 var expecting = " expecting " + expected.Trim() + " but found " + unexpected.Trim();
                 message = "Incorrect syntax near " + token + expecting + positionInfo + check;
             }
-    
+
             return new UniformPair<string>(message, expression);
         }
-    
+
         private static bool CheckForInputMismatchWithNoExpected(RecognitionException e)
         {
-            if (!(e is InputMismatchException)) {
+            if (!(e is InputMismatchException))
+            {
                 return false;
             }
 
             var expectedTokens = e.GetExpectedTokens();
-            if (expectedTokens.Count > 1) {
+            if (expectedTokens.Count > 1)
+            {
                 return false;
             }
             return
@@ -277,22 +288,29 @@ namespace com.espertech.esper.epl.parse
                 expectedTokens.ToList()[0] == -1;
         }
 
-        private static string GetTokenText(EsperEPL2GrammarParser parser, int tokenIndex) {
+        private static string GetTokenText(EsperEPL2GrammarParser parser, int tokenIndex)
+        {
             var expected = END_OF_INPUT_TEXT;
-            if ((tokenIndex >= 0) && (tokenIndex < parser.TokenNames.Length)) {
-                expected = parser.TokenNames[tokenIndex];
+
+            Vocabulary vocabulary = (Vocabulary) parser.Vocabulary;
+
+            if ((tokenIndex >= 0) && (tokenIndex <= vocabulary.getMaxTokenType()))
+            {
+                expected = parser.Vocabulary.GetSymbolicName(tokenIndex);
             }
             var lexerTokenParaphrases = EsperEPL2GrammarLexer.GetLexerTokenParaphrases();
-            if (lexerTokenParaphrases.Get(tokenIndex) != null) {
+            if (lexerTokenParaphrases.Get(tokenIndex) != null)
+            {
                 expected = lexerTokenParaphrases.Get(tokenIndex);
             }
             var parserTokenParaphrases = EsperEPL2GrammarParser.GetParserTokenParaphrases();
-            if (parserTokenParaphrases.Get(tokenIndex) != null) {
+            if (parserTokenParaphrases.Get(tokenIndex) != null)
+            {
                 expected = parserTokenParaphrases.Get(tokenIndex);
             }
             return expected;
         }
-    
+
         /// <summary>
         /// Returns the position information string for a parser exception.
         /// </summary>
@@ -304,12 +322,14 @@ namespace com.espertech.esper.epl.parse
                     ? " at line " + t.Line + " column " + t.Column
                     : "";
         }
-    
-        private static string GetSelectClauseAsText(IToken tBeforeBefore, IToken t) {
+
+        private static string GetSelectClauseAsText(IToken tBeforeBefore, IToken t)
+        {
             if (tBeforeBefore != null &&
                 tBeforeBefore.Type == EsperEPL2GrammarParser.IDENT &&
                 t != null &&
-                t.Type == EsperEPL2GrammarParser.IDENT) {
+                t.Type == EsperEPL2GrammarParser.IDENT)
+            {
                 return " (did you forget 'as'?)";
             }
             return "";

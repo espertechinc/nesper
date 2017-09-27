@@ -15,17 +15,16 @@ using com.espertech.esper.dispatch;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>
-    /// Dispatchable for dispatching events to Update listeners.
-    /// </summary>
-
+    /// <summary>Dispatchable for dispatching events to update eventHandlers.</summary>
     public class PatternListenerDispatch : Dispatchable
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EPStatement _statement;
         private readonly EPServiceProvider _serviceProvider;
         private readonly ICollection<UpdateEventHandler> _eventHandlers;
+
         private EventBean _singleEvent;
         private List<EventBean> _eventList;
 
@@ -34,11 +33,11 @@ namespace com.espertech.esper.core.service
         /// </summary>
         /// <param name="serviceProvider">The service provider.</param>
         /// <param name="statement">The statement.</param>
-        /// <param name="eventHandlers">The event handlers.</param>
-
-        public PatternListenerDispatch(EPServiceProvider serviceProvider,
-                                       EPStatement statement,
-                                       ICollection<UpdateEventHandler> eventHandlers)
+        /// <param name="eventHandlers">is the eventHandlers to dispatch to.</param>
+        public PatternListenerDispatch(
+            EPServiceProvider serviceProvider,
+            EPStatement statement,
+            ICollection<UpdateEventHandler> eventHandlers)
         {
             _serviceProvider = serviceProvider;
             _statement = statement;
@@ -48,8 +47,7 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Add an event to be dispatched.
         /// </summary>
-        /// <param name="theEvent">event to add</param>
-
+        /// <param name="theEvent">to add</param>
         public virtual void Add(EventBean theEvent)
         {
             if (_singleEvent == null)
@@ -60,10 +58,9 @@ namespace com.espertech.esper.core.service
             {
                 if (_eventList == null)
                 {
-                    _eventList = new List<EventBean>();
+                    _eventList = new List<EventBean>(5);
                     _eventList.Add(_singleEvent);
                 }
-
                 _eventList.Add(theEvent);
             }
         }
@@ -94,10 +91,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        /// <summary>
-        /// Execute any listeners.
-        /// </summary>
-        public virtual void Execute()
+        public void Execute()
         {
             EventBean[] eventArray;
 
@@ -109,20 +103,30 @@ namespace com.espertech.esper.core.service
             }
             else
             {
-                eventArray = new[] { _singleEvent };
+                eventArray = new EventBean[]
+                {
+                    _singleEvent
+                };
                 _singleEvent = null;
             }
 
             FireUpdateEvent(eventArray, null);
         }
 
-        /// <summary> Returns true if at least one event has been added.</summary>
-        /// <returns> true if it has data, false if not
-        /// </returns>
-
+        /// <summary>
+        /// Returns true if at least one event has been added.
+        /// </summary>
+        /// <value>true if it has data, false if not</value>
         public virtual bool HasData
         {
-            get { return _singleEvent != null; }
+            get
+            {
+                if (_singleEvent != null)
+                {
+                    return true;
+                }
+                return false;
+            }
         }
     }
-}
+} // end of namespace

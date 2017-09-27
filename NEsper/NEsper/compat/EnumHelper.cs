@@ -118,5 +118,14 @@ namespace com.espertech.esper.compat
             Array array = Enum.GetValues(typeof(T));
             return array.Length;
         }
+
+        public static void ForEach<T>(Action<T> valueHandler)
+        {
+            Array array = Enum.GetValues(typeof(T));
+            for(int ii = 0; ii < array.Length; ii++)
+            {
+                valueHandler((T)array.GetValue(ii));
+            }
+        }
     }
 }

@@ -11,36 +11,40 @@ using System.IO;
 
 namespace com.espertech.esper.client.soda
 {
-    /// <summary>
-    /// Create an index on a named window.
-    /// </summary>
+    /// <summary>Create an index on a named window.</summary>
     [Serializable]
     public class CreateIndexColumn
     {
-        /// <summary>Ctor. </summary>
+        /// <summary>Ctor.</summary>
         public CreateIndexColumn()
         {
             IndexColumnType = CreateIndexColumnType.HASH;
         }
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="columnName">column name</param>
-        public CreateIndexColumn(String columnName)
+        public CreateIndexColumn(string columnName)
         {
             IndexColumnType = CreateIndexColumnType.HASH;
             ColumnName = columnName;
         }
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="columnName">colum name</param>
         /// <param name="type">index type</param>
-        public CreateIndexColumn(String columnName, CreateIndexColumnType type)
+        public CreateIndexColumn(string columnName, CreateIndexColumnType type)
         {
             ColumnName = columnName;
             IndexColumnType = type;
         }
 
-        /// <summary>Renders the clause in textual representation. </summary>
+        /// <summary>
+        /// Renders the clause in textual representation.
+        /// </summary>
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
@@ -48,18 +52,20 @@ namespace com.espertech.esper.client.soda
             if (IndexColumnType != CreateIndexColumnType.HASH)
             {
                 writer.Write(' ');
-                writer.Write(IndexColumnType.ToString().ToLower());
+                writer.Write(IndexColumnType.ToString().ToLowerInvariant());
             }
         }
 
         /// <summary>
-        /// Gets or sets the column name.
+        /// Returns the column name.
         /// </summary>
-        /// <value>The name of the column.</value>
+        /// <value>column name</value>
         public string ColumnName { get; set; }
 
-        /// <summary>Returns the index type. </summary>
+        /// <summary>
+        /// Returns the index type.
+        /// </summary>
         /// <value>index type</value>
         public CreateIndexColumnType IndexColumnType { get; set; }
     }
-}
+} // end of namespace

@@ -174,11 +174,11 @@ namespace NEsper.Benchmark.Perforator
         {
             Configuration configuration = new Configuration();
             configuration.AddEventType<BidData>();
-            configuration.EngineDefaults.ExpressionConfig.IsUdfCache = true;
-            configuration.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = false;
-            configuration.EngineDefaults.LoggingConfig.IsEnableTimerDebug = false;
-            configuration.EngineDefaults.MetricsReportingConfig.IsEnableMetricsReporting = false;
-            configuration.EngineDefaults.MetricsReportingConfig.IsThreading = false;
+            configuration.EngineDefaults.Expression.IsUdfCache = true;
+            configuration.EngineDefaults.Logging.IsEnableExecutionDebug = false;
+            configuration.EngineDefaults.Logging.IsEnableTimerDebug = false;
+            configuration.EngineDefaults.MetricsReporting.IsEnableMetricsReporting = false;
+            configuration.EngineDefaults.MetricsReporting.IsThreading = false;
 
             _espServiceProvider = (EPServiceProviderSPI) EPServiceProviderManager.GetDefaultProvider(configuration);
             _espAdministrator = _espServiceProvider.EPAdministrator;

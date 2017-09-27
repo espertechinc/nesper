@@ -22,7 +22,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly ContextControllerLifecycleCallback _activationCallback;
 
         private readonly IDictionary<int, ContextControllerInstanceHandle> _handleCategories =
-            new LinkedHashMap<int, ContextControllerInstanceHandle>();
+            new Dictionary<int, ContextControllerInstanceHandle>();
 
         private int _currentSubpathId;
         private readonly ContextControllerCategoryFactoryImpl _factory;

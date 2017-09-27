@@ -9,8 +9,9 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -36,9 +37,10 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            Assert.IsFalse(_factory.CanReuse(new LastElementView(null)));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            Assert.False(_factory.CanReuse(new LastElementView(null), agentInstanceContext));
             EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
-            Assert.IsTrue(_factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(), type, null)));
+            Assert.IsTrue(_factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(), type, null), agentInstanceContext));
         }
     
         private void TryParameter(Object[] param)

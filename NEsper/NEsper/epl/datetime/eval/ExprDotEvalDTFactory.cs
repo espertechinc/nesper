@@ -36,14 +36,15 @@ namespace com.espertech.esper.epl.datetime.eval
             EPType inputType,
             IList<ExprNode> parameters,
             ExprDotNodeFilterAnalyzerInput inputDesc,
-            TimeZoneInfo timeZone)
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus)
         {
             // verify input
             String message = "Date-time enumeration method '" + dtMethodName +
-                             "' requires either a DateTime or long value as input or events of an event type that declares a timestamp property";
+                             "' requires either a DateTime, DateTimeEx or long value as input or events of an event type that declares a timestamp property";
             if (inputType is EventEPType)
             {
-                if (((EventEPType) inputType).EventType.StartTimestampPropertyName == null)
+                if (((EventEPType)inputType).EventType.StartTimestampPropertyName == null)
                 {
                     throw new ExprValidationException(message);
                 }
@@ -56,7 +57,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 }
                 if (inputType is ClassEPType)
                 {
-                    ClassEPType classEPType = (ClassEPType) inputType;
+                    ClassEPType classEPType = (ClassEPType)inputType;
                     if (!TypeHelper.IsDateTime(classEPType.Clazz))
                     {
                         throw new ExprValidationException(
@@ -86,19 +87,19 @@ namespace com.espertech.esper.epl.datetime.eval
 
                 // validate parameters
                 DotMethodUtil.ValidateParametersDetermineFootprint(
-                    currentMethod.Footprints(), 
-                    DotMethodTypeEnum.DATETIME, 
-                    currentMethodName, footprintProvided, 
+                    currentMethod.Footprints(),
+                    DotMethodTypeEnum.DATETIME,
+                    currentMethodName, footprintProvided,
                     DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
                 if (opFactory is CalendarOpFactory)
                 {
-                    CalendarOp calendarOp = ((CalendarOpFactory) opFactory).GetOp(currentMethod, currentMethodName, currentParameters, evaluators);
+                    CalendarOp calendarOp = ((CalendarOpFactory)opFactory).GetOp(currentMethod, currentMethodName, currentParameters, evaluators);
                     calendarOps.Add(calendarOp);
                 }
                 else if (opFactory is ReformatOpFactory)
                 {
-                    reformatOp = ((ReformatOpFactory) opFactory).GetOp(timeZone, currentMethod, currentMethodName, currentParameters);
+                    reformatOp = ((ReformatOpFactory)opFactory).GetOp(timeZone, timeAbacus, currentMethod, currentMethodName, currentParameters);
 
                     // compile filter analyzer information if there are no calendar ops in the chain
                     if (calendarOps.IsEmpty())
@@ -112,7 +113,7 @@ namespace com.espertech.esper.epl.datetime.eval
                 }
                 else if (opFactory is IntervalOpFactory)
                 {
-                    intervalOp = ((IntervalOpFactory) opFactory).GetOp(streamTypeService, currentMethod, currentMethodName, currentParameters, evaluators);
+                    intervalOp = ((IntervalOpFactory)opFactory).GetOp(streamTypeService, currentMethod, currentMethodName, currentParameters, timeZone, timeAbacus);
 
                     // compile filter analyzer information if there are no calendar ops in the chain
                     if (calendarOps.IsEmpty())
@@ -150,7 +151,10 @@ namespace com.espertech.esper.epl.datetime.eval
             ExprDotEval dotEval;
             EPType returnType;
 
-            dotEval = new ExprDotEvalDT(calendarOps, timeZone, reformatOp, intervalOp, EPTypeHelper.GetClassSingleValued(inputType), EPTypeHelper.GetEventTypeSingleValued(inputType));
+            dotEval = new ExprDotEvalDT(
+                calendarOps, timeZone, timeAbacus, reformatOp, intervalOp, 
+                EPTypeHelper.GetClassSingleValued(inputType),
+                EPTypeHelper.GetEventTypeSingleValued(inputType));
             returnType = dotEval.TypeInfo;
             return new ExprDotEvalDTMethodDesc(dotEval, returnType, filterAnalyzerDesc);
         }
@@ -162,18 +166,20 @@ namespace com.espertech.esper.epl.datetime.eval
             {
                 ExprNode innerExpr = parameters[i];
                 ExprEvaluator inner = innerExpr.ExprEvaluator;
-    
+
                 // Time periods get special attention
-                if (innerExpr is ExprTimePeriod) {
-    
-                    var timePeriod = (ExprTimePeriod) innerExpr;
+                if (innerExpr is ExprTimePeriod)
+                {
+
+                    var timePeriod = (ExprTimePeriod)innerExpr;
                     inputExpr[i] = new ProxyExprEvaluator
                     {
                         ProcEvaluate = evaluateParams => timePeriod.EvaluateGetTimePeriod(evaluateParams),
-                        ReturnType = typeof (TimePeriod),
+                        ReturnType = typeof(TimePeriod),
                     };
                 }
-                else {
+                else
+                {
                     inputExpr[i] = inner;
                 }
             }

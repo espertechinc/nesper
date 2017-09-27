@@ -8,7 +8,8 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.agg.service;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
@@ -41,8 +42,8 @@ namespace com.espertech.esper.epl.agg
             // apply two rows, all aggregators evaluated their sub-expressions(constants 5 and 2) twice
             _service.ApplyEnter(new EventBean[1], null, null);
             _service.ApplyEnter(new EventBean[1], null, null);
-            Assert.AreEqual(10, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(4, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(10, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(4, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
         }
     
         [Test]
@@ -52,8 +53,8 @@ namespace com.espertech.esper.epl.agg
             _service.ApplyLeave(new EventBean[1], null, null);
             _service.ApplyLeave(new EventBean[1], null, null);
             _service.ApplyLeave(new EventBean[1], null, null);
-            Assert.AreEqual(-15, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(-6, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(-15, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(-6, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
         }
     
         private static EventBean[][] MakeEvents(int countRows)

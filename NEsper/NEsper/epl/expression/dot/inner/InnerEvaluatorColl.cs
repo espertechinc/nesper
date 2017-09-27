@@ -10,33 +10,30 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.expression.dot.inner
 {
     public class InnerEvaluatorColl : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
     
         public InnerEvaluatorColl(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            _rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return rootEvaluator.Evaluate(evaluateParams);
+            return _rootEvaluator.Evaluate(evaluateParams);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams) {
             return null;
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -51,7 +48,7 @@ namespace com.espertech.esper.epl.expression.dot.inner
             get { return null; }
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams) {
             return null;
         }
 

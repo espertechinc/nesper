@@ -24,13 +24,13 @@ namespace com.espertech.esper.pattern
         private readonly EvalMatchUntilNode _evalMatchUntilNode;
         private MatchedEventMap _beginState;
         private readonly IList<EventBean>[] _matchedEventArrays;
-    
+
         private EvalStateNode _stateMatcher;
         private EvalStateNode _stateUntil;
         private int _numMatches;
         private int? _lowerbounds;
         private int? _upperbounds;
-    
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -42,35 +42,45 @@ namespace com.espertech.esper.pattern
             _matchedEventArrays = new IList<EventBean>[evalMatchUntilNode.FactoryNode.TagsArrayed.Length];
             _evalMatchUntilNode = evalMatchUntilNode;
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             bool quit = PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState);
-            if (!quit) {
-                foreach (List<EventBean> list in _matchedEventArrays) {
-                    if (list == null) {
+            if (!quit)
+            {
+                foreach (List<EventBean> list in _matchedEventArrays)
+                {
+                    if (list == null)
+                    {
                         continue;
                     }
-                    foreach (EventBean @event in list) {
-                        if (matchEvent.Contains(@event)) {
+                    foreach (EventBean @event in list)
+                    {
+                        if (matchEvent.Contains(@event))
+                        {
                             quit = true;
                             break;
                         }
                     }
-                    if (quit) {
+                    if (quit)
+                    {
                         break;
                     }
                 }
             }
-            if (quit) {
+            if (quit)
+            {
                 Quit();
                 ParentEvaluator.EvaluateFalse(this, true);
             }
-            else {
-                if (_stateMatcher != null) {
+            else
+            {
+                if (_stateMatcher != null)
+                {
                     _stateMatcher.RemoveMatch(matchEvent);
                 }
-                if (_stateUntil != null) {
+                if (_stateUntil != null)
+                {
                     _stateUntil.RemoveMatch(matchEvent);
                 }
             }
@@ -118,7 +128,7 @@ namespace com.espertech.esper.pattern
                     }
                 });
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
             Instrument.With(
@@ -144,11 +154,11 @@ namespace com.espertech.esper.pattern
                                 }
                                 if (theEvent is EventBean)
                                 {
-                                    _matchedEventArrays[i].Add((EventBean) theEvent);
+                                    _matchedEventArrays[i].Add((EventBean)theEvent);
                                 }
                                 else
                                 {
-                                    EventBean[] arrayEvents = (EventBean[]) theEvent;
+                                    EventBean[] arrayEvents = (EventBean[])theEvent;
                                     _matchedEventArrays[i].AddAll(arrayEvents);
                                 }
 
@@ -204,7 +214,7 @@ namespace com.espertech.esper.pattern
                         }
                     }
                     else
-                        // handle until-node
+                    // handle until-node
                     {
                         QuitInternal();
 
@@ -223,14 +233,14 @@ namespace com.espertech.esper.pattern
                     }
                 });
         }
-    
+
         public static MatchedEventMap Consolidate(MatchedEventMap beginState, IList<EventBean>[] matchedEventList, int[] tagsArrayed)
         {
             if (tagsArrayed == null)
             {
                 return beginState;
             }
-    
+
             for (int i = 0; i < tagsArrayed.Length; i++)
             {
                 if (matchedEventList[i] == null)
@@ -240,10 +250,10 @@ namespace com.espertech.esper.pattern
                 EventBean[] eventsForTag = matchedEventList[i].ToArray();
                 beginState.Add(tagsArrayed[i], eventsForTag);
             }
-    
+
             return beginState;
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
             Instrument.With(
@@ -265,10 +275,11 @@ namespace com.espertech.esper.pattern
                     ParentEvaluator.EvaluateFalse(this, true);
                 });
         }
-    
+
         public override void Quit()
         {
-            if (_stateMatcher == null && _stateUntil == null) {
+            if (_stateMatcher == null && _stateUntil == null)
+            {
                 return;
             }
 
@@ -277,18 +288,20 @@ namespace com.espertech.esper.pattern
                 i => i.APatternMatchUntilQuit(),
                 QuitInternal);
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitMatchUntil(_evalMatchUntilNode.FactoryNode, this, _matchedEventArrays, _beginState);
-            if (_stateMatcher != null) {
+            if (_stateMatcher != null)
+            {
                 _stateMatcher.Accept(visitor);
             }
-            if (_stateUntil != null) {
+            if (_stateUntil != null)
+            {
                 _stateUntil.Accept(visitor);
             }
         }
-    
+
         public override String ToString()
         {
             return "EvalMatchUntilStateNode";

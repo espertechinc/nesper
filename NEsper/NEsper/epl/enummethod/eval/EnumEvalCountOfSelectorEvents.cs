@@ -28,12 +28,13 @@ namespace com.espertech.esper.epl.enummethod.eval
         public object EvaluateEnumMethod(EventBean[] eventsLambda, ICollection<object> target, bool isNewData, ExprEvaluatorContext context)
         {
             int count = 0;
-    
+
+            var evaluateParams = new EvaluateParams(eventsLambda, isNewData, context);
             foreach (EventBean next in target)
             {
                 eventsLambda[StreamNumLambda] = next;
 
-                var pass = (bool?)InnerExpression.Evaluate(new EvaluateParams(eventsLambda, isNewData, context));
+                var pass = (bool?)InnerExpression.Evaluate(evaluateParams);
                 if (!pass.GetValueOrDefault(false)) {
                     continue;
                 }

@@ -14,6 +14,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.epl.db
@@ -28,6 +29,7 @@ namespace com.espertech.esper.epl.db
         private readonly IDictionary<String, DatabaseConnectionFactory> _connectionFactories;
         private readonly SchedulingService _schedulingService;
         private readonly ScheduleBucket _scheduleBucket;
+        private readonly EngineImportService _engineImportService;
 
         /// <summary> Ctor.</summary>
         /// <param name="mapDatabaseRef">is a map of database name and database configuration entries
@@ -36,12 +38,17 @@ namespace com.espertech.esper.epl.db
         /// </param>
         /// <param name="scheduleBucket">is a system bucket for all scheduling callbacks for caches
         /// </param>
-        public DatabaseConfigServiceImpl(IDictionary<String, ConfigurationDBRef> mapDatabaseRef, SchedulingService schedulingService, ScheduleBucket scheduleBucket)
+        public DatabaseConfigServiceImpl(
+            IDictionary<String, ConfigurationDBRef> mapDatabaseRef,
+            SchedulingService schedulingService,
+            ScheduleBucket scheduleBucket,
+            EngineImportService engineImportService)
         {
             _mapDatabaseRef = mapDatabaseRef;
             _connectionFactories = new Dictionary<String, DatabaseConnectionFactory>();
             _schedulingService = schedulingService;
             _scheduleBucket = scheduleBucket;
+            _engineImportService = engineImportService;
         }
 
         /// <summary>

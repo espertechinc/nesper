@@ -51,8 +51,10 @@ namespace com.espertech.esper.epl.annotation
 
         public static Object GetValue(AnnotationDesc desc)
         {
-            foreach (var pair in desc.Attributes) {
-                if (pair.First.ToLower() == "value") {
+            foreach (var pair in desc.Attributes)
+            {
+                if (pair.First.ToLower() == "value")
+                {
                     return pair.Second;
                 }
             }
@@ -127,6 +129,7 @@ namespace com.espertech.esper.epl.annotation
             // resolve attribute type
             try
             {
+                engineImportService.GetClassLoader(); // Currently unused
                 return engineImportService.ResolveAnnotation(attributeTypeNameForCLR);
             }
             catch (EngineImportException e)
@@ -166,7 +169,7 @@ namespace com.espertech.esper.epl.annotation
             }
 
             // Create the attribute
-            var attributeInstance = (Attribute) theConstructor.Invoke(null);
+            var attributeInstance = (Attribute)theConstructor.Invoke(null);
             // Create a collection of properties that have been explicitly set for later
             var explicitPropertyTable = new HashSet<string>();
 
@@ -242,7 +245,7 @@ namespace com.espertech.esper.epl.annotation
                     }
                 }
             }
-            
+
             if (attributeInstance is HintAttribute)
             {
                 HintEnumExtensions.ValidateGetListed(attributeInstance);
@@ -269,7 +272,7 @@ namespace com.espertech.esper.epl.annotation
                 }
                 else if (magicPropertyType.IsEnum && (propertyValue is string))
                 {
-                    return Enum.Parse(magicPropertyType, (string) propertyValue, true);
+                    return Enum.Parse(magicPropertyType, (string)propertyValue, true);
                 }
                 else if (!propertyValue.GetType().IsAssignableFrom(magicPropertyType))
                 {
@@ -382,7 +385,7 @@ namespace com.espertech.esper.epl.annotation
             return t.IsValueType ? Activator.CreateInstance(t) : null;
         }
 
-        public static Attribute FindAttribute(IEnumerable<Attribute> attributes, Type attributeType)
+        public static Attribute FindAnnotation(IEnumerable<Attribute> attributes, Type attributeType)
         {
             if (!attributeType.IsSubclassOrImplementsInterface<Attribute>())
             {
@@ -397,24 +400,27 @@ namespace com.espertech.esper.epl.annotation
                     attr => TypeHelper.IsSubclassOrImplementsInterface(attr.GetType(), (attributeType)));
         }
 
-        public static Attribute FindAttribute(Attribute[] annotations, Type annotationClass)
+        public static Attribute FindAnnotation(Attribute[] annotations, Type annotationClass)
         {
             if (annotations == null || annotations.Length == 0)
             {
                 return null;
             }
 
-            return annotations.FirstOrDefault(anno => 
+            return annotations.FirstOrDefault(anno =>
                 anno.GetType() == annotationClass ||
                 anno.GetType().IsSubclassOf(annotationClass));
         }
 
-        public static List<Attribute> FindAttributes(Attribute[] annotations, Type annotationClass) {
-            if (!TypeHelper.IsSubclassOrImplementsInterface(annotationClass, typeof(Attribute))) {
+        public static List<Attribute> FindAttributes(Attribute[] annotations, Type annotationClass)
+        {
+            if (!TypeHelper.IsSubclassOrImplementsInterface(annotationClass, typeof(Attribute)))
+            {
                 throw new ArgumentException("Class " + annotationClass.FullName + " is not an attribute class");
             }
 
-            if (annotations == null || annotations.Length == 0) {
+            if (annotations == null || annotations.Length == 0)
+            {
                 return null;
             }
 
@@ -430,18 +436,21 @@ namespace com.espertech.esper.epl.annotation
 
         public static String GetExpectSingleStringValue(String msgPrefix, IList<AnnotationDesc> annotationsSameName)
         {
-            if (annotationsSameName.Count > 1) {
+            if (annotationsSameName.Count > 1)
+            {
                 throw new ExprValidationException(msgPrefix + " multiple annotations provided named '" + annotationsSameName[0].Name + "'");
             }
             var annotation = annotationsSameName[0];
             var value = AnnotationUtil.GetValue(annotation);
-            if (value == null) {
+            if (value == null)
+            {
                 throw new ExprValidationException(msgPrefix + " no value provided for annotation '" + annotation.Name + "', expected a value");
             }
-            if (!(value is String)) {
+            if (!(value is String))
+            {
                 throw new ExprValidationException(msgPrefix + " string value expected for annotation '" + annotation.Name + "'");
             }
-            return (String) value;
+            return (String)value;
         }
     }
 }

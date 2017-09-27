@@ -56,10 +56,10 @@ namespace com.espertech.esper.events.xml
             {
                 Log.Debug("Determining XPath expression for property '" + propertyName + "'");
             }
-    
+
             var ctx = new XPathNamespaceContext();
             var namespaces = schemaModel.Namespaces;
-    
+
             string defaultNamespacePrefix = null;
             for (int i = 0; i < namespaces.Count; i++)
             {
@@ -71,33 +71,35 @@ namespace com.espertech.esper.events.xml
                 }
             }
 
-            Property property = PropertyParser.ParseAndWalk(propertyName);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             var isDynamic = property.IsDynamic;
-    
+
             var rootComplexElement = SchemaUtil.FindRootElement(schemaModel, @namespace, rootElementName);
             string prefix = ctx.LookupPrefix(rootComplexElement.Namespace);
-            if (prefix == null) {
+            if (prefix == null)
+            {
                 prefix = "";
             }
-            else {
+            else
+            {
                 prefix += ':';
             }
-    
+
             var xPathBuf = new StringBuilder();
             xPathBuf.Append('/');
             xPathBuf.Append(prefix);
             if (rootElementName.StartsWith("//"))
             {
-                xPathBuf.Append(rootElementName.Substring(2));    
+                xPathBuf.Append(rootElementName.Substring(2));
             }
             else
             {
                 xPathBuf.Append(rootElementName);
             }
-    
+
             var parentComplexElement = rootComplexElement;
             Pair<String, XPathResultType> pair = null;
-    
+
             if (!(property is NestedProperty))
             {
                 pair = MakeProperty(rootComplexElement, property, ctx, true, isDynamic, defaultNamespacePrefix);
@@ -121,23 +123,23 @@ namespace com.espertech.esper.events.xml
                     {
                         throw new PropertyAccessException("Failed to locate property '" + propertyName + "' nested property part '" + property.PropertyNameAtomic + "' in schema");
                     }
-    
+
                     var text = propertyNested.PropertyNameAtomic;
                     var obj = SchemaUtil.FindPropertyMapping(parentComplexElement, text);
                     if (obj is SchemaElementComplex)
                     {
-                        parentComplexElement = (SchemaElementComplex) obj;
+                        parentComplexElement = (SchemaElementComplex)obj;
                     }
                     xPathBuf.Append(pair.First);
                 }
             }
-    
+
             var xPath = xPathBuf.ToString();
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
             {
                 Log.Debug(".parse XPath for property '" + propertyName + "' is expression=" + xPath);
             }
-    
+
             // Compile assembled XPath expression
             if (Log.IsDebugEnabled)
             {
@@ -149,7 +151,8 @@ namespace com.espertech.esper.events.xml
             {
                 expr = XPathExpression.Compile(xPath, ctx);
             }
-            catch (XPathException e) {
+            catch (XPathException e)
+            {
                 String detail = "Error constructing XPath expression from property expression '" + propertyName + "' expression '" + xPath + "'";
                 if (e.Message != null)
                 {
@@ -157,7 +160,7 @@ namespace com.espertech.esper.events.xml
                 }
                 throw new EPException(detail, e);
             }
-    
+
             // get type
             var item = property.GetPropertyTypeSchema(rootComplexElement, eventAdapterService);
             if ((item == null) && (!isDynamic))
@@ -165,7 +168,7 @@ namespace com.espertech.esper.events.xml
                 return null;
             }
 
-            var resultType = isDynamic ? typeof (XmlNode) : SchemaUtil.ToReturnType(item);
+            var resultType = isDynamic ? typeof(XmlNode) : SchemaUtil.ToReturnType(item);
 
             FragmentFactory fragmentFactory = null;
             if (isAllowFragment)
@@ -180,17 +183,19 @@ namespace com.espertech.esper.events.xml
         {
             var text = property.PropertyNameAtomic;
             var obj = SchemaUtil.FindPropertyMapping(parent, text);
-            if ((obj is SchemaElementSimple) || (obj is SchemaElementComplex)){
-                return MakeElementProperty((SchemaElement) obj, property, ctx, isLast, isDynamic, defaultNamespacePrefix);
+            if ((obj is SchemaElementSimple) || (obj is SchemaElementComplex))
+            {
+                return MakeElementProperty((SchemaElement)obj, property, ctx, isLast, isDynamic, defaultNamespacePrefix);
             }
-            if (obj != null) {
-                return MakeAttributeProperty((SchemaItemAttribute) obj, property, ctx);
+            if (obj != null)
+            {
+                return MakeAttributeProperty((SchemaItemAttribute)obj, property, ctx);
             }
             if (isDynamic)
             {
                 return MakeElementProperty(null, property, ctx, isLast, isDynamic, defaultNamespacePrefix);
             }
-            
+
             return null;
         }
 
@@ -217,7 +222,7 @@ namespace com.espertech.esper.events.xml
             {
                 throw new Exception("Mapped properties not applicable to attributes");
             }
- 
+
             throw new Exception("Indexed properties not applicable to attributes");
         }
 
@@ -228,13 +233,14 @@ namespace com.espertech.esper.events.xml
             {
                 type = XPathResultType.Any;
             }
-            else if (schemaElement is SchemaElementSimple) {
-                var element = (SchemaElementSimple) schemaElement;
+            else if (schemaElement is SchemaElementSimple)
+            {
+                var element = (SchemaElementSimple)schemaElement;
                 type = SchemaUtil.SimpleTypeToResultType(element.SimpleType);
             }
             else
             {
-                var complex = (SchemaElementComplex) schemaElement;
+                var complex = (SchemaElementComplex)schemaElement;
                 type = XPathResultType.Any;
                 //if (complex.OptionalSimpleType != null)
                 //{
@@ -248,13 +254,15 @@ namespace com.espertech.esper.events.xml
             }
 
             var prefix = isDynamic ? defaultNamespacePrefix : ctx.LookupPrefix(schemaElement.Namespace);
-            if (String.IsNullOrEmpty(prefix)) {
+            if (String.IsNullOrEmpty(prefix))
+            {
                 prefix = String.Empty;
             }
-            else {
+            else
+            {
                 prefix += ':';
             }
-     
+
             if (IsAnySimpleProperty(property))
             {
                 if (!isDynamic && schemaElement.IsArray && !isAlone)
@@ -295,13 +303,13 @@ namespace com.espertech.esper.events.xml
 
         private static int GetIndexedPropertyIndex(Property property)
         {
-            return property is IndexedProperty ? ((IndexedProperty) property).Index : ((DynamicIndexedProperty) property).Index;
+            return property is IndexedProperty ? ((IndexedProperty)property).Index : ((DynamicIndexedProperty)property).Index;
         }
 
         private static String GetMappedPropertyKey(Property property)
         {
-            return property is MappedProperty ? ((MappedProperty) property).Key : ((DynamicMappedProperty) property).Key;
-        }    
+            return property is MappedProperty ? ((MappedProperty)property).Key : ((DynamicMappedProperty)property).Key;
+        }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

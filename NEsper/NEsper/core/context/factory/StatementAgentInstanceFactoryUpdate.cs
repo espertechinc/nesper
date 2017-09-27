@@ -27,7 +27,7 @@ namespace com.espertech.esper.core.context.factory
     public class StatementAgentInstanceFactoryUpdate : StatementAgentInstanceFactoryBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly StatementContext _statementContext;
         private readonly EPServicesContext _services;
         private readonly EventType _streamEventType;
@@ -35,7 +35,7 @@ namespace com.espertech.esper.core.context.factory
         private readonly InternalRoutePreprocessView _onExprView;
         private readonly InternalEventRouterDesc _routerDesc;
         private readonly SubSelectStrategyCollection _subSelectStrategyCollection;
-    
+
         public StatementAgentInstanceFactoryUpdate(StatementContext statementContext, EPServicesContext services, EventType streamEventType, UpdateDesc desc, InternalRoutePreprocessView onExprView, InternalEventRouterDesc routerDesc, SubSelectStrategyCollection subSelectStrategyCollection)
             : base(statementContext.Annotations)
         {
@@ -54,11 +54,12 @@ namespace com.espertech.esper.core.context.factory
             IList<StopCallback> stopCallbacks = new List<StopCallback>();
             IDictionary<ExprSubselectNode, SubSelectStrategyHolder> subselectStrategies;
 
-            try {
+            try
+            {
                 stopCallbacks.Add(new ProxyStopCallback(() => _services.InternalEventRouter.RemovePreprocessing(_streamEventType, _desc)));
-    
+
                 _services.InternalEventRouter.AddPreprocessing(_routerDesc, _onExprView, agentInstanceContext.AgentInstanceLock, !_subSelectStrategyCollection.Subqueries.IsEmpty());
-    
+
                 // start subselects
                 subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(_services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
             }
@@ -74,7 +75,7 @@ namespace com.espertech.esper.core.context.factory
             {
                 _statementContext.StatementExtensionServicesContext.ContributeStopCallback(result, stopCallbacks);
             }
-            
+
             stopCallback = StatementAgentInstanceUtil.GetStopCallback(stopCallbacks, agentInstanceContext);
             result.StopCallback = stopCallback;
             return result;

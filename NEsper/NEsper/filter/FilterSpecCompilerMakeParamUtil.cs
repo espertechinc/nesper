@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -25,19 +24,21 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.filter
 {
     /// <summary>
-    ///     Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
+    /// Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
     /// </summary>
-    public class FilterSpecCompilerMakeParamUtil
+    public sealed class FilterSpecCompilerMakeParamUtil
     {
         /// <summary>
-        ///     For a given expression determine if this is optimizable and create the filter parameter
-        ///     representing the expression, or null if not optimizable.
+        /// For a given expression determine if this is optimizable and create the filter parameter
+        /// representing the expression, or null if not optimizable.
         /// </summary>
         /// <param name="constituent">is the expression to look at</param>
-        /// <param name="arrayEventTypes">@return filter parameter representing the expression, or null</param>
-        /// <throws>com.espertech.esper.epl.expression.core.ExprValidationException if the expression is invalid</throws>
-        /// <returns>FilterSpecParam filter param</returns>
-        public static FilterSpecParam MakeFilterParam(
+        /// <param name="arrayEventTypes">event types that provide array values</param>
+        /// <param name="statementName">statement name</param>
+        /// <param name="exprEvaluatorContext">context</param>
+        /// <exception cref="com.espertech.esper.epl.expression.core.ExprValidationException">if the expression is invalid</exception>
+        /// <returns>filter parameter representing the expression, or null</returns>
+        internal static FilterSpecParam MakeFilterParam(
             ExprNode constituent,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -92,7 +93,7 @@ namespace com.espertech.esper.filter
 
         public static ExprNode RewriteOrToInIfApplicable(ExprNode constituent)
         {
-            if (!(constituent is ExprOrNode) || constituent.ChildNodes.Length < 2)
+            if (!(constituent is ExprOrNode) || constituent.ChildNodes.Count < 2)
             {
                 return constituent;
             }
@@ -136,7 +137,7 @@ namespace com.espertech.esper.filter
             // build node
             var @in = new ExprInNodeImpl(false);
             @in.AddChildNode(commonExpressionNode);
-            for (var i = 0; i < constituent.ChildNodes.Length; i++)
+            for (var i = 0; i < constituent.ChildNodes.Count; i++)
             {
                 var child = constituent.ChildNodes[i];
                 var nodeindex = ExprNodeUtility.DeepEquals(commonExpressionNode, childNodes[i].ChildNodes[0]) ? 1 : 0;
@@ -213,7 +214,7 @@ namespace com.espertech.esper.filter
                 {
                     return null;
                 }
-                else if (value is string)
+                if (value is string)
                 {
                     return new RangeValueString((string) value);
                 }
@@ -243,7 +244,7 @@ namespace com.espertech.esper.filter
                 {
                     var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
                     return new RangeValueEventPropIndexed(
-                        identNodeInner.ResolvedStreamName, indexAndProp.First.Value, indexAndProp.Second, statementName);
+                        identNodeInner.ResolvedStreamName, indexAndProp.First, indexAndProp.Second, statementName);
                 }
                 else
                 {
@@ -260,7 +261,6 @@ namespace com.espertech.esper.filter
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             ExprEvaluatorContext exprEvaluatorContext,
             string statementName)
-
         {
             var left = constituent.ChildNodes[0];
             if (!(left is ExprFilterOptimizableNode))
@@ -276,14 +276,18 @@ namespace com.espertech.esper.filter
                 op = FilterOperator.NOT_IN_LIST_OF_VALUES;
             }
 
-            var expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
-            IList<FilterSpecParamInValue> listofValues = new List<FilterSpecParamInValue>();
-            foreach (var subNode in constituent.ChildNodes.Skip(1)) // ignore the first node as it's the identifier
+            var expectedNumberOfConstants = constituent.ChildNodes.Count - 1;
+            var listofValues = new List<FilterSpecParamInValue>();
+            IEnumerator<ExprNode> it = constituent.ChildNodes.GetEnumerator();
+            it.MoveNext(); // ignore the first node as it's the identifier
+            while (it.MoveNext())
             {
+                ExprNode subNode = it.Current;
                 if (ExprNodeUtility.IsConstantValueExpr(subNode))
                 {
                     var constantNode = (ExprConstantNode) subNode;
                     var constant = constantNode.GetConstantValue(exprEvaluatorContext);
+
                     if (constant != null && !constant.GetType().IsArray)
                     {
                         var constantType = constant.GetType();
@@ -293,12 +297,12 @@ namespace com.espertech.esper.filter
                             return null;
                     }
 
-                    var asArray = constant as Array;
-                    if (asArray != null)
+                    var constantAsArray = constant as Array;
+                    if (constantAsArray != null)
                     {
-                        for (var i = 0; i < asArray.Length; i++)
+                        for (var i = 0; i < constantAsArray.Length; i++)
                         {
-                            var arrayElement = asArray.GetValue(i);
+                            var arrayElement = constantAsArray.GetValue(i);
                             var arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
                             listofValues.Add(new InSetOfValuesConstant(arrayElementCoerced));
                             if (i > 0)
@@ -317,40 +321,50 @@ namespace com.espertech.esper.filter
                 {
                     var contextPropertyNode = (ExprContextPropertyNode) subNode;
                     var returnType = contextPropertyNode.ReturnType;
-                    if (contextPropertyNode.ReturnType.IsImplementsInterface(typeof (ICollection<>)) ||
-                        contextPropertyNode.ReturnType.IsImplementsInterface(typeof (IDictionary<,>)))
+                    Coercer coercer;
+                    Type coercerType;
+
+                    if (returnType.IsCollectionMapOrArray())
                     {
-                        return null;
+                        CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
+                        coercer = null;
+                        coercerType = returnType;
                     }
-                    if ((returnType != null) && (returnType.GetType().IsArray))
+                    else
                     {
-                        return null;
+                        coercer = GetNumberCoercer(
+                            left.ExprEvaluator.ReturnType, contextPropertyNode.ReturnType, lookupable.Expression, out coercerType);
                     }
-                    var coercer = GetNumberCoercer(
-                        left.ExprEvaluator.ReturnType, contextPropertyNode.ReturnType, lookupable.Expression);
+                    var finalReturnType = coercerType;
                     listofValues.Add(
                         new InSetOfValuesContextProp(
-                            contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer));
+                            contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer, finalReturnType));
                 }
                 if (subNode is ExprIdentNode)
                 {
                     var identNodeInner = (ExprIdentNode) subNode;
                     if (identNodeInner.StreamId == 0)
                     {
-                        break; // for same event evals use the boolean expression, via count compare failing below
+                        break; // for same event evals use the bool expression, via count compare failing below
                     }
 
                     var isMustCoerce = false;
-                    var numericCoercionType = lookupable.ReturnType.GetBoxedType();
-                    if (identNodeInner.ExprEvaluator.ReturnType != lookupable.ReturnType)
+                    var coerceToType = lookupable.ReturnType.GetBoxedType();
+                    var identReturnType = identNodeInner.ExprEvaluator.ReturnType;
+
+                    if (identReturnType.IsCollectionMapOrArray())
+                    {
+                        CheckArrayCoercion(identReturnType, lookupable.ReturnType, lookupable.Expression);
+                        coerceToType = identReturnType;
+                        // no action
+                    }
+                    else if (identReturnType != lookupable.ReturnType)
                     {
                         if (lookupable.ReturnType.IsNumeric())
                         {
-                            if (!identNodeInner.ExprEvaluator.ReturnType.CanCoerce(lookupable.ReturnType))
+                            if (!identReturnType.CanCoerce(lookupable.ReturnType))
                             {
-                                ThrowConversionError(
-                                    identNodeInner.ExprEvaluator.ReturnType, lookupable.ReturnType,
-                                    lookupable.Expression);
+                                ThrowConversionError(identReturnType, lookupable.ReturnType, lookupable.Expression);
                             }
                             isMustCoerce = true;
                         }
@@ -366,14 +380,14 @@ namespace com.espertech.esper.filter
                     {
                         var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
                         inValue = new InSetOfValuesEventPropIndexed(
-                            identNodeInner.ResolvedStreamName, indexAndProp.First.Value,
-                            indexAndProp.Second, isMustCoerce, numericCoercionType, statementName);
+                            identNodeInner.ResolvedStreamName, indexAndProp.First,
+                            indexAndProp.Second, isMustCoerce, coerceToType, statementName);
                     }
                     else
                     {
                         inValue = new InSetOfValuesEventProp(
                             identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName, isMustCoerce,
-                            numericCoercionType);
+                            coerceToType);
                     }
 
                     listofValues.Add(inValue);
@@ -386,6 +400,18 @@ namespace com.espertech.esper.filter
                 return new FilterSpecParamIn(lookupable, op, listofValues);
             }
             return null;
+        }
+
+        private static void CheckArrayCoercion(Type returnTypeValue, Type returnTypeLookupable, string propertyName)
+        {
+            if (returnTypeValue == null || !returnTypeValue.IsArray)
+            {
+                return;
+            }
+            if (!returnTypeLookupable.IsArrayTypeCompatible(returnTypeValue.GetElementType()))
+            {
+                ThrowConversionError(returnTypeValue.GetElementType(), returnTypeLookupable, propertyName);
+            }
         }
 
         private static FilterSpecParam HandleEqualsAndRelOp(
@@ -436,7 +462,7 @@ namespace com.espertech.esper.filter
                 }
                 else
                 {
-                    throw new IllegalStateException(string.Format("Operator '{0}' not mapped", relNode.RelationalOpEnum));
+                    throw new IllegalStateException("Opertor '" + relNode.RelationalOpEnum + "' not mapped");
                 }
             }
 
@@ -484,7 +510,7 @@ namespace com.espertech.esper.filter
                     (identNodeLeft.StreamId != 0))
                 {
                     op = GetReversedOperator(constituent, op);
-                        // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                    // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     return HandleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes, statementName);
                 }
             }
@@ -496,8 +522,7 @@ namespace com.espertech.esper.filter
                 var lookupable = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.IsFilterLookupEligible)
                 {
-                    var numberCoercer = GetNumberCoercer(
-                        lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
+                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
                     return new FilterSpecParamContextProp(
                         lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
@@ -510,9 +535,8 @@ namespace com.espertech.esper.filter
                 if (filterOptimizableNode.IsFilterLookupEligible)
                 {
                     op = GetReversedOperator(constituent, op);
-                        // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
-                    var numberCoercer = GetNumberCoercer(
-                        lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
+                    // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
                     return new FilterSpecParamContextProp(
                         lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
@@ -570,8 +594,7 @@ namespace com.espertech.esper.filter
             {
                 var indexAndProp = GetStreamIndex(identNodeRight.ResolvedPropertyName);
                 return new FilterSpecParamEventPropIndexed(
-                    identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName,
-                    indexAndProp.First.Value,
+                    identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName, indexAndProp.First,
                     indexAndProp.Second, isMustCoerce, numberCoercer, numericCoercionType, statementName);
             }
             return new FilterSpecParamEventProp(
@@ -594,46 +617,69 @@ namespace com.espertech.esper.filter
                     return CoercerFactory.GetCoercer(rightType, numericCoercionType);
                 }
             }
+
             return null;
         }
 
-        private static Pair<int?, string> GetStreamIndex(string resolvedPropertyName)
+        private static Coercer GetNumberCoercer(Type leftType, Type rightType, string expression, out Type coercionType)
         {
-            var property = PropertyParser.ParseAndWalk(resolvedPropertyName);
+            var numericCoercionType = leftType.GetBoxedType();
+            if (rightType != leftType)
+            {
+                if (rightType.IsNumeric())
+                {
+                    if (!rightType.CanCoerce(leftType))
+                    {
+                        ThrowConversionError(rightType, leftType, expression);
+                    }
+                    coercionType = numericCoercionType;
+                    return CoercerFactory.GetCoercer(rightType, numericCoercionType);
+                }
+            }
+
+            coercionType = null;
+            return null;
+        }
+
+        private static Pair<int, string> GetStreamIndex(string resolvedPropertyName)
+        {
+            var property = PropertyParser.ParseAndWalkLaxToSimple(resolvedPropertyName);
             if (!(property is NestedProperty))
             {
                 throw new IllegalStateException(
-                    string.Format("Expected a nested property providing an index for array match '{0}'", resolvedPropertyName));
+                    "Expected a nested property providing an index for array match '" + resolvedPropertyName + "'");
             }
-            var nested = ((NestedProperty) property);
+            var nested = (NestedProperty) property;
             if (nested.Properties.Count < 2)
             {
                 throw new IllegalStateException(
-                    string.Format("Expected a nested property name for array match '{0}', none found", resolvedPropertyName));
+                    "Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
             }
             if (!(nested.Properties[0] is IndexedProperty))
             {
                 throw new IllegalStateException(
-                    string.Format("Expected an indexed property for array match '{0}', please provide an index", resolvedPropertyName));
+                    "Expected an indexed property for array match '" + resolvedPropertyName +
+                    "', please provide an index");
             }
             var index = ((IndexedProperty) nested.Properties[0]).Index;
-            nested.Properties.RemoveAt(0);
+            nested.Properties.DeleteAt(0);
             var writer = new StringWriter();
             nested.ToPropertyEPL(writer);
-            return new Pair<int?, string>(index, writer.ToString());
+            return new Pair<int, string>(index, writer.ToString());
         }
 
         private static void ThrowConversionError(Type fromType, Type toType, string propertyName)
-
         {
-            var text = string.Format("Implicit conversion from datatype '{0}' to '{1}' for property '{2}' is not allowed (strict filter type coercion)", fromType.Name, toType.Name, propertyName);
+            var text =
+                string.Format(
+                    "Implicit conversion from datatype '{0}' to '{1}' for property '{2}' is not allowed (strict filter type coercion)",
+                    Name.Of(fromType), Name.Of(toType), propertyName);
             throw new ExprValidationException(text);
         }
 
         // expressions automatically coerce to the most upwards type
         // filters require the same type
-        private static object HandleConstantsCoercion(FilterSpecLookupable lookupable, object constant)
-
+        private static Object HandleConstantsCoercion(FilterSpecLookupable lookupable, Object constant)
         {
             var identNodeType = lookupable.ReturnType;
             if (!identNodeType.IsNumeric())
@@ -641,8 +687,9 @@ namespace com.espertech.esper.filter
                 return constant; // no coercion required, other type checking performed by expression this comes from
             }
 
-            if (constant == null) // null constant type
+            if (constant == null)
             {
+                // null constant type
                 return null;
             }
 
@@ -655,7 +702,7 @@ namespace com.espertech.esper.filter
             return CoercerFactory.CoerceBoxed(constant, identNodeTypeBoxed);
         }
 
-        private static bool IsExprExistsInAllEqualsChildNodes(ExprNode[] childNodes, ExprNode search)
+        private static bool IsExprExistsInAllEqualsChildNodes(IEnumerable<ExprNode> childNodes, ExprNode search)
         {
             foreach (var child in childNodes)
             {

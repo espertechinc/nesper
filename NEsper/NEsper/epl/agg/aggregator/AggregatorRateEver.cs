@@ -23,28 +23,34 @@ namespace com.espertech.esper.epl.agg.aggregator
         private readonly LinkedList<Int64> _points;
         private bool _hasLeave = false;
         private readonly TimeProvider _timeProvider;
-    
-        /// <summary>Ctor. </summary>
+        private readonly long _oneSecondTime;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="interval">rate interval</param>
+        /// <param name="oneSecondTime">The one second time.</param>
         /// <param name="timeProvider">time</param>
-        public AggregatorRateEver(long interval, TimeProvider timeProvider) {
+        public AggregatorRateEver(long interval, long oneSecondTime, TimeProvider timeProvider)
+        {
             _interval = interval;
+            _oneSecondTime = oneSecondTime;
             _timeProvider = timeProvider;
             _points = new LinkedList<Int64>();
         }
-    
+
         public virtual void Clear()
         {
             _points.Clear();
         }
-    
+
         public virtual void Enter(Object @object)
         {
             long timestamp = _timeProvider.Time;
             _points.AddLast(timestamp);
             RemoveFromHead(timestamp);
         }
-    
+
         public virtual void Leave(Object @object)
         {
             // This is an "ever" aggregator and is designed for use in non-window env
@@ -67,11 +73,12 @@ namespace com.espertech.esper.epl.agg.aggregator
                 {
                     return 0d;
                 }
-                return (_points.Count*1000d)/_interval;
+                return (_points.Count * _oneSecondTime * 1.0d) / _interval;
             }
         }
 
-        private void RemoveFromHead(long timestamp) {
+        private void RemoveFromHead(long timestamp)
+        {
             if (_points.Count > 1)
             {
                 while (true)

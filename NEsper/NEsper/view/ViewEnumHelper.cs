@@ -12,28 +12,27 @@ using com.espertech.esper.epl.spec;
 namespace com.espertech.esper.view
 {
     /// <summary>Helper producing a repository of built-in views.</summary>
-	public class ViewEnumHelper
-	{
-	    private readonly static PluggableObjectCollection builtinViews;
+    public class ViewEnumHelper
+    {
+        private static readonly PluggableObjectCollection BUILTIN_VIEWS;
 
-	    static ViewEnumHelper()
-	    {
-	        builtinViews = new PluggableObjectCollection();
-	        foreach (ViewEnum viewEnum in EnumHelper.GetValues<ViewEnum>())
-	        {
-	            builtinViews.AddObject(
-                    viewEnum.GetNamespace(), 
-                    viewEnum.GetName(), 
-                    viewEnum.GetFactoryType(), 
-                    PluggableObjectType.VIEW);
-	        }
-	    }
+        static ViewEnumHelper()
+        {
+            BUILTIN_VIEWS = new PluggableObjectCollection();
+            foreach (ViewEnum viewEnum in EnumHelper.GetValues<ViewEnum>())
+            {
+                BUILTIN_VIEWS.AddObject(
+                    viewEnum.GetNamespace(), viewEnum.GetName(), viewEnum.GetFactoryType(), PluggableObjectType.VIEW);
+            }
+        }
 
-	    /// <summary>Returns a collection of plug-in views.</summary>
-	    /// <returns>built-in view definitions</returns>
-	    public static PluggableObjectCollection BuiltinViews
-	    {
-            get { return builtinViews; }
-	    }
-	}
-} // End of namespace
+        /// <summary>
+        /// Returns a collection of plug-in views.
+        /// </summary>
+        /// <value>built-in view definitions</value>
+        public static PluggableObjectCollection BuiltinViews
+        {
+            get { return BUILTIN_VIEWS; }
+        }
+    }
+} // end of namespace

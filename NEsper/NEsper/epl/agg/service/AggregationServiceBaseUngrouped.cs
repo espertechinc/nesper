@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.service
 {
@@ -24,10 +23,10 @@ namespace com.espertech.esper.epl.agg.service
     {
         /// <summary>Evaluation nodes under. </summary>
         protected ExprEvaluator[] Evaluators;
-    
+
         /// <summary>Aggregation states. </summary>
         protected AggregationMethod[] Aggregators;
-    
+
         protected AggregationMethodFactory[] AggregatorFactories;
         protected AggregationStateFactory[] AccessAggregations;
 
@@ -48,7 +47,7 @@ namespace com.espertech.esper.epl.agg.service
             Aggregators = aggregators;
             AggregatorFactories = aggregatorFactories;
             AccessAggregations = accessAggregations;
-    
+
             if (evaluators.Length != aggregators.Length)
             {
                 throw new ArgumentException("Expected the same number of evaluates as aggregation methods");
@@ -59,10 +58,15 @@ namespace com.espertech.esper.epl.agg.service
         {
         }
 
-        public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
+        }
+
+        public abstract object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams);
+        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams);
+        public abstract ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams);
+        public abstract EventBean GetEventBean(int column, EvaluateParams evaluateParams);
         public abstract object GetGroupKey(int agentInstanceId);
         public abstract ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext);
         public abstract void ApplyEnter(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);

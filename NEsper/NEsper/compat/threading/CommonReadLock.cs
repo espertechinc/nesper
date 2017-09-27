@@ -18,13 +18,13 @@ namespace com.espertech.esper.compat.threading
             return _disposableObj;
         }
 
-	    public IDisposable Acquire(int msec)
+	    public IDisposable Acquire(long msec)
 	    {
             _lockObj.AcquireReaderLock(msec);
             return _disposableObj;
         }
 
-        public IDisposable Acquire(bool releaseLock, int? msec = null)
+        public IDisposable Acquire(bool releaseLock, long? msec = null)
         {
             _lockObj.AcquireReaderLock(msec ?? BaseLock.RLockTimeout);
             if (releaseLock)
@@ -64,13 +64,13 @@ namespace com.espertech.esper.compat.threading
             return new TrackedDisposable(() => _lockObj.ReleaseReaderLock(_lockValue));
         }
 
-        public IDisposable Acquire(int msec)
+        public IDisposable Acquire(long msec)
         {
             _lockValue = _lockObj.AcquireReaderLock(msec);
             return new TrackedDisposable(() => _lockObj.ReleaseReaderLock(_lockValue));
         }
 
-	    public IDisposable Acquire(bool releaseLock, int? msec = null)
+	    public IDisposable Acquire(bool releaseLock, long? msec = null)
 	    {
             _lockValue = _lockObj.AcquireReaderLock(msec ?? BaseLock.RLockTimeout);
             if (releaseLock)

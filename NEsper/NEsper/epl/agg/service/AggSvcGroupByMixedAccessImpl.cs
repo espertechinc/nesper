@@ -13,8 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -28,10 +26,10 @@ namespace com.espertech.esper.epl.agg.service
         private readonly AggregationAccessorSlotPair[] _accessorsFactory;
         protected readonly AggregationStateFactory[] AccessAggregations;
         protected readonly bool IsJoin;
-    
+
         // maintain for each group a row of aggregator states that the expression node canb pull the data from via index
         protected IDictionary<Object, AggregationRowPair> AggregatorsPerGroup;
-    
+
         // maintain a current row for random access into the aggregator state table
         // (row=groups, columns=expression nodes that have aggregation functions)
         private AggregationRowPair _currentAggregatorRow;
@@ -53,17 +51,17 @@ namespace com.espertech.esper.epl.agg.service
             IsJoin = isJoin;
             AggregatorsPerGroup = new Dictionary<Object, AggregationRowPair>();
         }
-    
+
         public override void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
         {
             AggregatorsPerGroup.Clear();
         }
-    
+
         public override void ApplyEnter(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, Aggregators.Length, AccessAggregations.Length, groupByKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, Aggregators.Length, AccessAggregations.Length, groupByKey); }
             AggregationRowPair groupAggregators = AggregatorsPerGroup.Get(groupByKey);
-    
+
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationState[] states;
 
@@ -79,29 +77,31 @@ namespace com.espertech.esper.epl.agg.service
             // For this row, evaluate sub-expressions, enter result
             _currentAggregatorRow = groupAggregators;
             AggregationMethod[] groupAggMethods = groupAggregators.Methods;
-            for (int i = 0; i < Evaluators.Length; i++) {
+            for (int i = 0; i < Evaluators.Length; i++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggNoAccessEnterLeave(true, i, groupAggMethods[i], Aggregators[i].AggregationExpression); }
                 Object columnResult = Evaluators[i].Evaluate(evaluateParams);
                 groupAggMethods[i].Enter(columnResult);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(true, i, groupAggMethods[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(true, i, groupAggMethods[i]); }
             }
-    
+
             states = _currentAggregatorRow.States;
-            for (int i = 0; i < states.Length; i++) {
+            for (int i = 0; i < states.Length; i++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggAccessEnterLeave(true, i, states[i], AccessAggregations[i].AggregationExpression); }
                 states[i].ApplyEnter(eventsPerStream, exprEvaluatorContext);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(true, i, states[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(true, i, states[i]); }
             }
-    
+
             InternalHandleUpdated(groupByKey, groupAggregators);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true); }
         }
-    
+
         public override void ApplyLeave(EventBean[] eventsPerStream, Object groupByKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, Aggregators.Length, AccessAggregations.Length, groupByKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, Aggregators.Length, AccessAggregations.Length, groupByKey); }
             AggregationRowPair groupAggregators = AggregatorsPerGroup.Get(groupByKey);
-    
+
             // The aggregators for this group do not exist, need to create them from the prototypes
             AggregationState[] states;
 
@@ -123,25 +123,26 @@ namespace com.espertech.esper.epl.agg.service
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggNoAccessEnterLeave(false, i, groupAggMethods[i], Aggregators[i].AggregationExpression); }
                 Object columnResult = Evaluators[i].Evaluate(evaluateParams);
                 groupAggMethods[i].Leave(columnResult);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(false, i, groupAggMethods[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggNoAccessEnterLeave(false, i, groupAggMethods[i]); }
             }
-    
+
             states = _currentAggregatorRow.States;
-            for (int i = 0; i < states.Length; i++) {
+            for (int i = 0; i < states.Length; i++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggAccessEnterLeave(false, i, states[i], AccessAggregations[i].AggregationExpression); }
                 states[i].ApplyLeave(eventsPerStream, exprEvaluatorContext);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(false, i, states[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(false, i, states[i]); }
             }
-    
+
             InternalHandleUpdated(groupByKey, groupAggregators);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false); }
         }
 
         public override void SetCurrentAccess(Object groupByKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
         {
             _currentAggregatorRow = AggregatorsPerGroup.Get(groupByKey);
             _currentGroupKey = groupByKey;
-    
+
             if (_currentAggregatorRow == null)
             {
                 AggregationMethod[] methods = AggSvcGroupByUtil.NewAggregators(Aggregators);
@@ -150,29 +151,21 @@ namespace com.espertech.esper.epl.agg.service
                 AggregatorsPerGroup.Put(groupByKey, _currentAggregatorRow);
             }
         }
-    
-        public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
-            if (column < Aggregators.Length) {
+            if (column < Aggregators.Length)
+            {
                 return _currentAggregatorRow.Methods[column].Value;
             }
-            else {
+            else
+            {
                 AggregationAccessorSlotPair pair = _accessorsFactory[column - Aggregators.Length];
-                return pair.Accessor.GetValue(_currentAggregatorRow.States[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
-            }
-        }
-        
-        public override ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            if (column < Aggregators.Length) {
-                return null;
-            }
-            else {
-                AggregationAccessorSlotPair pair = _accessorsFactory[column - Aggregators.Length];
-                return pair.Accessor.GetEnumerableEvents(_currentAggregatorRow.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetValue(_currentAggregatorRow.States[pair.Slot], evaluateParams);
             }
         }
 
-        public override ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             if (column < Aggregators.Length)
             {
@@ -181,35 +174,56 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 AggregationAccessorSlotPair pair = _accessorsFactory[column - Aggregators.Length];
-                return pair.Accessor.GetEnumerableScalar(_currentAggregatorRow.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableEvents(_currentAggregatorRow.States[pair.Slot], evaluateParams);
             }
         }
-    
-        public override EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            if (column < Aggregators.Length) {
+
+        public override ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
+        {
+            if (column < Aggregators.Length)
+            {
                 return null;
             }
-            else {
+            else
+            {
                 AggregationAccessorSlotPair pair = _accessorsFactory[column - Aggregators.Length];
-                return pair.Accessor.GetEnumerableEvent(_currentAggregatorRow.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableScalar(_currentAggregatorRow.States[pair.Slot], evaluateParams);
             }
         }
-    
-        public override void SetRemovedCallback(AggregationRowRemovedCallback callback) {
+
+        public override EventBean GetEventBean(int column, EvaluateParams evaluateParams)
+        {
+            if (column < Aggregators.Length)
+            {
+                return null;
+            }
+            else
+            {
+                AggregationAccessorSlotPair pair = _accessorsFactory[column - Aggregators.Length];
+                return pair.Accessor.GetEnumerableEvent(_currentAggregatorRow.States[pair.Slot], evaluateParams);
+            }
+        }
+
+        public override void SetRemovedCallback(AggregationRowRemovedCallback callback)
+        {
             // not applicable
         }
-    
-        public void InternalHandleUpdated(Object groupByKey, AggregationRowPair groupAggregators) {
+
+        public void InternalHandleUpdated(Object groupByKey, AggregationRowPair groupAggregators)
+        {
             // no action required
         }
-    
-        public override void Accept(AggregationServiceVisitor visitor) {
+
+        public override void Accept(AggregationServiceVisitor visitor)
+        {
             visitor.VisitAggregations(AggregatorsPerGroup.Count, AggregatorsPerGroup);
         }
-    
-        public override void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor) {
+
+        public override void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
+        {
             visitor.VisitGrouped(AggregatorsPerGroup.Count);
-            foreach (var entry in AggregatorsPerGroup) {
+            foreach (var entry in AggregatorsPerGroup)
+            {
                 visitor.VisitGroup(entry.Key, entry.Value);
             }
         }
@@ -219,11 +233,13 @@ namespace com.espertech.esper.epl.agg.service
             get { return true; }
         }
 
-        public override Object GetGroupKey(int agentInstanceId) {
+        public override Object GetGroupKey(int agentInstanceId)
+        {
             return _currentGroupKey;
         }
-    
-        public override ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext) {
+
+        public override ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        {
             return AggregatorsPerGroup.Keys;
         }
     }

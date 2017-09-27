@@ -13,7 +13,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.epl.parse;
+using com.espertech.esper.supportunit.epl.parse;
 
 using NUnit.Framework;
 
@@ -43,11 +43,11 @@ namespace com.espertech.esper.rowregex
             for (int i = 0; i < patternTests.Length; i++)
             {
                 String pattern = patternTests[i][0];
-                String expression = "select * from MyEvent.win:keepall() match_recognize (" +
+                String expression = "select * from MyEvent#keepall() match_recognize (" +
                         "  partition by TheString measures A.TheString as a_string pattern ( " + pattern + ") define A as (A.value = 1) )";
 
                 EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-                StatementSpecRaw raw = walker.GetStatementSpec();
+                StatementSpecRaw raw = walker.StatementSpec;
     
                 RowRegexExprNode parent = raw.MatchRecognizeSpec.Pattern;
                 var singles = new FIFOHashSet<String>();
@@ -89,11 +89,11 @@ namespace com.espertech.esper.rowregex
             {
                 String pattern = patternTests[i][0];
                 String expected = patternTests[i][1];
-                String expression = "select * from MyEvent.win:keepall() match_recognize (" +
+                String expression = "select * from MyEvent#keepall() match_recognize (" +
                         "  partition by string measures A.string as a_string pattern ( " + pattern + ") define A as (A.value = 1) )";
 
                 EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-                StatementSpecRaw raw = walker.GetStatementSpec();
+                StatementSpecRaw raw = walker.StatementSpec;
 
                 RowRegexExprNode parent = raw.MatchRecognizeSpec.Pattern;
 

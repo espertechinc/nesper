@@ -156,7 +156,7 @@ namespace com.espertech.esper.util
             return ArrayShrinkRemoveSingle((Array) array, index);
         }
 
-            public static object ArrayExpandAddElements<T>(Array array, ICollection<T> elementsToAdd)
+        public static object ArrayExpandAddElements<T>(Array array, ICollection<T> elementsToAdd)
         {
             var length = array.Length;
             var newLength = length + elementsToAdd.Count;
@@ -530,5 +530,14 @@ namespace com.espertech.esper.util
         {
             return array.Any(t => t);
         }
+
+        public static IDictionary<TKey, TValue> TwoEntryMap<TKey,TValue>(TKey keyOne, TValue valueOne, TKey keyTwo, TValue valueTwo)
+        {
+            var map = new Dictionary<TKey, TValue>();
+            map.Put(keyOne, valueOne);
+            map.Put(keyTwo, valueTwo);
+            return map;
+        }
+
     }
 }

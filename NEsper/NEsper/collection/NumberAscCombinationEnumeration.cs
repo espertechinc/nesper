@@ -25,10 +25,11 @@ namespace com.espertech.esper.collection
         private int _level;
         private int[] _current;
         private bool _first;
-    
+
         public NumberAscCombinationEnumeration(int n)
         {
-            if (n < 1) {
+            if (n < 1)
+            {
                 throw new ArgumentException();
             }
             _n = n;
@@ -79,49 +80,56 @@ namespace com.espertech.esper.collection
                 return copy;
             }
         }
-    
+
         private void ComputeNext()
         {
             // determine whether there is a next for the outermost
-            int last = _current.Length-1;
-            if (_current[last] + 1 < _n) {
+            int last = _current.Length - 1;
+            if (_current[last] + 1 < _n)
+            {
                 _current[last]++;
                 return;
             }
-    
+
             // overflow
-            int currOverflowedLevel = last-1;
-            while(currOverflowedLevel >= 0) {
+            int currOverflowedLevel = last - 1;
+            while (currOverflowedLevel >= 0)
+            {
                 int maxAtPosition = _n - _level + currOverflowedLevel;
-                if (_current[currOverflowedLevel] < maxAtPosition) {
+                if (_current[currOverflowedLevel] < maxAtPosition)
+                {
                     _current[currOverflowedLevel]++;
-                    for (int i = currOverflowedLevel + 1; i < _current.Length; i++) {
-                        _current[i] = _current[i-1] + 1;
+                    for (int i = currOverflowedLevel + 1; i < _current.Length; i++)
+                    {
+                        _current[i] = _current[i - 1] + 1;
                     }
                     return;
                 }
                 currOverflowedLevel--;
             }
-    
+
             // bump level down
             _level--;
-            if (_level == 0) {
+            if (_level == 0)
+            {
                 _current = null;
             }
-            else {
+            else
+            {
                 _current = LevelCurrent(_level);
             }
         }
-    
+
         private static int[] LevelCurrent(int level)
         {
             var current = new int[level];
-            for (int i = 0; i < level; i++) {
+            for (int i = 0; i < level; i++)
+            {
                 current[i] = i;
             }
             return current;
         }
-    
+
         private int[] CopyCurrent(int[] current)
         {
             var updated = new int[current.Length];

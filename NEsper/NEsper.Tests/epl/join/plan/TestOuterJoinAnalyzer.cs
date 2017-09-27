@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.type;
 
 using NUnit.Framework;

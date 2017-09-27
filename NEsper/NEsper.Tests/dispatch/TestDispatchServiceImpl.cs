@@ -9,7 +9,7 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.support.dispatch;
+using com.espertech.esper.supportunit.dispatch;
 
 using NUnit.Framework;
 

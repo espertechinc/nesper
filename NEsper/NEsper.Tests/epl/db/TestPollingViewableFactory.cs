@@ -8,9 +8,9 @@
 
 using System;
 
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.view;
 
 using NUnit.Framework;
@@ -30,7 +30,8 @@ namespace com.espertech.esper.epl.db
                 1, 1, spec,
                 SupportDatabaseService.MakeService(),
                 SupportEventAdapterService.Service,
-                null, null, null, null, true, new DataCacheFactory(), null);
+                null, null, null, null, true, new DataCacheFactory(),
+                SupportStatementContextFactory.MakeContext());
             
             Assert.AreEqual(typeof(long?), eventCollection.EventType.GetPropertyType("mybigint"));
             Assert.AreEqual(typeof(string), eventCollection.EventType.GetPropertyType("myvarchar"));

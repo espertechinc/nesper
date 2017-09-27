@@ -36,8 +36,7 @@ namespace NEsper.Example.MatchMaker.monitor
             _epService = epService;
 
             // Get called for any user showing up
-            EPStatement factory =
-                _epService.EPAdministrator.CreatePattern("every User=" + typeof (MobileUserBean).FullName);
+            var factory = _epService.EPAdministrator.CreatePattern("every user=" + typeof (MobileUserBean).FullName);
             factory.Events += HandleFactoryEvents;
         }
 

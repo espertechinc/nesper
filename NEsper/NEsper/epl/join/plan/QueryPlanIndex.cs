@@ -176,7 +176,7 @@ namespace com.espertech.esper.epl.join.plan
 	    /// Print index specifications in readable format.
 	    /// </summary>
 	    /// <param name="indexSpecs">define indexes</param>
-	    /// <returns>readable format of index info</returns>
+	    /// <returns>readable format of index INFO</returns>
 
 	    public static string Print(QueryPlanIndex[] indexSpecs)
 	    {

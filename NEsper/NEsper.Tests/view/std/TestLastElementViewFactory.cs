@@ -8,8 +8,9 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -37,8 +38,9 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsTrue(_factory.CanReuse(new LastElementView(null)));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new LastElementView(null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)

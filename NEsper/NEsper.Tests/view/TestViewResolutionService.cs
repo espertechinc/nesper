@@ -11,40 +11,38 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.view;
 using com.espertech.esper.view.stat;
 
-using com.espertech.esper.compat.logging;
-
 using NUnit.Framework;
-
-
 
 namespace com.espertech.esper.view
 {
     [TestFixture]
     public class TestViewResolutionService 
     {
-        private ViewResolutionService service;
+        private ViewResolutionService _service;
     
         [SetUp]
         public void SetUp()
         {
             PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.BuiltinViews});
-            service = new ViewResolutionServiceImpl(registry, null, null);
+            _service = new ViewResolutionServiceImpl(registry, null, null);
         }
     
         [Test]
         public void TestInitializeFromConfig()
         {
-            service = CreateService(new String[] {"a", "b"}, new String[] {"v1", "v2"},
+            _service = CreateService(new String[] {"a", "b"}, new String[] {"v1", "v2"},
                     new String[] {typeof(SupportViewFactoryOne).FullName, typeof(SupportViewFactoryTwo).FullName});
     
-            ViewFactory factory = service.Create("a", "v1");
+            ViewFactory factory = _service.Create("a", "v1");
             Assert.IsTrue(factory is SupportViewFactoryOne);
     
-            factory = service.Create("b", "v2");
+            factory = _service.Create("b", "v2");
             Assert.IsTrue(factory is SupportViewFactoryTwo);
     
             TryInvalid("a", "v3");
@@ -52,7 +50,7 @@ namespace com.espertech.esper.view
     
             try
             {
-                service = CreateService(new String[] {"a"}, new String[] {"v1"}, new String[] {"abc"});
+                _service = CreateService(new String[] {"a"}, new String[] {"v1"}, new String[] {"abc"});
                 Assert.Fail();
             }
             catch (ConfigurationException ex)
@@ -65,7 +63,7 @@ namespace com.espertech.esper.view
         {
             try
             {
-                service.Create(@namespace, name);
+                _service.Create(@namespace, name);
                 Assert.Fail();
             }
             catch (ViewProcessingException ex)
@@ -77,7 +75,7 @@ namespace com.espertech.esper.view
         [Test]
         public void TestCreate()
         {
-            ViewFactory viewFactory = service.Create(ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
+            ViewFactory viewFactory = _service.Create(ViewEnum.UNIVARIATE_STATISTICS.GetNamespace(), ViewEnum.UNIVARIATE_STATISTICS.GetName());
             Assert.IsTrue(viewFactory is UnivariateStatisticsViewFactory);
         }
     
@@ -86,7 +84,7 @@ namespace com.espertech.esper.view
         {
             try
             {
-                service.Create("dummy", "bumblebee");
+                _service.Create("dummy", "bumblebee");
                 Assert.IsFalse(true);
             }
             catch (ViewProcessingException ex)
@@ -108,8 +106,8 @@ namespace com.espertech.esper.view
             }
     
             PluggableObjectCollection desc = new PluggableObjectCollection();
-            desc.AddViews(configs, Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>());
-            PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {desc});
+            desc.AddViews(configs, Collections.GetEmptyList<ConfigurationPlugInVirtualDataWindow>(), SupportEngineImportServiceFactory.Make());
+            PluggableObjectRegistryImpl registry = new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{desc});
             return new ViewResolutionServiceImpl(registry, null, null);
         }
     

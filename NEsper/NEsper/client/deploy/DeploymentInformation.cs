@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.client.deploy
 {
     /// <summary>
@@ -23,7 +25,13 @@ namespace com.espertech.esper.client.deploy
         /// <param name="items">module statement-level details</param>
         /// <param name="state">current state</param>
         /// <param name="module">the module</param>
-        public DeploymentInformation(String deploymentId, Module module, DateTimeOffset addedDate, DateTimeOffset lastUpdateDate, DeploymentInformationItem[] items, DeploymentState state)
+        public DeploymentInformation(
+            String deploymentId,
+            Module module,
+            DateTimeEx addedDate,
+            DateTimeEx lastUpdateDate,
+            DeploymentInformationItem[] items,
+            DeploymentState state)
         {
             DeploymentId = deploymentId;
             Module = module;
@@ -39,7 +47,7 @@ namespace com.espertech.esper.client.deploy
 
         /// <summary>Returns the last Update date, i.e. date the information was last updated with new state. </summary>
         /// <value>last Update date</value>
-        public DateTimeOffset LastUpdateDate { get; private set; }
+        public DateTimeEx LastUpdateDate { get; private set; }
 
         /// <summary>Returns deployment statement-level details: Note that for an newly-added undeployed modules not all statement-level information is available and therefore returns an empty array. </summary>
         /// <value>statement details or empty array for newly added deployments</value>
@@ -51,15 +59,14 @@ namespace com.espertech.esper.client.deploy
 
         /// <summary>Returns date the deployment was added. </summary>
         /// <value>added-date</value>
-        public DateTimeOffset AddedDate { get; private set; }
+        public DateTimeEx AddedDate { get; private set; }
 
         /// <summary>Returns the module. </summary>
         /// <value>module</value>
         public Module Module { get; private set; }
 
         public override String ToString() {
-            return "id '" + DeploymentId + "' " +
-                   " added on " + AddedDate;
+            return string.Format("id '{0}' " + " added on {1}", DeploymentId, AddedDate);
         }
     }
 }

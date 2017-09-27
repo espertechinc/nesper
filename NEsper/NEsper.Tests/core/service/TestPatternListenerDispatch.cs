@@ -6,11 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.support.events;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -29,9 +28,8 @@ namespace com.espertech.esper.core.service
         [SetUp]
         public void SetUp()
         {
-            ISet<UpdateEventHandler> listeners = new HashSet<UpdateEventHandler>();
-            listeners.Add(_listener.Update);
-            _dispatch = new PatternListenerDispatch(null, null, listeners);
+            var eventHandlers = Collections.SingletonSet<UpdateEventHandler>(_listener.Update);
+            _dispatch = new PatternListenerDispatch(null, null, eventHandlers);
         }
     
         [Test]

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
@@ -26,10 +24,15 @@ namespace com.espertech.esper.core.context.mgr
         private readonly ContextDetailConditionCrontab _spec;
         private readonly ContextControllerConditionCallback _callback;
         private readonly ContextInternalFilterAddendum _filterAddendum;
-
+    
         private EPStatementHandleCallback _scheduleHandle;
 
-        public ContextControllerConditionCrontab(StatementContext statementContext, long scheduleSlot, ContextDetailConditionCrontab spec, ContextControllerConditionCallback callback, ContextInternalFilterAddendum filterAddendum)
+        public ContextControllerConditionCrontab(
+            StatementContext statementContext,
+            long scheduleSlot,
+            ContextDetailConditionCrontab spec,
+            ContextControllerConditionCallback callback,
+            ContextInternalFilterAddendum filterAddendum)
         {
             _statementContext = statementContext;
             _scheduleSlot = scheduleSlot;
@@ -37,12 +40,12 @@ namespace com.espertech.esper.core.context.mgr
             _callback = callback;
             _filterAddendum = filterAddendum;
         }
-
+    
         public void Activate(EventBean optionalTriggerEvent, MatchedEventMap priorMatches, long timeOffset, bool isRecoveringResilient)
         {
             StartContextCallback();
         }
-
+    
         public void Deactivate()
         {
             EndContextCallback();
@@ -55,23 +58,25 @@ namespace com.espertech.esper.core.context.mgr
 
         private void StartContextCallback()
         {
-            ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback
+            var scheduleCallback = new ProxyScheduleHandleCallback
             {
-                ProcScheduledTrigger = extensionServicesContext => Instrument.With(
-                    i => i.QContextScheduledEval(_statementContext.ContextDescriptor),
-                    i => i.AContextScheduledEval(),
-                    () =>
-                    {
-                        _scheduleHandle = null; // terminates automatically unless scheduled again
-                        _callback.RangeNotification(
-                            Collections.GetEmptyMap<String, Object>(), this, null, null, _filterAddendum);
-                    })
+                ProcScheduledTrigger = (extensionServicesContext) =>
+                {
+                    if (InstrumentationHelper.ENABLED) {
+                        InstrumentationHelper.Get().QContextScheduledEval(_statementContext.ContextDescriptor);
+                    }
+                    _scheduleHandle = null;  // terminates automatically unless scheduled again
+                    _callback.RangeNotification(Collections.EmptyDataMap, this, null, null, _filterAddendum);
+                    if (InstrumentationHelper.ENABLED) {
+                        InstrumentationHelper.Get().AContextScheduledEval();
+                    }
+                }
             };
-
             var agentHandle = new EPStatementAgentInstanceHandle(_statementContext.EpStatementHandle, _statementContext.DefaultAgentInstanceLock, -1, new StatementAgentInstanceFilterVersion(), _statementContext.FilterFaultHandlerFactory);
             _scheduleHandle = new EPStatementHandleCallback(agentHandle, scheduleCallback);
             var schedulingService = _statementContext.SchedulingService;
-            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, _statementContext.EngineImportService.TimeZone);
+            var engineImportService = _statementContext.EngineImportService;
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_spec.Schedule, schedulingService.Time, engineImportService.TimeZone, engineImportService.TimeAbacus);
             _statementContext.SchedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
         }
 
@@ -86,7 +91,13 @@ namespace com.espertech.esper.core.context.mgr
 
         public long? ExpectedEndTime
         {
-            get { return ScheduleComputeHelper.ComputeNextOccurance(_spec.Schedule, _statementContext.TimeProvider.Time, _statementContext.EngineImportService.TimeZone); }
+            get
+            {
+                var engineImportService = _statementContext.EngineImportService;
+                return ScheduleComputeHelper.ComputeNextOccurance(
+                    _spec.Schedule, _statementContext.TimeProvider.Time, engineImportService.TimeZone,
+                    engineImportService.TimeAbacus);
+            }
         }
 
         public bool IsImmediate
@@ -94,4 +105,4 @@ namespace com.espertech.esper.core.context.mgr
             get { return _spec.IsImmediate; }
         }
     }
-}
+} // end of namespace

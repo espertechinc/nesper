@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.ops;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 

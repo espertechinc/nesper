@@ -27,7 +27,7 @@ namespace NEsper.Example.MatchMaker
         public void SetUp()
         {
             var configuration = new Configuration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
                 PropertyResolutionStyle.CASE_INSENSITIVE;
 
             _listener = new MatchAlertListener();

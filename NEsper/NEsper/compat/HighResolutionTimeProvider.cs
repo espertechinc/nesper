@@ -25,7 +25,7 @@ namespace com.espertech.esper.compat
         public static readonly HighResolutionTimeProvider Instance = new HighResolutionTimeProvider();
 
         /// <summary>
-        /// Gets the # of nano-seconds that were reported by DateTime.Now
+        /// Gets the # of nano-seconds that were reported by DateTime.GetInstance
         /// when we reset the baseline.  It is used to determine the starting
         /// point from which all other performance measurements are calculated.
         /// </summary>
@@ -66,7 +66,7 @@ namespace com.espertech.esper.compat
         }
 
         /// <summary>
-        /// Represents the # of nano-seconds that were reported by DateTime.Now
+        /// Represents the # of nano-seconds that were reported by DateTime.GetInstance
         /// when we reset the baseline.  It is used to determine the starting
         /// point from which all other performance measurements are calculated.
         /// </summary>

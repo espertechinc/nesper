@@ -22,7 +22,7 @@ namespace com.espertech.esper.example.qos_sla.monitor
 
             EPStatement pattern = admin.CreatePattern("every timer:at(*, *, *, *, *, */10)");
             EPStatement view = admin.CreateEPL("select count(*) as size from " + typeof(OperationMeasurement).FullName +
-                    "(success=false).win:time(10 min).std:size()");
+                    "(success=false)#time(10 min)#size()");
 
             pattern.Events +=
                 delegate {

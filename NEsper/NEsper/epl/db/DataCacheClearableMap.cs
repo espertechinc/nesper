@@ -15,29 +15,29 @@ using com.espertech.esper.epl.join.table;
 namespace com.espertech.esper.epl.db
 {
     /// <summary>
-    /// For use in iteration over historical joins, a <seealso cref="DataCache"/> implementation
-    /// that serves to hold EventBean rows generated during a join evaluation involving
-    /// historical streams stable for the same cache lookup keys.
+    /// For use in iteration over historical joins, a <seealso cref="DataCache" /> implementation
+    /// that serves to hold EventBean rows generated during a join evaluation
+    /// involving historical streams stable for the same cache lookup keys.
     /// </summary>
     public class DataCacheClearableMap : DataCache
     {
         private readonly IDictionary<Object, EventTable[]> _cache;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>Ctor.</summary>
         public DataCacheClearableMap()
         {
-            _cache = new Dictionary<Object, EventTable[]>().WithNullSupport();
+            _cache = new Dictionary<Object, EventTable[]>();
         }
-    
-        public EventTable[] GetCached(object[] lookupKeys)
+
+        public EventTable[] GetCached(Object[] methodParams, int numLookupKeys)
         {
-            var key = DataCacheUtil.GetLookupKey(lookupKeys);
+            var key = DataCacheUtil.GetLookupKey(methodParams, numLookupKeys);
             return _cache.Get(key);
         }
-    
-        public void PutCached(object[] lookupKeys, EventTable[] rows)
+
+        public void PutCached(Object[] methodParams, int numLookupKeys, EventTable[] rows)
         {
-            var key = DataCacheUtil.GetLookupKey(lookupKeys);
+            var key = DataCacheUtil.GetLookupKey(methodParams, numLookupKeys);
             _cache.Put(key, rows);
         }
 
@@ -46,17 +46,14 @@ namespace com.espertech.esper.epl.db
             get { return false; }
         }
 
-        /// <summary>Clears the cache. </summary>
+        /// <summary>Clears the cache.</summary>
         public void Clear()
         {
             _cache.Clear();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
         public void Dispose()
         {
         }
     }
-}
+} // end of namespace

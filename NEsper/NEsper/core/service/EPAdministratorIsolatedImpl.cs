@@ -24,13 +24,13 @@ namespace com.espertech.esper.core.service
     public class EPAdministratorIsolatedImpl : EPAdministratorIsolatedSPI
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly string _isolatedServiceName;
         private readonly EPIsolationUnitServices _services;
         private readonly EPServicesContext _unisolatedServices;
         private readonly EPRuntimeIsolatedSPI _isolatedRuntime;
         private readonly ICollection<string> _statementNames = new HashSet<string>().AsSyncCollection();
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="isolatedServiceName">name of the isolated service</param>
         /// <param name="services">isolated services</param>
@@ -43,18 +43,18 @@ namespace com.espertech.esper.core.service
             _unisolatedServices = unisolatedServices;
             _isolatedRuntime = isolatedRuntime;
         }
-    
+
         public EPStatement CreateEPL(string eplStatement, string statementName, object userObject)
         {
             return CreateEPLStatementId(eplStatement, statementName, userObject, null);
         }
-    
+
         public EPStatement CreateEPLStatementId(string eplStatement, string statementName, object userObject, int? optionalStatementId)
         {
-            var defaultStreamSelector = _unisolatedServices.ConfigSnapshot.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector.MapFromSODA();
+            var defaultStreamSelector = _unisolatedServices.ConfigSnapshot.EngineDefaults.StreamSelection.DefaultStreamSelector.MapFromSODA();
             var statementSpec = EPAdministratorHelper.CompileEPL(eplStatement, eplStatement, true, statementName, _unisolatedServices, defaultStreamSelector);
             var statement = _unisolatedServices.StatementLifecycleSvc.CreateAndStart(statementSpec, eplStatement, false, statementName, userObject, _services, optionalStatementId, null);
-            var stmtSpi = (EPStatementSPI) statement;
+            var stmtSpi = (EPStatementSPI)statement;
             stmtSpi.StatementContext.InternalEventEngineRouteDest = _isolatedRuntime;
             stmtSpi.ServiceIsolated = _isolatedServiceName;
             _statementNames.Add(stmtSpi.Name);
@@ -70,12 +70,13 @@ namespace com.espertech.esper.core.service
         {
             _statementNames.Add(name);   // for recovery
         }
-    
-        public void AddStatement(EPStatement stmt) {
-    
-            AddStatement(new[] {stmt});
+
+        public void AddStatement(EPStatement stmt)
+        {
+
+            AddStatement(new[] { stmt });
         }
-    
+
         public void AddStatement(EPStatement[] stmt)
         {
             using (_unisolatedServices.EventProcessingRWLock.AcquireWriteLock())
@@ -95,7 +96,7 @@ namespace com.espertech.esper.core.service
                             throw new EPServiceIsolationException(
                                 "Illegal argument, a null value was provided in the statement list");
                         }
-                        var stmtSpi = (EPStatementSPI) aStmt;
+                        var stmtSpi = (EPStatementSPI)aStmt;
                         statementIds.Add(stmtSpi.StatementId);
 
                         if (aStmt.ServiceIsolated != null)
@@ -117,7 +118,7 @@ namespace com.espertech.esper.core.service
 
                     foreach (EPStatement aStmt in stmt)
                     {
-                        var stmtSpi = (EPStatementSPI) aStmt;
+                        var stmtSpi = (EPStatementSPI)aStmt;
                         stmtSpi.StatementContext.FilterService = _services.FilterService;
                         stmtSpi.StatementContext.SchedulingService = _services.SchedulingService;
                         stmtSpi.StatementContext.InternalEventEngineRouteDest = _isolatedRuntime;
@@ -146,15 +147,16 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         public void RemoveStatement(EPStatement stmt)
         {
-            RemoveStatement(new[] {stmt});
+            RemoveStatement(new[] { stmt });
         }
-    
-        public void RemoveStatement(IList<EPStatement> stmt) {
-    
-            using(_unisolatedServices.EventProcessingRWLock.AcquireWriteLock())
+
+        public void RemoveStatement(IList<EPStatement> stmt)
+        {
+
+            using (_unisolatedServices.EventProcessingRWLock.AcquireWriteLock())
             {
                 try
                 {
@@ -171,7 +173,7 @@ namespace com.espertech.esper.core.service
                                 "Illegal argument, a null value was provided in the statement list");
                         }
 
-                        var stmtSpi = (EPStatementSPI) aStmt;
+                        var stmtSpi = (EPStatementSPI)aStmt;
                         statementIds.Add(stmtSpi.StatementId);
 
                         if (aStmt.ServiceIsolated == null)
@@ -200,7 +202,7 @@ namespace com.espertech.esper.core.service
 
                     foreach (EPStatement aStmt in stmt)
                     {
-                        var stmtSpi = (EPStatementSPI) aStmt;
+                        var stmtSpi = (EPStatementSPI)aStmt;
                         stmtSpi.StatementContext.FilterService = _unisolatedServices.FilterService;
                         stmtSpi.StatementContext.SchedulingService = _unisolatedServices.SchedulingService;
                         stmtSpi.StatementContext.InternalEventEngineRouteDest =
@@ -230,7 +232,7 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         /// <summary>Remove all statements from isolated services, such as upon destroy. </summary>
         public void RemoveAllStatements()
         {
@@ -243,16 +245,16 @@ namespace com.espertech.esper.core.service
                     Log.Debug("Statement '{0}', the statement could not be found", stmtName);
                     continue;
                 }
-    
+
                 if (stmt.ServiceIsolated != null && (!stmt.ServiceIsolated.Equals(_isolatedServiceName)))
                 {
                     Log.Error("Error returning statement '{0}', the internal isolation information is incorrect, isolated service for statement is currently '{1}' and mismatches this isolated services named '{2}'", stmtName, stmt.ServiceIsolated, _isolatedServiceName);
                     continue;
                 }
-    
+
                 statements.Add(stmt);
             }
-    
+
             RemoveStatement(statements.ToArray());
         }
 

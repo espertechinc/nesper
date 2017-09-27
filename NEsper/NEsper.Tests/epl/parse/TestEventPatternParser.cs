@@ -12,8 +12,8 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl.parse;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl.parse;
 
 using com.espertech.esper.compat.logging;
 

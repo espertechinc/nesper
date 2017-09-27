@@ -13,37 +13,46 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.rowregex
 {
-	public class EventRowRegexNFAViewSchedulerImpl : EventRowRegexNFAViewScheduler
-	{
-	    private AgentInstanceContext agentInstanceContext;
-	    private long scheduleSlot;
-	    private EPStatementHandleCallback handle;
-
-	    public void SetScheduleCallback(AgentInstanceContext agentInstanceContext, EventRowRegexNFAViewScheduleCallback scheduleCallback) {
-	        this.agentInstanceContext = agentInstanceContext;
-	        this.scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
-	        ScheduleHandleCallback callback = new ProxyScheduleHandleCallback() {
-	            ProcScheduledTrigger = (extensionServicesContext) =>
-	            {
-	                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegExScheduledEval();}
-	                scheduleCallback.Triggered();
-	                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExScheduledEval();}
-	            },
-	        };
-	        this.handle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
-	    }
-
-	    public void AddSchedule(long msecAfterCurrentTime) {
-	        agentInstanceContext.StatementContext.SchedulingService.Add(msecAfterCurrentTime, handle, scheduleSlot);
-	    }
-
-	    public void ChangeSchedule(long msecAfterCurrentTime) {
-	        agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
-	        agentInstanceContext.StatementContext.SchedulingService.Add(msecAfterCurrentTime, handle, scheduleSlot);
-	    }
-
-	    public void RemoveSchedule() {
-	        agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
-	    }
-	}
+    public class EventRowRegexNFAViewSchedulerImpl : EventRowRegexNFAViewScheduler
+    {
+        private AgentInstanceContext _agentInstanceContext;
+        private long _scheduleSlot;
+        private EPStatementHandleCallback _handle;
+    
+        public void SetScheduleCallback(AgentInstanceContext agentInstanceContext, EventRowRegexNFAViewScheduleCallback scheduleCallback)
+        {
+            _agentInstanceContext = agentInstanceContext;
+            _scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
+            var callback = new ProxyScheduleHandleCallback
+            {
+                ProcScheduledTrigger = extensionServicesContext =>
+                {
+                    if (InstrumentationHelper.ENABLED) {
+                        InstrumentationHelper.Get().QRegExScheduledEval();
+                    }
+                    scheduleCallback.Triggered();
+                    if (InstrumentationHelper.ENABLED) {
+                        InstrumentationHelper.Get().ARegExScheduledEval();
+                    }
+                }
+            };
+            _handle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+        }
+    
+        public void AddSchedule(long timeDelta)
+        {
+            _agentInstanceContext.StatementContext.SchedulingService.Add(timeDelta, _handle, _scheduleSlot);
+        }
+    
+        public void ChangeSchedule(long timeDelta)
+        {
+            _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
+            _agentInstanceContext.StatementContext.SchedulingService.Add(timeDelta, _handle, _scheduleSlot);
+        }
+    
+        public void RemoveSchedule()
+        {
+            _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
+        }
+    }
 } // end of namespace

@@ -36,7 +36,7 @@ namespace com.espertech.esper.core.deploy
         /// <summary>Add or Update the deployment information using the contained deployment id as a key. </summary>
         /// <param name="descriptor">to store</param>
         void AddUpdateDeployment(DeploymentInformation descriptor);
-    
+
         /// <summary> </summary>
         /// <param name="deploymentId"></param>
         void Remove(String deploymentId);

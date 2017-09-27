@@ -28,12 +28,15 @@ namespace com.espertech.esper.util
         {
             get
             {
-                if (_currentProcessThread == null) {
+                if (_currentProcessThread == null)
+                {
                     int id = Thread.CurrentThread.ManagedThreadId;
 
                     Process process = Process.GetCurrentProcess();
-                    foreach (ProcessThread processThread in process.Threads) {
-                        if ( processThread.Id == id ) {
+                    foreach (ProcessThread processThread in process.Threads)
+                    {
+                        if (processThread.Id == id)
+                        {
                             _currentProcessThread = processThread;
                             break;
                         }

@@ -29,26 +29,37 @@ namespace com.espertech.esper.core.context.factory
     public abstract class StatementAgentInstanceFactoryOnTriggerBase : StatementAgentInstanceFactory
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         protected readonly StatementContext StatementContext;
         protected readonly StatementSpecCompiled StatementSpec;
         protected readonly EPServicesContext Services;
         private readonly ViewableActivator _activator;
         private readonly SubSelectStrategyCollection _subSelectStrategyCollection;
 
-        public abstract OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient);
+        public abstract OnExprViewResult DetermineOnExprView(
+            AgentInstanceContext agentInstanceContext,
+            IList<StopCallback> stopCallbacks,
+            bool isRecoveringResilient);
+
         public abstract View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView);
-    
-        public StatementAgentInstanceFactoryOnTriggerBase(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection)
+
+        public StatementAgentInstanceFactoryOnTriggerBase(
+            StatementContext statementContext,
+            StatementSpecCompiled statementSpec,
+            EPServicesContext services,
+            ViewableActivator activator,
+            SubSelectStrategyCollection subSelectStrategyCollection)
         {
-            this.StatementContext = statementContext;
-            this.StatementSpec = statementSpec;
-            this.Services = services;
-            this._activator = activator;
-            this._subSelectStrategyCollection = subSelectStrategyCollection;
+            StatementContext = statementContext;
+            StatementSpec = statementSpec;
+            Services = services;
+            _activator = activator;
+            _subSelectStrategyCollection = subSelectStrategyCollection;
         }
-    
-        public StatementAgentInstanceFactoryResult NewContext(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
+
+        public StatementAgentInstanceFactoryResult NewContext(
+            AgentInstanceContext agentInstanceContext,
+            bool isRecoveringResilient)
         {
             IList<StopCallback> stopCallbacks = new List<StopCallback>();
             View view;
@@ -65,21 +76,23 @@ namespace com.espertech.esper.core.context.factory
 
                 view = onExprViewResult.OnExprView;
                 aggregationService = onExprViewResult.OptionalAggregationService;
-    
+
                 // attach stream to view
                 activationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
                 activationResult.Viewable.AddView(view);
                 stopCallbacks.Add(activationResult.StopCallback);
                 optPatternRoot = activationResult.OptionalPatternRoot;
-    
+
                 // determine final output view
                 view = DetermineFinalOutputView(agentInstanceContext, view);
-    
+
                 // start subselects
-                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(Services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
-    
+                subselectStrategies = EPStatementStartMethodHelperSubselect.StartSubselects(
+                    Services, _subSelectStrategyCollection, agentInstanceContext, stopCallbacks, isRecoveringResilient);
+
                 // plan table access
-                tableAccessStrategies = EPStatementStartMethodHelperTableAccess.AttachTableAccess(Services, agentInstanceContext, StatementSpec.TableNodes);
+                tableAccessStrategies = EPStatementStartMethodHelperTableAccess.AttachTableAccess(
+                    Services, agentInstanceContext, StatementSpec.TableNodes);
             }
             catch (Exception)
             {
@@ -88,10 +101,14 @@ namespace com.espertech.esper.core.context.factory
                 throw;
             }
 
-            StatementAgentInstanceFactoryOnTriggerResult onTriggerResult = new StatementAgentInstanceFactoryOnTriggerResult(view, null, agentInstanceContext, aggregationService, subselectStrategies, optPatternRoot, tableAccessStrategies, activationResult);
+            StatementAgentInstanceFactoryOnTriggerResult onTriggerResult =
+                new StatementAgentInstanceFactoryOnTriggerResult(
+                    view, null, agentInstanceContext, aggregationService, subselectStrategies, optPatternRoot,
+                    tableAccessStrategies, activationResult);
             if (StatementContext.StatementExtensionServicesContext != null)
             {
-                StatementContext.StatementExtensionServicesContext.ContributeStopCallback(onTriggerResult, stopCallbacks);
+                StatementContext.StatementExtensionServicesContext.ContributeStopCallback(
+                    onTriggerResult, stopCallbacks);
             }
 
             Log.Debug(".start Statement start completed");
@@ -108,7 +125,7 @@ namespace com.espertech.esper.core.context.factory
         public virtual void UnassignExpressions()
         {
         }
-    
+
         public class OnExprViewResult
         {
             public OnExprViewResult(View onExprView, AggregationService optionalAggregationService)

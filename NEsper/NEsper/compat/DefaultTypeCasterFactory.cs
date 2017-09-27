@@ -16,7 +16,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.compat
 {
     /// <summary>
-    /// DefaultTypeCasterFactory is a class that implements the methods required to
+    /// DefaultTypeCasterFactory is a class that : the methods required to
     /// transform objects from one type to another type.  This specific class allows
     /// the developer to override the behavior that occurs during creation of new
     /// TypeCasters.

@@ -15,9 +15,10 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -32,7 +33,7 @@ namespace com.espertech.esper.events
         [SetUp]
         public void SetUp()
         {
-            _service = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5);
+            _service = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, null, SupportEngineImportServiceFactory.Make());
         }
     
         [Test]

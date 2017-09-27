@@ -21,106 +21,104 @@ namespace com.espertech.esper.view
     /// </summary>
     public class ViewResolutionServiceImpl : ViewResolutionService
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly PluggableObjectRegistry _viewObjects;
-        private readonly String _optionalNamedWindowName;
+        private readonly string _optionalNamedWindowName;
         private readonly Type _virtualDataWindowViewFactory;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="viewObjects">is the view objects to use for resolving views, can be both built-in and plug-in views.</param>
-        /// <param name="optionalNamedWindowName">Name of the optional named window.</param>
-        /// <param name="virtualDataWindowViewFactory">The virtual data window view factory.</param>
-        public ViewResolutionServiceImpl(PluggableObjectRegistry viewObjects, String optionalNamedWindowName, Type virtualDataWindowViewFactory)
+    
+        public ViewResolutionServiceImpl(PluggableObjectRegistry viewObjects, string optionalNamedWindowName, Type virtualDataWindowViewFactory)
         {
             _viewObjects = viewObjects;
             _optionalNamedWindowName = optionalNamedWindowName;
             _virtualDataWindowViewFactory = virtualDataWindowViewFactory;
         }
     
-        public ViewFactory Create(String nameSpace, String name)
+        public ViewFactory Create(string nameSpace, string name)
         {
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug(".create Creating view factory, namespace=" + nameSpace + " name=" + name);
+            if (Log.IsDebugEnabled) {
+                Log.Debug(".create Creating view factory, @namespace =" + nameSpace + " name=" + name);
             }
-
+    
             Type viewFactoryClass = null;
-
+    
             var pair = _viewObjects.Lookup(nameSpace, name);
             if (pair != null)
             {
-                if (pair.Second.PluggableType == PluggableObjectType.VIEW )
+                if (pair.Second.PluggableType == PluggableObjectType.VIEW)
                 {
                     // Handle named windows in a configuration that always declares a system-wide virtual view factory
-                    if (_optionalNamedWindowName != null && _virtualDataWindowViewFactory != null) {
+                    if (_optionalNamedWindowName != null && _virtualDataWindowViewFactory != null)
+                    {
                         return new VirtualDWViewFactoryImpl(_virtualDataWindowViewFactory, _optionalNamedWindowName, null);
                     }
-    
+
                     viewFactoryClass = pair.First;
                 }
                 else if (pair.Second.PluggableType == PluggableObjectType.VIRTUALDW)
                 {
-                    if (_optionalNamedWindowName == null) {
-                        throw new ViewProcessingException("Virtual data window requires use with a named window in the create-window syntax");
+                    if (_optionalNamedWindowName == null)
+                    {
+                        throw new ViewProcessingException(
+                            "Virtual data window requires use with a named window in the create-window syntax");
                     }
                     return new VirtualDWViewFactoryImpl(pair.First, _optionalNamedWindowName, pair.Second.CustomConfigs);
                 }
                 else
                 {
-                    throw new ViewProcessingException("Invalid object type '" + pair.Second + "' for view '" + name + "'");
+                    throw new ViewProcessingException(
+                        "Invalid object type '" + pair.Second + "' for view '" + name + "'");
                 }
             }
-    
+
             if (viewFactoryClass == null)
             {
-                String message = "View name '" + nameSpace + ":" + name + "' is not a known view name";
+                var message = nameSpace == null ?
+                        "View name '" + name + "' is not a known view name" :
+                        "View name '" + nameSpace + ":" + name + "' is not a known view name";
                 throw new ViewProcessingException(message);
             }
     
             ViewFactory viewFactory;
             try
             {
-                viewFactory = (ViewFactory) Activator.CreateInstance(viewFactoryClass);
+                viewFactory = (ViewFactory)Activator.CreateInstance(viewFactoryClass);
     
-                if (Log.IsDebugEnabled)
-                {
+                if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated view");
                 }
             }
             catch (InvalidCastException e)
             {
-                String message = "Error casting view factory instance to " + typeof(ViewFactory).FullName + " interface for view '" + name + "'";
+                var message = "Error casting view factory instance to " + typeof(ViewFactory).FullName + " interface for view '" + name + "'";
                 throw new ViewProcessingException(message, e);
             }
             catch (TypeInstantiationException ex)
             {
-                String message = "Error invoking view factory constructor for view '" + name;
+                var message = "Error invoking view factory constructor for view '" + name;
                 message += "' using Activator.CreateInstance";
                 throw new ViewProcessingException(message, ex);
             }
             catch (TargetInvocationException ex)
             {
-                String message = "Error invoking view factory constructor for view '" + name;
+                var message = "Error invoking view factory constructor for view '" + name;
                 message += "' using Activator.CreateInstance";
                 throw new ViewProcessingException(message, ex);
             }
             catch (MethodAccessException ex)
             {
-                String message = "Error invoking view factory constructor for view '" + name;
+                var message = "Error invoking view factory constructor for view '" + name;
                 message += "', no invocation access for Activator.CreateInstance";
                 throw new ViewProcessingException(message, ex);
             }
             catch (MemberAccessException ex)
             {
-                String message = "Error invoking view factory constructor for view '" + name;
+                var message = "Error invoking view factory constructor for view '" + name;
                 message += "', no invocation access for Activator.CreateInstance";
                 throw new ViewProcessingException(message, ex);
             }
-
+    
             return viewFactory;
         }
     }
-}
+} // end of namespace

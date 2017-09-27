@@ -22,7 +22,7 @@ namespace com.espertech.esper.events.util
 {
     using Map = IDictionary<String, Object>;
 
-    /// <summary>Render for the JSON format. </summary>
+    /// <summary>RenderAny for the JSON format. </summary>
     public class JSONRendererImpl : JSONEventRenderer
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

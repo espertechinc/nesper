@@ -13,7 +13,7 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.compat
 {
     /// <summary>
-    /// Can be used to trace flow through a process.
+    /// Can be used to TRACE flow through a process.
     /// </summary>
     public class FlowTracer : IDisposable
     {

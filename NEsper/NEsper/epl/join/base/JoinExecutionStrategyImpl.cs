@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.join.@base
         /// </summary>
         /// <param name="composer">determines join tuple set</param>
         /// <param name="filter">for filtering among tuples</param>
-        /// <param name="indicator">for presenting the info to a view</param>
+        /// <param name="indicator">for presenting the INFO to a view</param>
         /// <param name="staticExprEvaluatorContext">expression evaluation context for static evaluation (not for runtime eval)</param>
         public JoinExecutionStrategyImpl(JoinSetComposer composer, JoinSetProcessor filter, JoinSetProcessor indicator, ExprEvaluatorContext staticExprEvaluatorContext)
         {

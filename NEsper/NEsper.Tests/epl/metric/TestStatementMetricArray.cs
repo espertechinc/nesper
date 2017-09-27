@@ -8,7 +8,7 @@
 
 
 using com.espertech.esper.client.metric;
-using com.espertech.esper.support.util;
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.metric

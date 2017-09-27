@@ -31,8 +31,8 @@ namespace com.espertech.esper.epl.approx
 
         public static CountMinSketchStateHashes MakeState(CountMinSketchSpecHashes spec)
         {
-            var width = (int) Math.Ceiling(2 / spec.EpsOfTotalCount);
-            var depth = (int) Math.Ceiling(-Math.Log(1 - spec.Confidence) / Math.Log(2));
+            var width = (int)Math.Ceiling(2 / spec.EpsOfTotalCount);
+            var depth = (int)Math.Ceiling(-Math.Log(1 - spec.Confidence) / Math.Log(2));
             var table = new long[depth][];
             for (var ii = 0; ii < depth; ii++)
                 table[ii] = new long[width];
@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.approx
             }
             return new CountMinSketchStateHashes(depth, width, table, hash, 0);
         }
-    
+
         public CountMinSketchStateHashes(int depth, int width, long[][] table, long[] hash, long total)
         {
             this.Depth = depth;
@@ -80,35 +80,39 @@ namespace com.espertech.esper.epl.approx
         {
             var res = long.MaxValue;
             var buckets = GetHashBuckets(item, Depth, Width);
-            for (var i = 0; i < Depth; ++i) {
+            for (var i = 0; i < Depth; ++i)
+            {
                 res = Math.Min(res, _table[i][buckets[i]]);
             }
             return res;
         }
-    
+
         public void Add(byte[] item, long count)
         {
-            if (count < 0) {
+            if (count < 0)
+            {
                 throw new ArgumentException("Negative increments not implemented");
             }
             var buckets = GetHashBuckets(item, Depth, Width);
-            for (var i = 0; i < Depth; ++i) {
+            for (var i = 0; i < Depth; ++i)
+            {
                 _table[i][buckets[i]] += count;
             }
             _total += count;
         }
-    
+
         private int[] GetHashBuckets(byte[] b, int hashCount, int max)
         {
             var result = new int[hashCount];
             var hash1 = MurmurHash.Hash(b, 0, b.Length, 0);
             var hash2 = MurmurHash.Hash(b, 0, b.Length, hash1);
-            for (var i = 0; i < hashCount; i++) {
-                var tempMod = (int) (hash1 + i*hash2)%max;
+            for (var i = 0; i < hashCount; i++)
+            {
+                var tempMod = (int)(hash1 + i * hash2) % max;
                 result[i] = Math.Abs(tempMod);
             }
             return result;
         }
     }
-    
+
 }

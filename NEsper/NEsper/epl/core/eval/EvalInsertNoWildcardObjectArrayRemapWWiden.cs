@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
@@ -25,10 +27,11 @@ namespace com.espertech.esper.epl.core.eval
         public override EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
         {
             ExprEvaluator[] expressionNodes = SelectExprContext.ExpressionNodes;
-    
+
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             var result = new object[ResultEventType.PropertyNames.Length];
             for (var i = 0; i < expressionNodes.Length; i++) {
-                var value = expressionNodes[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                var value = expressionNodes[i].Evaluate(evaluateParams);
                 if (_wideners[i] != null) {
                     value = _wideners[i].Invoke(value);
                 }

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
 
@@ -19,24 +20,26 @@ namespace com.espertech.esper.epl.approx
 {
     public class CountMinSketchAggAccessorDefault : AggregationAccessor {
     
-        public static CountMinSketchAggAccessorDefault INSTANCE = new CountMinSketchAggAccessorDefault();
+        public static readonly CountMinSketchAggAccessorDefault INSTANCE = new CountMinSketchAggAccessorDefault();
     
-        private CountMinSketchAggAccessorDefault() {}
+        private CountMinSketchAggAccessorDefault() {
+        }
     
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public object GetValue(AggregationState state, EvaluateParams evalParams)
+        {
             return null;
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     }
-}
+} // end of namespace

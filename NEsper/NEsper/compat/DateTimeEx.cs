@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.epl.datetime.calop;
+using com.espertech.esper.epl.named;
 
 namespace com.espertech.esper.compat
 {
@@ -16,7 +17,9 @@ namespace com.espertech.esper.compat
     /// DateTime with offset and timezone tracking.  When math operations are performed against this
     /// structure, they can take into account the timezone the date was associated with.
     /// </summary>
-    public class DateTimeEx : IComparable<DateTimeEx>
+    public class DateTimeEx 
+        : IComparable<DateTimeEx>
+        , IComparable
     {
         private DateTimeOffset _dateTime;
         private readonly TimeZoneInfo _timeZone;
@@ -33,6 +36,8 @@ namespace com.espertech.esper.compat
 
         public long TimeInMillis { get { return _dateTime.TimeInMillis(); } }
 
+        public int DayOfYear { get { return _dateTime.DateTime.DayOfYear; } }
+
         /// <summary>
         /// Gets the underlying date time object.
         /// </summary>
@@ -42,6 +47,17 @@ namespace com.espertech.esper.compat
         public DateTimeOffset DateTime
         {
             get { return _dateTime; }
+        }
+
+        /// <summary>
+        /// Gets the underlying date time object, translated to UTC.
+        /// </summary>
+        /// <value>
+        /// The UTC date time.
+        /// </value>
+        public DateTimeOffset UtcDateTime
+        {
+            get { return _dateTime.TranslateTo(TimeZoneInfo.Utc); }
         }
 
         /// <summary>
@@ -66,6 +82,22 @@ namespace com.espertech.esper.compat
             TimeSpan dateTimeOffset = timeZone.GetUtcOffset(dateTimeUTC);
             _dateTime = new DateTimeOffset(dateTimeUTC).ToOffset(dateTimeOffset);
             _timeZone = timeZone;
+        }
+
+        public DateTimeEx(
+            int year,
+            int month,
+            int day,
+            int hour,
+            int minute,
+            int second,
+            int millis,
+            TimeZoneInfo timeZoneInfo)
+        {
+            var dateTimeReference = new DateTime(year, month, day, hour, minute, second, millis);
+            var dateTimeUtcOffset = timeZoneInfo.GetUtcOffset(dateTimeReference);
+            _dateTime = new DateTimeOffset(year, month, day, hour, minute, second, millis, dateTimeUtcOffset);
+            _timeZone = timeZoneInfo;
         }
 
         public DateTimeEx(DateTimeEx source)
@@ -99,6 +131,69 @@ namespace com.espertech.esper.compat
             return this;
         }
 
+        public DateTimeEx SetYear(int year)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                year, _dateTime.Month, _dateTime.Day,
+                _dateTime.Hour, _dateTime.Minute, _dateTime.Second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetMonth(int month)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, month, _dateTime.Day,
+                _dateTime.Hour, _dateTime.Minute, _dateTime.Second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetDay(int day)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, _dateTime.Month, day,
+                _dateTime.Hour, _dateTime.Minute, _dateTime.Second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetHour(int hour)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, _dateTime.Month, _dateTime.Day,
+                hour, _dateTime.Minute, _dateTime.Second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetMinute(int minute)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, _dateTime.Month, _dateTime.Day,
+                _dateTime.Hour, minute, _dateTime.Second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetSecond(int second)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, _dateTime.Month, _dateTime.Day,
+                _dateTime.Hour, _dateTime.Minute, second,
+                _dateTime.Millisecond, _timeZone);
+            return this;
+        }
+
+        public DateTimeEx SetMillis(int millis)
+        {
+            _dateTime = DateTimeOffsetHelper.CreateDateTime(
+                _dateTime.Year, _dateTime.Month,  _dateTime.Day,
+                _dateTime.Hour,  _dateTime.Minute, _dateTime.Second,
+                millis, _timeZone);
+            return this;
+        }
+
         /// <summary>
         /// Compares the current object with another object of the same type.
         /// </summary>
@@ -110,6 +205,27 @@ namespace com.espertech.esper.compat
         public int CompareTo(DateTimeEx other)
         {
             return _dateTime.CompareTo(other._dateTime);
+        }
+
+        /// <summary>
+        /// Compares the current instance with another object of the same type and 
+        /// returns an integer that indicates whether the current instance precedes, 
+        /// follows, or occurs in the same position in the sort order as the other
+        /// object.
+        /// </summary>
+        /// <param name="obj">An object to compare with this instance.</param>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. Greater than zero This instance follows <paramref name="obj" /> in the sort order.
+        /// </returns>
+        public int CompareTo(object obj)
+        {
+            var otherDateTime = obj as DateTimeEx;
+            if (otherDateTime == null)
+            {
+                throw new ArgumentException("invalid value", nameof(obj));
+            }
+
+            return CompareTo(otherDateTime);
         }
 
         protected bool Equals(DateTimeEx other)
@@ -138,8 +254,15 @@ namespace com.espertech.esper.compat
 
         public string ToString(TimeZoneInfo timeZone)
         {
-            var offset = timeZone.GetUtcOffset(_dateTime);
-            return string.Format("{0} {1}", _dateTime.ToOffset(offset), _timeZone);
+            if (timeZone != null)
+            {
+                var offset = timeZone.GetUtcOffset(_dateTime);
+                return string.Format("{0} [TZ = {1}]", _dateTime.ToOffset(offset), _timeZone);
+            }
+            else
+            {
+                return string.Format("{0} [TZ = {1}]", _dateTime, _timeZone);
+            }
         }
 
         public override string ToString()
@@ -311,6 +434,41 @@ namespace com.espertech.esper.compat
         {
             _dateTime = _dateTime.MoveToWeek(week, _timeZone);
             return Rebase();
+        }
+
+        public static DateTimeEx NowUtc()
+        {
+            return GetInstance(TimeZoneInfo.Utc);
+        }
+
+        public static DateTimeEx NowLocal()
+        {
+            return GetInstance(TimeZoneInfo.Local);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo)
+        {
+            return new DateTimeEx(
+                DateTimeOffsetHelper.Now(timeZoneInfo),
+                timeZoneInfo
+                );
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, DateTimeOffset dtoffset)
+        {
+            return new DateTimeEx(dtoffset, timeZoneInfo);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, DateTime dateTime)
+        {
+            var baseDt = DateTimeOffsetHelper.ToDateTimeOffset(dateTime, timeZoneInfo);
+            return new DateTimeEx(baseDt, timeZoneInfo);
+        }
+
+        public static DateTimeEx GetInstance(TimeZoneInfo timeZoneInfo, long timeInMillis)
+        {
+            var baseDt = DateTimeOffsetHelper.TimeFromMillis(timeInMillis, timeZoneInfo);
+            return new DateTimeEx(baseDt, timeZoneInfo);
         }
     }
 }

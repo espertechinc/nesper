@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.expression.prev
     
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
                 throw new ExprValidationException("Match-Recognize Previous expression must have 2 parameters");
             }

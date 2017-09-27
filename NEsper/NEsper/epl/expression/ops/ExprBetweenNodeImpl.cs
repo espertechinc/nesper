@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.expression.ops
     /// Represents the between-clause function in an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprBetweenNodeImpl 
+    public class ExprBetweenNodeImpl
         : ExprNodeBase
         , ExprEvaluator
         , ExprBetweenNode
@@ -30,11 +30,13 @@ namespace com.espertech.esper.epl.expression.ops
         private readonly bool _isLowEndpointIncluded;
         private readonly bool _isHighEndpointIncluded;
         private readonly bool _isNotBetween;
-    
+
         private bool _isAlwaysFalse;
-        [NonSerialized] private IExprBetweenComp _computer;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
-    
+        [NonSerialized]
+        private IExprBetweenComp _computer;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
+
         /// <summary>Ctor. </summary>
         /// <param name="lowEndpointIncluded">is true for the regular 'between' or false for "val in (a:b)" (open range), orfalse if the endpoint is not included </param>
         /// <param name="highEndpointIncluded">indicates whether the high endpoint is included</param>
@@ -79,28 +81,29 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (((ExprNode) this).ChildNodes.Length != 3)
+            if (((ExprNode)this).ChildNodes.Count != 3)
             {
                 throw new ExprValidationException("The Between operator requires exactly 3 child expressions");
             }
-    
+
             // Must be either numeric or string
-            _evaluators = ExprNodeUtility.GetEvaluators(((ExprNode) this).ChildNodes);
+            _evaluators = ExprNodeUtility.GetEvaluators(((ExprNode)this).ChildNodes);
             Type typeOne = _evaluators[0].ReturnType.GetBoxedType();
             Type typeTwo = _evaluators[1].ReturnType.GetBoxedType();
             Type typeThree = _evaluators[2].ReturnType.GetBoxedType();
-    
+
             if (typeOne == null)
             {
                 throw new ExprValidationException("Null value not allowed in between-clause");
             }
-    
+
             Type compareType;
             if ((typeTwo == null) || (typeThree == null))
             {
                 _isAlwaysFalse = true;
             }
-            else {
+            else
+            {
                 if ((typeOne != typeof(String)) || (typeTwo != typeof(String)) || (typeThree != typeof(String)))
                 {
                     if (!typeOne.IsNumeric())
@@ -116,7 +119,7 @@ namespace com.espertech.esper.epl.expression.ops
                         throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", typeThree.FullName));
                     }
                 }
-    
+
                 Type intermedType = typeOne.GetCompareToCoercionType(typeTwo);
                 compareType = intermedType.GetCompareToCoercionType(typeThree);
                 _computer = MakeComputer(compareType, typeOne, typeTwo, typeThree);
@@ -127,7 +130,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public Type ReturnType
         {
-            get { return typeof (bool?); }
+            get { return typeof(bool?); }
         }
 
         public Object Evaluate(EvaluateParams evaluateParams)
@@ -153,17 +156,18 @@ namespace com.espertech.esper.epl.expression.ops
 
             return false;
         }
-    
+
         public override bool EqualsNode(ExprNode node)
         {
             var other = node as ExprBetweenNodeImpl;
-            if (other == null) {
+            if (other == null)
+            {
                 return false;
             }
 
             return other._isNotBetween == _isNotBetween;
         }
-    
+
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             IEnumerator<ExprNode> it = ((ExprNode)this).ChildNodes.Cast<ExprNode>().GetEnumerator();
@@ -193,12 +197,12 @@ namespace com.espertech.esper.epl.expression.ops
         private IExprBetweenComp MakeComputer(Type compareType, Type valueType, Type lowType, Type highType)
         {
             IExprBetweenComp computer;
-    
+
             if (compareType == typeof(String))
             {
                 return new ExprBetweenCompString(_isLowEndpointIncluded, _isHighEndpointIncluded);
             }
-            
+
             if ((compareType == valueType) && (compareType == lowType) && (compareType == highType))
             {
                 if (compareType == typeof(double?))
@@ -243,44 +247,44 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 return new ExprBetweenCompInt64(_isLowEndpointIncluded, _isHighEndpointIncluded);
             }
-            
+
             return new ExprBetweenCompDouble(_isLowEndpointIncluded, _isHighEndpointIncluded);
         }
-    
+
         private interface IExprBetweenComp
         {
             bool IsBetween(Object value, Object lower, Object upper);
         }
-    
+
         private class ExprBetweenCompString : IExprBetweenComp
         {
             private readonly bool _isLowIncluded;
             private readonly bool _isHighIncluded;
-    
+
             public ExprBetweenCompString(bool lowIncluded, bool isHighIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = isHighIncluded;
             }
-    
+
             public bool IsBetween(Object value, Object lower, Object upper)
             {
                 if ((value == null) || (lower == null) || ((upper == null)))
                 {
                     return false;
                 }
-        
-                String valueStr = (String) value;
-                String lowerStr = (String) lower;
-                String upperStr = (String) upper;
-    
+
+                String valueStr = (String)value;
+                String lowerStr = (String)lower;
+                String upperStr = (String)upper;
+
                 if (upperStr.CompareTo(lowerStr) < 0)
                 {
                     String temp = upperStr;
                     upperStr = lowerStr;
                     lowerStr = temp;
                 }
-    
+
                 if (valueStr.CompareTo(lowerStr) < 0)
                 {
                     return false;
@@ -378,13 +382,13 @@ namespace com.espertech.esper.epl.expression.ops
         {
             private readonly bool _isLowIncluded;
             private readonly bool _isHighIncluded;
-    
+
             public FastExprBetweenCompDouble(bool lowIncluded, bool highIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
             }
-    
+
             public bool IsBetween(Object value, Object lower, Object upper)
             {
                 if ((value == null) || (lower == null) || ((upper == null)))
@@ -392,17 +396,17 @@ namespace com.espertech.esper.epl.expression.ops
                     return false;
                 }
 
-                double valueD = (double) value;
-                double lowerD = (double) lower;
-                double upperD = (double) upper;
-    
+                double valueD = (double)value;
+                double lowerD = (double)lower;
+                double upperD = (double)upper;
+
                 if (lowerD > upperD)
                 {
                     double temp = upperD;
                     upperD = lowerD;
                     lowerD = temp;
                 }
-    
+
                 if (valueD > lowerD)
                 {
                     return valueD < upperD || _isHighIncluded && valueD == upperD;
@@ -454,31 +458,31 @@ namespace com.espertech.esper.epl.expression.ops
         {
             private readonly bool _isLowIncluded;
             private readonly bool _isHighIncluded;
-    
+
             public FastExprBetweenCompInt64(bool lowIncluded, bool highIncluded)
             {
                 _isLowIncluded = lowIncluded;
                 _isHighIncluded = highIncluded;
             }
-    
+
             public bool IsBetween(Object value, Object lower, Object upper)
             {
                 if ((value == null) || (lower == null) || ((upper == null)))
                 {
                     return false;
                 }
-                
-                long valueD = (long) value;
-                long lowerD = (long) lower;
-                long upperD = (long) upper;
-    
+
+                long valueD = (long)value;
+                long lowerD = (long)lower;
+                long upperD = (long)upper;
+
                 if (lowerD > upperD)
                 {
                     long temp = upperD;
                     upperD = lowerD;
                     lowerD = temp;
                 }
-    
+
                 if (valueD > lowerD)
                 {
                     return valueD < upperD || _isHighIncluded && valueD == upperD;

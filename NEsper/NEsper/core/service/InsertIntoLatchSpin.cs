@@ -19,13 +19,13 @@ namespace com.espertech.esper.core.service
     public class InsertIntoLatchSpin
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         // The earlier latch is the latch generated before this latch
         private readonly InsertIntoLatchFactory _factory;
         private InsertIntoLatchSpin _earlier;
         private readonly long _msecTimeout;
         private readonly EventBean _payload;
-    
+
         private bool _isCompleted;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.service
             _msecTimeout = msecTimeout;
             _payload = payload;
         }
-    
+
         /// <summary>Ctor - use for the first and unused latch to indicate completion. </summary>
         public InsertIntoLatchSpin(InsertIntoLatchFactory factory)
         {
@@ -51,14 +51,14 @@ namespace com.espertech.esper.core.service
             _earlier = null;
             _msecTimeout = 0;
         }
-    
+
         /// <summary>Returns true if the dispatch completed for this future. </summary>
         /// <returns>true for completed, false if not</returns>
         public bool IsCompleted()
         {
             return _isCompleted;
         }
-    
+
         /// <summary>Blocking call that returns only when the earlier latch completed. </summary>
         /// <returns>payload of the latch</returns>
         public EventBean Await()
@@ -66,11 +66,11 @@ namespace com.espertech.esper.core.service
             if (!_earlier._isCompleted)
             {
                 long spinStartTime = _factory.TimeSourceService.GetTimeMillis();
-    
-                while(!_earlier._isCompleted)
+
+                while (!_earlier._isCompleted)
                 {
                     Thread.Yield();
-    
+
                     long spinDelta = _factory.TimeSourceService.GetTimeMillis() - spinStartTime;
                     if (spinDelta > _msecTimeout)
                     {
@@ -79,10 +79,10 @@ namespace com.espertech.esper.core.service
                     }
                 }
             }
-    
+
             return _payload;
         }
-    
+
         /// <summary>Called to indicate that the latch completed and a later latch can start. </summary>
         public void Done()
         {

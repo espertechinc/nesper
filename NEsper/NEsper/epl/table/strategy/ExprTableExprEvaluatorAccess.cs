@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.table.strategy
             var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
             var result = _accessAccessorSlotPair.Accessor.GetValue(
-                row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
+                row.States[_accessAccessorSlotPair.Slot], new EvaluateParams(eventsPerStream, isNewData, context));
 
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTableSubproperty(result); }
 
@@ -73,15 +73,12 @@ namespace com.espertech.esper.epl.table.strategy
             return _eventTypeColl;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean) evaluateParams.EventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
             return _accessAccessorSlotPair.Accessor.GetEnumerableEvents(
-                row.States[_accessAccessorSlotPair.Slot], eventsPerStream, isNewData, context);
+                row.States[_accessAccessorSlotPair.Slot], evaluateParams);
         }
 
         public Type ComponentTypeCollection
@@ -89,10 +86,7 @@ namespace com.espertech.esper.epl.table.strategy
             get { return null; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -102,7 +96,7 @@ namespace com.espertech.esper.epl.table.strategy
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

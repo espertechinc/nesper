@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.expression.prior
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
                 throw new ExprValidationException("Prior node must have 2 parameters");
             }

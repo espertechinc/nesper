@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
@@ -35,6 +37,45 @@ namespace com.espertech.esper.events.bean
         private SupportBeanSimple _objSimple;
         private SupportBeanComplexProps _objComplex;
         private SupportBeanCombinedProps _objCombined;
+
+        private static void TryInvalidIsProperty(BeanEventType type, String property)
+        {
+            Assert.AreEqual(null, type.GetPropertyType(property));
+            Assert.AreEqual(false, type.IsProperty(property));
+        }
+
+        private static void RunTest(IEnumerable<PropTestDesc> tests, BeanEventType eventType, EventBean eventBean)
+        {
+            foreach (PropTestDesc desc in tests) {
+                RunTest(desc, eventType, eventBean);
+            }
+        }
+
+        private static void RunTest(PropTestDesc test, BeanEventType eventType, EventBean eventBean)
+        {
+            String propertyName = test.PropertyName;
+
+            Assert.AreEqual(test.IsProperty, eventType.IsProperty(propertyName), "isProperty mismatch on '" + propertyName + "',");
+            Assert.AreEqual(test.Clazz, eventType.GetPropertyType(propertyName), "getPropertyType mismatch on '" + propertyName + "',");
+
+            EventPropertyGetter getter = eventType.GetGetter(propertyName);
+            if (getter == null) {
+                Assert.IsFalse(test.HasGetter, "getGetter null on '" + propertyName + "',");
+            } else {
+                Assert.IsTrue(test.HasGetter, "getGetter not null on '" + propertyName + "',");
+                if (test.GetterReturnValue == typeof(NullReferenceException)) {
+                    try {
+                        getter.Get(eventBean);
+                        Assert.Fail("getGetter not throwing null pointer on '" + propertyName);
+                    } catch (NullReferenceException) {
+                        // expected
+                    }
+                } else {
+                    var value = getter.Get(eventBean);
+                    Assert.AreEqual(test.GetterReturnValue, value, "getter value mismatch on '" + propertyName + "',");
+                }
+            }
+        }
 
         [SetUp]
         public void SetUp()
@@ -98,8 +139,8 @@ namespace com.espertech.esper.events.bean
             Assert.AreEqual(typeof(SupportBeanCombinedProps.NestedLevOne).FullName, nestedType.Name);
             Assert.AreEqual(typeof(IDictionary<string, SupportBeanCombinedProps.NestedLevTwo>), nestedType.GetPropertyType("Mapprop"));
 
-            EventTypeAssertionUtil.AssertConsistency(_eventTypeComplex);
-            EventTypeAssertionUtil.AssertConsistency(_eventTypeNested);
+            SupportEventTypeAssertionUtil.AssertConsistency(_eventTypeComplex);
+            SupportEventTypeAssertionUtil.AssertConsistency(_eventTypeNested);
         }
 
         [Test]
@@ -246,11 +287,8 @@ namespace com.espertech.esper.events.bean
             TryInvalidIsProperty(_eventTypeComplex, "x[");
             TryInvalidIsProperty(_eventTypeComplex, "dummy()");
             TryInvalidIsProperty(_eventTypeComplex, "nested.xx['a']");
-            TryInvalidGetPropertyType(_eventTypeComplex, "x[");
-            TryInvalidGetPropertyType(_eventTypeComplex, "dummy()");
-            TryInvalidGetPropertyType(_eventTypeComplex, "nested.xx['a']");
-            TryInvalidGetPropertyType(_eventTypeNested, "dummy[(");
-            TryInvalidGetPropertyType(_eventTypeNested, "Array[1].Mapprop[x].value");
+            TryInvalidIsProperty(_eventTypeComplex, "dummy[(");
+            TryInvalidIsProperty(_eventTypeComplex, "array[1].mapprop[x].value");
         }
 
         [Test]
@@ -278,7 +316,7 @@ namespace com.espertech.esper.events.bean
         public void TestGetSuper()
         {
             var classes = new LinkedHashSet<Type>();
-            BeanEventType.GetSuper(typeof(ISupportAImplSuperGImplPlus), classes);
+            BeanEventType.GetBase(typeof(ISupportAImplSuperGImplPlus), classes);
 
             Assert.AreEqual(6, classes.Count);
             EPAssertionUtil.AssertEqualsAnyOrder(
@@ -291,7 +329,7 @@ namespace com.espertech.esper.events.bean
             );
 
             classes.Clear();
-            BeanEventType.GetSuper(typeof(Object), classes);
+            BeanEventType.GetBase(typeof(Object), classes);
             Assert.AreEqual(0, classes.Count);
         }
 
@@ -315,75 +353,6 @@ namespace com.espertech.esper.events.bean
             EPAssertionUtil.AssertEqualsAnyOrder(
                     type.PropertyNames,
                     new[] { "D", "BaseD", "BaseDBase" });
-        }
-
-        private static void TryInvalidGetPropertyType(BeanEventType type, String property)
-        {
-            try
-            {
-                type.GetPropertyType(property);
-                Assert.Fail();
-            }
-            catch (PropertyAccessException)
-            {
-                // expected
-            }
-        }
-
-        private static void TryInvalidIsProperty(BeanEventType type, String property)
-        {
-            try
-            {
-                type.GetPropertyType(property);
-                Assert.Fail();
-            }
-            catch (PropertyAccessException)
-            {
-                // expected
-            }
-        }
-
-        private static void RunTest(IEnumerable<PropTestDesc> tests, BeanEventType eventType, EventBean eventBean)
-        {
-            foreach (var desc in tests)
-            {
-                RunTest(desc, eventType, eventBean);
-            }
-        }
-
-        private static void RunTest(PropTestDesc test, BeanEventType eventType, EventBean eventBean)
-        {
-            var propertyName = test.PropertyName;
-
-            Assert.AreEqual(test.IsProperty, eventType.IsProperty(propertyName), "IsProperty mismatch on '" + propertyName + "',");
-            Assert.AreEqual(test.Clazz, eventType.GetPropertyType(propertyName), "GetPropertyType mismatch on '" + propertyName + "',");
-
-            var getter = eventType.GetGetter(propertyName);
-            if (getter == null)
-            {
-                Assert.IsFalse(test.HasGetter, "getGetter null on '" + propertyName + "',");
-            }
-            else
-            {
-                Assert.IsTrue(test.HasGetter, "getGetter not null on '" + propertyName + "',");
-                if (ReferenceEquals(test.GetterReturnValue, typeof(NullReferenceException)))
-                {
-                    try
-                    {
-                        getter.Get(eventBean);
-                        Assert.Fail("getGetter not throwing null pointer on '" + propertyName);
-                    }
-                    catch (NullReferenceException)
-                    {
-                        // expected
-                    }
-                }
-                else
-                {
-                    var value = getter.Get(eventBean);
-                    Assert.AreEqual(test.GetterReturnValue, value, "getter value mismatch on '" + propertyName + "',");
-                }
-            }
         }
 
         public class PropTestDesc

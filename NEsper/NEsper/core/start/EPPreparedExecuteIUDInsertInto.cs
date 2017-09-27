@@ -6,12 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -23,9 +19,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.start
 {
-    /// <summary>
-    /// Starts and provides the stop method for EPL statements.
-    /// </summary>
+    /// <summary>Starts and provides the stop method for EPL statements.</summary>
     public class EPPreparedExecuteIUDInsertInto : EPPreparedExecuteIUDSingleStream
     {
         public EPPreparedExecuteIUDInsertInto(StatementSpecCompiled statementSpec, EPServicesContext services, StatementContext statementContext)
@@ -33,91 +27,7 @@ namespace com.espertech.esper.core.start
         {
         }
     
-        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
-        {
-            var selectNoWildcard = NamedWindowOnMergeHelper.CompileSelectNoWildcard(UuidGenerator.Generate(), StatementSpec.SelectClauseSpec.SelectExprList);
-    
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(StatementContext.EngineURI, true);
-            var exprEvaluatorContextStatement = new ExprEvaluatorContextStatement(StatementContext, true);
-    
-            // assign names
-            var validationContext = new ExprValidationContext(
-                streamTypeService,
-                StatementContext.EngineImportService,
-                StatementContext.StatementExtensionServicesContext,
-                null, StatementContext.TimeProvider, 
-                StatementContext.VariableService, 
-                StatementContext.TableService,
-                exprEvaluatorContextStatement,
-                StatementContext.EventAdapterService,
-                StatementContext.StatementName, 
-                StatementContext.StatementId,
-                StatementContext.Annotations,
-                StatementContext.ContextDescriptor, 
-                StatementContext.ScriptingService,
-                false, false, true, false, null, false);
-    
-            // determine whether column names are provided
-            // if the "values" keyword was used, allow sequential automatic name assignment
-            string[] assignedSequentialNames = null;
-            if (StatementSpec.InsertIntoDesc.ColumnNames.IsEmpty()) {
-                var insert = (FireAndForgetSpecInsert) StatementSpec.FireAndForgetSpec;
-                if (insert.IsUseValuesKeyword) {
-                    assignedSequentialNames = Processor.EventTypePublic.PropertyNames;
-                }
-            }
-    
-            var count = -1;
-            foreach (var compiled in StatementSpec.SelectClauseSpec.SelectExprList) {
-                count++;
-                if (compiled is SelectClauseExprCompiledSpec) {
-                    var expr = (SelectClauseExprCompiledSpec) compiled;
-                    ExprNode validatedExpression = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, expr.SelectExpression, validationContext);
-                    expr.SelectExpression = validatedExpression;
-                    if (expr.AssignedName == null) {
-                        if (expr.ProvidedName == null) {
-                            if (assignedSequentialNames != null && count < assignedSequentialNames.Length) {
-                                expr.AssignedName = assignedSequentialNames[count];
-                            }
-                            else {
-                                expr.AssignedName = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expr.SelectExpression);
-                            }
-                        }
-                        else {
-                            expr.AssignedName = expr.ProvidedName;
-                        }
-                    }
-                }
-            }
-    
-            EventType optionalInsertIntoEventType = Processor.EventTypeResultSetProcessor;
-            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(StatementContext.StatementName, StatementContext.StatementEventTypeRef);
-            var insertHelper = SelectExprProcessorFactory.GetProcessor(
-                Collections.SingletonList(0),
-                selectNoWildcard.ToArray(), false, 
-                StatementSpec.InsertIntoDesc, optionalInsertIntoEventType, null, streamTypeService,
-                StatementContext.EventAdapterService, 
-                StatementContext.StatementResultService, 
-                StatementContext.ValueAddEventService, selectExprEventTypeRegistry,
-                StatementContext.EngineImportService, exprEvaluatorContextStatement, 
-                StatementContext.VariableService,
-                StatementContext.ScriptingService,
-                StatementContext.TableService, 
-                StatementContext.TimeProvider, 
-                StatementContext.EngineURI, 
-                StatementContext.StatementId, 
-                StatementContext.StatementName, 
-                StatementContext.Annotations, 
-                StatementContext.ContextDescriptor,
-                StatementContext.ConfigSnapshot, null, 
-                StatementContext.NamedWindowMgmtService, null, null, 
-                StatementContext.StatementExtensionServicesContext);
-    
-            return new EPPreparedExecuteIUDSingleStreamExecInsert(exprEvaluatorContextStatement, insertHelper, StatementSpec.TableNodes, Services);
-        }
-    
-        private static StatementSpecCompiled AssociatedFromClause(StatementSpecCompiled statementSpec)
-        {
+        private static StatementSpecCompiled AssociatedFromClause(StatementSpecCompiled statementSpec) {
             if (statementSpec.FilterRootNode != null ||
                     statementSpec.StreamSpecs.Length > 0 ||
                     statementSpec.HavingExprRootNode != null ||
@@ -130,10 +40,97 @@ namespace com.espertech.esper.core.start
             }
     
             var namedWindowName = statementSpec.InsertIntoDesc.EventTypeName;
-            var namedWindowStream = new NamedWindowConsumerStreamSpec(namedWindowName, null, new ViewSpec[0], Collections.GetEmptyList<ExprNode>(), new StreamSpecOptions(), null);
-            statementSpec.StreamSpecs = new StreamSpecCompiled[] {namedWindowStream};
+            var namedWindowStream = new NamedWindowConsumerStreamSpec(namedWindowName, null, new ViewSpec[0], Collections.GetEmptyList<ExprNode>(),
+                    StreamSpecOptions.DEFAULT, null);
+            statementSpec.StreamSpecs = new StreamSpecCompiled[]{namedWindowStream};
             return statementSpec;
         }
     
+        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
+        {
+            var statementSpec = base.StatementSpec;
+            var statementContext = base.StatementContext;
+            var selectNoWildcard = NamedWindowOnMergeHelper.CompileSelectNoWildcard(UuidGenerator.Generate(), statementSpec.SelectClauseSpec.SelectExprList);
+            var streamTypeService = new StreamTypeServiceImpl(statementContext.EngineURI, true);
+            var exprEvaluatorContextStatement = new ExprEvaluatorContextStatement(statementContext, true);
+    
+            // assign names
+            var validationContext = new ExprValidationContext(
+                streamTypeService, 
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.TimeProvider, 
+                statementContext.VariableService, 
+                statementContext.TableService, 
+                exprEvaluatorContextStatement,
+                statementContext.EventAdapterService, 
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+                statementContext.ScriptingService,
+                false, false, true, false, null, false);
+
+            var processor = base.Processor;
+    
+            // determine whether column names are provided
+            // if the "values" keyword was used, allow sequential automatic name assignment
+            string[] assignedSequentialNames = null;
+            if (statementSpec.InsertIntoDesc.ColumnNames.IsEmpty()) {
+                var insert = (FireAndForgetSpecInsert) statementSpec.FireAndForgetSpec;
+                if (insert.IsUseValuesKeyword) {
+                    assignedSequentialNames = processor.EventTypePublic.PropertyNames;
+                }
+            }
+    
+            var count = -1;
+            foreach (var compiled in statementSpec.SelectClauseSpec.SelectExprList) {
+                count++;
+                if (compiled is SelectClauseExprCompiledSpec) {
+                    var expr = (SelectClauseExprCompiledSpec) compiled;
+                    var validatedExpression = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, expr.SelectExpression, validationContext);
+                    expr.SelectExpression = validatedExpression;
+                    if (expr.AssignedName == null) {
+                        if (expr.ProvidedName == null) {
+                            if (assignedSequentialNames != null && count < assignedSequentialNames.Length) {
+                                expr.AssignedName = assignedSequentialNames[count];
+                            } else {
+                                expr.AssignedName = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expr.SelectExpression);
+                            }
+                        } else {
+                            expr.AssignedName = expr.ProvidedName;
+                        }
+                    }
+                }
+            }
+    
+            var optionalInsertIntoEventType = processor.EventTypeResultSetProcessor;
+            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(statementContext.StatementName, statementContext.StatementEventTypeRef);
+            var insertHelper = SelectExprProcessorFactory.GetProcessor(
+                Collections.SingletonList(0),
+                selectNoWildcard.ToArray(), false, 
+                statementSpec.InsertIntoDesc, optionalInsertIntoEventType, null, streamTypeService,
+                statementContext.EventAdapterService,
+                statementContext.StatementResultService, 
+                statementContext.ValueAddEventService, 
+                selectExprEventTypeRegistry,
+                statementContext.EngineImportService, 
+                exprEvaluatorContextStatement, 
+                statementContext.VariableService,
+                statementContext.ScriptingService,
+                statementContext.TableService, 
+                statementContext.TimeProvider, 
+                statementContext.EngineURI,
+                statementContext.StatementId,
+                statementContext.StatementName,
+                statementContext.Annotations,
+                statementContext.ContextDescriptor,
+                statementContext.ConfigSnapshot, null,
+                statementContext.NamedWindowMgmtService, null, null,
+                statementContext.StatementExtensionServicesContext);
+    
+            return new EPPreparedExecuteIUDSingleStreamExecInsert(exprEvaluatorContextStatement, insertHelper, statementSpec.TableNodes, base.Services);
+        }
+    
     }
-}
+} // end of namespace

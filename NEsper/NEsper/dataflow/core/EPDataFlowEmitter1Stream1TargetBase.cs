@@ -8,11 +8,12 @@
 
 using System;
 
-using XLR8.CGLib;
-
 using com.espertech.esper.client.dataflow;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
+using com.espertech.esper.epl.core;
+
+using XLR8.CGLib;
 
 namespace com.espertech.esper.dataflow.core
 {
@@ -22,22 +23,28 @@ namespace com.espertech.esper.dataflow.core
         protected readonly DataFlowSignalManager SignalManager;
         protected readonly SignalHandler SignalHandler;
         protected readonly EPDataFlowEmitterExceptionHandler ExceptionHandler;
-    
+
         private readonly FastMethod _fastMethod;
         protected readonly Object TargetObject;
 
-        protected EPDataFlowEmitter1Stream1TargetBase(int operatorNum, DataFlowSignalManager signalManager, SignalHandler signalHandler, EPDataFlowEmitterExceptionHandler exceptionHandler, ObjectBindingPair target)
+        protected EPDataFlowEmitter1Stream1TargetBase(
+            int operatorNum,
+            DataFlowSignalManager signalManager,
+            SignalHandler signalHandler,
+            EPDataFlowEmitterExceptionHandler exceptionHandler,
+            ObjectBindingPair target,
+            EngineImportService engineImportService)
         {
             OperatorNum = operatorNum;
             SignalManager = signalManager;
             SignalHandler = signalHandler;
             ExceptionHandler = exceptionHandler;
-    
+
             var fastClass = FastClass.Create(target.Target.GetType());
             _fastMethod = fastClass.GetMethod(target.Binding.ConsumingBindingDesc.Method);
             TargetObject = target.Target;
         }
-    
+
         public abstract void SubmitInternal(Object @object);
 
         public void Submit(Object @object)

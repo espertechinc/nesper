@@ -33,7 +33,7 @@ namespace com.espertech.esper.util
         public object Create(object parent, object configContext, XmlNode section)
         {
             Configuration configuration = new Configuration();
-            ConfigurationParser.DoConfigure(configuration, section);
+            ConfigurationParser.DoConfigure(configuration, (XmlElement) section);
             return configuration;
         }
 

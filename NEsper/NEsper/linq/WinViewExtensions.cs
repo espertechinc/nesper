@@ -23,7 +23,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> KeepFirst<T>(this EsperQuery<T> esperQuery, int length)
         {
-            return esperQuery.FilterView(() => View.Create("win", "firstlength", new ConstantExpression(length)));
+            return esperQuery.FilterView(() => View.Create("firstlength", new ConstantExpression(length)));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace com.espertech.esper.linq
         public static EsperQuery<T> KeepFirst<T>(this EsperQuery<T> esperQuery, TimeSpan duration)
         {
             var timePeriodExpression = duration.ToTimePeriodExpression();
-            return esperQuery.FilterView(() => View.Create("win", "firsttime", timePeriodExpression));
+            return esperQuery.FilterView(() => View.Create("firsttime", timePeriodExpression));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> KeepWhile<T>(this EsperQuery<T> esperQuery, System.Linq.Expressions.Expression<Func<T, bool>> expression)
         {
-            return esperQuery.FilterView(() => View.Create("win", "expr", LinqToSoda.LinqToSodaExpression(expression)));
+            return esperQuery.FilterView(() => View.Create("expr", LinqToSoda.LinqToSodaExpression(expression)));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> KeepUntil<T>(this EsperQuery<T> esperQuery, System.Linq.Expressions.Expression<Func<T, bool>> expression)
         {
-            return esperQuery.FilterView(() => View.Create("win", "expr_batch", LinqToSoda.LinqToSodaExpression(expression)));
+            return esperQuery.FilterView(() => View.Create("expr_batch", LinqToSoda.LinqToSodaExpression(expression)));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> KeepAll<T>(this EsperQuery<T> esperQuery)
         {
-            return esperQuery.FilterView(() => View.Create("win", "keepall"));
+            return esperQuery.FilterView(() => View.Create("keepall"));
         }
 
         /// <summary>
@@ -97,11 +97,11 @@ namespace com.espertech.esper.linq
                 ? "length_batch"
                 : "length";
 
-            return esperQuery.FilterView(() => View.Create("win", windowName, new ConstantExpression(length)));
+            return esperQuery.FilterView(() => View.Create(windowName, new ConstantExpression(length)));
         }
 
         /// <summary>
-        /// Expands the view to use a time bound window.  Time bound windows are sliding windows that extend the
+        /// Expands the view to use a time bound window.  TimeInMillis bound windows are sliding windows that extend the
         /// specified time interval into the past based on the system time.  Provide a time period as parameter.
         /// <para/>
         /// If batch is specified, then the window buffers events (tumbling window) and releases them
@@ -118,7 +118,7 @@ namespace com.espertech.esper.linq
         }
 
         /// <summary>
-        /// Expands the view to use a time bound window.  Time bound windows are sliding windows that extend the
+        /// Expands the view to use a time bound window.  TimeInMillis bound windows are sliding windows that extend the
         /// specified time interval into the past based on the system time.  Provide a time period as parameter.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -131,7 +131,7 @@ namespace com.espertech.esper.linq
             var timePeriodExpression = timeSpan.ToTimePeriodExpression();
             var windowName = batched ? "time_batch" : "time";
 
-            return esperQuery.FilterView(() => View.Create("win", windowName, timePeriodExpression));
+            return esperQuery.FilterView(() => View.Create(windowName, timePeriodExpression));
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace com.espertech.esper.linq
         public static EsperQuery<T> WithAccumlation<T>(this EsperQuery<T> esperQuery, TimeSpan timeSpan)
         {
             var timePeriodExpression = timeSpan.ToTimePeriodExpression();
-            return esperQuery.FilterView(() => View.Create("win", "time_accum", timePeriodExpression));
+            return esperQuery.FilterView(() => View.Create("time_accum", timePeriodExpression));
         }
 
         /// <summary>
@@ -164,14 +164,14 @@ namespace com.espertech.esper.linq
             var lengthExpression = new ConstantExpression(length);
 
             if (flowControlKeywords == null)
-                return esperQuery.FilterView(() => View.Create("win", "time_length_batch", timePeriodExpression, lengthExpression));
+                return esperQuery.FilterView(() => View.Create("time_length_batch", timePeriodExpression, lengthExpression));
 
             // we want to take this apart and turn this into something people can use without having to know
             // the keywords.  an enumeration might work well here with the values being accepted as params on
             // function call.
             var flowControlExpression = new ConstantExpression(flowControlKeywords);
 
-            return esperQuery.FilterView(() => View.Create("win", "time_length_batch", timePeriodExpression, lengthExpression, flowControlExpression));
+            return esperQuery.FilterView(() => View.Create("time_length_batch", timePeriodExpression, lengthExpression, flowControlExpression));
         }
     }
 }

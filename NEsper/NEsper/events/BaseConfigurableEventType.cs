@@ -175,6 +175,12 @@ namespace com.espertech.esper.events
 
         public EventPropertyGetterMapped GetGetterMapped(String mappedProperty)
         {
+            EventPropertyGetter getter = GetGetter(mappedProperty);
+            if (getter is EventPropertyGetterMapped)
+            {
+                return (EventPropertyGetterMapped) getter;
+            }
+
             return null;
         }
 
@@ -242,8 +248,8 @@ namespace com.espertech.esper.events
         /// <summary>
         /// Returns an enumeration of event types that are super to this event type, from which this event type inherited event properties.
         /// <para/>
-        /// For POCO instances underlying the event this method returns the event types for all superclasses extended by
-        /// the POCO and all interfaces implemented by the POCO.
+        /// For PONO instances underlying the event this method returns the event types for all superclasses extended by
+        /// the PONO and all interfaces implemented by the PONO.
         /// </summary>
         /// <value>The super types.</value>
         /// <returns>an array of event types</returns>
@@ -261,7 +267,7 @@ namespace com.espertech.esper.events
         public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
         public abstract EventBeanCopyMethod GetCopyMethod(string[] properties);
         public abstract EventBeanWriter GetWriter(string[] properties);
-        public abstract EventBeanReader GetReader();
+        public abstract EventBeanReader Reader { get; }
         public abstract string StartTimestampPropertyName { get; }
         public abstract string EndTimestampPropertyName { get; }
         public abstract bool EqualsCompareType(EventType eventType);

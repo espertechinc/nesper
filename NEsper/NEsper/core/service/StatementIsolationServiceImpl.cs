@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,54 +24,55 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class StatementIsolationServiceImpl : StatementIsolationService
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IDictionary<string, EPServiceProviderIsolatedImpl> _isolatedProviders;
         private EPServicesContext _epServicesContext;
-        private volatile int _currentUnitId = 0;
-    
-        /// <summary>Ctor. </summary>
+        private volatile int currentUnitId = 0;
+
+        /// <summary>Ctor.</summary>
         public StatementIsolationServiceImpl()
         {
             _isolatedProviders = new ConcurrentDictionary<string, EPServiceProviderIsolatedImpl>();
         }
 
-        /// <summary>Set the engine service context. </summary>
-        /// <value>services context</value>
-        public EPServicesContext ServicesContext
+        /// <summary>
+        /// Set the engine service context.
+        /// </summary>
+        /// <param name="epServicesContext">services context</param>
+        public void SetEpServicesContext(EPServicesContext epServicesContext)
         {
-            get { return _epServicesContext; }
-            set { _epServicesContext = value; }
+            _epServicesContext = epServicesContext;
         }
 
         public EPServiceProviderIsolated GetIsolationUnit(string name, int? optionalUnitId)
         {
-            var serviceProviderIsolated = _isolatedProviders.Get(name);
+            EPServiceProviderIsolatedImpl serviceProviderIsolated = _isolatedProviders.Get(name);
             if (serviceProviderIsolated != null)
             {
                 return serviceProviderIsolated;
             }
 
-            var filterService = FilterServiceProvider.NewService(_epServicesContext.ConfigSnapshot.EngineDefaults.ExecutionConfig.FilterServiceProfile, true);
+            FilterServiceSPI filterService =
+                FilterServiceProvider.NewService(
+                    _epServicesContext.ConfigSnapshot.EngineDefaults.Execution.FilterServiceProfile, true);
             var scheduleService = new SchedulingServiceImpl(_epServicesContext.TimeSource);
-            var services = new EPIsolationUnitServices(name, _currentUnitId, filterService, scheduleService);
-            serviceProviderIsolated = new EPServiceProviderIsolatedImpl(name, services, _epServicesContext, _isolatedProviders);
+            var services = new EPIsolationUnitServices(name, currentUnitId, filterService, scheduleService);
+            serviceProviderIsolated = new EPServiceProviderIsolatedImpl(
+                name, services, _epServicesContext, _isolatedProviders);
             _isolatedProviders.Put(name, serviceProviderIsolated);
             return serviceProviderIsolated;
         }
-    
+
         public void Dispose()
         {
-            _isolatedProviders.Clear();        
+            _isolatedProviders.Clear();
         }
 
         public string[] IsolationUnitNames
         {
-            get
-            {
-                ICollection<string> keyset = _isolatedProviders.Keys;
-                return keyset.ToArray();
-            }
+            get { return _isolatedProviders.Keys.ToArray(); }
         }
 
         public void BeginIsolatingStatements(string name, int unitId, IList<EPStatement> stmt)
@@ -114,7 +114,7 @@ namespace com.espertech.esper.core.service
                 Log.Info("Completed un-isolating statements " + Print(stmt) + " unit " + name + " id " + unitId);
             }
         }
-    
+
         public void RollbackUnisolatingStatements(string name, int unitId, IList<EPStatement> stmt)
         {
             if (Log.IsInfoEnabled)
@@ -122,16 +122,16 @@ namespace com.espertech.esper.core.service
                 Log.Info("Failed un-isolating statements " + Print(stmt) + " unit " + name + " id " + unitId);
             }
         }
-    
+
         public void NewStatement(int stmtId, string stmtName, EPIsolationUnitServices isolatedServices)
         {
             Log.Info("New statement '" + stmtName + "' unit " + isolatedServices.Name);
         }
-    
+
         private string Print(IEnumerable<EPStatement> stmts)
         {
             var buf = new StringBuilder();
-            var delimiter = "";
+            string delimiter = "";
             foreach (EPStatement stmt in stmts)
             {
                 buf.Append(delimiter);
@@ -141,4 +141,4 @@ namespace com.espertech.esper.core.service
             return buf.ToString();
         }
     }
-}
+} // end of namespace

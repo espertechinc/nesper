@@ -11,40 +11,39 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events;
 using com.espertech.esper.events.vaevent;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertWildcardSSWrapperRevision
-        : EvalBaseMap
-        , SelectExprProcessor
-    {
+    public class EvalInsertWildcardSSWrapperRevision : EvalBaseMap, SelectExprProcessor {
+    
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
         private readonly ValueAddEventProcessor _vaeProcessor;
-
-        public EvalInsertWildcardSSWrapperRevision(SelectExprContext selectExprContext,
-                                                   EventType resultEventType,
-                                                   ValueAddEventProcessor vaeProcessor)
+    
+        public EvalInsertWildcardSSWrapperRevision(SelectExprContext selectExprContext, EventType resultEventType, ValueAddEventProcessor vaeProcessor)
             : base(selectExprContext, resultEventType)
         {
             _vaeProcessor = vaeProcessor;
         }
-
+    
         // In case of a wildcard and single stream that is itself a
         // wrapper bean, we also need to add the map properties
-        public override EventBean ProcessSpecific(IDictionary<String, Object> props,
-                                                  EventBean[] eventsPerStream,
-                                                  bool isNewData,
-                                                  bool isSynthesize,
-                                                  ExprEvaluatorContext exprEvaluatorContext)
+        public override EventBean ProcessSpecific(
+            IDictionary<string, Object> props,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var wrapper = (DecoratingEventBean) eventsPerStream[0];
             if (wrapper != null)
             {
-                IDictionary<String, Object> map = wrapper.DecoratingProperties;
-                if ((ExprNodes.Length == 0) && (map.IsNotEmpty()))
+                IDictionary<string, Object> map = wrapper.DecoratingProperties;
+                if ((base.ExprNodes.Length == 0) && (!map.IsEmpty()))
                 {
                     // no action
                 }
@@ -58,4 +57,4 @@ namespace com.espertech.esper.epl.core.eval
             return _vaeProcessor.GetValueAddEventBean(theEvent);
         }
     }
-}
+} // end of namespace

@@ -24,13 +24,13 @@ namespace com.espertech.esper.epl.table.onaction
     public abstract class TableOnViewBase : ViewSupport
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         protected readonly SubordWMatchExprLookupStrategy LookupStrategy;
         protected readonly TableStateInstance TableStateInstance;
         protected readonly ExprEvaluatorContext exprEvaluatorContext;
         protected readonly TableMetadata Metadata;
         protected readonly bool AcquireWriteLock;
-    
+
         protected TableOnViewBase(SubordWMatchExprLookupStrategy lookupStrategy, TableStateInstance tableStateInstance, ExprEvaluatorContext exprEvaluatorContext, TableMetadata metadata, bool acquireWriteLock)
         {
             this.LookupStrategy = lookupStrategy;
@@ -39,28 +39,33 @@ namespace com.espertech.esper.epl.table.onaction
             this.Metadata = metadata;
             this.AcquireWriteLock = acquireWriteLock;
         }
-    
+
         public abstract void HandleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents);
-    
+
         public void Stop()
         {
             Log.Debug(".stop");
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (newData == null) {
+            if (newData == null)
+            {
                 return;
             }
-    
-            if (AcquireWriteLock) {
-                using (TableStateInstance.TableLevelRWLock.WriteLock.Acquire()) {
+
+            if (AcquireWriteLock)
+            {
+                using (TableStateInstance.TableLevelRWLock.WriteLock.Acquire())
+                {
                     EventBean[] eventsFound = LookupStrategy.Lookup(newData, exprEvaluatorContext);
                     HandleMatching(newData, eventsFound);
                 }
             }
-            else {
-                using (TableStateInstance.TableLevelRWLock.ReadLock.Acquire()) {
+            else
+            {
+                using (TableStateInstance.TableLevelRWLock.ReadLock.Acquire())
+                {
                     EventBean[] eventsFound = LookupStrategy.Lookup(newData, exprEvaluatorContext);
                     HandleMatching(newData, eventsFound);
                 }

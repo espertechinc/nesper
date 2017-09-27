@@ -10,10 +10,10 @@ using com.espertech.esper.compat;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.guard;
-using com.espertech.esper.support.pattern;
-using com.espertech.esper.support.schedule;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.guard;
+using com.espertech.esper.supportunit.pattern;
+using com.espertech.esper.supportunit.schedule;
+using com.espertech.esper.supportunit.view;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;

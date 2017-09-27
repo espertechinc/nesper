@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.util;
 
@@ -26,66 +26,38 @@ namespace com.espertech.esper.view.internals
     public class RouteResultView : ViewSupport
     {
         private readonly EventType _eventType;
-        private readonly RouteResultViewHandler _handler;
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
+        private readonly RouteResultViewHandler _handler;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="isFirst">true for the first-where clause, false for all where-clauses</param>
-        /// <param name="eventType">output type</param>
-        /// <param name="epStatementHandle">handle</param>
-        /// <param name="internalEventRouter">routining output events</param>
-        /// <param name="tableStateInstance">The table state instance.</param>
-        /// <param name="isNamedWindowInsert">The is named window insert.</param>
-        /// <param name="processors">processors for select clauses</param>
-        /// <param name="whereClauses">where expressions</param>
-        /// <param name="agentInstanceContext">agent instance context</param>
-        /// <exception cref="System.ArgumentException">Number of where-clauses and processors does not match</exception>
         public RouteResultView(
             bool isFirst,
             EventType eventType,
             EPStatementHandle epStatementHandle,
             InternalEventRouter internalEventRouter,
-            TableStateInstance[] tableStateInstance,
-            bool[] isNamedWindowInsert,
+            TableStateInstance[] tableStateInstances,
+            EPStatementStartMethodOnTriggerItem[] items,
             ResultSetProcessor[] processors,
-            ExprNode[] whereClauses,
+            ExprEvaluator[] whereClauses,
             AgentInstanceContext agentInstanceContext)
         {
             if (whereClauses.Length != processors.Length)
             {
                 throw new ArgumentException("Number of where-clauses and processors does not match");
             }
-    
+
             _exprEvaluatorContext = agentInstanceContext;
             _eventType = eventType;
-
             if (isFirst)
             {
-                _handler = new RouteResultViewHandlerFirst(epStatementHandle, internalEventRouter, tableStateInstance, isNamedWindowInsert, processors, ExprNodeUtility.GetEvaluators(whereClauses), agentInstanceContext);
+                _handler = new RouteResultViewHandlerFirst(
+                    epStatementHandle, internalEventRouter, tableStateInstances, items, processors, whereClauses,
+                    agentInstanceContext);
             }
             else
             {
-                _handler = new RouteResultViewHandlerAll(epStatementHandle, internalEventRouter, tableStateInstance, isNamedWindowInsert, processors, ExprNodeUtility.GetEvaluators(whereClauses), agentInstanceContext);
-            }
-        }
-    
-        public override void Update(EventBean[] newData, EventBean[] oldData)
-        {
-            if (newData == null)
-            {
-                return;
-            }
-    
-            foreach (EventBean bean in newData)
-            {
-                bool isHandled = _handler.Handle(bean, _exprEvaluatorContext);
-    
-                if (!isHandled)
-                {
-                    UpdateChildren(new EventBean[] {bean}, null);
-                }
+                _handler = new RouteResultViewHandlerAll(
+                    epStatementHandle, internalEventRouter, tableStateInstances, items, processors, whereClauses,
+                    agentInstanceContext);
             }
         }
 
@@ -94,9 +66,31 @@ namespace com.espertech.esper.view.internals
             get { return _eventType; }
         }
 
+        public override void Update(EventBean[] newData, EventBean[] oldData)
+        {
+            if (newData == null)
+            {
+                return;
+            }
+
+            foreach (EventBean bean in newData)
+            {
+                bool isHandled = _handler.Handle(bean, _exprEvaluatorContext);
+
+                if (!isHandled)
+                {
+                    UpdateChildren(
+                        new EventBean[]
+                        {
+                            bean
+                        }, null);
+                }
+            }
+        }
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return CollectionUtil.NULL_EVENT_ITERATOR;
         }
     }
-}
+} // end of namespace

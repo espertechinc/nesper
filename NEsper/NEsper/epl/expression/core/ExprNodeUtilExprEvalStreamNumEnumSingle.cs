@@ -23,11 +23,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return _enumeration.EvaluateGetEventBean(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext
-            );
+            return _enumeration.EvaluateGetEventBean(evaluateParams);
         }
 
         public Type ReturnType

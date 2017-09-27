@@ -70,7 +70,7 @@ namespace com.espertech.esper.events
             }
             else
             {
-                throw new EPException("Unexpected event object type '" + node.GetType().FullName + "' encountered, please supply a System.Xml.XmlDocument or Element node");
+                throw new EPException("Unexpected event object type '" + node.GetType().FullName + "' encountered, please supply a XmlDocument or XmlElement node");
             }
     
             if (_validateRootElement)

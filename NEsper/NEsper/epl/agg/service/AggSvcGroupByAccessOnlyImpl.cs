@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
-using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -28,7 +26,7 @@ namespace com.espertech.esper.epl.agg.service
         private readonly AggregationAccessorSlotPair[] _accessors;
         private readonly AggregationStateFactory[] _accessAggSpecs;
         private readonly bool _isJoin;
-    
+
         private AggregationState[] _currentAccesses;
         private Object _currentGroupKey;
 
@@ -45,29 +43,31 @@ namespace com.espertech.esper.epl.agg.service
             _accessAggSpecs = accessAggSpecs;
             _isJoin = isJoin;
         }
-    
+
         public void ApplyEnter(EventBean[] eventsPerStream, Object groupKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, 0, _accessAggSpecs.Length, groupKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(true, 0, _accessAggSpecs.Length, groupKey); }
             AggregationState[] row = GetAssertRow(exprEvaluatorContext.AgentInstanceId, groupKey);
-            for (int i = 0; i < row.Length; i++) {
+            for (int i = 0; i < row.Length; i++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggAccessEnterLeave(true, i, row[i], _accessAggSpecs[i].AggregationExpression); }
                 row[i].ApplyEnter(eventsPerStream, exprEvaluatorContext);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(true, i, row[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(true, i, row[i]); }
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(true); }
         }
-    
+
         public void ApplyLeave(EventBean[] eventsPerStream, Object groupKey, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, 0, _accessAggSpecs.Length, groupKey);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggregationGroupedApplyEnterLeave(false, 0, _accessAggSpecs.Length, groupKey); }
             AggregationState[] row = GetAssertRow(exprEvaluatorContext.AgentInstanceId, groupKey);
-            for (int i = 0; i < row.Length; i++) {
+            for (int i = 0; i < row.Length; i++)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QAggAccessEnterLeave(false, i, row[i], _accessAggSpecs[i].AggregationExpression); }
                 row[i].ApplyLeave(eventsPerStream, exprEvaluatorContext);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(false, i, row[i]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggAccessEnterLeave(false, i, row[i]); }
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false); }
         }
 
         public void SetCurrentAccess(Object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel)
@@ -75,55 +75,59 @@ namespace com.espertech.esper.epl.agg.service
             _currentAccesses = GetAssertRow(agentInstanceId, groupKey);
             _currentGroupKey = groupKey;
         }
-    
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetValue(_currentAccesses[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
-        }
-    
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableEvents(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetValue(_currentAccesses[pair.Slot], evaluateParams);
         }
 
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableScalar(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetEnumerableEvents(_currentAccesses[pair.Slot], evaluateParams);
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
+        {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableEvent(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetEnumerableScalar(_currentAccesses[pair.Slot], evaluateParams);
         }
-    
+
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
+        {
+            AggregationAccessorSlotPair pair = _accessors[column];
+            return pair.Accessor.GetEnumerableEvent(_currentAccesses[pair.Slot], evaluateParams);
+        }
+
         public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)
         {
             _accessMap.Clear();
         }
-    
-        private AggregationState[] GetAssertRow(int agentInstanceId, Object groupKey) {
+
+        private AggregationState[] GetAssertRow(int agentInstanceId, Object groupKey)
+        {
             AggregationState[] row = _accessMap.Get(groupKey);
-            if (row != null) {
+            if (row != null)
+            {
                 return row;
             }
-    
+
             row = AggSvcGroupByUtil.NewAccesses(agentInstanceId, _isJoin, _accessAggSpecs, groupKey, null);
             _accessMap.Put(groupKey, row);
             return row;
         }
-    
+
         public void SetRemovedCallback(AggregationRowRemovedCallback callback)
         {
             // not applicable
         }
-    
+
         public void Accept(AggregationServiceVisitor visitor)
         {
             visitor.VisitAggregations(_accessMap.Count, _accessMap);
         }
-    
+
         public void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor)
         {
             visitor.VisitGrouped(_accessMap.Count);
@@ -142,7 +146,7 @@ namespace com.espertech.esper.epl.agg.service
         {
             return _currentGroupKey;
         }
-    
+
         public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
         {
             return _accessMap.Keys;
@@ -150,6 +154,11 @@ namespace com.espertech.esper.epl.agg.service
 
         public void Stop()
         {
+        }
+
+        public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
+        {
+            return this;
         }
     }
 }

@@ -292,5 +292,18 @@ namespace com.espertech.esper.compat.collections
                 (a, b) => -comparer.Compare(a, b));
             return new SortedDictionary<TK, TV>(dictionary, inverted);
         }
+
+        public static IDictionary<K, V> AsBasicDictionary<K, V>(this object anyEntity)
+        {
+            var asRawDictionary = anyEntity as Dictionary<K, V>;
+            if (asRawDictionary != null)
+                return asRawDictionary;
+
+            var asFuzzyDictionary = anyEntity as IDictionary<K, V>;
+            if (asFuzzyDictionary != null)
+                return new Dictionary<K, V>(asFuzzyDictionary);
+
+            throw new ArgumentException("unable to translate dictionary", "anyEntity");
+        }
     }
 }

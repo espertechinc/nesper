@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 1)
+            if (ChildNodes.Count != 1)
             {
                 throw new ExprValidationException("Exists function node must have exactly 1 child node");
             }

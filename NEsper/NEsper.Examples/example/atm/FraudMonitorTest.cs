@@ -29,7 +29,7 @@ namespace com.espertech.esper.example.atm
 	        Configuration configuration = new Configuration();
 	        configuration.AddEventType("FraudWarning", typeof(FraudWarning).FullName);
 	        configuration.AddEventType("Withdrawal", typeof(Withdrawal).FullName);
-		    configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+		    configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	
 	        epService = EPServiceProviderManager.GetProvider("FraudMonitorTest", configuration);
 	        epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));

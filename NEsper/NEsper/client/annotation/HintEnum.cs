@@ -25,25 +25,25 @@ namespace com.espertech.esper.client.annotation
         /// For use with match_recognize, iterate-only matching.
         /// </summary>
         ITERATE_ONLY,
-    
+
         /// <summary>
         /// For use with group-by, disabled reclaim groups.
         /// </summary>
         DISABLE_RECLAIM_GROUP,
-    
+
         /// <summary>
         /// For use with group-by and std:groupwin, reclaim groups for unbound streams based on time.
         /// The number of seconds after which a groups is reclaimed if inactive.
         /// </summary>
         RECLAIM_GROUP_AGED,
-    
+
         /// <summary>
         /// For use with group-by and std:groupwin, reclaim groups for unbound streams based on time,
         /// this number is the frequency in seconds at which a sweep occurs for aged groups, if not
         /// provided then the sweep frequency is the same number as the age.
         /// </summary>
         RECLAIM_GROUP_FREQ,
-    
+
         /// <summary>
         /// For use with create-named-window statements only, to indicate that statements that subquery
         /// the named window use named window data structures (unless the subquery statement specifies
@@ -56,7 +56,7 @@ namespace com.espertech.esper.client.annotation
         /// </para>
         /// </summary>
         ENABLE_WINDOW_SUBQUERY_INDEXSHARE,
-    
+
         /// <summary>
         /// If ENABLE_WINDOW_SUBQUERY_INDEXSHARE is not specified for a named window (the default)
         /// then this instruction is ignored.
@@ -67,19 +67,19 @@ namespace com.espertech.esper.client.annotation
         /// </para>
         /// </summary>
         DISABLE_WINDOW_SUBQUERY_INDEXSHARE,
-    
+
         /// <summary>
         /// For use with subqueries and on-select, on-merge, on-Update and on-delete to specify the
         /// query engine neither build an implicit index nor use an existing index, always performing
         /// a full table scan.
         /// </summary>
         SET_NOINDEX,
-    
+
         /// <summary>
         /// For use with join query plans to force a nested iteration plan.
         /// </summary>
         FORCE_NESTED_ITER,
-    
+
         /// <summary>
         /// For use with join query plans to indicate preferance of the merge-join query plan.
         /// </summary>
@@ -99,7 +99,7 @@ namespace com.espertech.esper.client.annotation
         /// For use everywhere where unique data window are used
         /// </summary>
         DISABLE_UNIQUE_IMPLICIT_IDX,
-        
+
         /// <summary>
         /// For use when filter expression optimization may widen the filter expression
         /// </summary>
@@ -109,20 +109,20 @@ namespace com.espertech.esper.client.annotation
         ///  For use everywhere where unique data window are used
         /// </summary>
         DISABLE_WHEREEXPR_MOVETO_FILTER,
-    
-         /// <summary>
-         /// For use with output rate limiting to enable certain optimization that may however change output.
-         /// </summary>
+
+        /// <summary>
+        /// For use with output rate limiting to enable certain optimization that may however change output.
+        /// </summary>
         ENABLE_OUTPUTLIMIT_OPT
     }
-    
+
     public static class HintEnumExtensions
     {
         /// <summary>Returns the constant. </summary>
         /// <returns>constant</returns>
         public static String GetValue(this HintEnum @enum)
         {
-            switch(@enum)
+            switch (@enum)
             {
                 case HintEnum.ITERATE_ONLY:
                     return "ITERATE_ONLY";
@@ -155,15 +155,15 @@ namespace com.espertech.esper.client.annotation
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return "ENABLE_OUTPUTLIMIT_OPT";
             }
-            
+
             throw new ArgumentException();
         }
-    
+
         /// <summary>True if the hint accepts params. </summary>
         /// <returns>indicator</returns>
         public static bool IsAcceptsParameters(this HintEnum @enum)
         {
-            switch(@enum)
+            switch (@enum)
             {
                 case HintEnum.ITERATE_ONLY:
                     return false;
@@ -196,10 +196,10 @@ namespace com.espertech.esper.client.annotation
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return false;
             }
-            
+
             throw new ArgumentException();
         }
-    
+
         /// <summary>True if the hint requires params. </summary>
         /// <returns>indicator</returns>
         public static bool IsRequiresParameters(this HintEnum @enum)
@@ -207,7 +207,7 @@ namespace com.espertech.esper.client.annotation
             if (IsAcceptsParameters(@enum))
                 return true;
 
-            switch(@enum)
+            switch (@enum)
             {
                 case HintEnum.ITERATE_ONLY:
                     return false;
@@ -240,7 +240,7 @@ namespace com.espertech.esper.client.annotation
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return false;
             }
-            
+
             throw new ArgumentException();
         }
 
@@ -324,7 +324,7 @@ namespace com.espertech.esper.client.annotation
                 return new EmptyDictionary<HintEnum, IList<string>>();
             }
 
-            var hint = (HintAttribute) attribute;
+            var hint = (HintAttribute)attribute;
             var hintValueCaseNeutral = hint.Value.Trim();
             var hintValueUppercase = hintValueCaseNeutral.ToUpper();
 

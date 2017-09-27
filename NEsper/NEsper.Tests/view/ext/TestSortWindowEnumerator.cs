@@ -13,7 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.events;
 using com.espertech.esper.util;
 
 using NUnit.Framework;

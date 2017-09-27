@@ -80,10 +80,11 @@ namespace com.espertech.esper.epl.core
             IsEnableOutputLimitOpt = enableOutputLimitOpt;
             NumStreams = numStreams;
         }
-    
+
         public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
-            if (_noDataWindowSingleSnapshot && !IsHistoricalOnly) {
+            if (_noDataWindowSingleSnapshot && !IsHistoricalOnly)
+            {
                 return new ResultSetProcessorRowPerGroupRollupUnbound(this, orderByProcessor, aggregationService, agentInstanceContext);
             }
             return new ResultSetProcessorRowPerGroupRollup(this, orderByProcessor, aggregationService, agentInstanceContext);

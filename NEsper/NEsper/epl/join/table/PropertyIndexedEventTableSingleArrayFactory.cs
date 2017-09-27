@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.join.table
         protected readonly String[] PropertyNames;
         protected readonly bool Unique;
         protected readonly String OptionalIndexName;
-    
+
         protected readonly EventPropertyGetter[] PropertyGetters;
 
         /// <summary>
@@ -42,10 +42,11 @@ namespace com.espertech.esper.epl.join.table
             PropertyNames = propertyNames;
             Unique = unique;
             OptionalIndexName = optionalIndexName;
-    
+
             // Init getters
             PropertyGetters = new EventPropertyGetter[propertyNames.Length];
-            for (var i = 0; i < propertyNames.Length; i++) {
+            for (var i = 0; i < propertyNames.Length; i++)
+            {
                 PropertyGetters[i] = EventBeanUtility.GetAssertPropertyGetter(eventType, propertyNames[i]);
             }
         }
@@ -53,15 +54,19 @@ namespace com.espertech.esper.epl.join.table
         public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
         {
             var tables = new EventTable[PropertyGetters.Length];
-            if (Unique) {
-                for (var i = 0; i < tables.Length; i++) {
-                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganizationType.HASH);
+            if (Unique)
+            {
+                for (var i = 0; i < tables.Length; i++)
+                {
+                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] { PropertyNames[i] }, EventTableOrganizationType.HASH);
                     tables[i] = new PropertyIndexedEventTableSingleUnique(PropertyGetters[i], organization);
                 }
             }
-            else {
-                for (var i = 0; i < tables.Length; i++) {
-                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] {PropertyNames[i]}, EventTableOrganizationType.HASH);
+            else
+            {
+                for (var i = 0; i < tables.Length; i++)
+                {
+                    var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] { PropertyNames[i] }, EventTableOrganizationType.HASH);
                     tables[i] = new PropertyIndexedEventTableSingleUnadorned(PropertyGetters[i], organization);
                 }
             }
@@ -74,16 +79,17 @@ namespace com.espertech.esper.epl.join.table
             {
                 if (Unique)
                 {
-                    return typeof (PropertyIndexedEventTableSingleUnique);
+                    return typeof(PropertyIndexedEventTableSingleUnique);
                 }
                 else
                 {
-                    return typeof (PropertyIndexedEventTableSingle);
+                    return typeof(PropertyIndexedEventTableSingle);
                 }
             }
         }
 
-        public String ToQueryPlan() {
+        public String ToQueryPlan()
+        {
             return GetType().Name +
                     (Unique ? " unique" : " non-unique") +
                     " streamNum=" + StreamNum +

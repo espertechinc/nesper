@@ -31,7 +31,7 @@ namespace com.espertech.esper.core.context.mgr
 
             if (segmentedSpec.Items.IsEmpty())
             {
-                throw new ExprValidationException("Empty list of partition items");
+                throw new ExprValidationException("EmptyFalse list of partition items");
             }
 
             // verify properties exist
@@ -294,7 +294,7 @@ namespace com.espertech.esper.core.context.mgr
             }
             else
             {
-                var keys = ((MultiKeyUntyped) keyValue).Keys;
+                var keys = ((MultiKeyUntyped)keyValue).Keys;
                 for (var i = 0; i < foundPartition.PropertyNames.Count; i++)
                 {
                     var partitionPropertyName = foundPartition.PropertyNames[i];

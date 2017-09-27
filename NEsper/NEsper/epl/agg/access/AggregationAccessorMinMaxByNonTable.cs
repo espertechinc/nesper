@@ -6,11 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
@@ -25,9 +20,9 @@ namespace com.espertech.esper.epl.agg.access
         {
         }
     
-        public override object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override object GetValue(AggregationState state, EvaluateParams evaluateParams)
         {
-            var @event = GetEnumerableEvent(state, eventsPerStream, isNewData, context);
+            var @event = GetEnumerableEvent(state, evaluateParams);
             if (@event == null) {
                 return null;
             }

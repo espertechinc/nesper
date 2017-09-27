@@ -8,8 +8,8 @@
 
 using System.Collections.Generic;
 using com.espertech.esper.client;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 using NUnit.Framework;
 
 namespace com.espertech.esper.collection
@@ -17,7 +17,7 @@ namespace com.espertech.esper.collection
     [TestFixture]
     public class TestTransformEvent
     {
-        private IEnumerator<EventBean> enumerator;
+        private IEnumerator<EventBean> _enumerator;
 
         private static IEnumerator<EventBean> MakeEnumerator(int[] values)
         {
@@ -38,28 +38,28 @@ namespace com.espertech.esper.collection
         [Test]
         public void TestEmpty()
         {
-            enumerator = MakeEnumerator(new int[0]);
-            Assert.IsFalse(enumerator.MoveNext());
+            _enumerator = MakeEnumerator(new int[0]);
+            Assert.IsFalse(_enumerator.MoveNext());
         }
 
         [Test]
         public void TestOne()
         {
-            enumerator = MakeEnumerator(new[] {10});
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("Id"));
-            Assert.IsFalse(enumerator.MoveNext());
+            _enumerator = MakeEnumerator(new[] {10});
+            Assert.IsTrue(_enumerator.MoveNext());
+            Assert.AreEqual(10, _enumerator.Current.Get("Id"));
+            Assert.IsFalse(_enumerator.MoveNext());
         }
 
         [Test]
         public void TestTwo()
         {
-            enumerator = MakeEnumerator(new[] {10, 20});
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(10, enumerator.Current.Get("Id"));
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(20, enumerator.Current.Get("Id"));
-            Assert.IsFalse(enumerator.MoveNext());
+            _enumerator = MakeEnumerator(new[] {10, 20});
+            Assert.IsTrue(_enumerator.MoveNext());
+            Assert.AreEqual(10, _enumerator.Current.Get("Id"));
+            Assert.IsTrue(_enumerator.MoveNext());
+            Assert.AreEqual(20, _enumerator.Current.Get("Id"));
+            Assert.IsFalse(_enumerator.MoveNext());
         }
     }
 }

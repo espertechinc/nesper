@@ -46,10 +46,10 @@ namespace com.espertech.esper.epl.join.plan
 
         public override JoinExecTableLookupStrategy MakeStrategyInternal(EventTable[] eventTable, EventType[] eventTypes)
         {
-            var index = (PropertyCompositeEventTable) eventTable[0];
+            var index = (PropertyCompositeEventTable)eventTable[0];
             return new CompositeTableLookupStrategy(eventTypes[LookupStream], LookupStream, _hashKeys, _rangeKeyPairs, index);
         }
-    
+
         public override String ToString()
         {
             return string.Format("CompositeTableLookupPlan {0} directKeys={1} rangeKeys={2}",

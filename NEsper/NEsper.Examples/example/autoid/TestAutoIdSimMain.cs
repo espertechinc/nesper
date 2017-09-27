@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.example.autoid
@@ -15,7 +14,7 @@ namespace com.espertech.esper.example.autoid
 	public class TestAutoIdSimMain
 	{
 		[Test]
-	    public void testRun() 
+	    public void TestRun() 
 	    {
             AutoIdSimMain main = new AutoIdSimMain(10, "AutoIdSample");
 	        main.Run();

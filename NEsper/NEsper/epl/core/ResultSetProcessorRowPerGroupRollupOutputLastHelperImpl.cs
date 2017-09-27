@@ -24,15 +24,15 @@ namespace com.espertech.esper.epl.core
         {
 	        _processor = processor;
 
-            _outputLimitGroupRepsPerLevel = new LinkedHashMap<object, EventBean[]>[levelCount];
+            _outputLimitGroupRepsPerLevel = new IDictionary<object, EventBean[]>[levelCount];
 	        for (var i = 0; i < levelCount; i++) {
-	            _outputLimitGroupRepsPerLevel[i] = new LinkedHashMap<object, EventBean[]>();
-	        }
+                _outputLimitGroupRepsPerLevel[i] = new Dictionary<object, EventBean[]>().WithNullSupport();
+            }
 
 	        if (processor.Prototype.IsSelectRStream) {
-                _groupRepsOutputLastUnordRStream = new LinkedHashMap<object, EventBean>[levelCount];
+                _groupRepsOutputLastUnordRStream = new IDictionary<object, EventBean>[levelCount];
 	            for (var i = 0; i < levelCount; i++) {
-	                _groupRepsOutputLastUnordRStream[i] = new LinkedHashMap<object, EventBean>();
+                    _groupRepsOutputLastUnordRStream[i] = new Dictionary<object, EventBean>().WithNullSupport();
 	            }
 	        }
 	        else {

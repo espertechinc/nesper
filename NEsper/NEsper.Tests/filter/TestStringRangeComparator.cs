@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.logging;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -23,13 +25,13 @@ namespace com.espertech.esper.filter
                 new StringRangeComparator());
     
             String[][] TEST_SET =
-                    {
-                        new[] {"B", "G"},
-                        new[] {"B", "F"},
-                        new[] {null, "E"},
-                        new[] {"A", "F"},
-                        new[] {"A", "G"},
-                     };
+            {
+                new[] {"B", "G"},
+                new[] {"B", "F"},
+                new[] {null, "E"},
+                new[] {"A", "F"},
+                new[] {"A", "G"},
+            };
     
             int[] EXPECTED_INDEX = {2,3,4,1,0};
     

@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -26,7 +27,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("Concat node must have at least 2 parameters");
             }
@@ -36,7 +37,7 @@ namespace com.espertech.esper.epl.expression.ops
             for (var i = 0; i < evaluators.Length; i++)
             {
                 var childType = evaluators[i].ReturnType;
-                var childTypeName = childType == null ? "null" : childType.FullName;
+                var childTypeName = childType == null ? "null" : Name.Of(childType);
                 if (childType != typeof(String))
                 {
                     throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to string is not allowed", childTypeName));

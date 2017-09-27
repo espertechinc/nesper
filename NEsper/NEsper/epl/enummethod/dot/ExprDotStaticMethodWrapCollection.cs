@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.enummethod.dot
     public class ExprDotStaticMethodWrapCollection : ExprDotStaticMethodWrap
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _methodName;
         private readonly Type _componentType;
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             }
 
             if (result is ICollection<object>)
-                return ((ICollection<object>) result);
+                return ((ICollection<object>)result);
             if (result.GetType().IsGenericCollection())
                 return MagicMarker.GetCollectionFactory(result.GetType()).Invoke(result);
             if (result is ICollection)

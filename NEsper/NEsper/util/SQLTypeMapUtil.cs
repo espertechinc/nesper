@@ -10,22 +10,22 @@ using System;
 
 namespace com.espertech.esper.util
 {
-	/// <summary>
-	/// Utility for mapping SQL types to native types.
-	/// </summary>
-	public class SQLTypeMapUtil
-	{
-	    /// <summary>
-	    /// Converts a SQLType to a native type.
-	    /// </summary>
-	    /// <param name="sqlType">to return type for</param>
-	    /// <param name="className">
-	    /// is the classname that result metadata returns for a column
-	    /// </param>
-	    /// <returns>Type for sql types</returns>
-	    public static Type SqlTypeToClass(int sqlType, String className)
-	    {
-			throw new ArgumentException("Logic path is not active" );
-	    }
-	}
+    /// <summary>
+    /// Utility for mapping SQL types to native types.
+    /// </summary>
+    public class SQLTypeMapUtil
+    {
+        /// <summary>
+        /// Converts a SQLType to a native type.
+        /// </summary>
+        /// <param name="sqlType">to return type for</param>
+        /// <param name="className">
+        /// is the classname that result metadata returns for a column
+        /// </param>
+        /// <returns>Type for sql types</returns>
+        public static Type SqlTypeToClass(int sqlType, String className)
+        {
+            throw new ArgumentException("Logic path is not active");
+        }
+    }
 } // End of namespace

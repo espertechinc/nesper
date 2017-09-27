@@ -18,9 +18,7 @@ using com.espertech.esper.filter;
 
 namespace com.espertech.esper.core.start
 {
-    /// <summary>
-    /// Starts and provides the stop method for EPL statements.
-    /// </summary>
+    /// <summary>Starts and provides the stop method for EPL statements.</summary>
     public class EPPreparedExecuteIUDSingleStreamUpdate : EPPreparedExecuteIUDSingleStream
     {
         public EPPreparedExecuteIUDSingleStreamUpdate(StatementSpecCompiled statementSpec, EPServicesContext services, StatementContext statementContext)
@@ -30,40 +28,34 @@ namespace com.espertech.esper.core.start
     
         public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
         {
-            var updateSpec = (FireAndForgetSpecUpdate) StatementSpec.FireAndForgetSpec;
+            var services = base.Services;
+            var processor = base.Processor;
+            var statementContext = base.StatementContext;
+            var statementSpec = base.StatementSpec;
+            var updateSpec = (FireAndForgetSpecUpdate) statementSpec.FireAndForgetSpec;
     
             var assignmentTypeService = new StreamTypeServiceImpl(
-                    new EventType[] {Processor.EventTypeResultSetProcessor, null, Processor.EventTypeResultSetProcessor},
-                    new string[] {aliasName, "", EPStatementStartMethodOnTrigger.INITIAL_VALUE_STREAM_NAME},
-                    new bool[] {true, true, true}, Services.EngineURI, true);
+                    new EventType[]{processor.EventTypeResultSetProcessor, null, processor.EventTypeResultSetProcessor},
+                    new string[]{aliasName, "", EPStatementStartMethodOnTrigger.INITIAL_VALUE_STREAM_NAME},
+                    new bool[]{true, true, true}, services.EngineURI, true);
             assignmentTypeService.IsStreamZeroUnambigous = true;
-            var evaluatorContextStmt = new ExprEvaluatorContextStatement(StatementContext, true);
+            var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, true);
             var validationContext = new ExprValidationContext(
-                assignmentTypeService,
-                StatementContext.EngineImportService,
-                StatementContext.StatementExtensionServicesContext, null,
-                StatementContext.SchedulingService,
-                StatementContext.VariableService,
-                StatementContext.TableService,
-                evaluatorContextStmt,
-                StatementContext.EventAdapterService, 
-                StatementContext.StatementName,
-                StatementContext.StatementId, 
-                StatementContext.Annotations, 
-                StatementContext.ContextDescriptor,
-                StatementContext.ScriptingService, false,
-                false, true, false, null, false);
+                assignmentTypeService, statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
+                statementContext.VariableService, statementContext.TableService, evaluatorContextStmt,
+                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
+                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+                false, false, true, false, null, false);
     
             // validate update expressions
             try {
-                foreach (var assignment in updateSpec.Assignments)
-                {
-                    var validated = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.UPDATEASSIGN, assignment.Expression, validationContext);
+                foreach (OnTriggerSetAssignment assignment in updateSpec.Assignments) {
+                    ExprNode validated = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.UPDATEASSIGN, assignment.Expression, validationContext);
                     assignment.Expression = validated;
                     EPStatementStartMethodHelperValidate.ValidateNoAggregations(validated, "Aggregation functions may not be used within an update-clause");
                 }
-            }
-            catch (ExprValidationException e) {
+            } catch (ExprValidationException e) {
                 throw new EPException(e.Message, e);
             }
     
@@ -72,21 +64,20 @@ namespace com.espertech.esper.core.start
             TableUpdateStrategy tableUpdateStrategy = null;
             try {
     
-                var copyOnWrite = !(Processor is FireAndForgetProcessorTable);
-                updateHelper = EventBeanUpdateHelperFactory.Make(Processor.NamedWindowOrTableName,
-                        (EventTypeSPI) Processor.EventTypeResultSetProcessor, updateSpec.Assignments, aliasName, null, copyOnWrite);
+                bool copyOnWrite = !(processor is FireAndForgetProcessorTable);
+                updateHelper = EventBeanUpdateHelperFactory.Make(processor.NamedWindowOrTableName,
+                        (EventTypeSPI) processor.EventTypeResultSetProcessor, updateSpec.Assignments, aliasName, null, copyOnWrite, statementContext.StatementName, services.EngineURI, services.EventAdapterService);
     
-                if (Processor is FireAndForgetProcessorTable) {
-                    var tableProcessor = (FireAndForgetProcessorTable) Processor;
-                    tableUpdateStrategy = Services.TableService.GetTableUpdateStrategy(tableProcessor.TableMetadata, updateHelper, false);
+                if (processor is FireAndForgetProcessorTable) {
+                    FireAndForgetProcessorTable tableProcessor = (FireAndForgetProcessorTable) processor;
+                    tableUpdateStrategy = services.TableService.GetTableUpdateStrategy(tableProcessor.TableMetadata, updateHelper, false);
                     copyOnWrite = false;
                 }
-            }
-            catch (ExprValidationException e) {
+            } catch (ExprValidationException e) {
                 throw new EPException(e.Message, e);
             }
     
-            return new EPPreparedExecuteIUDSingleStreamExecUpdate(filter, StatementSpec.FilterRootNode, StatementSpec.Annotations, updateHelper, tableUpdateStrategy, StatementSpec.TableNodes, Services);
+            return new EPPreparedExecuteIUDSingleStreamExecUpdate(filter, statementSpec.FilterRootNode, statementSpec.Annotations, updateHelper, tableUpdateStrategy, statementSpec.TableNodes, services);
         }
     }
-}
+} // end of namespace

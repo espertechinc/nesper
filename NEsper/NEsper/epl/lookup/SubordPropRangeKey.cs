@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.lookup
 
         public String ToQueryPlan()
         {
-            return string.Format(" info {0} coercion {1}", RangeInfo.ToQueryPlan(), CoercionType);
+            return string.Format(" INFO {0} coercion {1}", RangeInfo.ToQueryPlan(), CoercionType);
         }
 
         public static String ToQueryPlan(ICollection<SubordPropRangeKey> rangeDescs)

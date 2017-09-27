@@ -18,13 +18,13 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.events.xml
 {
-	/// <summary>
-	/// Parses event property names and transforms to XPath expressions. Supports
-	/// nested, indexed and mapped event properties.
-	/// </summary>
-	
+    /// <summary>
+    /// Parses event property names and transforms to XPath expressions. Supports
+    /// nested, indexed and mapped event properties.
+    /// </summary>
+
     public class SimpleXMLPropertyParser
-	{
+    {
         /// <summary>
         /// Return the xPath corresponding to the given property. The PropertyName String
         /// may be simple, nested, indexed or mapped.
@@ -39,8 +39,8 @@ namespace com.espertech.esper.events.xml
         /// </returns>
         public static String Walk(EsperEPL2GrammarParser.StartEventPropertyRuleContext ast, String propertyName, String rootElementName, String defaultNamespacePrefix, bool isResolvePropertiesAbsolute)
         {
-			var xPathBuf = new StringBuilder();
-			xPathBuf.Append('/');
+            var xPathBuf = new StringBuilder();
+            xPathBuf.Append('/');
             if (isResolvePropertiesAbsolute)
             {
                 if (defaultNamespacePrefix != null)
@@ -50,7 +50,7 @@ namespace com.espertech.esper.events.xml
                 }
                 xPathBuf.Append(rootElementName);
             }
-			
+
             IList<EsperEPL2GrammarParser.EventPropertyAtomicContext> ctxs = ast.eventProperty().eventPropertyAtomic();
             if (ctxs.Count == 1)
             {
@@ -64,16 +64,16 @@ namespace com.espertech.esper.events.xml
                 }
             }
 
-			String xPath = xPathBuf.ToString();
+            String xPath = xPathBuf.ToString();
 
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
             {
-		        Log.Debug(".parse For property '" + propertyName + "' the xpath is '" + xPath + "'");
-		    }
+                Log.Debug(".parse For property '" + propertyName + "' the xpath is '" + xPath + "'");
+            }
 
             return xPath;
-		    //return XPathExpression.Compile( xPath );
-		}
+            //return XPathExpression.Compile( xPath );
+        }
 
         private static String MakeProperty(EsperEPL2GrammarParser.EventPropertyAtomicContext ctx, String defaultNamespacePrefix)
         {
@@ -99,7 +99,7 @@ namespace com.espertech.esper.events.xml
 
             return '/' + prefix + unescapedIdent;
         }
-		
-		private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	}
+
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    }
 }

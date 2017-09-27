@@ -41,10 +41,11 @@ namespace com.espertech.esper.pattern
         /// <param name="arrayEventTypes">the filter many-event types</param>
         /// <param name="allTags">All tags.</param>
         /// <param name="eventAdapterService">for creating wrappers if required</param>
-        public MatchedEventConvertorImpl(ICollection<KeyValuePair<string, Pair<EventType, string>>> filterTypes,
-                                         ICollection<KeyValuePair<string, Pair<EventType, string>>> arrayEventTypes,
-                                         IEnumerable<string> allTags,
-                                         EventAdapterService eventAdapterService)
+        public MatchedEventConvertorImpl(
+            ICollection<KeyValuePair<string, Pair<EventType, string>>> filterTypes,
+            ICollection<KeyValuePair<string, Pair<EventType, string>>> arrayEventTypes,
+            IEnumerable<string> allTags,
+            EventAdapterService eventAdapterService)
         {
             int size = filterTypes.Count;
             if (arrayEventTypes != null)
@@ -76,7 +77,7 @@ namespace com.espertech.esper.pattern
             {
                 foreach (var entry in _arrayEventTypes)
                 {
-                    var eventArray = (EventBean[]) events.GetMatchingEventAsObjectByTag(entry.Key);
+                    var eventArray = (EventBean[])events.GetMatchingEventAsObjectByTag(entry.Key);
                     var map = new Dictionary<string, object>();
                     map.Put(entry.Key, eventArray);
                     EventBean theEvent = new MapEventBean(map, null);

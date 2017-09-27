@@ -18,6 +18,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.core;
 
 namespace com.espertech.esper.events.xml
 {
@@ -38,20 +39,25 @@ namespace com.espertech.esper.events.xml
         /// <returns></returns>
         public static XmlSchema LoadSchema(Uri uri, String schemaText)
         {
-            if (uri == null) {
+            if (uri == null)
+            {
                 var stringReader = new StringReader(schemaText);
                 var schema = XmlSchema.Read(stringReader, null);
-                if (schema == null) {
+                if (schema == null)
+                {
                     throw new ConfigurationException("Failed to read schema from schemaText");
                 }
 
                 return schema;
             }
 
-            using (var client = new WebClient()) {
-                using (var resourceStream = client.OpenRead(uri)) {
+            using (var client = new WebClient())
+            {
+                using (var resourceStream = client.OpenRead(uri))
+                {
                     var schema = XmlSchema.Read(resourceStream, null);
-                    if (schema == null) {
+                    if (schema == null)
+                    {
                         throw new ConfigurationException("Failed to read schema via URL '" + uri + '\'');
                     }
 
@@ -65,20 +71,31 @@ namespace com.espertech.esper.events.xml
         /// </summary>
         /// <param name="schemaResource">schema to load and map.</param>
         /// <param name="schemaText">The schema text.</param>
+        /// <param name="engineImportService">The engine import service.</param>
         /// <param name="maxRecusiveDepth">depth of maximal recursive element</param>
-        /// <returns>model</returns>
-        public static SchemaModel LoadAndMap(String schemaResource, String schemaText, int maxRecusiveDepth = DEFAULT_MAX_RECURSIVE_DEPTH)
+        /// <returns>
+        /// model
+        /// </returns>
+        /// <exception cref="ConfigurationException">Failed to read schema ' + schemaResource + ' :  + ex.Message</exception>
+        public static SchemaModel LoadAndMap(
+            String schemaResource,
+            String schemaText,
+            EngineImportService engineImportService,
+            int maxRecusiveDepth = DEFAULT_MAX_RECURSIVE_DEPTH)
         {
             // Load schema
-            try {
+            try
+            {
                 var schemaLocation = string.IsNullOrEmpty(schemaResource) ? null : ResourceManager.ResolveResourceURL(schemaResource);
                 var schema = LoadSchema(schemaLocation, schemaText);
                 return Map(schema, schemaLocation, maxRecusiveDepth);
             }
-            catch (ConfigurationException) {
+            catch (ConfigurationException)
+            {
                 throw;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw new ConfigurationException("Failed to read schema '" + schemaResource + "' : " + ex.Message, ex);
             }
         }
@@ -113,7 +130,8 @@ namespace com.espertech.esper.events.xml
         private XmlSchemaType ResolveSchemaType(XmlSchema xsModel, XmlQualifiedName name)
         {
             var schemaType = _schemaTypeDictionary.Get(name);
-            if (schemaType == null) {
+            if (schemaType == null)
+            {
                 schemaType = ResolveSimpleType(xsModel, name);
             }
 
@@ -129,9 +147,11 @@ namespace com.espertech.esper.events.xml
         private static XmlSchemaType ResolveSimpleType(XmlSchema xsModel, XmlQualifiedName name)
         {
             XmlSchemaType schemaType = XmlSchemaSimpleType.GetBuiltInSimpleType(name);
-            if (schemaType == null) {
+            if (schemaType == null)
+            {
                 schemaType = XmlSchemaSimpleType.GetBuiltInComplexType(name);
-                if (schemaType == null) {
+                if (schemaType == null)
+                {
                     return xsModel.SchemaTypes[name] as XmlSchemaSimpleType;
                 }
             }
@@ -367,9 +387,9 @@ namespace com.espertech.esper.events.xml
             if (Log.IsDebugEnabled)
             {
                 Log.Debug(
-                    "Processing complex {0} {1} stack {2}", 
-                    complexElementName.Namespace, 
-                    complexElementName.Name, 
+                    "Processing complex {0} {1} stack {2}",
+                    complexElementName.Namespace,
+                    complexElementName.Name,
                     node);
             }
 
@@ -388,13 +408,13 @@ namespace com.espertech.esper.events.xml
                 );
 
             var complexElement = new SchemaElementComplex(
-                complexElementName.Name, 
-                complexElementName.Namespace, 
-                attributes, 
-                complexElements, 
-                simpleElements, 
-                isArray, 
-                optionalSimpleType, 
+                complexElementName.Name,
+                complexElementName.Namespace,
+                attributes,
+                complexElements,
+                simpleElements,
+                isArray,
+                optionalSimpleType,
                 optionalSimpleTypeName);
 
             // add attributes
@@ -453,7 +473,7 @@ namespace com.espertech.esper.events.xml
         /// <param name="attributes">The attributes.</param>
         /// <returns></returns>
         internal IEnumerable<SchemaItemAttribute> GetAttributes(
-            XmlSchema xsModel, 
+            XmlSchema xsModel,
             XmlSchemaObjectCollection attributes)
         {
             foreach (var attr in attributes.Cast<XmlSchemaAttribute>())
@@ -515,7 +535,7 @@ namespace com.espertech.esper.events.xml
 
             return EMPTY_SCHEMA_OBJECTS;
         }
-        
+
         /// <summary>
         /// Gets the content model particles associated with a content extension element.  These
         /// objects can be a little difficult because of the nesting of base types that occurs
@@ -548,7 +568,7 @@ namespace com.espertech.esper.events.xml
             }
 
             return result;
-        } 
+        }
 
         /// <summary>
         /// Processes the model group.
@@ -713,7 +733,7 @@ namespace com.espertech.esper.events.xml
             {
                 foreach (XmlSchemaObject facet in simpleTypeRestriction.Facets)
                 {
-                    Console.WriteLine(facet);
+                    //Console.WriteLine(facet);
                 }
             }
 #if false

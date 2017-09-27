@@ -26,7 +26,7 @@ namespace com.espertech.esper.core.context.activator
         private readonly bool _isSubSelect;
         private readonly InstrumentationAgent _instrumentationAgent;
         private readonly bool _isCanIterate;
-    
+
         internal ViewableActivatorFilterProxy(EPServicesContext services, FilterSpecCompiled filterSpec, Attribute[] annotations, bool subSelect, InstrumentationAgent instrumentationAgent, bool isCanIterate)
         {
             _services = services;
@@ -36,18 +36,18 @@ namespace com.espertech.esper.core.context.activator
             _instrumentationAgent = instrumentationAgent;
             _isCanIterate = isCanIterate;
         }
-    
+
         public ViewableActivationResult Activate(AgentInstanceContext agentInstanceContext, bool isSubselect, bool isRecoveringResilient)
         {
             // New event stream
             EventType resultEventType = _filterSpec.ResultEventType;
             EventStream zeroDepthStream = _isCanIterate ?
-                (EventStream) new ZeroDepthStreamIterable(resultEventType) : 
-                (EventStream) new ZeroDepthStreamNoIterate(resultEventType);
-    
+                (EventStream)new ZeroDepthStreamIterable(resultEventType) :
+                (EventStream)new ZeroDepthStreamNoIterate(resultEventType);
+
             // audit proxy
             var inputStream = EventStreamProxy.GetAuditProxy(agentInstanceContext.StatementContext.EngineURI, agentInstanceContext.EpStatementAgentInstanceHandle.StatementHandle.StatementName, _annotations, _filterSpec, zeroDepthStream);
-    
+
             var eventStream = inputStream;
             var statementId = agentInstanceContext.StatementContext.StatementId;
 
@@ -79,9 +79,10 @@ namespace com.espertech.esper.core.context.activator
             }
 
             var filterHandle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
-    
+
             FilterValueSetParam[][] addendum = null;
-            if (agentInstanceContext.AgentInstanceFilterProxy != null) {
+            if (agentInstanceContext.AgentInstanceFilterProxy != null)
+            {
                 addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(_filterSpec);
             }
             var filterValueSet = _filterSpec.GetValueSet(null, agentInstanceContext, addendum);

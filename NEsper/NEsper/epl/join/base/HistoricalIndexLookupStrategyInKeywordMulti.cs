@@ -6,25 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.@join.table;
 
 namespace com.espertech.esper.epl.join.@base
 {
-    /// <summary>Index lookup strategy into a poll-based cache result. </summary>
+    /// <summary>Index lookup strategy into a poll-based cache result.</summary>
     public class HistoricalIndexLookupStrategyInKeywordMulti : HistoricalIndexLookupStrategy
     {
-        private readonly EventBean[] _eventsPerStream;
         private readonly ExprEvaluator _evaluator;
+        private readonly EventBean[] _eventsPerStream;
         private readonly int _lookupStream;
 
-        /// <summary>Ctor. </summary>
         public HistoricalIndexLookupStrategyInKeywordMulti(int lookupStream, ExprNode expression)
         {
             _eventsPerStream = new EventBean[lookupStream + 1];
@@ -38,7 +35,7 @@ namespace com.espertech.esper.epl.join.@base
             ExprEvaluatorContext exprEvaluatorContext)
         {
             _eventsPerStream[_lookupStream] = lookupEvent;
-            ICollection<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
+            var result = InKeywordTableLookupUtil.MultiIndexLookup(
                 _evaluator, _eventsPerStream, exprEvaluatorContext, indexTable);
             if (result == null)
             {
@@ -47,9 +44,9 @@ namespace com.espertech.esper.epl.join.@base
             return result.GetEnumerator();
         }
 
-        public String ToQueryPlan()
+        public string ToQueryPlan()
         {
             return this.GetType().Name;
         }
     }
-}
+} // end of namespace

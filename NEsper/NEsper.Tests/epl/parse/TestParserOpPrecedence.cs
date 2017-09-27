@@ -15,7 +15,7 @@ using Antlr4.Runtime.Tree;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
-using com.espertech.esper.support.epl.parse;
+using com.espertech.esper.supportunit.epl.parse;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
@@ -23,9 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.epl.parse
 {
     /// <summary>
-    /// Test operator Precedence and on-expression equivalence. Precendences are similar
-    /// to Java see
-    /// <a>http://java.sun.com/docs/books/tutorial/java/nutsandbolts/expressions.html</a>) 
+    /// Test operator Precedence and on-expression equivalence.
     /// Precedence ordering (highest on top): postfix operators   -
     /// within unary operators 
     ///     -   not, every AND        
@@ -137,7 +135,7 @@ namespace com.espertech.esper.epl.parse
         }
 
         private String toPatternText(EPLTreeWalkerListener walker) {
-            PatternStreamSpecRaw raw = (PatternStreamSpecRaw) walker.GetStatementSpec().StreamSpecs[0];
+            PatternStreamSpecRaw raw = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
             StringWriter writer = new StringWriter();
             raw.EvalFactoryNode.ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
             return writer.ToString();

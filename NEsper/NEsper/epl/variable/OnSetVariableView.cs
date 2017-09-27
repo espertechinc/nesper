@@ -25,32 +25,33 @@ namespace com.espertech.esper.epl.variable
     {
         private readonly OnSetVariableViewFactory _factory;
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
-    
+
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
-    
-        public OnSetVariableView(OnSetVariableViewFactory factory, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public OnSetVariableView(OnSetVariableViewFactory factory, ExprEvaluatorContext exprEvaluatorContext)
+        {
             _factory = factory;
             _exprEvaluatorContext = exprEvaluatorContext;
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             if ((newData == null) || (newData.Length == 0))
             {
                 return;
             }
-    
+
             IDictionary<String, Object> values = null;
             var produceOutputEvents = (_factory.StatementResultService.IsMakeNatural || _factory.StatementResultService.IsMakeSynthetic);
-    
+
             if (produceOutputEvents)
             {
                 values = new Dictionary<String, Object>();
             }
-    
+
             _eventsPerStream[0] = newData[newData.Length - 1];
             _factory.VariableReadWritePackage.WriteVariables(_factory.VariableService, _eventsPerStream, values, _exprEvaluatorContext);
-            
+
             if (values != null)
             {
                 EventBean[] newDataOut = new EventBean[1];

@@ -48,13 +48,14 @@ namespace com.espertech.esper.epl.db
         /// <param name="outputTypes">describe columns selected by the SQL</param>
         /// <param name="outputRowConversionHook">hook to convert rows, if any hook is registered</param>
         /// <param name="columnTypeConversionHook">hook to convert columns, if any hook is registered</param>
-        public PollExecStrategyDBQuery(EventAdapterService eventAdapterService,
-                                       EventType eventType,
-                                       ConnectionCache connectionCache,
-                                       String preparedStatementText,
-                                       IDictionary<String, DBOutputTypeDesc> outputTypes,
-                                       SQLColumnTypeConversion columnTypeConversionHook,
-                                       SQLOutputRowConversion outputRowConversionHook)
+        public PollExecStrategyDBQuery(
+            EventAdapterService eventAdapterService,
+            EventType eventType,
+            ConnectionCache connectionCache,
+            String preparedStatementText,
+            IDictionary<String, DBOutputTypeDesc> outputTypes,
+            SQLColumnTypeConversion columnTypeConversionHook,
+            SQLOutputRowConversion outputRowConversionHook)
         {
             _eventAdapterService = eventAdapterService;
             _eventType = eventType;
@@ -93,7 +94,10 @@ namespace com.espertech.esper.epl.db
         /// Poll events using the keys provided.
         /// </summary>
         /// <param name="lookupValues">is keys for exeuting a query or such</param>
-        /// <returns>a list of events for the keys</returns>
+        /// <param name="exprEvaluatorContext">The expression evaluator context.</param>
+        /// <returns>
+        /// a list of events for the keys
+        /// </returns>
         public IList<EventBean> Poll(Object[] lookupValues, ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<EventBean> result;

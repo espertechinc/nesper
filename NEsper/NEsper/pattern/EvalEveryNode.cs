@@ -6,19 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using System.Reflection;
+
+using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.pattern
 {
     /// <summary>
     /// This class represents an 'every' operator in the evaluation tree representing an event expression.
     /// </summary>
-    [Serializable]
     public class EvalEveryNode : EvalNodeBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly EvalEveryFactoryNode _factoryNode;
         private readonly EvalNode _childNode;
-
+    
         public EvalEveryNode(PatternAgentInstanceContext context, EvalEveryFactoryNode factoryNode, EvalNode childNode)
             : base(context)
         {
@@ -36,9 +39,12 @@ namespace com.espertech.esper.pattern
             get { return _childNode; }
         }
 
-        public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
+        public override EvalStateNode NewState(
+            Evaluator parentNode,
+            EvalStateNodeNumber stateNodeNumber,
+            long stateNodeId)
         {
             return new EvalEveryStateNode(parentNode, this);
         }
     }
-}
+} // end of namespace

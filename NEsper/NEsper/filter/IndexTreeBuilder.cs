@@ -33,7 +33,7 @@ namespace com.espertech.esper.filter
     /// </summary>
     public sealed class IndexTreeBuilder
     {
-        private IndexTreeBuilder() {}
+        private IndexTreeBuilder() { }
 
         /// <summary>
         /// Add a filter callback according to the filter specification to the top node returning information to be used to remove the filter callback.
@@ -97,7 +97,7 @@ namespace com.espertech.esper.filter
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
             {
                 Log.Debug(".remove (" + Thread.CurrentThread.ManagedThreadId + ") Removing filterCallback " +
-                          " type " + eventType.Name + 
+                          " type " + eventType.Name +
                           "  topNode=" + topNode +
                           "  filterCallback=" + filterCallback);
             }
@@ -129,10 +129,10 @@ namespace com.espertech.esper.filter
             // If no parameters are specified, add to current node, and done
             if (remainingParameters.IsEmpty())
             {
-                using(currentNode.NodeRWLock.AcquireWriteLock())
+                using (currentNode.NodeRWLock.AcquireWriteLock())
                 {
                     currentNode.Add(filterCallback);
-                }            
+                }
                 return;
             }
 
@@ -155,7 +155,7 @@ namespace com.espertech.esper.filter
             }
 
             // An index for any of the filter parameters was not found, create one
-            using(currentNode.NodeRWLock.AcquireWriteLock())
+            using (currentNode.NodeRWLock.AcquireWriteLock())
             {
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.filter
             // No remaining filter parameters
             if (nextPair == null)
             {
-                using(currentNode.NodeRWLock.AcquireWriteLock())
+                using (currentNode.NodeRWLock.AcquireWriteLock())
                 {
                     var isRemoved = currentNode.Remove(filterCallback);
                     var isEmpty = currentNode.IsEmpty();
@@ -213,7 +213,7 @@ namespace com.espertech.esper.filter
             var nextIndex = nextPair.Index;
             var filteredForValue = nextPair.Lookupable;
 
-            using(currentNode.NodeRWLock.AcquireWriteLock())
+            using (currentNode.NodeRWLock.AcquireWriteLock())
             {
                 var isEmpty = RemoveFromIndex(filterCallback, nextIndex, treePathInfo, treePathPosition, filteredForValue);
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.filter
             int treePathPosition,
             Object filterForValue)
         {
-            using(index.ReadWriteLock.AcquireWriteLock())
+            using (index.ReadWriteLock.AcquireWriteLock())
             {
                 EventEvaluator eventEvaluator = index[filterForValue];
 
@@ -260,7 +260,7 @@ namespace com.espertech.esper.filter
 
                 if (eventEvaluator is FilterHandleSetNode)
                 {
-                    var node = (FilterHandleSetNode) eventEvaluator;
+                    var node = (FilterHandleSetNode)eventEvaluator;
                     var isEmptyX = RemoveFromNode(filterCallback, node, treePathInfo, treePathPosition);
                     if (isEmptyX)
                     {
@@ -272,7 +272,7 @@ namespace com.espertech.esper.filter
                     return (index.Count == 0);
                 }
 
-                var nextIndex = (FilterParamIndexBase) eventEvaluator;
+                var nextIndex = (FilterParamIndexBase)eventEvaluator;
                 var nextPair = treePathPosition < treePathInfo.Length ? treePathInfo[treePathPosition++] : null;
 
                 if (nextPair == null)
@@ -330,7 +330,7 @@ namespace com.espertech.esper.filter
 
             EventEvaluator eventEvaluator;
 
-            using(index.ReadWriteLock.AcquireReadLock())
+            using (index.ReadWriteLock.AcquireReadLock())
             {
                 eventEvaluator = index[filterForValue];
 
@@ -346,7 +346,7 @@ namespace com.espertech.esper.filter
             }
 
             // new filter parameter value, need a write lock
-            using(index.ReadWriteLock.AcquireWriteLock())
+            using (index.ReadWriteLock.AcquireWriteLock())
             {
                 eventEvaluator = index[filterForValue];
 
@@ -360,7 +360,7 @@ namespace com.espertech.esper.filter
                     }
 
                     // The found eventEvaluator must be converted to a new FilterHandleSetNode
-                    var nextIndexX = (FilterParamIndexBase) eventEvaluator;
+                    var nextIndexX = (FilterParamIndexBase)eventEvaluator;
                     var newNode = new FilterHandleSetNode(lockFactory.ObtainNew());
                     newNode.Add(nextIndexX);
                     index.Remove(filterForValue);
@@ -411,13 +411,13 @@ namespace com.espertech.esper.filter
         {
             if (eventEvaluator is FilterHandleSetNode)
             {
-                var node = (FilterHandleSetNode) eventEvaluator;
+                var node = (FilterHandleSetNode)eventEvaluator;
                 AddToNode(remainingParameters, filterCallback, node, treePathInfo, lockFactory);
                 return true;
             }
 
             // Check if the next index matches any of the remaining filterCallback parameters
-            var nextIndex = (FilterParamIndexBase) eventEvaluator;
+            var nextIndex = (FilterParamIndexBase)eventEvaluator;
 
             var parameter = IndexHelper.FindParameter(remainingParameters, nextIndex);
             if (parameter != null)

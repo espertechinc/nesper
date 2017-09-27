@@ -139,7 +139,7 @@ namespace com.espertech.esper.client
 
         public ConfigurationEventTypeXMLDOM()
         {
-            XPathProperties = new LinkedHashMap<String, XPathPropertyDesc>();
+            XPathProperties = new Dictionary<String, XPathPropertyDesc>();
             _namespacePrefixes = new Dictionary<String, String>();
             IsXPathResolvePropertiesAbsolute = true;
             IsXPathPropertyExpr = false;

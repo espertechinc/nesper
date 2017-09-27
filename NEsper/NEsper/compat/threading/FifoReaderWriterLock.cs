@@ -79,9 +79,9 @@ namespace com.espertech.esper.compat.threading
 
 #if DEBUG
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="FifoReaderWriterLock"/> is trace.
+        /// Gets or sets a value indicating whether this <see cref="FifoReaderWriterLock"/> is TRACE.
         /// </summary>
-        /// <value><c>true</c> if trace; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if TRACE; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
         
@@ -118,11 +118,11 @@ namespace com.espertech.esper.compat.threading
             }
         }
 
-        /// <summary>
-        /// Acquires the reader lock.
-        /// </summary>
-        /// <param name="timeout">The timeout.</param>
-        public Node AcquireReaderLock(int timeout)
+	    /// <summary>
+	    /// Acquires the reader lock.
+	    /// </summary>
+	    /// <param name="timeout">The timeout.</param>
+	    public Node AcquireReaderLock(long timeout)
         {
             var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;
@@ -160,11 +160,11 @@ namespace com.espertech.esper.compat.threading
             }
         }
 
-        /// <summary>
-        /// Acquires the writer lock.
-        /// </summary>
-        /// <param name="timeout">The timeout.</param>
-        public Node AcquireWriterLock(int timeout)
+	    /// <summary>
+	    /// Acquires the writer lock.
+	    /// </summary>
+	    /// <param name="timeout">The timeout.</param>
+	    public Node AcquireWriterLock(long timeout)
         {
         	var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;

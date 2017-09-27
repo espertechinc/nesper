@@ -24,7 +24,7 @@ namespace com.espertech.esper.pattern
         protected readonly EvalEveryDistinctNode EveryNode;
         protected readonly IDictionary<EvalStateNode, IDictionary<Object, long>> SpawnedNodes;
         protected MatchedEventMap BeginState;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="everyNode">is the factory node associated to the state</param>
@@ -34,7 +34,7 @@ namespace com.espertech.esper.pattern
             EveryNode = everyNode;
             SpawnedNodes = new LinkedHashMap<EvalStateNode, IDictionary<Object, long>>();
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             if (PatternConsumptionUtil.ContainsEvent(matchEvent, BeginState))
@@ -55,19 +55,19 @@ namespace com.espertech.esper.pattern
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctStart(EveryNode, beginState);}
-            
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctStart(EveryNode, beginState); }
+
             BeginState = beginState.ShallowCopy();
             var childState = EveryNode.ChildNode.NewState(this, null, 0L);
             SpawnedNodes.Put(childState, new LinkedHashMap<Object, long>());
-    
+
             // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
             // Events created during the start would likely come from the "not" operator.
             // Quit the new child again if
             var spawnEvaluator = new EvalEveryStateSpawnEvaluator(EveryNode.Context.PatternContext.StatementName);
             childState.ParentEvaluator = spawnEvaluator;
             childState.Start(beginState);
-    
+
             // If the spawned expression turned true already, just quit it
             if (spawnEvaluator.IsEvaluatedTrue)
             {
@@ -78,23 +78,23 @@ namespace com.espertech.esper.pattern
                 childState.ParentEvaluator = this;
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctStart(); }
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctEvalFalse(EveryNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctEvalFalse(EveryNode); }
 
             fromNode.Quit();
             SpawnedNodes.Remove(fromNode);
-    
+
             // Spawn all nodes below this EVERY node
             // During the start of a child we need to use the temporary evaluator to catch any event created during a start
             // Such events can be raised when the "not" operator is used.
             var spawnEvaluator = new EvalEveryStateSpawnEvaluator(EveryNode.Context.PatternContext.StatementName);
             var spawned = EveryNode.ChildNode.NewState(spawnEvaluator, null, 0L);
             spawned.Start(BeginState);
-    
+
             // If the whole spawned expression already turned true, quit it again
             if (spawnEvaluator.IsEvaluatedTrue)
             {
@@ -106,13 +106,13 @@ namespace com.espertech.esper.pattern
                 spawned.ParentEvaluator = this;
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctEvalFalse();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctEvalFalse(); }
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctEvaluateTrue(EveryNode, matchEvent);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctEvaluateTrue(EveryNode, matchEvent); }
+
             // determine if this evaluation has been seen before from the same node
             var matchEventKey = PatternExpressionUtil.GetKeys(matchEvent, EveryNode.FactoryNode.Convertor, EveryNode.FactoryNode.DistinctExpressionsArray, EveryNode.Context.AgentInstanceContext);
             var haveSeenThis = false;
@@ -123,7 +123,7 @@ namespace com.espertech.esper.pattern
                 var currentTime = EveryNode.Context.PatternContext.TimeProvider.Time;
                 var entries = new List<object>();
 
-                foreach(var entry in keysFromNode)
+                foreach (var entry in keysFromNode)
                 {
                     if (currentTime >= entry.Value)
                     {
@@ -143,16 +143,16 @@ namespace com.espertech.esper.pattern
                 }
                 else
                 {
-                    long expiryTime = EveryNode.FactoryNode.AbsMillisecondExpiry(EveryNode.Context);
+                    long expiryTime = EveryNode.FactoryNode.AbsExpiry(EveryNode.Context);
                     keysFromNode.Put(matchEventKey, expiryTime);
                 }
-            }        
-    
+            }
+
             if (isQuitted)
             {
                 SpawnedNodes.Remove(fromNode);
             }
-    
+
             // See explanation in EvalFilterStateNode for the type check
             if (fromNode.IsFilterStateNode)
             {
@@ -166,7 +166,7 @@ namespace com.espertech.esper.pattern
                 var spawnEvaluator = new EvalEveryStateSpawnEvaluator(EveryNode.Context.PatternContext.StatementName);
                 var spawned = EveryNode.ChildNode.NewState(spawnEvaluator, null, 0L);
                 spawned.Start(BeginState);
-    
+
                 // If the whole spawned expression already turned true, quit it again
                 if (spawnEvaluator.IsEvaluatedTrue)
                 {
@@ -183,30 +183,31 @@ namespace com.espertech.esper.pattern
                     spawned.ParentEvaluator = this;
                 }
             }
-    
+
             if (!haveSeenThis)
             {
                 ParentEvaluator.EvaluateTrue(matchEvent, this, false);
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctEvaluateTrue(null, keysFromNode, matchEventKey, haveSeenThis);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctEvaluateTrue(null, keysFromNode, matchEventKey, haveSeenThis); }
         }
-    
+
         public override void Quit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctQuit(EveryNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryDistinctQuit(EveryNode); }
             // Stop all child nodes
             foreach (EvalStateNode child in SpawnedNodes.Keys)
             {
                 child.Quit();
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryDistinctQuit(); }
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitEveryDistinct(EveryNode.FactoryNode, this, BeginState, SpawnedNodes.Values);
-            foreach (EvalStateNode spawnedNode in SpawnedNodes.Keys) {
+            foreach (EvalStateNode spawnedNode in SpawnedNodes.Keys)
+            {
                 spawnedNode.Accept(visitor);
             }
         }

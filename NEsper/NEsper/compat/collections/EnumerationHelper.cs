@@ -21,7 +21,7 @@ namespace com.espertech.esper.compat.collections
         /// Creates the empty enumerator.
         /// </summary>
         /// <returns></returns>
-        public static IEnumerator<T> CreateEmptyEnumerator()
+        public static IEnumerator<T> Empty()
         {
             return new NullEnumerator<T>();
         }
@@ -31,7 +31,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public static IEnumerator<T> CreateSingletonEnumerator(T item)
+        public static IEnumerator<T> Singleton(T item)
         {
             yield return item;
         }

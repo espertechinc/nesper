@@ -39,33 +39,36 @@ namespace com.espertech.esper.core.context.factory
         private readonly NamedWindowOnExprFactory _onExprFactory;
         private readonly OutputProcessViewFactory _outputProcessViewFactory;
         private readonly NamedWindowProcessor _processor;
-    
+
         private readonly SubordinateWMatchExprQueryPlanResult _queryPlan;
 
         public StatementAgentInstanceFactoryOnTriggerNamedWindow(StatementContext statementContext, StatementSpecCompiled statementSpec, EPServicesContext services, ViewableActivator activator, SubSelectStrategyCollection subSelectStrategyCollection, ResultSetProcessorFactoryDesc resultSetProcessorPrototype, ExprNode validatedJoin, ResultSetProcessorFactoryDesc outputResultSetProcessorPrototype, NamedWindowOnExprFactory onExprFactory, OutputProcessViewFactory outputProcessViewFactory, EventType activatorResultEventType, NamedWindowProcessor processor, IList<StopCallback> stopCallbacks)
-            : base(statementContext, statementSpec, services, activator, subSelectStrategyCollection)    
+            : base(statementContext, statementSpec, services, activator, subSelectStrategyCollection)
         {
             _resultSetProcessorPrototype = resultSetProcessorPrototype;
             _outputResultSetProcessorPrototype = outputResultSetProcessorPrototype;
             _onExprFactory = onExprFactory;
             _outputProcessViewFactory = outputProcessViewFactory;
             _processor = processor;
-    
+
             IndexHintPair pair = GetIndexHintPair(statementContext, statementSpec);
             IndexHint indexHint = pair.IndexHint;
             ExcludePlanHint excludePlanHint = pair.ExcludePlanHint;
-    
+
             _queryPlan = SubordinateQueryPlanner.PlanOnExpression(
                     validatedJoin, activatorResultEventType, indexHint, processor.IsEnableSubqueryIndexShare, -1, excludePlanHint,
                     processor.IsVirtualDataWindow, processor.EventTableIndexMetadataRepo, processor.NamedWindowType,
                     processor.OptionalUniqueKeyProps, false, statementContext.StatementName, statementContext.StatementId, statementContext.Annotations);
-            if (_queryPlan.IndexDescs != null) {
+            if (_queryPlan.IndexDescs != null)
+            {
                 SubordinateQueryPlannerUtil.AddIndexMetaAndRef(_queryPlan.IndexDescs, processor.EventTableIndexMetadataRepo, statementContext.StatementName);
                 stopCallbacks.Add(new ProxyStopCallback(() =>
                 {
-                    for (int i = 0; i < _queryPlan.IndexDescs.Length; i++) {
+                    for (int i = 0; i < _queryPlan.IndexDescs.Length; i++)
+                    {
                         bool last = processor.EventTableIndexMetadataRepo.RemoveIndexReference(_queryPlan.IndexDescs[i].IndexMultiKey, statementContext.StatementName);
-                        if (last) {
+                        if (last)
+                        {
                             processor.EventTableIndexMetadataRepo.RemoveIndex(_queryPlan.IndexDescs[i].IndexMultiKey);
                             processor.RemoveAllInstanceIndexes(_queryPlan.IndexDescs[i].IndexMultiKey);
                         }
@@ -73,25 +76,26 @@ namespace com.espertech.esper.core.context.factory
                 }));
             }
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(processor.RootView.IsQueryPlanLogging, NamedWindowRootView.QueryPlanLog,
-                    _queryPlan, statementContext.Annotations);
+                    _queryPlan, statementContext.Annotations, statementContext.EngineImportService);
         }
 
         public override OnExprViewResult DetermineOnExprView(AgentInstanceContext agentInstanceContext, IList<StopCallback> stopCallbacks, bool isRecoveringResilient)
         {
             // get result set processor and aggregation services
             Pair<ResultSetProcessor, AggregationService> pair = EPStatementStartMethodHelperUtil.StartResultSetAndAggregation(_resultSetProcessorPrototype, agentInstanceContext, false, null);
-    
+
             // get named window processor instance
             NamedWindowProcessorInstance processorInstance = _processor.GetProcessorInstance(agentInstanceContext);
-    
+
             // obtain on-expr view
             EventTable[] indexes = null;
-            if (_queryPlan.IndexDescs != null) {
+            if (_queryPlan.IndexDescs != null)
+            {
                 indexes = SubordinateQueryPlannerUtil.RealizeTables(_queryPlan.IndexDescs, _processor.NamedWindowType, processorInstance.RootViewInstance.IndexRepository, processorInstance.RootViewInstance.DataWindowContents, processorInstance.TailViewInstance.AgentInstanceContext, isRecoveringResilient);
             }
             SubordWMatchExprLookupStrategy strategy = _queryPlan.Factory.Realize(indexes, agentInstanceContext, processorInstance.RootViewInstance.DataWindowContents, processorInstance.RootViewInstance.VirtualDataWindow);
             NamedWindowOnExprBaseView onExprBaseView = _onExprFactory.Make(strategy, processorInstance.RootViewInstance, agentInstanceContext, pair.First);
-    
+
             return new OnExprViewResult(onExprBaseView, pair.Second);
         }
 
@@ -102,34 +106,36 @@ namespace com.espertech.esper.core.context.factory
         public override void UnassignExpressions()
         {
         }
-    
+
         public override View DetermineFinalOutputView(AgentInstanceContext agentInstanceContext, View onExprView)
         {
             if ((StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_DELETE) ||
                 (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_UPDATE) ||
-                (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_MERGE)) {
-    
+                (StatementSpec.OnTriggerDesc.OnTriggerType == OnTriggerType.ON_MERGE))
+            {
+
                 ResultSetProcessor outputResultSetProcessor = _outputResultSetProcessorPrototype.ResultSetProcessorFactory.Instantiate(null, null, agentInstanceContext);
                 View outputView = _outputProcessViewFactory.MakeView(outputResultSetProcessor, agentInstanceContext);
                 onExprView.AddView(outputView);
                 return outputView;
             }
-    
+
             return onExprView;
         }
-    
+
         internal static IndexHintPair GetIndexHintPair(StatementContext statementContext, StatementSpecCompiled statementSpec)
         {
             IndexHint indexHint = IndexHint.GetIndexHint(statementContext.Annotations);
             ExcludePlanHint excludePlanHint = null;
-            if (statementSpec.OnTriggerDesc is OnTriggerWindowDesc) {
-                OnTriggerWindowDesc onTriggerWindowDesc = (OnTriggerWindowDesc) statementSpec.OnTriggerDesc;
-                string[] streamNames = {onTriggerWindowDesc.OptionalAsName, statementSpec.StreamSpecs[0].OptionalStreamName};
+            if (statementSpec.OnTriggerDesc is OnTriggerWindowDesc)
+            {
+                OnTriggerWindowDesc onTriggerWindowDesc = (OnTriggerWindowDesc)statementSpec.OnTriggerDesc;
+                string[] streamNames = { onTriggerWindowDesc.OptionalAsName, statementSpec.StreamSpecs[0].OptionalStreamName };
                 excludePlanHint = ExcludePlanHint.GetHint(streamNames, statementContext);
             }
             return new IndexHintPair(indexHint, excludePlanHint);
         }
-    
+
         public class IndexHintPair
         {
             public IndexHintPair(IndexHint indexHint, ExcludePlanHint excludePlanHint)

@@ -52,7 +52,7 @@ namespace com.espertech.esper.epl.core
             get { return ResultSetProcessorType.UNAGGREGATED_UNGROUPED; }
         }
 
-        public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext) 
+        public ResultSetProcessor Instantiate(OrderByProcessor orderByProcessor, AggregationService aggregationService, AgentInstanceContext agentInstanceContext)
         {
             return new ResultSetProcessorSimple(this, _selectExprProcessor, orderByProcessor, agentInstanceContext);
         }

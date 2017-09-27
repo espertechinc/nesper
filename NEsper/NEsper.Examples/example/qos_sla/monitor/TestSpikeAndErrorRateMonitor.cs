@@ -24,7 +24,7 @@ namespace com.espertech.esper.example.qos_sla.monitor
 	    public void SetUp()
 	    {
             Configuration configuration = new Configuration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
             EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(configuration);

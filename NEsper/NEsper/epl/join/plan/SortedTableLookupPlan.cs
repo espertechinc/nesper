@@ -55,7 +55,7 @@ namespace com.espertech.esper.epl.join.plan
     
         public override String ToString()
         {
-            return string.Format("SortedTableLookupPlan {0} keyProperties={1}", base.ToString(), _rangeKeyPair.Render());
+            return string.Format("SortedTableLookupPlan {0} keyProperties={1}", base.ToString(), _rangeKeyPair.RenderAny());
         }
     }
 }

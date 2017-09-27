@@ -16,7 +16,6 @@ using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.start;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.script;
 using com.espertech.esper.epl.table.mgmt;
@@ -32,7 +31,7 @@ namespace com.espertech.esper.core.context.util
         private bool _isRemoveStream;
         private readonly Object _previousNodeGetter;
         private readonly ViewUpdatedCollection _priorViewUpdatedCollection;
-    
+
         public AgentInstanceViewFactoryChainContext(AgentInstanceContext agentInstanceContext, bool isRemoveStream, Object previousNodeGetter, ViewUpdatedCollection priorViewUpdatedCollection)
         {
             _agentInstanceContext = agentInstanceContext;
@@ -51,9 +50,9 @@ namespace com.espertech.esper.core.context.util
             get { return _agentInstanceContext; }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
-            get { return _agentInstanceContext.AgentInstanceScriptContext; }
+            get { return _agentInstanceContext.AllocateAgentInstanceScriptContext; }
         }
 
         public bool IsRemoveStream
@@ -107,34 +106,41 @@ namespace com.espertech.esper.core.context.util
             get { return _agentInstanceContext.TerminationCallbackRO; }
         }
 
-        public void AddTerminationCallback(Action action) {
+        public void AddTerminationCallback(Action action)
+        {
             AddTerminationCallback(new ProxyStopCallback(action));
         }
 
-        public void AddTerminationCallback(StopCallback callback) {
+        public void AddTerminationCallback(StopCallback callback)
+        {
             _agentInstanceContext.AddTerminationCallback(callback);
         }
 
-        public void RemoveTerminationCallback(Action action) {
+        public void RemoveTerminationCallback(Action action)
+        {
             RemoveTerminationCallback(new ProxyStopCallback(action));
         }
 
-        public void RemoveTerminationCallback(StopCallback callback) {
+        public void RemoveTerminationCallback(StopCallback callback)
+        {
             _agentInstanceContext.RemoveTerminationCallback(callback);
         }
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext {
+        public TableExprEvaluatorContext TableExprEvaluatorContext
+        {
             get { return _agentInstanceContext.TableExprEvaluatorContext; }
         }
 
-        public static AgentInstanceViewFactoryChainContext Create(IList<ViewFactory> viewFactoryChain, AgentInstanceContext agentInstanceContext, ViewResourceDelegateVerifiedStream viewResourceDelegate) {
-    
+        public static AgentInstanceViewFactoryChainContext Create(IList<ViewFactory> viewFactoryChain, AgentInstanceContext agentInstanceContext, ViewResourceDelegateVerifiedStream viewResourceDelegate)
+        {
+
             Object previousNodeGetter = null;
-            if (viewResourceDelegate.PreviousRequests != null && !viewResourceDelegate.PreviousRequests.IsEmpty()) {
+            if (viewResourceDelegate.PreviousRequests != null && !viewResourceDelegate.PreviousRequests.IsEmpty())
+            {
                 DataWindowViewWithPrevious factoryFound = EPStatementStartMethodHelperPrevious.FindPreviousViewFactory(viewFactoryChain);
                 previousNodeGetter = factoryFound.MakePreviousGetter();
             }
-    
+
             ViewUpdatedCollection priorViewUpdatedCollection = null;
             if (viewResourceDelegate.PriorRequests != null && !viewResourceDelegate.PriorRequests.IsEmpty())
             {
@@ -142,18 +148,21 @@ namespace com.espertech.esper.core.context.util
                 var callbacksPerIndex = viewResourceDelegate.PriorRequests;
                 priorViewUpdatedCollection = priorEventViewFactory.MakeViewUpdatedCollection(callbacksPerIndex, agentInstanceContext.AgentInstanceId);
             }
-    
+
             bool removedStream = false;
-            if (viewFactoryChain.Count > 1) {
+            if (viewFactoryChain.Count > 1)
+            {
                 int countDataWindow = 0;
-                foreach (ViewFactory viewFactory in viewFactoryChain) {
-                    if (viewFactory is DataWindowViewFactory) {
+                foreach (ViewFactory viewFactory in viewFactoryChain)
+                {
+                    if (viewFactory is DataWindowViewFactory)
+                    {
                         countDataWindow++;
                     }
                 }
                 removedStream = countDataWindow > 1;
             }
-    
+
             return new AgentInstanceViewFactoryChainContext(agentInstanceContext, removedStream, previousNodeGetter, priorViewUpdatedCollection);
         }
 

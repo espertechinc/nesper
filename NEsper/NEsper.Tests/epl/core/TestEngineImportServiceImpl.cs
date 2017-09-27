@@ -10,8 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.support;
-using com.espertech.esper.support.core;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
@@ -31,17 +30,18 @@ namespace com.espertech.esper.epl.core
         [Test]
         public void TestResolveMethodNoArgTypes()
         {
-            var method = _engineImportService.ResolveMethod("System.Math", "Sqrt");
+            var method = _engineImportService.ResolveMethodOverloadChecked("System.Math", "Sqrt");
             Assert.AreEqual(typeof(Math).GetMethod("Sqrt", new Type[] {typeof(double)}), method);
     
             try
             {
-                _engineImportService.ResolveMethod("System.Math", "Abs");
+                _engineImportService.ResolveMethodOverloadChecked("System.Math", "Abs");
                 Assert.Fail();
             }
             catch (EngineImportException ex)
             {
-                Assert.AreEqual("Ambiguous method name: method by name 'Abs' is overloaded in class 'System.Math'", ex.Message);
+                Assert.AreEqual(
+                    "Method by name 'Abs' is overloaded in class 'System.Math' and overloaded methods do not return the same type", ex.Message);
             }
         }
     

@@ -27,9 +27,10 @@ namespace com.espertech.esper.dataflow.ops
     {
         private EventAdapterService _eventAdapterService;
         private EPRuntimeEventSender _runtimeEventSender;
-    
-        [DataFlowOpParameter] private EPDataFlowEventCollector collector;
-    
+
+        [DataFlowOpParameter]
+        private EPDataFlowEventCollector collector;
+
         private EventBusCollector _eventBusCollector;
         private EventBeanAdapterFactory[] _adapterFactories;
 
@@ -38,60 +39,73 @@ namespace com.espertech.esper.dataflow.ops
 
         public DataFlowOpInitializeResult Initialize(DataFlowOpInitializateContext context)
         {
-            if (!context.OutputPorts.IsEmpty()) {
+            if (!context.OutputPorts.IsEmpty())
+            {
                 throw new ArgumentException("EventBusSink operator does not provide an output stream");
             }
-    
+
             var eventTypes = new EventType[context.InputPorts.Count];
-            for (int i = 0; i < eventTypes.Length; i++) {
+            for (int i = 0; i < eventTypes.Length; i++)
+            {
                 eventTypes[i] = context.InputPorts.Get(i).TypeDesc.EventType;
             }
             _runtimeEventSender = context.RuntimeEventSender;
             _eventAdapterService = context.StatementContext.EventAdapterService;
-    
+
             if (collector != null)
             {
                 _eventBusCollector = new EventBusCollectorImpl(
                     _eventAdapterService,
                     _runtimeEventSender);
             }
-            else {
+            else
+            {
                 _adapterFactories = new EventBeanAdapterFactory[eventTypes.Length];
-                for (int i = 0; i < eventTypes.Length; i++) {
+                for (int i = 0; i < eventTypes.Length; i++)
+                {
                     _adapterFactories[i] = context.ServicesContext.EventAdapterService.GetAdapterFactoryForType(eventTypes[i]);
                 }
             }
             return null;
         }
-    
-        public void OnInput(int port, Object data) {
-            if (_eventBusCollector != null) {
+
+        public void OnInput(int port, Object data)
+        {
+            if (_eventBusCollector != null)
+            {
                 EPDataFlowEventCollectorContext holder = _collectorDataTL.GetOrCreate();
-                if (holder == null) {
+                if (holder == null)
+                {
                     holder = new EPDataFlowEventCollectorContext(_eventBusCollector, data);
                     _collectorDataTL.Value = holder;
                 }
-                else {
+                else
+                {
                     holder.Event = data;
                 }
                 collector.Collect(holder);
             }
-            else {
-                if (data is EventBean) {
-                    _runtimeEventSender.ProcessWrappedEvent( (EventBean) data);
+            else
+            {
+                if (data is EventBean)
+                {
+                    _runtimeEventSender.ProcessWrappedEvent((EventBean)data);
                 }
-                else {
+                else
+                {
                     EventBean theEvent = _adapterFactories[port].MakeAdapter(data);
                     _runtimeEventSender.ProcessWrappedEvent(theEvent);
                 }
             }
         }
-    
-        public void Open(DataFlowOpOpenContext openContext) {
+
+        public void Open(DataFlowOpOpenContext openContext)
+        {
             // no action
         }
-    
-        public void Close(DataFlowOpCloseContext openContext) {
+
+        public void Close(DataFlowOpCloseContext openContext)
+        {
             // no action
         }
 
@@ -132,7 +146,7 @@ namespace com.espertech.esper.dataflow.ops
 
             public void SendEvent(XElement node)
             {
-                EventBean theEvent = _eventAdapterService.AdapterForLINQ(node);
+                EventBean theEvent = _eventAdapterService.AdapterForDOM(node);
                 _runtimeEventSender.ProcessWrappedEvent(theEvent);
             }
         }

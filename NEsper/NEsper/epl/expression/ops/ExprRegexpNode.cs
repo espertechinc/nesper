@@ -25,11 +25,12 @@ namespace com.espertech.esper.epl.expression.ops
     public class ExprRegexpNode : ExprNodeBase, ExprEvaluator
     {
         private readonly bool _isNot;
-    
+
         private Regex _pattern;
         private bool _isNumericValue;
         private bool _isConstantPattern;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
 
         /// <summary>Ctor. </summary>
         /// <param name="not">is true if the it's a "not regexp" expression, of false for regular regexp</param>
@@ -45,12 +46,12 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
                 throw new ExprValidationException("The regexp operator requires 2 child expressions");
             }
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
-    
+
             // check pattern child node
             var patternChildType = _evaluators[1].ReturnType;
             if (patternChildType != typeof(String))
@@ -61,7 +62,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 _isConstantPattern = true;
             }
-    
+
             // check eval child node - can be String or numeric
             Type evalChildType = _evaluators[0].ReturnType;
             _isNumericValue = evalChildType.IsNumeric();
@@ -75,7 +76,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public Type ReturnType
         {
-            get { return typeof (bool?); }
+            get { return typeof(bool?); }
         }
 
         public override bool IsConstantResult
@@ -93,7 +94,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 if (_pattern == null)
                 {
-                    var patternText = (String) _evaluators[1].Evaluate(evaluateParams);
+                    var patternText = (String)_evaluators[1].Evaluate(evaluateParams);
                     if (patternText == null)
                     {
                         return null;
@@ -111,7 +112,7 @@ namespace com.espertech.esper.epl.expression.ops
                 {
                     if (!_isConstantPattern)
                     {
-                        var patternText = (String) _evaluators[1].Evaluate(evaluateParams);
+                        var patternText = (String)_evaluators[1].Evaluate(evaluateParams);
                         if (patternText == null)
                         {
                             return null;
@@ -138,17 +139,17 @@ namespace com.espertech.esper.epl.expression.ops
                 {
                     if (evalValue is double)
                     {
-                        var tempValue = (double) evalValue;
+                        var tempValue = (double)evalValue;
                         evalValue = tempValue.ToString("F");
                     }
                     else if (evalValue is float)
                     {
-                        var tempValue = (float) evalValue;
+                        var tempValue = (float)evalValue;
                         evalValue = tempValue.ToString("F");
                     }
                     else if (evalValue is decimal)
                     {
-                        var tempValue = (decimal) evalValue;
+                        var tempValue = (decimal)evalValue;
                         evalValue = tempValue.ToString("F");
                     }
                     else
@@ -157,7 +158,7 @@ namespace com.espertech.esper.epl.expression.ops
                     }
                 }
 
-                result.Value = _pattern.IsMatch((String) evalValue);
+                result.Value = _pattern.IsMatch((String)evalValue);
 
                 if (_isNot)
                 {
@@ -167,15 +168,15 @@ namespace com.espertech.esper.epl.expression.ops
                 return result.Value;
             }
         }
-    
+
         public override bool EqualsNode(ExprNode node)
         {
             if (!(node is ExprRegexpNode))
             {
                 return false;
             }
-    
-            var other = (ExprRegexpNode) node;
+
+            var other = (ExprRegexpNode)node;
             if (_isNot != other._isNot)
             {
                 return false;

@@ -11,7 +11,7 @@ using System.IO;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -28,7 +28,7 @@ namespace com.espertech.esper.client
         public void SetUp()
         {
             _config = new Configuration();
-            _config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug = true;
+            _config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
         [Test]

@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.parse
     public class ASTMatchRecognizeHelper
     {
         private const String Message = "Match-recognize AFTER clause must be either AFTER MATCH SKIP TO LAST ROW or AFTER MATCH SKIP TO NEXT ROW or AFTER MATCH SKIP TO CURRENT ROW";
-    
+
         public static MatchRecognizeSkipEnum ParseSkip(CommonTokenStream tokenStream, EsperEPL2GrammarParser.MatchRecogMatchesAfterSkipContext ctx)
         {
             if ((!ctx.i1.GetText().ToUpper().Equals("MATCH")) ||
@@ -35,14 +35,14 @@ namespace com.espertech.esper.epl.parse
             {
                 throw ASTWalkException.From(Message, tokenStream, ctx);
             }
-    
+
             if ((!ctx.i3.GetText().ToUpper().Equals("TO")) &&
                 (!ctx.i3.GetText().ToUpper().Equals("PAST"))
                 )
             {
                 throw ASTWalkException.From(Message, tokenStream, ctx);
             }
-    
+
             if (ctx.i4.GetText().ToUpper().Equals("LAST"))
             {
                 return MatchRecognizeSkipEnum.PAST_LAST_ROW;

@@ -31,10 +31,12 @@ namespace com.espertech.esper.epl.agg.service
 
         public ExprEvaluator[] Evaluators { get; protected set; }
 
-        public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        public abstract AggregationService GetContextPartitionAggregationService(int agentInstanceId);
+
+        public abstract object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams);
+        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams);
+        public abstract EventBean GetEventBean(int column, EvaluateParams evaluateParams);
+        public abstract ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams);
 
         public abstract void ApplyEnter(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);
         public abstract void ApplyLeave(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);

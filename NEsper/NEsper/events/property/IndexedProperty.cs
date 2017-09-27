@@ -31,7 +31,7 @@ namespace com.espertech.esper.events.property
     /// Represents an indexed property or array property, ie. an 'value' property with read method getValue(int index)
     /// or a 'array' property via read method Array returning an array.
     /// </summary>
-    public class IndexedProperty : PropertyBase
+    public class IndexedProperty : PropertyBase, PropertyWithIndex
     {
         private readonly int _index;
 
@@ -99,7 +99,28 @@ namespace com.espertech.esper.events.property
             }
 
             Type returnType = propertyDesc.ReturnType;
-            if (returnType.IsArray)
+            if (returnType == typeof(string))
+            {
+                if (propertyDesc.ReadMethod != null)
+                {
+                    MethodInfo method = propertyDesc.ReadMethod;
+                    if (fastClass != null)
+                    {
+                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        return new StringFastPropertyGetter(fastMethod, _index, eventAdapterService);
+                    }
+                    else
+                    {
+                        return new StringMethodPropertyGetter(method, _index, eventAdapterService);
+                    }
+                }
+                else
+                {
+                    FieldInfo field = propertyDesc.AccessorField;
+                    return new StringFieldPropertyGetter(field, _index, eventAdapterService);
+                }
+            }
+            else if (returnType.IsArray)
             {
                 if (propertyDesc.ReadMethod != null)
                 {
@@ -120,7 +141,11 @@ namespace com.espertech.esper.events.property
                     return new ArrayFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
-            else if (returnType.IsImplementsInterface(typeof(IList<object>)))
+            else if (returnType.IsGenericDictionary())
+            {
+
+            }
+            else if (returnType.IsGenericList())
             {
                 if (propertyDesc.ReadMethod != null)
                 {
@@ -222,27 +247,7 @@ namespace com.espertech.esper.events.property
                 return null;
             }
 
-            var returnType = descriptor.ReturnType;
-            if (returnType.IsArray)
-            {
-                return returnType.GetElementType();
-            }
-            else if (returnType.IsImplementsInterface(typeof(IEnumerable)))
-            {
-                if (descriptor.ReadMethod != null)
-                {
-                    return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
-                }
-                else if (descriptor.AccessorField != null)
-                {
-                    return TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
+            return descriptor.ReturnType.GetIndexType();
         }
 
         public override Type GetPropertyTypeMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
@@ -444,10 +449,10 @@ namespace com.espertech.esper.events.property
             String indexStr = propertyName.Substring(start, end - start);
             return Int32.Parse(indexStr);
         }
-        
+
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<string, int> indexPerProperty, 
-            IDictionary<string, object> nestableTypes, 
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, object> nestableTypes,
             EventAdapterService eventAdapterService)
         {
             int propertyIndex;
@@ -490,11 +495,11 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-                if (!((Type) type).IsArray())
+                if (!((Type)type).IsArray())
                 {
                     return null;
                 }
-                Type componentType = ((Type) type).GetElementType();
+                Type componentType = ((Type)type).GetElementType();
                 // its an array
                 return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
                     propertyIndex, _index, eventAdapterService, componentType);

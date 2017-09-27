@@ -10,7 +10,7 @@ using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
 
 using NUnit.Framework;
 
@@ -31,7 +31,7 @@ namespace com.espertech.esper.events.xml
             configNoNS.RootElementName = "simpleEvent";
             configNoNS.AddXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
             configNoNS.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
-            var model = XSDSchemaMapper.LoadAndMap(schemaUrl.ToString(), null);
+            var model = XSDSchemaMapper.LoadAndMap(schemaUrl.ToString(), null, SupportEngineImportServiceFactory.Make());
             var eventTypeNoNS = new SchemaXMLEventType(null, 1, configNoNS, model, SupportEventAdapterService.Service);
 
             var noNSDoc = new XmlDocument();
@@ -44,9 +44,10 @@ namespace com.espertech.esper.events.xml
         }
     
         [Test]
-        public void TestSimpleProperies()
+        public void TestSimpleProperties()
         {
             Assert.AreEqual("SAMPLE_V6", _eventSchemaOne.Get("prop4"));
+            Assert.IsFalse(_eventSchemaOne.EventType.IsProperty("window(*)"));
         }
     
         [Test]

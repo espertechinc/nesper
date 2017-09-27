@@ -35,7 +35,7 @@ namespace com.espertech.esper.client.context
         /// <summary>
         /// Returns context partition identifier
         /// </summary>
-        /// <value>context partition info</value>
+        /// <value>context partition INFO</value>
         public ContextPartitionIdentifier Identifier { get; private set; }
 
         /// <summary>

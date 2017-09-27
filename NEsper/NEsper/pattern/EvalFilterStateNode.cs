@@ -25,12 +25,12 @@ namespace com.espertech.esper.pattern
     public class EvalFilterStateNode : EvalStateNode, FilterHandleCallback
     {
         private readonly EvalFilterNode _evalFilterNode;
-    
+
         protected bool IsStarted;
         protected EPStatementHandleCallback Handle;
         protected FilterServiceEntry FilterServiceEntry;
         protected MatchedEventMap BeginState;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalFilterNode">is the factory node associated to the state</param>
@@ -52,27 +52,27 @@ namespace com.espertech.esper.pattern
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterStart(_evalFilterNode, beginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterStart(_evalFilterNode, beginState); }
             BeginState = beginState;
             if (IsStarted)
             {
                 throw new IllegalStateException("Filter state node already active");
             }
-    
+
             // Start the filter
             IsStarted = true;
             StartFiltering();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterStart(); }
         }
-    
+
         public override void Quit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterQuit(_evalFilterNode, BeginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterQuit(_evalFilterNode, BeginState); }
             IsStarted = false;
             StopFiltering();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterQuit(); }
         }
-    
+
         private void EvaluateTrue(MatchedEventMap theEvent, bool isQuitted)
         {
             ParentEvaluator.EvaluateTrue(theEvent, this, isQuitted);
@@ -85,16 +85,16 @@ namespace com.espertech.esper.pattern
 
         public virtual void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterMatch(_evalFilterNode, theEvent);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternFilterMatch(_evalFilterNode, theEvent); }
+
             if (!IsStarted)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterMatch(true);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterMatch(true); }
                 return;
             }
-    
+
             MatchedEventMap passUp = BeginState.ShallowCopy();
-    
+
             if (_evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator != null)
             {
                 EventBean[] propertyEvents = _evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator.GetProperty(theEvent, _evalFilterNode.Context.AgentInstanceContext);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.pattern
                     passUp.Add(_evalFilterNode.FactoryNode.EventAsTagNumber, theEvent);
                 }
             }
-    
+
             // Explanation for the type cast...
             // Each state node stops listening if it resolves to true, and all nodes newState
             // new listeners again. However this would be a performance drain since
@@ -129,12 +129,12 @@ namespace com.espertech.esper.pattern
                 StopFiltering();
                 isQuitted = true;
             }
-    
+
             EvaluateTrue(passUp, isQuitted);
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterMatch(isQuitted);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternFilterMatch(isQuitted); }
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitFilter(_evalFilterNode.FactoryNode, this, Handle, BeginState);
@@ -173,15 +173,17 @@ namespace com.espertech.esper.pattern
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (!IsStarted) {
+            if (!IsStarted)
+            {
                 return;
             }
-            if (PatternConsumptionUtil.ContainsEvent(matchEvent, BeginState)) {
+            if (PatternConsumptionUtil.ContainsEvent(matchEvent, BeginState))
+            {
                 Quit();
                 ParentEvaluator.EvaluateFalse(this, true);
             }
         }
-    
+
         protected void StartFiltering()
         {
             FilterService filterService = _evalFilterNode.Context.PatternContext.FilterService;
@@ -191,11 +193,12 @@ namespace com.espertech.esper.pattern
             long filtersVersion = filterService.FiltersVersion;
             _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
         }
-    
+
         private void StopFiltering()
         {
             PatternContext context = _evalFilterNode.Context.PatternContext;
-            if (Handle != null) {
+            if (Handle != null)
+            {
                 context.FilterService.Remove(Handle, FilterServiceEntry);
             }
             Handle = null;

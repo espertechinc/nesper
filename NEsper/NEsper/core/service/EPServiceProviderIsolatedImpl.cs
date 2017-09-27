@@ -20,7 +20,7 @@ namespace com.espertech.esper.core.service
     public class EPServiceProviderIsolatedImpl : EPServiceProviderIsolatedSPI
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _name;
         private readonly EPRuntimeIsolatedSPI _runtime;
         private readonly EPAdministratorIsolatedImpl _admin;
@@ -69,7 +69,7 @@ namespace com.espertech.esper.core.service
         public void Dispose()
         {
             _providers.Remove(_name);
-    
+
             _admin.RemoveAllStatements();
         }
     }

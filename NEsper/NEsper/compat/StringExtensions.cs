@@ -9,12 +9,18 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using Nito.KitchenSink.CRC;
 
 namespace com.espertech.esper.compat
 {
     public static class StringExtensions
     {
+        public static string Between(this string input, int startIndex, int endIndex)
+        {
+            return input.Substring(startIndex, endIndex - startIndex);
+        }
+
         public static string Capitalize(this string input)
         {
             if (input == null)

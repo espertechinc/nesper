@@ -35,12 +35,15 @@ namespace com.espertech.esper.epl.join.exec.@base
         private readonly MyResultAssembler _myResultAssembler;
         private readonly int _requireResultsInstruction;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="rootStream">is the stream supplying the lookup event</param>
         /// <param name="rootStreamName">is the name of the stream supplying the lookup event</param>
         /// <param name="numStreams">is the number of streams</param>
         /// <param name="lookupInstructions">is a list of lookups to perform</param>
         /// <param name="requiredPerStream">indicates which streams are required and which are optional in the lookup</param>
+        /// <param name="assemblyInstructionFactories">The assembly instruction factories.</param>
         public LookupInstructionExecNode(
             int rootStream,
             String rootStreamName,

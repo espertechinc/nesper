@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 
@@ -40,6 +36,7 @@ namespace com.espertech.esper.epl.datetime
                 .SetMinutes(1)
                 .SetSeconds(1)
                 .SetMillis(1)
+                .SetMicros(1)
                 .LargestAbsoluteValue());
 	    }
 

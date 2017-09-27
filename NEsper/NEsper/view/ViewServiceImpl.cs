@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,13 +40,13 @@ namespace com.espertech.esper.view
             ViewServiceHelper.AddMergeViews(viewSpecList);
 
             // Instantiate factories, not making them aware of each other yet
-            IList<ViewFactory> viewFactories = ViewServiceHelper.InstantiateFactories(streamNum, viewSpecList, context, isSubquery, subqueryNumber);
+            var viewFactories = ViewServiceHelper.InstantiateFactories(streamNum, viewSpecList, context, isSubquery, subqueryNumber);
 
             ViewFactory parentViewFactory = null;
             IList<ViewFactory> attachedViewFactories = new List<ViewFactory>();
-            for (int i = 0; i < viewFactories.Count; i++)
+            for (var i = 0; i < viewFactories.Count; i++)
             {
-                ViewFactory factoryToAttach = viewFactories[i];
+                var factoryToAttach = viewFactories[i];
                 try
                 {
                     factoryToAttach.Attach(parentEventType, context, parentViewFactory, attachedViewFactories);
@@ -56,7 +55,7 @@ namespace com.espertech.esper.view
                 }
                 catch (ViewParameterException ex)
                 {
-                    String text = "Error attaching view to parent view";
+                    var text = "Error attaching view to parent view";
                     if (i == 0)
                     {
                         text = "Error attaching view to event stream";
@@ -66,11 +65,11 @@ namespace com.espertech.esper.view
             }
 
             // obtain count of data windows
-            int dataWindowCount = 0;
-            int firstNonDataWindowIndex = -1;
-            for (int i = 0; i < viewFactories.Count; i++)
+            var dataWindowCount = 0;
+            var firstNonDataWindowIndex = -1;
+            for (var i = 0; i < viewFactories.Count; i++)
             {
-                ViewFactory factory = viewFactories[i];
+                var factory = viewFactories[i];
                 if (factory is DataWindowViewFactory)
                 {
                     dataWindowCount++;
@@ -86,9 +85,9 @@ namespace com.espertech.esper.view
                 }
             }
 
-            bool isAllowMultipleExpiry = context.ConfigSnapshot.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies;
-            bool isRetainIntersection = options.IsRetainIntersection;
-            bool isRetainUnion = options.IsRetainUnion;
+            var isAllowMultipleExpiry = context.ConfigSnapshot.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies;
+            var isRetainIntersection = options.IsRetainIntersection;
+            var isRetainUnion = options.IsRetainUnion;
 
             // Set the default to retain-intersection unless allow-multiple-expiry is turned on
             if ((!isAllowMultipleExpiry) && (!isRetainUnion))
@@ -100,7 +99,7 @@ namespace com.espertech.esper.view
             // wrap view factories into the union view factory and handle a group-by, if present
             if ((isRetainUnion || isRetainIntersection) && dataWindowCount > 1)
             {
-                viewFactories = GetRetainViewFactories(parentEventType, viewFactories, isRetainUnion,  context);
+                viewFactories = GetRetainViewFactories(parentEventType, viewFactories, isRetainUnion, context);
             }
 
             return new ViewFactoryChain(parentEventType, viewFactories);
@@ -112,9 +111,9 @@ namespace com.espertech.esper.view
             ICollection<int> mergeFactory = new HashSet<int>();
             IList<ViewFactory> derivedValueViews = new List<ViewFactory>();
             IList<ViewFactory> dataWindowViews = new List<ViewFactory>();
-            for (int i = 0; i < viewFactories.Count; i++)
+            for (var i = 0; i < viewFactories.Count; i++)
             {
-                ViewFactory factory = viewFactories[i];
+                var factory = viewFactories[i];
                 if (factory is GroupByViewFactoryMarker)
                 {
                     groupByFactory.Add(i);
@@ -160,14 +159,14 @@ namespace com.espertech.esper.view
             ViewFactory retainPolicy;
             if (isUnion)
             {
-                UnionViewFactory viewFactory = (UnionViewFactory) context.ViewResolutionService.Create("internal", "union");
+                var viewFactory = (UnionViewFactory)context.ViewResolutionService.Create("internal", "union");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;
             }
             else
             {
-                IntersectViewFactory viewFactory = (IntersectViewFactory) context.ViewResolutionService.Create("internal", "intersect");
+                var viewFactory = (IntersectViewFactory)context.ViewResolutionService.Create("internal", "intersect");
                 viewFactory.ParentEventType = parentEventType;
                 viewFactory.ViewFactories = dataWindowViews;
                 retainPolicy = viewFactory;
@@ -177,9 +176,9 @@ namespace com.espertech.esper.view
             nonRetainViewFactories.Add(retainPolicy);
             if (groupByViewFactory != null)
             {
-                nonRetainViewFactories.Insert(0, (ViewFactory) groupByViewFactory);
+                nonRetainViewFactories.Insert(0, (ViewFactory)groupByViewFactory);
                 nonRetainViewFactories.AddAll(derivedValueViews);
-                nonRetainViewFactories.Add((ViewFactory) mergeViewFactory);
+                nonRetainViewFactories.Add((ViewFactory)mergeViewFactory);
             }
             else
             {
@@ -198,14 +197,16 @@ namespace com.espertech.esper.view
             // Attempt to find existing views under the stream that match specs.
             // The viewSpecList may have been changed by this method.
             Pair<Viewable, IList<View>> resultPair;
-            if (hasPreviousNode) {
+            if (hasPreviousNode)
+            {
                 resultPair = new Pair<Viewable, IList<View>>(eventStreamViewable, Collections.GetEmptyList<View>());
             }
-            else {
-                resultPair = ViewServiceHelper.MatchExistingViews(eventStreamViewable, viewFactories);
+            else
+            {
+                resultPair = ViewServiceHelper.MatchExistingViews(eventStreamViewable, viewFactories, viewFactoryChainContext.AgentInstanceContext);
             }
 
-            Viewable parentViewable = resultPair.First;
+            var parentViewable = resultPair.First;
 
             if (viewFactories.IsEmpty())
             {
@@ -219,14 +220,14 @@ namespace com.espertech.esper.view
             }
 
             // Instantiate remaining chain of views from the remaining factories which didn't match to existing views.
-            IList<View> views = ViewServiceHelper.InstantiateChain(parentViewable, viewFactories, viewFactoryChainContext);
+            var views = ViewServiceHelper.InstantiateChain(parentViewable, viewFactories, viewFactoryChainContext);
 
             // Initialize any views that need initializing after the chain is complete
-            foreach (View view in views)
+            foreach (var view in views)
             {
                 if (view is InitializableView)
                 {
-                    InitializableView initView = (InitializableView) view;
+                    var initView = (InitializableView)view;
                     initView.Initialize();
                 }
             }

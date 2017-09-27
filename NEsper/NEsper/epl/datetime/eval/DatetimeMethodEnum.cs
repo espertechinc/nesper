@@ -19,46 +19,46 @@ namespace com.espertech.esper.epl.datetime.eval
     {
         // datetime ops
         WITHTIME,
-        WITHDATE, 
+        WITHDATE,
         PLUS,
-        MINUS, 
+        MINUS,
         WITHMAX,
         WITHMIN,
         SET,
         ROUNDCEILING,
         ROUNDFLOOR,
         ROUNDHALF,
-    
+
         // reformat ops
-        GET, 
+        GET,
         FORMAT,
         TOCALENDAR,
-        TODATE, 
-        TOMILLISEC, 
-        GETMINUTEOFHOUR, 
-        GETMONTHOFYEAR, 
-        GETDAYOFMONTH, 
+        TODATE,
+        TOMILLISEC,
+        GETMINUTEOFHOUR,
+        GETMONTHOFYEAR,
+        GETDAYOFMONTH,
         GETDAYOFWEEK,
-        GETDAYOFYEAR, 
+        GETDAYOFYEAR,
         GETERA,
-        GETHOUROFDAY, 
-        GETMILLISOFSECOND, 
+        GETHOUROFDAY,
+        GETMILLISOFSECOND,
         GETSECONDOFMINUTE,
-        GETWEEKYEAR, 
-        GETYEAR, 
-        BETWEEN, 
-    
+        GETWEEKYEAR,
+        GETYEAR,
+        BETWEEN,
+
         // interval ops
         BEFORE,
         AFTER,
         COINCIDES,
         DURING,
         INCLUDES,
-        FINISHES, 
+        FINISHES,
         FINISHEDBY,
         MEETS,
         METBY,
-        OVERLAPS, 
+        OVERLAPS,
         OVERLAPPEDBY,
         STARTS,
         STARTEDBY
@@ -102,163 +102,163 @@ namespace com.espertech.esper.epl.datetime.eval
             MetaDataTable = new Dictionary<DatetimeMethodEnum, DatetimeMethodEnumMetaData>();
             MetaDataTable.Put(
                 DatetimeMethodEnum.WITHTIME,
-                new DatetimeMethodEnumMetaData("withTime", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("withTime", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.WITHTIME));
             MetaDataTable.Put(
                 DatetimeMethodEnum.WITHDATE,
-                new DatetimeMethodEnumMetaData("withDate", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("withDate", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.WITHDATE));
             MetaDataTable.Put(
                 DatetimeMethodEnum.PLUS,
-                new DatetimeMethodEnumMetaData("plus", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("plus", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.PLUSMINUS));
             MetaDataTable.Put(
                 DatetimeMethodEnum.MINUS,
-                new DatetimeMethodEnumMetaData("minus", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("minus", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.PLUSMINUS));
             MetaDataTable.Put(
                 DatetimeMethodEnum.WITHMAX,
-                new DatetimeMethodEnumMetaData("withMax", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("withMax", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.WITHMIN,
-                new DatetimeMethodEnumMetaData("withMin", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("withMin", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.SET,
-                new DatetimeMethodEnumMetaData("set", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("set", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD_PLUS_INT));
             MetaDataTable.Put(
                 DatetimeMethodEnum.ROUNDCEILING,
-                new DatetimeMethodEnumMetaData("roundCeiling", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("roundCeiling", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.ROUNDFLOOR,
-                new DatetimeMethodEnumMetaData("roundFloor", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("roundFloor", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.ROUNDHALF,
-                new DatetimeMethodEnumMetaData("roundHalf", DatetimeMethodEnumStatics.CalendarOpFactory,
+                new DatetimeMethodEnumMetaData("roundHalf", DatetimeMethodEnumStatics.CALENDAR_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GET,
-                new DatetimeMethodEnumMetaData("get", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("get", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.CALFIELD));
             MetaDataTable.Put(
                 DatetimeMethodEnum.FORMAT,
-                new DatetimeMethodEnumMetaData("format", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("format", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.TOCALENDAR,
-                new DatetimeMethodEnumMetaData("toCalendar", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("toCalendar", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.TODATE,
-                new DatetimeMethodEnumMetaData("toDate", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("toDate", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.TOMILLISEC,
-                new DatetimeMethodEnumMetaData("toMillisec", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("toMillisec", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETMINUTEOFHOUR,
-                new DatetimeMethodEnumMetaData("getMinuteOfHour", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getMinuteOfHour", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETMONTHOFYEAR,
-                new DatetimeMethodEnumMetaData("getMonthOfYear", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getMonthOfYear", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETDAYOFMONTH,
-                new DatetimeMethodEnumMetaData("getDayOfMonth", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getDayOfMonth", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETDAYOFWEEK,
-                new DatetimeMethodEnumMetaData("getDayOfWeek", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getDayOfWeek", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETDAYOFYEAR,
-                new DatetimeMethodEnumMetaData("getDayOfYear", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getDayOfYear", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETERA,
-                new DatetimeMethodEnumMetaData("getEra", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getEra", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETHOUROFDAY,
-                new DatetimeMethodEnumMetaData("getHourOfDay", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getHourOfDay", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETMILLISOFSECOND,
-                new DatetimeMethodEnumMetaData("getMillisOfSecond", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getMillisOfSecond", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETSECONDOFMINUTE,
-                new DatetimeMethodEnumMetaData("getSecondOfMinute", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getSecondOfMinute", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETWEEKYEAR,
-                new DatetimeMethodEnumMetaData("getWeekyear", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getWeekyear", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.GETYEAR,
-                new DatetimeMethodEnumMetaData("getYear", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("getYear", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.NOPARAM));
             MetaDataTable.Put(
                 DatetimeMethodEnum.BETWEEN,
-                new DatetimeMethodEnumMetaData("between", DatetimeMethodEnumStatics.ReformatOpFactory,
+                new DatetimeMethodEnumMetaData("between", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
                                                DatetimeMethodEnumParams.BETWEEN));
             MetaDataTable.Put(
                 DatetimeMethodEnum.BEFORE,
-                new DatetimeMethodEnumMetaData("before", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("before", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER));
             MetaDataTable.Put(
                 DatetimeMethodEnum.AFTER,
-                new DatetimeMethodEnumMetaData("after", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("after", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_BEFORE_AFTER));
             MetaDataTable.Put(
                 DatetimeMethodEnum.COINCIDES,
-                new DatetimeMethodEnumMetaData("coincides", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("coincides", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_COINCIDES));
             MetaDataTable.Put(
                 DatetimeMethodEnum.DURING,
-                new DatetimeMethodEnumMetaData("during", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("during", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES));
             MetaDataTable.Put(
                 DatetimeMethodEnum.INCLUDES,
-                new DatetimeMethodEnumMetaData("includes", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("includes", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_DURING_INCLUDES));
             MetaDataTable.Put(
                 DatetimeMethodEnum.FINISHES,
-                new DatetimeMethodEnumMetaData("finishes", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("finishes", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.FINISHEDBY,
-                new DatetimeMethodEnumMetaData("finishedBy", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("finishedBy", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_FINISHES_FINISHEDBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.MEETS,
-                new DatetimeMethodEnumMetaData("meets", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("meets", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_MEETS_METBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.METBY,
-                new DatetimeMethodEnumMetaData("metBy", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("metBy", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_MEETS_METBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.OVERLAPS,
-                new DatetimeMethodEnumMetaData("overlaps", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("overlaps", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.OVERLAPPEDBY,
-                new DatetimeMethodEnumMetaData("overlappedBy", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("overlappedBy", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_DURING_OVERLAPS_OVERLAPBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.STARTS,
-                new DatetimeMethodEnumMetaData("starts", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("starts", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY));
             MetaDataTable.Put(
                 DatetimeMethodEnum.STARTEDBY,
-                new DatetimeMethodEnumMetaData("startedBy", DatetimeMethodEnumStatics.IntervalOpFactory,
+                new DatetimeMethodEnumMetaData("startedBy", DatetimeMethodEnumStatics.INTERVAL_OP_FACTORY,
                                                DatetimeMethodEnumParams.INTERVAL_STARTS_STARTEDBY));
         }
 
@@ -286,7 +286,7 @@ namespace com.espertech.esper.epl.datetime.eval
         {
             name = name.ToLower();
 
-            foreach(var keyValuePair in MetaDataTable)
+            foreach (var keyValuePair in MetaDataTable)
             {
                 if (keyValuePair.Value.NameCamel.ToLower() == name)
                 {

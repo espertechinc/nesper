@@ -81,43 +81,43 @@ namespace com.espertech.esper.epl.variable
     public class VariableServiceImpl : VariableService
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         /// <summary>
         /// Sets the boundary above which a reader considers the high-version list of variable values.
         /// For use in roll-over when the current version number overflows the ROLLOVER_WRITER_BOUNDARY.
         /// </summary>
         public const int ROLLOVER_READER_BOUNDARY = int.MaxValue - 100000;
-    
+
         /// <summary>
         /// Applicable for each variable if more then the number of versions accumulated, check
         /// timestamps to determine if a version can be expired.
         /// </summary>
         public const int HIGH_WATERMARK_VERSIONS = 50;
-    
+
         // Each variable has an index number, a context-partition id, a current version and a list of values
         private readonly List<ConcurrentDictionary<int, VariableReader>> _variableVersionsPerCP;
-    
+
         // Each variable and a context-partition id may have a set of callbacks to invoke when the variable changes
         private readonly List<IDictionary<int, ICollection<VariableChangeCallback>>> _changeCallbacksPerCP;
-    
+
         // Keep the variable list
         private readonly IDictionary<String, VariableMetaData> _variables;
-    
+
         // Write lock taken on write of any variable; and on read of older versions
         private readonly IReaderWriterLock _readWriteLock;
-    
+
         // Thread-local for the visible version per thread
         private VariableVersionThreadLocal _versionThreadLocal = new VariableVersionThreadLocal();
-    
+
         // Number of milliseconds that old versions of a variable are allowed to live
         private readonly long _millisecondLifetimeOldVersions;
         private readonly TimeProvider _timeProvider;
         private readonly EventAdapterService _eventAdapterService;
         private readonly VariableStateHandler _optionalStateHandler;
-    
+
         private volatile int _currentVersionNumber;
         private int _currentVariableNumber;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -129,7 +129,7 @@ namespace com.espertech.esper.epl.variable
             : this(0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler)
         {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -150,89 +150,101 @@ namespace com.espertech.esper.epl.variable
             _changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();
             _currentVersionNumber = startVersion;
         }
-    
+
         public void Dispose()
         {
             _versionThreadLocal = new VariableVersionThreadLocal();
         }
-    
+
         public void RemoveVariableIfFound(String name)
         {
-            lock(this)
+            lock (this)
             {
                 var metaData = _variables.Get(name);
-                if (metaData == null) {
+                if (metaData == null)
+                {
                     return;
                 }
-    
-                if (Log.IsDebugEnabled) {
+
+                if (Log.IsDebugEnabled)
+                {
                     Log.Debug("Removing variable '" + name + "'");
                 }
                 _variables.Remove(name);
-    
-                if (_optionalStateHandler != null) {
+
+                if (_optionalStateHandler != null)
+                {
                     ConcurrentDictionary<int, VariableReader> readers = _variableVersionsPerCP[metaData.VariableNumber];
                     IEnumerable<int> cps = Collections.GetEmptySet<int>();
-                    if (readers != null) {
+                    if (readers != null)
+                    {
                         cps = readers.Keys;
                     }
                     _optionalStateHandler.RemoveVariable(name, cps);
                 }
-    
+
                 var number = metaData.VariableNumber;
                 _variableVersionsPerCP[number] = null;
                 _changeCallbacksPerCP[number] = null;
             }
         }
-    
+
         public void SetLocalVersion()
         {
             _versionThreadLocal.CurrentThread.Version = _currentVersionNumber;
         }
-    
+
         public void RegisterCallback(String variableName, int agentInstanceId, VariableChangeCallback variableChangeCallback)
         {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 return;
             }
-    
+
             IDictionary<int, ICollection<VariableChangeCallback>> cps = _changeCallbacksPerCP[metaData.VariableNumber];
-            if (cps == null) {
+            if (cps == null)
+            {
                 cps = new Dictionary<int, ICollection<VariableChangeCallback>>();
                 _changeCallbacksPerCP[metaData.VariableNumber] = cps;
             }
-    
-            if (metaData.ContextPartitionName == null) {
+
+            if (metaData.ContextPartitionName == null)
+            {
                 agentInstanceId = EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID;
             }
-    
+
             ICollection<VariableChangeCallback> callbacks = cps.Get(agentInstanceId);
-            if (callbacks == null) {
+            if (callbacks == null)
+            {
                 callbacks = new CopyOnWriteArraySet<VariableChangeCallback>();
                 cps.Put(agentInstanceId, callbacks);
             }
             callbacks.Add(variableChangeCallback);
         }
-    
+
         public void UnregisterCallback(String variableName, int agentInstanceId, VariableChangeCallback variableChangeCallback)
         {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 return;
             }
-    
+
             var cps = _changeCallbacksPerCP[metaData.VariableNumber];
-            if (cps == null) {
+            if (cps == null)
+            {
                 return;
             }
-    
-            if (metaData.ContextPartitionName == null) {
+
+            if (metaData.ContextPartitionName == null)
+            {
                 agentInstanceId = 0;
             }
-    
+
             ICollection<VariableChangeCallback> callbacks = cps.Get(agentInstanceId);
-            if (callbacks != null) {
+            if (callbacks != null)
+            {
                 callbacks.Remove(variableChangeCallback);
             }
         }
@@ -247,9 +259,9 @@ namespace com.espertech.esper.epl.variable
             CreateNewVariable(
                 optionalContextName,
                 variableName,
-                typeof (T).FullName,
+                typeof(T).FullName,
                 constant,
-                typeof (T).IsArray, false,
+                typeof(T).IsArray, false,
                 value,
                 engineImportService);
         }
@@ -321,7 +333,7 @@ namespace com.espertech.esper.epl.variable
                     }
                 }
             }
-    
+
             if ((eventType == null) && (!type.IsBuiltinDataType()) && (type != typeof(object)) && !type.IsArray && !type.IsEnum)
             {
                 if (array)
@@ -329,72 +341,84 @@ namespace com.espertech.esper.epl.variable
                     throw new VariableTypeException("Cannot create variable '" + variableName + "', type '" +
                         variableType + "' cannot be declared as an array, only scalar types can be array");
                 }
-                eventType = _eventAdapterService.AddBeanType(type.Name, type, false, false, false);
+
+                eventType = _eventAdapterService.AddBeanType(type.GetDefaultTypeName(), type, false, false, false);
             }
-    
+
             if (arrayType != null)
             {
                 type = arrayType;
             }
-    
+
             CreateNewVariable(variableName, optionalContextName, type, eventType, constant, value);
         }
-    
+
         private void CreateNewVariable(String variableName, String optionalContextName, Type type, EventType eventType, bool constant, Object value)
         {
             lock (this)
             {
                 // check type
                 var variableType = type.GetBoxedType();
-    
+
                 // check if it exists
                 var metaData = _variables.Get(variableName);
-                if (metaData != null) {
+                if (metaData != null)
+                {
                     throw new VariableExistsException(VariableServiceUtil.GetAlreadyDeclaredEx(variableName, false));
                 }
-    
+
                 // find empty spot
                 var emptySpot = -1;
                 var count = 0;
-                foreach (var entry in _variableVersionsPerCP) {
-                    if (entry == null) {
+                foreach (var entry in _variableVersionsPerCP)
+                {
+                    if (entry == null)
+                    {
                         emptySpot = count;
                         break;
                     }
                     count++;
                 }
-    
+
                 int variableNumber;
-                if (emptySpot != -1) {
+                if (emptySpot != -1)
+                {
                     variableNumber = emptySpot;
                     _variableVersionsPerCP[emptySpot] = new ConcurrentDictionary<int, VariableReader>();
                     _changeCallbacksPerCP[emptySpot] = null;
                 }
-                else {
+                else
+                {
                     variableNumber = _currentVariableNumber;
                     _variableVersionsPerCP.Add(new ConcurrentDictionary<int, VariableReader>());
                     _changeCallbacksPerCP.Add(null);
                     _currentVariableNumber++;
                 }
-    
+
                 // check coercion
                 var coercedValue = value;
-                if (eventType != null) {
-                    if ((value != null) && (!TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), eventType.UnderlyingType))) {
+                if (eventType != null)
+                {
+                    if ((value != null) && (!TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), eventType.UnderlyingType)))
+                    {
                         throw new VariableTypeException("Variable '" + variableName
                                 + "' of declared event type '" + eventType.Name + "' underlying type '" + eventType.UnderlyingType.FullName +
                                 "' cannot be assigned a value of type '" + value.GetType().FullName + "'");
                     }
                     coercedValue = _eventAdapterService.AdapterForType(value, eventType);
                 }
-                else if (variableType == typeof(object)) {
+                else if (variableType == typeof(object))
+                {
                     // no validation
                 }
-                else {
+                else
+                {
                     // allow string assignments to non-string variables
-                    if ((coercedValue != null) && (coercedValue is String)) {
-                        try {
-                            coercedValue = TypeHelper.Parse(variableType, (String) coercedValue);
+                    if ((coercedValue != null) && (coercedValue is String))
+                    {
+                        try
+                        {
+                            coercedValue = TypeHelper.Parse(variableType, (String)coercedValue);
                         }
                         catch (Exception ex)
                         {
@@ -408,15 +432,15 @@ namespace com.espertech.esper.epl.variable
                                     ex.Message));
                         }
                     }
-    
-                    if ((coercedValue != null) && (variableType.GetBoxedType() != coercedValue.GetBoxedType()))
+
+                    if ((coercedValue != null) && (!TypeHelper.IsSubclassOrImplementsInterface(coercedValue.GetType(), variableType)))
                     {
                         // if the declared type is not numeric or the init value is not numeric, fail
                         if ((!variableType.IsNumeric()) || (!(coercedValue.IsNumber())))
                         {
                             throw GetVariableTypeException(variableName, variableType, coercedValue.GetType());
                         }
-                        
+
                         if (!(coercedValue.GetType().CanCoerce(variableType)))
                         {
                             throw GetVariableTypeException(variableName, variableType, coercedValue.GetType());
@@ -425,30 +449,32 @@ namespace com.espertech.esper.epl.variable
                         coercedValue = CoercerFactory.CoerceBoxed(coercedValue, variableType);
                     }
                 }
-    
+
                 var initialState = coercedValue;
                 VariableStateFactory stateFactory = new VariableStateFactoryConst(initialState);
-    
+
                 metaData = new VariableMetaData(variableName, optionalContextName, variableNumber, variableType, eventType, constant, stateFactory);
                 _variables.Put(variableName, metaData);
             }
         }
-    
+
         public void AllocateVariableState(String variableName, int agentInstanceId, StatementExtensionSvcContext extensionServicesContext, bool isRecoveringResilient)
         {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 throw new ArgumentException("Failed to find variable '" + variableName + "'");
             }
-    
+
             // Check current state - see if the variable exists in the state handler
             var initialState = metaData.VariableStateFactory.InitialState;
-            if (_optionalStateHandler != null) {
+            if (_optionalStateHandler != null)
+            {
                 var priorValue = _optionalStateHandler.GetHasState(
-                    variableName, 
+                    variableName,
                     metaData.VariableNumber, agentInstanceId,
                     metaData.VariableType,
-                    metaData.EventType, extensionServicesContext, 
+                    metaData.EventType, extensionServicesContext,
                     metaData.IsConstant);
                 if (isRecoveringResilient)
                 {
@@ -462,7 +488,7 @@ namespace com.espertech.esper.epl.variable
                     _optionalStateHandler.SetState(variableName, metaData.VariableNumber, agentInstanceId, initialState);
                 }
             }
-    
+
             // create new holder for versions
             var timestamp = _timeProvider.Time;
             var valuePerVersion = new VersionedValueList<Object>(variableName, _currentVersionNumber, initialState, timestamp, _millisecondLifetimeOldVersions, _readWriteLock.ReadLock, HIGH_WATERMARK_VERSIONS, false);
@@ -470,48 +496,55 @@ namespace com.espertech.esper.epl.variable
             var reader = new VariableReader(metaData, _versionThreadLocal, valuePerVersion);
             cps.Put(agentInstanceId, reader);
         }
-    
+
         public void DeallocateVariableState(String variableName, int agentInstanceId)
         {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 throw new ArgumentException("Failed to find variable '" + variableName + "'");
             }
 
             VariableReader tempVariableReader;
             var cps = _variableVersionsPerCP[metaData.VariableNumber];
             cps.TryRemove(agentInstanceId, out tempVariableReader);
-    
-            if (_optionalStateHandler != null) {
+
+            if (_optionalStateHandler != null)
+            {
                 _optionalStateHandler.RemoveState(variableName, metaData.VariableNumber, agentInstanceId);
             }
         }
-    
-        public VariableMetaData GetVariableMetaData(String variableName) {
+
+        public VariableMetaData GetVariableMetaData(String variableName)
+        {
             return _variables.Get(variableName);
         }
-    
+
         public VariableReader GetReader(String variableName, int agentInstanceIdAccessor)
         {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 return null;
             }
             var cps = _variableVersionsPerCP[metaData.VariableNumber];
-            if (metaData.ContextPartitionName == null) {
+            if (metaData.ContextPartitionName == null)
+            {
                 return cps.Get(EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }
             return cps.Get(agentInstanceIdAccessor);
         }
-    
-        public String IsContextVariable(String variableName) {
+
+        public String IsContextVariable(String variableName)
+        {
             var metaData = _variables.Get(variableName);
-            if (metaData == null) {
+            if (metaData == null)
+            {
                 return null;
             }
             return metaData.ContextPartitionName;
         }
-    
+
         public void Write(int variableNumber, int agentInstanceId, Object newValue)
         {
             var entry = _versionThreadLocal.CurrentThread;
@@ -530,14 +563,16 @@ namespace com.espertech.esper.epl.variable
         public void Commit()
         {
             var entry = _versionThreadLocal.CurrentThread;
-            if (entry.Uncommitted == null) {
+            if (entry.Uncommitted == null)
+            {
                 return;
             }
-    
+
             // get new version for adding the new values (1 or many new values)
             var newVersion = _currentVersionNumber + 1;
-    
-            if (_currentVersionNumber == ROLLOVER_READER_BOUNDARY) {
+
+            if (_currentVersionNumber == ROLLOVER_READER_BOUNDARY)
+            {
                 // Roll over to new collections;
                 // This honors existing threads that will now use the "high" collection in the reader for high version requests
                 // and low collection (new and updated) for low version requests
@@ -545,87 +580,95 @@ namespace com.espertech.esper.epl.variable
                 newVersion = 2;
             }
             var timestamp = _timeProvider.Time;
-    
+
             // apply all uncommitted changes
-            foreach (KeyValuePair<int, Pair<int, object>> uncommittedEntry in entry.Uncommitted.ToList()) {
+            foreach (KeyValuePair<int, Pair<int, object>> uncommittedEntry in entry.Uncommitted.ToList())
+            {
                 var cps = _variableVersionsPerCP[uncommittedEntry.Key];
                 var reader = cps[uncommittedEntry.Value.First];
                 var versions = reader.VersionsLow;
-    
+
                 // add new value as a new version
                 var newValue = uncommittedEntry.Value.Second;
                 var oldValue = versions.AddValue(newVersion, newValue, timestamp);
-    
+
                 // make a callback that the value changed
                 var cpsCallback = _changeCallbacksPerCP[uncommittedEntry.Key];
-                if (cpsCallback != null) {
+                if (cpsCallback != null)
+                {
                     var callbacks = cpsCallback.Get(uncommittedEntry.Value.First);
-                    if (callbacks != null) {
-                        foreach (var callback in callbacks) {
+                    if (callbacks != null)
+                    {
+                        foreach (var callback in callbacks)
+                        {
                             callback.Invoke(newValue, oldValue);
                         }
                     }
                 }
-    
+
                 // Check current state - see if the variable exists in the state handler
                 if (_optionalStateHandler != null)
                 {
                     var name = versions.Name;
                     int agentInstanceId = reader.VariableMetaData.ContextPartitionName == null
-                        ? EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID 
+                        ? EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID
                         : uncommittedEntry.Value.First;
                     _optionalStateHandler.SetState(name, uncommittedEntry.Key, agentInstanceId, newValue);
                 }
             }
-    
+
             // this makes the new values visible to other threads (not this thread unless set-version called again)
             _currentVersionNumber = newVersion;
             entry.Uncommitted = null;    // clean out uncommitted variables
         }
-    
+
         public void Rollback()
         {
             var entry = _versionThreadLocal.CurrentThread;
             entry.Uncommitted = null;
         }
-    
+
         /// <summary>
         /// Rollover includes creating a new
         /// </summary>
         private void RollOver()
         {
-            foreach (var entryCP in _variableVersionsPerCP) {
-                foreach (KeyValuePair<int, VariableReader> entry in entryCP) {
+            foreach (var entryCP in _variableVersionsPerCP)
+            {
+                foreach (KeyValuePair<int, VariableReader> entry in entryCP)
+                {
                     String name = entry.Value.VariableMetaData.VariableName;
                     var timestamp = _timeProvider.Time;
-    
+
                     // Construct a new collection, forgetting the history
                     var versionsOld = entry.Value.VersionsLow;
                     var currentValue = versionsOld.CurrentAndPriorValue.CurrentVersion.Value;
                     var versionsNew = new VersionedValueList<Object>(name, 1, currentValue, timestamp, _millisecondLifetimeOldVersions, _readWriteLock.ReadLock, HIGH_WATERMARK_VERSIONS, false);
-    
+
                     // Tell the reader to use the high collection for old requests
                     entry.Value.VersionsHigh = versionsOld;
                     entry.Value.VersionsLow = versionsNew;
                 }
             }
         }
-    
-        public void CheckAndWrite(String variableName, int agentInstanceId, Object newValue) 
+
+        public void CheckAndWrite(String variableName, int agentInstanceId, Object newValue)
         {
             var metaData = _variables.Get(variableName);
             var variableNumber = metaData.VariableNumber;
-    
+
             if (newValue == null)
             {
                 Write(variableNumber, agentInstanceId, null);
                 return;
             }
-    
+
             var valueType = newValue.GetType();
-    
-            if (metaData.EventType != null) {
-                if ((!TypeHelper.IsSubclassOrImplementsInterface(newValue.GetType(), metaData.EventType.UnderlyingType))) {
+
+            if (metaData.EventType != null)
+            {
+                if ((!TypeHelper.IsSubclassOrImplementsInterface(newValue.GetType(), metaData.EventType.UnderlyingType)))
+                {
                     throw new VariableValueException("Variable '" + variableName
                         + "' of declared event type '" + metaData.EventType.Name + "' underlying type '" + metaData.EventType.UnderlyingType.FullName +
                             "' cannot be assigned a value of type '" + valueType.FullName + "'");
@@ -634,7 +677,7 @@ namespace com.espertech.esper.epl.variable
                 Write(variableNumber, agentInstanceId, eventBean);
                 return;
             }
-    
+
             var variableType = metaData.VariableType;
             if ((valueType == variableType) || (variableType == typeof(object)))
             {
@@ -650,28 +693,30 @@ namespace com.espertech.esper.epl.variable
                 Write(variableNumber, agentInstanceId, newValue);
                 return;
             }
-            
+
             if ((!variableType.IsNumeric()) || (!valueType.IsNumeric()))
             {
                 throw new VariableValueException(VariableServiceUtil.GetAssigmentExMessage(variableName, variableType, valueType));
             }
-    
+
             // determine if the expression type can be assigned
             if (!(TypeHelper.CanCoerce(valueType, variableType)))
             {
                 throw new VariableValueException(VariableServiceUtil.GetAssigmentExMessage(variableName, variableType, valueType));
             }
-    
+
             object valueCoerced = CoercerFactory.CoerceBoxed(newValue, variableType);
             Write(variableNumber, agentInstanceId, valueCoerced);
         }
-    
+
         public override String ToString()
         {
             var writer = new StringWriter();
-            foreach (var entryMeta in _variables) {
+            foreach (var entryMeta in _variables)
+            {
                 var variableNum = entryMeta.Value.VariableNumber;
-                foreach (KeyValuePair<int, VariableReader> entry in _variableVersionsPerCP[variableNum]) {
+                foreach (KeyValuePair<int, VariableReader> entry in _variableVersionsPerCP[variableNum])
+                {
                     var list = entry.Value.VersionsLow;
                     writer.Write("Variable '" + entry.Key + "' : " + list + "\n");
                 }
@@ -699,12 +744,14 @@ namespace com.espertech.esper.epl.variable
             }
         }
 
-        public ConcurrentDictionary<int, VariableReader> GetReadersPerCP(String variableName) {
+        public ConcurrentDictionary<int, VariableReader> GetReadersPerCP(String variableName)
+        {
             var metaData = _variables.Get(variableName);
             return _variableVersionsPerCP[metaData.VariableNumber];
         }
-    
-        private static VariableTypeException GetVariableTypeException(String variableName, Type variableType, Type initValueClass) {
+
+        private static VariableTypeException GetVariableTypeException(String variableName, Type variableType, Type initValueClass)
+        {
             return new VariableTypeException("Variable '" + variableName
                     + "' of declared type " + variableType.GetTypeNameFullyQualPretty() +
                     " cannot be initialized by a value of type " + initValueClass.GetTypeNameFullyQualPretty());

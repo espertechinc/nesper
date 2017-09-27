@@ -50,10 +50,10 @@ namespace com.espertech.esper.pattern.observer
 	        object observerState,
 	        bool isFilterChildNonQuitting);
 
-        /// <summary>
-        /// Determines whether [is non restarting].
-        /// </summary>
-        /// <returns></returns>
-	    public abstract bool IsNonRestarting();
+	    /// <summary>
+	    /// Determines whether [is non restarting].
+	    /// </summary>
+	    /// <value></value>
+	    public abstract bool IsNonRestarting { get; }
 	}
 } // End of namespace

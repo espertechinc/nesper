@@ -34,14 +34,14 @@ namespace com.espertech.esper.epl.named
 	    /// <param name="locking">the blocking strategy to employ</param>
 	    /// <param name="timeSourceService">time source provider</param>
 	    /// <param name="initializenow"></param>
-	    public NamedWindowConsumerLatchFactory(string name, bool enabled, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService, bool initializenow)
+	    public NamedWindowConsumerLatchFactory(string name, bool enabled, long msecWait, ConfigurationEngineDefaults.ThreadingConfig.Locking locking, TimeSourceService timeSourceService, bool initializenow)
 	    {
 	        Name = name;
 	        Enabled = enabled;
 	        MsecWait = msecWait;
 	        TimeSourceService = timeSourceService;
 
-	        UseSpin = enabled && (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
+	        UseSpin = enabled && (locking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN);
 
 	        // construct a completed latch as an initial root latch
 	        if (initializenow && UseSpin)

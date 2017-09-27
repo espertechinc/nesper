@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.timer;
+using com.espertech.esper.supportunit.timer;
 
 using NUnit.Framework;
 

@@ -42,7 +42,7 @@ namespace com.espertech.esper.core.service
             if (theEvent.EventType == StatementLifecycleEvent.LifecycleEventType.CREATE)
             {
                 IEnumerator<EPStatementStateListener> it = _statementListeners.GetEnumerator();
-                for (; it.MoveNext();)
+                for (; it.MoveNext(); )
                 {
                     try
                     {
@@ -57,7 +57,7 @@ namespace com.espertech.esper.core.service
             else if (theEvent.EventType == StatementLifecycleEvent.LifecycleEventType.STATECHANGE)
             {
                 IEnumerator<EPStatementStateListener> it = _statementListeners.GetEnumerator();
-                for (; it.MoveNext();)
+                for (; it.MoveNext(); )
                 {
                     try
                     {

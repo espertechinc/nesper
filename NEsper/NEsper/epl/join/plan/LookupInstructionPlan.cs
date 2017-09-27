@@ -20,26 +20,27 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.epl.join.plan
 {
     /// <summary>
-    /// Plan for lookup using a from-stream event looking up one or more to-streams using a 
-    /// specified lookup plan for each to-stream.
+    /// Plan for lookup using a from-stream event looking up one or more to-streams using a specified lookup plan for each
+    /// to-stream.
     /// </summary>
     public class LookupInstructionPlan
     {
-        private readonly int _fromStream;
-        private readonly String _fromStreamName;
-        private readonly int[] _toStreams;
-        private readonly TableLookupPlan[] _lookupPlans;
-        private readonly bool[] _requiredPerStream;
-        private readonly HistoricalDataPlanNode[] _historicalPlans;
-    
-        /// <summary>Ctor. </summary>
-        /// <param name="fromStream">the stream supplying the lookup event</param>
-        /// <param name="fromStreamName">the stream name supplying the lookup event</param>
-        /// <param name="toStreams">the set of streams to look up in</param>
-        /// <param name="lookupPlans">the plan to use for each stream to look up in</param>
-        /// <param name="requiredPerStream">indicates which of the lookup streams are required to build a result and which are not</param>
-        /// <param name="historicalPlans">plans for use with historical streams</param>
-        public LookupInstructionPlan(int fromStream, String fromStreamName, int[] toStreams, TableLookupPlan[] lookupPlans, HistoricalDataPlanNode[] historicalPlans, bool[] requiredPerStream)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="fromStream">- the stream supplying the lookup event</param>
+        /// <param name="fromStreamName">- the stream name supplying the lookup event</param>
+        /// <param name="toStreams">- the set of streams to look up in</param>
+        /// <param name="lookupPlans">- the plan to use for each stream to look up in</param>
+        /// <param name="requiredPerStream">- indicates which of the lookup streams are required to build a result and which are not</param>
+        /// <param name="historicalPlans">- plans for use with historical streams</param>
+        public LookupInstructionPlan(
+            int fromStream,
+            string fromStreamName,
+            int[] toStreams,
+            TableLookupPlan[] lookupPlans,
+            HistoricalDataPlanNode[] historicalPlans,
+            bool[] requiredPerStream)
         {
             if (toStreams.Length != lookupPlans.Length)
             {
@@ -53,60 +54,73 @@ namespace com.espertech.esper.epl.join.plan
             {
                 throw new ArgumentException("Invalid from stream");
             }
-    
-            _fromStream = fromStream;
-            _fromStreamName = fromStreamName;
-            _toStreams = toStreams;
-            _lookupPlans = lookupPlans;
-            _historicalPlans = historicalPlans;
-            _requiredPerStream = requiredPerStream;
+
+            FromStream = fromStream;
+            FromStreamName = fromStreamName;
+            ToStreams = toStreams;
+            LookupPlans = lookupPlans;
+            HistoricalPlans = historicalPlans;
+            RequiredPerStream = requiredPerStream;
         }
 
         /// <summary>
         /// Constructs the executable from the plan.
         /// </summary>
-        /// <param name="statementName">Name of the statement.</param>
-        /// <param name="statementId">The statement id.</param>
-        /// <param name="annotations">The annotations.</param>
+        /// <param name="statementName">statement name</param>
+        /// <param name="statementId">statement id</param>
+        /// <param name="annotations">annotations</param>
         /// <param name="indexesPerStream">is the index objects for use in lookups</param>
         /// <param name="streamTypes">is the types of each stream</param>
         /// <param name="streamViews">the viewable representing each stream</param>
-        /// <param name="historicalStreamIndexLists">index management for historical streams</param>
-        /// <param name="viewExternal">The view external.</param>
-        /// <returns></returns>
-        public LookupInstructionExec MakeExec(string statementName, int statementId, Attribute[] annotations, IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists, VirtualDWView[] viewExternal)
+        /// <param name="historicalStreamIndexLists">index management for historical streams     @return executable instruction</param>
+        /// <param name="viewExternal">virtual data window</param>
+        /// <returns>instruction exec</returns>
+        public LookupInstructionExec MakeExec(
+            string statementName,
+            int statementId,
+            Attribute[] annotations,
+            IDictionary<TableLookupIndexReqKey, EventTable>[] indexesPerStream,
+            EventType[] streamTypes,
+            Viewable[] streamViews,
+            HistoricalStreamIndexList[] historicalStreamIndexLists,
+            VirtualDWView[] viewExternal)
         {
-            JoinExecTableLookupStrategy[] strategies = new JoinExecTableLookupStrategy[_lookupPlans.Length];
-            for (int i = 0; i < _lookupPlans.Length; i++)
+            var strategies = new JoinExecTableLookupStrategy[LookupPlans.Length];
+            for (int i = 0; i < LookupPlans.Length; i++)
             {
-                if (_lookupPlans[i] != null)
+                if (LookupPlans[i] != null)
                 {
-                    strategies[i] = _lookupPlans[i].MakeStrategy(statementName, statementId, annotations, indexesPerStream, streamTypes, viewExternal);
+                    strategies[i] = LookupPlans[i].MakeStrategy(
+                        statementName, statementId, annotations, indexesPerStream, streamTypes, viewExternal);
                 }
                 else
                 {
-                    strategies[i] = _historicalPlans[i].MakeOuterJoinStategy(streamViews, _fromStream, historicalStreamIndexLists);
+                    strategies[i] = HistoricalPlans[i].MakeOuterJoinStategy(
+                        streamViews, FromStream, historicalStreamIndexLists);
                 }
             }
-            return new LookupInstructionExec(_fromStream, _fromStreamName, _toStreams, strategies, _requiredPerStream);
+            return new LookupInstructionExec(FromStream, FromStreamName, ToStreams, strategies, RequiredPerStream);
         }
-    
-        /// <summary>Output the planned instruction. </summary>
+
+        /// <summary>
+        /// Output the planned instruction.
+        /// </summary>
         /// <param name="writer">to output to</param>
         public void Print(IndentWriter writer)
         {
-            writer.WriteLine("LookupInstructionPlan" +
-                    " fromStream=" + _fromStream +
-                    " fromStreamName=" + _fromStreamName +
-                    " toStreams=" + _toStreams.Render()
-                    );
-    
+            writer.WriteLine(
+                "LookupInstructionPlan" +
+                " fromStream=" + FromStream +
+                " fromStreamName=" + FromStreamName +
+                " toStreams=" + ToStreams.Render()
+                );
+
             writer.IncrIndent();
-            for (int i = 0; i < _lookupPlans.Length; i++)
+            for (int i = 0; i < LookupPlans.Length; i++)
             {
-                if (_lookupPlans[i] != null)
+                if (LookupPlans[i] != null)
                 {
-                    writer.WriteLine("plan " + i + " :" + _lookupPlans[i]);
+                    writer.WriteLine("plan " + i + " :" + LookupPlans[i]);
                 }
                 else
                 {
@@ -116,45 +130,27 @@ namespace com.espertech.esper.epl.join.plan
             writer.DecrIndent();
         }
 
-        public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        public void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
-            for (int i = 0; i < _lookupPlans.Length; i++)
+            for (int i = 0; i < LookupPlans.Length; i++)
             {
-                if (_lookupPlans[i] != null)
+                if (LookupPlans[i] != null)
                 {
-                    usedIndexes.AddAll(_lookupPlans[i].IndexNum);
+                    usedIndexes.AddAll(LookupPlans[i].IndexNum);
                 }
-            }        
+            }
         }
 
-        public int FromStream
-        {
-            get { return _fromStream; }
-        }
+        public int FromStream { get; private set; }
 
-        public string FromStreamName
-        {
-            get { return _fromStreamName; }
-        }
+        public string FromStreamName { get; private set; }
 
-        public int[] ToStreams
-        {
-            get { return _toStreams; }
-        }
+        public int[] ToStreams { get; private set; }
 
-        public TableLookupPlan[] LookupPlans
-        {
-            get { return _lookupPlans; }
-        }
+        public TableLookupPlan[] LookupPlans { get; private set; }
 
-        public bool[] RequiredPerStream
-        {
-            get { return _requiredPerStream; }
-        }
+        public bool[] RequiredPerStream { get; private set; }
 
-        public HistoricalDataPlanNode[] HistoricalPlans
-        {
-            get { return _historicalPlans; }
-        }
+        public HistoricalDataPlanNode[] HistoricalPlans { get; private set; }
     }
-}
+} // end of namespace

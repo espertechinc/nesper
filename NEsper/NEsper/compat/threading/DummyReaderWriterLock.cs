@@ -51,7 +51,6 @@ namespace com.espertech.esper.compat.threading
             get { return false; }
         }
 
-
 #if DEBUG
         public bool Trace { get; set; }
 #endif

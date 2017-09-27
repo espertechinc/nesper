@@ -26,7 +26,7 @@ namespace com.espertech.esper.view.stat
     /// from its parent, <seealso cref="com.espertech.esper.view.stat.BaseBivariateStatisticsView"/>. 
     /// It adds the usage of the correlation bean and the appropriate schema.
     /// </summary>
-    public sealed class CorrelationView 
+    public sealed class CorrelationView
         : BaseBivariateStatisticsView
         , CloneableView
     {
@@ -44,7 +44,7 @@ namespace com.espertech.esper.view.stat
 
         public View CloneView()
         {
-            return new CorrelationView(ViewFactory, AgentInstanceContext, ExpressionX, ExpressionY, ((ViewSupport) this).EventType, AdditionalProps);
+            return new CorrelationView(ViewFactory, AgentInstanceContext, ExpressionX, ExpressionY, ((ViewSupport)this).EventType, AdditionalProps);
         }
 
         protected override EventBean PopulateMap(BaseStatisticsBean baseStatisticsBean,

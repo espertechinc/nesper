@@ -22,78 +22,86 @@ namespace com.espertech.esper.view.std
     /// <summary>
     /// Factory for <seealso cref="GroupByView"/> instances.
     /// </summary>
-    public class GroupByViewFactory 
+    public class GroupByViewFactory
         : ViewFactory
         , GroupByViewFactoryMarker
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         /// <summary>View parameters. </summary>
         protected IList<ExprNode> ViewParameters;
-    
+
         /// <summary>List of criteria expressions. </summary>
         private ExprNode[] _criteriaExpressions;
-    
+
         private EventType _eventType;
-    
+
         private bool _isReclaimAged;
 
         private double _reclaimMaxAge;
         private double _reclaimFrequency;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             ViewParameters = expressionParameters;
-    
+
             var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(viewFactoryContext.StatementContext.Annotations);
-    
-            if (reclaimGroupAged != null) {
+
+            if (reclaimGroupAged != null)
+            {
                 _isReclaimAged = true;
                 String hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueMaxAge == null)
                 {
                     throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' has not been provided");
                 }
-                try {
+                try
+                {
                     _reclaimMaxAge = Double.Parse(hintValueMaxAge);
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' value '" + hintValueMaxAge + "' could not be parsed as a double value");
                 }
-    
+
                 String hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueFrequency == null)
                 {
                     _reclaimFrequency = _reclaimMaxAge;
                 }
-                else {
-                    try {
+                else
+                {
+                    try
+                    {
                         _reclaimFrequency = Double.Parse(hintValueFrequency);
                     }
-                    catch (Exception) {
+                    catch (Exception)
+                    {
                         throw new ViewParameterException("Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" + hintValueFrequency + "' could not be parsed as a double value");
                     }
                 }
-                if (_reclaimMaxAge < 0.100) {
+                if (_reclaimMaxAge < 0.100)
+                {
                     Log.Warn("Reclaim max age parameter is less then 100 milliseconds, are your sure?");
                 }
-    
-                if (Log.IsDebugEnabled) {
+
+                if (Log.IsDebugEnabled)
+                {
                     Log.Debug("Using reclaim-aged strategy for group-window age " + _reclaimMaxAge + " frequency " + _reclaimFrequency);
                 }
             }
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             _criteriaExpressions = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, ViewParameters, false);
-    
+
             if (_criteriaExpressions.Length == 0)
             {
                 String errorMessage = ViewName + " view requires a one or more expressions provinding unique values as parameters";
                 throw new ViewParameterException(errorMessage);
             }
-    
+
             _eventType = parentEventType;
         }
 
@@ -106,7 +114,8 @@ namespace com.espertech.esper.view.std
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            if (IsReclaimAged) {
+            if (IsReclaimAged)
+            {
                 return new GroupByViewReclaimAged(agentInstanceViewFactoryContext, _criteriaExpressions, ExprNodeUtility.GetEvaluators(_criteriaExpressions), _reclaimMaxAge, _reclaimFrequency);
             }
             return new GroupByViewImpl(agentInstanceViewFactoryContext, _criteriaExpressions, ExprNodeUtility.GetEvaluators(_criteriaExpressions));
@@ -117,23 +126,24 @@ namespace com.espertech.esper.view.std
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is GroupByView))
             {
                 return false;
             }
-    
-            if (IsReclaimAged) {
+
+            if (IsReclaimAged)
+            {
                 return false;
             }
-    
-            GroupByView myView = (GroupByView) view;
+
+            GroupByView myView = (GroupByView)view;
             if (!ExprNodeUtility.DeepEquals(myView.CriteriaExpressions, _criteriaExpressions))
             {
                 return false;
             }
-    
+
             return true;
         }
 

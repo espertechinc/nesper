@@ -47,20 +47,20 @@ namespace com.espertech.esper.type
             }
             return false;
         }
-    
+
         public ICollection<int> GetValuesInRange(int min, int max)
         {
             ICollection<int> values = new HashSet<int>();
-    
+
             int start = (min > Low) ? min : Low;
             int end = (max > High) ? High : max;
-    
+
             while (start <= end)
             {
                 values.Add(start);
                 start++;
             }
-    
+
             return values;
         }
 

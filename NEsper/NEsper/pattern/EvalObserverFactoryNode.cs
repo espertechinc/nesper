@@ -24,14 +24,14 @@ namespace com.espertech.esper.pattern
         private readonly PatternObserverSpec _patternObserverSpec;
         [NonSerialized]
         private ObserverFactory _observerFactory;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="patternObserverSpec">is the factory to use to get an observer instance</param>
         public EvalObserverFactoryNode(PatternObserverSpec patternObserverSpec)
         {
             _patternObserverSpec = patternObserverSpec;
         }
-    
+
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             return new EvalObserverNode(agentInstanceContext, this);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.pattern
 
         public virtual bool IsObserverStateNodeNonRestarting
         {
-            get { return _observerFactory.IsNonRestarting(); }
+            get { return _observerFactory.IsNonRestarting; }
         }
     }
 }

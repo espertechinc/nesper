@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Reflection;
+using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
@@ -16,9 +18,8 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.updatehelper
 {
-    public class EventBeanUpdateHelper
-    {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    public class EventBeanUpdateHelper {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
         private readonly EventBeanCopyMethod _copyMethod;
         private readonly EventBeanUpdateItem[] _updateItems;
@@ -31,7 +32,9 @@ namespace com.espertech.esper.epl.updatehelper
     
         public EventBean UpdateWCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, true);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, true);
+            }
     
             EventBean copy = _copyMethod.Copy(matchingEvent);
             eventsPerStream[0] = copy;
@@ -39,17 +42,22 @@ namespace com.espertech.esper.epl.updatehelper
     
             UpdateInternal(eventsPerStream, exprEvaluatorContext, copy);
     
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraUpdate(copy);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().AInfraUpdate(copy);
+            }
             return copy;
         }
     
-        public void UpdateNoCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, false);}
+        public void UpdateNoCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, false);
+            }
     
             UpdateInternal(eventsPerStream, exprEvaluatorContext, matchingEvent);
     
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraUpdate(matchingEvent);}
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().AInfraUpdate(matchingEvent);
+            }
         }
 
         public EventBeanUpdateItem[] UpdateItems
@@ -62,17 +70,20 @@ namespace com.espertech.esper.epl.updatehelper
             get { return _copyMethod != null; }
         }
 
-        private void UpdateInternal(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, EventBean target)
+        private void UpdateInternal(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, EventBean target) 
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, true, exprEvaluatorContext);
-
             for (int i = 0; i < _updateItems.Length; i++)
             {
-                var updateItem = _updateItems[i];
+                EventBeanUpdateItem updateItem = _updateItems[i];
     
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QInfraUpdateRHSExpr(i, updateItem);}
-                var result = updateItem.Expression.Evaluate(evaluateParams);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraUpdateRHSExpr(result);}
+                if (InstrumentationHelper.ENABLED) {
+                    InstrumentationHelper.Get().QInfraUpdateRHSExpr(i, updateItem);
+                }
+                Object result = updateItem.Expression.Evaluate(evaluateParams);
+                if (InstrumentationHelper.ENABLED) {
+                    InstrumentationHelper.Get().AInfraUpdateRHSExpr(result);
+                }
     
                 if (updateItem.OptionalWriter != null) {
                     if (result == null && updateItem.IsNotNullableField) {
@@ -88,4 +99,4 @@ namespace com.espertech.esper.epl.updatehelper
             }
         }
     }
-}
+} // end of namespace

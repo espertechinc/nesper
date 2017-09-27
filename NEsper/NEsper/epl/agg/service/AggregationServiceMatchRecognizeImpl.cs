@@ -11,19 +11,16 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.agg.aggregator;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    /// <summary>
-    /// Implements an aggregation service for match recognize.
-    /// </summary>
+    /// <summary>Implements an aggregation service for match recognize.</summary>
     public class AggregationServiceMatchRecognizeImpl : AggregationServiceMatchRecognize
     {
-        private readonly ExprEvaluator[][] _evaluatorsEachStream;
-        private readonly AggregationMethod[][] _aggregatorsEachStream;
         private readonly AggregationMethod[] _aggregatorsAll;
+        private readonly AggregationMethod[][] _aggregatorsEachStream;
+        private readonly ExprEvaluator[][] _evaluatorsEachStream;
 
         public AggregationServiceMatchRecognizeImpl(
             ExprEvaluator[][] evaluatorsEachStream,
@@ -37,38 +34,37 @@ namespace com.espertech.esper.epl.agg.service
 
         public void ApplyEnter(EventBean[] eventsPerStream, int streamId, ExprEvaluatorContext exprEvaluatorContext)
         {
-
-            var evaluatorsStream = _evaluatorsEachStream[streamId];
+            ExprEvaluator[] evaluatorsStream = _evaluatorsEachStream[streamId];
             if (evaluatorsStream == null)
             {
                 return;
             }
 
             var evaluateParams = new EvaluateParams(eventsPerStream, true, exprEvaluatorContext);
-            var aggregatorsStream = _aggregatorsEachStream[streamId];
+            AggregationMethod[] aggregatorsStream = _aggregatorsEachStream[streamId];
             for (int j = 0; j < evaluatorsStream.Length; j++)
             {
-                var columnResult = evaluatorsStream[j].Evaluate(evaluateParams);
+                object columnResult = evaluatorsStream[j].Evaluate(evaluateParams);
                 aggregatorsStream[j].Enter(columnResult);
             }
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             return _aggregatorsAll[column].Value;
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -91,4 +87,4 @@ namespace com.espertech.esper.epl.agg.service
             return null;
         }
     }
-}
+} // end of namespace

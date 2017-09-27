@@ -86,6 +86,7 @@ namespace com.espertech.esper.client
                 
         /// <summary>
         /// Returns the engine-instance global read-write lock.
+        /// </summary>
         /// <para>The <seealso cref="com.espertech.esper.client.EPRuntime.SendEvent" /> method takes a read lock.</para>
         /// <para>The <seealso cref="com.espertech.esper.client.EPAdministrator.CreateEPL" /> methods take a write lock.</para>
         /// <returns>engine instance global read-write lock</returns>

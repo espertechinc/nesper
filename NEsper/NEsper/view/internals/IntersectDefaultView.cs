@@ -6,16 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.metrics.instrumentation;
-using com.espertech.esper.view;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace com.espertech.esper.view.internals
 {
@@ -42,6 +38,7 @@ namespace com.espertech.esper.view.internals
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="agentInstanceViewFactoryContext">The agent instance view factory context.</param>
         /// <param name="factory">the view _factory</param>
         /// <param name="viewList">the list of data window views</param>
         public IntersectDefaultView(
@@ -154,7 +151,7 @@ namespace com.espertech.esper.view.internals
                 }
             }
 
-                // handle remove stream
+            // handle remove stream
             else if (oldData != null)
             {
                 localState.IsDiscardObserverEvents = true; // disable reaction logic in observer
@@ -239,7 +236,7 @@ namespace com.espertech.esper.view.internals
             {
                 if (view is StoppableView)
                 {
-                    ((StoppableView) view).Stop();
+                    ((StoppableView)view).Stop();
                 }
             }
         }

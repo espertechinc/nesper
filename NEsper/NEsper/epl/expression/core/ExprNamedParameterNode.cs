@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 namespace com.espertech.esper.epl.expression.core
 {
 	public interface ExprNamedParameterNode
     {
 	    string ParameterName { get; }
-	    ExprNode[] ChildNodes { get; }
+	    IList<ExprNode> ChildNodes { get; }
     }
 } // end of namespace

@@ -139,7 +139,7 @@ namespace com.espertech.esper.view.window
             if (timestamp != -1)
             {
                 expired =
-                    _timeWindow.ExpireEvents(timestamp - _timeDeltaComputation.DeltaMillisecondsSubtract(timestamp) + 1);
+                    _timeWindow.ExpireEvents(timestamp - _timeDeltaComputation.DeltaSubtract(timestamp) + 1);
             }
 
             EventBean[] oldDataUpdate = null;

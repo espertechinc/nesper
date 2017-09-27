@@ -32,13 +32,13 @@ namespace com.espertech.esper.schedule
 
         // Map of time and handle
         private readonly IDictionary<long, IDictionary<long, ScheduleHandle>> _timeHandleMap;
-    
+
         // Map of handle and handle list for faster removal
         private readonly IDictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>> _handleSetMap;
-    
+
         // Current time - used for evaluation as well as for adding new handles
         private long _currentTime;
-    
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -51,7 +51,7 @@ namespace com.espertech.esper.schedule
             // initialize time to just before now as there is a check for duplicate external time events
             _currentTime = timeSourceService.GetTimeMillis() - 1;
         }
-    
+
         public void Dispose()
         {
             Log.Debug("Destroying scheduling service");
@@ -64,16 +64,17 @@ namespace com.espertech.esper.schedule
             get { return _currentTime; }
             set
             {
-                using (_uLock.Acquire()) {
+                using (_uLock.Acquire())
+                {
                     _currentTime = value;
                 }
             }
         }
 
-        public void Add(long afterMSec, ScheduleHandle handle, long slot)
+        public void Add(long afterTime, ScheduleHandle handle, long slot)
         {
             using (Instrument.With(
-                i => i.QScheduleAdd(_currentTime, afterMSec, handle, slot),
+                i => i.QScheduleAdd(_currentTime, afterTime, handle, slot),
                 i => i.AScheduleAdd()))
             {
                 using (_uLock.Acquire())
@@ -83,13 +84,13 @@ namespace com.espertech.esper.schedule
                         Remove(handle, slot);
                     }
 
-                    long triggerOnTime = _currentTime + afterMSec;
+                    long triggerOnTime = _currentTime + afterTime;
 
                     AddTrigger(slot, handle, triggerOnTime);
                 }
             }
         }
-    
+
         public void Remove(ScheduleHandle handle, long scheduleSlot)
         {
             using (Instrument.With(
@@ -110,7 +111,7 @@ namespace com.espertech.esper.schedule
                 }
             }
         }
-    
+
         public void Evaluate(ICollection<ScheduleHandle> handles)
         {
             using (Instrument.With(
@@ -252,7 +253,8 @@ namespace com.espertech.esper.schedule
         {
             get
             {
-                if (_timeHandleMap.IsNotEmpty()) {
+                if (_timeHandleMap.IsNotEmpty())
+                {
                     return _timeHandleMap.Keys.Last();
                 }
                 return null;

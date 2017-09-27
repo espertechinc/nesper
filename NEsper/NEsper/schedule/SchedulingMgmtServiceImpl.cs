@@ -26,7 +26,7 @@ namespace com.espertech.esper.schedule
         /// <summary>
         /// Current bucket number - for use in ordering handles by bucket
         /// </summary>
-        private int curBucketNum;
+        private int _curBucketNum;
 
         #region SchedulingMgmtService Members
 
@@ -37,7 +37,7 @@ namespace com.espertech.esper.schedule
 
         public ScheduleBucket AllocateBucket()
         {
-            int bucket = Interlocked.Increment(ref curBucketNum);
+            int bucket = Interlocked.Increment(ref _curBucketNum);
             return new ScheduleBucket(bucket);
         }
 

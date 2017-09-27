@@ -40,7 +40,8 @@ namespace com.espertech.esper.epl.join.exec.@base
         /// <param name="lookupStrategyDesc">The lookup strategy desc.</param>
         public InKeywordSingleTableLookupStrategyExpr(ExprEvaluator[] evaluators, int streamNum, PropertyIndexedEventTableSingle index, LookupStrategyDesc lookupStrategyDesc)
         {
-            if (index == null) {
+            if (index == null)
+            {
                 throw new ArgumentException("Unexpected null index received");
             }
             _index = index;
@@ -59,16 +60,16 @@ namespace com.espertech.esper.epl.join.exec.@base
 
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) {InstrumentationHelper.Get().QIndexJoinLookup(this, _index); }
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexJoinLookup(this, _index); }
+
             _eventsPerStream[_streamNum] = theEvent;
             var result = InKeywordTableLookupUtil.SingleIndexLookup(
                 _evaluators, _eventsPerStream, exprEvaluatorContext, _index);
-    
-            if (InstrumentationHelper.ENABLED) {InstrumentationHelper.Get().AIndexJoinLookup(result, null);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexJoinLookup(result, null); }
             return result;
         }
-    
+
         public override String ToString()
         {
             return "IndexedTableLookupStrategyExpr expressions" +

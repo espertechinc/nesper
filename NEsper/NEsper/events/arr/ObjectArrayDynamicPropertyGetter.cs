@@ -17,44 +17,52 @@ namespace com.espertech.esper.events.arr
     /// </summary>
     public class ObjectArrayDynamicPropertyGetter : ObjectArrayEventPropertyGetter
     {
-        private readonly String _propertyName;
-
-        public ObjectArrayDynamicPropertyGetter(String propertyName)
+        private readonly string _propertyName;
+    
+        public ObjectArrayDynamicPropertyGetter(string propertyName)
         {
             _propertyName = propertyName;
         }
-
+    
         public Object GetObjectArray(Object[] array)
         {
             return null;
         }
-
+    
         public bool IsObjectArrayExistsProperty(Object[] array)
         {
             return false;
         }
-
+    
         public Object Get(EventBean eventBean)
         {
-            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
-
             int index;
+
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
             if (!objectArrayEventType.PropertiesIndexes.TryGetValue(_propertyName, out index))
+            {
                 return null;
+            }
 
-            Object[] theEvent = ((Object[])eventBean.Underlying);
-            return theEvent[index];
+            return ((Object[]) eventBean.Underlying)[index];
         }
-
+    
         public bool IsExistsProperty(EventBean eventBean)
         {
-            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
-            return objectArrayEventType.PropertiesIndexes.ContainsKey(_propertyName);
-        }
+            int index;
 
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
+            if (objectArrayEventType.PropertiesIndexes.TryGetValue(_propertyName, out index))
+            {
+                return true;
+            }
+
+            return false;
+        }
+    
         public Object GetFragment(EventBean eventBean)
         {
             return null;
         }
     }
-}
+} // end of namespace

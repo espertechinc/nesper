@@ -19,7 +19,7 @@ namespace com.espertech.esper.core.service
     {
         private readonly ExprEvaluatorContext _context;
         private readonly TableService _tableService;
-    
+
         public ExprEvaluatorContextWTableAccess(ExprEvaluatorContext context, TableService tableService)
         {
             _context = context;
@@ -66,9 +66,9 @@ namespace com.espertech.esper.core.service
             get { return _context.ContextProperties; }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
-            get { return _context.AgentInstanceScriptContext; }
+            get { return _context.AllocateAgentInstanceScriptContext; }
         }
 
         public IReaderWriterLock AgentInstanceLock

@@ -66,7 +66,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public bool IsContextPropertyPrefix(String prefixName)
         {
-            return (prefixName != null) && (prefixName.ToLower() == CONTEXT_PREFIX);
+            return (prefixName != null) && (String.Equals(prefixName, CONTEXT_PREFIX, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public EventType ContextEventType

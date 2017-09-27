@@ -57,12 +57,13 @@ namespace com.espertech.esper.epl.join.plan
         {
             var evaluator = _keyExpr.ExprEvaluator;
             var singles = new PropertyIndexedEventTableSingle[eventTable.Length];
-            for (int i = 0; i < eventTable.Length; i++) {
-                singles[i] = (PropertyIndexedEventTableSingle) eventTable[i];
+            for (int i = 0; i < eventTable.Length; i++)
+            {
+                singles[i] = (PropertyIndexedEventTableSingle)eventTable[i];
             }
             return new InKeywordMultiTableLookupStrategyExpr(evaluator, LookupStream, singles, new LookupStrategyDesc(LookupStrategyType.INKEYWORDMULTIIDX, new String[] { ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(_keyExpr) }));
         }
-    
+
         public override String ToString()
         {
             return this.GetType().Name + " " +

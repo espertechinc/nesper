@@ -66,10 +66,11 @@ namespace com.espertech.esper.epl.join.table
 
         public virtual Type EventTableType
         {
-            get {
+            get
+            {
                 return Unique
-                    ? typeof (PropertyIndexedEventTableSingleUnique)
-                    : typeof (PropertyIndexedEventTableSingle);
+                    ? typeof(PropertyIndexedEventTableSingleUnique)
+                    : typeof(PropertyIndexedEventTableSingle);
             }
         }
 

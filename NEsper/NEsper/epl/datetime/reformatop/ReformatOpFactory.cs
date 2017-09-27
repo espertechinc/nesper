@@ -8,62 +8,100 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.calop;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
-    public class ReformatOpFactory : OpFactory 
+    public class ReformatOpFactory : OpFactory
     {
-        private static readonly ReformatOp FormatString = new ReformatOpStringFormat();
-        private static readonly ReformatOp ToMsec = new ReformatOpToMillisec();
-    
-        public ReformatOp GetOp(TimeZoneInfo timeZone, DatetimeMethodEnum method, String methodNameUsed, IList<ExprNode> parameters)
-        {
-            switch (method)
-            {
-                case DatetimeMethodEnum.GET:
-                    return new ReformatOpGetField(CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]), timeZone);
-                case DatetimeMethodEnum.FORMAT:
-                    return FormatString;
-                case DatetimeMethodEnum.TOMILLISEC:
-                    return ToMsec;
-                case DatetimeMethodEnum.TODATE:
-                    return new ReformatOpToDateTime(timeZone);
-                case DatetimeMethodEnum.TOCALENDAR:
-                    return new ReformatOpToDateTime(timeZone);
-                case DatetimeMethodEnum.GETDAYOFMONTH:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfMonth, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETMINUTEOFHOUR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MinuteOfHour, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETMONTHOFYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MonthOfYear, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETDAYOFWEEK:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfWeek, typeof(DayOfWeek), timeZone);
-                case DatetimeMethodEnum.GETDAYOFYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.DayOfYear, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETHOUROFDAY:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.HourOfDay, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETMILLISOFSECOND:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.MillisOfSecond, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETSECONDOFMINUTE:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.SecondOfMinute, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETWEEKYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Weekyear, typeof(int), timeZone);
-                case DatetimeMethodEnum.GETYEAR:
-                    return new ReformatOpDateTimeEval(DateTimeEvalStatics.Year, typeof(int), timeZone);
-                case DatetimeMethodEnum.BETWEEN:
-                    if (ExprNodeUtility.IsAllConstants(parameters))
-                    {
-                        return new ReformatOpBetweenConstantParams(parameters);
-                    }
-                    return new ReformatOpBetweenNonConstantParams(parameters);
-            }
+        private static readonly ReformatOp FORMAT_STRING = new ReformatOpStringFormat();
 
+        public ReformatOp GetOp(
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus,
+            DatetimeMethodEnum method,
+            string methodNameUsed,
+            IList<ExprNode> parameters)
+        {
+            if (method == DatetimeMethodEnum.GET)
+            {
+                CalendarFieldEnum fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
+                return new ReformatOpGetField(fieldNum, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.FORMAT)
+            {
+                return FORMAT_STRING;
+            }
+            if (method == DatetimeMethodEnum.TOCALENDAR)
+            {
+                return new ReformatOpToCalendar(timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.TOMILLISEC)
+            {
+                return new ReformatOpToMillisec(timeZone);
+            }
+            if (method == DatetimeMethodEnum.TODATE)
+            {
+                return new ReformatOpToDateTimeOffset(timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETDAYOFMONTH)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.DAY_OF_MONTH, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETMINUTEOFHOUR)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.MINUTE_OF_HOUR, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETMONTHOFYEAR)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.MONTH_OF_YEAR, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETDAYOFWEEK)
+            {
+                return new ReformatOpEval<DayOfWeek>(CalendarEvalStatics.DAY_OF_WEEK, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETDAYOFYEAR)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.DAY_OF_YEAR, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETERA)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.ERA, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETHOUROFDAY)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.HOUR_OF_DAY, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETMILLISOFSECOND)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.MILLIS_OF_SECOND, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETSECONDOFMINUTE)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.SECOND_OF_MINUTE, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETWEEKYEAR)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.WEEKYEAR, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.GETYEAR)
+            {
+                return new ReformatOpEval<int>(CalendarEvalStatics.YEAR, timeZone, timeAbacus);
+            }
+            if (method == DatetimeMethodEnum.BETWEEN)
+            {
+                if (ExprNodeUtility.IsAllConstants(parameters))
+                {
+                    return new ReformatOpBetweenConstantParams(parameters, timeZone);
+                }
+                return new ReformatOpBetweenNonConstantParams(parameters, timeZone);
+            }
             throw new IllegalStateException("Unrecognized date-time method code '" + method + "'");
         }
     }
-}
+} // end of namespace

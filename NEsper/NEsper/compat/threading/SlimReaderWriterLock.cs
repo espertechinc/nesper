@@ -92,9 +92,9 @@ namespace com.espertech.esper.compat.threading
 
 #if DEBUG
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="SlimReaderWriterLock"/> is trace.
+        /// Gets or sets a value indicating whether this <see cref="SlimReaderWriterLock"/> is TRACE.
         /// </summary>
-        /// <value><c>true</c> if trace; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if TRACE; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
 
@@ -102,12 +102,12 @@ namespace com.espertech.esper.compat.threading
         /// Acquires the reader lock.
         /// </summary>
         /// <param name="timeout">The timeout.</param>
-        public void AcquireReaderLock(int timeout)
+        public void AcquireReaderLock(long timeout)
         {
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterReadLock(timeout))
+            if (_rwLock.TryEnterReadLock((int) timeout))
                 return;
 
             throw new TimeoutException("ReaderWriterLock timeout expired");
@@ -118,12 +118,12 @@ namespace com.espertech.esper.compat.threading
         /// Acquires the writer lock.
         /// </summary>
         /// <param name="timeout">The timeout.</param>
-        public void AcquireWriterLock(int timeout)
+        public void AcquireWriterLock(long timeout)
         {
 #if MONO
             throw new NotSupportedException(ExceptionText);
 #else
-            if (_rwLock.TryEnterWriteLock(timeout))
+            if (_rwLock.TryEnterWriteLock((int) timeout))
                 return;
 
             throw new TimeoutException("ReaderWriterLock timeout expired");

@@ -23,7 +23,7 @@ namespace com.espertech.esper.core.thread
         private readonly String _eventTypeName;
         private readonly EPServicesContext _services;
         private readonly EPRuntimeImpl _runtime;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="properties">to send</param>
         /// <param name="eventTypeName">type name</param>
@@ -36,7 +36,7 @@ namespace com.espertech.esper.core.thread
             _services = services;
             _runtime = runtime;
         }
-    
+
         public void Run()
         {
             try

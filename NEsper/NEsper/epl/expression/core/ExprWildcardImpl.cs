@@ -17,8 +17,8 @@ namespace com.espertech.esper.epl.expression.core
     /// Expression for use within crontab to specify a wildcard.
     /// </summary>
     [Serializable]
-    public class ExprWildcardImpl 
-        : ExprNodeBase 
+    public class ExprWildcardImpl
+        : ExprNodeBase
         , ExprEvaluator
         , ExprWildcard
     {
@@ -48,15 +48,15 @@ namespace com.espertech.esper.epl.expression.core
         {
             return node is ExprWildcardImpl;
         }
-    
-        public override ExprNode Validate(ExprValidationContext validationContext) 
+
+        public override ExprNode Validate(ExprValidationContext validationContext)
         {
             return null;
         }
 
         public Type ReturnType
         {
-            get { return typeof (WildcardParameter); }
+            get { return typeof(WildcardParameter); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)

@@ -11,12 +11,11 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.events.vaevent;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertNoWildcardRevision 
+    public class EvalInsertNoWildcardRevision
         : EvalBaseMap
         , SelectExprProcessor
     {
@@ -32,7 +31,7 @@ namespace com.espertech.esper.epl.core.eval
 
         public override EventBean ProcessSpecific(IDictionary<String, Object> props, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return _vaeProcessor.GetValueAddEventBean(EventAdapterService.AdapterForTypedMap(props, _vaeInnerEventType));
+            return _vaeProcessor.GetValueAddEventBean(base.EventAdapterService.AdapterForTypedMap(props, _vaeInnerEventType));
         }
     }
 }

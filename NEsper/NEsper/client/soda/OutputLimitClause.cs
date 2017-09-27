@@ -222,7 +222,7 @@ namespace com.espertech.esper.client.soda
 
         /// <summary>Returns output frequency. </summary>
         /// <value>frequency of output</value>
-        public double? Frequency { get; set; }
+        public double? Frequency { get; private set; }
 
         /// <summary>Returns the unit the frequency is in. </summary>
         /// <value>unit for the frequency.</value>

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.agg.access
@@ -23,9 +25,15 @@ namespace com.espertech.esper.epl.agg.access
 
     public static class AggregationStateTypeExtensions
     {
-        public static AggregationStateType? FromString(string text)
+        public static AggregationStateType? FromString(string text, bool throwException = false)
         {
-            return EnumHelper.ParseBoxed<AggregationStateType>(text, true);
+            var value = EnumHelper.ParseBoxed<AggregationStateType>(text, true);
+            if ((value == null) && throwException)
+            {
+                throw new ArgumentException("illegal value for enumeration");
+            }
+
+            return value;
         }
     }
-}
+} // end of namespace

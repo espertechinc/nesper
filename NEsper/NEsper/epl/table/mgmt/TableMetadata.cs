@@ -148,7 +148,7 @@ namespace com.espertech.esper.epl.table.mgmt
 
 	    public EventBean GetPublicEventBean(EventBean @event, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
-	        return _eventToPublic.Convert(@event, eventsPerStream, isNewData, context);
+	        return _eventToPublic.Convert(@event, new EvaluateParams(eventsPerStream, isNewData, context));
 	    }
 
 	    public EventType PublicEventType

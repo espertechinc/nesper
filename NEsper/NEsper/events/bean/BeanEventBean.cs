@@ -9,22 +9,24 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Wrapper for PONO objects that represent events.
-    /// Allows access to event properties, which is done through the getter supplied by the
-    /// event type. <seealso cref="client.EventType"/> instances containing type information are
-    /// obtained from <seealso cref="BeanEventTypeFactory"/>. Two BeanEventBean instances
-    /// are equal if they have the same event type and refer to the same instance of
-    /// event object. Clients that need to compute equality between object wrapped by
-    /// this class need to obtain the underlying object.
+    /// Wrapper for vanilla objects Java objects the represent events.
+    /// Allows access to event properties, which is done through the getter supplied by the event type.
+    /// <seealso cref="client.EventType" /> instances containing type information are obtained from <seealso cref="BeanEventTypeFactory" />.
+    /// Two BeanEventBean instances are equal if they have the same event type and refer to the same instance of event object.
+    /// Clients that need to compute equality between objects wrapped by this class need to obtain the underlying object.
     /// </summary>
-    public sealed class BeanEventBean : EventBeanSPI
+    public class BeanEventBean : EventBeanSPI
     {
-        private object _underlying;
-        private EventType _eventType;
+        private readonly EventType _eventType;
+        private object _theEvent;
 
         /// <summary>
         /// Constructor.
@@ -33,20 +35,30 @@ namespace com.espertech.esper.events.bean
         /// <param name="eventType">is the schema information for the event object.</param>
         public BeanEventBean(Object theEvent, EventType eventType)
         {
-            _eventType = eventType;
-            _underlying = theEvent;
+            this._eventType = eventType;
+            this._theEvent = theEvent;
         }
 
         public object Underlying
         {
-            get { return _underlying; }
-            set { _underlying = value; }
+            get { return _theEvent; }
+            set { _theEvent = value; }
         }
 
         public EventType EventType
         {
             get { return _eventType; }
-            private set { _eventType = value; }
+        }
+
+        public Object Get(string property)
+        {
+            EventPropertyGetter getter = _eventType.GetGetter(property);
+            if (getter == null)
+            {
+                throw new PropertyAccessException(
+                    "Property named '" + property + "' is not a valid property name for this type");
+            }
+            return getter.Get(this);
         }
 
         public object this[string property]
@@ -54,31 +66,21 @@ namespace com.espertech.esper.events.bean
             get { return Get(property); }
         }
 
-        public Object Get(String property)
-        {
-            EventPropertyGetter getter = EventType.GetGetter(property);
-            if (getter == null)
-            {
-                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
-            }
-            return getter.Get(this);
-        }
-    
         public override String ToString()
         {
             return "BeanEventBean" +
-                   " eventType=" + EventType +
-                   " eventObject=" + Underlying;
+                   " eventType=" + _eventType +
+                   " bean=" + _theEvent;
         }
-    
-        public Object GetFragment(String propertyExpression)
+
+        public Object GetFragment(string propertyExpression)
         {
-            EventPropertyGetter getter = EventType.GetGetter(propertyExpression);
+            EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
             if (getter == null)
             {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
             return getter.GetFragment(this);
         }
     }
-}
+} // end of namespace

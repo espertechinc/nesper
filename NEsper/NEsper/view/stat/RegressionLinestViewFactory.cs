@@ -23,38 +23,39 @@ namespace com.espertech.esper.view.stat
     {
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
-    
+
         /// <summary>Expression X field. </summary>
         private ExprNode _expressionX;
-    
+
         /// <summary>Expression Y field. </summary>
         private ExprNode _expressionY;
 
         private StatViewAdditionalProps _additionalProps;
 
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
             _streamNumber = viewFactoryContext.StreamNum;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
-    
-            if (validated.Length < 2) {
+
+            if (validated.Length < 2)
+            {
                 throw new ViewParameterException(ViewParamMessage);
             }
             if ((!validated[0].ExprEvaluator.ReturnType.IsNumeric()) || (!validated[1].ExprEvaluator.ReturnType.IsNumeric()))
             {
                 throw new ViewParameterException(ViewParamMessage);
             }
-    
+
             _expressionX = validated[0];
             _expressionY = validated[1];
-    
+
             _additionalProps = StatViewAdditionalProps.Make(validated, 2, parentEventType);
             _eventType = RegressionLinestView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
@@ -66,18 +67,19 @@ namespace com.espertech.esper.view.stat
         }
 
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is RegressionLinestView))
             {
                 return false;
             }
-    
-            if (_additionalProps != null) {
+
+            if (_additionalProps != null)
+            {
                 return false;
             }
-    
-            RegressionLinestView myView = (RegressionLinestView) view;
+
+            RegressionLinestView myView = (RegressionLinestView)view;
             if ((!ExprNodeUtility.DeepEquals(myView.ExpressionX, _expressionX)) ||
                 (!ExprNodeUtility.DeepEquals(myView.ExpressionY, _expressionY)))
             {

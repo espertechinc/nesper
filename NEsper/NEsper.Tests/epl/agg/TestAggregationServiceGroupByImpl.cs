@@ -13,7 +13,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
@@ -52,11 +52,11 @@ namespace com.espertech.esper.epl.agg
             _service.ApplyEnter(new EventBean[1], _groupTwoKey, exprEvaluatorContext);
     
             _service.SetCurrentAccess(_groupOneKey, -1, null);
-            Assert.AreEqual(10, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(4, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(10, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(4, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
             _service.SetCurrentAccess(_groupTwoKey, -1, null);
-            Assert.AreEqual(5, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(2, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(5, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(2, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
     
             _service.ApplyLeave(new EventBean[1], _groupTwoKey, exprEvaluatorContext);
             _service.ApplyLeave(new EventBean[1], _groupTwoKey, exprEvaluatorContext);
@@ -64,11 +64,11 @@ namespace com.espertech.esper.epl.agg
             _service.ApplyLeave(new EventBean[1], _groupOneKey, exprEvaluatorContext);
 
             _service.SetCurrentAccess(_groupOneKey, -1, null);
-            Assert.AreEqual(10 - 5, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(4 - 2, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(10 - 5, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(4 - 2, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
             _service.SetCurrentAccess(_groupTwoKey, -1, null);
-            Assert.AreEqual(5 - 15, _service.GetValue(0, -1, null, true, null));
-            Assert.AreEqual(2 - 6, _service.GetValue(1, -1, null, true, null));
+            Assert.AreEqual(5 - 15, _service.GetValue(0, -1, EvaluateParams.EmptyTrue));
+            Assert.AreEqual(2 - 6, _service.GetValue(1, -1, EvaluateParams.EmptyTrue));
         }
     }
 }

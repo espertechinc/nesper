@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
@@ -19,7 +20,7 @@ namespace com.espertech.esper.core.service
     public class ExceptionHandlingService
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly String _engineURI;
 
         public event ExceptionHandler UnhandledException;
@@ -34,7 +35,7 @@ namespace com.espertech.esper.core.service
             foreach (var handler in exceptionHandlers) UnhandledException += handler;
             foreach (var handler in conditionHandlers) UnhandledCondition += handler;
         }
-    
+
         public void HandleCondition(BaseCondition condition, EPStatementHandle handle)
         {
             if (UnhandledCondition == null)
@@ -51,12 +52,18 @@ namespace com.espertech.esper.core.service
         public void HandleException(
             Exception ex,
             EPStatementAgentInstanceHandle handle,
-            ExceptionHandlerExceptionType type)
+            ExceptionHandlerExceptionType type,
+            EventBean optionalCurrentEvent)
         {
-            HandleException(ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type);
+            HandleException(ex, handle.StatementHandle.StatementName, handle.StatementHandle.EPL, type, optionalCurrentEvent);
         }
 
-        public void HandleException(Exception ex, String statementName, String epl, ExceptionHandlerExceptionType type)
+        public void HandleException(
+            Exception ex,
+            String statementName,
+            String epl,
+            ExceptionHandlerExceptionType type,
+            EventBean optionalCurrentEvent)
         {
             if (UnhandledException == null)
             {
@@ -75,7 +82,7 @@ namespace com.espertech.esper.core.service
                 writer.Write(epl);
                 writer.Write("' : ");
                 writer.Write(ex.Message);
-                
+
                 var message = writer.ToString();
 
                 if (type == ExceptionHandlerExceptionType.PROCESS)
@@ -91,7 +98,7 @@ namespace com.espertech.esper.core.service
             }
 
             UnhandledException(
-                new ExceptionHandlerContext(_engineURI, ex, statementName, epl, type));
+                new ExceptionHandlerContext(_engineURI, ex, statementName, epl, type, optionalCurrentEvent));
         }
 
         public string EngineURI

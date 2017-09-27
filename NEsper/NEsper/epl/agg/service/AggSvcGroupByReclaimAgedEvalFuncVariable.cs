@@ -19,9 +19,9 @@ namespace com.espertech.esper.epl.agg.service
     public class AggSvcGroupByReclaimAgedEvalFuncVariable : AggSvcGroupByReclaimAgedEvalFunc
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly VariableReader _variableReader;
-    
+
         public AggSvcGroupByReclaimAgedEvalFuncVariable(VariableReader variableReader)
         {
             _variableReader = variableReader;

@@ -290,6 +290,14 @@ namespace com.espertech.esper.compat.collections
             return enumThis.Where(item => item is TX);
         }
 
+        public static void Fill<T>(this IList<T> listThis, T value)
+        {
+            for (int ii = 0; ii < listThis.Count; ii++)
+            {
+                listThis[ii] = value;
+            }
+        }
+
         public static void Fill<T>(this T[] arrayThis, T value)
         {
             for (int ii = 0; ii < arrayThis.Length; ii++)
@@ -312,6 +320,24 @@ namespace com.espertech.esper.compat.collections
             {
                 arrayThis[ii] = generator.Invoke(ii);
             }
+        }
+
+        public static bool IsEqual<T>(this T[] arrayThis, T[] arrayThat)
+        {
+            if (arrayThis.Length != arrayThat.Length)
+            {
+                return false;
+            }
+
+            for (int ii = 0; ii < arrayThis.Length; ii++)
+            {
+                if (!Equals(arrayThis[ii], arrayThat[ii]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static bool IsEqual<T>( this IEnumerator<T> enumThis, IEnumerator<T> enumThat )
@@ -694,6 +720,11 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        public static double Render(object p)
+        {
+            throw new NotImplementedException();
+        }
+
         public static string Render<K, V>(this IEnumerable<KeyValuePair<K, V>> source)
         {
             string fieldDelimiter = String.Empty;
@@ -706,16 +737,18 @@ namespace com.espertech.esper.compat.collections
                 foreach(var current in source)
                 {
                     builder.Append(fieldDelimiter);
-                    builder.Append(Render(current.Key));
+                    builder.Append(RenderAny(current.Key));
                     builder.Append('=');
                     if (ReferenceEquals(current.Value, null))
                         builder.Append("null");
                     else if (current.Value.GetType().IsGenericDictionary())
                         builder.Append(MagicMarker.NewMagicDictionary<object, object>(current.Value));
+                    else if (current.Value is string)
+                        builder.Append(RenderAny(current.Value));
                     else if (current.Value is IEnumerable)
-                        builder.Append(Render((IEnumerable) current.Value));
+                        builder.Append(Render((IEnumerable)current.Value));
                     else
-                        builder.Append(Render(current.Value));
+                        builder.Append(RenderAny(current.Value));
                     fieldDelimiter = ", ";
                 }
             }
@@ -742,7 +775,7 @@ namespace com.espertech.esper.compat.collections
                 IEnumerator sourceEnum = source.GetEnumerator();
                 while (sourceEnum.MoveNext()) {
                     builder.Append(fieldDelimiter);
-                    builder.Append(Render(sourceEnum.Current));
+                    builder.Append(RenderAny(sourceEnum.Current));
                     fieldDelimiter = ", ";
                 }
 
@@ -791,7 +824,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="index">The index.</param>
         /// <returns></returns>
 
-        public static V Delete<V>(this IList<V> list, int index)
+        public static V DeleteAt<V>(this IList<V> list, int index)
         {
             V tempItem = list[index];
             list.RemoveAt(index);
@@ -888,100 +921,163 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public static T[] UnwrapIntoArray<T>(this object value)
+        public static bool CanUnwrap<T>(this object value)
+        {
+            if (value == null)
+                return true;
+            if (value is ICollection<T>)
+                return true;
+            if (value is IEnumerable<object>)
+                return true;
+            if (value is IEnumerable)
+                return true;
+            if (value is IEnumerator)
+                return true;
+
+            return false;
+        }
+
+        public static T[] UnwrapIntoArray<T>(this object value, bool includeNullValues = true)
         {
             if (value == null)
                 return null;
             if (value is T[])
                 return (T[]) value;
-            if (value is ICollection<T>)
-                return ((ICollection<T>) value).ToArray();
-            if (value is IEnumerable<object>)
-                return ((IEnumerable<object>)value).OfType<T>().ToArray();
-            if (value is IEnumerable)
-                return ((IEnumerable)value).Cast<object>().OfType<T>().ToArray();
 
-            throw new ArgumentException("invalid value");
+            return Unwrap<T>(value, includeNullValues).ToArray();
         }
 
-        public static ICollection<T> UnwrapWithNulls<T>(this object value)
+        public static IList<T> UnwrapIntoList<T>(this object value, bool includeNullValues = true)
+        {
+            if (value == null)
+                return null;
+            if (value is IList<T>)
+                return ((IList<T>) value);
+
+            return Unwrap<T>(value, includeNullValues).ToList();
+        }
+
+        public static ICollection<T> UnwrapSafe<T>(this object value, bool includeNullValues = false)
         {
             if (value == null)
                 return null;
             if (value is ICollection<T>)
                 return ((ICollection<T>)value);
-            if (value is IEnumerable<object>)
-                return ((IEnumerable<object>)value)
-                    .Where(o => o == null || o is T)
-                    .Cast<T>()
-                    .ToArray();
-            if (value is IEnumerable)
-                return ((IEnumerable)value)
-                    .Cast<object>()
-                    .Where(o => o == null || o is T)
-                    .Cast<T>()
-                    .ToArray();
 
-            throw new ArgumentException("invalid value");
+            return UnwrapEnumerable<T>(value, includeNullValues).ToArray();
         }
 
-
-        public static ICollection<T> Unwrap<T>(this object value)
+        public static ICollection<T> Unwrap<T>(this object value, bool includeNullValues = false)
         {
             if (value == null)
                 return null;
             if (value is ICollection<T>)
-                return ((ICollection<T>)value);
-            if (value is IEnumerable<object>)
-                return ((IEnumerable<object>) value)
-                    .OfType<T>()
-                    .ToArray();
-            if (value is IEnumerable)
-                return ((IEnumerable) value)
-                    .Cast<object>()
-                    .OfType<T>()
-                    .ToArray();
+                return ((ICollection<T>) value);
 
-            throw new ArgumentException("invalid value");
+            return UnwrapEnumerable<T>(value, includeNullValues).ToArray();
         }
 
-        public static IEnumerable<T> UnwrapEnumerable<T>(this object value)
+        public static IEnumerable<T> UnwrapEnumerable<T>(
+            this object value, 
+            bool includeNullValues = false)
         {
             if (value == null)
                 return null;
-            if (value is ICollection<T>)
-                return ((ICollection<T>)value);
+            if (value is IEnumerable<T>)
+                return ((IEnumerable<T>)value);
+
             if (value is IEnumerable<object>)
-                return ((IEnumerable<object>)value)
-                    .OfType<T>();
+            {
+                IEnumerable<object> expression = ((IEnumerable<object>)value);
+                if (includeNullValues)
+                {
+                    expression = expression.Where(o => o == null || o is T);
+                }
+                else
+                {
+                    expression = expression.Where(o => o != null && o is T);
+                }
+
+                return expression.Cast<T>();
+            }
+
             if (value is IEnumerable)
-                return ((IEnumerable) value)
-                    .Cast<object>()
-                    .OfType<T>();
+            {
+                IEnumerable<object> expression = ((IEnumerable)value).Cast<object>();
+                if (includeNullValues)
+                {
+                    expression = expression.Where(o => o == null || o is T);
+                }
+                else
+                {
+                    expression = expression.Where(o => o != null && o is T);
+                }
+
+                return expression.Cast<T>();
+            }
+
+            if (value is IEnumerator)
+            {
+                var result = new List<T>();
+                var enumerator = (IEnumerator)value;
+                while (enumerator.MoveNext())
+                {
+                    var current = enumerator.Current;
+                    if (includeNullValues)
+                    {
+                        if (current is T)
+                        {
+                            result.Add((T) current);
+                        }
+                    }
+                    else if ((current != null) && (current is T))
+                    {
+                        result.Add((T) current);
+                    }
+                }
+
+                return result;
+            }
 
             throw new ArgumentException("invalid value");
         }
 
         public static IDictionary<string, object> UnwrapDictionary(this object value)
         {
-            var valueDataMap = value as IDictionary<string, object>;
-            if (valueDataMap == null)
+            if (value == null)
+                return null;
+            if (value is IDictionary<string, object>)
+                return (IDictionary<string, object>) value;
+
+            var valueType = value.GetType();
+            if (valueType.IsGenericStringDictionary())
             {
-                var valueType = value.GetType();
-                if (valueType.IsGenericStringDictionary())
-                {
-                    valueDataMap = MagicMarker.GetStringDictionaryFactory(valueType).Invoke(value);
-                }
-                else
-                {
-                    throw new ArgumentException("unable to convert input to string dictionary");
-                }
+                return MagicMarker.GetStringDictionaryFactory(valueType).Invoke(value);
             }
 
-            return valueDataMap;
+            if (value is IEnumerable<KeyValuePair<string, object>>)
+            {
+                var valueDataMap = new Dictionary<string, object>();
+                foreach (var valueKeyValuePair in ((IEnumerable<KeyValuePair<string, object>>) value))
+                {
+                    valueDataMap[valueKeyValuePair.Key] = valueKeyValuePair.Value;
+                }
+
+                return valueDataMap;
+            }
+
+            if (value is KeyValuePair<string, object>)
+            {
+                var valueDataMap = new Dictionary<string, object>();
+                var valueKeyValuePair = (KeyValuePair<string, object>) value;
+                valueDataMap[valueKeyValuePair.Key] = valueKeyValuePair.Value;
+                return valueDataMap;
+            }
+
+            throw new ArgumentException("unable to convert input to string dictionary");
         }
 
-        public static string Render(this object value)
+        public static string RenderAny(this object value)
         {
             if (value == null)
             {
@@ -1091,7 +1187,7 @@ namespace com.espertech.esper.compat.collections
                 for (int ii = 0; ii < length; ii++)
                 {
                     builder.Append(fieldDelimiter);
-                    builder.Append(Render(array.GetValue(ii)));
+                    builder.Append(RenderAny(array.GetValue(ii)));
                     fieldDelimiter = itemSeparator;
                 }
             }

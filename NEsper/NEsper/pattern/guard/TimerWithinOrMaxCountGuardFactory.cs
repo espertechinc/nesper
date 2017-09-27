@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
@@ -23,16 +22,25 @@ namespace com.espertech.esper.pattern.guard
         : GuardFactory
         , MetaDefItem
     {
-        /// <summary>For converting matched-events maps to events-per-stream. </summary>
+        /// <summary>For converting matched-events maps to events-per-stream.</summary>
         [NonSerialized] private MatchedEventConvertor _convertor;
 
-        /// <summary>Number of milliseconds. </summary>
-        private ExprNode _millisecondsExpr;
-
-        /// <summary>Number of count-to max. </summary>
+        /// <summary>Number of count-to max.</summary>
         private ExprNode _numCountToExpr;
 
-        #region GuardFactory Members
+        /// <summary>Number of milliseconds.</summary>
+        private ExprNode _timeExpr;
+
+        public Guard MakeGuard(
+            PatternAgentInstanceContext context,
+            MatchedEventMap beginState,
+            Quitable quitable,
+            EvalStateNodeNumber stateNodeId,
+            Object guardState)
+        {
+            return new TimerWithinOrMaxCountGuard(
+                ComputeTime(beginState, context), ComputeNumCountTo(beginState, context), quitable);
+        }
 
         public void SetGuardParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor)
         {
@@ -49,50 +57,39 @@ namespace com.espertech.esper.pattern.guard
                 throw new GuardParameterException(message);
             }
 
-            if (parameters[1].ExprEvaluator.ReturnType.GetBoxedType() != typeof (int?))
+            if (parameters[1].ExprEvaluator.ReturnType != typeof (int?))
             {
                 throw new GuardParameterException(message);
             }
 
-            _millisecondsExpr = parameters[0];
+            _timeExpr = parameters[0];
             _numCountToExpr = parameters[1];
             _convertor = convertor;
         }
 
-        public Guard MakeGuard(PatternAgentInstanceContext context,
-                               MatchedEventMap beginState,
-                               Quitable quitable,
-                               EvalStateNodeNumber stateNodeId,
-                               Object guardState)
+        public long ComputeTime(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
-            return new TimerWithinOrMaxCountGuard(
-                ComputeMilliseconds(beginState, context), ComputeNumCountTo(beginState, context), quitable);
-        }
-
-        #endregion
-
-        public long ComputeMilliseconds(MatchedEventMap beginState, PatternAgentInstanceContext context)
-        {
-            if (_millisecondsExpr is ExprTimePeriod)
+            if (_timeExpr is ExprTimePeriod)
             {
-                var timePeriod = (ExprTimePeriod)_millisecondsExpr;
-                return timePeriod.NonconstEvaluator().DeltaMillisecondsUseEngineTime(
-                    _convertor.Convert(beginState), context.AgentInstanceContext);
+                var timePeriod = (ExprTimePeriod) _timeExpr;
+                return timePeriod.NonconstEvaluator()
+                    .DeltaUseEngineTime(_convertor.Convert(beginState), context.AgentInstanceContext);
             }
             else
             {
-                var millisecondVal = PatternExpressionUtil.Evaluate(
-                    "Timer-Within-Or-Max-Count guard", beginState, _millisecondsExpr, _convertor, context.AgentInstanceContext);
-                if (null == millisecondVal) {
+                Object time = PatternExpressionUtil.Evaluate(
+                    "Timer-Within-Or-Max-Count guard", beginState, _timeExpr, _convertor, context.AgentInstanceContext);
+                if (null == time)
+                {
                     throw new EPException("Timer-within-or-max first parameter evaluated to a null-value");
                 }
-                return (long) Math.Round(1000d * millisecondVal.AsDouble());
+                return context.StatementContext.TimeAbacus.DeltaForSecondsNumber(time);
             }
         }
 
         public int ComputeNumCountTo(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
-            object numCountToVal = PatternExpressionUtil.Evaluate(
+            Object numCountToVal = PatternExpressionUtil.Evaluate(
                 "Timer-Within-Or-Max-Count guard", beginState, _numCountToExpr, _convertor, context.AgentInstanceContext);
             if (null == numCountToVal)
             {
@@ -101,4 +98,4 @@ namespace com.espertech.esper.pattern.guard
             return numCountToVal.AsInt();
         }
     }
-}
+} // end of namespace

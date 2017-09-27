@@ -54,12 +54,12 @@ namespace com.espertech.esper.core.service
             _spi.VisitSchedules(visitor);
         }
     
-        public void Add(long afterMSec, ScheduleHandle handle, long slot)
+        public void Add(long afterTime, ScheduleHandle handle, long slot)
         {
             if (AuditPath.IsInfoEnabled) {
                 StringWriter message = new StringWriter();
                 message.Write("after ");
-                message.Write(afterMSec);
+                message.Write(afterTime);
                 message.Write(" handle ");
                 PrintHandle(message, handle);
     
@@ -67,7 +67,7 @@ namespace com.espertech.esper.core.service
     
                 ModifyCreateProxy(handle);
             }
-            _spi.Add(afterMSec, handle, slot);
+            _spi.Add(afterTime, handle, slot);
         }
 
         public void Remove(ScheduleHandle handle, long scheduleSlot)
@@ -118,7 +118,7 @@ namespace com.espertech.esper.core.service
             // no action required
         }
 
-        private void PrintHandle(StringWriter message, ScheduleHandle handle)
+        private void PrintHandle(TextWriter message, ScheduleHandle handle)
         {
             if (handle is EPStatementHandleCallback)
             {
@@ -137,7 +137,7 @@ namespace com.espertech.esper.core.service
                 return;
             }
             var callback = (EPStatementHandleCallback) handle;
-            var sc = (ScheduleHandleCallback) ScheduleHandleCallbackProxy.NewInstance(_engineUri, _statementName, callback.ScheduleCallback);
+            var sc = ScheduleHandleCallbackProxy.NewInstance(_engineUri, _statementName, callback.ScheduleCallback);
             callback.ScheduleCallback = sc;
         }
     }

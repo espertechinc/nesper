@@ -12,7 +12,7 @@ namespace com.espertech.esper.client.hook
 {
     /// <summary>
     /// Implement this interface when providing a callback for SQL row result processing for a statement,
-    /// converting each row's values into a POCO.
+    /// converting each row's values into a PONO.
     /// <para/>
     /// Rows can also be skipped via this callback, determined by the implementation returning a null value 
     /// for a row.
@@ -22,14 +22,14 @@ namespace com.espertech.esper.client.hook
     /// </summary>
     public interface SQLOutputRowConversion
     {
-        /// <summary>Return the POCO class that represents a row of the SQL query result. </summary>
+        /// <summary>Return the PONO class that represents a row of the SQL query result. </summary>
         /// <param name="context">receives the context information such as database name, query fired and types returned by query</param>
         /// <returns>class that represents a result row</returns>
         Type GetOutputRowType(SQLOutputRowTypeContext context);
     
-        /// <summary>Returns the POCO object that represents a row of the SQL query result, or null to indicate to skip this row. </summary>
+        /// <summary>Returns the PONO object that represents a row of the SQL query result, or null to indicate to skip this row. </summary>
         /// <param name="context">receives row result information</param>
-        /// <returns>POCO or null value to skip the row</returns>
+        /// <returns>PONO or null value to skip the row</returns>
         Object GetOutputRow(SQLOutputRowValueContext context);
     }
 }

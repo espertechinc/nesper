@@ -24,11 +24,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return _enumeration.EvaluateGetROCollectionEvents(
-                evaluateParams.EventsPerStream, 
-                evaluateParams.IsNewData, 
-                evaluateParams.ExprEvaluatorContext
-            );
+            return _enumeration.EvaluateGetROCollectionEvents(evaluateParams);
         }
 
         public Type ReturnType

@@ -76,7 +76,7 @@ namespace com.espertech.esper.view.window
                     i => i.AViewScheduledEval(),
                     Expire)
             };
-            
+
             _handle = new EPStatementHandleCallback(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
 
             if (agentInstanceContext.StatementContext.ScheduleAdjustmentService != null)
@@ -131,7 +131,7 @@ namespace com.espertech.esper.view.window
                         if (_timeWindow.IsEmpty())
                         {
                             long current = _agentInstanceContext.StatementContext.SchedulingService.Time;
-                            ScheduleCallback(_timeDeltaComputation.DeltaMillisecondsAdd(current));
+                            ScheduleCallback(_timeDeltaComputation.DeltaAdd(current));
                         }
 
                         // add data points to the timeWindow
@@ -164,7 +164,7 @@ namespace com.espertech.esper.view.window
         public void Expire()
         {
             long current = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            long expireBeforeTimestamp = current - _timeDeltaComputation.DeltaMillisecondsSubtract(current) + 1;
+            long expireBeforeTimestamp = current - _timeDeltaComputation.DeltaSubtract(current) + 1;
 
             // Remove from the timeWindow any events that have an older or timestamp then the given timestamp
             // The window : from X to (X - timeDeltaComputation + 1)
@@ -200,8 +200,8 @@ namespace com.espertech.esper.view.window
             }
             var oldestTimestamp = _timeWindow.OldestTimestamp;
             var currentTimestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            var scheduleMillisec = _timeDeltaComputation.DeltaMillisecondsAdd(oldestTimestamp.Value) + oldestTimestamp - currentTimestamp;
-            ScheduleCallback(scheduleMillisec.Value);
+            var scheduleTime = _timeDeltaComputation.DeltaAdd(oldestTimestamp.Value) + oldestTimestamp - currentTimestamp;
+            ScheduleCallback(scheduleTime.Value);
         }
 
         public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
@@ -209,9 +209,9 @@ namespace com.espertech.esper.view.window
             get { return _timeDeltaComputation; }
         }
 
-        private void ScheduleCallback(long msecAfterCurrentTime)
+        private void ScheduleCallback(long timeAfterCurrentTime)
         {
-            _agentInstanceContext.StatementContext.SchedulingService.Add(msecAfterCurrentTime, _handle, _scheduleSlot);
+            _agentInstanceContext.StatementContext.SchedulingService.Add(timeAfterCurrentTime, _handle, _scheduleSlot);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

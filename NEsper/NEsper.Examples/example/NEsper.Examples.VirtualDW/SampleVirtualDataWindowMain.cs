@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat.logging;
 
 namespace NEsper.Examples.VirtualDW
@@ -35,7 +36,7 @@ namespace NEsper.Examples.VirtualDW
             Log.Info("Setting up engine instance.");
     
             Configuration config = new Configuration();
-            config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = EventRepresentation.MAP; // use Map-type events for testing
+            config.EngineDefaults.EventMeta.DefaultEventRepresentation = EventUnderlyingType.MAP; // use Map-type events for testing
             config.AddPlugInVirtualDataWindow("sample", "samplevdw", typeof(SampleVirtualDataWindowFactory).FullName);
             config.AddEventTypeAutoName(typeof(SampleVirtualDataWindowMain).Namespace);    // import all event classes
     
@@ -86,7 +87,7 @@ namespace NEsper.Examples.VirtualDW
     
         private void RunJoinSample(EPServiceProvider epService) {
             String epl = "select sw.* " +
-                    "from SampleJoinEvent.std:lastevent() sje, MySampleWindow sw " +
+                    "from SampleJoinEvent#lastevent() sje, MySampleWindow sw " +
                     "where sw.key1 = sje.propOne and sw.key2 = sje.propTwo";
             EPStatement stmt = epService.EPAdministrator.CreateEPL(epl);
             SampleUpdateListener sampleListener = new SampleUpdateListener();

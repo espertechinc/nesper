@@ -30,7 +30,8 @@ namespace com.espertech.esper.epl.expression.core
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly CronOperatorEnum _cronOperator;
-        [NonSerialized] private ExprEvaluator _evaluator;
+        [NonSerialized]
+        private ExprEvaluator _evaluator;
 
         /// <summary>Ctor. </summary>
         /// <param name="cronOperator">type of cron parameter</param>
@@ -55,7 +56,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             get
             {
-                if (ChildNodes.Length == 0)
+                if (ChildNodes.Count == 0)
                 {
                     return true;
                 }
@@ -65,12 +66,12 @@ namespace com.espertech.esper.epl.expression.core
 
         public Type ReturnType
         {
-            get { return typeof (CronParameter); }
+            get { return typeof(CronParameter); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 return new CronParameter(_cronOperator, null);
             }
@@ -89,7 +90,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (ChildNodes.Length != 0)
+            if (ChildNodes.Count != 0)
             {
                 ChildNodes[0].ToEPL(writer, Precedence);
                 writer.Write(" ");
@@ -108,13 +109,13 @@ namespace com.espertech.esper.epl.expression.core
             {
                 return false;
             }
-            var other = (ExprNumberSetCronParam) node;
+            var other = (ExprNumberSetCronParam)node;
             return other._cronOperator.Equals(_cronOperator);
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 return null;
             }

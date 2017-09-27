@@ -15,58 +15,69 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.pattern
 {
-    /// <summary>
-    /// Utility for evaluating pattern expressions.
-    /// </summary>
+    /// <summary>Utility for evaluating pattern expressions.</summary>
     public class PatternExpressionUtil
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        public static Object GetKeys(MatchedEventMap matchEvent, MatchedEventConvertor convertor, ExprEvaluator[] expressions, AgentInstanceContext agentInstanceContext)
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static Object GetKeys(
+            MatchedEventMap matchEvent,
+            MatchedEventConvertor convertor,
+            ExprEvaluator[] expressions,
+            AgentInstanceContext agentInstanceContext)
         {
             var eventsPerStream = convertor.Convert(matchEvent);
-            if (expressions.Length == 1) {
-                return expressions[0].Evaluate(new EvaluateParams(eventsPerStream, true, agentInstanceContext));
-            }
-    
-            var keys = new Object[expressions.Length];
-            for (var i = 0; i < keys.Length; i++)
+            var evaluateParams = new EvaluateParams(eventsPerStream, true, agentInstanceContext);
+            if (expressions.Length == 1)
             {
-                keys[i] = expressions[i].Evaluate(new EvaluateParams(eventsPerStream, true, agentInstanceContext));
+                return expressions[0].Evaluate(evaluateParams);
+            }
+
+            var keys = new Object[expressions.Length];
+            for (int i = 0; i < keys.Length; i++)
+            {
+                keys[i] = expressions[i].Evaluate(evaluateParams);
             }
             return new MultiKeyUntyped(keys);
         }
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="objectName">is the pattern object name</param>
         /// <param name="beginState">the pattern begin state</param>
         /// <param name="parameters">object parameters</param>
         /// <param name="convertor">for converting to a event-per-stream view for use to evaluate expressions</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
+        /// <exception cref="EPException">if the evaluate failed</exception>
         /// <returns>expression results</returns>
-        /// <throws>EPException if the evaluate failed</throws>
-        public static IList<Object> Evaluate(String objectName, MatchedEventMap beginState, IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprEvaluatorContext exprEvaluatorContext)
+        public static IList<Object> Evaluate(
+            string objectName,
+            MatchedEventMap beginState,
+            IList<ExprNode> parameters,
+            MatchedEventConvertor convertor,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            IList<Object> results = new List<Object>();
-            var count = 0;
-            var eventsPerStream = convertor.Convert(beginState);
-            foreach (var expr in parameters)
+            var results = new List<Object>();
+            int count = 0;
+            EventBean[] eventsPerStream = convertor.Convert(beginState);
+            foreach (ExprNode expr in parameters)
             {
                 try
                 {
-                    var result = Evaluate(objectName, expr, eventsPerStream, exprEvaluatorContext);
+                    Object result = Evaluate(objectName, expr, eventsPerStream, exprEvaluatorContext);
                     results.Add(result);
                     count++;
                 }
                 catch (Exception ex)
                 {
-                    var message = objectName + " invalid parameter in expression " + count;
-                    if (ex.Message != null)
+                    string message = objectName + " invalid parameter in expression " + count;
+                    if (!string.IsNullOrEmpty(ex.Message))
                     {
                         message += ": " + ex.Message;
                     }
@@ -82,47 +93,61 @@ namespace com.espertech.esper.pattern
         /// </summary>
         /// <param name="objectName">pattern object name</param>
         /// <param name="beginState">pattern state</param>
-        /// <param name="timePeriod">The time period.</param>
         /// <param name="convertor">to converting from pattern match to event-per-stream</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
-        /// <returns>
-        /// evaluation result
-        /// </returns>
-        /// <throws>EPException if the evaluation failed</throws>
-        public static Object EvaluateTimePeriod(String objectName, MatchedEventMap beginState, ExprTimePeriod timePeriod, MatchedEventConvertor convertor, ExprEvaluatorContext exprEvaluatorContext)
+        /// <param name="timePeriod">time period</param>
+        /// <exception cref="EPException">if the evaluation failed</exception>
+        /// <returns>evaluation result</returns>
+        public static Object EvaluateTimePeriod(
+            string objectName,
+            MatchedEventMap beginState,
+            ExprTimePeriod timePeriod,
+            MatchedEventConvertor convertor,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean[] eventsPerStream = convertor.Convert(beginState);
-            try {
+            try
+            {
                 return timePeriod.EvaluateGetTimePeriod(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
             }
             catch (Exception ex)
             {
-                throw HandleRuntimeException(ex, objectName);
-            }
-        }
-        
-        public static Object Evaluate(String objectName, MatchedEventMap beginState, ExprNode parameter, MatchedEventConvertor convertor, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            var eventsPerStream = convertor.Convert(beginState);
-            return Evaluate(objectName, parameter, eventsPerStream, exprEvaluatorContext);
-        }
-    
-        private static Object Evaluate(String objectName, ExprNode expression, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            try
-            {
-                return expression.ExprEvaluator.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
-            }
-            catch (Exception ex)
-            {
-                throw HandleRuntimeException(ex, objectName);
+                throw HandleRuntimeEx(ex, objectName);
             }
         }
 
-        private static EPException HandleRuntimeException(Exception ex, string objectName)
+        public static Object Evaluate(
+            string objectName,
+            MatchedEventMap beginState,
+            ExprNode parameter,
+            MatchedEventConvertor convertor,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            var message = objectName + " failed to evaluate expression";
-            if (ex.Message != null)
+            EventBean[] eventsPerStream = convertor.Convert(beginState);
+            return Evaluate(objectName, parameter, eventsPerStream, exprEvaluatorContext);
+        }
+
+        private static Object Evaluate(
+            string objectName,
+            ExprNode expression,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            try
+            {
+                return expression.ExprEvaluator.Evaluate(
+                    new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+            }
+            catch (Exception ex)
+            {
+                throw HandleRuntimeEx(ex, objectName);
+            }
+        }
+
+        private static EPException HandleRuntimeEx(Exception ex, string objectName)
+        {
+            string message = objectName + " failed to evaluate expression";
+            if (!string.IsNullOrEmpty(ex.Message))
             {
                 message += ": " + ex.Message;
             }
@@ -130,10 +155,14 @@ namespace com.espertech.esper.pattern
             throw new EPException(message);
         }
 
-        public static void ToPrecedenceFreeEPL(TextWriter writer, String delimiterText, IList<EvalFactoryNode> childNodes, PatternExpressionPrecedenceEnum precedence)
+        public static void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            string delimiterText,
+            IList<EvalFactoryNode> childNodes,
+            PatternExpressionPrecedenceEnum precedence)
         {
-            var delimiter = "";
-            foreach (var child in childNodes)
+            string delimiter = "";
+            foreach (EvalFactoryNode child in childNodes)
             {
                 writer.Write(delimiter);
                 child.ToEPL(writer, precedence);
@@ -141,4 +170,4 @@ namespace com.espertech.esper.pattern
             }
         }
     }
-}
+} // end of namespace

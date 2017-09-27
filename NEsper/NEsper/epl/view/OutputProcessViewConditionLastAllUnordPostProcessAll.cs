@@ -17,18 +17,26 @@ namespace com.espertech.esper.epl.view
 	{
 	    private readonly OutputStrategyPostProcess _postProcessor;
 
-        public OutputProcessViewConditionLastAllUnordPostProcessAll(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
+	    public OutputProcessViewConditionLastAllUnordPostProcessAll(
+	        ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+	        ResultSetProcessor resultSetProcessor,
+	        long? afterConditionTime,
+	        int? afterConditionNumberOfEvents,
+	        bool afterConditionSatisfied,
+	        OutputProcessViewConditionFactory parent,
+	        AgentInstanceContext agentInstanceContext,
+	        OutputStrategyPostProcess postProcessor)
             : base(resultSetProcessorHelperFactory, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
         {
 	        _postProcessor = postProcessor;
 	    }
 
-	    internal override void Output(bool forceUpdate, UniformPair<EventBean[]> results)
+	    protected override void Output(bool forceUpdate, UniformPair<EventBean[]> results)
 	    {
 	        // Child view can be null in replay from named window
-	        if (base.ChildView != null)
+	        if (ChildView != null)
 	        {
-	            _postProcessor.Output(forceUpdate, results, base.ChildView);
+	            _postProcessor.Output(forceUpdate, results, ChildView);
 	        }
 	    }
 	}

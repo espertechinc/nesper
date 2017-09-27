@@ -76,7 +76,7 @@ namespace com.espertech.esper.events.xml
 
         protected override Type DoResolvePropertyType(String propertyExpression)
         {
-            EsperEPL2GrammarParser.StartEventPropertyRuleContext ast = PropertyParser.Parse(propertyExpression);
+            var ast = PropertyParser.Parse(propertyExpression);
             return PropertyParser.IsPropertyDynamic(ast)
                 ? typeof(XNode)
                 : typeof(string);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.events.xml
 
             if (!ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr)
             {
-                Property prop = PropertyParser.ParseAndWalk(propertyExpression);
+                var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                 getter = prop.GetGetterDOM();
                 if (!prop.IsDynamic)
                 {

@@ -49,8 +49,7 @@ namespace com.espertech.esper.epl.expression.prev
 
         #region ExprPreviousEvalStrategy Members
 
-        public Object Evaluate(EventBean[] eventsPerStream,
-                               ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean substituteEvent = GetSubstitute(eventsPerStream, exprEvaluatorContext);
             if (substituteEvent == null)

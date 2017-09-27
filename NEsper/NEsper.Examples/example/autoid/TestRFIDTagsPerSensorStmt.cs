@@ -15,7 +15,6 @@ using System.Xml;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
-using com.espertech.esper.support.util;
 using com.espertech.esper.events;
 
 using NUnit.Framework;

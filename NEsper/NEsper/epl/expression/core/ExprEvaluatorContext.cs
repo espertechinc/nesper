@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.expression.core
 
         EventBean ContextProperties { get; }
 
-        AgentInstanceScriptContext AgentInstanceScriptContext { get; }
+        AgentInstanceScriptContext AllocateAgentInstanceScriptContext { get; }
 
         IReaderWriterLock AgentInstanceLock { get; }
 
@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.expression.core
 
     public class ProxyExprEvaluatorContext : ExprEvaluatorContext
     {
-        public Func<object> ProcStatementUserObject { get; set; } 
+        public Func<object> ProcStatementUserObject { get; set; }
         public Func<TimeProvider> ProcTimeProvider { get; set; }
         public Func<ExpressionResultCacheService> ProcExpressionResultCacheService { get; set; }
         public Func<int> ProcAgentInstanceId { get; set; }
@@ -58,7 +58,7 @@ namespace com.espertech.esper.epl.expression.core
         public Func<string> ProcEngineURI { get; set; }
         public Func<int> ProcStatementId { get; set; }
         public Func<StatementType?> ProcStatementType { get; set; }
-        public Func<AgentInstanceScriptContext> ProcAgentInstanceScriptContext { get; set; }
+        public Func<AgentInstanceScriptContext> ProcAllocateAgentInstanceScriptContext { get; set; }
         public Func<IReaderWriterLock> ProcAgentInstanceLock { get; set; }
         public Func<TableExprEvaluatorContext> ProcTableExprEvaluatorContext { get; set; }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.expression.core
             ProcEngineURI = () => null;
             ProcStatementId = () => -1;
             ProcStatementType = () => null;
-            ProcAgentInstanceScriptContext = () => null;
+            ProcAllocateAgentInstanceScriptContext = () => null;
             ProcAgentInstanceLock = () => null;
             ProcTableExprEvaluatorContext = () => null;
         }
@@ -122,9 +122,9 @@ namespace com.espertech.esper.epl.expression.core
             get { return ProcStatementType(); }
         }
 
-        public AgentInstanceScriptContext AgentInstanceScriptContext
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
-            get { return ProcAgentInstanceScriptContext(); }
+            get { return ProcAllocateAgentInstanceScriptContext(); }
         }
 
         public IReaderWriterLock AgentInstanceLock

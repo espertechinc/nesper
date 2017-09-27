@@ -18,86 +18,85 @@ using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
-	public class PropertyExprEvaluatorScalarCollection
+    public class PropertyExprEvaluatorScalarCollection
         : ExprEvaluatorEnumeration
         , ExprEvaluatorEnumerationGivenEvent
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-	    private readonly string _propertyName;
-	    private readonly int _streamId;
-	    private readonly EventPropertyGetter _getter;
-	    private readonly Type _componentType;
+        private readonly string _propertyName;
+        private readonly int _streamId;
+        private readonly EventPropertyGetter _getter;
+        private readonly Type _componentType;
 
-	    public PropertyExprEvaluatorScalarCollection(string propertyName, int streamId, EventPropertyGetter getter, Type componentType)
+        public PropertyExprEvaluatorScalarCollection(string propertyName, int streamId, EventPropertyGetter getter, Type componentType)
         {
-	        _propertyName = propertyName;
-	        _streamId = streamId;
-	        _getter = getter;
-	        _componentType = componentType;
-	    }
-
-	    public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-	        return null;
-	    }
-
-	    public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-	        return EvaluateInternal<object>(eventsPerStream[_streamId]);
-	    }
-
-	    public ICollection<EventBean> EvaluateEventGetROCollectionEvents(EventBean @event, ExprEvaluatorContext context)
-        {
-	        return EvaluateInternal<EventBean>(@event);
-	    }
-
-	    private ICollection<T> EvaluateInternal<T>(EventBean @event)
-        {
-	        var result = _getter.Get(@event);
-	        if (result == null)
-            {
-	            return null;
-	        }
-
-	        var resultAsCollection = result as ICollection<object>;
-            if (resultAsCollection == null)
-            {
-	            Log.Warn("Expected collection-type input from property '" + _propertyName + "' but received " + result.GetType());
-	            return null;
-	        }
-
-	        return resultAsCollection.Unwrap<T>();
+            _propertyName = propertyName;
+            _streamId = streamId;
+            _getter = getter;
+            _componentType = componentType;
         }
 
-	    public Type ComponentTypeCollection
-	    {
-	        get { return _componentType; }
-	    }
-
-	    public ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-	        return null;
-	    }
+            return null;
+        }
 
-	    public EventBean EvaluateEventGetEventBean(EventBean @event, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-	        return null;
-	    }
+            return EvaluateInternal<object>(evaluateParams.EventsPerStream[_streamId]);
+        }
 
-	    public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
+        public ICollection<EventBean> EvaluateEventGetROCollectionEvents(EventBean @event, ExprEvaluatorContext context)
         {
-	        return null;
-	    }
+            return EvaluateInternal<EventBean>(@event);
+        }
 
-	    public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        private ICollection<T> EvaluateInternal<T>(EventBean @event)
         {
-	        return null;
-	    }
+            var result = _getter.Get(@event);
+            if (result == null)
+            {
+                return null;
+            }
 
-	    public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+            if (!result.GetType().IsGenericCollection())
+            {
+                Log.Warn("Expected collection-type input from property '" + _propertyName + "' but received " + result.GetType());
+                return null;
+            }
+
+            return result.Unwrap<T>();
+        }
+
+        public Type ComponentTypeCollection
         {
-	        return null;
-	    }
-	}
+            get { return _componentType; }
+        }
+
+        public ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context)
+        {
+            return null;
+        }
+
+        public EventBean EvaluateEventGetEventBean(EventBean @event, ExprEvaluatorContext context)
+        {
+            return null;
+        }
+
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
+        {
+            return null;
+        }
+
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
+            return null;
+        }
+
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
+        {
+            return null;
+        }
+    }
 } // end of namespace

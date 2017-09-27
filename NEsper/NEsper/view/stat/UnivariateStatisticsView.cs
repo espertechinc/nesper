@@ -25,7 +25,7 @@ namespace com.espertech.esper.view.stat
     /// View for computing statistics, which the view exposes via fields representing the sum, 
     /// count, standard deviation for sample and for population and variance.
     /// </summary>
-    public class UnivariateStatisticsView 
+    public class UnivariateStatisticsView
         : ViewSupport
         , CloneableView
         , DerivedValueView
@@ -34,7 +34,7 @@ namespace com.espertech.esper.view.stat
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly ExprEvaluator _fieldExpressionEvaluator;
         private readonly BaseStatisticsBean _baseStatisticsBean = new BaseStatisticsBean();
-    
+
         private EventBean _lastNewEvent;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
         private Object[] _lastValuesEventNew;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.view.stat
             this._agentInstanceContext = agentInstanceContext;
             this._fieldExpressionEvaluator = viewFactory.FieldExpression.ExprEvaluator;
         }
-    
+
         public View CloneView()
         {
             return _viewFactory.MakeView(_agentInstanceContext);
@@ -65,8 +65,8 @@ namespace com.espertech.esper.view.stat
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, UnivariateStatisticsViewFactory.NAME, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, UnivariateStatisticsViewFactory.NAME, newData, oldData); }
+
             // If we have child views, keep a reference to the old values, so we can Update them as old data event.
             EventBean oldDataMap = null;
             if (_lastNewEvent == null)
@@ -86,7 +86,8 @@ namespace com.espertech.esper.view.stat
                 {
                     _eventsPerStream[0] = newData[i];
                     var pointnum = _fieldExpressionEvaluator.Evaluate(evaluateParams);
-                    if (pointnum != null) {
+                    if (pointnum != null)
+                    {
                         double point = pointnum.AsDouble();
                         _baseStatisticsBean.AddPoint(point, 0);
                     }
@@ -104,7 +105,7 @@ namespace com.espertech.esper.view.stat
                     }
                 }
             }
-    
+
             // remove data points from the bean
             if (oldData != null)
             {
@@ -112,36 +113,39 @@ namespace com.espertech.esper.view.stat
                 {
                     _eventsPerStream[0] = oldData[i];
                     var pointnum = _fieldExpressionEvaluator.Evaluate(evaluateParams);
-                    if (pointnum != null) {
+                    if (pointnum != null)
+                    {
                         double point = pointnum.AsDouble();
                         _baseStatisticsBean.RemovePoint(point, 0);
                     }
                 }
             }
-    
+
             // If there are child view, call Update method
             if (HasViews)
             {
                 EventBean newDataMap = PopulateMap(_baseStatisticsBean, _agentInstanceContext.StatementContext.EventAdapterService, _viewFactory.EventType, _viewFactory.AdditionalProps, _lastValuesEventNew);
-    
+
                 EventBean[] oldEvents;
-                EventBean[] newEvents = new EventBean[] {newDataMap};
-                if (_lastNewEvent == null) {
-                    oldEvents = new EventBean[] {oldDataMap};
+                EventBean[] newEvents = new EventBean[] { newDataMap };
+                if (_lastNewEvent == null)
+                {
+                    oldEvents = new EventBean[] { oldDataMap };
                 }
-                else {
-                    oldEvents = new EventBean[] {_lastNewEvent};
+                else
+                {
+                    oldEvents = new EventBean[] { _lastNewEvent };
                 }
 
                 Instrument.With(
                     i => i.QViewIndicate(this, UnivariateStatisticsViewFactory.NAME, newEvents, oldEvents),
                     i => i.AViewIndicate(),
                     () => UpdateChildren(newEvents, oldEvents));
-    
+
                 _lastNewEvent = newDataMap;
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
 
         public override EventType EventType
@@ -157,12 +161,12 @@ namespace com.espertech.esper.view.stat
                 _viewFactory.EventType,
                 _viewFactory.AdditionalProps, _lastValuesEventNew);
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName + " fieldExpression=" + _viewFactory.FieldExpression;
         }
-    
+
         public static EventBean PopulateMap(BaseStatisticsBean baseStatisticsBean,
                                       EventAdapterService eventAdapterService,
                                       EventType eventType,
@@ -176,7 +180,8 @@ namespace com.espertech.esper.view.stat
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.GetName(), baseStatisticsBean.XStandardDeviationPop);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.GetName(), baseStatisticsBean.XVariance);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.GetName(), baseStatisticsBean.XAverage);
-            if (additionalProps != null) {
+            if (additionalProps != null)
+            {
                 additionalProps.AddProperties(result, lastNewValues);
             }
             return eventAdapterService.AdapterForTypedMap(result, eventType);

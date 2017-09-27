@@ -229,9 +229,9 @@ namespace com.espertech.esper.events.vaevent
             return null;
         }
 
-        public EventBeanReader GetReader()
+        public EventBeanReader Reader
         {
-            return null;
+            get { return null; }
         }
 
         public EventPropertyGetterMapped GetGetterMapped(String mappedProperty) 

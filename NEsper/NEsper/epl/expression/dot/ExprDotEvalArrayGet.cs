@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.rettype;
 
@@ -17,36 +18,37 @@ namespace com.espertech.esper.epl.expression.dot
 {
     public class ExprDotEvalArrayGet : ExprDotEval
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly EPType _typeInfo;
         private readonly ExprEvaluator _indexExpression;
-    
+
         public ExprDotEvalArrayGet(ExprEvaluator index, Type componentType)
         {
             _indexExpression = index;
             _typeInfo = EPTypeHelper.SingleValue(componentType);
         }
-    
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
                 return null;
             }
-    
-            var index = _indexExpression.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+
+            var index = _indexExpression.Evaluate(evalParams);
             if (index == null)
             {
                 return null;
             }
-
             if (!index.IsInt())
             {
                 return null;
             }
 
-            var targetArray = target as Array;
-            var indexNum = (int) index;
-    
+            var indexNum = index.AsInt();
+            var targetArray = (Array) target;
             if (targetArray.Length <= indexNum)
             {
                 return null;
@@ -64,4 +66,4 @@ namespace com.espertech.esper.epl.expression.dot
             visitor.VisitArraySingleItemSource();
         }
     }
-}
+} // end of namespace

@@ -12,8 +12,6 @@ using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.util;
-
 
 namespace com.espertech.esper.example.marketdatafeed
 {

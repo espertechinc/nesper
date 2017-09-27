@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
@@ -17,7 +16,7 @@ namespace com.espertech.esper.epl.expression.subquery
 {
     public class ExprSubselectRowNodeUtility
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public static EventBean EvaluateFilterExpectSingleMatch(
             EventBean[] eventsZeroSubselect,
@@ -26,18 +25,20 @@ namespace com.espertech.esper.epl.expression.subquery
             ExprEvaluatorContext exprEvaluatorContext,
             ExprSubselectRowNode parent)
         {
+            var evaluateParams = new EvaluateParams(eventsZeroSubselect, newData, exprEvaluatorContext);
+
             EventBean subSelectResult = null;
             foreach (EventBean subselectEvent in matchingEvents)
             {
                 // Prepare filter expression event list
                 eventsZeroSubselect[0] = subselectEvent;
 
-                var pass = parent.FilterExpr.Evaluate(new EvaluateParams(eventsZeroSubselect, newData, exprEvaluatorContext));
-                if ((pass != null) && (true.Equals(pass)))
+                var pass = parent.FilterExpr.Evaluate(evaluateParams);
+                if ((pass != null) && true.Equals(pass))
                 {
                     if (subSelectResult != null)
                     {
-                        Log.Warn(parent.MultirowMessage);
+                        Log.Warn(parent.GetMultirowMessage());
                         return null;
                     }
                     subSelectResult = subselectEvent;
@@ -47,4 +48,4 @@ namespace com.espertech.esper.epl.expression.subquery
             return subSelectResult;
         }
     }
-}
+} // end of namespace

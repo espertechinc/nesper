@@ -23,32 +23,32 @@ namespace com.espertech.esper.view.std
     public class UniqueByPropertyViewFactory : DataWindowViewFactoryUniqueCandidate, DataWindowViewFactory
     {
         public readonly static String NAME = "Unique-By";
-    
+
         /// <summary>View parameters. </summary>
         private IList<ExprNode> _viewParameters;
-    
+
         /// <summary>Property name to evaluate unique values. </summary>
         private ExprNode[] _criteriaExpressions;
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             _criteriaExpressions = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, false);
-    
+
             if (_criteriaExpressions.Length == 0)
             {
                 String errorMessage = ViewName + " view requires a one or more expressions providing unique values as parameters";
                 throw new ViewParameterException(errorMessage);
             }
-    
+
             _eventType = parentEventType;
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new UniqueByPropertyView(this, agentInstanceViewFactoryContext);
@@ -59,19 +59,19 @@ namespace com.espertech.esper.view.std
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is UniqueByPropertyView))
             {
                 return false;
             }
-    
-            UniqueByPropertyView myView = (UniqueByPropertyView) view;
+
+            UniqueByPropertyView myView = (UniqueByPropertyView)view;
             if (!ExprNodeUtility.DeepEquals(_criteriaExpressions, myView.CriteriaExpressions))
             {
                 return false;
             }
-    
+
             return myView.IsEmpty();
         }
 

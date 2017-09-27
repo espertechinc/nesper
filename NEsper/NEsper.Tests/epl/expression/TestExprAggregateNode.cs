@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 

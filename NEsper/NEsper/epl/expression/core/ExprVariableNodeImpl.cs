@@ -36,9 +36,12 @@ namespace com.espertech.esper.epl.expression.core
 
         private Type _variableType;
         private bool _isPrimitive;
-        [NonSerialized] private EventPropertyGetter _eventTypeGetter;
-        [NonSerialized] private IDictionary<int, VariableReader> _readersPerCp;
-        [NonSerialized] private VariableReader _readerNonCP;
+        [NonSerialized]
+        private EventPropertyGetter _eventTypeGetter;
+        [NonSerialized]
+        private IDictionary<int, VariableReader> _readersPerCp;
+        [NonSerialized]
+        private VariableReader _readerNonCP;
 
         /// <summary>
         /// Ctor.
@@ -94,10 +97,10 @@ namespace com.espertech.esper.epl.expression.core
             {
                 if (types[i] is EventTypeSPI)
                 {
-                    hasPropertyAgnosticType |= ((EventTypeSPI) types[i]).Metadata.IsPropertyAgnostic;
+                    hasPropertyAgnosticType |= ((EventTypeSPI)types[i]).Metadata.IsPropertyAgnostic;
                 }
             }
-    
+
             if (!hasPropertyAgnosticType)
             {
                 // the variable name should not overlap with a property name
@@ -131,7 +134,8 @@ namespace com.espertech.esper.epl.expression.core
                     throw new ExprValidationException("Property '" + _optSubPropName + "' is not valid for variable '" + _variableName + "'");
                 }
                 _eventTypeGetter = variableMetadata.EventType.GetGetter(_optSubPropName);
-                if (_eventTypeGetter == null) {
+                if (_eventTypeGetter == null)
+                {
                     throw new ExprValidationException("Property '" + _optSubPropName + "' is not valid for variable '" + _variableName + "'");
                 }
                 _variableType = variableMetadata.EventType.GetPropertyType(_optSubPropName);
@@ -173,19 +177,21 @@ namespace com.espertech.esper.epl.expression.core
                 reader = _readersPerCp.Get(evaluateParams.ExprEvaluatorContext.AgentInstanceId);
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprVariable(this);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprVariable(this); }
             var value = reader.Value;
-            if (_isPrimitive || value == null) {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(value);}
+            if (_isPrimitive || value == null)
+            {
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(value); }
                 return value;
             }
-            var theEvent = (EventBean) value;
-            if (_optSubPropName == null) {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(theEvent.Underlying);}
+            var theEvent = (EventBean)value;
+            if (_optSubPropName == null)
+            {
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(theEvent.Underlying); }
                 return theEvent.Underlying;
             }
             var result = _eventTypeGetter.Get(theEvent);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(result);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprVariable(result); }
             return result;
         }
 
@@ -210,10 +216,11 @@ namespace com.espertech.esper.epl.expression.core
             {
                 return false;
             }
-    
-            var that = (ExprVariableNodeImpl) node;
-    
-            if (_optSubPropName != null ? !_optSubPropName.Equals(that._optSubPropName) : that._optSubPropName != null) {
+
+            var that = (ExprVariableNodeImpl)node;
+
+            if (_optSubPropName != null ? !_optSubPropName.Equals(that._optSubPropName) : that._optSubPropName != null)
+            {
                 return false;
             }
             return that._variableName.Equals(_variableName);

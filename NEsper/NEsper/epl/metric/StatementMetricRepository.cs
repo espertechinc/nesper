@@ -23,14 +23,14 @@ namespace com.espertech.esper.epl.metric
     public class StatementMetricRepository
     {
         private readonly StatementMetricArray[] _groupMetrics;
-        private readonly ConfigurationMetricsReporting _specification;
+        private readonly MetricsReportingConfig _specification;
         private readonly IDictionary<String, int?> _statementGroups;
 
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="specification">specifies statement groups</param>
         public StatementMetricRepository(String engineURI,
-                                         ConfigurationMetricsReporting specification)
+                                         MetricsReportingConfig specification)
         {
             _specification = specification;
             int numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.metric
             int countGroups = 1;
             foreach (var entry in specification.StatementGroups)
             {
-                ConfigurationMetricsReporting.StmtGroupMetrics config = entry.Value;
+                MetricsReportingConfig.StmtGroupMetrics config = entry.Value;
 
                 int initialNumStmts = config.NumStatements;
                 if (initialNumStmts < 10)

@@ -14,9 +14,9 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.multimatch;
 using com.espertech.esper.filter;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.filter;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.filter;
 
 using NUnit.Framework;
 

@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.join.@base
         private readonly EventTable[][] _repositories;
         private readonly int _streamNumber;
         private readonly QueryStrategy _queryStrategy;
-    
+
         private readonly bool _isResetSelfJoinRepositories;
         private readonly bool[] _selfJoinRepositoryResets;
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.join.@base
             _repositories = JoinSetComposerUtil.ToArray(repositories);
             _streamNumber = streamNumber;
             _queryStrategy = queryStrategy;
-    
+
             _selfJoinRepositoryResets = selfJoinRepositoryResets;
             if (isPureSelfJoin)
             {
@@ -100,48 +100,50 @@ namespace com.espertech.esper.epl.join.@base
                 }
             }
         }
-    
+
         public void Destroy()
         {
             foreach (EventTable[] repository in _repositories)
             {
                 if (repository != null)
                 {
-                	foreach (EventTable table in repository)
-                	{
-                		table.Destroy();
-                	}
+                    foreach (EventTable table in repository)
+                    {
+                        table.Destroy();
+                    }
                 }
             }
         }
-    
+
         public UniformPair<ISet<MultiKey<EventBean>>> Join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStreamToWin();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStreamToWin(); }
             _newResults.Clear();
-    
+
             // We add and remove data in one call to each index.
             // Most indexes will add first then remove as newdata and olddata may contain the same event.
             // Unique indexes may remove then add.
-            for (int stream = 0; stream < newDataPerStream.Length; stream++) {
-                if (stream != _streamNumber) {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStepUpdIndex(stream, newDataPerStream[stream], oldDataPerStream[stream]);}
+            for (int stream = 0; stream < newDataPerStream.Length; stream++)
+            {
+                if (stream != _streamNumber)
+                {
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStepUpdIndex(stream, newDataPerStream[stream], oldDataPerStream[stream]); }
                     for (int j = 0; j < _repositories[stream].Length; j++)
                     {
                         _repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream]);
                     }
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStepUpdIndex();}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStepUpdIndex(); }
                 }
             }
-    
+
             // join new data
             if (newDataPerStream[_streamNumber] != null)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(true, _streamNumber, newDataPerStream[_streamNumber]);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionQueryStrategy(true, _streamNumber, newDataPerStream[_streamNumber]); }
                 _queryStrategy.Lookup(newDataPerStream[_streamNumber], _newResults, exprEvaluatorContext);
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionQueryStrategy(); }
             }
-    
+
             // on self-joins there can be repositories which are temporary for join execution
             if (_isResetSelfJoinRepositories)
             {
@@ -157,17 +159,18 @@ namespace com.espertech.esper.epl.join.@base
                     }
                 }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStreamToWin(_newResults);}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStreamToWin(_newResults); }
             return new UniformPair<ISet<MultiKey<EventBean>>>(_newResults, _emptyResults);
         }
-    
+
         public ISet<MultiKey<EventBean>> StaticJoin()
         {
             throw new UnsupportedOperationException("Iteration over a unidirectional join is not supported");
         }
-    
-        public void VisitIndexes(StatementAgentInstancePostLoadIndexVisitor visitor) {
+
+        public void VisitIndexes(StatementAgentInstancePostLoadIndexVisitor visitor)
+        {
             visitor.Visit(_repositories);
         }
     }

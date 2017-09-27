@@ -16,8 +16,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.@join.exec.@base;
 using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.join.table;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

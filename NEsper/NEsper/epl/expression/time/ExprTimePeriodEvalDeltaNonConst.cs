@@ -14,9 +14,17 @@ namespace com.espertech.esper.epl.expression.time
 {
     public interface ExprTimePeriodEvalDeltaNonConst
     {
-        long DeltaMillisecondsAdd(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        long DeltaMillisecondsSubtract(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        long DeltaMillisecondsUseEngineTime(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext);
-        ExprTimePeriodEvalDeltaResult DeltaMillisecondsAddWReference(long current, long reference, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        long DeltaAdd(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+
+        long DeltaSubtract(long currentTime, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+
+        long DeltaUseEngineTime(EventBean[] eventsPerStream, AgentInstanceContext agentInstanceContext);
+
+        ExprTimePeriodEvalDeltaResult DeltaAddWReference(
+            long current,
+            long reference,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
     }
-}
+} // end of namespace

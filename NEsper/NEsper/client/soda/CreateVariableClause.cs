@@ -107,7 +107,7 @@ namespace com.espertech.esper.client.soda
         public bool IsArrayOfPrimitive { get; set; }
 
         /// <summary>
-        /// Render as EPL.
+        /// RenderAny as EPL.
         /// </summary>
         /// <param name="writer">to output to</param>
         public virtual void ToEPL(TextWriter writer)

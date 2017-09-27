@@ -37,7 +37,7 @@ namespace com.espertech.esper.epl.expression.core
 
 	    public override ExprNode Validate(ExprValidationContext validationContext)
 	    {
-	        if (this.ChildNodes.Length != 0)
+	        if (this.ChildNodes.Count != 0)
 	        {
 	            throw new ExprValidationException("current_evaluation_context function node cannot have a child node");
 	        }

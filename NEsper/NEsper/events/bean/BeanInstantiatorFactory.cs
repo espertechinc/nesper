@@ -58,7 +58,7 @@ namespace com.espertech.esper.events.bean
                 }
                 catch (TargetInvocationException e)
                 {
-                    string message = string.Format(
+                    var message = string.Format(
                         "Failed to instantiate class '{0}', define a factory method if the class has no suitable constructors: {1}",
                         fastClass.TargetType.FullName,
                         (e.InnerException ?? e).Message);
@@ -66,7 +66,7 @@ namespace com.espertech.esper.events.bean
                 }
                 catch (ArgumentException e)
                 {
-                    string message =
+                    var message =
                         string.Format(
                             "Failed to instantiate class '{0}', define a factory method if the class has no suitable constructors",
                             fastClass.TargetType.FullName);
@@ -82,14 +82,14 @@ namespace com.espertech.esper.events.bean
         private static BeanInstantiator ResolveFactoryMethod(BeanEventType beanEventType,
                                                              EngineImportService engineImportService)
         {
-            string factoryMethodName = beanEventType.FactoryMethodName;
+            var factoryMethodName = beanEventType.FactoryMethodName;
 
-            int lastDotIndex = factoryMethodName.LastIndexOf('.');
+            var lastDotIndex = factoryMethodName.LastIndexOf('.');
             if (lastDotIndex == -1)
             {
                 try
                 {
-                    MethodInfo method = engineImportService.ResolveMethod(
+                    var method = engineImportService.ResolveMethod(
                         beanEventType.UnderlyingType, factoryMethodName, new Type[0], new bool[0], new bool[0]);
                     if (beanEventType.FastClass != null)
                     {
@@ -102,7 +102,7 @@ namespace com.espertech.esper.events.bean
                 }
                 catch (EngineImportException e)
                 {
-                    string message =
+                    var message =
                         string.Format(
                             "Failed to resolve configured factory method '{0}' expected to exist for class '{1}'",
                             factoryMethodName, beanEventType.UnderlyingType);
@@ -111,14 +111,14 @@ namespace com.espertech.esper.events.bean
                 }
             }
 
-            string className = factoryMethodName.Substring(0, lastDotIndex);
-            string methodName = factoryMethodName.Substring(lastDotIndex + 1);
+            var className = factoryMethodName.Substring(0, lastDotIndex);
+            var methodName = factoryMethodName.Substring(lastDotIndex + 1);
             try
             {
-                MethodInfo method = engineImportService.ResolveMethod(className, methodName, new Type[0], new bool[0], new bool[0]);
+                var method = engineImportService.ResolveMethodOverloadChecked(className, methodName, new Type[0], new bool[0], new bool[0]);
                 if (beanEventType.FastClass != null)
                 {
-                    FastClass fastClassFactory = FastClass.Create(method.DeclaringType);
+                    var fastClassFactory = FastClass.Create(method.DeclaringType);
                     return new BeanInstantiatorByFactoryFastClass(fastClassFactory.GetMethod(method));
                 }
                 else
@@ -128,7 +128,7 @@ namespace com.espertech.esper.events.bean
             }
             catch (EngineImportException e)
             {
-                String message = "Failed to resolve configured factory method '" + methodName +
+                var message = "Failed to resolve configured factory method '" + methodName +
                                  "' expected to exist for class '" + className + "'";
                 Log.Info(message, e);
                 throw new EventBeanManufactureException(message, e);

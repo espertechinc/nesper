@@ -48,13 +48,13 @@ namespace com.espertech.esper.filter
                     return;
                 }
 
-                var attributeValue = (String) objAttributeValue;
+                var attributeValue = (String)objAttributeValue;
 
                 if (FilterOperator == FilterOperator.NOT_RANGE_CLOSED) // include all endpoints
                 {
                     foreach (var entry in Ranges)
                     {
-                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) > 0 || 
+                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) > 0 ||
                             String.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) < 0)
                         {
                             entry.Value.MatchEvent(theEvent, matches);
@@ -74,11 +74,11 @@ namespace com.espertech.esper.filter
                     }
                 }
                 else if (FilterOperator == FilterOperator.NOT_RANGE_HALF_CLOSED)
-                    // include high endpoint not low endpoint
+                // include high endpoint not low endpoint
                 {
                     foreach (var entry in Ranges)
                     {
-                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) >= 0 || 
+                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) >= 0 ||
                             String.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) < 0)
                         {
                             entry.Value.MatchEvent(theEvent, matches);
@@ -86,7 +86,7 @@ namespace com.espertech.esper.filter
                     }
                 }
                 else if (FilterOperator == FilterOperator.NOT_RANGE_HALF_OPEN)
-                    // include low endpoint not high endpoint
+                // include low endpoint not high endpoint
                 {
                     foreach (var entry in Ranges)
                     {

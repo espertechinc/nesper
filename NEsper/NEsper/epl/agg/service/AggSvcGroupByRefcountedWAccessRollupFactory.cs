@@ -6,14 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.service
 {
@@ -22,37 +19,49 @@ namespace com.espertech.esper.epl.agg.service
     /// </summary>
     public class AggSvcGroupByRefcountedWAccessRollupFactory : AggregationServiceFactoryBase
     {
-        protected internal readonly AggregationAccessorSlotPair[] Accessors;
-        protected internal readonly AggregationStateFactory[] AccessAggregations;
-        protected internal readonly bool IsJoin;
-        protected internal readonly AggregationGroupByRollupDesc GroupByRollupDesc;
+        private readonly AggregationAccessorSlotPair[] _accessors;
+        private readonly AggregationStateFactory[] _accessAggregations;
+        private readonly bool _isJoin;
+        private readonly AggregationGroupByRollupDesc _groupByRollupDesc;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="evaluators">evaluate the sub-expression within the aggregate function (ie. Sum(4*myNum))</param>
-        /// <param name="prototypes">collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregationsaggregation states for each group</param>
+        /// <param name="evaluators">- evaluate the sub-expression within the aggregate function (ie. Sum(4*myNum))</param>
+        /// <param name="prototypes">
+        /// - collect the aggregation state that evaluators evaluate to, act as prototypes for new aggregations
+        /// aggregation states for each group
+        /// </param>
         /// <param name="accessors">accessor definitions</param>
         /// <param name="accessAggregations">access aggs</param>
         /// <param name="isJoin">true for join, false for single-stream</param>
-        /// <param name="groupByRollupDesc">The group by rollup desc.</param>
-        public AggSvcGroupByRefcountedWAccessRollupFactory(ExprEvaluator[] evaluators, AggregationMethodFactory[] prototypes, AggregationAccessorSlotPair[] accessors, AggregationStateFactory[] accessAggregations, bool isJoin, AggregationGroupByRollupDesc groupByRollupDesc)
+        /// <param name="groupByRollupDesc">rollups if any</param>
+        public AggSvcGroupByRefcountedWAccessRollupFactory(
+            ExprEvaluator[] evaluators,
+            AggregationMethodFactory[] prototypes,
+            AggregationAccessorSlotPair[] accessors,
+            AggregationStateFactory[] accessAggregations,
+            bool isJoin,
+            AggregationGroupByRollupDesc groupByRollupDesc)
             : base(evaluators, prototypes)
         {
-            Accessors = accessors;
-            AccessAggregations = accessAggregations;
-            IsJoin = isJoin;
-            GroupByRollupDesc = groupByRollupDesc;
+            _accessors = accessors;
+            _accessAggregations = accessAggregations;
+            _isJoin = isJoin;
+            _groupByRollupDesc = groupByRollupDesc;
         }
 
-        public override AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber)
+        public override AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            EngineImportService engineImportService,
+            bool isSubquery,
+            int? subqueryNumber)
         {
             AggregationState[] topStates = AggSvcGroupByUtil.NewAccesses(
-                agentInstanceContext.AgentInstanceId, IsJoin, AccessAggregations, null, null);
-            AggregationMethod[] topMethods = AggSvcGroupByUtil.NewAggregators(
-                base.Aggregators);
+                agentInstanceContext.AgentInstanceId, _isJoin, _accessAggregations, null, null);
+            AggregationMethod[] topMethods = AggSvcGroupByUtil.NewAggregators(base.Aggregators);
             return new AggSvcGroupByRefcountedWAccessRollupImpl(
-                Evaluators, Aggregators, Accessors, AccessAggregations, IsJoin, GroupByRollupDesc, topMethods, topStates);
+                Evaluators, Aggregators, _accessors, _accessAggregations, _isJoin, _groupByRollupDesc, topMethods, topStates);
         }
     }
-}
+} // end of namespace

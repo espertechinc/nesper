@@ -18,6 +18,8 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.type
 {
+    using Computer = Func<object, object, bool>;
+
     /// <summary>
     /// Enum representing relational types of operation.
     /// </summary>
@@ -217,15 +219,6 @@ namespace com.espertech.esper.type
 
             return computer;
         }
-
-        /// <summary>
-        /// Delegate for computing a relational operation on two objects.
-        /// </summary>
-        /// <param name="objOne"></param>
-        /// <param name="objTwo"></param>
-        /// <returns></returns>
-
-        public delegate Boolean Computer(Object objOne, Object objTwo);
 
         #region String
         /// <summary>

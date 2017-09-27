@@ -11,22 +11,49 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.script
 {
-    /// <summary>Context-partition local script context. </summary>
+    /// <summary>Context-partition local script context.</summary>
     public class AgentInstanceScriptContext : EPLScriptContext
     {
-        private readonly IDictionary<String, Object> _scriptProperties = new Dictionary<String, Object>();
+        private readonly EventBeanService _eventBeanService;
+        private IDictionary<string, Object> _scriptProperties;
 
-        public void SetScriptAttribute(String attribute, Object value)
+        private AgentInstanceScriptContext(EventBeanService eventBeanService)
         {
+            _eventBeanService = eventBeanService;
+        }
+
+        public static AgentInstanceScriptContext From(EventAdapterService eventAdapterService)
+        {
+            return new AgentInstanceScriptContext(eventAdapterService);
+        }
+
+        public EventBeanService EventBeanService
+        {
+            get { return _eventBeanService; }
+        }
+
+        public void SetScriptAttribute(string attribute, Object value)
+        {
+            AllocateScriptProperties();
             _scriptProperties.Put(attribute, value);
         }
 
-        public Object GetScriptAttribute(String attribute)
+        public Object GetScriptAttribute(string attribute)
         {
+            AllocateScriptProperties();
             return _scriptProperties.Get(attribute);
         }
+
+        private void AllocateScriptProperties()
+        {
+            if (_scriptProperties == null)
+            {
+                _scriptProperties = new Dictionary<string, object>();
+            }
+        }
     }
-}
+} // end of namespace

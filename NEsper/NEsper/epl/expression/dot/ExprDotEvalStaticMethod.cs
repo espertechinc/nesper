@@ -7,15 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
-
-using com.espertech.esper.epl.expression.core;
 
 using XLR8.CGLib;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.enummethod.dot;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -25,20 +26,29 @@ namespace com.espertech.esper.epl.expression.dot
     public class ExprDotEvalStaticMethod : ExprEvaluator, EventPropertyGetter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
+        private static MethodInfo UnwrapCollection;
+        private static MethodInfo UnwrapList;
+
+        static ExprDotEvalStaticMethod()
+        {
+            UnwrapCollection = typeof(CompatExtensions).GetMethod("Unwrap", new Type[] { typeof(object), typeof(bool) });
+            UnwrapList = typeof(CompatExtensions).GetMethod("UnwrapIntoList", new Type[] { typeof(object), typeof(bool) });
+        }
+
         private readonly String _statementName;
         private readonly String _classOrPropertyName;
-    	private readonly FastMethod _staticMethod;
+        private readonly FastMethod _staticMethod;
         private readonly ExprEvaluator[] _childEvals;
         private readonly bool _isConstantParameters;
         private readonly ExprDotEval[] _chainEval;
         private readonly ExprDotStaticMethodWrap _resultWrapLambda;
         private readonly bool _rethrowExceptions;
         private readonly Object _targetObject;
-    
+
         private bool _isCachedResult;
         private Object _cachedResult;
-    
+
         public ExprDotEvalStaticMethod(String statementName,
                                        String classOrPropertyName,
                                        FastMethod staticMethod,
@@ -75,23 +85,59 @@ namespace com.espertech.esper.epl.expression.dot
             }
         }
 
+        private object RewriteArgument(object value, Type parameterType)
+        {
+            if (value == null)
+                return null;
+            if (value.GetType() == parameterType)
+                return value;
+            if (TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), parameterType))
+                return value;
+
+            // ICollection<object> gets passed around a lot internally rather than
+            // the actual type required for final targeting.  If this is a collection
+            // to collection target, then we can rewrite the values.
+            if (value is ICollection<object>)
+            {
+                if (parameterType.IsGenericCollection())
+                {
+                    var genericType = parameterType.GetGenericArguments()[0];
+                    return UnwrapCollection
+                        .MakeGenericMethod(new Type[] { genericType })
+                        .Invoke(null, new object[] { value, true });
+                }
+                else if (parameterType.IsGenericList())
+                {
+                    var genericType = parameterType.GetGenericArguments()[0];
+                    return UnwrapList
+                        .MakeGenericMethod(new Type[] { genericType })
+                        .Invoke(null, new object[] { value, true });
+                }
+            }
+
+            return value;
+        }
+
         public object Evaluate(EvaluateParams evaluateParams)
         {
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprPlugInSingleRow(_staticMethod.Target); }
             if ((_isConstantParameters) && (_isCachedResult))
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(_cachedResult);}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(_cachedResult); }
                 return _cachedResult;
             }
-    
-    		var args = new Object[_childEvals.Length];
-    		for(var i = 0; i < args.Length; i++)
-    		{
-    			args[i] = _childEvals[i].Evaluate(evaluateParams);
-    		}
-    
-    		// The method is static so the object it is invoked on
-    		// can be null
+
+            var methodParameters = _staticMethod.Target.GetParameters();
+
+            var args = new Object[_childEvals.Length];
+            for (var i = 0; i < args.Length; i++)
+            {
+                var arg = _childEvals[i].Evaluate(evaluateParams);
+                args[i] = RewriteArgument(arg, methodParameters[i].ParameterType);
+            }
+
+            // The method is static so the object it is invoked on
+            // can be null
             try
             {
                 var result = _staticMethod.Invoke(_targetObject, args);
@@ -136,18 +182,18 @@ namespace com.espertech.esper.epl.expression.dot
                 }
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(null);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprPlugInSingleRow(null); }
             return null;
         }
-    
+
         public Object Get(EventBean eventBean)
         {
             var args = new Object[_childEvals.Length];
-            for(var i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
-                args[i] = _childEvals[i].Evaluate(new EvaluateParams(new EventBean[] {eventBean}, false, null));
+                args[i] = _childEvals[i].Evaluate(new EvaluateParams(new EventBean[] { eventBean }, false, null));
             }
-    
+
             // The method is static so the object it is invoked on
             // can be null
             try
@@ -158,18 +204,19 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 var message = TypeHelper.GetMessageInvocationTarget(_statementName, _staticMethod.Target, _classOrPropertyName, args, e);
                 Log.Error(message, e.InnerException);
-                if (_rethrowExceptions) {
+                if (_rethrowExceptions)
+                {
                     throw new EPException(message, e.InnerException);
                 }
             }
             return null;
         }
-    
+
         public bool IsExistsProperty(EventBean eventBean)
         {
             return false;
         }
-    
+
         public Object GetFragment(EventBean eventBean)
         {
             return null;

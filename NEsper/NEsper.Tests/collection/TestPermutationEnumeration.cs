@@ -83,7 +83,7 @@ namespace com.espertech.esper.collection
             factors = PermutationEnumerator.GetFactors(1);
             Assert.IsTrue(Collections.AreEqual(factors, new[] {0}));
 
-            //Log.Debug(".testGetFactors " + CompatExtensions.Render(factors));
+            //Log.Debug(".testGetFactors " + CompatExtensions.RenderAny(factors));
         }
 
         public static void TestFaculty()

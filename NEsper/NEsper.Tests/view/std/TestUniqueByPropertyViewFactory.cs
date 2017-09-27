@@ -8,13 +8,14 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -41,9 +42,10 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(null, TestViewSupport.ToExprListBean(new Object[] {"IntPrimitive"}));
+           AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(null, TestViewSupport.ToExprListBean(new Object[]{"IntPrimitive"}));
             _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportStatementContextFactory.MakeContext(), null, null);
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)

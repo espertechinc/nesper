@@ -41,7 +41,7 @@ namespace com.espertech.esperio.regression.adapter
             epService.Initialize();
             EPAdministrator administrator = epService.EPAdministrator;
 
-            String statementText = "select * from mapEvent.win:length(5)";
+            String statementText = "select * from mapEvent#length(5)";
             EPStatement statement = administrator.CreateEPL(statementText);
 
             listener = new SupportUpdateListener();
@@ -232,7 +232,7 @@ namespace com.espertech.esperio.regression.adapter
                 "MarketData"
                 );
             try {
-                epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData.win:length(2)");
+                epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData#length(2)");
                 Assert.Fail("should fail due to type conversion");
             }
             catch (EPStatementException e) {
@@ -244,7 +244,7 @@ namespace com.espertech.esperio.regression.adapter
                 new AdapterInputSource(new StringReader("sym,long price\nGOOG,22\nGOOG,33")),
                 "MarketData2"
                 );
-            epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData2.win:length(2)");
+            epService.EPAdministrator.CreateEPL("select Sum(price) from MarketData2#length(2)");
         }
 
         [Test]
@@ -277,7 +277,7 @@ namespace com.espertech.esperio.regression.adapter
             adapterSpec.IsUsingEngineThread = true;
             adapter = new CSVInputAdapter(epService, adapterSpec);
 
-            const string statementText = "select * from intsTitleRowEvent.win:length(5)";
+            const string statementText = "select * from intsTitleRowEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             statement.Events += listener.Update;
 
@@ -417,7 +417,7 @@ namespace com.espertech.esperio.regression.adapter
             adapterSpec.IsUsingEngineThread = true;
             adapter = new CSVInputAdapter(epService, adapterSpec);
 
-            const string statementText = "select * from allStringEvent.win:length(5)";
+            const string statementText = "select * from allStringEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             statement.Events += listener.Update;
 
@@ -612,7 +612,7 @@ namespace com.espertech.esperio.regression.adapter
             adapterSpec.IsUsingEngineThread = true;
             adapter = new CSVInputAdapter(epService, adapterSpec);
 
-            const string statementText = "select * from propertyTypeEvent.win:length(5)";
+            const string statementText = "select * from propertyTypeEvent#length(5)";
             EPStatement statement = epService.EPAdministrator.CreateEPL(statementText);
             statement.Events += listener.Update;
 

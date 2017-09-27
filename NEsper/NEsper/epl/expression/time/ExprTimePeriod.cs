@@ -47,6 +47,10 @@ namespace com.espertech.esper.epl.expression.time
         /// <value>true for part present, false for not present</value>
         bool HasMillisecond { get; }
 
+        /// <summary>Indicator whether the time period has a microsecond part child expression. </summary>
+        /// <value>true for part present, false for not present</value>
+        bool HasMicrosecond { get; }
+
         /// <summary>Indicator whether the time period has a year part child expression. </summary>
         /// <value>true for part present, false for not present</value>
         bool HasYear { get; }

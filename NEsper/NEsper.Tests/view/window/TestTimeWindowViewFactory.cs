@@ -8,10 +8,9 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.support.view;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -44,10 +43,11 @@ namespace com.espertech.esper.view.window
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {1000}));
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstMsec(1000), null, false, false, null)));
-            Assert.IsTrue(_factory.CanReuse(new TimeWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, new ExprTimePeriodEvalDeltaConstMsec(1000000), null)));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { 1000 }));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstGivenDelta(1000), null, false, false, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new TimeWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, new ExprTimePeriodEvalDeltaConstGivenDelta(1000000), null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.view.window
             var factory = new TimeWindowViewFactory();
             factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {param}));
             var view = (TimeWindowView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
-            Assert.AreEqual(msec, view.TimeDeltaComputation.DeltaMillisecondsAdd(0));
+            Assert.AreEqual(msec, view.TimeDeltaComputation.DeltaAdd(0));
         }
     }
 }

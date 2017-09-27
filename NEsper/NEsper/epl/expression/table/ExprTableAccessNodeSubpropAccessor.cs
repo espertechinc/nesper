@@ -23,17 +23,19 @@ using com.espertech.esper.metrics.instrumentation;
 namespace com.espertech.esper.epl.expression.table
 {
     [Serializable]
-    public class ExprTableAccessNodeSubpropAccessor 
-        : ExprTableAccessNode 
+    public class ExprTableAccessNodeSubpropAccessor
+        : ExprTableAccessNode
         , ExprEvaluator
         , ExprEvaluatorEnumeration
     {
         private readonly string _subpropName;
         private readonly ExprNode _aggregateAccessMultiValueNode;
-
         [NonSerialized] private AggregationMethodFactory _accessorFactory;
-    
-        public ExprTableAccessNodeSubpropAccessor(string tableName, string subpropName, ExprNode aggregateAccessMultiValueNode)
+
+        public ExprTableAccessNodeSubpropAccessor(
+            string tableName,
+            string subpropName,
+            ExprNode aggregateAccessMultiValueNode)
             : base(tableName)
         {
             _subpropName = subpropName;
@@ -50,7 +52,7 @@ namespace com.espertech.esper.epl.expression.table
             get { return this; }
         }
 
-        public virtual Type ReturnType
+        public Type ReturnType
         {
             get { return _accessorFactory.ResultType; }
         }
@@ -60,18 +62,22 @@ namespace com.espertech.esper.epl.expression.table
             get { return _accessorFactory.Accessor; }
         }
 
-        protected override void ValidateBindingInternal(ExprValidationContext validationContext, TableMetadata tableMetadata)
+        protected override void ValidateBindingInternal(
+            ExprValidationContext validationContext,
+            TableMetadata tableMetadata)
         {
             // validate group keys
             ValidateGroupKeys(tableMetadata);
-            var column = (TableMetadataColumnAggregation) ValidateSubpropertyGetCol(tableMetadata, _subpropName);
-    
+            var column =
+                (TableMetadataColumnAggregation) ValidateSubpropertyGetCol(tableMetadata, _subpropName);
+
             // validate accessor factory i.e. the parameters types and the match to the required state
-            if (column.AccessAccessorSlotPair == null) {
+            if (column.AccessAccessorSlotPair == null)
+            {
                 throw new ExprValidationException("Invalid combination of aggregation state and aggregation accessor");
             }
-
-            ExprAggregateAccessMultiValueNode mfNode = ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode);
+            var mfNode =
+                (ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode;
             mfNode.ValidatePositionals();
             _accessorFactory = mfNode.ValidateAggregationParamsWBinding(validationContext, column);
         }
@@ -81,13 +87,16 @@ namespace com.espertech.esper.epl.expression.table
             return Evaluate(
                 evaluateParams.EventsPerStream,
                 evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
+                evaluateParams.ExprEvaluatorContext
+                );
         }
 
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().QExprTableSubpropAccessor(this, TableName, _subpropName, _accessorFactory.AggregationExpression);
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get()
+                    .QExprTableSubpropAccessor(this, TableName, _subpropName, _accessorFactory.AggregationExpression);
                 var result = Strategy.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 InstrumentationHelper.Get().AExprTableSubpropAccessor(result);
                 return result;
@@ -100,12 +109,16 @@ namespace com.espertech.esper.epl.expression.table
             get { return _subpropName; }
         }
 
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
-            return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeCollection(eventAdapterService, statementId);
+        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
+        {
+            return
+                ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeCollection(
+                    eventAdapterService, statementId);
         }
-    
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return Strategy.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
+        {
+            return Strategy.EvaluateGetROCollectionEvents(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
 
         public Type ComponentTypeCollection
@@ -113,30 +126,38 @@ namespace com.espertech.esper.epl.expression.table
             get { return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).ComponentTypeCollection; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return Strategy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
+        {
+            return Strategy.EvaluateGetROCollectionScalar(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
-    
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
-            return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeSingle(eventAdapterService, statementId);
+
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
+            return
+                ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).GetEventTypeSingle(
+                    eventAdapterService, statementId);
         }
-    
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return Strategy.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
+        {
+            return Strategy.EvaluateGetEventBean(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
-    
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
+
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
             ToPrecedenceFreeEPLInternal(writer, _subpropName);
             writer.Write(".");
             _aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
         }
-    
-        protected override bool EqualsNodeInternal(ExprTableAccessNode other) {
+
+        protected override bool EqualsNodeInternal(ExprTableAccessNode other)
+        {
             var that = (ExprTableAccessNodeSubpropAccessor) other;
-            if (!_subpropName.Equals(that._subpropName)) {
+            if (!_subpropName.Equals(that._subpropName))
+            {
                 return false;
             }
             return ExprNodeUtility.DeepEquals(_aggregateAccessMultiValueNode, that._aggregateAccessMultiValueNode);
         }
     }
-}
+} // end of namespace

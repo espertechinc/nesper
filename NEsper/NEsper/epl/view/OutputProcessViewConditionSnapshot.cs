@@ -6,8 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
@@ -24,19 +24,31 @@ namespace com.espertech.esper.epl.view
     /// </summary>
     public class OutputProcessViewConditionSnapshot : OutputProcessViewBaseWAfter
     {
-        private readonly OutputProcessViewConditionFactory _parent;
-    
-        private readonly OutputCondition _outputCondition;
-    
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public OutputProcessViewConditionSnapshot(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext)
+        private readonly OutputProcessViewConditionFactory _parent;
+        private readonly OutputCondition _outputCondition;
+
+        public OutputProcessViewConditionSnapshot(
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext)
             : base(resultSetProcessorHelperFactory, agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
         {
             _parent = parent;
     
-        	OutputCallback outputCallback = GetCallbackToLocal(parent.StreamCount);
-        	_outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
+            var outputCallback = GetCallbackToLocal(parent.StreamCount);
+            _outputCondition = parent.OutputConditionFactory.Make(agentInstanceContext, outputCallback);
+        }
+    
+        public override void Stop()
+        {
+            base.Stop();
+            _outputCondition.Stop();
         }
 
         public override int NumChangesetRows
@@ -44,17 +56,11 @@ namespace com.espertech.esper.epl.view
             get { return 0; }
         }
 
-        public override void Stop()
-        {
-            base.Stop();
-            _outputCondition.Stop();
-        }
-
         public override OutputCondition OptionalOutputCondition
         {
             get { return _outputCondition; }
         }
-        
+
         public override OutputProcessViewConditionDeltaSet OptionalDeltaSet
         {
             get { return null; }
@@ -65,72 +71,64 @@ namespace com.espertech.esper.epl.view
             get { return null; }
         }
 
-        /// <summary>The Update method is called if the view does not participate in a join. </summary>
-        /// <param name="newData">new events</param>
-        /// <param name="oldData">old events</param>
-        public override void Update(EventBean[] newData, EventBean[] oldData)
-        {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
-            {
-                Log.Debug(".Update Received Update, " +
+        /// <summary>
+        /// The update method is called if the view does not participate in a join.
+        /// </summary>
+        /// <param name="newData">- new events</param>
+        /// <param name="oldData">- old events</param>
+        public override void Update(EventBean[] newData, EventBean[] oldData) {
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+                Log.Debug(".update Received update, " +
                         "  newData.Length==" + ((newData == null) ? 0 : newData.Length) +
                         "  oldData.Length==" + ((oldData == null) ? 0 : oldData.Length));
             }
-
+    
             ResultSetProcessor.ApplyViewResult(newData, oldData);
     
-            if (!CheckAfterCondition(newData, _parent.StatementContext))
-            {
+            if (!base.CheckAfterCondition(newData, _parent.StatementContext)) {
                 return;
             }
     
             // add the incoming events to the event batches
             int newDataLength = 0;
             int oldDataLength = 0;
-            if(newData != null)
-            {
-            	newDataLength = newData.Length;
+            if (newData != null) {
+                newDataLength = newData.Length;
             }
-            if(oldData != null)
-            {
-            	oldDataLength = oldData.Length;
+            if (oldData != null) {
+                oldDataLength = oldData.Length;
             }
     
             _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
         }
-
+    
         /// <summary>
-        /// This process (Update) method is for participation in a join.
+        /// This process (update) method is for participation in a join.
         /// </summary>
-        /// <param name="newEvents">new events</param>
-        /// <param name="oldEvents">old events</param>
-        /// <param name="exprEvaluatorContext">expression evaluation context</param>
+        /// <param name="newEvents">- new events</param>
+        /// <param name="oldEvents">- old events</param>
         public override void Process(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents, ExprEvaluatorContext exprEvaluatorContext)
         {
-            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
-            {
-                Log.Debug(".process Received Update, " +
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
+                Log.Debug(".Process Received update, " +
                         "  newData.Length==" + ((newEvents == null) ? 0 : newEvents.Count) +
                         "  oldData.Length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
             }
-
+    
             ResultSetProcessor.ApplyJoinResult(newEvents, oldEvents);
     
-            if (!CheckAfterCondition(newEvents, _parent.StatementContext))
-            {
+            if (!base.CheckAfterCondition(newEvents, _parent.StatementContext)) {
                 return;
             }
     
             int newEventsSize = 0;
-            if (newEvents != null)
-            {
+            if (newEvents != null) {
                 // add the incoming events to the event batches
                 newEventsSize = newEvents.Count;
             }
     
             int oldEventsSize = 0;
-            if (oldEvents != null)
-            {
+            if (oldEvents != null) {
                 oldEventsSize = oldEvents.Count;
             }
     
@@ -139,8 +137,12 @@ namespace com.espertech.esper.epl.view
 
         /// <summary>
         /// Called once the output condition has been met.
+        /// Invokes the result set processor.
+        /// Used for non-join event data.
         /// </summary>
-    	protected void ContinueOutputProcessingView(Boolean doOutput, Boolean forceUpdate)
+        /// <param name="doOutput">- true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="forceUpdate">- true if output should be made even when no updating events have arrived</param>
+        protected void ContinueOutputProcessingView(bool doOutput, bool forceUpdate)
         {
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
             {
@@ -150,18 +152,16 @@ namespace com.espertech.esper.epl.view
             EventBean[] newEvents = null;
             EventBean[] oldEvents = null;
 
-            var it = GetEnumerator();
-            if (it.MoveNext())
-            {
-                var snapshot = new List<EventBean>();
-                do
-                {
-                    snapshot.Add(it.Current);
-                } while (it.MoveNext());
+            IEnumerator<EventBean> en = GetEnumerator();
 
-                newEvents = snapshot.ToArray();
-                oldEvents = null;
+            var snapshot = new List<EventBean>();
+            while (en.MoveNext())
+            {
+                EventBean @event = en.Current;
+                snapshot.Add(@event);
             }
+            newEvents = snapshot.ToArray();
+            oldEvents = null;
 
             var newOldEvents = new UniformPair<EventBean[]>(newEvents, oldEvents);
 
@@ -171,42 +171,45 @@ namespace com.espertech.esper.epl.view
             }
         }
 
-        public virtual void Output(Boolean forceUpdate, UniformPair<EventBean[]> results)
-        {
+        public virtual void Output(bool forceUpdate, UniformPair<EventBean[]> results) {
             // Child view can be null in replay from named window
-            if (ChildView != null)
-            {
+            if (ChildView != null) {
                 OutputStrategyUtil.Output(forceUpdate, results, ChildView);
             }
         }
-
-        /// <summary>Called once the output condition has been met. Invokes the result set processor. Used for non-join event data. </summary>
-    	/// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
-    	/// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
-        protected virtual void ContinueOutputProcessingJoin(Boolean doOutput, Boolean forceUpdate)
-    	{
-    		if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
-            {
+    
+        /// <summary>
+        /// Called once the output condition has been met.
+        /// Invokes the result set processor.
+        /// Used for join event data.
+        /// </summary>
+        /// <param name="doOutput">- true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="forceUpdate">- true if output should be made even when no updating events have arrived</param>
+        protected void ContinueOutputProcessingJoin(bool doOutput, bool forceUpdate) {
+            if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled)) {
                 Log.Debug(".continueOutputProcessingJoin");
             }
             ContinueOutputProcessingView(doOutput, forceUpdate);
-    	}
-    
+        }
+
         private OutputCallback GetCallbackToLocal(int streamCount)
         {
             // single stream means no join
             // multiple streams means a join
-            if(streamCount == 1)
+            if (streamCount == 1)
             {
                 return ContinueOutputProcessingView;
             }
-
-            return ContinueOutputProcessingJoin;
+            else
+            {
+                return ContinueOutputProcessingJoin;
+            }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetEnumerator(JoinExecutionStrategy, ResultSetProcessor, Parent, _parent.IsDistinct);
+            return OutputStrategyUtil.GetEnumerator(
+                JoinExecutionStrategy, ResultSetProcessor, ParentView, _parent.IsDistinct);
         }
 
         public override void Terminated()
@@ -217,4 +220,4 @@ namespace com.espertech.esper.epl.view
             }
         }
     }
-}
+} // end of namespace

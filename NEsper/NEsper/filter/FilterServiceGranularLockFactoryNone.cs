@@ -16,7 +16,7 @@ namespace com.espertech.esper.filter
             new FilterServiceGranularLockFactoryNone();
         private static readonly IReaderWriterLock InstanceLock =
             new VoidReaderWriterLock();
-        
+
         public IReaderWriterLock ObtainNew()
         {
             return InstanceLock;

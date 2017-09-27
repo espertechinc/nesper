@@ -16,7 +16,7 @@ using com.espertech.esper.view.internals;
 namespace com.espertech.esper.epl.join.@base
 {
     /// <summary>
-    /// Implements a method for pre-loading (initializing) join indexes from a filled buffer.
+    /// : a method for pre-loading (initializing) join indexes from a filled buffer.
     /// </summary>
     public class JoinPreloadMethodImpl : JoinPreloadMethod
     {

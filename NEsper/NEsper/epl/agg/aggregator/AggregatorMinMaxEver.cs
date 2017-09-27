@@ -18,22 +18,25 @@ namespace com.espertech.esper.epl.agg.aggregator
     /// </summary>
     public class AggregatorMinMaxEver : AggregationMethod
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
+
+        private IComparable _currentMinMax;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="minMaxTypeEnum">enum indicating to return minimum or maximum values</param>
+        /// <param name="minMaxTypeEnum">- enum indicating to return minimum or maximum values</param>
         public AggregatorMinMaxEver(MinMaxTypeEnum minMaxTypeEnum)
         {
             _minMaxTypeEnum = minMaxTypeEnum;
         }
-    
-        public virtual void Clear()
+
+        public void Clear()
         {
-            CurrentMinMax = null;
+            _currentMinMax = null;
         }
 
         public virtual void Enter(Object @object)
@@ -42,22 +45,27 @@ namespace com.espertech.esper.epl.agg.aggregator
             {
                 return;
             }
-            if (CurrentMinMax == null) {
-                CurrentMinMax = (IComparable)@object;
+            if (_currentMinMax == null)
+            {
+                _currentMinMax = (IComparable) @object;
                 return;
             }
-            if (_minMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                if (CurrentMinMax.CompareTo(@object) < 0) {
-                    CurrentMinMax = (IComparable)@object;
+            if (_minMaxTypeEnum == MinMaxTypeEnum.MAX)
+            {
+                if (_currentMinMax.CompareTo(@object) < 0)
+                {
+                    _currentMinMax = (IComparable) @object;
                 }
             }
-            else {
-                if (CurrentMinMax.CompareTo(@object) > 0) {
-                    CurrentMinMax = (IComparable)@object;
+            else
+            {
+                if (_currentMinMax.CompareTo(@object) > 0)
+                {
+                    _currentMinMax = (IComparable) @object;
                 }
             }
         }
-    
+
         public virtual void Leave(Object @object)
         {
             // no-op, this is designed to handle min-max ever
@@ -66,9 +74,13 @@ namespace com.espertech.esper.epl.agg.aggregator
 
         public object Value
         {
-            get { return CurrentMinMax; }
+            get { return _currentMinMax; }
         }
 
-        public IComparable CurrentMinMax { get; set; }
+        public IComparable CurrentMinMax
+        {
+            get { return _currentMinMax; }
+            set { this._currentMinMax = value; }
+        }
     }
-}
+} // end of namespace

@@ -39,7 +39,7 @@ namespace com.espertech.esper.events.xml
         /// <summary>
         /// Adds the given namespace to the collection.
         /// </summary>
-        /// <param name="prefix">The prefix to associate with the namespace being added. Use String.Empty to add a default namespace.
+        /// <param name="prefix">The prefix to associate with the namespace being added. Use String.EmptyFalse to add a default namespace.
         /// Note:
         /// If the
         /// <see cref="T:System.Xml.XmlNamespaceManager"/> will be used for resolving namespaces in an XML Path Language (XPath)
@@ -79,7 +79,7 @@ namespace com.espertech.esper.events.xml
         /// </summary>
         /// <value></value>
         /// <returns>
-        /// Returns the namespace URI for the default namespace, or String.Empty if there is no default namespace.
+        /// Returns the namespace URI for the default namespace, or String.EmptyFalse if there is no default namespace.
         /// </returns>
         public override string DefaultNamespace
         {
@@ -248,7 +248,7 @@ namespace com.espertech.esper.events.xml
         /// <summary>
         /// Gets the namespace URI for the specified prefix.
         /// </summary>
-        /// <param name="prefix">The prefix whose namespace URI you want to resolve. To match the default namespace, pass String.Empty.</param>
+        /// <param name="prefix">The prefix whose namespace URI you want to resolve. To match the default namespace, pass String.EmptyFalse.</param>
         /// <returns>
         /// Returns the namespace URI for <paramref name="prefix"/> or null if there is no mapped namespace. The returned string is atomized.
         /// For more information on atomized strings, see <see cref="T:System.Xml.XmlNameTable"/>.
@@ -263,7 +263,7 @@ namespace com.espertech.esper.events.xml
         /// </summary>
         /// <param name="uri">The namespace to resolve for the prefix.</param>
         /// <returns>
-        /// The matching prefix. If there is no mapped prefix, the method returns String.Empty. If a null value is supplied, then null is returned.
+        /// The matching prefix. If there is no mapped prefix, the method returns String.EmptyFalse. If a null value is supplied, then null is returned.
         /// </returns>
         public override string LookupPrefix(string uri)
         {

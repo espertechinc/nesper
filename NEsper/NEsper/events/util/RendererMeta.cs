@@ -42,12 +42,15 @@ namespace com.espertech.esper.events.util
             var gettersNested = new List<NestedGetterPair>();
 
             var descriptors = eventType.PropertyDescriptors;
-            foreach (EventPropertyDescriptor desc in descriptors) {
+            foreach (EventPropertyDescriptor desc in descriptors)
+            {
                 String propertyName = desc.PropertyName;
 
-                if ((!desc.IsIndexed) && (!desc.IsMapped) && (!desc.IsFragment)) {
+                if ((!desc.IsIndexed) && (!desc.IsMapped) && (!desc.IsFragment))
+                {
                     var getter = eventType.GetGetter(propertyName);
-                    if (getter == null) {
+                    if (getter == null)
+                    {
                         log.Warn("No getter returned for event type '" + eventType.Name + "' and property '" +
                                  propertyName + "'");
                         continue;
@@ -57,9 +60,11 @@ namespace com.espertech.esper.events.util
                                                          desc.PropertyType, options)));
                 }
 
-                if (desc.IsIndexed && !desc.RequiresIndex && (!desc.IsFragment)) {
+                if (desc.IsIndexed && !desc.RequiresIndex && (!desc.IsFragment))
+                {
                     var getter = eventType.GetGetter(propertyName);
-                    if (getter == null) {
+                    if (getter == null)
+                    {
                         log.Warn("No getter returned for event type '" + eventType.Name + "' and property '" +
                                  propertyName + "'");
                         continue;
@@ -69,9 +74,11 @@ namespace com.espertech.esper.events.util
                                                           desc.PropertyType, options)));
                 }
 
-                if (desc.IsMapped && !desc.RequiresMapKey && (!desc.IsFragment)) {
+                if (desc.IsMapped && !desc.RequiresMapKey && (!desc.IsFragment))
+                {
                     var getter = eventType.GetGetter(propertyName);
-                    if (getter == null) {
+                    if (getter == null)
+                    {
                         log.Warn("No getter returned for event type '" + eventType.Name + "' and property '" +
                                  propertyName + "'");
                         continue;
@@ -81,22 +88,26 @@ namespace com.espertech.esper.events.util
                                                          desc.PropertyType, options)));
                 }
 
-                if (desc.IsFragment) {
+                if (desc.IsFragment)
+                {
                     var getter = eventType.GetGetter(propertyName);
                     var fragmentType = eventType.GetFragmentType(propertyName);
-                    if (getter == null) {
+                    if (getter == null)
+                    {
                         log.Warn("No getter returned for event type '" + eventType.Name + "' and property '" +
                                  propertyName + "'");
                         continue;
                     }
-                    if (fragmentType == null) {
+                    if (fragmentType == null)
+                    {
                         log.Warn("No fragment type returned for event type '" + eventType.Name + "' and property '" +
                                  propertyName + "'");
                         continue;
                     }
 
                     var pair = new EventTypePropertyPair(fragmentType.FragmentType, propertyName);
-                    if ((options.PreventLooping && stack.Contains(pair))) {
+                    if ((options.PreventLooping && stack.Contains(pair)))
+                    {
                         continue; // prevent looping behavior on self-references
                     }
 

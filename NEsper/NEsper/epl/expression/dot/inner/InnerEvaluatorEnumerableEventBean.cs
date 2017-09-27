@@ -28,25 +28,17 @@ namespace com.espertech.esper.epl.expression.dot.inner
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
-        }
-
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-            return _rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetEventBean(evaluateParams);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(evaluateParams);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(evaluateParams);
         }
 
         public EventType EventTypeCollection
@@ -59,9 +51,9 @@ namespace com.espertech.esper.epl.expression.dot.inner
             get { return null; }
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            return _rootLambdaEvaluator.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetEventBean(evaluateParams);
         }
 
         public EventType EventTypeSingle

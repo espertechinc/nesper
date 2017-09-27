@@ -37,7 +37,7 @@ namespace com.espertech.esperio.regression.adapter
             _baseUseCase.EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", configuration);
             _baseUseCase.EPService.Initialize();
 
-            EPStatement stmt = _baseUseCase.EPService.EPAdministrator.CreateEPL("select * from ReadWrite.win:length(100)");
+            EPStatement stmt = _baseUseCase.EPService.EPAdministrator.CreateEPL("select * from ReadWrite#length(100)");
             SupportUpdateListener listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 

@@ -33,7 +33,11 @@ namespace com.espertech.esper.client
         Object this[string property] { get; }
 
         /// <summary>
-        /// Returns the value of an event property for the given property name or property expression. <para/> Returns null if the property value is null. Throws an exception if the expression is not valid against the event type. <para/> The method takes a property name or property expression as a parameter. Property expressions may include indexed properties via the syntax "name[index]", mapped properties via the syntax "name('key')", nested properties via the syntax "outer.inner" or combinations thereof.
+        /// Returns the value of an event property for the given property name or property expression.
+        /// <para/> Returns null if the property value is null. Throws an exception if the expression is not valid against the event type.
+        /// <para/> The method takes a property name or property expression as a parameter. Property expressions may include indexed properties 
+        /// via the syntax "name[index]", mapped properties via the syntax "name('key')", nested properties via the syntax "outer.inner" or 
+        /// combinations thereof.
         /// </summary>
         /// <param name="propertyExpression">name or expression of the property whose value is to be retrieved</param>
         /// <returns>
@@ -57,7 +61,7 @@ namespace com.espertech.esper.client
         /// an event by the underlying event representation.
         /// <para/>
         /// The <seealso cref="EventType"/> of the event bean Instance(s) returned by this method can be
-        /// determined by <seealso cref="EventType.FragmentType" />
+        /// determined by <seealso cref="FragmentEventType" />
         /// 	. Use 
         /// <seealso cref="EventPropertyDescriptor"/> to obtain a list of properties that return fragments from an event type.
         /// <para/> 

@@ -28,19 +28,11 @@ namespace com.espertech.esper.epl.agg.access
             _max = max;
         }
 
-        public abstract object GetValue(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext);
+        public abstract object GetValue(AggregationState state, EvaluateParams evaluateParams);
 
-        public ICollection<EventBean> GetEnumerableEvents(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams)
         {
-            EventBean bean = GetEnumerableEvent(state, eventsPerStream, isNewData, context);
+            EventBean bean = GetEnumerableEvent(state, evalParams);
             if (bean == null)
             {
                 return null;
@@ -48,20 +40,12 @@ namespace com.espertech.esper.epl.agg.access
             return Collections.SingletonList(bean);
         }
 
-        public ICollection<object> GetEnumerableScalar(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams)
         {
             return null;
         }
 
-        public EventBean GetEnumerableEvent(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams)
         {
             if (_max)
             {

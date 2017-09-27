@@ -20,6 +20,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.events;
@@ -81,7 +82,7 @@ namespace com.espertech.esper.core.deploy
                             "The 'module' keyword must be the first declaration in the module file for resource '" +
                             resourceName + "'");
                     }
-                    moduleName = ((ParseNodeModule) node).ModuleName;
+                    moduleName = ((ParseNodeModule)node).ModuleName;
                 }
                 count++;
             }
@@ -102,7 +103,7 @@ namespace com.espertech.esper.core.deploy
                     {
                         throw new ParseException(message);
                     }
-                    uses.Add(((ParseNodeUses) node).Uses);
+                    uses.Add(((ParseNodeUses)node).Uses);
                     continue;
                 }
                 if (node is ParseNodeImport)
@@ -111,7 +112,7 @@ namespace com.espertech.esper.core.deploy
                     {
                         throw new ParseException(message);
                     }
-                    imports.Add(((ParseNodeImport) node).Imported);
+                    imports.Add(((ParseNodeImport)node).Imported);
                     continue;
                 }
                 count++;
@@ -155,7 +156,7 @@ namespace com.espertech.esper.core.deploy
                 var type = eventAdapterService.GetEventTypeByName(typeName);
                 if (type != null)
                 {
-                    var spi = (EventTypeSPI) type;
+                    var spi = (EventTypeSPI)type;
                     if (!spi.Metadata.IsApplicationPreConfigured)
                     {
                         eventAdapterService.RemoveType(typeName);
@@ -239,7 +240,7 @@ namespace com.espertech.esper.core.deploy
                 if (t.Type == EsperEPL2GrammarParser.Eof)
                 {
                     break;
-                } 
+                }
 
                 if ((t.Type != EsperEPL2GrammarParser.IDENT) &&
                     (t.Type != EsperEPL2GrammarParser.DOT) &&
@@ -337,7 +338,7 @@ namespace com.espertech.esper.core.deploy
                 }
                 else if (ex is RecognitionException)
                 {
-                    var recog = (RecognitionException) ex;
+                    var recog = (RecognitionException)ex;
                     message += ", recognition failed for " + recog;
                 }
                 else if (!string.IsNullOrWhiteSpace(ex.Message))
@@ -404,10 +405,20 @@ namespace com.espertech.esper.core.deploy
             }
         }
 
-        public static Module ReadResource(String resource)
+        public static Module ReadResource(String resource, EngineImportService engineImportService)
         {
+            Stream stream = null;
+
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-            var stream = ResourceManager.GetResourceAsStream(stripped);
+            var classLoader = engineImportService.GetClassLoader();
+            if (classLoader != null)
+            {
+                stream = classLoader.GetResourceAsStream(stripped);
+            }
+            if (stream == null)
+            {
+                stream = ResourceManager.GetResourceAsStream(stripped);
+            }
             if (stream == null)
             {
                 throw new IOException("Failed to find resource '" + resource + "' in classpath");
@@ -439,7 +450,7 @@ namespace com.espertech.esper.core.deploy
             foreach (var token in tokens)
             {
                 index++;
-                var t = (IToken) token;
+                var t = (IToken)token;
                 if (t.Type == EsperEPL2GrammarParser.EXPRESSIONDECL)
                 {
                     if (result == null)

@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.table.mgmt
@@ -65,7 +66,7 @@ namespace com.espertech.esper.epl.table.mgmt
             {
                 get
                 {
-                    return _eventToPublic.Convert(_enumerator.Current, null, true, _tableStateInstance.AgentInstanceContext);
+                    return _eventToPublic.Convert(_enumerator.Current, new EvaluateParams(null, true, _tableStateInstance.AgentInstanceContext));
                 }
             }
 

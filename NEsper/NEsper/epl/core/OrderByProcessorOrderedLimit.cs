@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.rollup;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.core
 {

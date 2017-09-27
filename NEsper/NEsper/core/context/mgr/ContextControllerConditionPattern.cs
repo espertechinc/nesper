@@ -87,7 +87,7 @@ namespace com.espertech.esper.core.context.mgr
                 }
                 else {
                     // need to reorder according to tag order
-                    var ordered = new LinkedHashMap<String, Object>();
+                    var ordered = new Dictionary<String, Object>();
                     foreach (String key in _endpointPatternSpec.PatternCompiled.TaggedEventTypes.Keys) {
                         ordered.Put(key, matchEvent.Get(key));
                     }

@@ -86,7 +86,7 @@ namespace com.espertech.esper.filter
                 var filterOperator = FilterOperator;
 
                 // Look up in table
-                using(_constantsMapRwLock.AcquireReadLock())
+                using (_constantsMapRwLock.AcquireReadLock())
                 {
                     // Get the head or tail end of the map depending on comparison type
                     IDictionary<Object, EventEvaluator> subMap;

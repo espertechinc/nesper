@@ -13,6 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
@@ -57,7 +58,8 @@ namespace com.espertech.esper.core.service
             TimeSourceService timeSourceService,
             EngineImportService engineImportService,
             AggregationFactoryFactory aggregationFactoryFactory,
-            SchedulingService schedulingService)
+            SchedulingService schedulingService,
+            ExprDeclaredService exprDeclaredService)
         {
             EngineURI = engineURI;
             EventAdapterService = eventAdapterService;
@@ -85,6 +87,7 @@ namespace com.espertech.esper.core.service
             EngineImportService = engineImportService;
             AggregationFactoryFactory = aggregationFactoryFactory;
             SchedulingService = schedulingService;
+            ExprDeclaredService = exprDeclaredService;
         }
 
         public string EngineURI { get; private set; }
@@ -143,5 +146,7 @@ namespace com.espertech.esper.core.service
         public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
 
         public SchedulingService SchedulingService { get; private set; }
+
+        public ExprDeclaredService ExprDeclaredService { get; private set; }
     }
 }

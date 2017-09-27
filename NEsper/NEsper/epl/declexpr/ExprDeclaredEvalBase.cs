@@ -121,54 +121,54 @@ namespace com.espertech.esper.epl.declexpr
             }
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             // rewrite streams
-            EventBean[] events = GetEventsPerStreamRewritten(eventsPerStream);
+            EventBean[] events = GetEventsPerStreamRewritten(evaluateParams.EventsPerStream);
     
             ICollection<EventBean> result;
             if (_isCache)
             {
-                var cache = context.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
+                var cache = evaluateParams.ExprEvaluatorContext.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
                 var entry = cache.GetDeclaredExpressionLastColl(_prototype, events);
                 if (entry != null)
                 {
                     return entry.Result;
                 }
     
-                result = _innerEvaluatorLambda.EvaluateGetROCollectionEvents(events, isNewData, context);
+                result = _innerEvaluatorLambda.EvaluateGetROCollectionEvents(evaluateParams);
                 cache.SaveDeclaredExpressionLastColl(_prototype, events, result);
                 return result;
             }
             else
             {
-                result = _innerEvaluatorLambda.EvaluateGetROCollectionEvents(events, isNewData, context);
+                result = _innerEvaluatorLambda.EvaluateGetROCollectionEvents(evaluateParams);
             }
     
             return result;
         }
     
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             // rewrite streams
-            EventBean[] events = GetEventsPerStreamRewritten(eventsPerStream);
+            EventBean[] events = GetEventsPerStreamRewritten(evaluateParams.EventsPerStream);
 
             ICollection<object> result;
             if (_isCache)
             {
-                var cache = context.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
+                var cache = evaluateParams.ExprEvaluatorContext.ExpressionResultCacheService.AllocateDeclaredExprLastColl;
                 var entry = cache.GetDeclaredExpressionLastColl(_prototype, events);
                 if (entry != null)
                 {
                     return entry.Result.Unwrap<object>();
                 }
     
-                result = _innerEvaluatorLambda.EvaluateGetROCollectionScalar(events, isNewData, context);
-                cache.SaveDeclaredExpressionLastColl(_prototype, events, result.Unwrap<EventBean>());
+                result = _innerEvaluatorLambda.EvaluateGetROCollectionScalar(evaluateParams);
+                cache.SaveDeclaredExpressionLastColl(_prototype, events, result.UnwrapSafe<EventBean>());
                 return result;
             }
             else {
-                result = _innerEvaluatorLambda.EvaluateGetROCollectionScalar(events, isNewData, context);
+                result = _innerEvaluatorLambda.EvaluateGetROCollectionScalar(evaluateParams);
             }
     
             return result;
@@ -192,9 +192,9 @@ namespace com.espertech.esper.epl.declexpr
             return _innerEvaluatorLambda != null ? _innerEvaluatorLambda.GetEventTypeSingle(eventAdapterService, statementId) : null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            return _innerEvaluatorLambda.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return _innerEvaluatorLambda.EvaluateGetEventBean(evaluateParams);
         }
     }
 }

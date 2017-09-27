@@ -12,27 +12,24 @@ using com.espertech.esper.collection;
 
 namespace com.espertech.esper.epl.core
 {
-    /// <summary>
-    /// Base class for stream and property name resolution errors.
-    /// </summary>
+    /// <summary>Base class for stream and property name resolution errors.</summary>
     public abstract class StreamTypesException : Exception
     {
         private readonly StreamTypesExceptionSuggestionGen _optionalSuggestionGenerator;
-
-        /// <summary>Ctor. </summary>
-        /// <param name="message">message</param>
-        /// <param name="optionalSuggestionGenerator">optional suggestion for a matching name</param>
-        protected StreamTypesException(String message, StreamTypesExceptionSuggestionGen optionalSuggestionGenerator)
+    
+        public StreamTypesException(string message, StreamTypesExceptionSuggestionGen optionalSuggestionGenerator)
             : base(message)
         {
             _optionalSuggestionGenerator = optionalSuggestionGenerator;
         }
 
-        /// <summary>Returns the optional suggestion for a matching name. </summary>
+        /// <summary>
+        /// Returns the optional suggestion for a matching name.
+        /// </summary>
         /// <value>suggested match</value>
         public Pair<int, string> OptionalSuggestion
         {
             get { return _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Invoke() : null; }
         }
     }
-}
+} // end of namespace

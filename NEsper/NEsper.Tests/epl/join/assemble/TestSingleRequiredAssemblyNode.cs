@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-using com.espertech.esper.support.epl.join;
+using com.espertech.esper.supportunit.epl.join;
 
 using NUnit.Framework;
 

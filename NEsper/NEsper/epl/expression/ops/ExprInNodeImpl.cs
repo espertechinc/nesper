@@ -28,20 +28,23 @@ namespace com.espertech.esper.epl.expression.ops
     /// Represents the in-clause (set check) function in an expression tree.
     /// </summary>
     [Serializable]
-    public class ExprInNodeImpl 
+    public class ExprInNodeImpl
         : ExprNodeBase
         , ExprEvaluator
         , ExprInNode
     {
         private readonly bool _isNotIn;
-    
+
         private bool _mustCoerce;
         private bool _hasCollectionOrArray;
-    
-        [NonSerialized] private Coercer _coercer;
-        [NonSerialized] private ExprEvaluator[] _evaluators;
-        [NonSerialized] private Func<object, object>[] _transformList;
-    
+
+        [NonSerialized]
+        private Coercer _coercer;
+        [NonSerialized]
+        private ExprEvaluator[] _evaluators;
+        [NonSerialized]
+        private Func<object, object>[] _transformList;
+
         /// <summary>Ctor. </summary>
         /// <param name="isNotIn">is true for "not in" and false for "in"</param>
         public ExprInNodeImpl(bool isNotIn)
@@ -70,15 +73,15 @@ namespace com.espertech.esper.epl.expression.ops
 
         public void ValidateWithoutContext()
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("The IN operator requires at least 2 child expressions");
             }
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
-    
+
             // Must be the same boxed type returned by expressions under this
             var typeOne = _evaluators[0].ReturnType.GetBoxedType();
-    
+
             // collections, array or map not supported
             if ((typeOne.IsArray) ||
                 (typeOne.IsGenericCollection()) ||
@@ -92,7 +95,7 @@ namespace com.espertech.esper.epl.expression.ops
             var comparedTypes = new List<Type> { typeOne };
             _hasCollectionOrArray = false;
 
-            var length = ChildNodes.Length - 1;
+            var length = ChildNodes.Count - 1;
             for (int i = 1; i <= length; i++)
             {
                 var propType = _evaluators[i].ReturnType;
@@ -125,17 +128,18 @@ namespace com.espertech.esper.epl.expression.ops
                     comparedTypes.Add(propType);
                 }
             }
-    
+
             // Determine common denominator type
             Type coercionType;
-            try {
+            try
+            {
                 coercionType = TypeHelper.GetCommonCoercionType(comparedTypes);
             }
             catch (CoercionException ex)
             {
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
-    
+
             // Check if we need to coerce
             _mustCoerce = false;
             if (coercionType.IsNumeric())
@@ -156,7 +160,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public Type ReturnType
         {
-            get { return typeof (bool?); }
+            get { return typeof(bool?); }
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
@@ -179,15 +183,15 @@ namespace com.espertech.esper.epl.expression.ops
         private bool? EvaluateInternal(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             var inPropResult = _evaluators[0].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
-    
+
             if (!_hasCollectionOrArray)
             {
                 if ((_mustCoerce) && (inPropResult != null))
                 {
                     inPropResult = _coercer.Invoke(inPropResult);
                 }
-    
-                int len = this.ChildNodes.Length - 1;
+
+                int len = this.ChildNodes.Count - 1;
                 if ((len > 0) && (inPropResult == null))
                 {
                     return null;
@@ -204,7 +208,7 @@ namespace com.espertech.esper.epl.expression.ops
                         hasNullRow = true;
                         continue;
                     }
-    
+
                     if (!_mustCoerce)
                     {
                         if (rightResult.Equals(inPropResult))
@@ -221,7 +225,7 @@ namespace com.espertech.esper.epl.expression.ops
                         }
                     }
                 }
-    
+
                 if (hasNullRow)
                 {
                     return null;
@@ -230,11 +234,12 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                var len = ChildNodes.Length - 1;
+                var len = ChildNodes.Count - 1;
                 var hasNullRow = false;
+                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
                 for (int i = 1; i <= len; i++)
                 {
-                    var rightResult = _evaluators[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                    var rightResult = _evaluators[i].Evaluate(evaluateParams);
                     if (_transformList[i] != null)
                         rightResult = _transformList[i](rightResult);
 
@@ -242,7 +247,7 @@ namespace com.espertech.esper.epl.expression.ops
                     {
                         continue;
                     }
-                    
+
                     if (rightResult is AnyMap)
                     {
                         if (inPropResult == null)
@@ -257,7 +262,7 @@ namespace com.espertech.esper.epl.expression.ops
                     }
                     else if (rightResult.GetType().IsArray)
                     {
-                        var array = (Array) rightResult;
+                        var array = (Array)rightResult;
                         int arrayLength = array.Length;
                         if ((arrayLength > 0) && (inPropResult == null))
                         {
@@ -329,7 +334,7 @@ namespace com.espertech.esper.epl.expression.ops
                         }
                     }
                 }
-    
+
                 if (hasNullRow)
                 {
                     return null;
@@ -349,11 +354,11 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 return false;
             }
-    
-            var other = (ExprInNodeImpl) node;
+
+            var other = (ExprInNodeImpl)node;
             return other._isNotIn == _isNotIn;
         }
-    
+
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
@@ -363,7 +368,7 @@ namespace com.espertech.esper.epl.expression.ops
             it.Current.ToEPL(writer, Precedence);
             writer.Write(_isNotIn ? " not in (" : " in (");
 
-            while(it.MoveNext())
+            while (it.MoveNext())
             {
                 ExprNode inSetValueExpr = it.Current;
                 writer.Write(delimiter);

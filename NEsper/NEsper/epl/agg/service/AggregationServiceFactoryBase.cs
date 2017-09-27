@@ -8,31 +8,32 @@
 
 using System;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.service
 {
     /// <summary>
-    /// All aggregation services require evaluation nodes which supply the value to be 
-    /// aggregated (summed, averaged, etc.) and aggregation state factories to make new 
-    /// aggregation states.
+    /// All aggregation services require evaluation nodes which supply the value to be aggregated (summed, averaged, etc.)
+    /// and aggregation state factories to make new aggregation states.
     /// </summary>
     public abstract class AggregationServiceFactoryBase : AggregationServiceFactory
     {
-        /// <summary>Evaluation nodes under. </summary>
+        /// <summary>Evaluation nodes under.</summary>
         protected ExprEvaluator[] Evaluators;
 
-        /// <summary>_prototype aggregation states and factories. </summary>
+        /// <summary>Prototype aggregation states and factories.</summary>
         protected AggregationMethodFactory[] Aggregators;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="evaluators">are the child node of each aggregation function used for computing the value to be aggregated</param>
-        /// <param name="aggregators">aggregation states/factories</param>
+        /// <param name="evaluators">- are the child node of each aggregation function used for computing the value to be aggregated</param>
+        /// <param name="aggregators">- aggregation states/factories</param>
         protected AggregationServiceFactoryBase(ExprEvaluator[] evaluators, AggregationMethodFactory[] aggregators)
         {
             Evaluators = evaluators;
@@ -44,6 +45,10 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
 
-        public abstract AggregationService MakeService(AgentInstanceContext agentInstanceContext, EngineImportService engineImportService, bool isSubquery, int? subqueryNumber);
+        public abstract AggregationService MakeService(
+            AgentInstanceContext agentInstanceContext,
+            EngineImportService engineImportService,
+            bool isSubquery,
+            int? subqueryNumber);
     }
-}
+} // end of namespace

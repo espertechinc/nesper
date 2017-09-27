@@ -10,21 +10,26 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.core.eval
 {
-    public class EvalInsertWildcardWrapper 
-        : EvalBaseMap
-        , SelectExprProcessor
+    public class EvalInsertWildcardWrapper : EvalBaseMap, SelectExprProcessor
     {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
         public EvalInsertWildcardWrapper(SelectExprContext selectExprContext, EventType resultEventType)
-                    : base(selectExprContext, resultEventType)
+            : base(selectExprContext, resultEventType)
         {
         }
-    
-        public override EventBean ProcessSpecific(IDictionary<String, Object> props, EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override EventBean ProcessSpecific(
+            IDictionary<string, Object> props,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean theEvent = eventsPerStream[0];
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
@@ -32,4 +37,4 @@ namespace com.espertech.esper.epl.core.eval
             return base.EventAdapterService.AdapterForTypedWrapper(theEvent, props, base.ResultEventType);
         }
     }
-}
+} // end of namespace

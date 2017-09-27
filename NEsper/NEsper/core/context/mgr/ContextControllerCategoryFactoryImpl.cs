@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
 
@@ -20,7 +17,10 @@ namespace com.espertech.esper.core.context.mgr
     {
 	    private readonly ContextStatePathValueBinding _binding;
 
-	    public ContextControllerCategoryFactoryImpl(ContextControllerFactoryContext factoryContext, ContextDetailCategory categorySpec, IList<FilterSpecCompiled> filtersSpecsNestedContexts)
+	    public ContextControllerCategoryFactoryImpl(
+	        ContextControllerFactoryContext factoryContext,
+	        ContextDetailCategory categorySpec,
+	        IList<FilterSpecCompiled> filtersSpecsNestedContexts)
             : base(factoryContext, categorySpec, filtersSpecsNestedContexts)
         {
 	        _binding = factoryContext.StateCache.GetBinding(typeof(int));    // the integer ordinal of the category

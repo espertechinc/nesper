@@ -12,105 +12,105 @@ using com.espertech.esper.pattern.guard;
 
 namespace com.espertech.esper.client.soda
 {
-	/// <summary>
-	/// Convenience factory for creating <see cref="PatternExpr"/> instances, which represent pattern expression trees.
-	/// <para>
-	/// Provides quick-access method to create all possible pattern expressions and provides typical parameter lists to each.
-	/// </para>
-	/// <para>
-	/// Note that only the typical parameter lists are provided and pattern expressions can allow adding
-	/// additional parameters.
-	/// </para>
-	/// <para>
-	/// Many expressions, for example logical AND and OR (conjunction and disjunction), allow
-	/// adding an unlimited number of additional sub-expressions to a pattern expression. For those pattern expressions
-	/// there are additional add methods.
-	/// </para>
-	/// </summary>
-	public class Patterns
-	{
-	    /// <summary>
-	    /// Pattern-every expression control the lifecycle of the pattern sub-expression.
-	    /// </summary>
-	    /// <param name="inner">sub-expression to the every-keyword</param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternEveryExpr Every(PatternExpr inner)
-	    {
-	        return new PatternEveryExpr(inner);
-	    }
+    /// <summary>
+    /// Convenience factory for creating <see cref="PatternExpr"/> instances, which represent pattern expression trees.
+    /// <para>
+    /// Provides quick-access method to create all possible pattern expressions and provides typical parameter lists to each.
+    /// </para>
+    /// <para>
+    /// Note that only the typical parameter lists are provided and pattern expressions can allow adding
+    /// additional parameters.
+    /// </para>
+    /// <para>
+    /// Many expressions, for example logical AND and OR (conjunction and disjunction), allow
+    /// adding an unlimited number of additional sub-expressions to a pattern expression. For those pattern expressions
+    /// there are additional add methods.
+    /// </para>
+    /// </summary>
+    public class Patterns
+    {
+        /// <summary>
+        /// Pattern-every expression control the lifecycle of the pattern sub-expression.
+        /// </summary>
+        /// <param name="inner">sub-expression to the every-keyword</param>
+        /// <returns>pattern expression</returns>
+        public static PatternEveryExpr Every(PatternExpr inner)
+        {
+            return new PatternEveryExpr(inner);
+        }
 
-	    /// <summary>
-	    /// Pattern-AND expression, allows adding sub-expressions that are connected by a logical AND.
-	    /// </summary>
-	    /// <returns>pattern expression representing the AND relationship</returns>
-	    public static PatternAndExpr And()
-	    {
-	        return new PatternAndExpr();
-	    }
+        /// <summary>
+        /// Pattern-AND expression, allows adding sub-expressions that are connected by a logical AND.
+        /// </summary>
+        /// <returns>pattern expression representing the AND relationship</returns>
+        public static PatternAndExpr And()
+        {
+            return new PatternAndExpr();
+        }
 
-	    /// <summary>
-	    /// Pattern-AND expression, allows adding sub-expressions that are connected by a logical AND.
-	    /// </summary>
-	    /// <param name="first">is the first pattern sub-expression to add to the AND</param>
-	    /// <param name="second">is a second pattern sub-expression to add to the AND</param>
-	    /// <param name="more">
-	    /// is optional additional pattern sub-expression to add to the AND
-	    /// </param>
-	    /// <returns>pattern expression representing the AND relationship</returns>
-	    public static PatternAndExpr And(PatternExpr first, PatternExpr second, params PatternExpr[] more)
-	    {
-	        return new PatternAndExpr(first, second, more);
-	    }
+        /// <summary>
+        /// Pattern-AND expression, allows adding sub-expressions that are connected by a logical AND.
+        /// </summary>
+        /// <param name="first">is the first pattern sub-expression to add to the AND</param>
+        /// <param name="second">is a second pattern sub-expression to add to the AND</param>
+        /// <param name="more">
+        /// is optional additional pattern sub-expression to add to the AND
+        /// </param>
+        /// <returns>pattern expression representing the AND relationship</returns>
+        public static PatternAndExpr And(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        {
+            return new PatternAndExpr(first, second, more);
+        }
 
-	    /// <summary>
-	    /// Pattern-OR expression, allows adding sub-expressions that are connected by a logical OR.
-	    /// </summary>
-	    /// <param name="first">is the first pattern sub-expression to add to the OR</param>
-	    /// <param name="second">is a second pattern sub-expression to add to the OR</param>
-	    /// <param name="more">
-	    /// is optional additional pattern sub-expression to add to the OR
-	    /// </param>
-	    /// <returns>pattern expression representing the OR relationship</returns>
-	    public static PatternOrExpr Or(PatternExpr first, PatternExpr second, params PatternExpr[] more)
-	    {
-	        return new PatternOrExpr(first, second, more);
-	    }
+        /// <summary>
+        /// Pattern-OR expression, allows adding sub-expressions that are connected by a logical OR.
+        /// </summary>
+        /// <param name="first">is the first pattern sub-expression to add to the OR</param>
+        /// <param name="second">is a second pattern sub-expression to add to the OR</param>
+        /// <param name="more">
+        /// is optional additional pattern sub-expression to add to the OR
+        /// </param>
+        /// <returns>pattern expression representing the OR relationship</returns>
+        public static PatternOrExpr Or(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        {
+            return new PatternOrExpr(first, second, more);
+        }
 
-	    /// <summary>
-	    /// Pattern-OR expression, allows adding sub-expressions that are connected by a logical OR.
-	    /// </summary>
-	    /// <returns>pattern expression representing the OR relationship</returns>
-	    public static PatternOrExpr Or()
-	    {
-	        return new PatternOrExpr();
-	    }
+        /// <summary>
+        /// Pattern-OR expression, allows adding sub-expressions that are connected by a logical OR.
+        /// </summary>
+        /// <returns>pattern expression representing the OR relationship</returns>
+        public static PatternOrExpr Or()
+        {
+            return new PatternOrExpr();
+        }
 
-	    /// <summary>
-	    /// Pattern followed-by expression, allows adding sub-expressions that are connected by a followed-by.
-	    /// </summary>
-	    /// <param name="first">
-	    /// is the first pattern sub-expression to add to the followed-by
-	    /// </param>
-	    /// <param name="second">
-	    /// is a second pattern sub-expression to add to the followed-by
-	    /// </param>
-	    /// <param name="more">
-	    /// is optional additional pattern sub-expression to add to the followed-by
-	    /// </param>
-	    /// <returns>pattern expression representing the followed-by relationship</returns>
-	    public static PatternFollowedByExpr FollowedBy(PatternExpr first, PatternExpr second, params PatternExpr[] more)
-	    {
-	        return new PatternFollowedByExpr(first, second, more);
-	    }
+        /// <summary>
+        /// Pattern followed-by expression, allows adding sub-expressions that are connected by a followed-by.
+        /// </summary>
+        /// <param name="first">
+        /// is the first pattern sub-expression to add to the followed-by
+        /// </param>
+        /// <param name="second">
+        /// is a second pattern sub-expression to add to the followed-by
+        /// </param>
+        /// <param name="more">
+        /// is optional additional pattern sub-expression to add to the followed-by
+        /// </param>
+        /// <returns>pattern expression representing the followed-by relationship</returns>
+        public static PatternFollowedByExpr FollowedBy(PatternExpr first, PatternExpr second, params PatternExpr[] more)
+        {
+            return new PatternFollowedByExpr(first, second, more);
+        }
 
-	    /// <summary>
-	    /// Pattern followed-by expression, allows adding sub-expressions that are connected by a followed-by.
-	    /// </summary>
-	    /// <returns>pattern expression representing the followed-by relationship</returns>
-	    public static PatternFollowedByExpr FollowedBy()
-	    {
-	        return new PatternFollowedByExpr();
-	    }
+        /// <summary>
+        /// Pattern followed-by expression, allows adding sub-expressions that are connected by a followed-by.
+        /// </summary>
+        /// <returns>pattern expression representing the followed-by relationship</returns>
+        public static PatternFollowedByExpr FollowedBy()
+        {
+            return new PatternFollowedByExpr();
+        }
 
         /// <summary>
         /// Pattern every-operator and filter in combination, equivalent to the "every
@@ -141,32 +141,32 @@ namespace com.espertech.esper.client.soda
             return new PatternEveryExpr(filter);
         }
 
-	    /// <summary>
-	    /// Pattern every-operator and filter in combination, equivalent to the "every MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternEveryExpr EveryFilter(Filter filter)
-	    {
-	        PatternExpr inner = new PatternFilterExpr(filter);
-	        return new PatternEveryExpr(inner);
-	    }
+        /// <summary>
+        /// Pattern every-operator and filter in combination, equivalent to the "every MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <returns>pattern expression</returns>
+        public static PatternEveryExpr EveryFilter(Filter filter)
+        {
+            PatternExpr inner = new PatternFilterExpr(filter);
+            return new PatternEveryExpr(inner);
+        }
 
-	    /// <summary>
-	    /// Pattern every-operator and filter in combination, equivalent to the "every tag=MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <param name="tagName">is the tag name to assign to matching events</param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternEveryExpr EveryFilter(Filter filter, String tagName)
-	    {
-	        PatternExpr inner = new PatternFilterExpr(filter, tagName);
-	        return new PatternEveryExpr(inner);
-	    }
+        /// <summary>
+        /// Pattern every-operator and filter in combination, equivalent to the "every tag=MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <param name="tagName">is the tag name to assign to matching events</param>
+        /// <returns>pattern expression</returns>
+        public static PatternEveryExpr EveryFilter(Filter filter, String tagName)
+        {
+            PatternExpr inner = new PatternFilterExpr(filter, tagName);
+            return new PatternEveryExpr(inner);
+        }
 
         /// <summary>
         /// Filter expression for use in patterns, equivalent to the simple "MyEvent"
@@ -195,30 +195,30 @@ namespace com.espertech.esper.client.soda
             return new PatternFilterExpr(soda.Filter.Create(eventTypeName), tagName);
         }
 
-	    /// <summary>
-	    /// Filter expression for use in patterns, equivalent to the "MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternFilterExpr Filter(Filter filter)
-	    {
-	        return new PatternFilterExpr(filter);
-	    }
+        /// <summary>
+        /// Filter expression for use in patterns, equivalent to the "MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <returns>pattern expression</returns>
+        public static PatternFilterExpr Filter(Filter filter)
+        {
+            return new PatternFilterExpr(filter);
+        }
 
-	    /// <summary>
-	    /// Filter expression for use in patterns, equivalent to the "tag=MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <param name="tagName">is the tag name to assign to matching events</param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternFilterExpr Filter(Filter filter, String tagName)
-	    {
-	        return new PatternFilterExpr(filter, tagName);
-	    }
+        /// <summary>
+        /// Filter expression for use in patterns, equivalent to the "tag=MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <param name="tagName">is the tag name to assign to matching events</param>
+        /// <returns>pattern expression</returns>
+        public static PatternFilterExpr Filter(Filter filter, String tagName)
+        {
+            return new PatternFilterExpr(filter, tagName);
+        }
 
         /// <summary>
         /// Guard pattern expression guards a sub-expression, equivalent to the "every MyEvent where timer:within(1 sec)" syntax
@@ -229,9 +229,9 @@ namespace com.espertech.esper.client.soda
         /// <param name="guarded">is the pattern sub-expression to be guarded</param>
         /// <returns>pattern guard expression</returns>
         public static PatternGuardExpr Guard(String @namespace, String name, Expression[] parameters, PatternExpr guarded)
-	    {
-	        return new PatternGuardExpr(@namespace, name, parameters, guarded);
-	    }
+        {
+            return new PatternGuardExpr(@namespace, name, parameters, guarded);
+        }
 
         /// <summary>
         /// Observer pattern expression, equivalent to the "every timer:interval(1 sec)" syntax
@@ -241,16 +241,16 @@ namespace com.espertech.esper.client.soda
         /// <param name="parameters">is the observer objects optional parameters, i.e. integer 1 for 1 second</param>
         /// <returns>pattern observer expression</returns>
         public static PatternObserverExpr Observer(String @namespace, String name, Expression[] parameters)
-	    {
-	        return new PatternObserverExpr(@namespace, name, parameters);
-	    }
+        {
+            return new PatternObserverExpr(@namespace, name, parameters);
+        }
 
-	    /// <summary>Timer-within guard expression.</summary>
-	    /// <param name="seconds">is the number of seconds for the guard</param>
-	    /// <param name="guarded">is the sub-expression to guard</param>
-	    /// <returns>pattern guard</returns>
-	    public static PatternGuardExpr TimerWithin(double seconds, PatternExpr guarded)
-	    {
+        /// <summary>Timer-within guard expression.</summary>
+        /// <param name="seconds">is the number of seconds for the guard</param>
+        /// <param name="guarded">is the sub-expression to guard</param>
+        /// <returns>pattern guard</returns>
+        public static PatternGuardExpr TimerWithin(double seconds, PatternExpr guarded)
+        {
             return new PatternGuardExpr("timer", "within", new Expression[] { Expressions.Constant(seconds) }, guarded);
         }
 
@@ -263,7 +263,7 @@ namespace com.espertech.esper.client.soda
             return new PatternGuardExpr(
                 GuardEnum.WHILE_GUARD.GetNamespace(),
                 GuardEnum.WHILE_GUARD.GetName(),
-                new [] { expression }, guarded);
+                new[] { expression }, guarded);
         }
 
         /// <summary>Timer-within-max guard expression. </summary>
@@ -279,13 +279,13 @@ namespace com.espertech.esper.client.soda
                 guarded);
         }
 
-	    /// <summary>Timer-interval observer expression.</summary>
-	    /// <param name="seconds">is the number of seconds in the interval</param>
-	    /// <returns>pattern observer</returns>
-	    public static PatternObserverExpr TimerInterval(double seconds)
-	    {
+        /// <summary>Timer-interval observer expression.</summary>
+        /// <param name="seconds">is the number of seconds in the interval</param>
+        /// <returns>pattern observer</returns>
+        public static PatternObserverExpr TimerInterval(double seconds)
+        {
             return new PatternObserverExpr("timer", "interval", new Expression[] { Expressions.Constant(seconds) });
-	    }
+        }
 
         /// <summary>
         /// Pattern not-operator and filter in combination, equivalent to the "not MyEvent"
@@ -314,40 +314,40 @@ namespace com.espertech.esper.client.soda
             return new PatternNotExpr(new PatternFilterExpr(soda.Filter.Create(name), tagName));
         }
 
-	    /// <summary>
-	    /// Pattern not-operator and filter in combination, equivalent to the "not MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternNotExpr NotFilter(Filter filter)
-	    {
-	        return new PatternNotExpr(new PatternFilterExpr(filter));
-	    }
+        /// <summary>
+        /// Pattern not-operator and filter in combination, equivalent to the "not MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <returns>pattern expression</returns>
+        public static PatternNotExpr NotFilter(Filter filter)
+        {
+            return new PatternNotExpr(new PatternFilterExpr(filter));
+        }
 
-	    /// <summary>
-	    /// Pattern not-operator and filter in combination, equivalent to the "not tag=MyEvent(vol &gt; 100)" syntax.
-	    /// </summary>
-	    /// <param name="filter">
-	    /// specifies the event type name and filter expression to filter for
-	    /// </param>
-	    /// <param name="tagName">is the tag name to assign to matching events</param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternNotExpr NotFilter(Filter filter, String tagName)
-	    {
-	        return new PatternNotExpr(new PatternFilterExpr(filter, tagName));
-	    }
+        /// <summary>
+        /// Pattern not-operator and filter in combination, equivalent to the "not tag=MyEvent(vol &gt; 100)" syntax.
+        /// </summary>
+        /// <param name="filter">
+        /// specifies the event type name and filter expression to filter for
+        /// </param>
+        /// <param name="tagName">is the tag name to assign to matching events</param>
+        /// <returns>pattern expression</returns>
+        public static PatternNotExpr NotFilter(Filter filter, String tagName)
+        {
+            return new PatternNotExpr(new PatternFilterExpr(filter, tagName));
+        }
 
-	    /// <summary>
-	    /// Not-keyword pattern expression flips the truth-value of the pattern sub-expression.
-	    /// </summary>
-	    /// <param name="subexpression">is the expression whose truth value to flip</param>
-	    /// <returns>pattern expression</returns>
-	    public static PatternNotExpr Not(PatternExpr subexpression)
-	    {
-	        return new PatternNotExpr(subexpression);
-	    }
+        /// <summary>
+        /// Not-keyword pattern expression flips the truth-value of the pattern sub-expression.
+        /// </summary>
+        /// <param name="subexpression">is the expression whose truth value to flip</param>
+        /// <returns>pattern expression</returns>
+        public static PatternNotExpr Not(PatternExpr subexpression)
+        {
+            return new PatternNotExpr(subexpression);
+        }
 
         /// <summary>
         /// Match-until-pattern expression matches a certain number of
@@ -386,5 +386,5 @@ namespace com.espertech.esper.client.soda
             paramList.Add(seconds == null ? wildcard : Expressions.Constant(seconds));
             return new PatternObserverExpr("timer", "at", paramList);
         }
-	}
+    }
 } // End of namespace

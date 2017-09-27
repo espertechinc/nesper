@@ -217,7 +217,7 @@ namespace com.espertech.esper.core.context.mgr
                     _rootContext.Factory.FactoryContext.StateCache.RemoveContextPath(
                         _contextName, leaf.Key.Level, leaf.Key.ParentPath, leaf.Key.SubPath);
                     var descriptor = visitor.AgentInstanceInfo.Get(agentInstanceId);
-                    var nestedIdent = (ContextPartitionIdentifierNested) descriptor.Identifier;
+                    var nestedIdent = (ContextPartitionIdentifierNested)descriptor.Identifier;
                     entry.Key.DeletePath(nestedIdent.Identifiers[_nestedContextFactories.Length - 1]);
                 }
             }
@@ -261,7 +261,7 @@ namespace com.espertech.esper.core.context.mgr
             IList<ContextPartitionSelector[]> selectors;
             if (selector is ContextPartitionSelectorNested)
             {
-                var nested = (ContextPartitionSelectorNested) selector;
+                var nested = (ContextPartitionSelectorNested)selector;
                 selectors = nested.Selectors;
             }
             else if (selector is ContextPartitionSelectorAll)
@@ -300,7 +300,7 @@ namespace com.espertech.esper.core.context.mgr
             {
                 Activate(); // this may itself trigger a callback
             }
-                // activate statement in respect to existing context partitions
+            // activate statement in respect to existing context partitions
             else
             {
                 foreach (var subcontext in _subcontexts)
@@ -383,7 +383,7 @@ namespace com.espertech.esper.core.context.mgr
             byte[] payload,
             bool isRecoveringResilient)
         {
-            var nestedHandle = (ContextManagerNestedInstanceHandle) existingHandle;
+            var nestedHandle = (ContextManagerNestedInstanceHandle)existingHandle;
 
             // detect non-leaf
             var nestingLevel = originator.Factory.FactoryContext.NestingLevel; // starts at 1 for root
@@ -612,7 +612,7 @@ namespace com.espertech.esper.core.context.mgr
             bool leaveLocksAcquired,
             IList<AgentInstance> agentInstances)
         {
-            var handle = (ContextManagerNestedInstanceHandle) contextNestedHandle;
+            var handle = (ContextManagerNestedInstanceHandle)contextNestedHandle;
             if (handle.IsBranch)
             {
                 var branchHandle = handle;
@@ -925,7 +925,7 @@ namespace com.espertech.esper.core.context.mgr
                     if (instancesList != null)
                     {
                         var instanceIt = instancesList.AgentInstances.GetEnumerator();
-                        while(instanceIt.MoveNext())
+                        while (instanceIt.MoveNext())
                         {
                             var instance = instanceIt.Current;
                             if (instance.AgentInstanceContext.StatementContext.StatementId == statementId)
@@ -943,7 +943,7 @@ namespace com.espertech.esper.core.context.mgr
         {
             if (selector is ContextPartitionSelectorById)
             {
-                var byId = (ContextPartitionSelectorById) selector;
+                var byId = (ContextPartitionSelectorById)selector;
                 var ids = byId.ContextPartitionIds;
                 if (ids == null || ids.IsEmpty())
                 {
@@ -959,7 +959,7 @@ namespace com.espertech.esper.core.context.mgr
             }
             else if (selector is ContextPartitionSelectorNested)
             {
-                var nested = (ContextPartitionSelectorNested) selector;
+                var nested = (ContextPartitionSelectorNested)selector;
                 var visitor = new ContextPartitionVisitorAgentInstanceIdWPath(_nestedContextFactories.Length);
                 foreach (var item in nested.Selectors)
                 {
@@ -1002,7 +1002,7 @@ namespace com.espertech.esper.core.context.mgr
                     }
                 }
             }
-                // handle leaf
+            // handle leaf
             else
             {
                 currentContext.VisitSelectedPartitions(selector, visitor);

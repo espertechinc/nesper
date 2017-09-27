@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have a single child node
-            if (ChildNodes.Length != 1)
+            if (ChildNodes.Count != 1)
             {
                 throw new ExprValidationException("The NOT node requires exactly 1 child node");
             }

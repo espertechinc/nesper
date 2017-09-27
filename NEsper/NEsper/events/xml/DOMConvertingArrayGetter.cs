@@ -22,9 +22,9 @@ namespace com.espertech.esper.events.xml
     /// </summary>
     public class DOMConvertingArrayGetter : EventPropertyGetter
     {
-        private readonly Type componentType;
-        private readonly DOMPropertyGetter getter;
-        private readonly SimpleTypeParser parser;
+        private readonly Type _componentType;
+        private readonly DOMPropertyGetter _getter;
+        private readonly SimpleTypeParser _parser;
 
         /// <summary>
         /// Ctor.
@@ -33,9 +33,9 @@ namespace com.espertech.esper.events.xml
         /// <param name="returnType">component type</param>
         public DOMConvertingArrayGetter(DOMPropertyGetter domPropertyGetter, Type returnType)
         {
-            getter = domPropertyGetter;
-            componentType = returnType;
-            parser = SimpleTypeParserFactory.GetParser(returnType);
+            _getter = domPropertyGetter;
+            _componentType = returnType;
+            _parser = SimpleTypeParserFactory.GetParser(returnType);
         }
 
         #region EventPropertyGetter Members
@@ -48,19 +48,19 @@ namespace com.espertech.esper.events.xml
                                                   "the underlying data object is not of type Node");
             }
 
-            var result = getter.GetValueAsNodeArray(asXml);
+            var result = _getter.GetValueAsNodeArray(asXml);
             if (result == null) {
                 return null;
             }
 
-            var array = Array.CreateInstance(componentType, result.Length);
+            var array = Array.CreateInstance(_componentType, result.Length);
             for (int i = 0; i < result.Length; i++) {
                 var text = result[i].InnerText;
                 if (string.IsNullOrEmpty(text)) {
                     continue;
                 }
 
-                var parseResult = parser.Invoke(text);
+                var parseResult = _parser.Invoke(text);
                 array.SetValue(parseResult, i);
             }
 

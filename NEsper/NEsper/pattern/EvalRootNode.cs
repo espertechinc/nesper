@@ -15,15 +15,15 @@ namespace com.espertech.esper.pattern
     /// expression. It hold the handle to the EPStatement implementation for notifying 
     /// when matches are found.
     /// </summary>
-    public class EvalRootNode 
+    public class EvalRootNode
         : EvalNodeBase
         , PatternStarter
     {
         private readonly EvalRootFactoryNode _factoryNode;
         private readonly EvalNode _childNode;
-    
+
         public EvalRootNode(PatternAgentInstanceContext context, EvalRootFactoryNode factoryNode, EvalNode childNode)
-                    : base(context)
+            : base(context)
         {
             _factoryNode = factoryNode;
             _childNode = childNode;
@@ -52,22 +52,23 @@ namespace com.espertech.esper.pattern
         {
             return StartInternal(callback, context, beginState, isRecoveringResilient);
         }
-    
+
         protected EvalRootState StartInternal(PatternMatchCallback callback,
                                                PatternContext context,
                                                MatchedEventMap beginState,
                                                bool isRecoveringResilient)
         {
-            if (beginState == null) {
+            if (beginState == null)
+            {
                 throw new ArgumentException("No pattern begin-state has been provided");
             }
             var rootStateNode = NewState(null, null, 0L);
-            var rootState = (EvalRootState) rootStateNode;
+            var rootState = (EvalRootState)rootStateNode;
             rootState.Callback = callback;
             rootState.StartRecoverable(isRecoveringResilient, beginState);
             return rootState;
         }
-    
+
         public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
         {
             return new EvalRootStateNode(_childNode);

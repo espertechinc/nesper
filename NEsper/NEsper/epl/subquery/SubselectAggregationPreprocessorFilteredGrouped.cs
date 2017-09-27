@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.subquery
 {
@@ -20,9 +19,9 @@ namespace com.espertech.esper.epl.subquery
     {
         public SubselectAggregationPreprocessorFilteredGrouped(
             AggregationService aggregationService,
-            ExprEvaluator filterExpr,
+            ExprEvaluator filterEval,
             ExprEvaluator[] groupKeys)
-            : base(aggregationService, filterExpr, groupKeys)
+            : base(aggregationService, filterEval, groupKeys)
         {
         }
 
@@ -36,16 +35,15 @@ namespace com.espertech.esper.epl.subquery
             {
                 return;
             }
-
             var events = new EventBean[eventsPerStream.Length + 1];
             Array.Copy(eventsPerStream, 0, events, 1, eventsPerStream.Length);
-
             var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
+
             foreach (EventBean subselectEvent in matchingEvents)
             {
                 events[0] = subselectEvent;
-                var pass = (bool?) FilterExpr.Evaluate(evaluateParams);
-                if (pass ?? false)
+                var pass = FilterEval.Evaluate(evaluateParams);
+                if (true.Equals(pass))
                 {
                     Object groupKey = GenerateGroupKey(events, true, exprEvaluatorContext);
                     AggregationService.ApplyEnter(events, groupKey, exprEvaluatorContext);
@@ -53,4 +51,4 @@ namespace com.espertech.esper.epl.subquery
             }
         }
     }
-}
+} // end of namespace

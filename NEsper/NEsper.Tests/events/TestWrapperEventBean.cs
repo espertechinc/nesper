@@ -10,8 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -32,7 +33,7 @@ namespace com.espertech.esper.events
     	{
     		_eventService = SupportEventAdapterService.Service;
     		EventType underlyingEventTypeSimple = _eventService.AddBeanType("UnderlyingSimpleBean", typeof(SupportBeanSimple), true, true, true);
-    		EventType underlyingEventTypeCombined = _eventService.AddBeanType("UnderlyingCombinedBean", typeof(SupportBeanCombinedProps),true, true, true);
+    		EventType underlyingEventTypeCombined = _eventService.AddBeanType("UnderlyingCombinedBean", typeof(SupportBeanCombinedProps), true, true, true);
     		
     		IDictionary<String, Object> typeMap = new Dictionary<String, Object>();
     		typeMap["string"] = typeof(string);

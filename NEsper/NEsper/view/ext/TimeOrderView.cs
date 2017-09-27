@@ -160,11 +160,11 @@ namespace com.espertech.esper.view.ext
                 {
                     // figure out the current tail time
                     long engineTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-                    long windowTailTime = engineTime - _timeDeltaComputation.DeltaMillisecondsAdd(engineTime) + 1;
+                    long windowTailTime = engineTime - _timeDeltaComputation.DeltaAdd(engineTime) + 1;
                     long oldestEvent = long.MaxValue;
                     if (_sortedEvents.IsNotEmpty())
                     {
-                        oldestEvent = (long) _sortedEvents.Keys.First();
+                        oldestEvent = (long)_sortedEvents.Keys.First();
                     }
                     bool addedOlderEvent = false;
 
@@ -216,7 +216,7 @@ namespace com.espertech.esper.view.ext
                             // We may need to reschedule, and older event may have been added
                             if (addedOlderEvent)
                             {
-                                oldestEvent = (long) _sortedEvents.Keys.First();
+                                oldestEvent = (long)_sortedEvents.Keys.First();
                                 long callbackWait = oldestEvent - windowTailTime + 1;
                                 _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
                                 _agentInstanceContext.StatementContext.SchedulingService.Add(
@@ -272,7 +272,7 @@ namespace com.espertech.esper.view.ext
         {
             _eventsPerStream[0] = newEvent;
             return
-                (long?) _timestampEvaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, _agentInstanceContext));
+                (long?)_timestampEvaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, _agentInstanceContext));
         }
 
         /// <summary>True to indicate the sort window is empty, or false if not empty. </summary>
@@ -305,7 +305,7 @@ namespace com.espertech.esper.view.ext
         protected void Expire()
         {
             long currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            long expireBeforeTimestamp = currentTime - _timeDeltaComputation.DeltaMillisecondsSubtract(currentTime) + 1;
+            long expireBeforeTimestamp = currentTime - _timeDeltaComputation.DeltaSubtract(currentTime) + 1;
             _isCallbackScheduled = false;
 
             IList<EventBean> releaseEvents = null;
@@ -318,7 +318,7 @@ namespace com.espertech.esper.view.ext
                     break;
                 }
 
-                oldestKey = (long) _sortedEvents.Keys.First();
+                oldestKey = (long)_sortedEvents.Keys.First();
                 if (oldestKey >= expireBeforeTimestamp)
                 {
                     break;
@@ -329,7 +329,7 @@ namespace com.espertech.esper.view.ext
                 {
                     if (released is IList<EventBean>)
                     {
-                        var releasedEventList = (IList<EventBean>) released;
+                        var releasedEventList = (IList<EventBean>)released;
                         if (releaseEvents == null)
                         {
                             releaseEvents = releasedEventList;
@@ -343,7 +343,7 @@ namespace com.espertech.esper.view.ext
                     }
                     else
                     {
-                        var releasedEvent = (EventBean) released;
+                        var releasedEvent = (EventBean)released;
                         if (releaseEvents == null)
                         {
                             releaseEvents = new List<EventBean>(4);

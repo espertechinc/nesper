@@ -33,7 +33,7 @@ namespace com.espertech.esper.client.context
         /// </summary>
         /// <param name="contextName">context name</param>
         /// <returns>nesting level</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         int GetContextNestingLevel(string contextName);
     
         /// <summary>
@@ -46,7 +46,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="selector">a selector that identifies the context partitions</param>
         /// <returns>collection of the destroyed context partition ids and descriptors</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ContextPartitionCollection DestroyContextPartitions(string contextName, ContextPartitionSelector selector);
     
@@ -61,7 +61,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="selector">a selector that identifies the context partitions</param>
         /// <returns>collection of the stopped context partition ids and descriptors</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ContextPartitionCollection StopContextPartitions(string contextName, ContextPartitionSelector selector);
     
@@ -75,7 +75,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="selector">a selector that identifies the context partitions</param>
         /// <returns>collection of the started context partition ids and descriptors</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ContextPartitionCollection StartContextPartitions(string contextName, ContextPartitionSelector selector);
     
@@ -85,7 +85,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="selector">a selector that identifies the context partitions</param>
         /// <returns>collection of the context partition ids and descriptors</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ContextPartitionCollection GetContextPartitions(string contextName, ContextPartitionSelector selector);
     
@@ -95,7 +95,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="selector">a selector that identifies the context partitions</param>
         /// <returns>set of the context partition ids</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         /// <throws>InvalidContextPartitionSelector if the selector type and context declaration mismatch</throws>
         ISet<int> GetContextPartitionIds(string contextName, ContextPartitionSelector selector);
     
@@ -108,7 +108,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="agentInstanceId">the context partition id number</param>
         /// <returns>descriptor or null if the context partition is not found</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         ContextPartitionDescriptor DestroyContextPartition(string contextName, int agentInstanceId);
     
         /// <summary>
@@ -117,7 +117,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="agentInstanceId">the context partition id number</param>
         /// <returns>descriptor or null if the context partition is not found or is already stopped</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         ContextPartitionDescriptor StopContextPartition(string contextName, int agentInstanceId);
     
         /// <summary>
@@ -126,7 +126,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="agentInstanceId">the context partition id number</param>
         /// <returns>descriptor or null if the context partition is not found or is already started</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         ContextPartitionDescriptor StartContextPartition(string contextName, int agentInstanceId);
     
         /// <summary>
@@ -135,7 +135,7 @@ namespace com.espertech.esper.client.context
         /// <param name="contextName">context name</param>
         /// <param name="agentInstanceId">the context partition id number</param>
         /// <returns>descriptor or null if the context partition is not found</returns>
-        /// <throws>IllegalArgumentException if a context by that name was not declared</throws>
+        /// <throws>ArgumentException if a context by that name was not declared</throws>
         ContextPartitionDescriptor GetDescriptor(string contextName, int agentInstanceId);
     }
 }

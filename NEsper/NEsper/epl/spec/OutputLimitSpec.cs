@@ -48,9 +48,9 @@ namespace com.espertech.esper.epl.spec
                                bool isAndAfterTerminate,
                                ExprNode andAfterTerminateExpr,
                                IList<OnTriggerSetAssignment> andAfterTerminateSetExpressions)
-    	{
-    		Rate = rate;
-    		DisplayLimit = displayLimit;
+        {
+            Rate = rate;
+            DisplayLimit = displayLimit;
             VariableName = variableForRate;
             RateType = rateType;
             CrontabAtSchedule = crontabAtSchedule;

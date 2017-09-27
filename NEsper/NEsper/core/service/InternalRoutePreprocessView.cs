@@ -26,16 +26,16 @@ namespace com.espertech.esper.core.service
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventType _eventType;
         private readonly StatementResultService _statementResultService;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="eventType">the type of event to indicator</param>
         /// <param name="statementResultService">determines whether listeners or subscribers are attached.</param>
         public InternalRoutePreprocessView(EventType eventType, StatementResultService statementResultService)
         {
             _eventType = eventType;
-            _statementResultService =  statementResultService;
+            _statementResultService = statementResultService;
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled))
@@ -72,13 +72,13 @@ namespace com.espertech.esper.core.service
             {
                 if (_statementResultService.IsMakeNatural)
                 {
-                    var natural = new NaturalEventBean(_eventType, new Object[] {newEvent.Underlying}, newEvent);
-                    var naturalOld = new NaturalEventBean(_eventType, new Object[] {oldEvent.Underlying}, oldEvent);
-                    UpdateChildren(new NaturalEventBean[]{natural}, new NaturalEventBean[]{naturalOld});
+                    var natural = new NaturalEventBean(_eventType, new Object[] { newEvent.Underlying }, newEvent);
+                    var naturalOld = new NaturalEventBean(_eventType, new Object[] { oldEvent.Underlying }, oldEvent);
+                    UpdateChildren(new NaturalEventBean[] { natural }, new NaturalEventBean[] { naturalOld });
                 }
                 else
                 {
-                    UpdateChildren(new EventBean[]{newEvent}, new EventBean[]{oldEvent});
+                    UpdateChildren(new EventBean[] { newEvent }, new EventBean[] { oldEvent });
                 }
             }
             catch (Exception ex)

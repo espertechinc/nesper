@@ -207,8 +207,7 @@ namespace com.espertech.esper.core.service
             MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
             ExprDeclaredService = exprDeclaredService;
-            ExpressionResultCacheSharable = new ExpressionResultCacheService(
-                configSnapshot.EngineDefaults.ExecutionConfig.DeclaredExprValueCacheSize);
+            ExpressionResultCacheSharable = new ExpressionResultCacheService(configSnapshot.EngineDefaults.Execution.DeclaredExprValueCacheSize);
             ContextControllerFactoryFactorySvc = contextControllerFactoryFactorySvc;
             ContextManagerFactoryService = contextManagerFactoryService;
             EpStatementFactory = epStatementFactory;
@@ -414,7 +413,7 @@ namespace com.espertech.esper.core.service
         public NamedWindowConsumerMgmtService NamedWindowConsumerMgmtService { get; private set; }
 
         public AggregationFactoryFactory AggregationFactoryFactory { get; private set; }
-        
+
         /// <summary>Sets the service dealing with starting and stopping statements. </summary>
         /// <param name="statementLifecycleSvc">statement lifycycle svc</param>
         public void SetStatementLifecycleSvc(StatementLifecycleSvc statementLifecycleSvc)

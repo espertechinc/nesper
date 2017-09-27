@@ -88,7 +88,7 @@ namespace com.espertech.esper.events.xml
         {
             EsperEPL2GrammarParser.StartEventPropertyRuleContext ast = PropertyParser.Parse(propertyExpression);
             return PropertyParser.IsPropertyDynamic(ast)
-                ? typeof(XmlNode) 
+                ? typeof(XmlNode)
                 : typeof(string);
         }
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.events.xml
 
             if (!ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr)
             {
-                Property prop = PropertyParser.ParseAndWalk(propertyExpression);
+                Property prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                 getter = prop.GetGetterDOM();
                 if (!prop.IsDynamic)
                 {
@@ -116,10 +116,10 @@ namespace com.espertech.esper.events.xml
                     var ast = PropertyParser.Parse(propertyExpression);
                     var isDynamic = PropertyParser.IsPropertyDynamic(ast);
                     var xPathExpr = SimpleXMLPropertyParser.Walk(
-                        ast, 
-                        propertyExpression, 
-                        RootElementName, 
-                        _defaultNamespacePrefix, 
+                        ast,
+                        propertyExpression,
+                        RootElementName,
+                        _defaultNamespacePrefix,
                         _isResolvePropertiesAbsolute);
 
                     if (Log.IsInfoEnabled)

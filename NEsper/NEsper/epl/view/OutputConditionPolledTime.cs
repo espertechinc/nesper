@@ -10,35 +10,38 @@ using com.espertech.esper.core.context.util;
 
 namespace com.espertech.esper.epl.view
 {
-	public sealed class OutputConditionPolledTime : OutputConditionPolled
-	{
-	    private readonly OutputConditionPolledTimeFactory _factory;
-	    private readonly AgentInstanceContext _context;
-	    private readonly OutputConditionPolledTimeState _state;
+    public sealed class OutputConditionPolledTime : OutputConditionPolled
+    {
+        private readonly OutputConditionPolledTimeFactory _factory;
+        private readonly AgentInstanceContext _context;
+        private readonly OutputConditionPolledTimeState _state;
 
-	    public OutputConditionPolledTime(OutputConditionPolledTimeFactory factory, AgentInstanceContext context, OutputConditionPolledTimeState state)
+        public OutputConditionPolledTime(
+            OutputConditionPolledTimeFactory factory,
+            AgentInstanceContext context,
+            OutputConditionPolledTimeState state)
         {
-	        _factory = factory;
-	        _context = context;
-	        _state = state;
-	    }
+            _factory = factory;
+            _context = context;
+            _state = state;
+        }
 
-	    public OutputConditionPolledState State
-	    {
-	        get { return _state; }
-	    }
+        public OutputConditionPolledState State
+        {
+            get { return _state; }
+        }
 
-	    public bool UpdateOutputCondition(int newEventsCount, int oldEventsCount)
-	    {
-	        // If we pull the interval from a variable, then we may need to reschedule
-	        var msecIntervalSize = _factory.TimePeriod.NonconstEvaluator().DeltaMillisecondsUseEngineTime(null, _context);
-	        var current = _context.TimeProvider.Time;
-	        if (_state.LastUpdate == null || current - _state.LastUpdate >= msecIntervalSize)
+        public bool UpdateOutputCondition(int newEventsCount, int oldEventsCount)
+        {
+            // If we pull the interval from a variable, then we may need to reschedule
+            var msecIntervalSize = _factory.TimePeriod.NonconstEvaluator().DeltaUseEngineTime(null, _context);
+            var current = _context.TimeProvider.Time;
+            if (_state.LastUpdate == null || current - _state.LastUpdate >= msecIntervalSize)
             {
-	            _state.LastUpdate = current;
-	            return true;
-	        }
-	        return false;
-	    }
-	}
+                _state.LastUpdate = current;
+                return true;
+            }
+            return false;
+        }
+    }
 } // end of namespace

@@ -93,7 +93,7 @@ namespace com.espertech.esper.client.soda
         public bool? OptionalTypeIsPrimitiveArray { get; set; }
 
         /// <summary>
-        /// Render create-table column
+        /// RenderAny create-table column
         /// </summary>
         /// <param name="writer">to render to</param>
         public void ToEPL(TextWriter writer)

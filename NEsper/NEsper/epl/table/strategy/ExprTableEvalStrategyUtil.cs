@@ -30,7 +30,9 @@ namespace com.espertech.esper.epl.table.strategy
         internal static IDictionary<String, object> EvalMap(ObjectArrayBackedEventBean @event, AggregationRowPair row, IDictionary<String, TableMetadataColumn> items, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
         {
             var cols = new Dictionary<string, object>();
-            foreach (var entry in items) {
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
+            foreach (var entry in items)
+            {
                 if (entry.Value is TableMetadataColumnPlain) {
                     var plain = (TableMetadataColumnPlain) entry.Value;
                     cols.Put(entry.Key, @event.Properties[plain.IndexPlain]);
@@ -42,7 +44,7 @@ namespace com.espertech.esper.epl.table.strategy
                     }
                     else {
                         var pair = aggcol.AccessAccessorSlotPair;
-                        var value = pair.Accessor.GetValue(row.States[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+                        var value = pair.Accessor.GetValue(row.States[pair.Slot], evaluateParams);
                         cols.Put(entry.Key, value);
                     }
                 }
@@ -58,6 +60,7 @@ namespace com.espertech.esper.epl.table.strategy
                                              ExprEvaluatorContext exprEvaluatorContext)
         {
             var values = new object[items.Count];
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             var count = 0;
             foreach (var entry in items)
             {
@@ -76,7 +79,7 @@ namespace com.espertech.esper.epl.table.strategy
                     else
                     {
                         var pair = aggcol.AccessAccessorSlotPair;
-                        values[count] = pair.Accessor.GetValue(row.States[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+                        values[count] = pair.Accessor.GetValue(row.States[pair.Slot], evaluateParams);
                     }
                 }
                 count++;
@@ -86,22 +89,22 @@ namespace com.espertech.esper.epl.table.strategy
     
         internal static object EvalAccessorGetValue(AggregationRowPair row, AggregationAccessorSlotPair pair, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
-            return pair.Accessor.GetValue(row.States[pair.Slot], eventsPerStream, newData, context);
+            return pair.Accessor.GetValue(row.States[pair.Slot], new EvaluateParams(eventsPerStream, newData, context));
         }
     
         internal static ICollection<EventBean> EvalGetROCollectionEvents(AggregationRowPair row, AggregationAccessorSlotPair pair, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
-            return pair.Accessor.GetEnumerableEvents(row.States[pair.Slot], eventsPerStream, newData, context);
+            return pair.Accessor.GetEnumerableEvents(row.States[pair.Slot], new EvaluateParams(eventsPerStream, newData, context));
         }
     
         internal static EventBean EvalGetEventBean(AggregationRowPair row, AggregationAccessorSlotPair pair, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
-            return pair.Accessor.GetEnumerableEvent(row.States[pair.Slot], eventsPerStream, newData, context);
+            return pair.Accessor.GetEnumerableEvent(row.States[pair.Slot], new EvaluateParams(eventsPerStream, newData, context));
         }
     
         internal static ICollection<object> EvalGetROCollectionScalar(AggregationRowPair row, AggregationAccessorSlotPair pair, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext context)
         {
-            return pair.Accessor.GetEnumerableScalar(row.States[pair.Slot], eventsPerStream, newData, context);
+            return pair.Accessor.GetEnumerableScalar(row.States[pair.Slot], new EvaluateParams(eventsPerStream, newData, context));
         }
     
         internal static object EvalMethodGetValue(AggregationRowPair row, int index)

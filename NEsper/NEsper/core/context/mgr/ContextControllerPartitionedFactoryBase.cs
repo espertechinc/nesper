@@ -36,6 +36,11 @@ namespace com.espertech.esper.core.context.mgr
 	        _filtersSpecsNestedContexts = filtersSpecsNestedContexts;
 	    }
 
+	    internal IList<FilterSpecCompiled> FiltersSpecsNestedContexts
+	    {
+	        get { return _filtersSpecsNestedContexts; }
+	    }
+
 	    public bool HasFiltersSpecsNestedContexts
 	    {
 	        get { return _filtersSpecsNestedContexts != null && !_filtersSpecsNestedContexts.IsEmpty(); }
@@ -43,20 +48,20 @@ namespace com.espertech.esper.core.context.mgr
 
 	    public override void ValidateFactory()
         {
-	        Type[] propertyTypes = ContextControllerPartitionedUtil.ValidateContextDesc(_factoryContext.ContextName, _segmentedSpec);
+	        Type[] propertyTypes = ContextControllerPartitionedUtil.ValidateContextDesc(FactoryContext.ContextName, _segmentedSpec);
 	        _contextBuiltinProps = ContextPropertyEventType.GetPartitionType(_segmentedSpec, propertyTypes);
 	    }
 
 	    public override ContextControllerStatementCtxCache ValidateStatement(ContextControllerStatementBase statement)
         {
 	        StatementSpecCompiledAnalyzerResult streamAnalysis = StatementSpecCompiledAnalyzer.AnalyzeFilters(statement.StatementSpec);
-	        ContextControllerPartitionedUtil.ValidateStatementForContext(_factoryContext.ContextName, statement, streamAnalysis, GetItemEventTypes(_segmentedSpec), _factoryContext.ServicesContext.NamedWindowMgmtService);
+	        ContextControllerPartitionedUtil.ValidateStatementForContext(FactoryContext.ContextName, statement, streamAnalysis, GetItemEventTypes(_segmentedSpec), FactoryContext.ServicesContext.NamedWindowMgmtService);
 	        return new ContextControllerStatementCtxCacheFilters(streamAnalysis.Filters);
 	    }
 
 	    public override void PopulateFilterAddendums(IDictionary<FilterSpecCompiled, FilterValueSetParam[][]> filterAddendum, ContextControllerStatementDesc statement, object key, int contextId)
         {
-	        ContextControllerStatementCtxCacheFilters statementInfo = (ContextControllerStatementCtxCacheFilters) statement.Caches[_factoryContext.NestingLevel - 1];
+	        ContextControllerStatementCtxCacheFilters statementInfo = (ContextControllerStatementCtxCacheFilters) statement.Caches[FactoryContext.NestingLevel - 1];
 	        ContextControllerPartitionedUtil.PopulateAddendumFilters(key, statementInfo.FilterSpecs, _segmentedSpec, statement.Statement.StatementSpec, filterAddendum);
 	    }
 

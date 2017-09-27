@@ -9,22 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat.logging;
-
 namespace com.espertech.esper.rowregex
 {
-    /// <summary>
-    /// Nested () regular expression in a regex expression tree.
-    /// </summary>
+    /// <summary>Nested () regular expression in a regex expression tree.</summary>
     [Serializable]
     public class RowRegexExprNodeNested : RowRegexExprNode
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="type">multiplicity and greedy</param>
         public RowRegexExprNodeNested(RegexNFATypeEnum type, RowRegexExprRepeatDesc optionalRepeat)
         {
             NFAType = type;
@@ -34,17 +24,9 @@ namespace com.espertech.esper.rowregex
         /// <summary>
         /// Returns multiplicity and greedy.
         /// </summary>
-        /// <returns>
-        /// type
-        /// </returns>
+        /// <value>type</value>
         public RegexNFATypeEnum NFAType { get; private set; }
 
-        /// <summary>
-        /// Returns the optional repeat information.
-        /// </summary>
-        /// <value>
-        /// The optional repeat.
-        /// </value>
         public RowRegexExprRepeatDesc OptionalRepeat { get; private set; }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -58,4 +40,4 @@ namespace com.espertech.esper.rowregex
             get { return RowRegexExprNodePrecedenceEnum.GROUPING; }
         }
     }
-}
+} // end of namespace

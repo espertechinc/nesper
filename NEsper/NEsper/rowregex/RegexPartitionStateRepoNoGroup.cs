@@ -89,7 +89,8 @@ namespace com.espertech.esper.rowregex
             }
             else
             {
-                foreach (EventBean oldEvent in oldEvents) {
+                foreach (EventBean oldEvent in oldEvents)
+                {
                     countRemoved += _singletonState.RemoveEventFromState(oldEvent);
                 }
             }

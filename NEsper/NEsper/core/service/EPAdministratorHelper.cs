@@ -8,10 +8,12 @@
 
 using System;
 
+using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.epl.core;
@@ -26,18 +28,21 @@ using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>Helper class for administrative interface. </summary>
+    /// <summary>Helper class for administrative interface.</summary>
     public class EPAdministratorHelper
     {
         private static readonly ParseRuleSelector PatternParseRule;
         private static readonly ParseRuleSelector EPLParseRule;
-    
+
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         static EPAdministratorHelper()
         {
             PatternParseRule = DoPatternParseRule;
             EPLParseRule = DoEPLParseRule;
         }
-            
+
         #region Parse & Walk Rules
         private static ITree DoPatternParseRule(EsperEPL2GrammarParser parser)
         {
@@ -50,7 +55,9 @@ namespace com.espertech.esper.core.service
         }
         #endregion
 
-        /// <summary>Compile an EPL statement. </summary>
+        /// <summary>
+        /// Compile an EPL statement.
+        /// </summary>
         /// <param name="eplStatement">to compile</param>
         /// <param name="eplStatementForErrorMsg">the statement to use for indicating error messages</param>
         /// <param name="addPleaseCheck">true to add please-check message text</param>
@@ -59,62 +66,30 @@ namespace com.espertech.esper.core.service
         /// <param name="defaultStreamSelector">stream selector</param>
         /// <returns>compiled statement</returns>
         public static StatementSpecRaw CompileEPL(
-            String eplStatement,
-            String eplStatementForErrorMsg,
+            string eplStatement,
+            string eplStatementForErrorMsg,
             bool addPleaseCheck,
-            String statementName,
+            string statementName,
             EPServicesContext services,
             SelectClauseStreamSelectorEnum defaultStreamSelector)
         {
             return CompileEPL(
-                eplStatement, 
-                eplStatementForErrorMsg, 
-                addPleaseCheck, 
-                statementName, 
-                defaultStreamSelector,
-                services.EngineImportService, 
-                services.VariableService, 
-                services.SchedulingService, 
-                services.EngineURI, 
-                services.ConfigSnapshot, 
-                services.PatternNodeFactory, 
-                services.ContextManagementService, 
-                services.ExprDeclaredService,
-                services.TableService);
+                eplStatement, eplStatementForErrorMsg, addPleaseCheck, statementName, defaultStreamSelector,
+                services.EngineImportService, services.VariableService, services.SchedulingService, services.EngineURI,
+                services.ConfigSnapshot, services.PatternNodeFactory, services.ContextManagementService,
+                services.ExprDeclaredService, services.TableService);
         }
 
-        /// <summary>
-        /// Compile the EPL.
-        /// </summary>
-        /// <param name="eplStatement">expression to compile</param>
-        /// <param name="eplStatementForErrorMsg">use this text for the error message</param>
-        /// <param name="addPleaseCheck">indicator to add a "please check" wording for stack paraphrases</param>
-        /// <param name="statementName">is the name of the statement</param>
-        /// <param name="defaultStreamSelector">the configuration for which insert or remove streams (or both) to produce</param>
-        /// <param name="engineImportService">The engine import service.</param>
-        /// <param name="variableService">The variable service.</param>
-        /// <param name="schedulingService">The scheduling service.</param>
-        /// <param name="engineURI">The engine URI.</param>
-        /// <param name="configSnapshot">The config snapshot.</param>
-        /// <param name="patternNodeFactory">The pattern node factory.</param>
-        /// <param name="contextManagementService">The context management service.</param>
-        /// <param name="exprDeclaredService">The expr declared service.</param>
-        /// <param name="tableService">The table service.</param>
-        /// <returns>
-        /// statement specification
-        /// </returns>
-        /// <exception cref="EPStatementException">
-        /// </exception>
         public static StatementSpecRaw CompileEPL(
-            String eplStatement,
-            String eplStatementForErrorMsg,
+            string eplStatement,
+            string eplStatementForErrorMsg,
             bool addPleaseCheck,
-            String statementName,
+            string statementName,
             SelectClauseStreamSelectorEnum defaultStreamSelector,
             EngineImportService engineImportService,
             VariableService variableService,
             SchedulingService schedulingService,
-            String engineURI,
+            string engineURI,
             ConfigurationInformation configSnapshot,
             PatternNodeFactory patternNodeFactory,
             ContextManagementService contextManagementService,
@@ -123,25 +98,17 @@ namespace com.espertech.esper.core.service
         {
             if (Log.IsDebugEnabled)
             {
-                Log.Debug(".createEPLStmt StatementName=" + statementName + " eplStatement=" + eplStatement);
+                Log.Debug(".createEPLStmt statementName=" + statementName + " eplStatement=" + eplStatement);
             }
-    
-            var parseResult = ParseHelper.Parse(eplStatement, eplStatementForErrorMsg, addPleaseCheck, EPLParseRule, true);
-            var ast = parseResult.Tree;
 
-            EPLTreeWalkerListener walker = new EPLTreeWalkerListener(
-                parseResult.TokenStream,
-                engineImportService, 
-                variableService, 
-                schedulingService,
-                defaultStreamSelector, 
-                engineURI, 
-                configSnapshot, 
-                patternNodeFactory, 
-                contextManagementService,
-                parseResult.Scripts,
-                exprDeclaredService,
-                tableService);
+            ParseResult parseResult = ParseHelper.Parse(
+                eplStatement, eplStatementForErrorMsg, addPleaseCheck, EPLParseRule, true);
+            ITree ast = parseResult.Tree;
+
+            var walker = new EPLTreeWalkerListener(
+                parseResult.TokenStream, engineImportService, variableService, schedulingService, defaultStreamSelector,
+                engineURI, configSnapshot, patternNodeFactory, contextManagementService, parseResult.Scripts,
+                exprDeclaredService, tableService);
 
             try
             {
@@ -150,54 +117,51 @@ namespace com.espertech.esper.core.service
             catch (ASTWalkException ex)
             {
                 Log.Error(".createEPL Error validating expression", ex);
-                throw new EPStatementException(ex.Message, eplStatementForErrorMsg, ex);
+                throw new EPStatementException(ex.Message, ex, eplStatementForErrorMsg);
             }
-            catch (EPStatementSyntaxException)
+            catch (EPStatementSyntaxException ex)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                const string message = "Error in expression";
+                string message = "Error in expression";
                 Log.Debug(message, ex);
-                throw new EPStatementException(GetNullableErrortext(message, ex.Message), eplStatementForErrorMsg, ex);
+                throw new EPStatementException(GetNullableErrortext(message, ex.Message), ex, eplStatementForErrorMsg);
             }
-    
+
             if (Log.IsDebugEnabled)
             {
                 ASTUtil.DumpAST(ast);
             }
-    
-            StatementSpecRaw raw = walker.GetStatementSpec();
+
+            StatementSpecRaw raw = walker.StatementSpec;
             raw.ExpressionNoAnnotations = parseResult.ExpressionWithoutAnnotations;
             return raw;
         }
 
-        public static StatementSpecRaw CompilePattern(String expression, String expressionForErrorMessage, bool addPleaseCheck, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector)
+        public static StatementSpecRaw CompilePattern(
+            string expression,
+            string expressionForErrorMessage,
+            bool addPleaseCheck,
+            EPServicesContext services,
+            SelectClauseStreamSelectorEnum defaultStreamSelector)
         {
             // Parse
-            ParseResult parseResult = ParseHelper.Parse(expression, expressionForErrorMessage, addPleaseCheck, PatternParseRule, true);
-            var ast = parseResult.Tree;
+            ParseResult parseResult = ParseHelper.Parse(
+                expression, expressionForErrorMessage, addPleaseCheck, PatternParseRule, true);
+            ITree ast = parseResult.Tree;
             if (Log.IsDebugEnabled)
             {
                 ASTUtil.DumpAST(ast);
             }
 
             // Walk
-            EPLTreeWalkerListener walker = new EPLTreeWalkerListener(
-                parseResult.TokenStream, 
-                services.EngineImportService, 
-                services.VariableService,
-                services.SchedulingService, 
-                defaultStreamSelector, 
-                services.EngineURI, 
-                services.ConfigSnapshot,
-                services.PatternNodeFactory, 
-                services.ContextManagementService, 
-                parseResult.Scripts,
-                services.ExprDeclaredService,
-                services.TableService);
-
+            var walker = new EPLTreeWalkerListener(
+                parseResult.TokenStream, services.EngineImportService, services.VariableService,
+                services.SchedulingService, defaultStreamSelector, services.EngineURI, services.ConfigSnapshot,
+                services.PatternNodeFactory, services.ContextManagementService, parseResult.Scripts,
+                services.ExprDeclaredService, services.TableService);
             try
             {
                 ParseHelper.Walk(ast, walker, expression, expressionForErrorMessage);
@@ -213,40 +177,40 @@ namespace com.espertech.esper.core.service
             }
             catch (Exception ex)
             {
-                String message = "Error in expression";
+                string message = "Error in expression";
                 Log.Debug(message, ex);
                 throw new EPStatementException(GetNullableErrortext(message, ex.Message), expression);
             }
 
-            var walkerStatementSpec = walker.GetStatementSpec();
-            if (walkerStatementSpec.StreamSpecs.Count > 1)
+            if (walker.StatementSpec.StreamSpecs.Count > 1)
             {
                 throw new IllegalStateException("Unexpected multiple stream specifications encountered");
             }
-    
+
             // Get pattern specification
-            var patternStreamSpec = (PatternStreamSpecRaw)walkerStatementSpec.StreamSpecs[0];
-    
+            PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.StatementSpec.StreamSpecs[0];
+
             // Create statement spec, set pattern stream, set wildcard select
             var statementSpec = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             statementSpec.StreamSpecs.Add(patternStreamSpec);
             statementSpec.SelectClauseSpec.SelectExprList.Clear();
             statementSpec.SelectClauseSpec.SelectExprList.Add(new SelectClauseElementWildcard());
-            statementSpec.Annotations = walkerStatementSpec.Annotations;
+            statementSpec.Annotations = walker.StatementSpec.Annotations;
             statementSpec.ExpressionNoAnnotations = parseResult.ExpressionWithoutAnnotations;
-    
+
             return statementSpec;
         }
-    
-        private static String GetNullableErrortext(String msg, String cause)
+
+        private static string GetNullableErrortext(string msg, string cause)
         {
             if (cause == null)
             {
                 return msg;
             }
-            return msg + ": " + cause;
+            else
+            {
+                return msg + ": " + cause;
+            }
         }
-
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
-}
+} // end of namespace

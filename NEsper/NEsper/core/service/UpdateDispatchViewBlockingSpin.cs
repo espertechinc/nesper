@@ -24,7 +24,7 @@ namespace com.espertech.esper.core.service
         private UpdateDispatchFutureSpin _currentFutureSpin;
         private readonly long _msecTimeout;
         private readonly TimeSourceService _timeSourceService;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="dispatchService">for performing the dispatch</param>
         /// <param name="msecTimeout">timeout for preserving dispatch order through blocking</param>
@@ -37,12 +37,12 @@ namespace com.espertech.esper.core.service
             _msecTimeout = msecTimeout;
             _timeSourceService = timeSourceService;
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             NewResult(new UniformPair<EventBean[]>(newData, oldData));
         }
-    
+
         public override void NewResult(UniformPair<EventBean[]> result)
         {
             StatementResultService.Indicate(result);
@@ -52,7 +52,7 @@ namespace com.espertech.esper.core.service
             if (!isDispatchWaiting.Value)
             {
                 UpdateDispatchFutureSpin nextFutureSpin;
-                lock(this)
+                lock (this)
                 {
                     nextFutureSpin = new UpdateDispatchFutureSpin(this, _currentFutureSpin, _msecTimeout, _timeSourceService);
                     _currentFutureSpin = nextFutureSpin;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.core.service
                 isDispatchWaiting.Value = true;
             }
         }
-    
+
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

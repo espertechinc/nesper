@@ -77,7 +77,7 @@ namespace com.espertech.esper.epl.expression.table
     
         protected void ValidateGroupKeys(TableMetadata metadata)
         {
-            if (ChildNodes.Length > 0) {
+            if (ChildNodes.Count > 0) {
                 _groupKeyEvaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
             }
             else {
@@ -102,7 +102,7 @@ namespace com.espertech.esper.epl.expression.table
         protected void ToPrecedenceFreeEPLInternal(TextWriter writer)
         {
             writer.Write(_tableName);
-            if (ChildNodes.Length > 0) {
+            if (ChildNodes.Count > 0) {
                 writer.Write("[");
                 var delimiter = "";
                 foreach (var expr in ChildNodes) {

@@ -53,5 +53,18 @@ namespace com.espertech.esper.events.arr
             EventBean eventBean = EventAdapterService.AdapterForTypedObjectArray((Object[])value, FragmentType);
             return _arrayGetter.GetFragment(eventBean);
         }
+
+        public override bool HandleNestedValueExists(Object value)
+        {
+            if (!(value is Object[]))
+            {
+                if (value is EventBean)
+                {
+                    return _arrayGetter.IsExistsProperty((EventBean) value);
+                }
+                return false;
+            }
+            return _arrayGetter.IsObjectArrayExistsProperty((Object[]) value);
+        }
     }
 }

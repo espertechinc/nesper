@@ -10,11 +10,13 @@ using System;
 using System.Linq;
 using System.Text;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.epl.datetime.calop
 {
     public enum CalendarFieldEnum
     {
-        MILLISEC, 
+        MILLISEC,
         SECOND,
         MINUTE,
         HOUR,
@@ -24,28 +26,28 @@ namespace com.espertech.esper.epl.datetime.calop
         YEAR
     }
 
-    public static class CalendarFieldEnumExtensions 
+    public static class CalendarFieldEnumExtensions
     {
         public static string[] GetNames(this CalendarFieldEnum @enum)
         {
-            switch(@enum)
+            switch (@enum)
             {
                 case CalendarFieldEnum.MILLISEC:
-                    return new[] {"msec", "millisecond", "milliseconds"};
+                    return new[] { "msec", "millisecond", "milliseconds" };
                 case CalendarFieldEnum.SECOND:
-                    return new[] {"sec", "second", "seconds"};
+                    return new[] { "sec", "second", "seconds" };
                 case CalendarFieldEnum.MINUTE:
-                    return new[] {"min", "minute", "minutes"};
+                    return new[] { "min", "minute", "minutes" };
                 case CalendarFieldEnum.HOUR:
-                    return new[] {"hour", "hours"};
+                    return new[] { "hour", "hours" };
                 case CalendarFieldEnum.DAY:
-                    return new[] {"day", "days"};
+                    return new[] { "day", "days" };
                 case CalendarFieldEnum.MONTH:
-                    return new[] {"month", "months"};
+                    return new[] { "month", "months" };
                 case CalendarFieldEnum.WEEK:
-                    return new[] {"week", "weeks"};
+                    return new[] { "week", "weeks" };
                 case CalendarFieldEnum.YEAR:
-                    return new[] {"year", "years"};
+                    return new[] { "year", "years" };
             }
 
             throw new ArgumentException("invalid value", "enum");
@@ -56,7 +58,7 @@ namespace com.espertech.esper.epl.datetime.calop
             var builder = new StringBuilder();
             var delimiter = "";
 
-            var values = Enum.GetValues(typeof (CalendarFieldEnum));
+            var values = Enum.GetValues(typeof(CalendarFieldEnum));
             foreach (CalendarFieldEnum value in values)
             {
                 foreach (String name in GetNames(value))
@@ -70,7 +72,7 @@ namespace com.espertech.esper.epl.datetime.calop
             return builder.ToString();
         }
 
-        public static CalendarFieldEnum FromString(string field) 
+        public static CalendarFieldEnum FromString(string field)
         {
             string compareTo = field.Trim().ToLower();
 
@@ -106,6 +108,56 @@ namespace com.espertech.esper.epl.datetime.calop
                     return DateTimeFieldEnum.WEEK;
                 case CalendarFieldEnum.YEAR:
                     return DateTimeFieldEnum.YEAR;
+            }
+
+            throw new ArgumentException("invalid value", "enum");
+        }
+
+        public static ChronoUnit GetChronoUnit(this CalendarFieldEnum @enum)
+        {
+            switch (@enum)
+            {
+                case CalendarFieldEnum.MILLISEC:
+                    return ChronoUnit.MILLIS;
+                case CalendarFieldEnum.SECOND:
+                    return ChronoUnit.SECONDS;
+                case CalendarFieldEnum.MINUTE:
+                    return ChronoUnit.MINUTES;
+                case CalendarFieldEnum.HOUR:
+                    return ChronoUnit.HOURS;
+                case CalendarFieldEnum.DAY:
+                    return ChronoUnit.DAYS;
+                case CalendarFieldEnum.MONTH:
+                    return ChronoUnit.MONTHS;
+                case CalendarFieldEnum.WEEK:
+                    return ChronoUnit.WEEKS;
+                case CalendarFieldEnum.YEAR:
+                    return ChronoUnit.YEARS;
+            }
+
+            throw new ArgumentException("invalid value", "enum");
+        }
+
+        public static ChronoField GetChronoField(this CalendarFieldEnum @enum)
+        {
+            switch (@enum)
+            {
+                case CalendarFieldEnum.MILLISEC:
+                    return ChronoField.MILLI_OF_SECOND;
+                case CalendarFieldEnum.SECOND:
+                    return ChronoField.SECOND_OF_MINUTE;
+                case CalendarFieldEnum.MINUTE:
+                    return ChronoField.MINUTE_OF_HOUR;
+                case CalendarFieldEnum.HOUR:
+                    return ChronoField.HOUR_OF_DAY;
+                case CalendarFieldEnum.DAY:
+                    return ChronoField.DAY_OF_MONTH;
+                case CalendarFieldEnum.MONTH:
+                    return ChronoField.MONTH_OF_YEAR;
+                case CalendarFieldEnum.WEEK:
+                    return ChronoField.ALIGNED_WEEK_OF_YEAR;
+                case CalendarFieldEnum.YEAR:
+                    return ChronoField.YEAR;
             }
 
             throw new ArgumentException("invalid value", "enum");

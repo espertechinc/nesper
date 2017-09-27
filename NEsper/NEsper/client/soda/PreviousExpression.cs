@@ -11,41 +11,41 @@ using System.IO;
 
 namespace com.espertech.esper.client.soda
 {
-	/// <summary>
-	/// Previous function for obtaining property values of previous events.
-	/// </summary>
+    /// <summary>
+    /// Previous function for obtaining property values of previous events.
+    /// </summary>
     [Serializable]
     public class PreviousExpression : ExpressionBase
-	{
+    {
         private PreviousExpressionType _expressionType =
             PreviousExpressionType.PREV;
 
-	    /// <summary>Ctor.</summary>
-	    public PreviousExpression()
-	    {
-	    }
+        /// <summary>Ctor.</summary>
+        public PreviousExpression()
+        {
+        }
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="expression">provides the index to use</param>
-	    /// <param name="propertyName">
-	    /// is the name of the property to return the value for
-	    /// </param>
-	    public PreviousExpression(Expression expression, String propertyName)
-	    {
-	        AddChild(expression);
-	        AddChild(new PropertyValueExpression(propertyName));
-	    }
+        /// <summary>Ctor.</summary>
+        /// <param name="expression">provides the index to use</param>
+        /// <param name="propertyName">
+        /// is the name of the property to return the value for
+        /// </param>
+        public PreviousExpression(Expression expression, String propertyName)
+        {
+            AddChild(expression);
+            AddChild(new PropertyValueExpression(propertyName));
+        }
 
-	    /// <summary>Ctor.</summary>
-	    /// <param name="index">provides the index</param>
-	    /// <param name="propertyName">
-	    /// is the name of the property to return the value for
-	    /// </param>
-	    public PreviousExpression(int index, String propertyName)
-	    {
-	        AddChild(new ConstantExpression(index));
-	        AddChild(new PropertyValueExpression(propertyName));
-	    }
+        /// <summary>Ctor.</summary>
+        /// <param name="index">provides the index</param>
+        /// <param name="propertyName">
+        /// is the name of the property to return the value for
+        /// </param>
+        public PreviousExpression(int index, String propertyName)
+        {
+            AddChild(new ConstantExpression(index));
+            AddChild(new PropertyValueExpression(propertyName));
+        }
 
         /// <summary>
         /// Ctor.
@@ -58,21 +58,21 @@ namespace com.espertech.esper.client.soda
             AddChild(expression);
         }
 
-	    public override ExpressionPrecedenceEnum Precedence
-	    {
-	        get { return ExpressionPrecedenceEnum.UNARY; }
-	    }
+        public override ExpressionPrecedenceEnum Precedence
+        {
+            get { return ExpressionPrecedenceEnum.UNARY; }
+        }
 
-	    public PreviousExpressionType ExpressionType
-	    {
+        public PreviousExpressionType ExpressionType
+        {
             get { return _expressionType; }
             set { _expressionType = value; }
-	    }
+        }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(_expressionType.ToString().ToLower());
-            writer.Write("("); 
+            writer.Write("(");
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             if (Children.Count > 1)
             {
@@ -81,5 +81,5 @@ namespace com.espertech.esper.client.soda
             }
             writer.Write(')');
         }
-	}
+    }
 } // End of namespace

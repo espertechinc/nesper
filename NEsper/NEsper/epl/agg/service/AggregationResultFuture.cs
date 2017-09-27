@@ -26,22 +26,20 @@ namespace com.espertech.esper.epl.agg.service
         /// </summary>
         /// <param name="column">is assigned to the aggregation expression node and passed as an column (index) into a row</param>
         /// <param name="agentInstanceId">the context partition id</param>
-        /// <param name="eventsPerStream">The events per stream.</param>
-        /// <param name="isNewData">The new data indicator.</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
+        /// <param name="evaluateParams"></param>
         /// <returns>
         /// current aggragation state
         /// </returns>
-        object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
+        object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams);
     
-        ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams);
     
-        EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        EventBean GetEventBean(int column, EvaluateParams evaluateParams);
     
         Object GetGroupKey(int agentInstanceId);
     
         ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext);
 
-        ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams);
     }
 }

@@ -22,7 +22,7 @@ namespace com.espertech.esper.compat.collections
         private readonly ICollection<T> _facadeCollection;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronizedCollectionCollection{T}"/> class.
+        /// Initializes a new instance of the <see cref="SynchronizedCollection{T}"/> class.
         /// </summary>
         /// <param name="facadeCollection">The facadeCollection.</param>
         public SynchronizedCollection(ICollection<T> facadeCollection)

@@ -40,7 +40,7 @@ namespace com.espertech.esper.core.service
         public InsertIntoLatchWait(InsertIntoLatchWait earlier, long msecTimeout, EventBean payload)
         {
             _earlier = earlier;
-            _msecTimeout = (int) msecTimeout;
+            _msecTimeout = (int)msecTimeout;
             _payload = payload;
         }
 
@@ -85,7 +85,7 @@ namespace com.espertech.esper.core.service
         {
             if (!_earlier._isCompleted)
             {
-                lock(this)
+                lock (this)
                 {
                     if (!_earlier._isCompleted)
                     {
@@ -110,7 +110,7 @@ namespace com.espertech.esper.core.service
             _isCompleted = true;
             if (_later != null)
             {
-                lock(_later)
+                lock (_later)
                 {
                     Monitor.Pulse(_later);
                 }

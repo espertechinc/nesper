@@ -71,7 +71,7 @@ namespace com.espertech.esper.compat.magic
                 .GetMethod("NewMagicCollection", new[] {typeof (object)})
                 .MakeGenericMethod(genericArg);
 
-            // Now create a function that will create the wrapper type when
+            // GetInstance create a function that will create the wrapper type when
             // the generic object is presented.
             var eParam = Expression.Parameter(typeof (object), "o");
             var eBuild = Expression.Call(magicActivator, eParam);
@@ -128,7 +128,7 @@ namespace com.espertech.esper.compat.magic
                 .GetMethod("NewMagicList", new[] { typeof(object) })
                 .MakeGenericMethod(genericArg);
 
-            // Now create a function that will create the wrapper type when
+            // GetInstance create a function that will create the wrapper type when
             // the generic object is presented.
             var eParam = Expression.Parameter(typeof(object), "o");
             var eBuild = Expression.Call(magicActivator, eParam);
@@ -195,7 +195,7 @@ namespace com.espertech.esper.compat.magic
                 .GetMethod("NewMagicDictionary", new[] {typeof (object)})
                 .MakeGenericMethod(genericKey, genericArg);
 
-            // Now create a function that will create the wrapper type when
+            // GetInstance create a function that will create the wrapper type when
             // the generic object is presented.
             var eParam = Expression.Parameter(typeof(object), "o");
             var eBuild = Expression.Call(magicActivator, eParam);
@@ -277,7 +277,7 @@ namespace com.espertech.esper.compat.magic
                 .GetMethod("NewMagicStringDictionary", new[] { typeof(object) })
                 .MakeGenericMethod(genericArg);
 
-            // Now create a function that will create the wrapper type when
+            // GetInstance create a function that will create the wrapper type when
             // the generic object is presented.
             var eParam = Expression.Parameter(typeof(object), "o");
             var eBuild = Expression.Call(magicActivator, eParam);

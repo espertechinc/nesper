@@ -6,47 +6,34 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.collection
 {
     /// <summary>
-    /// Work queue wherein items can be added to the front and to the back, wherein both front
-    /// and back have a given order, with the idea that all items of the front queue get processed 
-    /// before any given single item of the back queue gets processed.
+    /// Work queue wherein items can be added to the front and to the back, wherein both front and back
+    /// have a given order, with the idea that all items of the front queue get processed before any
+    /// given single item of the back queue gets processed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class DualWorkQueue<T> where T : class
+    public class DualWorkQueue<TV>
     {
-        private readonly LinkedList<T> _frontQueue;
-        private readonly LinkedList<T> _backQueue;
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
+        /// <summary>Ctor.</summary>
         public DualWorkQueue()
         {
-            _frontQueue = new LinkedList<T>();
-            _backQueue = new LinkedList<T>();
+            FrontQueue = new ArrayDeque<TV>();
+            BackQueue = new ArrayDeque<TV>();
         }
 
         /// <summary>
         /// Items to be processed first, in the order to be processed.
         /// </summary>
         /// <value>front queue</value>
-        public LinkedList<T> FrontQueue
-        {
-            get { return _frontQueue; }
-        }
+        public ArrayDeque<TV> FrontQueue { get; private set; }
 
         /// <summary>
         /// Items to be processed after front-queue is empty, in the order to be processed.
         /// </summary>
         /// <value>back queue</value>
-        public LinkedList<T> BackQueue
-        {
-            get { return _backQueue; }
-        }
+        public ArrayDeque<TV> BackQueue { get; private set; }
     }
-}
+} // end of namespace

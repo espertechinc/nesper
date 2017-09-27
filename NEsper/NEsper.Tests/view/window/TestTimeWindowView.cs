@@ -14,9 +14,9 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 namespace com.espertech.esper.view.window
@@ -37,7 +37,7 @@ namespace com.espertech.esper.view.window
             _schedulingServiceStub = new SupportSchedulingServiceImpl();
 
             // Set up length window view and a test child view
-            _myView = new TimeWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_schedulingServiceStub), new TimeWindowViewFactory(), new ExprTimePeriodEvalDeltaConstMsec(TEST_WINDOW_MSEC), null);
+            _myView = new TimeWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_schedulingServiceStub), new TimeWindowViewFactory(), new ExprTimePeriodEvalDeltaConstGivenDelta(TEST_WINDOW_MSEC), null);
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);
         }

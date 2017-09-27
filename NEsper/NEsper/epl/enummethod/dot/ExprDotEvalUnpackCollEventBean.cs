@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
@@ -26,8 +25,8 @@ namespace com.espertech.esper.epl.enummethod.dot
         public ExprDotEvalUnpackCollEventBean(EventType type) {
             _typeInfo = EPTypeHelper.CollectionOfSingleValue(type.UnderlyingType);
         }
-    
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {

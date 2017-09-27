@@ -39,7 +39,7 @@ namespace com.espertech.esper.view.window
         private readonly LengthBatchViewFactory _lengthBatchViewFactory;
         private readonly int _size;
         private readonly ViewUpdatedCollection _viewUpdatedCollection;
-    
+
         // Current running windows
         protected ArrayDeque<EventBean> LastBatch = null;
         protected ArrayDeque<EventBean> CurrentBatch = new ArrayDeque<EventBean>();
@@ -60,13 +60,13 @@ namespace com.espertech.esper.view.window
             _lengthBatchViewFactory = lengthBatchViewFactory;
             _size = size;
             _viewUpdatedCollection = viewUpdatedCollection;
-    
+
             if (size <= 0)
             {
                 throw new ArgumentException("Invalid size parameter, size=" + size);
             }
         }
-    
+
         public View CloneView()
         {
             return _lengthBatchViewFactory.MakeView(AgentInstanceViewFactoryContext);
@@ -86,33 +86,34 @@ namespace com.espertech.esper.view.window
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _lengthBatchViewFactory.ViewName, newData, oldData);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewProcessIRStream(this, _lengthBatchViewFactory.ViewName, newData, oldData); }
+
             // we don't care about removed data from a prior view
             if ((newData == null) || (newData.Length == 0))
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
                 return;
             }
-    
+
             // add data points to the current batch
-            foreach (EventBean newEvent in newData) {
+            foreach (EventBean newEvent in newData)
+            {
                 CurrentBatch.Add(newEvent);
             }
-    
+
             // check if we reached the minimum size
             if (CurrentBatch.Count < _size)
             {
                 // done if no overflow
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
                 return;
             }
-    
+
             SendBatch();
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream();}
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewProcessIRStream(); }
         }
-    
+
         /// <summary>This method updates child views and clears the batch of events. </summary>
         protected void SendBatch()
         {
@@ -130,26 +131,26 @@ namespace com.espertech.esper.view.window
                 {
                     oldData = LastBatch.ToArray();
                 }
-    
+
                 // Update view buffer to serve expressions require access to events held
                 if (_viewUpdatedCollection != null)
                 {
                     _viewUpdatedCollection.Update(newData, oldData);
                 }
-    
+
                 // Post new data (current batch) and old data (prior batch)
                 if ((newData != null) || (oldData != null))
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _lengthBatchViewFactory.ViewName, newData, oldData);}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QViewIndicate(this, _lengthBatchViewFactory.ViewName, newData, oldData); }
                     UpdateChildren(newData, oldData);
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate();}
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AViewIndicate(); }
                 }
             }
-    
+
             LastBatch = CurrentBatch;
             CurrentBatch = new ArrayDeque<EventBean>();
         }
-    
+
         /// <summary>Returns true if the window is empty, or false if not empty. </summary>
         /// <returns>true if empty</returns>
         public bool IsEmpty()
@@ -163,18 +164,18 @@ namespace com.espertech.esper.view.window
             }
             return CurrentBatch.IsEmpty();
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return CurrentBatch.GetEnumerator();
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName +
                     " size=" + _size;
         }
-    
+
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(CurrentBatch, true, _lengthBatchViewFactory.ViewName, null);

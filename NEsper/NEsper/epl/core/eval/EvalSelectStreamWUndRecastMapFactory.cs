@@ -22,33 +22,45 @@ namespace com.espertech.esper.epl.core.eval
 {
     public class EvalSelectStreamWUndRecastMapFactory
     {
-        public static SelectExprProcessor Make(EventType[] eventTypes, SelectExprContext selectExprContext, int streamNumber, EventType targetType, ExprNode[] exprNodes, EngineImportService engineImportService)
+        public static SelectExprProcessor Make(
+            EventType[] eventTypes,
+            SelectExprContext selectExprContext,
+            int streamNumber,
+            EventType targetType,
+            ExprNode[] exprNodes,
+            EngineImportService engineImportService,
+            string statementName,
+            string engineURI)
         {
-            var mapResultType = (MapEventType) targetType;
-            var mapStreamType = (MapEventType) eventTypes[streamNumber];
-    
+            var mapResultType = (MapEventType)targetType;
+            var mapStreamType = (MapEventType)eventTypes[streamNumber];
+
             // (A) fully assignment-compatible: same number, name and type of fields, no additional expressions: Straight repackage
             String typeSameMssage = BaseNestableEventType.IsDeepEqualsProperties(mapResultType.Name, mapResultType.Types, mapStreamType.Types);
-            if (typeSameMssage == null && selectExprContext.ExpressionNodes.Length == 0) {
+            if (typeSameMssage == null && selectExprContext.ExpressionNodes.Length == 0)
+            {
                 return new MapInsertProcessorSimpleRepackage(selectExprContext, streamNumber, targetType);
             }
-    
+
             // (B) not completely assignable: find matching properties
             ICollection<WriteablePropertyDescriptor> writables = selectExprContext.EventAdapterService.GetWriteableProperties(mapResultType, true);
             IList<Item> items = new List<Item>();
             IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
-    
+
             // find the properties coming from the providing source stream
             int count = 0;
-            foreach (WriteablePropertyDescriptor writeable in writables) {
+            foreach (WriteablePropertyDescriptor writeable in writables)
+            {
                 String propertyName = writeable.PropertyName;
-    
-                if (mapStreamType.Types.ContainsKey(propertyName)) {
+
+                if (mapStreamType.Types.ContainsKey(propertyName))
+                {
                     Object setOneType = mapStreamType.Types.Get(propertyName);
                     Object setTwoType = mapResultType.Types.Get(propertyName);
                     bool setTwoTypeFound = mapResultType.Types.ContainsKey(propertyName);
                     String message = BaseNestableEventUtil.ComparePropType(propertyName, setOneType, setTwoType, setTwoTypeFound, mapResultType.Name);
-                    if (message != null) {
+                    if (message != null)
+                    {
                         throw new ExprValidationException(message);
                     }
                     items.Add(new Item(count, propertyName, null, null));
@@ -56,41 +68,46 @@ namespace com.espertech.esper.epl.core.eval
                     count++;
                 }
             }
-    
+
             // find the properties coming from the expressions of the select clause
-            for (int i = 0; i < selectExprContext.ExpressionNodes.Length; i++) {
+            for (int i = 0; i < selectExprContext.ExpressionNodes.Length; i++)
+            {
                 String columnName = selectExprContext.ColumnNames[i];
                 ExprEvaluator evaluator = selectExprContext.ExpressionNodes[i];
                 ExprNode exprNode = exprNodes[i];
-    
+
                 WriteablePropertyDescriptor writable = FindWritable(columnName, writables);
-                if (writable == null) {
+                if (writable == null)
+                {
                     throw new ExprValidationException("Failed to find column '" + columnName + "' in target type '" + mapResultType.Name + "'");
                 }
-    
+
                 TypeWidener widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                    ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode), 
+                    ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode),
                     exprNode.ExprEvaluator.ReturnType,
-                    writable.PropertyType, columnName);
+                    writable.PropertyType, columnName,
+                    false, null, statementName, engineURI);
                 items.Add(new Item(count, null, evaluator, widener));
                 written.Add(writable);
                 count++;
             }
-    
+
             // make manufacturer
             Item[] itemsArr = items.ToArray();
             EventBeanManufacturer manufacturer;
-            try {
+            try
+            {
                 manufacturer = selectExprContext.EventAdapterService.GetManufacturer(mapResultType,
                         written.ToArray(), engineImportService, true);
             }
-            catch (EventBeanManufactureException e) {
+            catch (EventBeanManufactureException e)
+            {
                 throw new ExprValidationException("Failed to write to type: " + e.Message, e);
             }
-    
+
             return new MapInsertProcessorAllocate(streamNumber, itemsArr, manufacturer, targetType);
         }
-    
+
         private static WriteablePropertyDescriptor FindWritable(String columnName, ICollection<WriteablePropertyDescriptor> writables)
         {
             return writables.FirstOrDefault(writable => writable.PropertyName.Equals(columnName));
@@ -116,11 +133,11 @@ namespace com.espertech.esper.epl.core.eval
 
             public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
             {
-                var theEvent = (MappedEventBean) eventsPerStream[_underlyingStreamNumber];
+                var theEvent = (MappedEventBean)eventsPerStream[_underlyingStreamNumber];
                 return _selectExprContext.EventAdapterService.AdapterForTypedMap(theEvent.Properties, _resultType);
             }
         }
-    
+
         private class MapInsertProcessorAllocate : SelectExprProcessor
         {
             private readonly int _underlyingStreamNumber;
@@ -143,28 +160,32 @@ namespace com.espertech.esper.epl.core.eval
 
             public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
             {
-                var theEvent = (MappedEventBean) eventsPerStream[_underlyingStreamNumber];
+                var theEvent = (MappedEventBean)eventsPerStream[_underlyingStreamNumber];
                 var props = new Object[_items.Length];
-                foreach (Item item in _items) {
+                foreach (Item item in _items)
+                {
                     Object value;
-    
-                    if (item.OptionalPropertyName != null) {
+
+                    if (item.OptionalPropertyName != null)
+                    {
                         value = theEvent.Properties.Get(item.OptionalPropertyName);
                     }
-                    else {
+                    else
+                    {
                         value = item.Evaluator.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
-                        if (item.OptionalWidener != null) {
+                        if (item.OptionalWidener != null)
+                        {
                             value = item.OptionalWidener.Invoke(value);
                         }
                     }
-    
+
                     props[item.ToIndex] = value;
                 }
-    
+
                 return _manufacturer.Make(props);
             }
         }
-    
+
         private class Item
         {
             internal Item(int toIndex, String optionalPropertyName, ExprEvaluator evaluator, TypeWidener optionalWidener)

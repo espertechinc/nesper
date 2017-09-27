@@ -28,11 +28,16 @@ namespace com.espertech.esper.dataflow.ops
     {
         private static readonly ILog Logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [DataFlowOpParameter] private string title;
-        [DataFlowOpParameter] private string layout;
-        [DataFlowOpParameter] private string format;
-        [DataFlowOpParameter] private bool log = true;
-        [DataFlowOpParameter] private bool linefeed = true;
+        [DataFlowOpParameter]
+        private string title;
+        [DataFlowOpParameter]
+        private string layout;
+        [DataFlowOpParameter]
+        private string format;
+        [DataFlowOpParameter]
+        private bool log = true;
+        [DataFlowOpParameter]
+        private bool linefeed = true;
 
         private String _dataflowName;
         private String _dataFlowInstanceId;
@@ -95,81 +100,94 @@ namespace com.espertech.esper.dataflow.ops
         {
         }
 
-        public void OnInput(int port, Object theEvent) {
-    
+        public void OnInput(int port, Object theEvent)
+        {
+
             String line;
-            if (layout == null) {
-    
+            if (layout == null)
+            {
+
                 var writer = new StringWriter();
-    
+
                 writer.Write("[");
                 writer.Write(_dataflowName);
                 writer.Write("] ");
-    
-                if (title != null) {
+
+                if (title != null)
+                {
                     writer.Write("[");
                     writer.Write(title);
                     writer.Write("] ");
                 }
-    
-                if (_dataFlowInstanceId != null) {
+
+                if (_dataFlowInstanceId != null)
+                {
                     writer.Write("[");
                     writer.Write(_dataFlowInstanceId);
                     writer.Write("] ");
                 }
-    
+
                 writer.Write("[port ");
                 writer.Write(Convert.ToString(port));
                 writer.Write("] ");
-    
+
                 GetEventOut(port, theEvent, writer);
                 line = writer.ToString();
             }
-            else {
+            else
+            {
                 String result = layout.Replace("%df", _dataflowName).Replace("%p", Convert.ToString(port));
-                if (_dataFlowInstanceId != null) {
+                if (_dataFlowInstanceId != null)
+                {
                     result = result.Replace("%i", _dataFlowInstanceId);
                 }
-                if (title != null) {
+                if (title != null)
+                {
                     result = result.Replace("%t", title);
                 }
-    
+
                 var writer = new StringWriter();
                 GetEventOut(port, theEvent, writer);
                 result = result.Replace("%e", writer.ToString());
-    
+
                 line = result;
             }
-    
-            if (!linefeed) {
+
+            if (!linefeed)
+            {
                 line = line.Replace("\n", "").Replace("\r", "");
             }
-    
+
             // output
-            if (log) {
+            if (log)
+            {
                 Logger.Info(line);
             }
-            else {
+            else
+            {
                 Console.Out.WriteLine(line);
             }
         }
 
         private void GetEventOut(int port, Object theEvent, TextWriter writer)
         {
-    
-            if (theEvent is EventBean) {
-                _renderer.Render((EventBean) theEvent, writer);
+
+            if (theEvent is EventBean)
+            {
+                _renderer.Render((EventBean)theEvent, writer);
                 return;
             }
-    
-            if (_shellPerStream[port] != null) {
-                lock(this) {
+
+            if (_shellPerStream[port] != null)
+            {
+                lock (this)
+                {
                     _shellPerStream[port].Underlying = theEvent;
                     _renderer.Render(_shellPerStream[port], writer);
                 }
                 return;
             }
-    
+
             writer.Write("Unrecognized underlying: ");
             writer.Write(theEvent.ToString());
         }

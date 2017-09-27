@@ -46,7 +46,7 @@ namespace com.espertech.esper.filter
             var range = new DoubleRange(10d, 20d);
 
             int hashCode = 10.0.GetHashCode();
-            hashCode *= 397;
+            hashCode *= 31;
             hashCode ^= 20.0.GetHashCode();
 
             Assert.That(range.GetHashCode(), Is.EqualTo(hashCode));

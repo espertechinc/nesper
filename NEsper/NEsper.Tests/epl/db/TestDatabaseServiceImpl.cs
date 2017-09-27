@@ -13,8 +13,9 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.epl.db
             configs["name3"] = config;
     
             SchedulingService schedulingService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
-            _databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, new ScheduleBucket(1));
+            _databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, new ScheduleBucket(1), SupportEngineImportServiceFactory.Make());
         }
     
         [Test]
@@ -63,16 +64,18 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestGetCache()
         {
+            var statementContext = SupportStatementContextFactory.MakeContext();
+
             var dataCacheFactory = new DataCacheFactory();
 
             Assert.That(_databaseServiceImpl.GetDataCache("name1", null, null, dataCacheFactory, 0), Is.InstanceOf<DataCacheNullImpl>());
 
-            var lru = (DataCacheLRUImpl) _databaseServiceImpl.GetDataCache("name2", null, null, dataCacheFactory, 0);
+            var lru = (DataCacheLRUImpl)_databaseServiceImpl.GetDataCache("name2", statementContext, null, dataCacheFactory, 0);
             Assert.AreEqual(10000, lru.CacheSize);
 
-            var exp = (DataCacheExpiringImpl) _databaseServiceImpl.GetDataCache("name3", null, null, dataCacheFactory, 0);
-            Assert.AreEqual(1000, exp.MaxAgeMSec);
-            Assert.AreEqual(3000, exp.PurgeIntervalMSec);
+            var exp = (DataCacheExpiringImpl)_databaseServiceImpl.GetDataCache("name3", statementContext, null, dataCacheFactory, 0);
+            Assert.AreEqual(1.0d, exp.MaxAgeSec);
+            Assert.AreEqual(3.0d, exp.PurgeIntervalSec);
         }
     
         [Test]
@@ -85,7 +88,7 @@ namespace com.espertech.esper.epl.db
             }
             catch (DatabaseConfigException ex)
             {
-                Log.Debug(string.Empty, ex);
+                Log.Debug(ex.Message, ex);
                 // expected
             }
         }

@@ -12,8 +12,10 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
@@ -83,7 +85,7 @@ namespace com.espertech.esper.events.bean
             }
             catch (PropertyAccessException ex)
             {
-                Assert.AreEqual("Mismatched getter instance to event bean type, expected com.espertech.esper.support.bean.SupportBeanSimple but received com.espertech.esper.support.bean.SupportBean_A", ex.Message);
+                Assert.AreEqual("Mismatched getter instance to event bean type, expected com.espertech.esper.supportunit.bean.SupportBeanSimple but received com.espertech.esper.supportunit.bean.SupportBean_A", ex.Message);
             }
         }
 
@@ -118,8 +120,8 @@ namespace com.espertech.esper.events.bean
             Assert.IsNull(eventBean.GetFragment("Array[3]?"));
             Assert.IsNull(eventBean.GetFragment("Array[4]?"));
             Assert.IsNull(eventBean.GetFragment("Array[5]?"));
-    
-            var eventText = EventTypeAssertionUtil.Print(eventBean);
+
+            var eventText = SupportEventTypeAssertionUtil.Print(eventBean);
             //Console.Out.WriteLine(eventText);
     
             var eventComplex = SupportBeanComplexProps.MakeDefaultBean();
@@ -132,7 +134,7 @@ namespace com.espertech.esper.events.bean
         {
             var eventComplex = SupportBeanIterableProps.MakeDefaultBean();
             var eventBean = SupportEventBeanFactory.CreateObject(eventComplex);
-            EventTypeAssertionUtil.AssertConsistency(eventBean);
+            SupportEventTypeAssertionUtil.AssertConsistency(eventBean);
     
             // generic interogation : iterable, List and Map
             Assert.AreEqual(typeof(IEnumerable<SupportBeanIterableProps.SupportBeanSpecialGetterNested>), eventBean.EventType.GetPropertyType("IterableNested"));

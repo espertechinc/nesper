@@ -79,9 +79,9 @@ namespace com.espertech.esper.compat.threading
 
 #if DEBUG
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="FairReaderWriterLock"/> is trace.
+        /// Gets or sets a value indicating whether this <see cref="FairReaderWriterLock"/> is TRACE.
         /// </summary>
-        /// <value><c>true</c> if trace; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if TRACE; otherwise, <c>false</c>.</value>
         public bool Trace { get; set; }
 #endif
 
@@ -152,7 +152,7 @@ namespace com.espertech.esper.compat.threading
         /// Acquires the reader lock.
         /// </summary>
         /// <param name="timeout">The timeout.</param>
-        public void AcquireReaderLock(int timeout)
+        public void AcquireReaderLock(long timeout)
         {
             var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;
@@ -189,7 +189,7 @@ namespace com.espertech.esper.compat.threading
         /// Acquires the writer lock.
         /// </summary>
         /// <param name="timeout">The timeout.</param>
-        public void AcquireWriterLock(int timeout)
+        public void AcquireWriterLock(long timeout)
         {
             var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;

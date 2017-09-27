@@ -70,13 +70,6 @@ namespace com.espertech.esper.filter
 
     public static class FilterOperatorExtensions
     {
-        private const string EQUAL_OP = "=";
-        private const string NOT_EQUAL_OP = "!=";
-        private const string LESS_OP = "<";
-        private const string LESS_EQUAL_OP = "<=";
-        private const string GREATER_OP = ">";
-        private const string GREATER_EQUAL_OP = ">=";
-
         /// <summary> Returns true for all range operators, false if not a range operator.</summary>
         /// <returns> true for ranges, false for anyting else
         /// </returns>
@@ -121,38 +114,6 @@ namespace com.espertech.esper.filter
                 return true;
             }
             return false;
-        }
-
-        /// <summary> Parse the comparison operator returning null if not a valid operator.</summary>
-        /// <param name="op">is the lesser then or other compare op
-        /// </param>
-        /// <returns> FilterOperator or null if not valid
-        /// </returns>
-
-        public static FilterOperator? ParseComparisonOperator(string op)
-        {
-            if (op == null)
-            {
-                return null;
-            }
-
-            switch (op)
-            {
-                case EQUAL_OP:
-                    return FilterOperator.EQUAL;
-                case NOT_EQUAL_OP:
-                    return FilterOperator.NOT_EQUAL;
-                case LESS_OP:
-                    return FilterOperator.LESS;
-                case LESS_EQUAL_OP:
-                    return FilterOperator.LESS_OR_EQUAL;
-                case GREATER_OP:
-                    return FilterOperator.GREATER;
-                case GREATER_EQUAL_OP:
-                    return FilterOperator.GREATER_OR_EQUAL;
-                default:
-                    return null;
-            }
         }
 
         /// <summary>

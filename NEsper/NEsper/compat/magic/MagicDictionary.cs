@@ -6,35 +6,34 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.magic
 {
-    public class MagicDictionary<K,V> : IDictionary<object, object>
+    public class MagicDictionary<K1,V1> : IDictionary<object, object>
     {
-        private readonly IDictionary<K, V> _realDictionary;
-        private GenericTypeCaster<K> _typeKeyCaster;
+        private readonly IDictionary<K1, V1> _realDictionary;
+        private GenericTypeCaster<K1> _typeKeyCaster;
 
         public MagicDictionary(Object opaqueDictionary)
         {
-            _realDictionary = (IDictionary<K, V>)opaqueDictionary;
+            _realDictionary = (IDictionary<K1, V1>)opaqueDictionary;
             _typeKeyCaster = null;
         }
 
-        public MagicDictionary(IDictionary<K, V> realDictionary)
+        public MagicDictionary(IDictionary<K1, V1> realDictionary)
         {
             _realDictionary = realDictionary;
         }
 
-        public GenericTypeCaster<K> TypeKeyCaster
+        public GenericTypeCaster<K1> TypeKeyCaster
         {
             get
             {
                 if (_typeKeyCaster == null)
-                    _typeKeyCaster = CastHelper.GetCastConverter<K>();
+                    _typeKeyCaster = CastHelper.GetCastConverter<K1>();
                 return _typeKeyCaster;
             }
         }
@@ -53,7 +52,7 @@ namespace com.espertech.esper.compat.magic
 
         public void Add(KeyValuePair<object, object> item)
         {
-            _realDictionary.Add(new KeyValuePair<K, V>((K) item.Key, (V)item.Value));
+            _realDictionary.Add(new KeyValuePair<K1, V1>((K1) item.Key, (V1)item.Value));
         }
 
         public void Clear()
@@ -63,7 +62,7 @@ namespace com.espertech.esper.compat.magic
 
         public bool Contains(KeyValuePair<object, object> item)
         {
-            return _realDictionary.Contains(new KeyValuePair<K, V>((K) item.Key, (V)item.Value));
+            return _realDictionary.Contains(new KeyValuePair<K1, V1>((K1) item.Key, (V1)item.Value));
         }
 
         public void CopyTo(KeyValuePair<object, object>[] array, int arrayIndex)
@@ -73,7 +72,7 @@ namespace com.espertech.esper.compat.magic
 
         public bool Remove(KeyValuePair<object, object> item)
         {
-            return _realDictionary.Remove(new KeyValuePair<K, V>((K) item.Key, (V)item.Value));
+            return _realDictionary.Remove(new KeyValuePair<K1, V1>((K1) item.Key, (V1)item.Value));
         }
 
         public int Count
@@ -88,9 +87,9 @@ namespace com.espertech.esper.compat.magic
 
         public bool ContainsKey(object key)
         {
-            if (key is K)
+            if (key is K1)
             {
-                return _realDictionary.ContainsKey((K) key);
+                return _realDictionary.ContainsKey((K1) key);
             }
             else
             {
@@ -100,18 +99,18 @@ namespace com.espertech.esper.compat.magic
 
         public void Add(object key, object value)
         {
-            _realDictionary.Add((K) key, (V) value);
+            _realDictionary.Add((K1) key, (V1) value);
         }
 
         public bool Remove(object key)
         {
-            return _realDictionary.Remove((K) key);
+            return _realDictionary.Remove((K1) key);
         }
 
         public bool TryGetValue(object key, out object value)
         {
-            V item;
-            if (_realDictionary.TryGetValue((K) key, out item)) {
+            V1 item;
+            if (_realDictionary.TryGetValue((K1) key, out item)) {
                 value = item;
                 return true;
             }
@@ -122,18 +121,18 @@ namespace com.espertech.esper.compat.magic
 
         public object this[object key]
         {
-            get { return _realDictionary[(K) key]; }
-            set { _realDictionary[(K) key] = (V) value; }
+            get { return _realDictionary[(K1) key]; }
+            set { _realDictionary[(K1) key] = (V1) value; }
         }
 
         public ICollection<object> Keys
         {
-            get { return new MagicCollection<K>(_realDictionary.Keys); }
+            get { return new MagicCollection<K1>(_realDictionary.Keys); }
         }
 
         public ICollection<object> Values
         {
-            get { return new MagicCollection<V>(_realDictionary.Values); }
+            get { return new MagicCollection<V1>(_realDictionary.Values); }
         }
     }
 }

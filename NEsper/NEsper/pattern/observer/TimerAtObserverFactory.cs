@@ -13,7 +13,6 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.schedule;
 using com.espertech.esper.util;
 
@@ -23,34 +22,41 @@ namespace com.espertech.esper.pattern.observer
     /// Factory for 'crontab' observers that indicate truth when a time point was reached.
     /// </summary>
     [Serializable]
-    public class TimerAtObserverFactory : ObserverFactory, MetaDefItem
+    public class TimerAtObserverFactory
+        : ObserverFactory
+        , MetaDefItem
     {
-        /// <summary>Parameters. </summary>
-        protected IList<ExprNode> parameters;
-    
-        /// <summary>Convertor. </summary>
-        [NonSerialized] protected MatchedEventConvertor convertor;
-    
-        /// <summary>The schedule specification for the timer-at. </summary>
-        protected ScheduleSpec spec = null;
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public void SetObserverParameters(IList<ExprNode> parameters, MatchedEventConvertor convertor, ExprValidationContext validationContext)
+        /// <summary>Parameters.</summary>
+        private IList<ExprNode> _parameters;
+
+        /// <summary>Convertor.</summary>
+        [NonSerialized] private MatchedEventConvertor _convertor;
+
+        /// <summary>The schedule specification for the timer-at.</summary>
+        private ScheduleSpec _spec = null;
+
+        public void SetObserverParameters(
+            IList<ExprNode> parameters,
+            MatchedEventConvertor convertor,
+            ExprValidationContext validationContext)
         {
             ObserverParameterUtil.ValidateNoNamedParameters("timer:at", parameters);
-
             if (Log.IsDebugEnabled)
             {
                 Log.Debug(".setObserverParameters " + parameters);
             }
-    
+
             if ((parameters.Count < 5) || (parameters.Count > 7))
             {
                 throw new ObserverParameterException("Invalid number of parameters for timer:at");
             }
-    
-            this.parameters = parameters;
-            this.convertor = convertor;
-    
+
+            _parameters = parameters;
+            _convertor = convertor;
+
             // if all parameters are constants, lets try to evaluate and build a schedule for early validation
             bool allConstantResult = true;
             foreach (ExprNode param in parameters)
@@ -60,31 +66,38 @@ namespace com.espertech.esper.pattern.observer
                     allConstantResult = false;
                 }
             }
-    
+
             if (allConstantResult)
             {
                 try
                 {
-                    IList<Object> observerParameters = PatternExpressionUtil.Evaluate("Timer-at observer", new MatchedEventMapImpl(convertor.MatchedEventMapMeta), parameters, convertor, null);
-                    spec = ScheduleSpecUtil.ComputeValues(observerParameters.ToArray());
+                    var observerParameters = PatternExpressionUtil.Evaluate(
+                        "Timer-at observer", new MatchedEventMapImpl(convertor.MatchedEventMapMeta), parameters,
+                        convertor, null);
+                    _spec = ScheduleSpecUtil.ComputeValues(observerParameters.ToArray());
                 }
                 catch (ScheduleParameterException e)
                 {
-                    throw new ObserverParameterException("Error computing crontab schedule specification: " + e.Message, e);
+                    throw new ObserverParameterException(
+                        "Error computing crontab schedule specification: " + e.Message, e);
                 }
             }
         }
-    
+
         public ScheduleSpec ComputeSpec(MatchedEventMap beginState, PatternAgentInstanceContext context)
         {
-            if (spec != null) {
-                return spec;
+            if (_spec != null)
+            {
+                return _spec;
             }
-            IList<Object> observerParameters = PatternExpressionUtil.Evaluate("Timer-at observer", beginState, parameters, convertor, context.AgentInstanceContext);
-            try {
+            var observerParameters = PatternExpressionUtil.Evaluate(
+                "Timer-at observer", beginState, _parameters, _convertor, context.AgentInstanceContext);
+            try
+            {
                 return ScheduleSpecUtil.ComputeValues(observerParameters.ToArray());
             }
-            catch (ScheduleParameterException e) {
+            catch (ScheduleParameterException e)
+            {
                 throw new EPException("Error computing crontab schedule specification: " + e.Message, e);
             }
         }
@@ -100,11 +113,9 @@ namespace com.espertech.esper.pattern.observer
             return new TimerAtObserver(ComputeSpec(beginState, context), beginState, observerEventEvaluator);
         }
 
-        public bool IsNonRestarting()
+        public bool IsNonRestarting
         {
-            return false;
+            get { return false; }
         }
-    
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
-}
+} // end of namespace

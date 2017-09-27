@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.core.service;
-using com.espertech.esper.support.client;
 
 using NUnit.Framework;
 
@@ -19,7 +18,8 @@ namespace com.espertech.esper.client
         [Test]
         public void TestGetInstance()
         {
-            Configuration configuration = SupportConfigFactory.GetConfiguration();
+            Configuration configuration = new Configuration();
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = true;
 
             EPServiceProvider runtimeDef1 = EPServiceProviderManager.GetDefaultProvider();
             EPServiceProvider runtimeA1 = EPServiceProviderManager.GetProvider("A");
@@ -55,7 +55,7 @@ namespace com.espertech.esper.client
         public void TestInvalid()
         {
             Configuration configuration = new Configuration();
-            configuration.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             configuration.AddEventType("x", "xxx.noclass");
     
             try
@@ -72,7 +72,7 @@ namespace com.espertech.esper.client
         [Test]
         public void TestDefaultNaming()
         {
-        	Assert.AreEqual("default", EPServiceProviderConstants.DEFAULT_ENGINE_URI__QUALIFIER);
+        	Assert.AreEqual("default", EPServiceProviderConstants.DEFAULT_ENGINE_URI_QUALIFIER);
         	EPServiceProvider epNoArg = EPServiceProviderManager.GetDefaultProvider();
         	EPServiceProvider epDefault = EPServiceProviderManager.GetProvider("default");
         	EPServiceProvider epNull = EPServiceProviderManager.GetProvider(null);

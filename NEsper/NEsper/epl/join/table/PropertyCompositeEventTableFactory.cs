@@ -50,24 +50,27 @@ namespace com.espertech.esper.epl.join.table
             OptionalKeyedProps = optionalKeyedProps;
             OptKeyCoercedTypes = optKeyCoercedTypes;
             OptRangeCoercedTypes = optRangeCoercedTypes;
-    
+
             // construct chain
             var enterRemoves = new List<CompositeIndexEnterRemove>();
-            if (optionalKeyedProps != null && optionalKeyedProps.Count > 0) {
+            if (optionalKeyedProps != null && optionalKeyedProps.Count > 0)
+            {
                 enterRemoves.Add(new CompositeIndexEnterRemoveKeyed(eventType, optionalKeyedProps, optKeyCoercedTypes));
             }
             int count = 0;
-            foreach (String rangeProp in rangeProps) {
+            foreach (String rangeProp in rangeProps)
+            {
                 var coercionType = optRangeCoercedTypes == null ? null : optRangeCoercedTypes[count];
                 enterRemoves.Add(new CompositeIndexEnterRemoveRange(eventType, rangeProp, coercionType));
                 count++;
             }
-    
+
             // Hook up as chain for remove
             CompositeIndexEnterRemove last = null;
             foreach (CompositeIndexEnterRemove action in enterRemoves)
             {
-                if (last != null) {
+                if (last != null)
+                {
                     last.SetNext(action);
                 }
                 last = action;
@@ -94,7 +97,7 @@ namespace com.espertech.esper.epl.join.table
 
         public Type EventTableType
         {
-            get { return typeof (PropertyCompositeEventTable); }
+            get { return typeof(PropertyCompositeEventTable); }
         }
 
         public String ToQueryPlan()
@@ -104,7 +107,7 @@ namespace com.espertech.esper.epl.join.table
                     " keys=" + OptionalKeyedProps.Render() +
                     " ranges=" + RangeProps.Render();
         }
-    
+
         private IList<String> CombinedPropertyLists(IList<string> optionalKeyedProps, IList<string> rangeProps)
         {
             if (optionalKeyedProps == null)

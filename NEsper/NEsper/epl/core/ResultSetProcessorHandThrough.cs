@@ -14,7 +14,6 @@ using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
 
@@ -146,7 +145,7 @@ namespace com.espertech.esper.epl.core
             // Process join results set as a regular join, includes sorting and having-clause filter
             UniformPair<EventBean[]> result = ProcessJoinResult(joinSet, CollectionUtil.EMPTY_ROW_SET, true);
             if ((result == null) || (result.First == null))
-                return EnumerationHelper<EventBean>.CreateEmptyEnumerator(); 
+                return EnumerationHelper<EventBean>.Empty(); 
             return ((IEnumerable<EventBean>)result.First).GetEnumerator();
         }
 

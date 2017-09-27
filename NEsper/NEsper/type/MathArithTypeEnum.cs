@@ -91,7 +91,7 @@ namespace com.espertech.esper.type
 
         public static String GetExpressionText(this MathArithTypeEnum value)
         {
-            switch(value)
+            switch (value)
             {
                 case MathArithTypeEnum.ADD:
                     return "+";
@@ -115,7 +115,7 @@ namespace com.espertech.esper.type
         /// <returns>math enum</returns>
         public static MathArithTypeEnum ParseOperator(string value)
         {
-            switch(value)
+            switch (value)
             {
                 case "+":
                     return MathArithTypeEnum.ADD;
@@ -162,43 +162,47 @@ namespace com.espertech.esper.type
             if (t != null)
                 coercedType = t;
 
-            if ((coercedType != typeof (BigInteger)) && 
-                (coercedType != typeof (decimal)) &&
-                (coercedType != typeof (double)) &&
-                (coercedType != typeof (float)) &&
-                (coercedType != typeof (long)) &&
-                (coercedType != typeof (int))) {
+            if ((coercedType != typeof(BigInteger)) &&
+                (coercedType != typeof(decimal)) &&
+                (coercedType != typeof(double)) &&
+                (coercedType != typeof(float)) &&
+                (coercedType != typeof(long)) &&
+                (coercedType != typeof(int)))
+            {
                 throw new ArgumentException("Expected base numeric type for computation result but got type " + coercedType);
             }
 
-            if (value != MathArithTypeEnum.DIVIDE) {
-                var key = new MultiKeyUntyped(new Object[] {coercedType, value});
+            if (value != MathArithTypeEnum.DIVIDE)
+            {
+                var key = new MultiKeyUntyped(new Object[] { coercedType, value });
                 var computer = Computers.Get(key);
-                if (computer == null) {
+                if (computer == null)
+                {
                     throw new ArgumentException("Could not determine process or type " + value + " type " + coercedType);
                 }
                 return computer;
             }
 
-            if (!isIntegerDivision) {
+            if (!isIntegerDivision)
+            {
                 if (coercedType == typeof(decimal))
                     return isDivisionByZeroReturnsNull ? (Computer)DivideDecimalChecked : DivideDecimalUnchecked;
 
                 return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked;
             }
 
-            if (coercedType == typeof (BigInteger))
+            if (coercedType == typeof(BigInteger))
                 return DivideBigInteger;
-            if (coercedType == typeof (double))
-                return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked; 
-            if (coercedType == typeof (float))
+            if (coercedType == typeof(double))
+                return isDivisionByZeroReturnsNull ? (Computer)DivideDoubleChecked : DivideDoubleUnchecked;
+            if (coercedType == typeof(float))
                 return DivideSingle;
-            if (coercedType == typeof (long))
+            if (coercedType == typeof(long))
                 return DivideInt64;
-            if (coercedType == typeof (int))
+            if (coercedType == typeof(int))
                 return DivideInt32;
-            if (coercedType == typeof (decimal))
-                return isDivisionByZeroReturnsNull ? (Computer) DivideDecimalChecked : DivideDecimalUnchecked;
+            if (coercedType == typeof(decimal))
+                return isDivisionByZeroReturnsNull ? (Computer)DivideDecimalChecked : DivideDecimalUnchecked;
 
             throw new ArgumentException("Could not determine process or type " + value + " type " + coercedType);
         }

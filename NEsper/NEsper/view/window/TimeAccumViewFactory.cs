@@ -10,54 +10,64 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.collection;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.view.window
 {
     /// <summary>
-    /// Factory for <seealso cref="com.espertech.esper.view.window.TimeAccumView"/>.
+    /// Factory for <seealso cref="com.espertech.esper.view.window.TimeAccumView" />.
     /// </summary>
-    public class TimeAccumViewFactory : DataWindowViewFactory, DataWindowViewWithPrevious
+    public class TimeAccumViewFactory
+        : DataWindowViewFactory
+        , DataWindowViewWithPrevious
     {
+        /// <summary>Number of msec of quiet time before results are flushed.</summary>
+        private ExprTimePeriodEvalDeltaConstFactory _timeDeltaComputationFactory;
+
         private EventType _eventType;
-    
-        /// <summary>Number of msec of quiet time before results are flushed. </summary>
-        private ExprTimePeriodEvalDeltaConst _timeDeltaComputation;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             if (expressionParameters.Count != 1)
             {
                 throw new ViewParameterException(ViewParamMessage);
             }
-            _timeDeltaComputation = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDelta(
+            _timeDeltaComputationFactory = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
                 ViewName, viewFactoryContext.StatementContext, expressionParameters[0], ViewParamMessage, 0);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
         }
-    
+
         public Object MakePreviousGetter()
         {
             return new RandomAccessByIndexGetter();
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            var randomAccess = agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory.GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
+            ExprTimePeriodEvalDeltaConst timeDeltaComputation = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceViewFactoryContext.AgentInstanceContext);
+            ViewUpdatedCollection randomAccess =
+                agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
+                    .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
-                return new TimeAccumViewRStream(this, agentInstanceViewFactoryContext, _timeDeltaComputation);
+                return new TimeAccumViewRStream(this, agentInstanceViewFactoryContext, timeDeltaComputation);
             }
             else
             {
-                return new TimeAccumView(this, agentInstanceViewFactoryContext, _timeDeltaComputation, randomAccess);
+                return new TimeAccumView(this, agentInstanceViewFactoryContext, timeDeltaComputation, randomAccess);
             }
         }
 
@@ -66,30 +76,27 @@ namespace com.espertech.esper.view.window
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is TimeAccumView))
             {
                 return false;
             }
-    
+
             var myView = (TimeAccumView) view;
-            if (!_timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
+            ExprTimePeriodEvalDeltaConst timeDeltaComputation = _timeDeltaComputationFactory.Make(
+                ViewName, "view", agentInstanceContext);
+            if (!timeDeltaComputation.EqualsTimePeriod(myView.TimeDeltaComputation))
             {
                 return false;
             }
-    
-            return myView.IsEmpty();
+
+            return myView.IsEmpty;
         }
 
         public string ViewName
         {
-            get { return "Time-Accumulative-Batch"; }
-        }
-
-        public ExprTimePeriodEvalDeltaConst TimeDeltaComputation
-        {
-            get { return _timeDeltaComputation; }
+            get { return "TimeInMillis-Accumulative-Batch"; }
         }
 
         private string ViewParamMessage
@@ -97,4 +104,4 @@ namespace com.espertech.esper.view.window
             get { return ViewName + " view requires a single numeric parameter or time period parameter"; }
         }
     }
-}
+} // end of namespace

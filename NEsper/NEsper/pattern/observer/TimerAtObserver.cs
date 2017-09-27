@@ -19,21 +19,30 @@ namespace com.espertech.esper.pattern.observer
     /// <summary>
     /// Observer implementation for indicating that a certain time arrived, similar to "crontab".
     /// </summary>
-    public class TimerAtObserver : EventObserver, ScheduleHandleCallback
+    public class TimerAtObserver
+        : EventObserver
+        , ScheduleHandleCallback
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ScheduleSpec _scheduleSpec;
         private readonly long _scheduleSlot;
         private readonly MatchedEventMap _beginState;
         private readonly ObserverEventEvaluator _observerEventEvaluator;
-    
-        private bool _isTimerActive;
+        private bool _isTimerActive = false;
         private EPStatementHandleCallback _scheduleHandle;
-    
-        /// <summary>Ctor. </summary>
-        /// <param name="scheduleSpec">specification containing the crontab schedule</param>
-        /// <param name="beginState">start state</param>
-        /// <param name="observerEventEvaluator">receiver for events</param>
-        public TimerAtObserver(ScheduleSpec scheduleSpec, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator)
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="scheduleSpec">- specification containing the crontab schedule</param>
+        /// <param name="beginState">- start state</param>
+        /// <param name="observerEventEvaluator">- receiver for events</param>
+        public TimerAtObserver(
+            ScheduleSpec scheduleSpec,
+            MatchedEventMap beginState,
+            ObserverEventEvaluator observerEventEvaluator)
         {
             _scheduleSpec = scheduleSpec;
             _beginState = beginState;
@@ -48,26 +57,35 @@ namespace com.espertech.esper.pattern.observer
 
         public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternObserverScheduledEval();}
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().QPatternObserverScheduledEval();
+            }
             _observerEventEvaluator.ObserverEvaluateTrue(_beginState, true);
             _isTimerActive = false;
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternObserverScheduledEval();}
+            if (InstrumentationHelper.ENABLED)
+            {
+                InstrumentationHelper.Get().APatternObserverScheduledEval();
+            }
         }
-    
+
         public void StartObserve()
         {
             if (_isTimerActive)
             {
                 throw new IllegalStateException("Timer already active");
             }
-    
+
             _scheduleHandle = new EPStatementHandleCallback(_observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
-            SchedulingService schedulingService = _observerEventEvaluator.Context.PatternContext.SchedulingService;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(_scheduleSpec, schedulingService.Time, _observerEventEvaluator.Context.StatementContext.EngineImportService.TimeZone);
+            var schedulingService = _observerEventEvaluator.Context.PatternContext.SchedulingService;
+            var engineImportService =
+                _observerEventEvaluator.Context.StatementContext.EngineImportService;
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+                _scheduleSpec, schedulingService.Time, engineImportService.TimeZone, engineImportService.TimeAbacus);
             schedulingService.Add(nextScheduledTime, _scheduleHandle, _scheduleSlot);
             _isTimerActive = true;
         }
-    
+
         public void StopObserve()
         {
             if (_isTimerActive)
@@ -77,11 +95,10 @@ namespace com.espertech.esper.pattern.observer
                 _scheduleHandle = null;
             }
         }
-    
-        public void Accept(EventObserverVisitor visitor) {
+
+        public void Accept(EventObserverVisitor visitor)
+        {
             visitor.VisitObserver(_beginState, 2, _scheduleSlot, _scheduleSpec);
         }
-    
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
-}
+} // end of namespace

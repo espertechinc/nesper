@@ -18,12 +18,13 @@ using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
-using DataCollection = System.Collections.Generic.ICollection<object>;
-using DataMap = System.Collections.Generic.IDictionary<string, object>;
-using AnyMap = System.Collections.Generic.IDictionary<object, object>;
-
 namespace com.espertech.esper.epl.expression.ops
 {
+    using DataCollection = ICollection<object>;
+    using DataMap = IDictionary<string, object>;
+    using AnyMap = IDictionary<object, object>;
+    using RelationalComputer = Func<object, object, bool>;
+
     /// <summary>
     /// Represents a lesser or greater then (&lt;/&lt;=/&gt;/&gt;=) expression in a filter
     /// expression tree.
@@ -39,7 +40,7 @@ namespace com.espertech.esper.epl.expression.ops
         private bool _hasCollectionOrArray;
 
         [NonSerialized] private Func<object, object>[] _transformList;
-        [NonSerialized] private RelationalOpEnumExtensions.Computer _computer;
+        [NonSerialized] private RelationalComputer _computer;
         [NonSerialized] private ExprEvaluator[] _evaluators;
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace com.espertech.esper.epl.expression.ops
             writer.Write("(");
             String delimiter = "";
 
-            for (int i = 0; i < ChildNodes.Length - 1; i++)
+            for (int i = 0; i < ChildNodes.Count - 1; i++)
             {
                 writer.Write(delimiter);
                 ChildNodes[i + 1].ToEPL(writer, Precedence);
@@ -127,7 +128,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             // Must have 2 child nodes
             var childNodes = ChildNodes;
-            if (childNodes.Length < 1)
+            if (childNodes.Count < 1)
             {
                 throw new IllegalStateException("Group relational op node must have 1 or more parameters");
             }
@@ -145,12 +146,12 @@ namespace com.espertech.esper.epl.expression.ops
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
 
-            _transformList = new Func<object, object>[childNodes.Length];
+            _transformList = new Func<object, object>[childNodes.Count];
 
             var comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
             _hasCollectionOrArray = false;
-            for (int i = 1; i < childNodes.Length; i++)
+            for (int i = 1; i < childNodes.Count; i++)
             {
                 var propType = _evaluators[i].ReturnType;
                 if (propType.IsArray)

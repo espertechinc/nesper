@@ -25,9 +25,9 @@ namespace com.espertech.esper.example.marketdatafeed
 	    [SetUp]
 	    public void SetUp() {
 	        Configuration configuration = new Configuration();
-            configuration.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
+            configuration.EngineDefaults.Threading.IsInternalTimerEnabled = false;
 	        configuration.AddEventType("MarketDataEvent", typeof(MarketDataEvent).FullName);
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
 	        _epService = EPServiceProviderManager.GetProvider("TestTicksPerSecondStatement", configuration);
 	        _epService.Initialize();

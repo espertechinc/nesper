@@ -46,14 +46,14 @@ namespace com.espertech.esper.util
         public override String ToString()
         {
             var writer = new StringWriter();
-    
+
             int count = 0;
             foreach (var entry in _dependencies)
             {
                 count++;
                 writer.WriteLine("Record {0}: from={1} to={2}", count, entry.Key, entry.Value.Render());
             }
-    
+
             return writer.ToString();
         }
 
@@ -68,13 +68,13 @@ namespace com.espertech.esper.util
             {
                 throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
             }
-    
+
             var toSet = _dependencies.Get(target);
             if (toSet != null)
             {
                 throw new ArgumentException("Dependencies from stream " + target + " already in collection");
             }
-    
+
             _dependencies.Put(target, requiredStreams);
         }
 
@@ -89,14 +89,14 @@ namespace com.espertech.esper.util
             {
                 throw new ArgumentException("Dependency between same streams is not allowed for stream " + target);
             }
-    
+
             var toSet = _dependencies.Get(target);
             if (toSet == null)
             {
                 toSet = new SortedSet<int>();
                 _dependencies.Put(target, toSet);
             }
-    
+
             toSet.Add(from);
         }
 
@@ -114,7 +114,7 @@ namespace com.espertech.esper.util
             }
             return false;
         }
-    
+
         /// <summary>Returns the set of dependent streams for a given stream. </summary>
         /// <param name="stream">to return dependent streams for</param>
         /// <returns>set of stream numbers of stream providing properties</returns>
@@ -168,10 +168,11 @@ namespace com.espertech.esper.util
         public ICollection<int> GetRootNodes(ICollection<int> ignoreList)
         {
             var rootNodes = new HashSet<int>();
-    
+
             for (int i = 0; i < _numStreams; i++)
             {
-                if (ignoreList.Contains(i)) {
+                if (ignoreList.Contains(i))
+                {
                     continue;
                 }
                 bool found = _dependencies
@@ -182,7 +183,7 @@ namespace com.espertech.esper.util
                     rootNodes.Add(i);
                 }
             }
-    
+
             return rootNodes;
         }
 
@@ -214,7 +215,7 @@ namespace com.espertech.esper.util
             {
                 return false;
             }
-    
+
             foreach (int stream in required)
             {
                 if (deepDependencies.Contains(stream))
@@ -229,29 +230,34 @@ namespace com.espertech.esper.util
                 }
                 deepDependencies.Pop();
             }
-    
+
             return false;
         }
-    
+
         /// <summary>Check if the given stream has any dependencies, direct or indirect, to any of the streams that are not in the ignore list. </summary>
-        public bool HasUnsatisfiedDependency(int navigableStream, ICollection<int> ignoreList) {
+        public bool HasUnsatisfiedDependency(int navigableStream, ICollection<int> ignoreList)
+        {
             var deepDependencies = new HashSet<int>();
             RecursivePopulateDependencies(navigableStream, deepDependencies);
-    
-            foreach (int dependency in deepDependencies) {
-                if (!ignoreList.Contains(dependency)) {
+
+            foreach (int dependency in deepDependencies)
+            {
+                if (!ignoreList.Contains(dependency))
+                {
                     return true;
                 }
             }
             return false;
         }
-    
-        private void RecursivePopulateDependencies(int navigableStream, ICollection<int> deepDependencies) {
+
+        private void RecursivePopulateDependencies(int navigableStream, ICollection<int> deepDependencies)
+        {
             var dependencies = GetDependenciesForStream(navigableStream);
             deepDependencies.AddAll(dependencies);
-            foreach (int dependency in dependencies) {
+            foreach (int dependency in dependencies)
+            {
                 RecursivePopulateDependencies(dependency, deepDependencies);
-            }        
+            }
         }
     }
 }

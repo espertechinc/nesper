@@ -18,6 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.view.std
@@ -32,11 +33,11 @@ namespace com.espertech.esper.view.std
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceContext;
         private readonly long _reclaimMaxAge;
         private readonly long _reclaimFrequency;
-    
+
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
         private readonly String[] _propertyNames;
 
-        private readonly IDictionary<Object, GroupByViewAgedEntry> _subViewsPerKey = 
+        private readonly IDictionary<Object, GroupByViewAgedEntry> _subViewsPerKey =
             new Dictionary<Object, GroupByViewAgedEntry>();
         private readonly Dictionary<GroupByViewAgedEntry, Pair<Object, Object>> _groupedEvents =
             new Dictionary<GroupByViewAgedEntry, Pair<Object, Object>>();
@@ -48,26 +49,30 @@ namespace com.espertech.esper.view.std
         /// <param name="agentInstanceContext">contains required view services</param>
         /// <param name="criteriaExpressions">is the fields from which to pull the values to group by</param>
         /// <param name="criteriaEvaluators">The criteria evaluators.</param>
-        /// <param name="reclaimMaxAge">age after which to reclaim group</param>
-        /// <param name="reclaimFrequency">frequency in which to check for groups to reclaim</param>
-        public GroupByViewReclaimAged(AgentInstanceViewFactoryChainContext agentInstanceContext,
-                                      ExprNode[] criteriaExpressions,
-                                      ExprEvaluator[] criteriaEvaluators,
-                                      double reclaimMaxAge, double reclaimFrequency)
+        /// <param name="reclaimMaxAgeSeconds">age after which to reclaim group</param>
+        /// <param name="reclaimFrequencySeconds">frequency in which to check for groups to reclaim</param>
+        public GroupByViewReclaimAged(
+            AgentInstanceViewFactoryChainContext agentInstanceContext,
+            ExprNode[] criteriaExpressions,
+            ExprEvaluator[] criteriaEvaluators,
+            double reclaimMaxAgeSeconds,
+            double reclaimFrequencySeconds)
         {
             _agentInstanceContext = agentInstanceContext;
             _criteriaExpressions = criteriaExpressions;
             _criteriaEvaluators = criteriaEvaluators;
-            _reclaimMaxAge = (long) (reclaimMaxAge * 1000d);
-            _reclaimFrequency = (long) (reclaimFrequency * 1000d);
-    
+
+            var timeAbacus = agentInstanceContext.StatementContext.EngineImportService.TimeAbacus;
+            _reclaimMaxAge = timeAbacus.DeltaForSecondsDouble(reclaimMaxAgeSeconds);
+            _reclaimFrequency = timeAbacus.DeltaForSecondsDouble(reclaimFrequencySeconds);
+
             _propertyNames = new String[criteriaExpressions.Length];
             for (var i = 0; i < criteriaExpressions.Length; i++)
             {
                 _propertyNames[i] = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(criteriaExpressions[i]);
             }
         }
-    
+
         public View CloneView()
         {
             return new GroupByViewReclaimAged(_agentInstanceContext, _criteriaExpressions, _criteriaEvaluators, _reclaimMaxAge, _reclaimFrequency);
@@ -101,18 +106,18 @@ namespace com.espertech.esper.view.std
                 _nextSweepTime = currentTime + _reclaimFrequency;
                 Sweep(currentTime);
             }
-    
+
             // Algorithm for single new event
             if ((newData != null) && (oldData == null) && (newData.Length == 1))
             {
                 var theEvent = newData[0];
-                var newDataToPost = new EventBean[] {theEvent};
-    
+                var newDataToPost = new EventBean[] { theEvent };
+
                 var groupByValuesKey = GetGroupKey(theEvent);
-    
+
                 // Get child views that belong to this group-by value combination
                 var subViews = _subViewsPerKey.Get(groupByValuesKey);
-    
+
                 // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
                 if (subViews == null)
                 {
@@ -120,15 +125,16 @@ namespace com.espertech.esper.view.std
                     subViews = new GroupByViewAgedEntry(subviewsList, currentTime);
                     _subViewsPerKey.Put(groupByValuesKey, subViews);
                 }
-                else {
+                else
+                {
                     subViews.LastUpdateTime = currentTime;
                 }
-    
+
                 GroupByViewImpl.UpdateChildViews(subViews.SubviewHolder, newDataToPost, null);
             }
             else
             {
-    
+
                 // Algorithm for dispatching multiple events
                 if (newData != null)
                 {
@@ -137,7 +143,7 @@ namespace com.espertech.esper.view.std
                         HandleEvent(newValue, true);
                     }
                 }
-    
+
                 if (oldData != null)
                 {
                     foreach (var oldValue in oldData)
@@ -145,7 +151,7 @@ namespace com.espertech.esper.view.std
                         HandleEvent(oldValue, false);
                     }
                 }
-    
+
                 // Update child views
                 foreach (var entry in _groupedEvents)
                 {
@@ -153,18 +159,18 @@ namespace com.espertech.esper.view.std
                     var oldEvents = GroupByViewImpl.ConvertToArray(entry.Value.Second);
                     GroupByViewImpl.UpdateChildViews(entry.Key, newEvents, oldEvents);
                 }
-    
+
                 _groupedEvents.Clear();
             }
         }
-    
+
         private void HandleEvent(EventBean theEvent, bool isNew)
         {
             var groupByValuesKey = GetGroupKey(theEvent);
-    
+
             // Get child views that belong to this group-by value combination
             var subViews = _subViewsPerKey.Get(groupByValuesKey);
-    
+
             // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
             if (subViews == null)
             {
@@ -173,43 +179,49 @@ namespace com.espertech.esper.view.std
                 subViews = new GroupByViewAgedEntry(subviewsList, currentTime);
                 _subViewsPerKey.Put(groupByValuesKey, subViews);
             }
-            else {
+            else
+            {
                 subViews.LastUpdateTime = _agentInstanceContext.StatementContext.TimeProvider.Time;
             }
-    
+
             // Construct a pair of lists to hold the events for the grouped value if not already there
             var pair = _groupedEvents.Get(subViews);
-            if (pair == null) {
+            if (pair == null)
+            {
                 pair = new Pair<Object, Object>(null, null);
                 _groupedEvents.Put(subViews, pair);
             }
-    
+
             // Add event to a child view event list for later child Update that includes new and old events
-            if (isNew) {
+            if (isNew)
+            {
                 pair.First = GroupByViewImpl.AddUpgradeToDequeIfPopulated(pair.First, theEvent);
             }
-            else {
+            else
+            {
                 pair.Second = GroupByViewImpl.AddUpgradeToDequeIfPopulated(pair.Second, theEvent);
             }
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             throw new UnsupportedOperationException("Cannot iterate over group view, this operation is not supported");
         }
-    
+
         public override String ToString()
         {
             return GetType().FullName + " groupFieldNames=" + _criteriaExpressions.Render();
         }
-    
-        public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor) {
+
+        public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
+        {
             viewDataVisitor.VisitPrimary(GroupByViewImpl.VIEWNAME, _subViewsPerKey.Count);
-            foreach (var entry in _subViewsPerKey) {
+            foreach (var entry in _subViewsPerKey)
+            {
                 GroupByViewImpl.VisitView(viewDataVisitor, entry.Key, entry.Value.SubviewHolder);
             }
         }
-    
+
         private void Sweep(long currentTime)
         {
             var removed = new ArrayDeque<Object>();
@@ -221,20 +233,22 @@ namespace com.espertech.esper.view.std
                     removed.Add(entry.Key);
                 }
             }
-    
+
             foreach (var key in removed)
             {
                 var entry = _subViewsPerKey.Delete(key);
                 var subviewHolder = entry.SubviewHolder;
                 if (subviewHolder is IList<View>)
                 {
-                    var subviews = (IList<View>) subviewHolder;
-                    foreach (var view in subviews) {
+                    var subviews = (IList<View>)subviewHolder;
+                    foreach (var view in subviews)
+                    {
                         RemoveSubview(view);
                     }
                 }
-                else if (subviewHolder is View) {
-                    RemoveSubview((View) subviewHolder);
+                else if (subviewHolder is View)
+                {
+                    RemoveSubview((View)subviewHolder);
                 }
             }
         }
@@ -255,14 +269,14 @@ namespace com.espertech.esper.view.std
                 _subViewsPerKey.Clear();
                 return true;
             }
-            var removedView = (GroupableView) view;
+            var removedView = (GroupableView)view;
             Deque<Object> removedKeys = null;
             foreach (var entry in _subViewsPerKey)
             {
                 var value = entry.Value.SubviewHolder;
                 if (value is View)
                 {
-                    var subview = (GroupableView) value;
+                    var subview = (GroupableView)value;
                     if (CompareViews(subview, removedView))
                     {
                         if (removedKeys == null)
@@ -274,10 +288,10 @@ namespace com.espertech.esper.view.std
                 }
                 else if (value is IList<View>)
                 {
-                    var subviews = (IList<View>) value;
+                    var subviews = (IList<View>)value;
                     for (var i = 0; i < subviews.Count; i++)
                     {
-                        var subview = (GroupableView) subviews[i];
+                        var subview = (GroupableView)subviews[i];
                         if (CompareViews(subview, removedView))
                         {
                             subviews.RemoveAt(i);
@@ -308,17 +322,18 @@ namespace com.espertech.esper.view.std
         {
             return subview.ViewFactory == removed.ViewFactory;
         }
-    
+
         private void RemoveSubview(View view)
         {
             view.Parent = null;
             RecursiveMergeViewRemove(view);
             var stoppableView = view as StoppableView;
-            if (stoppableView != null) {
+            if (stoppableView != null)
+            {
                 stoppableView.Stop();
             }
         }
-    
+
         private void RecursiveMergeViewRemove(View view)
         {
             foreach (var child in view.Views)
@@ -342,7 +357,7 @@ namespace com.espertech.esper.view.std
                 }
             }
         }
-    
+
         private Object GetGroupKey(EventBean theEvent)
         {
             var evaluateParams = new EvaluateParams(_eventsPerStream, true, _agentInstanceContext);
@@ -360,7 +375,7 @@ namespace com.espertech.esper.view.std
             }
             return new MultiKeyUntyped(values);
         }
-    
+
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

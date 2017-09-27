@@ -31,16 +31,16 @@ namespace com.espertech.esper.core.context.mgr
         private readonly int _pathId;
         protected readonly ContextControllerLifecycleCallback ActivationCallback;
         private readonly ContextControllerInitTermFactoryImpl _factory;
-    
+
         protected ContextControllerCondition StartCondition;
         private readonly IDictionary<Object, EventBean> _distinctContexts;
         private EventBean _nonDistinctLastTrigger;
         private readonly ExprEvaluator[] _distinctEvaluators;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
-    
-        protected IDictionary<ContextControllerCondition, ContextControllerInitTermInstance> EndConditions = 
+
+        protected IDictionary<ContextControllerCondition, ContextControllerInitTermInstance> EndConditions =
             new LinkedHashMap<ContextControllerCondition, ContextControllerInitTermInstance>();
-    
+
         protected int CurrentSubpathId;
 
         internal IDictionary<object, EventBean> DistinctContexts
@@ -60,23 +60,26 @@ namespace com.espertech.esper.core.context.mgr
             _factory = factory;
 
             var contextDetail = factory.ContextDetail as ContextDetailInitiatedTerminated;
-            if (contextDetail != null && contextDetail.DistinctExpressions != null && contextDetail.DistinctExpressions.Length > 0) {
-                _distinctContexts = new Dictionary<Object, EventBean>();
+            if (contextDetail != null && contextDetail.DistinctExpressions != null && contextDetail.DistinctExpressions.Length > 0)
+            {
+                _distinctContexts = new Dictionary<Object, EventBean>().WithNullSupport();
                 _distinctEvaluators = ExprNodeUtility.GetEvaluators(contextDetail.DistinctExpressions);
             }
         }
-    
+
         public void ImportContextPartitions(ContextControllerState state, int pathIdToUse, ContextInternalFilterAddendum filterAddendum, AgentInstanceSelector agentInstanceSelector)
         {
             InitializeFromState(null, null, filterAddendum, state, pathIdToUse, agentInstanceSelector, true);
         }
-    
+
         public void DeletePath(ContextPartitionIdentifier identifier)
         {
-            var initterm = (ContextPartitionIdentifierInitiatedTerminated) identifier;
-            foreach (var entry in EndConditions) {
+            var initterm = (ContextPartitionIdentifierInitiatedTerminated)identifier;
+            foreach (var entry in EndConditions)
+            {
                 if (Compare(initterm.StartTime, initterm.Properties, initterm.EndTime,
-                        entry.Value.StartTime, entry.Value.StartProperties, entry.Value.EndTime)) {
+                        entry.Value.StartTime, entry.Value.StartProperties, entry.Value.EndTime))
+                {
                     entry.Key.Deactivate();
                     EndConditions.Remove(entry.Key);
                     RemoveDistinctKey(entry.Value);
@@ -84,25 +87,29 @@ namespace com.espertech.esper.core.context.mgr
                 }
             }
         }
-    
+
         public void Activate(EventBean optionalTriggeringEvent, IDictionary<String, Object> optionalTriggeringPattern, ContextControllerState controllerState, ContextInternalFilterAddendum filterAddendum, int? importPathId)
         {
-            if (_factory.FactoryContext.NestingLevel == 1) {
+            if (_factory.FactoryContext.NestingLevel == 1)
+            {
                 controllerState = ContextControllerStateUtil.GetRecoveryStates(_factory.FactoryContext.StateCache, _factory.FactoryContext.OutermostContextName);
             }
 
             bool currentlyRunning;
             var contextDetailInitiatedTerminated = _factory.ContextDetailInitiatedTerminated;
-            if (controllerState == null) {
+            if (controllerState == null)
+            {
                 StartCondition = MakeEndpoint(contextDetailInitiatedTerminated.Start, filterAddendum, true, 0);
-    
+
                 // if this is single-instance mode, check if we are currently running according to schedule
                 currentlyRunning = StartCondition.IsImmediate;
-                if (!contextDetailInitiatedTerminated.IsOverlapping) {
+                if (!contextDetailInitiatedTerminated.IsOverlapping)
+                {
                     currentlyRunning = DetermineCurrentlyRunning(StartCondition);
                 }
-    
-                if (currentlyRunning) {
+
+                if (currentlyRunning)
+                {
                     CurrentSubpathId++;
                     var endEndpoint = MakeEndpoint(contextDetailInitiatedTerminated.End, filterAddendum, false, CurrentSubpathId);
                     endEndpoint.Activate(optionalTriggeringEvent, null, 0, _factory.FactoryContext.IsRecoveringResilient);
@@ -111,71 +118,82 @@ namespace com.espertech.esper.core.context.mgr
                     var builtinProps = GetBuiltinProperties(_factory.FactoryContext.ContextName, startTime, endTime, Collections.GetEmptyMap<string, object>());
                     var instanceHandle = ActivationCallback.ContextPartitionInstantiate(null, CurrentSubpathId, null, this, optionalTriggeringEvent, optionalTriggeringPattern, null, builtinProps, controllerState, filterAddendum, _factory.FactoryContext.IsRecoveringResilient, ContextPartitionState.STARTED);
                     EndConditions.Put(endEndpoint, new ContextControllerInitTermInstance(instanceHandle, null, startTime, endTime, CurrentSubpathId));
-    
+
                     var state = new ContextControllerInitTermState(_factory.FactoryContext.ServicesContext.SchedulingService.Time, builtinProps);
                     _factory.FactoryContext.StateCache.AddContextPath(_factory.FactoryContext.OutermostContextName, _factory.FactoryContext.NestingLevel, _pathId, CurrentSubpathId, instanceHandle.ContextPartitionOrPathId, state, _factory.Binding);
                 }
-    
+
                 // non-overlapping and not currently running, or overlapping
                 if ((!contextDetailInitiatedTerminated.IsOverlapping && !currentlyRunning) ||
-                    contextDetailInitiatedTerminated.IsOverlapping) {
+                    contextDetailInitiatedTerminated.IsOverlapping)
+                {
                     StartCondition.Activate(optionalTriggeringEvent, null, 0, _factory.FactoryContext.IsRecoveringResilient);
                 }
                 return;
             }
 
             StartCondition = MakeEndpoint(contextDetailInitiatedTerminated.Start, filterAddendum, true, 0);
-    
+
             // if this is single-instance mode, check if we are currently running according to schedule
             currentlyRunning = false;
-            if (!contextDetailInitiatedTerminated.IsOverlapping) {
+            if (!contextDetailInitiatedTerminated.IsOverlapping)
+            {
                 currentlyRunning = DetermineCurrentlyRunning(StartCondition);
             }
-            if (!currentlyRunning) {
+            if (!currentlyRunning)
+            {
                 StartCondition.Activate(optionalTriggeringEvent, null, 0, _factory.FactoryContext.IsRecoveringResilient);
             }
-    
+
             int pathIdToUse = importPathId ?? _pathId;
             InitializeFromState(optionalTriggeringEvent, optionalTriggeringPattern, filterAddendum, controllerState, pathIdToUse, null, false);
         }
-    
+
         protected ContextControllerCondition MakeEndpoint(ContextDetailCondition endpoint, ContextInternalFilterAddendum filterAddendum, bool isStartEndpoint, int subPathId)
         {
             return ContextControllerConditionFactory.GetEndpoint(_factory.FactoryContext.ContextName, _factory.FactoryContext.ServicesContext, _factory.FactoryContext.AgentInstanceContextCreate,
                     endpoint, this, filterAddendum, isStartEndpoint,
                     _factory.FactoryContext.NestingLevel, _pathId, subPathId);
         }
-    
+
         public void VisitSelectedPartitions(ContextPartitionSelector contextPartitionSelector, ContextPartitionVisitor visitor)
         {
             var nestingLevel = _factory.FactoryContext.NestingLevel;
-            if (contextPartitionSelector is ContextPartitionSelectorFiltered) {
-                var filter = (ContextPartitionSelectorFiltered) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorFiltered)
+            {
+                var filter = (ContextPartitionSelectorFiltered)contextPartitionSelector;
                 var identifier = new ContextPartitionIdentifierInitiatedTerminated();
-                foreach (var entry in EndConditions) {
+                foreach (var entry in EndConditions)
+                {
                     identifier.EndTime = entry.Value.EndTime;
                     identifier.StartTime = entry.Value.StartTime;
                     identifier.Properties = entry.Value.StartProperties;
                     identifier.ContextPartitionId = entry.Value.InstanceHandle.ContextPartitionOrPathId;
-                    if (filter.Filter(identifier)) {
+                    if (filter.Filter(identifier))
+                    {
                         var state = new ContextControllerInitTermState(_factory.FactoryContext.ServicesContext.SchedulingService.Time, entry.Value.StartProperties);
                         visitor.Visit(nestingLevel, _pathId, _factory.Binding, state, this, entry.Value.InstanceHandle);
                     }
                 }
                 return;
             }
-            if (contextPartitionSelector is ContextPartitionSelectorById) {
-                var filter = (ContextPartitionSelectorById) contextPartitionSelector;
-                foreach (var entry in EndConditions) {
-                    if (filter.ContextPartitionIds.Contains(entry.Value.InstanceHandle.ContextPartitionOrPathId)) {
+            if (contextPartitionSelector is ContextPartitionSelectorById)
+            {
+                var filter = (ContextPartitionSelectorById)contextPartitionSelector;
+                foreach (var entry in EndConditions)
+                {
+                    if (filter.ContextPartitionIds.Contains(entry.Value.InstanceHandle.ContextPartitionOrPathId))
+                    {
                         var state = new ContextControllerInitTermState(_factory.FactoryContext.ServicesContext.SchedulingService.Time, entry.Value.StartProperties);
                         visitor.Visit(nestingLevel, _pathId, _factory.Binding, state, this, entry.Value.InstanceHandle);
                     }
                 }
                 return;
             }
-            if (contextPartitionSelector is ContextPartitionSelectorAll) {
-                foreach (var entry in EndConditions) {
+            if (contextPartitionSelector is ContextPartitionSelectorAll)
+            {
+                foreach (var entry in EndConditions)
+                {
                     var state = new ContextControllerInitTermState(_factory.FactoryContext.ServicesContext.SchedulingService.Time, entry.Value.StartProperties);
                     visitor.Visit(nestingLevel, _pathId, _factory.Binding, state, this, entry.Value.InstanceHandle);
                 }
@@ -197,8 +215,8 @@ namespace com.espertech.esper.core.context.mgr
 
             _nonDistinctLastTrigger = optionalTriggeringEvent;
 
-            ILockable tempLock = startNow 
-                ? _factory.FactoryContext.ServicesContext.FilterService.WriteLock 
+            ILockable tempLock = startNow
+                ? _factory.FactoryContext.ServicesContext.FilterService.WriteLock
                 : new VoidLock();
 
             using (tempLock.Acquire())
@@ -226,7 +244,7 @@ namespace com.espertech.esper.core.context.mgr
                         {
                             agentInstancesLocksHeld = new List<AgentInstance>();
                             optionalTriggeringEvent = null;
-                                // since we are restarting, we don't want to evaluate the event twice
+                            // since we are restarting, we don't want to evaluate the event twice
                             optionalTriggeringPattern = null;
                         }
                         ActivationCallback.ContextPartitionTerminate(
@@ -328,17 +346,22 @@ namespace com.espertech.esper.core.context.mgr
         private void InstallFilterFaultHandler(ContextControllerInstanceHandle instanceHandle)
         {
             FilterFaultHandler myFaultHandler = null;
-            if (DistinctContexts != null) {
+            if (DistinctContexts != null)
+            {
                 myFaultHandler = new DistinctFilterFaultHandler(this);
             }
-            else {
-                if (StartCondition is ContextControllerConditionFilter) {
+            else
+            {
+                if (StartCondition is ContextControllerConditionFilter)
+                {
                     myFaultHandler = new NonDistinctFilterFaultHandler(this);
                 }
             }
 
-            if (myFaultHandler != null && instanceHandle.Instances != null) {
-                foreach (AgentInstance agentInstance in instanceHandle.Instances.AgentInstances) {
+            if (myFaultHandler != null && instanceHandle.Instances != null)
+            {
+                foreach (AgentInstance agentInstance in instanceHandle.Instances.AgentInstances)
+                {
                     agentInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.FilterFaultHandler = myFaultHandler;
                 }
             }
@@ -348,7 +371,8 @@ namespace com.espertech.esper.core.context.mgr
         {
             var props = new Object[_factory.MatchedEventMapMeta.TagsPerIndex.Length];
             var count = 0;
-            foreach (var name in _factory.MatchedEventMapMeta.TagsPerIndex) {
+            foreach (var name in _factory.MatchedEventMapMeta.TagsPerIndex)
+            {
                 props[count++] = builtinProperties.Get(name);
             }
             return new MatchedEventMapImpl(_factory.MatchedEventMapMeta, props);
@@ -359,22 +383,32 @@ namespace com.espertech.esper.core.context.mgr
             // we are not currently running if either of the endpoints is not crontab-triggered
             var contextDetailInitiatedTerminated = _factory.ContextDetailInitiatedTerminated;
             if ((contextDetailInitiatedTerminated.Start is ContextDetailConditionCrontab) &&
-               ((contextDetailInitiatedTerminated.End is ContextDetailConditionCrontab)))     {
-                var scheduleStart = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.Start).Schedule;
-                var scheduleEnd = ((ContextDetailConditionCrontab) contextDetailInitiatedTerminated.End).Schedule;
-                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleStart, _factory.TimeProvider.Time, _factory.StatementContext.EngineImportService.TimeZone);
-                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(scheduleEnd, _factory.TimeProvider.Time, _factory.StatementContext.EngineImportService.TimeZone);
+               ((contextDetailInitiatedTerminated.End is ContextDetailConditionCrontab)))
+            {
+                var scheduleStart = ((ContextDetailConditionCrontab)contextDetailInitiatedTerminated.Start).Schedule;
+                var scheduleEnd = ((ContextDetailConditionCrontab)contextDetailInitiatedTerminated.End).Schedule;
+
+                var engineImportService = _factory.StatementContext.EngineImportService;
+                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    scheduleStart, _factory.TimeProvider.Time, engineImportService.TimeZone,
+                    engineImportService.TimeAbacus);
+                long nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(
+                    scheduleEnd, _factory.TimeProvider.Time, engineImportService.TimeZone, 
+                    engineImportService.TimeAbacus);
+
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
-    
-            if (startCondition is ContextControllerConditionTimePeriod) {
-                var condition = (ContextControllerConditionTimePeriod) startCondition;
+
+            if (startCondition is ContextControllerConditionTimePeriod)
+            {
+                var condition = (ContextControllerConditionTimePeriod)startCondition;
                 var endTime = condition.ExpectedEndTime;
-                if (endTime != null && endTime <= 0) {
+                if (endTime != null && endTime <= 0)
+                {
                     return true;
                 }
             }
-    
+
             return startCondition is ContextControllerConditionImmediate;
         }
 
@@ -390,14 +424,18 @@ namespace com.espertech.esper.core.context.mgr
 
         public void Deactivate()
         {
-            if (StartCondition != null) {
-                if (StartCondition.IsRunning) {
+            if (StartCondition != null)
+            {
+                if (StartCondition.IsRunning)
+                {
                     StartCondition.Deactivate();
                 }
             }
-    
-            foreach (var entry in EndConditions) {
-                if (entry.Key.IsRunning) {
+
+            foreach (var entry in EndConditions)
+            {
+                if (entry.Key.IsRunning)
+                {
                     entry.Key.Deactivate();
                 }
             }
@@ -427,58 +465,67 @@ namespace com.espertech.esper.core.context.mgr
             var states = controllerState.States;
             var childContexts = ContextControllerStateUtil.GetChildContexts(_factory.FactoryContext, pathIdToUse, states);
             var eventAdapterService = _factory.FactoryContext.ServicesContext.EventAdapterService;
-    
+
             var maxSubpathId = int.MinValue;
-            foreach (var entry in childContexts) {
-                var state = (ContextControllerInitTermState) _factory.Binding.ByteArrayToObject(entry.Value.Blob, eventAdapterService);
-    
-                if (_distinctContexts != null) {
-                    var filter = (ContextControllerConditionFilter) StartCondition;
-                    var @event = (EventBean) state.PatternData.Get(filter.EndpointFilterSpec.OptionalFilterAsName);
+            foreach (var entry in childContexts)
+            {
+                var state = (ContextControllerInitTermState)_factory.Binding.ByteArrayToObject(entry.Value.Blob, eventAdapterService);
+
+                if (_distinctContexts != null)
+                {
+                    var filter = (ContextControllerConditionFilter)StartCondition;
+                    var @event = (EventBean)state.PatternData.Get(filter.EndpointFilterSpec.OptionalFilterAsName);
                     AddDistinctKey(@event);
                 }
-    
-                if (controllerState.IsImported) {
+
+                if (controllerState.IsImported)
+                {
                     KeyValuePair<ContextControllerCondition, ContextControllerInitTermInstance>? existing = null;
-                    foreach (var entryExisting in EndConditions) {
+                    foreach (var entryExisting in EndConditions)
+                    {
                         if (Compare(state.StartTime, state.PatternData, null,
-                                    entryExisting.Value.StartTime, entryExisting.Value.StartProperties, null)) {
+                                    entryExisting.Value.StartTime, entryExisting.Value.StartProperties, null))
+                        {
                             existing = entryExisting;
                             break;
                         }
                     }
-                    if (existing != null) {
+                    if (existing != null)
+                    {
                         ContextControllerInstanceHandle existingHandle = existing.Value.Value.InstanceHandle;
-                        if (existingHandle != null) {
+                        if (existingHandle != null)
+                        {
                             ActivationCallback.ContextPartitionNavigate(existingHandle, this, controllerState, entry.Value.OptionalContextPartitionId.Value, filterAddendum, agentInstanceSelector, entry.Value.Blob, loadingExistingState);
                             continue;
                         }
                     }
                 }
-    
+
                 var endEndpoint = MakeEndpoint(_factory.ContextDetailInitiatedTerminated.End, filterAddendum, false, entry.Key.SubPath);
                 var timeOffset = _factory.FactoryContext.ServicesContext.SchedulingService.Time - state.StartTime;
-    
+
                 endEndpoint.Activate(optionalTriggeringEvent, null, timeOffset, _factory.FactoryContext.IsRecoveringResilient);
                 var startTime = state.StartTime;
                 var endTime = endEndpoint.ExpectedEndTime;
                 var builtinProps = GetBuiltinProperties(_factory.FactoryContext.ContextName, startTime, endTime, state.PatternData);
                 var contextPartitionId = entry.Value.OptionalContextPartitionId;
-    
+
                 var assignedSubPathId = !controllerState.IsImported ? entry.Key.SubPath : ++CurrentSubpathId;
                 var instanceHandle = ActivationCallback.ContextPartitionInstantiate(contextPartitionId, assignedSubPathId, entry.Key.SubPath, this, optionalTriggeringEvent, optionalTriggeringPattern, null, builtinProps, controllerState, filterAddendum, loadingExistingState || _factory.FactoryContext.IsRecoveringResilient, entry.Value.State);
                 EndConditions.Put(endEndpoint, new ContextControllerInitTermInstance(instanceHandle, state.PatternData, startTime, endTime, assignedSubPathId));
-    
-                if (entry.Key.SubPath > maxSubpathId) {
+
+                if (entry.Key.SubPath > maxSubpathId)
+                {
                     maxSubpathId = assignedSubPathId;
                 }
             }
-    
-            if (!controllerState.IsImported) {
+
+            if (!controllerState.IsImported)
+            {
                 CurrentSubpathId = maxSubpathId != int.MinValue ? maxSubpathId : 0;
             }
         }
-    
+
         public static bool Compare(long savedStartTime,
                                       IDictionary<String, Object> savedProperties,
                                       long? savedEndTime,
@@ -486,27 +533,35 @@ namespace com.espertech.esper.core.context.mgr
                                       IDictionary<String, Object> existingProperties,
                                       long? existingEndTime)
         {
-            if (savedStartTime != existingStartTime) {
+            if (savedStartTime != existingStartTime)
+            {
                 return false;
             }
-            if (savedEndTime != null && existingEndTime != null && !savedEndTime.Equals(existingEndTime)) {
+            if (savedEndTime != null && existingEndTime != null && !savedEndTime.Equals(existingEndTime))
+            {
                 return false;
             }
-    
-            foreach (var savedEntry in savedProperties) {
+
+            foreach (var savedEntry in savedProperties)
+            {
                 var existingValue = existingProperties.Get(savedEntry.Key);
                 var savedValue = savedEntry.Value;
-                if (savedValue == null && existingValue == null) {
+                if (savedValue == null && existingValue == null)
+                {
                     continue;
                 }
-                if (savedValue == null || existingValue == null) {
+                if (savedValue == null || existingValue == null)
+                {
                     return false;
                 }
-                if (existingValue.Equals(savedValue)) {
+                if (existingValue.Equals(savedValue))
+                {
                     continue;
                 }
-                if (existingValue is EventBean && savedValue is EventBean) {
-                    if (((EventBean)existingValue).Underlying.Equals(((EventBean) savedValue).Underlying)) {
+                if (existingValue is EventBean && savedValue is EventBean)
+                {
+                    if (((EventBean)existingValue).Underlying.Equals(((EventBean)savedValue).Underlying))
+                    {
                         continue;
                     }
                 }
@@ -514,7 +569,7 @@ namespace com.espertech.esper.core.context.mgr
             }
             return true;
         }
-    
+
         private bool AddDistinctKey(EventBean optionalTriggeringEvent)
         {
             var key = GetDistinctKey(optionalTriggeringEvent);
@@ -525,29 +580,31 @@ namespace com.espertech.esper.core.context.mgr
             _distinctContexts.Put(key, optionalTriggeringEvent);
             return true;
         }
-    
+
         private void RemoveDistinctKey(ContextControllerInitTermInstance value)
         {
             if (_distinctContexts == null)
             {
                 return;
             }
-            var filter = (ContextControllerConditionFilter) StartCondition;
-            var @event = (EventBean) value.StartProperties.Get(filter.EndpointFilterSpec.OptionalFilterAsName);
+            var filter = (ContextControllerConditionFilter)StartCondition;
+            var @event = (EventBean)value.StartProperties.Get(filter.EndpointFilterSpec.OptionalFilterAsName);
             var key = GetDistinctKey(@event);
             _distinctContexts.Remove(key);
         }
-    
+
         private Object GetDistinctKey(EventBean optionalTriggeringEvent)
         {
             _eventsPerStream[0] = optionalTriggeringEvent;
-            if (_distinctEvaluators.Length == 1) {
+            if (_distinctEvaluators.Length == 1)
+            {
                 return _distinctEvaluators[0].Evaluate(new EvaluateParams(_eventsPerStream, true, _factory.FactoryContext.AgentInstanceContextCreate));
             }
-    
+
             var results = new Object[_distinctEvaluators.Length];
             var count = 0;
-            foreach (var expr in _distinctEvaluators) {
+            foreach (var expr in _distinctEvaluators)
+            {
                 results[count] = expr.Evaluate(new EvaluateParams(_eventsPerStream, true, _factory.FactoryContext.AgentInstanceContextCreate));
                 count++;
             }

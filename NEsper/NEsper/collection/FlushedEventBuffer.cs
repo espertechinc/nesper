@@ -60,7 +60,7 @@ namespace com.espertech.esper.collection
 	        return flattened;
 	    }
 
-	    /// <summary>Empty buffer.</summary>
+	    /// <summary>EmptyFalse buffer.</summary>
 	    public void Flush()
 	    {
 	        _remainEvents.Clear();

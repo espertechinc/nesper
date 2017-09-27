@@ -7,21 +7,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
+using com.espertech.esper.core.service;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.metrics.instrumentation
 {
     public class InstrumentationHelper
     {
-        private const String PROVIDER_PROPERTY = "instrumentation_provider";
-
         public const bool ENABLED = false;
         public const bool ASSERTIONENABLED = false;
 
-        public static Instrumentation DEFAULT_INSTRUMENTATION = new InstrumentationDefault();
-        public static Instrumentation Instrumentation = DEFAULT_INSTRUMENTATION;
+        private const string PROVIDER_PROPERTY = "instrumentation_provider";
+
+        public static Instrumentation DefaultInstrumentation = new InstrumentationDefault();
+        public static Instrumentation Instrumentation = DefaultInstrumentation;
 
         public static InstrumentationAssertionService AssertionService;
 
@@ -30,7 +35,7 @@ namespace com.espertech.esper.metrics.instrumentation
             return Instrumentation;
         }
 
-        public static void StartTest(EPServiceProvider engine, Type testClass, String testName)
+        public static void StartTest(EPServiceProvider engine, Type testClass, string testName)
         {
             if (!ASSERTIONENABLED)
             {
@@ -38,7 +43,7 @@ namespace com.espertech.esper.metrics.instrumentation
             }
             if (AssertionService == null)
             {
-                ResolveAssertionService();
+                ResolveAssertionService(engine);
             }
             AssertionService.StartTest(engine, testClass, testName);
         }
@@ -52,27 +57,30 @@ namespace com.espertech.esper.metrics.instrumentation
             AssertionService.EndTest();
         }
 
-        private static void ResolveAssertionService()
+        private static void ResolveAssertionService(EPServiceProvider epServiceProvider)
         {
-            var provider = Environment.GetEnvironmentVariable(PROVIDER_PROPERTY);
+            string provider = Environment.GetEnvironmentVariable(PROVIDER_PROPERTY);
             if (provider == null)
             {
-                throw new ApplicationException("Failed to find '" + PROVIDER_PROPERTY + "' system property");
+                throw new EPException("Failed to find '" + PROVIDER_PROPERTY + "' system property");
             }
-            if (provider.ToLower().Trim() == "default")
+            if (provider.ToLowerInvariant().Trim().Equals("default"))
             {
                 AssertionService = new DefaultInstrumentationAssertionService();
             }
             else
             {
-                AssertionService = TypeHelper.Instantiate<InstrumentationAssertionService>(provider);
+                var spi = (EPServiceProviderSPI) epServiceProvider;
+                AssertionService = TypeHelper.Instantiate<InstrumentationAssertionService>(
+                    provider, spi.EngineImportService.GetClassForNameProvider());
             }
         }
 
         private class DefaultInstrumentationAssertionService : InstrumentationAssertionService
         {
-            public void StartTest(EPServiceProvider engine, Type testClass, String testName)
+            public void StartTest(EPServiceProvider engine, Type testClass, string testName)
             {
+
             }
 
             public void EndTest()
@@ -80,4 +88,4 @@ namespace com.espertech.esper.metrics.instrumentation
             }
         }
     }
-}
+} // end of namespace

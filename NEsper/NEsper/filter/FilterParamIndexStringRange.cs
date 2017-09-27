@@ -48,7 +48,7 @@ namespace com.espertech.esper.filter
                     return;
                 }
 
-                var attributeValue = (String) objAttributeValue;
+                var attributeValue = (String)objAttributeValue;
 
                 var rangeStart = new StringRange(null, attributeValue);
                 var rangeEnd = new StringRange(attributeValue, null);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.filter
                 {
                     foreach (var entry in subMap)
                     {
-                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) <= 0 && 
+                        if (String.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) <= 0 &&
                             String.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) >= 0)
                         {
                             entry.Value.MatchEvent(theEvent, matches);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.filter
                     }
                 }
                 else if (FilterOperator == FilterOperator.RANGE_HALF_CLOSED)
-                    // include high endpoint not low endpoint
+                // include high endpoint not low endpoint
                 {
                     foreach (var entry in subMap)
                     {
@@ -92,7 +92,7 @@ namespace com.espertech.esper.filter
                     }
                 }
                 else if (FilterOperator == FilterOperator.RANGE_HALF_OPEN)
-                    // include low endpoint not high endpoint
+                // include low endpoint not high endpoint
                 {
                     foreach (var entry in subMap)
                     {

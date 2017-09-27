@@ -22,11 +22,11 @@ namespace com.espertech.esper.core.service
     public class StatementEventTypeRefImpl : StatementEventTypeRef
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly IReaderWriterLock _mapLock;
         private readonly Dictionary<String, ICollection<String>> _typeToStmt;
         private readonly Dictionary<String, String[]> _stmtToType;
-    
+
         /// <summary>Ctor. </summary>
         public StatementEventTypeRefImpl()
         {
@@ -34,15 +34,15 @@ namespace com.espertech.esper.core.service
             _stmtToType = new Dictionary<String, String[]>();
             _mapLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
-    
+
         public void AddReferences(String statementName, String[] eventTypesReferenced)
         {
             if (eventTypesReferenced.Length == 0)
             {
-                return;    
+                return;
             }
-    
-            using(_mapLock.AcquireWriteLock())
+
+            using (_mapLock.AcquireWriteLock())
             {
                 foreach (String reference in eventTypesReferenced)
                 {
@@ -50,10 +50,10 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         public void RemoveReferencesStatement(String statementName)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
                 var types = _stmtToType.Delete(statementName);
                 if (types != null)
@@ -65,10 +65,10 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         public void RemoveReferencesType(String name)
         {
-            using(_mapLock.AcquireWriteLock())
+            using (_mapLock.AcquireWriteLock())
             {
                 var statementNames = _typeToStmt.Delete(name);
                 if (statementNames != null)
@@ -80,7 +80,7 @@ namespace com.espertech.esper.core.service
                 }
             }
         }
-    
+
         public bool IsInUse(String eventTypeName)
         {
             using (_mapLock.AcquireReadLock())
@@ -88,7 +88,7 @@ namespace com.espertech.esper.core.service
                 return _typeToStmt.ContainsKey(eventTypeName);
             }
         }
-    
+
         public ICollection<String> GetStatementNamesForType(String eventTypeName)
         {
             using (_mapLock.AcquireReadLock())
@@ -101,7 +101,7 @@ namespace com.espertech.esper.core.service
                 return types.AsReadOnlyCollection();
             }
         }
-    
+
         public String[] GetTypesForStatementName(String statementName)
         {
             using (_mapLock.AcquireReadLock())
@@ -130,17 +130,14 @@ namespace com.espertech.esper.core.service
             String[] types = _stmtToType.Get(statementName);
             if (types == null)
             {
-                types = new String[]
-                {
-                    eventTypeName
-                };
+                types = new String[]{ eventTypeName };
             }
             else
             {
                 int index = CollectionUtil.FindItem(types, eventTypeName);
                 if (index == -1)
                 {
-                    types = (String[]) CollectionUtil.ArrayExpandAddSingle(types, eventTypeName);
+                    types = (String[])CollectionUtil.ArrayExpandAddSingle(types, eventTypeName);
                 }
             }
             _stmtToType.Put(statementName, types);
@@ -176,7 +173,7 @@ namespace com.espertech.esper.core.service
                     }
                     else
                     {
-                        types = (String[]) CollectionUtil.ArrayShrinkRemoveSingle(types, index);
+                        types = (String[])CollectionUtil.ArrayShrinkRemoveSingle(types, index);
                         _stmtToType.Put(statementName, types);
                     }
                 }

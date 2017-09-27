@@ -241,7 +241,7 @@ namespace com.espertech.esper.view
                 case ViewEnum.EXT_TIMED_WINDOW:
                     return typeof(ExternallyTimedWindowViewFactory);
                 case ViewEnum.EXT_TIMED_BATCH:
-                    return typeof (ExternallyTimedBatchViewFactory);
+                    return typeof(ExternallyTimedBatchViewFactory);
                 case ViewEnum.KEEPALL_WINDOW:
                     return typeof(KeepAllViewFactory);
                 case ViewEnum.SIZE:
@@ -285,7 +285,7 @@ namespace com.espertech.esper.view
                 case ViewEnum.EXPRESSION_BATCH_WINDOW:
                     return typeof(ExpressionBatchViewFactory);
                 case ViewEnum.NOOP_WINDOW:
-                    return typeof (NoopViewFactory);
+                    return typeof(NoopViewFactory);
             }
 
             throw new ArgumentException("invalid value", "viewEnum");
@@ -349,14 +349,28 @@ namespace com.espertech.esper.view
 
         public static ViewEnum? ForName(String nspace, String name)
         {
-            foreach (ViewEnum viewEnum in Enum.GetValues(typeof(ViewEnum)))
+            if (string.IsNullOrEmpty(nspace))
             {
-                if (Equals(viewEnum.GetNamespace(), nspace) &&
-                    Equals(viewEnum.GetName(), name))
+                foreach (ViewEnum viewEnum in Enum.GetValues(typeof(ViewEnum)))
                 {
-                    return viewEnum;
+                    if (Equals(viewEnum.GetName(), name))
+                    {
+                        return viewEnum;
+                    }
                 }
             }
+            else
+            {
+                foreach (ViewEnum viewEnum in Enum.GetValues(typeof(ViewEnum)))
+                {
+                    if (Equals(viewEnum.GetNamespace(), nspace) &&
+                        Equals(viewEnum.GetName(), name))
+                    {
+                        return viewEnum;
+                    }
+                }
+            }
+
 
             return null;
         }

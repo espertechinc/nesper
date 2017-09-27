@@ -28,6 +28,14 @@ namespace com.espertech.esper.events
     {
         public static IDictionary<String, Object> CheckedCastUnderlyingMap(EventBean theEvent)
         {
+#if CHECKED_CAST
+            if (!(theEvent.Underlying is IDictionary<string, object>))
+            {
+                System.Diagnostics.Debug.Assert(true, "invalid dictionary");
+                throw new InvalidCastException("checked cast to IDictionary<string,object> failed");
+            }
+#endif
+
             return (IDictionary<String, Object>)theEvent.Underlying;
         }
 
@@ -59,6 +67,31 @@ namespace com.espertech.esper.events
                 return null;
             }
             return getter.GetMap((IDictionary<String, Object>)valueMap);
+        }
+
+        public static bool HandleNestedValueArrayWithMapExists(Object value, int index, MapEventPropertyGetter getter)
+        {
+            var asArray = value as Array;
+            if (asArray == null)
+            {
+                return false;
+            }
+
+            if (asArray.Length <= index)
+            {
+                return false;
+            }
+
+            var valueMap = asArray.GetValue(index);
+            if (!(valueMap is DataMap))
+            {
+                if (valueMap is EventBean)
+                {
+                    return getter.IsExistsProperty((EventBean) valueMap);
+                }
+                return false;
+            }
+            return getter.IsMapExistsProperty((DataMap) valueMap);
         }
 
         public static Object HandleNestedValueArrayWithMapFragment(Object value, int index, MapEventPropertyGetter getter, EventAdapterService eventAdapterService, EventType fragmentType)
@@ -112,6 +145,31 @@ namespace com.espertech.esper.events
                 return null;
             }
             return getter.GetObjectArray((Object[])valueArray);
+        }
+
+        public static bool HandleNestedValueArrayWithObjectArrayExists(Object value, int index, ObjectArrayEventPropertyGetter getter)
+        {
+            var asArray = value as Array;
+            if (asArray == null)
+            {
+                return false;
+            }
+
+            if (asArray.Length <= index)
+            {
+                return false;
+            }
+
+            var valueArray = asArray.GetValue(index);
+            if (!(valueArray is Object[]))
+            {
+                if (valueArray is EventBean)
+                {
+                    return getter.IsExistsProperty((EventBean) valueArray);
+                }
+                return false;
+            }
+            return getter.IsObjectArrayExistsProperty((Object[]) valueArray);
         }
 
         public static Object HandleNestedValueArrayWithObjectArrayFragment(Object value, int index, ObjectArrayEventPropertyGetter getter, EventType fragmentType, EventAdapterService eventAdapterService)
@@ -178,7 +236,7 @@ namespace com.espertech.esper.events
             }
             if (value is DataMap)
             {
-                return ((DataMap) value).Get(key);
+                return ((DataMap)value).Get(key);
             }
             if (value.GetType().IsGenericStringDictionary())
             {
@@ -212,7 +270,7 @@ namespace com.espertech.esper.events
             ICollection<String> arrayPropertiesToCopy = new HashSet<String>();
             for (var i = 0; i < properties.Length; i++)
             {
-                var prop = PropertyParser.ParseAndWalk(properties[i]);
+                var prop = PropertyParser.ParseAndWalkLaxToSimple(properties[i]);
                 if (prop is MappedProperty)
                 {
                     var mappedProperty = (MappedProperty)prop;
@@ -257,7 +315,7 @@ namespace com.espertech.esper.events
             }
 
             var asType = value.GetType();
-            var asGenericList = asType.FindGenericInterface(typeof (IList<>));
+            var asGenericList = asType.FindGenericInterface(typeof(IList<>));
             if (asGenericList != null)
             {
                 var asList = MagicMarker.GetListFactory(value.GetType()).Invoke(value);
@@ -312,7 +370,7 @@ namespace com.espertech.esper.events
             {
                 return eventAdapterService.AdapterForTypedMap((IDictionary<String, Object>)fragmentUnderlying, fragmentEventType);
             }
-            return eventAdapterService.AdapterForTypedObjectArray((Object[])fragmentUnderlying, fragmentEventType);
+            return eventAdapterService.AdapterForTypedObjectArray(fragmentUnderlying.UnwrapIntoArray<object>(true), fragmentEventType);
         }
 
         public static Object GetFragmentArray(EventAdapterService eventAdapterService, Object value, EventType fragmentEventType)
@@ -402,7 +460,7 @@ namespace com.espertech.esper.events
             }
             if (result is Array)
             {
-                var arrayX = (Array) result;
+                var arrayX = (Array)result;
                 var len = arrayX.Length;
                 var events = new EventBean[len];
                 for (var i = 0; i < events.Length; i++)
@@ -488,13 +546,16 @@ namespace com.espertech.esper.events
         public static String ComparePropType(String propName, Object setOneType, Object setTwoType, bool setTwoTypeFound, String otherName)
         {
             // allow null for nested event types
-            if ((setOneType is String || setOneType is EventType) && setTwoType == null) {
+            if ((setOneType is String || setOneType is EventType) && setTwoType == null)
+            {
                 return null;
             }
-            if ((setTwoType is String || setTwoType is EventType) && setOneType == null) {
+            if ((setTwoType is String || setTwoType is EventType) && setOneType == null)
+            {
                 return null;
             }
-            if (!setTwoTypeFound) {
+            if (!setTwoTypeFound)
+            {
                 return "The property '" + propName + "' is not provided but required";
             }
             if (setTwoType == null)
@@ -508,12 +569,14 @@ namespace com.espertech.esper.events
 
             if ((setTwoType is Type) && (setOneType is Type))
             {
-                var boxedOther = ((Type) setTwoType).GetBoxedType();
+                var boxedOther = ((Type)setTwoType).GetBoxedType();
                 var boxedThis = ((Type)setOneType).GetBoxedType();
                 if (boxedOther != boxedThis)
                 {
-                    if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis)) {
-                        return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis + " but receives " + boxedOther;
+                    if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis))
+                    {
+                        return string.Format("Type by name '{0}' in property '{1}' expected {2} but receives {3}",
+                            otherName, propName, Name.Of(boxedThis), Name.Of(boxedOther));
                     }
                 }
             }
@@ -526,10 +589,10 @@ namespace com.espertech.esper.events
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis + " but receives " + boxedOther;
                 }
             }
-            else if (setTwoType is EventType[] && ((EventType[])setTwoType)[0] is BeanEventType && setOneType is Type && ((Type) setOneType).IsArray)
+            else if (setTwoType is EventType[] && ((EventType[])setTwoType)[0] is BeanEventType && setOneType is Type && ((Type)setOneType).IsArray)
             {
                 var boxedOther = (((EventType[])setTwoType)[0]).UnderlyingType.GetBoxedType();
-                var boxedThis = ((Type) setOneType).GetElementType().GetBoxedType();
+                var boxedThis = ((Type)setOneType).GetElementType().GetBoxedType();
                 if (boxedOther != boxedThis)
                 {
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis + " but receives " + boxedOther;
@@ -546,15 +609,18 @@ namespace com.espertech.esper.events
             else if ((setTwoType is EventType) && (setOneType is EventType))
             {
                 bool mismatch;
-                if (setTwoType is EventTypeSPI && setOneType is EventTypeSPI) {
-                    mismatch = !((EventTypeSPI) setOneType).EqualsCompareType((EventTypeSPI) setTwoType);
+                if (setTwoType is EventTypeSPI && setOneType is EventTypeSPI)
+                {
+                    mismatch = !((EventTypeSPI)setOneType).EqualsCompareType((EventTypeSPI)setTwoType);
                 }
-                else {
+                else
+                {
                     mismatch = !setOneType.Equals(setTwoType);
                 }
-                if (mismatch) {
-                    var setOneEventType = (EventType) setOneType;
-                    var setTwoEventType = (EventType) setTwoType;
+                if (mismatch)
+                {
+                    var setOneEventType = (EventType)setOneType;
+                    var setTwoEventType = (EventType)setTwoType;
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType.Name + "' but receives event type '" + setTwoEventType.Name + "'";
                 }
             }
@@ -580,17 +646,18 @@ namespace com.espertech.esper.events
             {
                 if (!setTwoType.Equals(setOneType))
                 {
-                    var setOneEventType = (String) setOneType;
-                    var setTwoEventType = (String) setTwoType;
+                    var setOneEventType = (String)setOneType;
+                    var setTwoEventType = (String)setTwoType;
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneEventType + "' but receives event type '" + setTwoEventType + "'";
                 }
             }
             else if ((setTwoType is EventType[]) && (setOneType is String))
             {
-                var setTwoTypeArr = (EventType[]) setTwoType;
+                var setTwoTypeArr = (EventType[])setTwoType;
                 var setTwoFragmentType = setTwoTypeArr[0];
                 var setOneTypeString = (String)setOneType;
-                if (!(setOneTypeString.EndsWith("[]"))) {
+                if (!(setOneTypeString.EndsWith("[]")))
+                {
                     return "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" + setOneType + "' but receives event type '" + setTwoFragmentType.Name + "[]'";
                 }
                 var setOneTypeNoArray = (setOneTypeString).RegexReplaceAll("\\[\\]", "");
@@ -603,7 +670,8 @@ namespace com.espertech.esper.events
             {
                 var typeOne = GetTypeName(setOneType);
                 var typeTwo = GetTypeName(setTwoType);
-                if (typeOne.Equals(typeTwo)) {
+                if (typeOne.Equals(typeTwo))
+                {
                     return null;
                 }
                 return "Type by name '" + otherName + "' in property '" + propName + "' expected " + typeOne + " but receives " + typeTwo;
@@ -620,7 +688,7 @@ namespace com.espertech.esper.events
             }
             if (type is Type)
             {
-                return ((Type) type).FullName;
+                return ((Type)type).FullName;
             }
             if (type is EventType)
             {
@@ -634,11 +702,11 @@ namespace com.espertech.esper.events
                     return boxedType.FullName;
                 }
 
-                return (string) type;
+                return (string)type;
             }
             return type.GetType().FullName;
         }
-        
+
         public class MapIndexedPropPair
         {
             public MapIndexedPropPair(ICollection<String> mapProperties, ICollection<String> arrayProperties)

@@ -64,7 +64,7 @@ namespace com.espertech.esper.client.soda
         /// <summary>Add value. </summary>
         /// <param name="value">to add</param>
         public void AddValue(Object value) {
-            Attributes.Add(new AnnotationAttribute("value", value));
+            Attributes.Add(new AnnotationAttribute("Value", value));
         }
     
         /// <summary>Add named value. </summary>

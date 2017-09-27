@@ -13,7 +13,8 @@ using System.Xml.XPath;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -29,7 +30,7 @@ namespace com.espertech.esper.events
         [SetUp]
         public void SetUp()
         {
-            _adapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5);
+            _adapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, null, SupportEngineImportServiceFactory.Make());
         }
     
         [Test]

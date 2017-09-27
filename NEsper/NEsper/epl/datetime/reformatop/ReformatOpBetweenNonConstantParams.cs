@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 
 namespace com.espertech.esper.epl.datetime.reformatop
@@ -26,21 +25,23 @@ namespace com.espertech.esper.epl.datetime.reformatop
         private readonly ExprNode _end;
         private readonly ExprEvaluator _endEval;
         private readonly DatetimeLongCoercer _secondCoercer;
+        private readonly TimeZoneInfo _timeZone;
 
-        private readonly bool? _includeBoth;
+        private readonly bool _includeBoth;
         private readonly bool? _includeLow;
         private readonly bool? _includeHigh;
         private readonly ExprEvaluator _evalIncludeLow;
         private readonly ExprEvaluator _evalIncludeHigh;
 
-        public ReformatOpBetweenNonConstantParams(IList<ExprNode> parameters)
+        public ReformatOpBetweenNonConstantParams(IList<ExprNode> parameters, TimeZoneInfo timeZone)
         {
+            _timeZone = timeZone;
             _start = parameters[0];
             _startEval = _start.ExprEvaluator;
-            _startCoercer = DatetimeLongCoercerFactory.GetCoercer(_startEval.ReturnType);
+            _startCoercer = DatetimeLongCoercerFactory.GetCoercer(_startEval.ReturnType, timeZone);
             _end = parameters[1];
             _endEval = _end.ExprEvaluator;
-            _secondCoercer = DatetimeLongCoercerFactory.GetCoercer(_endEval.ReturnType);
+            _secondCoercer = DatetimeLongCoercerFactory.GetCoercer(_endEval.ReturnType, timeZone);
 
             if (parameters.Count == 2)
             {
@@ -66,53 +67,88 @@ namespace com.espertech.esper.epl.datetime.reformatop
                 {
                     _evalIncludeHigh = parameters[3].ExprEvaluator;
                 }
-                if (_includeLow.GetValueOrDefault() && _includeHigh.GetValueOrDefault())
+                if (_includeLow != null && _includeHigh != null && _includeLow.Value && _includeHigh.Value)
                 {
                     _includeBoth = true;
                 }
             }
         }
 
-        private static bool GetBooleanValue(ExprNode exprNode)
+        private bool GetBooleanValue(ExprNode exprNode)
         {
-            Object value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
+            var value = exprNode.ExprEvaluator.Evaluate(new EvaluateParams(null, true, null));
             if (value == null)
             {
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
-            return value.AsBoolean();
+            return (bool) value;
         }
 
-        public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(
+            long ts,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateInternal(ts, eventsPerStream, newData, exprEvaluatorContext);
         }
 
-        public object Evaluate(DateTimeOffset d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Evaluate(
+            DateTime d,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return EvaluateInternal(d.UtcMillis(), eventsPerStream, newData, exprEvaluatorContext);
+        }
+
+        public Object Evaluate(
+            DateTimeOffset d,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             return EvaluateInternal(d.TimeInMillis(), eventsPerStream, newData, exprEvaluatorContext);
         }
 
-        public Type ReturnType
+        public Object Evaluate(
+            DateTimeEx dtx,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            get { return typeof(bool?); }
+            if (dtx == null)
+            {
+                return null;
+            }
+            return EvaluateInternal(dtx.TimeInMillis, eventsPerStream, newData, exprEvaluatorContext);
         }
 
-        public Object EvaluateInternal(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Type ReturnType
         {
-            Object firstObj = _startEval.Evaluate(new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
+            get { return typeof (bool?); }
+        }
+
+        public Object EvaluateInternal(
+            long ts,
+            EventBean[] eventsPerStream,
+            bool newData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            var evaluateParams = new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext);
+            var firstObj = _startEval.Evaluate(evaluateParams);
             if (firstObj == null)
             {
                 return null;
             }
-            Object secondObj = _endEval.Evaluate(new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
+            var secondObj = _endEval.Evaluate(evaluateParams);
             if (secondObj == null)
             {
                 return null;
             }
-            long first = _startCoercer.Coerce(firstObj);
-            long second = _secondCoercer.Coerce(secondObj);
-            if (_includeBoth.GetValueOrDefault())
+            var first = _startCoercer.Coerce(firstObj);
+            var second = _secondCoercer.Coerce(secondObj);
+            if (_includeBoth)
             {
                 if (first <= second)
                 {
@@ -129,32 +165,32 @@ namespace com.espertech.esper.epl.datetime.reformatop
                 bool includeLowEndpoint;
                 if (_includeLow != null)
                 {
-                    includeLowEndpoint = _includeLow.GetValueOrDefault();
+                    includeLowEndpoint = _includeLow.Value;
                 }
                 else
                 {
-                    Object value = _evalIncludeLow.Evaluate(new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
+                    var value = _evalIncludeLow.Evaluate(evaluateParams);
                     if (value == null)
                     {
                         return null;
                     }
-                    includeLowEndpoint = value.AsBoolean();
+                    includeLowEndpoint = (bool) value;
 
                 }
 
                 bool includeHighEndpoint;
                 if (_includeHigh != null)
                 {
-                    includeHighEndpoint = _includeHigh.GetValueOrDefault();
+                    includeHighEndpoint = _includeHigh.Value;
                 }
                 else
                 {
-                    Object value = _evalIncludeHigh.Evaluate(new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
+                    var value = _evalIncludeHigh.Evaluate(evaluateParams);
                     if (value == null)
                     {
                         return null;
                     }
-                    includeHighEndpoint = value.AsBoolean();
+                    includeHighEndpoint = (bool) value;
 
                 }
 
@@ -192,10 +228,11 @@ namespace com.espertech.esper.epl.datetime.reformatop
             }
         }
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(EventType[] typesPerStream,
-                                                           DatetimeMethodEnum currentMethod,
-                                                           ICollection<ExprNode> currentParameters,
-                                                           ExprDotNodeFilterAnalyzerInput inputDesc)
+        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             if (_includeLow == null || _includeHigh == null)
             {
@@ -203,17 +240,17 @@ namespace com.espertech.esper.epl.datetime.reformatop
             }
 
             int targetStreamNum;
-            String targetProperty;
+            string targetProperty;
             if (inputDesc is ExprDotNodeFilterAnalyzerInputStream)
             {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputStream)inputDesc;
+                var targetStream = (ExprDotNodeFilterAnalyzerInputStream) inputDesc;
                 targetStreamNum = targetStream.StreamNum;
-                EventType targetType = typesPerStream[targetStreamNum];
+                var targetType = typesPerStream[targetStreamNum];
                 targetProperty = targetType.StartTimestampPropertyName;
             }
             else if (inputDesc is ExprDotNodeFilterAnalyzerInputProp)
             {
-                var targetStream = (ExprDotNodeFilterAnalyzerInputProp)inputDesc;
+                var targetStream = (ExprDotNodeFilterAnalyzerInputProp) inputDesc;
                 targetStreamNum = targetStream.StreamNum;
                 targetProperty = targetStream.PropertyName;
             }
@@ -222,9 +259,8 @@ namespace com.espertech.esper.epl.datetime.reformatop
                 return null;
             }
 
-            return new ExprDotNodeFilterAnalyzerDTBetweenDesc(typesPerStream, targetStreamNum, targetProperty, _start,
-                                                              _end, _includeLow.GetValueOrDefault(),
-                                                              _includeHigh.GetValueOrDefault());
+            return new ExprDotNodeFilterAnalyzerDTBetweenDesc(
+                typesPerStream, targetStreamNum, targetProperty, _start, _end, _includeLow.Value, _includeHigh.Value);
         }
     }
-}
+} // end of namespace

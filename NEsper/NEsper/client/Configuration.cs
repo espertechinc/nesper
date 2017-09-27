@@ -7,10 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Reflection;
 using System.Xml;
 
 using com.espertech.esper.client.annotation;
@@ -25,14 +25,12 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.client
 {
-    using DataMap = IDictionary<string, object>;
-
     /// <summary>
     /// An instance of <tt>Configuration</tt> allows the application
     /// to specify properties to be used when
     /// creating a <tt>EPServiceProvider</tt>. Usually an application will create
     /// a single <tt>Configuration</tt>, then get one or more instances of
-    /// <see cref="EPServiceProvider" /> via <see cref="EPServiceProviderManager" />.
+    /// <seealso cref="EPServiceProvider" /> via <seealso cref="EPServiceProviderManager" />.
     /// The <tt>Configuration</tt> is meant
     /// only as an initialization-time object. <tt>EPServiceProvider</tt>s are
     /// immutable and do not retain any association back to the
@@ -47,68 +45,83 @@ namespace com.espertech.esper.client
         : ConfigurationOperations
         , ConfigurationInformation
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>Import name of the package that hosts the annotation classes.</summary>
-        public readonly static String ANNOTATION_IMPORT = typeof (NameAttribute).Namespace;
-
-        /// <summary> Default name of the configuration file.</summary>
-        internal const String ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
-
-        /// <summary> Map of event name and fully-qualified type name.</summary>
-        private IDictionary<String, String> _eventClasses;
-
-        /// <summary> Map of event type name and XML DOM configuration.</summary>
-        private IDictionary<String, ConfigurationEventTypeXMLDOM> _eventTypesXmldom;
-
-        /// <summary> Map of event type name and Legacy-type event configuration.</summary>
-        private IDictionary<String, ConfigurationEventTypeLegacy> _eventTypesLegacy;
-
         /// <summary>
-        /// The type aliases for events that are backed by Map, not containing
-        /// strongly-typed nested maps.
+        /// Import name of the package that hosts the annotation classes.
         /// </summary>
-        private IDictionary<String, Properties> _mapNames;
+        public readonly static String ANNOTATION_IMPORT = typeof(NameAttribute).Namespace;
+
+        /// <summary>Default name of the configuration file.</summary>
+        internal static readonly string ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
+
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>Map of event name and fully-qualified class name.</summary>
+        private IDictionary<string, string> _eventClasses;
+
+        /// <summary>Map of event type name and XML DOM configuration.</summary>
+        private IDictionary<string, ConfigurationEventTypeXMLDOM> _eventTypesXmldom;
+
+        /// <summary>Map of event type name and XML DOM configuration.</summary>
+        private IDictionary<string, ConfigurationEventTypeAvro> _eventTypesAvro;
+
+        /// <summary>Map of event type name and Legacy-type event configuration.</summary>
+        private IDictionary<string, ConfigurationEventTypeLegacy> _eventTypesLegacy;
 
         /// <summary>
-        /// The type aliases for events that are backed by Map, possibly containing
-        /// strongly-typed nested maps.
-        /// <para/>
-        /// Each entries value must be either a Class or a DataMap to define nested maps.
+        /// The type names for events that are backed by IDictionary,
+        /// not containing strongly-typed nested maps.
         /// </summary>
-        private IDictionary<String, IDictionary<String, Object>> _nestableMapNames;
+        private IDictionary<string, Properties> _mapNames;
 
         /// <summary>
-        /// The type names for events that are backed by java.util.Map,
+        /// The type names for events that are backed by IDictionary,
         /// possibly containing strongly-typed nested maps.
         /// <para>
-        /// Each entries value must be either a Class or a Map to
+        /// Each entrie's value must be either a Type or a Map&lt;string,Object&gt; to
         /// define nested maps.
         /// </para>
         /// </summary>
-        private IDictionary<String, IDictionary<String, Object>> _nestableObjectArrayNames;
+        private IDictionary<string, IDictionary<string, Object>> _nestableMapNames;
+
+        /// <summary>
+        /// The type names for events that are backed by IDictionary,
+        /// possibly containing strongly-typed nested maps.
+        /// <para>
+        /// Each entrie's value must be either a Type or a Map&lt;string,Object&gt; to
+        /// define nested maps.
+        /// </para>
+        /// </summary>
+        private IDictionary<string, IDictionary<string, Object>> _nestableObjectArrayNames;
 
         /// <summary>Map event types additional configuration information.</summary>
-        private IDictionary<String, ConfigurationEventTypeMap> _mapTypeConfigurations;
+        private IDictionary<string, ConfigurationEventTypeMap> _mapTypeConfigurations;
+
+        /// <summary>Map event types additional configuration information.</summary>
+        private IDictionary<string, ConfigurationEventTypeObjectArray> _objectArrayTypeConfigurations;
 
         /// <summary>
-        /// Map event types additional configuration information.
+        /// The class and package name imports that
+        /// will be used to resolve partial class names.
         /// </summary>
-        private IDictionary<String, ConfigurationEventTypeObjectArray> _objectArrayTypeConfigurations;
-
-        /// <summary>
-        /// The class and namespace imports that will be used to resolve partial class names.
-        /// </summary>
-
         private IList<AutoImportDesc> _imports;
 
         /// <summary>
-        /// For annotations only, will be used to resolve partial class names 
-        /// (not available in EPL statements unless used in an annotation).
+        /// For annotations only, the class and package name imports that
+        /// will be used to resolve partial class names (not available in EPL statements unless used in an annotation).
         /// </summary>
         private IList<AutoImportDesc> _annotationImports;
 
-        private IDictionary<String, ConfigurationDBRef> _databaseReferences;
+        /// <summary>
+        /// The class and package name imports that
+        /// will be used to resolve partial class names.
+        /// </summary>
+        private IDictionary<string, ConfigurationDBRef> _databaseReferences;
+
+        /// <summary>
+        /// Optional classname to use for constructing services context.
+        /// </summary>
+        private string _epServicesContextFactoryClassName;
 
         /// <summary>List of configured plug-in views.</summary>
         private IList<ConfigurationPlugInView> _plugInViews;
@@ -117,13 +130,13 @@ namespace com.espertech.esper.client
         private IList<ConfigurationPlugInVirtualDataWindow> _plugInVirtualDataWindows;
 
         /// <summary>List of configured plug-in pattern objects.</summary>
-        private List<ConfigurationPlugInPatternObject> _plugInPatternObjects;
+        private IList<ConfigurationPlugInPatternObject> _plugInPatternObjects;
 
         /// <summary>List of configured plug-in aggregation functions.</summary>
         private IList<ConfigurationPlugInAggregationFunction> _plugInAggregationFunctions;
 
         /// <summary>List of configured plug-in aggregation multi-functions.</summary>
-        protected IList<ConfigurationPlugInAggregationMultiFunction> _plugInAggregationMultiFunctions;
+        private IList<ConfigurationPlugInAggregationMultiFunction> _plugInAggregationMultiFunctions;
 
         /// <summary>List of configured plug-in single-row functions.</summary>
         private IList<ConfigurationPlugInSingleRowFunction> _plugInSingleRowFunctions;
@@ -131,70 +144,128 @@ namespace com.espertech.esper.client
         /// <summary>List of adapter loaders.</summary>
         private IList<ConfigurationPluginLoader> _pluginLoaders;
 
-        /// <summary>
-        /// Saves engine default configs such as threading settings
-        /// </summary>
+        /// <summary>Saves engine default configs such as threading settings</summary>
         private ConfigurationEngineDefaults _engineDefaults;
 
-        /// <summary>
-        /// Saves the namespaces to search to resolve event type aliases.
-        /// </summary>
-        private ICollection<String> _eventTypeAutoNamePackages;
+        /// <summary>Saves the packages to search to resolve event type names.</summary>
+        private ISet<string> _eventTypeAutoNamePackages;
 
-        /// <summary>
-        /// Map of variables.
-        /// </summary>
-        private IDictionary<String, ConfigurationVariable> _variables;
+        /// <summary>Map of variables.</summary>
+        private IDictionary<string, ConfigurationVariable> _variables;
 
         /// <summary>
         /// Map of class name and configuration for method invocations on that class.
         /// </summary>
-        private IDictionary<String, ConfigurationMethodRef> _methodInvocationReferences;
+        private IDictionary<string, ConfigurationMethodRef> _methodInvocationReferences;
 
         /// <summary>Map of plug-in event representation name and configuration</summary>
         private IDictionary<Uri, ConfigurationPlugInEventRepresentation> _plugInEventRepresentation;
 
         /// <summary>Map of plug-in event types.</summary>
-        private IDictionary<String, ConfigurationPlugInEventType> _plugInEventTypes;
+        private IDictionary<string, ConfigurationPlugInEventType> _plugInEventTypes;
 
-        /// <summary>All revision event types which allow updates to past events.</summary>
-        private IDictionary<String, ConfigurationRevisionEventType> _revisionEventTypes;
+        /// <summary>
+        /// Uris that point to plug-in event representations that are given a chance to dynamically resolve an event type name to an
+        /// event type, as it occurs in a new EPL statement.
+        /// </summary>
+        private IList<Uri> _plugInEventTypeResolutionUris;
 
-        /// <summary>Variant streams allow events of disparate types to be treated the same.</summary>
-        private IDictionary<String, ConfigurationVariantStream> _variantStreams;
+        /// <summary>
+        /// All revision event types which allow updates to past events.
+        /// </summary>
+        private IDictionary<string, ConfigurationRevisionEventType> _revisionEventTypes;
+
+        /// <summary>
+        /// Variant streams allow events of disparate types to be treated the same.
+        /// </summary>
+        private IDictionary<string, ConfigurationVariantStream> _variantStreams;
+
+        [NonSerialized] private IDictionary<string, Object> _transientConfiguration;
 
         /// <summary>
         /// Constructs an empty configuration. The auto import values
-        /// are set to System, System.Collections and System.Text
+        /// are set by default to System, System.Collections and
+        /// System.Text.
         /// </summary>
-
         public Configuration()
         {
             Reset();
         }
 
         /// <summary>
-        /// Gets or sets the service context factory type name
+        /// Get the configuration file as an <tt>InputStream</tt>. Might be overridden
+        /// by subclasses to allow the configuration to be located by some arbitrary
+        /// mechanism.
+        /// <para>
+        /// See <tt>getResourceAsStream</tt> for information on how the resource name is resolved.
+        /// </para>
         /// </summary>
-        /// <value></value>
-        /// <returns>class name</returns>
-        public string EPServicesContextFactoryClassName { get; set; }
+        /// <param name="resource">is the resource name</param>
+        /// <exception cref="EPException">thrown to indicate error reading configuration</exception>
+        /// <returns>input stream for resource</returns>
+        internal static Stream GetConfigurationInputStream(string resource)
+        {
+            return GetResourceAsStream(resource);
+        }
 
         /// <summary>
-        /// Adds a plug-in aggregation function given a EPL function name and an aggregation factory class name.
-        /// <para />
-        /// The same function name cannot be added twice.
+        /// Returns an input stream from an application resource in the classpath.
+        /// <para>
+        /// The method first removes the '/' character from the resource name if
+        /// the first character is '/'.
+        /// </para>
+        /// <para>
+        /// The lookup order is as follows:
+        /// </para>
+        /// <para>
+        /// If a thread context class loader exists, use <tt>Thread.CurrentThread().getResourceAsStream</tt>
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, use the <tt>typeof(Configuration).getResourceAsStream</tt>.
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, use the <tt>typeof(Configuration).ClassLoader.getResourceAsStream</tt>.
+        /// to obtain an InputStream.
+        /// </para>
+        /// <para>
+        /// If no input stream was returned, throw an Exception.
+        /// </para>
         /// </summary>
-        /// <param name="functionName">is the new aggregation function name for use in EPL</param>
-        /// <param name="aggregationFactoryClassName">is the fully-qualified class name of the class implementing the aggregation function factory interface <seealso cref="AggregationFunctionFactory" /></param>
-        /// <throws>ConfigurationException is thrown to indicate a problem adding the aggregation function</throws>
-        public void AddPlugInAggregationFunctionFactory(String functionName, String aggregationFactoryClassName)
+        /// <param name="resource">to get input stream for</param>
+        /// <returns>input stream for resource</returns>
+        internal static Stream GetResourceAsStream(String resource)
         {
-            var entry = new ConfigurationPlugInAggregationFunction
+            String stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase) ? resource.Substring(1) : resource;
+            Stream stream = ResourceManager.GetResourceAsStream(resource) ??
+                            ResourceManager.GetResourceAsStream(stripped);
+            if (stream == null)
             {
-                Name = functionName,
-                FactoryClassName = aggregationFactoryClassName
-            };
+                throw new EPException(resource + " not found");
+            }
+            return stream;
+        }
+
+        public string EPServicesContextFactoryClassName
+        {
+            get { return _epServicesContextFactoryClassName; }
+        }
+
+        /// <summary>
+        /// Sets the class name of the services context factory class to use.
+        /// </summary>
+        /// <param name="epServicesContextFactoryClassName">service context factory class name</param>
+        public void SetEPServicesContextFactoryClassName(string epServicesContextFactoryClassName)
+        {
+            _epServicesContextFactoryClassName = epServicesContextFactoryClassName;
+        }
+
+        public void AddPlugInAggregationFunctionFactory(string functionName, string aggregationFactoryClassName)
+        {
+            var entry = new ConfigurationPlugInAggregationFunction();
+            entry.Name = functionName;
+            entry.FactoryClassName = aggregationFactoryClassName;
             _plugInAggregationFunctions.Add(entry);
         }
 
@@ -221,39 +292,67 @@ namespace com.espertech.esper.client
             AddPlugInAggregationFunctionFactory(functionName, typeof(T).AssemblyQualifiedName);
         }
 
-        public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config) 
+        public void AddPlugInAggregationMultiFunction(ConfigurationPlugInAggregationMultiFunction config)
         {
             _plugInAggregationMultiFunctions.Add(config);
         }
 
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName)
+        public void AddPlugInSingleRowFunction(ConfigurationPlugInSingleRowFunction singleRowFunction)
         {
-            AddPlugInSingleRowFunction(functionName, className, methodName, ValueCache.DISABLED);
+            _plugInSingleRowFunctions.Add(singleRowFunction);
         }
 
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName, ValueCache valueCache)
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName)
         {
-            AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, FilterOptimizable.ENABLED);
+            AddPlugInSingleRowFunction(
+                functionName, className, methodName, ValueCacheEnum.DISABLED);
         }
 
-        public void AddPlugInSingleRowFunction(String functionName, String className, String methodName, FilterOptimizable filterOptimizable) 
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            string className,
+            string methodName,
+            ValueCacheEnum valueCache)
         {
-            AddPlugInSingleRowFunction(functionName, className, methodName, ValueCache.DISABLED, filterOptimizable);
+            AddPlugInSingleRowFunction(
+                functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED);
         }
 
-        /// <summary>Add single-row function with configurations. </summary>
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            string className,
+            string methodName,
+            FilterOptimizableEnum filterOptimizable)
+        {
+            AddPlugInSingleRowFunction(
+                functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable);
+        }
+
+        /// <summary>
+        /// Returns transient configuration, i.e. information that is passed along as a reference and not as a value
+        /// </summary>
+        /// <value>map of transients</value>
+        public IDictionary<string, object> TransientConfiguration
+        {
+            get { return _transientConfiguration; }
+            set { this._transientConfiguration = value; }
+        }
+
+        /// <summary>
+        /// Add single-row function with configurations.
+        /// </summary>
         /// <param name="functionName">EPL name of function</param>
         /// <param name="className">providing fully-qualified class name</param>
         /// <param name="methodName">providing method name</param>
         /// <param name="valueCache">value cache settings</param>
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
-        /// <throws>ConfigurationException thrown to indicate that the configuration is invalid</throws>
-
-        public void AddPlugInSingleRowFunction(String functionName,
-                                               String className,
-                                               String methodName,
-                                               ValueCache valueCache,
-                                               FilterOptimizable filterOptimizable)
+        /// <exception cref="ConfigurationException">thrown to indicate that the configuration is invalid</exception>
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            string className,
+            string methodName,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, false);
         }
@@ -266,14 +365,15 @@ namespace com.espertech.esper.client
         /// <param name="methodName">providing method name</param>
         /// <param name="valueCache">value cache settings</param>
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
-        /// <param name="rethrowExceptions">if set to <c>true</c> [rethrow exceptions].</param>
-        /// <throws>ConfigurationException thrown to indicate that the configuration is invalid</throws>
-        public void AddPlugInSingleRowFunction(String functionName,
-                                               String className,
-                                               String methodName,
-                                               ValueCache valueCache,
-                                               FilterOptimizable filterOptimizable,
-                                               bool rethrowExceptions)
+        /// <param name="rethrowExceptions">whether exceptions generated by the UDF are rethrown</param>
+        /// <exception cref="ConfigurationException">thrown to indicate that the configuration is invalid</exception>
+        public void AddPlugInSingleRowFunction(
+            string functionName,
+            string className,
+            string methodName,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
+            bool rethrowExceptions)
         {
             var entry = new ConfigurationPlugInSingleRowFunction();
             entry.FunctionClassName = className;
@@ -281,75 +381,58 @@ namespace com.espertech.esper.client
             entry.Name = functionName;
             entry.ValueCache = valueCache;
             entry.FilterOptimizable = filterOptimizable;
-            entry.RethrowExceptions = rethrowExceptions;
-            _plugInSingleRowFunctions.Add(entry);
+            entry.IsRethrowExceptions = rethrowExceptions;
+            AddPlugInSingleRowFunction(entry);
         }
 
         /// <summary>
-        /// Add a database reference with a given database name.
-        /// </summary>
-        /// <param name="name">is the database name</param>
-        /// <param name="configurationDBRef">descriptor containing database connection and access policy information</param>
-        public virtual void AddDatabaseReference(String name, ConfigurationDBRef configurationDBRef)
-        {
-            _databaseReferences[name] = configurationDBRef;
-        }
-
-        /// <summary>
-        /// Checks if an eventTypeName has already been registered for that name.
+        /// Checks if an event type has already been registered for that name.
         /// </summary>
         /// <param name="eventTypeName">the name</param>
         /// <returns>true if already registered</returns>
-
-        public bool IsEventTypeExists(String eventTypeName)
+        public bool IsEventTypeExists(string eventTypeName)
         {
             return _eventClasses.ContainsKey(eventTypeName)
-                    || _mapNames.ContainsKey(eventTypeName)
-                    || _nestableMapNames.ContainsKey(eventTypeName)
-                    || _nestableObjectArrayNames.ContainsKey(eventTypeName)
-                    || _eventTypesXmldom.ContainsKey(eventTypeName);
+                   || _mapNames.ContainsKey(eventTypeName)
+                   || _nestableMapNames.ContainsKey(eventTypeName)
+                   || _nestableObjectArrayNames.ContainsKey(eventTypeName)
+                   || _eventTypesXmldom.ContainsKey(eventTypeName)
+                   || _eventTypesAvro.ContainsKey(eventTypeName);
             //note: no need to check legacy as they get added as class event type
         }
 
         /// <summary>
-        /// Add a name for an event type represented by plain-old object events.
-        /// <para>
-        /// Note that when adding multiple names for the same type the names represent an
-        /// alias to the same event type since event type identity for types is per type.
-        /// </para>
+        /// Add an name for an event type represented by object events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="nativeEventTypeName">fully-qualified class name of the event type</param>
-
-        public virtual void AddEventType(String eventTypeName, String nativeEventTypeName)
+        /// <param name="eventClassName">fully-qualified class name of the event type</param>
+        public void AddEventType(string eventTypeName, string eventClassName)
         {
-            _eventClasses[eventTypeName] = nativeEventTypeName;
+            _eventClasses[eventTypeName] = eventClassName;
         }
 
         /// <summary>
-        /// Add a name for an event type represented by plain-old object events.
-        /// Note that when adding multiple names for the same type the names represent an
-        /// alias to the same event type since event type identity for types is per type.
+        /// Add an name for an event type represented by plain-old object events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="eventType">is the event class for which to create the name</param>
-        /// <throws>
-        /// ConfigurationException if the name is already in used for a different type
-        /// </throws>
-        public virtual void AddEventType(String eventTypeName, Type eventType)
+        /// <param name="eventClass">is the event class for which to add the name</param>
+        public void AddEventType(string eventTypeName, Type eventClass)
         {
-            AddEventType(eventTypeName, eventType.AssemblyQualifiedName);
+            AddEventType(eventTypeName, eventClass.AssemblyQualifiedName);
         }
 
         /// <summary>
-        /// Add a name for an event type represented by plain-old object events,
-        /// and the name is the simple name of the type.
+        /// Add event type represented by plain-old object events,
+        /// and the name is the simple class name of the class.
         /// </summary>
-        /// <param name="eventType">the event type for which to create the name</param>
-        /// <throws>ConfigurationException if the name is already in used for a different type</throws>
-        public void AddEventType(Type eventType)
+        /// <param name="eventClass">is the event class for which to add the name</param>
+        public void AddEventType(Type eventClass)
         {
-            AddEventType(eventType.Name, eventType.AssemblyQualifiedName);
+            AddEventType(eventClass.Name, eventClass.AssemblyQualifiedName);
         }
 
         /// <summary>
@@ -372,25 +455,30 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
-        /// Add an name for an event type that represents map events.
-        /// <para/>
-        /// Each entry in the type map is the property name and the fully-qualified type name or primitive type name.
+        /// Add an name for an event type that represents IDictionary events.
+        /// <para>
+        /// Each entry in the type map is the property name and the fully-qualified
+        /// class name or primitive type name.
+        /// </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="typeMap">maps the name of each property in the Map event to the type(fully qualified classname) of its value in Map event instances. </param>
-        public void AddEventType(String eventTypeName, Properties typeMap)
+        /// <param name="typeMap">
+        /// maps the name of each property in the Map event to the type
+        /// (fully qualified classname) of its value in Map event instances.
+        /// </param>
+        public void AddEventType(string eventTypeName, Properties typeMap)
         {
             _mapNames.Put(eventTypeName, typeMap);
         }
 
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap)
+        public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap)
         {
-            _nestableMapNames.Put(eventTypeName, CopyAndBoxTypeMap(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
         }
 
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap, String[] superTypes)
+        public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap, string[] superTypes)
         {
-            _nestableMapNames.Put(eventTypeName, new LinkedHashMap<string, object>(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
             if (superTypes != null)
             {
                 for (int i = 0; i < superTypes.Length; i++)
@@ -400,137 +488,106 @@ namespace com.espertech.esper.client
             }
         }
 
-        public void AddEventType(String eventTypeName, IDictionary<String, Object> typeMap, ConfigurationEventTypeMap mapConfig)
+        public void AddEventType(
+            string eventTypeName,
+            IDictionary<string, Object> typeMap,
+            ConfigurationEventTypeMap mapConfig)
         {
-            _nestableMapNames.Put(eventTypeName, CopyAndBoxTypeMap(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
             _mapTypeConfigurations.Put(eventTypeName, mapConfig);
-        }
-
-        private static LinkedHashMap<string, object> CopyAndBoxTypeMap(IDictionary<String, Object> typeMap)
-        {
-            var trueTypeMap = new LinkedHashMap<string, object>();
-            foreach (var typeMapEntry in typeMap)
-            {
-                var value = typeMapEntry.Value;
-                if (value is Type)
-                    value = value.GetBoxedType();
-
-                trueTypeMap[typeMapEntry.Key] = value;
-            }
-            return trueTypeMap;
         }
 
         /// <summary>
         /// Add, for a given Map event type identified by the first parameter, the supertype (by its event type name).
-        /// <para/>
-        /// Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event. </summary>
+        /// <para>
+        /// Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event.
+        /// </para>
+        /// </summary>
         /// <param name="mapeventTypeName">the name of a Map event type, that is to have a supertype</param>
         /// <param name="mapSupertypeName">the name of a Map event type that is the supertype</param>
-        public void AddMapSuperType(String mapeventTypeName, String mapSupertypeName)
+        public void AddMapSuperType(string mapeventTypeName, string mapSupertypeName)
         {
-            var current = _mapTypeConfigurations.Get(mapeventTypeName);
+            ConfigurationEventTypeMap current = _mapTypeConfigurations.Get(mapeventTypeName);
             if (current == null)
             {
                 current = new ConfigurationEventTypeMap();
                 _mapTypeConfigurations.Put(mapeventTypeName, current);
             }
-            var superTypes = current.SuperTypes;
+            ICollection<string> superTypes = current.SuperTypes;
             superTypes.Add(mapSupertypeName);
         }
 
         /// <summary>
-        /// Add, for a given Object-array event type identified by the first parameter, the 
-        /// supertype (by its event type name). 
-        /// <para/>
-        /// Each Object array event type may have any number of supertypes, each supertype must 
-        /// also be of a Object-array-type event.
+        /// Add, for a given Object-array event type identified by the first parameter, the supertype (by its event type name).
+        /// <para>
+        /// Each Object array event type may have any number of supertypes, each supertype must also be of a Object-array-type event.
+        /// </para>
         /// </summary>
         /// <param name="eventTypeName">the name of a Map event type, that is to have a supertype</param>
         /// <param name="supertypeName">the name of a Map event type that is the supertype</param>
-        public void AddObjectArraySuperType(String eventTypeName, String supertypeName)
+        public void AddObjectArraySuperType(string eventTypeName, string supertypeName)
         {
-            var current = _objectArrayTypeConfigurations.Get(eventTypeName);
+            ConfigurationEventTypeObjectArray current = _objectArrayTypeConfigurations.Get(eventTypeName);
             if (current == null)
             {
                 current = new ConfigurationEventTypeObjectArray();
                 _objectArrayTypeConfigurations.Put(eventTypeName, current);
             }
-
-            var superTypes = current.SuperTypes;
+            ICollection<string> superTypes = current.SuperTypes;
             if (!superTypes.IsEmpty())
             {
                 throw new ConfigurationException("Object-array event types may not have multiple supertypes");
             }
-
             superTypes.Add(supertypeName);
         }
 
         /// <summary>
         /// Add configuration for a map event type.
-        /// <param name="mapeventTypeName">configuration to add</param>
-        /// <param name="config">config map type configuration</param>
         /// </summary>
-        public void AddMapConfiguration(String mapeventTypeName, ConfigurationEventTypeMap config)
+        /// <param name="mapeventTypeName">configuration to add</param>
+        /// <param name="config">map type configuration</param>
+        public void AddMapConfiguration(string mapeventTypeName, ConfigurationEventTypeMap config)
         {
             _mapTypeConfigurations.Put(mapeventTypeName, config);
         }
 
-        /// <summary>Add configuration for a object array event type. </summary>
+        /// <summary>
+        /// Add configuration for a object array event type.
+        /// </summary>
         /// <param name="objectArrayeventTypeName">configuration to add</param>
         /// <param name="config">map type configuration</param>
-        public void AddObjectArrayConfiguration(String objectArrayeventTypeName, ConfigurationEventTypeObjectArray config)
+        public void AddObjectArrayConfiguration(
+            string objectArrayeventTypeName,
+            ConfigurationEventTypeObjectArray config)
         {
             _objectArrayTypeConfigurations.Put(objectArrayeventTypeName, config);
         }
 
-        /// <summary>Add an name for an event type that represents System.Xml.XmlNode events. </summary>
+        /// <summary>
+        /// Add an name for an event type that represents org.w3c.dom.Node events.
+        /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="xmlDOMEventTypeDesc">descriptor containing property and mapping information for XML-DOM events</param>
-        public void AddEventType(String eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
+        public void AddEventType(string eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
         {
             _eventTypesXmldom.Put(eventTypeName, xmlDOMEventTypeDesc);
         }
 
-        /// <summary>
-        /// Add an name for an event type that represents legacy type events.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
-        public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes)
         {
-            AddEventType(typeof(T).FullName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
-        }
-
-        /// <summary>
-        /// Add an name for an event type that represents legacy type events.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
-        public void AddEventType<T>(String eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
-        {
-            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
-        }
-
-        /// <summary>Add an name for an event type that represents legacy type events. </summary>
-        /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="eventType">fully-qualified class name of the event type</param>
-        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
-        public void AddEventType(String eventTypeName, String eventType, ConfigurationEventTypeLegacy legacyEventTypeDesc)
-        {
-            _eventClasses.Put(eventTypeName, eventType);
-            _eventTypesLegacy.Put(eventTypeName, legacyEventTypeDesc);
-        }
-
-        public void AddEventType(String eventTypeName, String[] propertyNames, Object[] propertyTypes) 
-        {
-            LinkedHashMap<String, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+            var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
+                propertyNames, propertyTypes);
             _nestableObjectArrayNames.Put(eventTypeName, propertyTypesMap);
         }
 
-        public void AddEventType(String eventTypeName, String[] propertyNames, Object[] propertyTypes, ConfigurationEventTypeObjectArray config) 
+        public void AddEventType(
+            string eventTypeName,
+            string[] propertyNames,
+            Object[] propertyTypes,
+            ConfigurationEventTypeObjectArray config)
         {
-            LinkedHashMap<String, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+            var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
+                propertyNames, propertyTypes);
             _nestableObjectArrayNames.Put(eventTypeName, propertyTypesMap);
             _objectArrayTypeConfigurations.Put(eventTypeName, config);
             if (config.SuperTypes != null && config.SuperTypes.Count > 1)
@@ -539,9 +596,49 @@ namespace com.espertech.esper.client
             }
         }
 
-        public void AddRevisionEventType(String revisionEventTypeName, ConfigurationRevisionEventType revisionEventTypeConfig)
+        public void AddRevisionEventType(
+            string revisioneventTypeName,
+            ConfigurationRevisionEventType revisionEventTypeConfig)
         {
-            _revisionEventTypes.Put(revisionEventTypeName, revisionEventTypeConfig);
+            _revisionEventTypes.Put(revisioneventTypeName, revisionEventTypeConfig);
+        }
+
+        /// <summary>
+        /// Add a database reference with a given database name.
+        /// </summary>
+        /// <param name="name">is the database name</param>
+        /// <param name="configurationDBRef">descriptor containing database connection and access policy information</param>
+        public void AddDatabaseReference(string name, ConfigurationDBRef configurationDBRef)
+        {
+            _databaseReferences.Put(name, configurationDBRef);
+        }
+
+        public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        /// <summary>
+        /// Add an name for an event type that represents legacy object type events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
+        /// </summary>
+        /// <param name="eventTypeName">is the name for the event type</param>
+        /// <param name="eventClass">fully-qualified class name of the event type</param>
+        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
+        public void AddEventType(
+            string eventTypeName,
+            string eventClass,
+            ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            eventClass = TypeHelper.TryResolveAbsoluteTypeName(eventClass);
+            _eventClasses.Put(eventTypeName, eventClass);
+            _eventTypesLegacy.Put(eventTypeName, legacyEventTypeDesc);
         }
 
         /// <summary>
@@ -651,91 +748,74 @@ namespace com.espertech.esper.client
             }
             else
             {
-                AddAnnotationImport(typeof(T).FullName, typeof (T).Assembly.FullName);
+                AddAnnotationImport(typeof(T).FullName, typeof(T).Assembly.FullName);
             }
         }
 
         /// <summary>
-        /// Removes the import.
+        /// Remove an import.
         /// </summary>
-        /// <param name="name">The name.</param>
-        public void RemoveImport(String name)
+        /// <param name="autoImportDesc"></param>
+        public void RemoveImport(AutoImportDesc autoImportDesc)
         {
-            var desc = _imports.FirstOrDefault(import => import.TypeOrNamespace == name);
-            if (desc != null)
-            {
-                _imports.Remove(desc);
-            }
+            _imports.Remove(autoImportDesc);
         }
 
         /// <summary>
         /// Adds a cache configuration for a class providing methods for use in the from-clause.
         /// </summary>
-        /// <param name="className">the class name (simple or fully-qualified) providing methods</param>
-        /// <param name="methodInvocationConfig">the cache configuration</param>
-        public void AddMethodRef(String className, ConfigurationMethodRef methodInvocationConfig)
+        /// <param name="className">is the class name (simple or fully-qualified) providing methods</param>
+        /// <param name="methodInvocationConfig">is the cache configuration</param>
+        public void AddMethodRef(string className, ConfigurationMethodRef methodInvocationConfig)
         {
-            _methodInvocationReferences[className] = methodInvocationConfig;
+            _methodInvocationReferences.Put(className, methodInvocationConfig);
         }
 
         /// <summary>
         /// Adds a cache configuration for a class providing methods for use in the from-clause.
         /// </summary>
-        /// <param name="clazz">the class providing methods</param>
-        /// <param name="methodInvocationConfig">the cache configuration</param>
+        /// <param name="clazz">is the class providing methods</param>
+        /// <param name="methodInvocationConfig">is the cache configuration</param>
         public void AddMethodRef(Type clazz, ConfigurationMethodRef methodInvocationConfig)
         {
-            _methodInvocationReferences[clazz.FullName] = methodInvocationConfig;
+            _methodInvocationReferences.Put(clazz.Name, methodInvocationConfig);
         }
 
-        /// <summary>
-        /// Returns the mapping of event type name to type name.
-        /// </summary>
-        public IDictionary<String, String> EventTypeNames
+        public IDictionary<string, string> EventTypeNames
         {
             get { return _eventClasses; }
         }
 
-        /// <summary>
-        /// Returns a map keyed by event type name name, and values being the definition for the
-        /// event type of the property names and types that make up the event.
-        /// </summary>
-        /// <returns> map of event type name name and definition of event properties
-        /// </returns>
-        public IDictionary<String, Properties> EventTypesMapEvents
+        public IDictionary<string, Properties> EventTypesMapEvents
         {
             get { return _mapNames; }
         }
 
-        public IDictionary<String, IDictionary<String, Object>> EventTypesNestableMapEvents
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableMapEvents
         {
             get { return _nestableMapNames; }
         }
 
-        public IDictionary<string, DataMap> EventTypesNestableObjectArrayEvents
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents
         {
             get { return _nestableObjectArrayNames; }
         }
 
-        /// <summary> Returns the mapping of event type name to XML DOM event type information.</summary>
-        /// <returns> event type aliases mapping to XML DOM configs
-        /// </returns>
-        public IDictionary<String, ConfigurationEventTypeXMLDOM> EventTypesXMLDOM
+        public IDictionary<string, ConfigurationEventTypeXMLDOM> EventTypesXMLDOM
         {
             get { return _eventTypesXmldom; }
         }
 
-        /// <summary> Returns the mapping of event type name to legacy event type information.</summary>
-        /// <returns> event type aliases mapping to legacy type configs
-        /// </returns>
-        public IDictionary<String, ConfigurationEventTypeLegacy> EventTypesLegacy
+        public IDictionary<string, ConfigurationEventTypeAvro> EventTypesAvro
+        {
+            get { return _eventTypesAvro; }
+        }
+
+        public IDictionary<string, ConfigurationEventTypeLegacy> EventTypesLegacy
         {
             get { return _eventTypesLegacy; }
         }
 
-        /// <summary> Returns the class and package imports.</summary>
-        /// <returns> imported names
-        /// </returns>
         public IList<AutoImportDesc> Imports
         {
             get { return _imports; }
@@ -746,16 +826,10 @@ namespace com.espertech.esper.client
             get { return _annotationImports; }
         }
 
-        /// <summary> Returns a map of string database names to database configuration options.</summary>
-        /// <returns> map of database configurations
-        /// </returns>
-        public IDictionary<String, ConfigurationDBRef> DatabaseReferences
+        public IDictionary<string, ConfigurationDBRef> DatabaseReferences
         {
             get { return _databaseReferences; }
         }
-
-        /// <summary>Returns a list of configured plug-in views.</summary>
-        /// <returns>list of plug-in view configs</returns>
 
         public IList<ConfigurationPlugInView> PlugInViews
         {
@@ -767,25 +841,15 @@ namespace com.espertech.esper.client
             get { return _objectArrayTypeConfigurations; }
         }
 
-        /// <summary>
-        /// Returns the plug in virtual data windows.
-        /// </summary>
-        /// <value>The plug in virtual data windows.</value>
         public IList<ConfigurationPlugInVirtualDataWindow> PlugInVirtualDataWindows
         {
             get { return _plugInVirtualDataWindows; }
         }
 
-        /// <summary>Returns a list of configured plugin loaders.</summary>
-        /// <returns>plugin loaders</returns>
-
         public IList<ConfigurationPluginLoader> PluginLoaders
         {
             get { return _pluginLoaders; }
         }
-
-        /// <summary>Returns a list of configured plug-in aggregation functions.</summary>
-        /// <returns>list of configured aggregations</returns>
 
         public IList<ConfigurationPlugInAggregationFunction> PlugInAggregationFunctions
         {
@@ -802,118 +866,122 @@ namespace com.espertech.esper.client
             get { return _plugInSingleRowFunctions; }
         }
 
-        /// <summary>Returns a list of configured plug-ins for pattern observers and guards.</summary>
-        /// <returns>list of pattern plug-ins</returns>
-
         public IList<ConfigurationPlugInPatternObject> PlugInPatternObjects
         {
             get { return _plugInPatternObjects; }
         }
 
-        /// <summary>
-        /// Gets the variables.
-        /// </summary>
-        /// <value>The variables.</value>
-        public IDictionary<String, ConfigurationVariable> Variables
+        public IDictionary<string, ConfigurationVariable> Variables
         {
             get { return _variables; }
         }
 
-        /// <summary>
-        /// Gets the method invocation references.
-        /// </summary>
-        /// <value>The method invocation references.</value>
-        public IDictionary<String, ConfigurationMethodRef> MethodInvocationReferences
+        public IDictionary<string, ConfigurationMethodRef> MethodInvocationReferences
         {
             get { return _methodInvocationReferences; }
         }
 
-        public IDictionary<String, ConfigurationRevisionEventType> RevisionEventTypes
+        public IDictionary<string, ConfigurationRevisionEventType> RevisionEventTypes
         {
             get { return _revisionEventTypes; }
         }
 
-        public IDictionary<String, ConfigurationEventTypeMap> MapTypeConfigurations
+        public IDictionary<string, ConfigurationEventTypeMap> MapTypeConfigurations
         {
             get { return _mapTypeConfigurations; }
         }
 
-        /// <summary>Add an input/output plugin loader.</summary>
-        /// <param name="loaderName">is the name of the loader</param>
-        /// <param name="typeName">is the fully-qualified classname of the loader class</param>
-        /// <param name="configuration">is loader cofiguration entries</param>
-
-        public void AddPluginLoader(String loaderName, String typeName, Properties configuration)
-        {
-            AddPluginLoader(loaderName, typeName, configuration, null);
-        }
-
         /// <summary>
-        /// Add a plugin loader (f.e. an input/output adapter loader) without any additional loader configuration.
-        /// <p>
-        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />
-        /// </p>.
+        /// Add a plugin loader (f.e. an input/output adapter loader).
+        /// <para>
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
+        /// </para>
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
         /// <param name="className">is the fully-qualified classname of the loader class</param>
-        public void AddPluginLoader(String loaderName, String className)
+        /// <param name="configuration">is loader cofiguration entries</param>
+        public void AddPluginLoader(string loaderName, string className, Properties configuration)
+        {
+            AddPluginLoader(loaderName, className, configuration, null);
+        }
+
+        /// <summary>
+        /// Add a plugin loader (f.e. an input/output adapter loader) without any additional loader configuration
+        /// <para>
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
+        /// </para>
+        /// </summary>
+        /// <param name="loaderName">is the name of the loader</param>
+        /// <param name="className">is the fully-qualified classname of the loader class</param>
+        public void AddPluginLoader(string loaderName, string className)
         {
             AddPluginLoader(loaderName, className, null, null);
         }
 
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
-        /// <p>
-        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />
-        /// </p>.
+        /// <para>
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
+        /// </para>
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
-        /// <param name="typeName">is the fully-qualified classname of the loader class</param>
+        /// <param name="className">is the fully-qualified classname of the loader class</param>
         /// <param name="configuration">is loader cofiguration entries</param>
         /// <param name="configurationXML">config xml if any</param>
-        public void AddPluginLoader(String loaderName, String typeName, Properties configuration, String configurationXML)
+        public void AddPluginLoader(
+            string loaderName,
+            string className,
+            Properties configuration,
+            string configurationXML)
         {
             var pluginLoader = new ConfigurationPluginLoader();
             pluginLoader.LoaderName = loaderName;
-            pluginLoader.TypeName = typeName;
+            pluginLoader.TypeName = className;
             pluginLoader.ConfigProperties = configuration;
             pluginLoader.ConfigurationXML = configurationXML;
             _pluginLoaders.Add(pluginLoader);
         }
 
-        /// <summary>Add a view for plug-in.</summary>
+        /// <summary>
+        /// Add a view for plug-in.
+        /// </summary>
         /// <param name="namespace">is the namespace the view should be available under</param>
         /// <param name="name">is the name of the view</param>
         /// <param name="viewFactoryClass">is the view factory class to use</param>
-
-        public void AddPlugInView(String @namespace, String name, String viewFactoryClass)
+        public void AddPlugInView(string @namespace, string name, string viewFactoryClass)
         {
-            var configurationPlugInView = new ConfigurationPlugInView
-            {
-                Namespace = @namespace,
-                Name = name,
-                FactoryClassName = viewFactoryClass
-            };
+            var configurationPlugInView = new ConfigurationPlugInView();
+            configurationPlugInView.Namespace = @namespace;
+            configurationPlugInView.Name = name;
+            configurationPlugInView.FactoryClassName = viewFactoryClass;
             _plugInViews.Add(configurationPlugInView);
         }
 
-        /// <summary>Add a virtual data window for plug-in. </summary>
+        /// <summary>
+        /// Add a virtual data window for plug-in.
+        /// </summary>
         /// <param name="namespace">is the namespace the virtual data window should be available under</param>
         /// <param name="name">is the name of the data window</param>
         /// <param name="factoryClass">is the view factory class to use</param>
-        public void AddPlugInVirtualDataWindow(String @namespace, String name, String factoryClass)
+        public void AddPlugInVirtualDataWindow(string @namespace, string name, string factoryClass)
         {
             AddPlugInVirtualDataWindow(@namespace, name, factoryClass, null);
         }
 
-        /// <summary>Add a virtual data window for plug-in. </summary>
+        /// <summary>
+        /// Add a virtual data window for plug-in.
+        /// </summary>
         /// <param name="namespace">is the namespace the virtual data window should be available under</param>
         /// <param name="name">is the name of the data window</param>
         /// <param name="factoryClass">is the view factory class to use</param>
         /// <param name="customConfigurationObject">additional configuration to be passed along</param>
-        public void AddPlugInVirtualDataWindow(String @namespace, String name, String factoryClass, Object customConfigurationObject)
+        public void AddPlugInVirtualDataWindow(
+            string @namespace,
+            string name,
+            string factoryClass,
+            object customConfigurationObject)
         {
-            ConfigurationPlugInVirtualDataWindow configurationPlugInVirtualDataWindow = new ConfigurationPlugInVirtualDataWindow();
+            var configurationPlugInVirtualDataWindow = new ConfigurationPlugInVirtualDataWindow();
             configurationPlugInVirtualDataWindow.Namespace = @namespace;
             configurationPlugInVirtualDataWindow.Name = name;
             configurationPlugInVirtualDataWindow.FactoryClassName = factoryClass;
@@ -921,216 +989,206 @@ namespace com.espertech.esper.client
             _plugInVirtualDataWindows.Add(configurationPlugInVirtualDataWindow);
         }
 
-        /// <summary>Add a pattern event observer for plug-in.</summary>
+        /// <summary>
+        /// Add a pattern event observer for plug-in.
+        /// </summary>
         /// <param name="namespace">is the namespace the observer should be available under</param>
         /// <param name="name">is the name of the observer</param>
         /// <param name="observerFactoryClass">is the observer factory class to use</param>
-
-        public void AddPlugInPatternObserver(String @namespace, String name, String observerFactoryClass)
+        public void AddPlugInPatternObserver(string @namespace, string name, string observerFactoryClass)
         {
-            var entry = new ConfigurationPlugInPatternObject
-            {
-                Namespace = @namespace,
-                Name = name,
-                FactoryClassName = observerFactoryClass,
-                PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER
-            };
+            var entry = new ConfigurationPlugInPatternObject();
+            entry.Namespace = @namespace;
+            entry.Name = name;
+            entry.FactoryClassName = observerFactoryClass;
+            entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER;
             _plugInPatternObjects.Add(entry);
         }
 
-        /// <summary>Add a pattern guard for plug-in.</summary>
+        /// <summary>
+        /// Add a pattern guard for plug-in.
+        /// </summary>
         /// <param name="namespace">is the namespace the guard should be available under</param>
         /// <param name="name">is the name of the guard</param>
         /// <param name="guardFactoryClass">is the guard factory class to use</param>
-
-        public void AddPlugInPatternGuard(String @namespace, String name, String guardFactoryClass)
+        public void AddPlugInPatternGuard(string @namespace, string name, string guardFactoryClass)
         {
-            var entry = new ConfigurationPlugInPatternObject
-            {
-                Namespace = @namespace,
-                Name = name,
-                FactoryClassName = guardFactoryClass,
-                PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD
-            };
+            var entry = new ConfigurationPlugInPatternObject();
+            entry.Namespace = @namespace;
+            entry.Name = name;
+            entry.FactoryClassName = guardFactoryClass;
+            entry.PatternObjectType = ConfigurationPlugInPatternObject.PatternObjectTypeEnum.GUARD;
             _plugInPatternObjects.Add(entry);
         }
 
-        public void AddEventTypeAutoName(String @namespace)
+        public void AddEventTypeAutoName(string packageName)
         {
-            _eventTypeAutoNamePackages.Add(@namespace);
+            _eventTypeAutoNamePackages.Add(packageName);
         }
 
-        public void AddVariable<T>(string variableName, T initializationValue)
+        public void AddVariable<TValue>(string variableName, TValue initializationValue)
         {
-            AddVariable(variableName, initializationValue, false);
+            AddVariable(variableName, typeof(TValue).FullName, initializationValue, false);
+        }
+
+        public void AddVariable(string variableName, Type type, Object initializationValue)
+        {
+            AddVariable(variableName, type.FullName, initializationValue, false);
         }
 
         /// <summary>
         /// Add variable that can be a constant.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="variableName">Name of the variable.</param>
-        /// <param name="initializationValue">The initialization value.</param>
-        /// <param name="constant">if set to <c>true</c> [constant].</param>
-        public void AddVariable<T>(String variableName, T initializationValue, Boolean constant = false)
+        /// <param name="variableName">name of variable</param>
+        /// <param name="type">variable type</param>
+        /// <param name="initializationValue">initial value</param>
+        /// <param name="constant">constant indicator</param>
+        public void AddVariable(string variableName, Type type, Object initializationValue, bool constant)
         {
-            ConfigurationVariable configVar = new ConfigurationVariable();
-            configVar.VariableType = typeof(T).GetBoxedType().FullName;
-            configVar.InitializationValue = initializationValue;
-            configVar.IsConstant = constant;
-            _variables[variableName] = configVar;
+            AddVariable(variableName, type.FullName, initializationValue, constant);
         }
 
-        public void AddVariable(string variableName, Type type, object initializationValue)
+        public void AddVariable(string variableName, string type, Object initializationValue)
         {
             AddVariable(variableName, type, initializationValue, false);
         }
 
-        public void AddVariable(String variableName, Type type, Object initializationValue, Boolean constant = false)
+        public void AddVariable(string variableName, string type, Object initializationValue, bool constant)
         {
-            ConfigurationVariable configVar = new ConfigurationVariable();
-            configVar.VariableType = type.FullName;
-            configVar.InitializationValue = initializationValue;
-            configVar.IsConstant = constant;
-            _variables[variableName] = configVar;
-        }
-
-        public void AddVariable(String variableName, String type, Object initializationValue, Boolean constant = false)
-        {
-            ConfigurationVariable configVar = new ConfigurationVariable();
+            var configVar = new ConfigurationVariable();
             configVar.VariableType = type;
             configVar.InitializationValue = initializationValue;
             configVar.IsConstant = constant;
-            _variables[variableName] = configVar;
+            _variables.Put(variableName, configVar);
         }
 
-        /// <summary>Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) fora certain kind of object representation that holds the event property values.</summary>
-        /// <param name="eventRepresentationRootURI">uniquely identifies the event representation and acts as a parentfor child URIs used in resolving</param>
-        /// <param name="eventRepresentationClassName">is the name of the class implementing <see cref="com.espertech.esper.plugin.PlugInEventRepresentation"/>.</param>
+        /// <summary>
+        /// Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
+        /// a certain kind of object representation that holds the event property values.
+        /// </summary>
+        /// <param name="eventRepresentationRootUri">
+        /// uniquely identifies the event representation and acts as a parent
+        /// for child Uris used in resolving
+        /// </param>
+        /// <param name="eventRepresentationClassName">is the name of the class implementing <seealso cref="com.espertech.esper.plugin.PlugInEventRepresentation" />.</param>
         /// <param name="initializer">is optional configuration or initialization information, or null if none required</param>
-        public void AddPlugInEventRepresentation(Uri eventRepresentationRootURI, String eventRepresentationClassName, Object initializer)
+        public void AddPlugInEventRepresentation(
+            Uri eventRepresentationRootUri,
+            string eventRepresentationClassName,
+            object initializer)
         {
-            var config = new ConfigurationPlugInEventRepresentation
-            {
-                EventRepresentationTypeName =
-                    eventRepresentationClassName,
-                Initializer = initializer
-            };
-            _plugInEventRepresentation.Put(eventRepresentationRootURI, config);
+            var config = new ConfigurationPlugInEventRepresentation();
+            config.EventRepresentationTypeName = eventRepresentationClassName;
+            config.Initializer = initializer;
+            _plugInEventRepresentation.Put(eventRepresentationRootUri, config);
         }
 
-        /// <summary>Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) fora certain kind of object representation that holds the event property values.</summary>
-        /// <param name="eventRepresentationRootURI">uniquely identifies the event representation and acts as a parentfor child URIs used in resolving</param>
-        /// <param name="eventRepresentationType">is the class implementing <see cref="com.espertech.esper.plugin.PlugInEventRepresentation"/>.</param>
+        /// <summary>
+        /// Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
+        /// a certain kind of object representation that holds the event property values.
+        /// </summary>
+        /// <param name="eventRepresentationRootUri">
+        /// uniquely identifies the event representation and acts as a parent
+        /// for child Uris used in resolving
+        /// </param>
+        /// <param name="eventRepresentationClass">is the class implementing <seealso cref="com.espertech.esper.plugin.PlugInEventRepresentation" />.</param>
         /// <param name="initializer">is optional configuration or initialization information, or null if none required</param>
-        public void AddPlugInEventRepresentation(Uri eventRepresentationRootURI, Type eventRepresentationType, Object initializer)
+        public void AddPlugInEventRepresentation(
+            Uri eventRepresentationRootUri,
+            Type eventRepresentationClass,
+            object initializer)
         {
-            AddPlugInEventRepresentation(eventRepresentationRootURI, eventRepresentationType.FullName, initializer);
+            AddPlugInEventRepresentation(eventRepresentationRootUri, eventRepresentationClass.Name, initializer);
         }
 
-        public void AddPlugInEventType(String eventTypeName, IList<Uri> resolutionURIs, Object initializer)
+        public void AddPlugInEventType(string eventTypeName, Uri[] resolutionUris, object initializer)
         {
-            var config = new ConfigurationPlugInEventType
-            {
-                EventRepresentationResolutionURIs = resolutionURIs,
-                Initializer = initializer
-            };
+            var config = new ConfigurationPlugInEventType();
+            config.EventRepresentationResolutionURIs = resolutionUris;
+            config.Initializer = initializer;
             _plugInEventTypes.Put(eventTypeName, config);
         }
 
-        public IList<Uri> PlugInEventTypeResolutionURIs { get; set; }
+        public IList<Uri> PlugInEventTypeResolutionURIs
+        {
+            get { return _plugInEventTypeResolutionUris; }
+            set { _plugInEventTypeResolutionUris = value; }
+        }
 
         public IDictionary<Uri, ConfigurationPlugInEventRepresentation> PlugInEventRepresentation
         {
             get { return _plugInEventRepresentation; }
         }
 
-        public IDictionary<String, ConfigurationPlugInEventType> PlugInEventTypes
+        public IDictionary<string, ConfigurationPlugInEventType> PlugInEventTypes
         {
             get { return _plugInEventTypes; }
         }
 
-        /// <summary>
-        /// Returns a set of namespaces that event classes reside in.
-        /// <para>
-        /// This setting allows an application to place all it's events into one or more namespaces
-        /// and then declare these packages via this method. The engine
-        /// attempts to resolve an event type name to a type residing in each declared package.
-        /// </para>
-        /// <para>
-        /// For example, in the statement "select * from MyEvent" the engine attempts to load
-        /// class "namespace.MyEvent" and if successful, uses that class as the event type.
-        /// </para>
-        /// </summary>
-        public ICollection<String> EventTypeAutoNamePackages
+        public ISet<string> EventTypeAutoNamePackages
         {
             get { return _eventTypeAutoNamePackages; }
         }
 
-        /// <summary>
-        /// Gets the engine default settings.
-        /// </summary>
-        /// <value>The engine defaults.</value>
         public ConfigurationEngineDefaults EngineDefaults
         {
             get { return _engineDefaults; }
         }
 
-        public void AddVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig)
+        public void AddVariantStream(string varianteventTypeName, ConfigurationVariantStream variantStreamConfig)
         {
-            _variantStreams.Put(variantEventTypeName, variantStreamConfig);
+            _variantStreams.Put(varianteventTypeName, variantStreamConfig);
         }
 
-        /// <summary>
-        /// Gets the variant streams.
-        /// </summary>
-        /// <value>The variant streams.</value>
         public IDictionary<string, ConfigurationVariantStream> VariantStreams
         {
             get { return _variantStreams; }
         }
 
-        public void UpdateMapEventType(String mapEventTypeName, IDictionary<String, Object> typeMap)
+        public void UpdateMapEventType(string mapeventTypeName, IDictionary<string, Object> typeMap)
         {
-            throw new UnsupportedOperationException("Map type Update is only available in runtime configuration");
+            throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
         }
 
-        public void UpdateObjectArrayEventType(String myEvent, String[] namesNew, Object[] typesNew)
+        public void UpdateObjectArrayEventType(string myEvent, string[] namesNew, Object[] typesNew)
         {
-            throw new UnsupportedOperationException("Object-array type Update is only available in runtime configuration");
+            throw new UnsupportedOperationException(
+                "Object-array type update is only available in runtime configuration");
         }
 
-        public void ReplaceXMLEventType(String xmlEventTypeName, ConfigurationEventTypeXMLDOM config)
+        public void ReplaceXMLEventType(string xmlEventTypeName, ConfigurationEventTypeXMLDOM config)
         {
-            throw new UnsupportedOperationException("XML type Update is only available in runtime configuration");
+            throw new UnsupportedOperationException("XML type update is only available in runtime configuration");
         }
 
-        public ICollection<String> GetEventTypeNameUsedBy(String name)
+        public ICollection<string> GetEventTypeNameUsedBy(string name)
         {
             throw new UnsupportedOperationException("Get event type by name is only available in runtime configuration");
         }
 
-        public bool IsVariantStreamExists(String name)
+        public bool IsVariantStreamExists(string name)
         {
             return _variantStreams.ContainsKey(name);
         }
 
-        public void SetMetricsReportingInterval(String stmtGroupName, long newInterval)
+        public void SetMetricsReportingInterval(string stmtGroupName, long newInterval)
         {
-            EngineDefaults.MetricsReportingConfig.SetStatementGroupInterval(stmtGroupName, newInterval);
+            EngineDefaults.MetricsReporting.SetStatementGroupInterval(stmtGroupName, newInterval);
         }
 
-        public void SetMetricsReportingStmtEnabled(String statementName)
+        public void SetMetricsReportingStmtEnabled(string statementName)
         {
-            throw new UnsupportedOperationException("Statement metric reporting can only be enabled or disabled at runtime");
+            throw new UnsupportedOperationException(
+                "Statement metric reporting can only be enabled or disabled at runtime");
         }
 
-        public void SetMetricsReportingStmtDisabled(String statementName)
+        public void SetMetricsReportingStmtDisabled(string statementName)
         {
-            throw new UnsupportedOperationException("Statement metric reporting can only be enabled or disabled at runtime");
+            throw new UnsupportedOperationException(
+                "Statement metric reporting can only be enabled or disabled at runtime");
         }
 
-        public EventType GetEventType(String eventTypeName)
+        public EventType GetEventType(string eventTypeName)
         {
             throw new UnsupportedOperationException("Obtaining an event type by name is only available at runtime");
         }
@@ -1142,78 +1200,52 @@ namespace com.espertech.esper.client
 
         public void SetMetricsReportingEnabled()
         {
-            EngineDefaults.MetricsReportingConfig.IsEnableMetricsReporting = true;
+            EngineDefaults.MetricsReporting.IsEnableMetricsReporting = true;
         }
 
         public void SetMetricsReportingDisabled()
         {
-            EngineDefaults.MetricsReportingConfig.IsEnableMetricsReporting = false;
+            EngineDefaults.MetricsReporting.IsEnableMetricsReporting = false;
         }
 
         public long PatternMaxSubexpressions
         {
-            get { return EngineDefaults.PatternsConfig.MaxSubexpressions.GetValueOrDefault(); }
-            set { EngineDefaults.PatternsConfig.MaxSubexpressions = value; }
+            set { EngineDefaults.Patterns.MaxSubexpressions = value; }
         }
 
         public long? MatchRecognizeMaxStates
         {
-            get { return EngineDefaults.MatchRecognizeConfig.MaxStates; }
-            set { EngineDefaults.MatchRecognizeConfig.MaxStates = value; }
+            set { EngineDefaults.MatchRecognize.MaxStates = value; }
         }
 
-        public bool RemoveEventType(String eventTypeName, bool force)
-        {
-            _eventClasses.Remove(eventTypeName);
-            _eventTypesXmldom.Remove(eventTypeName);
-            _eventTypesLegacy.Remove(eventTypeName);
-            _mapNames.Remove(eventTypeName);
-            _nestableMapNames.Remove(eventTypeName);
-            _mapTypeConfigurations.Remove(eventTypeName);
-            _plugInEventTypes.Remove(eventTypeName);
-            _revisionEventTypes.Remove(eventTypeName);
-            _variantStreams.Remove(eventTypeName);
-            return true;
-        }
-
-        public ICollection<String> GetVariableNameUsedBy(String variableName)
-        {
-            throw new UnsupportedOperationException(
-                "Get variable use information is only available in runtime configuration");
-        }
-
-        public bool RemoveVariable(String name, bool force)
-        {
-            return _variables.Remove(name);
-        }
-
-        /// <summary> Use the configuration specified in an application
+        /// <summary>
+        /// Use the configuration specified in an application
         /// resource named <tt>esper.cfg.xml</tt>.
         /// </summary>
-        /// <returns> Configuration initialized from the resource
-        /// </returns>
-        /// <throws>  EPException thrown to indicate error reading configuration </throws>
-        public virtual Configuration Configure()
+        /// <exception cref="EPException">thrown to indicate error reading configuration</exception>
+        /// <returns>Configuration initialized from the resource</returns>
+        public Configuration Configure()
         {
-            Configure("/" + ESPER_DEFAULT_CONFIG);
+            Configure('/' + ESPER_DEFAULT_CONFIG);
             return this;
         }
 
-        /// <summary> Use the configuration specified in the given application
+        /// <summary>
+        /// Use the configuration specified in the given application
         /// resource. The format of the resource is defined in
         /// <tt>esper-configuration-2.0.xsd</tt>.
-        /// <p/>
-        /// The resource is found via <tt>getConfigurationInputStream(resource)</tt>.
+        /// <para>
+        /// The resource is found via <tt>GetConfigurationInputStream(resource)</tt>.
         /// That method can be overridden to implement an arbitrary lookup strategy.
-        /// <p/>
+        /// </para>
+        /// <para>
         /// See <tt>getResourceAsStream</tt> for information on how the resource name is resolved.
+        /// </para>
         /// </summary>
-        /// <param name="resource">if the file name of the resource
-        /// </param>
-        /// <returns> Configuration initialized from the resource
-        /// </returns>
-        /// <throws>  EPException thrown to indicate error reading configuration </throws>
-        public virtual Configuration Configure(String resource)
+        /// <param name="resource">if the file name of the resource</param>
+        /// <exception cref="EPException">thrown to indicate error reading configuration</exception>
+        /// <returns>Configuration initialized from the resource</returns>
+        public Configuration Configure(string resource)
         {
             if (Log.IsDebugEnabled)
             {
@@ -1224,34 +1256,15 @@ namespace com.espertech.esper.client
             return this;
         }
 
-        /// <summary> Get the configuration file as an <tt>InputStream</tt>. Might be overridden
-        /// by subclasses to allow the configuration to be located by some arbitrary
-        /// mechanism.
-        ///
-        /// See GetResourceAsStream for information on how the resource name is resolved.
-        /// </summary>
-        /// <param name="resource">is the resource name
-        /// </param>
-        /// <returns> input stream for resource
-        /// </returns>
-        /// <throws>  EPException thrown to indicate error reading configuration </throws>
-        internal static Stream GetConfigurationInputStream(String resource)
-        {
-            return GetResourceAsStream(resource);
-        }
-
-
-        /// <summary> Use the configuration specified by the given URL.
+        /// <summary>
+        /// Use the configuration specified by the given URL.
         /// The format of the document obtained from the URL is defined in
         /// <tt>esper-configuration-2.0.xsd</tt>.
-        ///
         /// </summary>
-        /// <param name="url">URL from which you wish to load the configuration
-        /// </param>
-        /// <returns> A configuration configured via the file
-        /// </returns>
-        /// <throws>  EPException </throws>
-        public virtual Configuration Configure(Uri url)
+        /// <param name="url">URL from which you wish to load the configuration</param>
+        /// <exception cref="EPException">is thrown when the URL could not be access</exception>
+        /// <returns>A configuration configured via the file</returns>
+        public Configuration Configure(Uri url)
         {
             if (Log.IsDebugEnabled)
             {
@@ -1268,17 +1281,15 @@ namespace com.espertech.esper.client
             }
         }
 
-        /// <summary> Use the configuration specified in the given application
+        /// <summary>
+        /// Use the configuration specified in the given application
         /// file. The format of the file is defined in
         /// <tt>esper-configuration-2.0.xsd</tt>.
-        ///
         /// </summary>
-        /// <param name="configFile"><tt>File</tt> from which you wish to load the configuration
-        /// </param>
-        /// <returns> A configuration configured via the file
-        /// </returns>
-        /// <throws>  EPException </throws>
-        public virtual Configuration Configure(FileInfo configFile)
+        /// <param name="configFile"><tt>File</tt> from which you wish to load the configuration</param>
+        /// <exception cref="EPException">when the file could not be found</exception>
+        /// <returns>A configuration configured via the file</returns>
+        public Configuration Configure(FileInfo configFile)
         {
             if (Log.IsDebugEnabled)
             {
@@ -1298,68 +1309,66 @@ namespace com.espertech.esper.client
             return this;
         }
 
-        /// <summary> Use the mappings and properties specified in the given XML document.
+        public bool RemoveEventType(string eventTypeName, bool force)
+        {
+            _eventClasses.Remove(eventTypeName);
+            _eventTypesXmldom.Remove(eventTypeName);
+            _eventTypesAvro.Remove(eventTypeName);
+            _eventTypesLegacy.Remove(eventTypeName);
+            _mapNames.Remove(eventTypeName);
+            _nestableMapNames.Remove(eventTypeName);
+            _mapTypeConfigurations.Remove(eventTypeName);
+            _plugInEventTypes.Remove(eventTypeName);
+            _revisionEventTypes.Remove(eventTypeName);
+            _variantStreams.Remove(eventTypeName);
+            return true;
+        }
+
+        public ICollection<string> GetVariableNameUsedBy(string variableName)
+        {
+            throw new UnsupportedOperationException(
+                "Get variable use information is only available in runtime configuration");
+        }
+
+        public bool RemoveVariable(string name, bool force)
+        {
+            return _variables.Remove(name);
+        }
+
+        public void AddEventTypeAvro(string eventTypeName, ConfigurationEventTypeAvro avro)
+        {
+            _eventTypesAvro.Put(eventTypeName, avro);
+        }
+
+        /// <summary>
+        /// Use the mappings and properties specified in the given XML document.
         /// The format of the file is defined in
         /// <tt>esper-configuration-2.0.xsd</tt>.
-        ///
         /// </summary>
-        /// <param name="document">an XML document from which you wish to load the configuration
-        /// </param>
-        /// <returns> A configuration configured via the <tt>Document</tt>
-        /// </returns>
-        /// <throws>  EPException if there is problem in accessing the document. </throws>
-        public virtual Configuration Configure(XmlDocument document)
+        /// <param name="document">an XML document from which you wish to load the configuration</param>
+        /// <exception cref="EPException">if there is problem in accessing the document.</exception>
+        /// <returns>A configuration configured via the <tt>Document</tt></returns>
+        public Configuration Configure(XmlDocument document)
         {
-            Log.Debug("configuring from XML document");
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("configuring from XML document");
+            }
             ConfigurationParser.DoConfigure(this, document);
             return this;
         }
 
-        /// <summary> Returns an input stream from an application resource in the classpath.
-        ///
-        /// The method first removes the '/' character from the resource name if
-        /// the first character is '/'.
-        ///
-        /// The lookup order is as follows:
-        ///
-        /// If a thread context class loader exists, use <tt>Thread.CurrentThread().getResourceAsStream</tt>
-        /// to obtain an InputStream.
-        ///
-        /// If no input stream was returned, use the <tt>typeof(Configuration).getResourceAsStream</tt>.
-        /// to obtain an InputStream.
-        ///
-        /// If no input stream was returned, use the <tt>typeof(Configuration).GetClassLoader().getResourceAsStream</tt>.
-        /// to obtain an InputStream.
-        ///
-        /// If no input stream was returned, throw an Exception.
-        ///
-        /// </summary>
-        /// <param name="resource">to get input stream for
-        /// </param>
-        /// <returns> input stream for resource
-        /// </returns>
-        internal static Stream GetResourceAsStream(String resource)
+        /// <summary>Reset to an empty configuration.</summary>
+        protected void Reset()
         {
-            String stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-            Stream stream = ResourceManager.GetResourceAsStream(resource) ??
-                            ResourceManager.GetResourceAsStream(stripped);
-            if (stream == null)
-            {
-                throw new EPException(resource + " not found");
-            }
-            return stream;
-        }
-
-        /// <summary> Reset to an empty configuration.</summary>
-        internal void Reset()
-        {
-            _eventClasses = new Dictionary<String, String>();
-            _mapNames = new Dictionary<String, Properties>();
-            _nestableMapNames = new Dictionary<String, IDictionary<String, Object>>();
-            _nestableObjectArrayNames = new Dictionary<String, IDictionary<String, Object>>();
-            _eventTypesXmldom = new Dictionary<String, ConfigurationEventTypeXMLDOM>();
-            _eventTypesLegacy = new Dictionary<String, ConfigurationEventTypeLegacy>();
-            _databaseReferences = new Dictionary<String, ConfigurationDBRef>();
+            _eventClasses = new Dictionary<string, string>();
+            _mapNames = new Dictionary<string, Properties>();
+            _nestableMapNames = new Dictionary<string, IDictionary<string, Object>>();
+            _nestableObjectArrayNames = new Dictionary<string, IDictionary<string, Object>>();
+            _eventTypesXmldom = new Dictionary<string, ConfigurationEventTypeXMLDOM>();
+            _eventTypesAvro = new Dictionary<string, ConfigurationEventTypeAvro>();
+            _eventTypesLegacy = new Dictionary<string, ConfigurationEventTypeLegacy>();
+            _databaseReferences = new Dictionary<string, ConfigurationDBRef>();
             _imports = new List<AutoImportDesc>();
             _annotationImports = new List<AutoImportDesc>();
             AddDefaultImports();
@@ -1371,53 +1380,26 @@ namespace com.espertech.esper.client
             _plugInSingleRowFunctions = new List<ConfigurationPlugInSingleRowFunction>();
             _plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
             _engineDefaults = new ConfigurationEngineDefaults();
-            _eventTypeAutoNamePackages = new FIFOHashSet<String>();
-            _variables = new Dictionary<String, ConfigurationVariable>();
-            _methodInvocationReferences = new Dictionary<String, ConfigurationMethodRef>();
+            _eventTypeAutoNamePackages = new FIFOHashSet<string>();
+            _variables = new Dictionary<string, ConfigurationVariable>();
+            _methodInvocationReferences = new Dictionary<string, ConfigurationMethodRef>();
             _plugInEventRepresentation = new Dictionary<Uri, ConfigurationPlugInEventRepresentation>();
-            _plugInEventTypes = new Dictionary<String, ConfigurationPlugInEventType>();
-            _revisionEventTypes = new Dictionary<String, ConfigurationRevisionEventType>();
-            _variantStreams = new Dictionary<String, ConfigurationVariantStream>();
-            _mapTypeConfigurations = new Dictionary<String, ConfigurationEventTypeMap>();
-            _objectArrayTypeConfigurations = new NullableDictionary<String, ConfigurationEventTypeObjectArray>();
+            _plugInEventTypes = new Dictionary<string, ConfigurationPlugInEventType>();
+            _revisionEventTypes = new Dictionary<string, ConfigurationRevisionEventType>();
+            _variantStreams = new Dictionary<string, ConfigurationVariantStream>();
+            _mapTypeConfigurations = new Dictionary<string, ConfigurationEventTypeMap>();
+            _objectArrayTypeConfigurations = new Dictionary<string, ConfigurationEventTypeObjectArray>();
+            _transientConfiguration = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Use these imports until the user specifies something else.
-        /// </summary>
-
+        /// <summary>Use these imports until the user specifies something else.</summary>
         private void AddDefaultImports()
         {
             _imports.Add(new AutoImportDesc("System"));
             _imports.Add(new AutoImportDesc("System.Collections"));
             _imports.Add(new AutoImportDesc("System.Text"));
             _imports.Add(new AutoImportDesc(ANNOTATION_IMPORT));
-            _imports.Add(new AutoImportDesc(typeof (BeaconSource).Namespace, null));
+            _imports.Add(new AutoImportDesc(typeof(BeaconSource).Namespace, (string) null));
         }
     }
-
-    /// <summary>
-    /// Enumeration of event representation
-    /// </summary>
-    public enum EventRepresentation
-    {
-        /// <summary>
-        /// Event representation is object-array (Object[]).
-        /// </summary>
-        OBJECTARRAY,
-
-        /// <summary>
-        /// Event representation is Map (any IDictionary interface implementation).
-        /// </summary>
-
-        MAP
-    }
-
-    public static class EventRepresentationExtensions
-    {
-        public static EventRepresentation Default
-        {
-            get { return EventRepresentation.MAP; }
-        }
-    }
-}
+} // end of namespace

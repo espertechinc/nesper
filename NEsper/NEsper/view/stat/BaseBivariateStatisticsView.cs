@@ -31,25 +31,25 @@ namespace com.espertech.esper.view.stat
 
         /// <summary>This bean can be overridden by subclasses providing extra values such as correlation, regression. </summary>
         private BaseStatisticsBean _statisticsBean = new BaseStatisticsBean();
-    
+
         private readonly ExprNode _expressionX;
         private readonly ExprNode _expressionY;
         private readonly ExprEvaluator _expressionXEval;
         private readonly ExprEvaluator _expressionYEval;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
-    
+
         /// <summary>Services required by implementing classes. </summary>
         protected readonly AgentInstanceContext AgentInstanceContext;
-    
+
         /// <summary>Additional properties. </summary>
         private readonly StatViewAdditionalProps _additionalProps;
-    
+
         /// <summary>Event type. </summary>
         protected readonly EventType _eventType;
 
         private Object[] _lastValuesEventNew;
         private EventBean _lastNewEvent;
-    
+
         /// <summary>Populate bean. </summary>
         /// <param name="baseStatisticsBean">results</param>
         /// <param name="eventAdapterService">event adapters</param>
@@ -85,10 +85,10 @@ namespace com.espertech.esper.view.stat
             _eventType = eventType;
             _additionalProps = additionalProps;
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
-            using(Instrument.With(
+            using (Instrument.With(
                 i => i.QViewProcessIRStream(this, NAME, newData, oldData),
                 i => i.AViewProcessIRStream()))
             {
@@ -112,15 +112,18 @@ namespace com.espertech.esper.view.stat
                         _eventsPerStream[0] = newData[i];
                         var xnum = _expressionXEval.Evaluate(evaluateParams);
                         var ynum = _expressionYEval.Evaluate(evaluateParams);
-                        if (xnum != null && ynum != null) {
+                        if (xnum != null && ynum != null)
+                        {
                             var x = xnum.AsDouble();
                             var y = ynum.AsDouble();
                             _statisticsBean.AddPoint(x, y);
                         }
                     }
-    
-                    if ((_additionalProps != null) && (newData.Length != 0)) {
-                        if (_lastValuesEventNew == null) {
+
+                    if ((_additionalProps != null) && (newData.Length != 0))
+                    {
+                        if (_lastValuesEventNew == null)
+                        {
                             _lastValuesEventNew = new Object[_additionalProps.AdditionalExpr.Length];
                         }
                         for (var val = 0; val < _additionalProps.AdditionalExpr.Length; val++)
@@ -129,7 +132,7 @@ namespace com.espertech.esper.view.stat
                         }
                     }
                 }
-    
+
                 // remove data points from the bean
                 if (oldData != null)
                 {
@@ -138,37 +141,40 @@ namespace com.espertech.esper.view.stat
                         _eventsPerStream[0] = oldData[i];
                         var xnum = _expressionXEval.Evaluate(evaluateParams);
                         var ynum = _expressionYEval.Evaluate(evaluateParams);
-                        if (xnum != null && ynum != null) {
+                        if (xnum != null && ynum != null)
+                        {
                             var x = xnum.AsDouble();
                             var y = ynum.AsDouble();
                             _statisticsBean.RemovePoint(x, y);
                         }
                     }
                 }
-    
+
                 // If there are child view, fireStatementStopped Update method
                 if (HasViews)
                 {
                     var newDataMap = PopulateMap(_statisticsBean, AgentInstanceContext.StatementContext.EventAdapterService, _eventType, _additionalProps, _lastValuesEventNew);
-                    var newEvents = new EventBean[] {newDataMap};
+                    var newEvents = new EventBean[] { newDataMap };
                     EventBean[] oldEvents;
-                    if (_lastNewEvent == null) {
-                        oldEvents = new EventBean[] {oldValues};
+                    if (_lastNewEvent == null)
+                    {
+                        oldEvents = new EventBean[] { oldValues };
                     }
-                    else {
-                        oldEvents = new EventBean[] {_lastNewEvent};
+                    else
+                    {
+                        oldEvents = new EventBean[] { _lastNewEvent };
                     }
 
                     Instrument.With(
                         i => i.QViewIndicate(this, NAME, newEvents, oldEvents),
                         i => i.AViewIndicate(),
                         () => UpdateChildren(newEvents, oldEvents));
-    
+
                     _lastNewEvent = newDataMap;
                 }
             }
         }
-    
+
         public override IEnumerator<EventBean> GetEnumerator()
         {
             yield return PopulateMap(_statisticsBean,

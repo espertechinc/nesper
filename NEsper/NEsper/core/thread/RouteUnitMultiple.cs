@@ -10,32 +10,40 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.core.thread
 {
-    /// <summary>
-    /// Route execution work unit.
-    /// </summary>
+    /// <summary>Route execution work unit.</summary>
     public class RouteUnitMultiple
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly EPRuntimeImpl _epRuntime;
         private readonly EventBean _theEvent;
+        private readonly long _filterVersion;
         private readonly Object _callbackList;
         private readonly EPStatementAgentInstanceHandle _handle;
-        private readonly long _filterVersion;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="epRuntime">runtime to process</param>
         /// <param name="callbackList">callback list</param>
         /// <param name="theEvent">event to pass</param>
         /// <param name="handle">statement handle</param>
         /// <param name="filterVersion">version of filter</param>
-        public RouteUnitMultiple(EPRuntimeImpl epRuntime, Object callbackList, EventBean theEvent, EPStatementAgentInstanceHandle handle, long filterVersion)
+        public RouteUnitMultiple(
+            EPRuntimeImpl epRuntime,
+            Object callbackList,
+            EventBean theEvent,
+            EPStatementAgentInstanceHandle handle,
+            long filterVersion)
         {
             _epRuntime = epRuntime;
             _callbackList = callbackList;
@@ -43,15 +51,15 @@ namespace com.espertech.esper.core.thread
             _handle = handle;
             _filterVersion = filterVersion;
         }
-    
+
         public void Run()
         {
             try
             {
                 _epRuntime.ProcessStatementFilterMultiple(_handle, _callbackList, _theEvent, _filterVersion);
-    
+
                 _epRuntime.Dispatch();
-    
+
                 _epRuntime.ProcessThreadWorkQueue();
             }
             catch (Exception e)
@@ -59,6 +67,5 @@ namespace com.espertech.esper.core.thread
                 Log.Error("Unexpected error processing multiple route execution: " + e.Message, e);
             }
         }
-    
     }
-}
+} // end of namespace

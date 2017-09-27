@@ -134,7 +134,7 @@ namespace com.espertech.esper.core.context.mgr
 
         public static IDictionary<String, Object> GetPartitionType(ContextDetailPartitioned segmentedSpec, Type[] propertyTypes)
         {
-            IDictionary<String, Object> props = new LinkedHashMap<String, Object>();
+            IDictionary<String, Object> props = new Dictionary<String, Object>();
             for (var i = 0; i < segmentedSpec.Items[0].PropertyNames.Count; i++)
             {
                 var propertyName = PROP_CTX_KEY_PREFIX + (i + 1);
@@ -168,13 +168,13 @@ namespace com.espertech.esper.core.context.mgr
 
         public static IDictionary<String, Object> GetNestedTypeBase()
         {
-            IDictionary<String, Object> props = new LinkedHashMap<String, Object>();
+            IDictionary<String, Object> props = new Dictionary<String, Object>();
             return MakeEventType(LIST_NESTED_PROPS, props);
         }
 
         public static IDictionary<String, Object> GetNestedBeanBase(String contextName, int contextPartitionId)
         {
-            IDictionary<String, Object> props = new LinkedHashMap<String, Object>();
+            IDictionary<String, Object> props = new Dictionary<String, Object>();
             props.Put(PROP_CTX_NAME, contextName);
             props.Put(PROP_CTX_ID, contextPartitionId);
             return props;
@@ -195,7 +195,7 @@ namespace com.espertech.esper.core.context.mgr
 
         private static IDictionary<String, Object> MakeEventType(IEnumerable<ContextProperty> builtin, IDictionary<String, Object> additionalProperties)
         {
-            IDictionary<String, Object> properties = new LinkedHashMap<String, Object>();
+            IDictionary<String, Object> properties = new Dictionary<String, Object>();
             properties.PutAll(additionalProperties);
             foreach (var prop in builtin)
             {

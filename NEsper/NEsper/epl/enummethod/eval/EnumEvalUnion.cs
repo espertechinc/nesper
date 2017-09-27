@@ -44,13 +44,13 @@ namespace com.espertech.esper.epl.enummethod.eval
             ICollection<object> set;
             if (_scalar)
             {
-                set = _evaluator.EvaluateGetROCollectionScalar(eventsLambda, isNewData, context);
+                set = _evaluator.EvaluateGetROCollectionScalar(new EvaluateParams(eventsLambda, isNewData, context));
             }
             else
             {
-                set = _evaluator.EvaluateGetROCollectionEvents(eventsLambda, isNewData, context).TransformInto(
-                    o => (EventBean)o,
-                    e => (Object)e);
+                set = _evaluator
+                    .EvaluateGetROCollectionEvents(new EvaluateParams(eventsLambda, isNewData, context))
+                    .TransformInto(o => (EventBean) o, e => (Object) e);
             }
 
             if (set == null || set.IsEmpty())

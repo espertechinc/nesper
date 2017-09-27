@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -25,24 +26,24 @@ namespace com.espertech.esper.pattern
     public class PatternObjectResolutionServiceImpl : PatternObjectResolutionService
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly PluggableObjectCollection _patternObjects;
-    
+
         /// <summary>Ctor. </summary>
         /// <param name="patternObjects">is the pattern plug-in objects configured</param>
         public PatternObjectResolutionServiceImpl(PluggableObjectCollection patternObjects)
         {
             _patternObjects = patternObjects;
         }
-    
+
         public ObserverFactory Create(PatternObserverSpec spec)
         {
             Object result = CreateFactory(spec, PluggableObjectType.PATTERN_OBSERVER);
             ObserverFactory factory;
             try
             {
-                factory = (ObserverFactory) result;
-    
+                factory = (ObserverFactory)result;
+
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug(".create Successfully instantiated observer");
@@ -55,15 +56,15 @@ namespace com.espertech.esper.pattern
             }
             return factory;
         }
-    
+
         public GuardFactory Create(PatternGuardSpec spec)
         {
             Object result = CreateFactory(spec, PluggableObjectType.PATTERN_GUARD);
             GuardFactory factory;
             try
             {
-                factory = (GuardFactory) result;
-    
+                factory = (GuardFactory)result;
+
                 if (Log.IsDebugEnabled)
                 {
                     Log.Debug(".create Successfully instantiated guard");
@@ -76,14 +77,14 @@ namespace com.espertech.esper.pattern
             }
             return factory;
         }
-    
+
         private Object CreateFactory(ObjectSpec spec, PluggableObjectType type)
         {
             if (Log.IsDebugEnabled)
             {
                 Log.Debug(".create Creating factory, spec=" + spec);
             }
-    
+
             // Find the factory class for this pattern object
             Type factoryClass = null;
 
@@ -111,7 +112,7 @@ namespace com.espertech.esper.pattern
                     }
                 }
             }
-    
+
             if (factoryClass == null)
             {
                 if (type == PluggableObjectType.PATTERN_GUARD)
@@ -159,7 +160,7 @@ namespace com.espertech.esper.pattern
                 message += "', no invocation access for Activator.CreateInstance";
                 throw new PatternObjectException(message, ex);
             }
-    
+
             return result;
         }
     }

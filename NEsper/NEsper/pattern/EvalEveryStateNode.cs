@@ -23,17 +23,17 @@ namespace com.espertech.esper.pattern
         private readonly EvalEveryNode _evalEveryNode;
         private readonly IList<EvalStateNode> _spawnedNodes;
         private MatchedEventMap _beginState;
-    
+
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
         /// <param name="evalEveryNode">is the factory node associated to the state</param>
-        public EvalEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode) 
+        public EvalEveryStateNode(Evaluator parentNode, EvalEveryNode evalEveryNode)
             : base(parentNode)
         {
             _evalEveryNode = evalEveryNode;
             _spawnedNodes = new List<EvalStateNode>();
         }
-    
+
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             if (PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState))
@@ -54,18 +54,18 @@ namespace com.espertech.esper.pattern
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryStart(_evalEveryNode, beginState);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryStart(_evalEveryNode, beginState); }
             _beginState = beginState.ShallowCopy();
             var childState = _evalEveryNode.ChildNode.NewState(this, null, 0L);
             _spawnedNodes.Add(childState);
-    
+
             // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
             // Events created during the start would likely come from the "not" operator.
             // Quit the new child again if
             var spawnEvaluator = new EvalEveryStateSpawnEvaluator(_evalEveryNode.Context.PatternContext.StatementName);
             childState.ParentEvaluator = spawnEvaluator;
             childState.Start(beginState);
-    
+
             // If the spawned expression turned true already, just quit it
             if (spawnEvaluator.IsEvaluatedTrue)
             {
@@ -75,12 +75,12 @@ namespace com.espertech.esper.pattern
             {
                 childState.ParentEvaluator = this;
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryStart();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryStart(); }
         }
-    
+
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryEvalFalse(_evalEveryNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryEvalFalse(_evalEveryNode); }
             fromNode.Quit();
             _spawnedNodes.Remove(fromNode);
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.pattern
             var spawnEvaluator = new EvalEveryStateSpawnEvaluator(_evalEveryNode.Context.PatternContext.StatementName);
             var spawned = _evalEveryNode.ChildNode.NewState(spawnEvaluator, null, 0L);
             spawned.Start(_beginState);
-    
+
             // If the whole spawned expression already turned true, quit it again
             if (spawnEvaluator.IsEvaluatedTrue)
             {
@@ -108,17 +108,17 @@ namespace com.espertech.esper.pattern
                 _spawnedNodes.Add(spawned);
                 spawned.ParentEvaluator = this;
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryEvalFalse();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryEvalFalse(); }
         }
-    
+
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryEvaluateTrue(_evalEveryNode, matchEvent);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryEvaluateTrue(_evalEveryNode, matchEvent); }
             if (isQuitted)
             {
                 _spawnedNodes.Remove(fromNode);
             }
-    
+
             // See explanation in EvalFilterStateNode for the type check
             if (fromNode.IsFilterStateNode || fromNode.IsObserverStateNodeNonRestarting)
             {
@@ -132,7 +132,7 @@ namespace com.espertech.esper.pattern
                 var spawnEvaluator = new EvalEveryStateSpawnEvaluator(_evalEveryNode.Context.PatternContext.StatementName);
                 var spawned = _evalEveryNode.ChildNode.NewState(spawnEvaluator, null, 0L);
                 spawned.Start(_beginState);
-    
+
                 // If the whole spawned expression already turned true, quit it again
                 if (spawnEvaluator.IsEvaluatedTrue)
                 {
@@ -144,27 +144,28 @@ namespace com.espertech.esper.pattern
                     spawned.ParentEvaluator = this;
                 }
             }
-    
+
             // All nodes indicate to their parents that their child node did not quit, therefore a false for isQuitted
             ParentEvaluator.EvaluateTrue(matchEvent, this, false);
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryEvaluateTrue();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryEvaluateTrue(); }
         }
-    
+
         public override void Quit()
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryQuit(_evalEveryNode);}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternEveryQuit(_evalEveryNode); }
             // Stop all child nodes
             foreach (var child in _spawnedNodes)
             {
                 child.Quit();
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryQuit();}
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternEveryQuit(); }
         }
-    
+
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitEvery(_evalEveryNode.FactoryNode, this,  _beginState);
-            foreach (var spawnedNode in _spawnedNodes) {
+            visitor.VisitEvery(_evalEveryNode.FactoryNode, this, _beginState);
+            foreach (var spawnedNode in _spawnedNodes)
+            {
                 spawnedNode.Accept(visitor);
             }
         }

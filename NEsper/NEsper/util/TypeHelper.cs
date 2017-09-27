@@ -15,19 +15,19 @@ using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using System.Xml;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
+using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.events.avro;
 using com.espertech.esper.type;
 
 namespace com.espertech.esper.util
@@ -299,6 +299,11 @@ namespace com.espertech.esper.util
             return type;
         }
 
+        public static bool IsBoxedType<T>(this Type type)
+        {
+            return (type.GetBoxedType() == typeof(T).GetBoxedType());
+        }
+
         /// <summary>
         /// Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
         /// For primitive boxed types returns the unboxed primitive type, e.g. returns typeof(int) for passing typeof(int?).
@@ -438,6 +443,7 @@ namespace com.espertech.esper.util
                 return typeof(bool?).FullName;
             }
             if ((typeName == typeof(BigInteger).FullName) ||
+                (typeName == "biginteger") ||
                 (typeName == "bigint"))
             {
                 return typeof(BigInteger?).FullName;
@@ -961,7 +967,7 @@ namespace com.espertech.esper.util
                 return true;
             }
 
-            ICollection<Type> widenings = MethodResolver.WideningConversions.Get(declarationType);
+            ICollection<Type> widenings = MethodResolver.WIDENING_CONVERSIONS.Get(declarationType);
             if (widenings != null)
             {
                 return widenings.Contains(invocationType);
@@ -1200,15 +1206,18 @@ namespace com.espertech.esper.util
         /// <summary>
         /// Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
         /// uppercase and lowercase.
-        /// <para/>
+        /// <para />
         /// Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
         /// and so on.
         /// </summary>
         /// <param name="typeName">is the name to recognize</param>
         /// <param name="boxed">if set to <c>true</c> [boxed].</param>
-        /// <returns>class</returns>
+        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
+        /// <returns>
+        /// class
+        /// </returns>
         /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
-        public static Type GetTypeForSimpleName(String typeName, bool boxed = false)
+        public static Type GetTypeForSimpleName(String typeName, bool boxed = false, bool throwOnError = false)
         {
             switch (typeName.ToLower().Trim())
             {
@@ -1284,6 +1293,13 @@ namespace com.espertech.esper.util
                     return boxed
                         ? typeof (DateTime?)
                         : typeof (DateTime);
+                case "dto":
+                case "datetimeoffet":
+                    return boxed
+                        ? typeof (DateTimeOffset?)
+                        : typeof (DateTimeOffset);
+                case "dtx":
+                    return typeof (DateTimeEx);
                 case "bigint":
                 case "biginteger":
                     return boxed
@@ -1291,7 +1307,7 @@ namespace com.espertech.esper.util
                         : typeof (BigInteger);
             }
 
-            var type = ResolveType(typeName.Trim(), false);
+            var type = ResolveType(typeName.Trim(), throwOnError);
             if (type == null)
             {
                 return null;
@@ -1417,9 +1433,12 @@ namespace com.espertech.esper.util
                 case "datetime":
                 case "system.datetime":
                     return typeof(DateTime);
+                case "dto":
                 case "datetimeoffset":
                 case "system.datetimeoffset":
                     return typeof(DateTimeOffset);
+                case "dtx":
+                    return typeof(DateTimeEx);
                 case "bigint":
                 case "biginteger":
                     return typeof(BigInteger?);
@@ -1549,6 +1568,28 @@ namespace com.espertech.esper.util
                 .Any(result => result);
         }
 
+        public static String ResolveAbsoluteTypeName(String assemblyQualifiedTypeName)
+        {
+            var trueTypeName = ResolveType(assemblyQualifiedTypeName, false);
+            if (trueTypeName == null)
+            {
+                throw new EPException("unable to determine assembly qualified class for " + assemblyQualifiedTypeName);
+            }
+
+            return trueTypeName.AssemblyQualifiedName;
+        }
+
+        public static String TryResolveAbsoluteTypeName(String assemblyQualifiedTypeName)
+        {
+            var trueTypeName = ResolveType(assemblyQualifiedTypeName, false);
+            if (trueTypeName == null)
+            {
+                return assemblyQualifiedTypeName;
+            }
+
+            return trueTypeName.AssemblyQualifiedName;
+        }
+
         /// <summary>
         /// Resolves a type using the assembly qualified type name.  If the type
         /// can not be resolved using a simple Type.GetType() [which many can not],
@@ -1664,6 +1705,11 @@ namespace com.espertech.esper.util
             return null;
         }
 
+        public static Type GetClassForName(String typeName, ClassForNameProvider classForNameProvider)
+        {
+            return classForNameProvider.ClassForName(typeName);
+        }
+
         private static Type MakeArrayType(int arrayRank, Type typeInstance)
         {
             for (; arrayRank > 0; arrayRank--)
@@ -1722,7 +1768,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>Method to check if a given class, and its superclasses and interfaces (deep), implement a given interface or extend a given class.</summary>
-        /// <param name="extendorOrImplementor">is the class to inspects its extends and implements clauses</param>
+        /// <param name="extendorOrImplementor">is the class to inspects its : and : clauses</param>
         /// <param name="extendedOrImplemented">is the potential interface, or superclass, to check</param>
         /// <returns>true if such interface is implemented by type of the clazz or its superclasses orextends by type interface and superclasses (deep check)</returns>
         public static bool IsSubclassOrImplementsInterface(Type extendorOrImplementor, Type extendedOrImplemented)
@@ -1764,7 +1810,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>
-        /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
+        /// Looks up the given class and checks that it : or : the required interface,and instantiates an object.
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="type">of the class to load, check type and instantiate</param>
@@ -1812,7 +1858,7 @@ namespace com.espertech.esper.util
         }
 
         /// <summary>
-        /// Looks up the given class and checks that it implements or extends the required interface,and instantiates an object.
+        /// Looks up the given class and checks that it : or : the required interface,and instantiates an object.
         /// </summary>
         /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
         /// <param name="typeName">of the class to load, check type and instantiate</param>
@@ -1867,6 +1913,67 @@ namespace com.espertech.esper.util
                     "Member access when instantiating class '" + typeName + "' via default constructor", ex);
             }
         }
+
+        /// <summary>
+        /// Looks up the given class and checks that it : or : the required interface,and instantiates an object.
+        /// </summary>
+        /// <typeparam name="T">is the type that the looked-up class should extend or implement</typeparam>
+        /// <param name="typeName">Name of the type.</param>
+        /// <param name="classForNameProvider">The class for name provider.</param>
+        /// <returns>
+        /// instance of given class, via newInstance
+        /// </returns>
+        public static T Instantiate<T>(string typeName, ClassForNameProvider classForNameProvider)
+        {
+            var implementedOrExtendedType = typeof(T);
+
+            Type type;
+            try
+            {
+                type = classForNameProvider.ClassForName(typeName);
+            }
+            catch (Exception ex)
+            {
+                throw new TypeInstantiationException("Unable to load class '" + typeName + "', class not found", ex);
+            }
+
+            if (!IsSubclassOrImplementsInterface(type, implementedOrExtendedType))
+            {
+                if (implementedOrExtendedType.IsInterface)
+                {
+                    throw new TypeInstantiationException("Class '" + typeName + "' does not implement interface '" +
+                                                         implementedOrExtendedType.FullName + "'");
+                }
+                throw new TypeInstantiationException("Class '" + typeName + "' does not extend '" +
+                                                     implementedOrExtendedType.FullName + "'");
+            }
+
+            try
+            {
+                return (T)Activator.CreateInstance(type);
+            }
+            catch (TypeInstantiationException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Unable to instantiate from class '" + typeName + "' via default constructor", ex);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Invocation exception when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+            catch (MethodAccessException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Method access when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+            catch (MemberAccessException ex)
+            {
+                throw new TypeInstantiationException(
+                    "Member access when instantiating class '" + typeName + "' via default constructor", ex);
+            }
+        }
+
 
         /// <summary>
         /// Applies a visitor pattern to the base interfaces for the provided type.
@@ -2043,13 +2150,17 @@ namespace com.espertech.esper.util
             {
                 return false;
             }
+            if (propertyType.FullName == AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME)
+            {
+                return false;
+            }
             return true;
         }
 
         /// <summary>
         /// Returns the generic type parameter of a return value by a field, property or method.
         /// </summary>
-        /// <param name="memberInfo">The member info.</param>
+        /// <param name="memberInfo">The member INFO.</param>
         /// <param name="isAllowNull">if set to <c>true</c> [is allow null].</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnType(MemberInfo memberInfo, bool isAllowNull)
@@ -2066,7 +2177,7 @@ namespace com.espertech.esper.util
         /// Returns the second generic type parameter of a return value by a field or
         /// method.
         /// </summary>
-        /// <param name="memberInfo">The member info.</param>
+        /// <param name="memberInfo">The member INFO.</param>
         /// <param name="isAllowNull">whether null is allowed as a return value or expected typeof(object)</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnTypeMap(MemberInfo memberInfo, bool isAllowNull)
@@ -2197,7 +2308,7 @@ namespace com.espertech.esper.util
         /// <summary>Returns the generic type parameter of a return value by a field or method. </summary>
         /// <param name="method">method or null if field</param>
         /// <param name="field">field or null if method</param>
-        /// <param name="isAllowNull">whether null is allowed as a return value or expected Object.class</param>
+        /// <param name="isAllowNull">whether null is allowed as a return value or expected typeof(Object)</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnType(MethodInfo method, FieldInfo field, bool isAllowNull)
         {
@@ -2580,34 +2691,50 @@ namespace com.espertech.esper.util
                    e.Message;
         }
 
-        public static IDictionary<String, Object> GetClassObjectFromPropertyTypeNames(Properties properties)
+        public static IDictionary<String, Object> GetClassObjectFromPropertyTypeNames(
+            Properties properties,
+            Func<string, Type> typeResolver)
         {
             IDictionary<String, Object> propertyTypes = new Dictionary<String, Object>();
             foreach (var entry in properties)
             {
-                var className = entry.Value;
-                if (className == "string")
-                {
-                    className = typeof(string).FullName;
-                }
-
-                // use the boxed type for primitives
-                var boxedClassName = GetBoxedTypeName(className);
-
-                Type clazz;
-                try
-                {
-                    clazz = ResolveType(boxedClassName, true);
-                }
-                catch (TypeLoadException ex)
-                {
-                    throw new ConfigurationException("Unable to load class '" + boxedClassName + "', class not found",
-                                                     ex);
-                }
-
-                propertyTypes.Put(entry.Key, clazz);
+                propertyTypes.Put(entry.Key, typeResolver.Invoke(entry.Value));
             }
             return propertyTypes;
+        }
+
+        public static IDictionary<String, Object> GetClassObjectFromPropertyTypeNames(
+            Properties properties,
+            ClassForNameProvider classForNameProvider)
+        {
+            return GetClassObjectFromPropertyTypeNames(
+                properties, classForNameProvider.ClassForName);
+        }
+
+        public static IDictionary<String, Object> GetClassObjectFromPropertyTypeNames(Properties properties)
+        {
+            return GetClassObjectFromPropertyTypeNames(
+                properties, className =>
+                {
+                    if (className == "string")
+                    {
+                        className = typeof (string).FullName;
+                    }
+
+                    // use the boxed type for primitives
+                    var boxedClassName = GetBoxedTypeName(className);
+
+                    try
+                    {
+                        return ResolveType(boxedClassName, true);
+                    }
+                    catch (TypeLoadException ex)
+                    {
+                        throw new ConfigurationException(
+                            "Unable to load class '" + boxedClassName + "', class not found",
+                            ex);
+                    }
+                });
         }
 
         public static object Boxed(this object value)
@@ -2875,6 +3002,7 @@ namespace com.espertech.esper.util
 
             var clazzBoxed = clazz.GetBoxedType();
             return
+                (clazzBoxed == typeof (DateTimeEx)) ||
                 (clazzBoxed == typeof (DateTimeOffset?)) ||
                 (clazzBoxed == typeof (DateTime?)) ||
                 (clazzBoxed == typeof (long?));
@@ -2897,6 +3025,33 @@ namespace com.espertech.esper.util
         public static bool IsDelegate(this Type type)
         {
             return typeof (Delegate).IsAssignableFrom(type.BaseType);
+        }
+
+        /// <summary>
+        /// Determines whether [is collection map or array] [the specified type].
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static bool IsCollectionMapOrArray(this Type type)
+        {
+            return (type != null) && (type.IsGenericCollection() || (type.IsGenericDictionary() || IsArray(type)));
+        }
+
+        /// <summary>
+        /// Determines whether the target type and provided type are compatible in an array.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <param name="provided">The provided.</param>
+        /// <returns></returns>
+        public static bool IsArrayTypeCompatible(this Type target, Type provided)
+        {
+            if (target == provided || target == typeof(object))
+            {
+                return true;
+            }
+            var targetBoxed = GetBoxedType(target);
+            var providedBoxed = GetBoxedType(provided);
+            return targetBoxed == providedBoxed || IsSubclassOrImplementsInterface(providedBoxed, targetBoxed);
         }
 
         /// <summary>
@@ -2928,6 +3083,11 @@ namespace com.espertech.esper.util
             return type.FullName.Replace('+', '$');
         }
 
+        public static string MaskTypeName(string typename)
+        {
+            return typename.Replace('+', '$');
+        }
+
         /// <summary>
         /// Unmasks the name of the stream.
         /// </summary>
@@ -2937,6 +3097,24 @@ namespace com.espertech.esper.util
         {
             return name.Replace('$', '+');
         }
+
+        public static string GetDefaultTypeName(this Type type)
+        {
+#if false
+            if (type.IsNullable())
+            {
+                // Nullables have been causing problems because their names arent properly
+                // unique.  We generally dont want nullables automatically binding to public
+                // namespaces, so be sure to provide an opaque name when they are automatically
+                // bound so we can find them.
+
+                return string.Format("__NULLABLE_{0}", Nullable.GetUnderlyingType(type).Name);
+            }
+#endif
+
+            return type.FullName;
+        }
+
     }
 
     public class TypeResolverEventArgs : EventArgs

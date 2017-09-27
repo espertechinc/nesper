@@ -15,6 +15,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,6 +25,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.events.arr;
+using com.espertech.esper.events.avro;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
 using com.espertech.esper.events.xml;
@@ -59,6 +61,9 @@ namespace com.espertech.esper.events
         private readonly EventTypeIdGenerator _eventTypeIdGenerator;
         private readonly EventAdapterServiceAnonymousTypeCache _anonymousTypeCache;
 
+        private readonly EventAdapterAvroHandler _avroHandler;
+        private readonly EngineImportService _engineImportService;
+
         private readonly IDictionary<String, PlugInEventTypeHandler> _nameToHandlerMap;
         private readonly IDictionary<String, EventType> _nameToTypeMap;
 
@@ -71,9 +76,15 @@ namespace com.espertech.esper.events
         private readonly IDictionary<String, EventType> _xelementRootElementNames;
 
         /// <summary>Ctor. </summary>
-        public EventAdapterServiceImpl(EventTypeIdGenerator eventTypeIdGenerator, int anonymousTypeCacheSize)
+        public EventAdapterServiceImpl(
+            EventTypeIdGenerator eventTypeIdGenerator,
+            int anonymousTypeCacheSize,
+            EventAdapterAvroHandler avroHandler,
+            EngineImportService engineImportService)
         {
             _eventTypeIdGenerator = eventTypeIdGenerator;
+            _avroHandler = avroHandler;
+            _engineImportService = engineImportService;
 
             _nameToTypeMap = new Dictionary<String, EventType>();
             _xmldomRootElementNames = new Dictionary<String, EventType>();
@@ -106,18 +117,29 @@ namespace com.espertech.esper.events
             get { return new Dictionary<String, EventType>(_nameToTypeMap); }
         }
 
+        public EngineImportService EngineImportService
+        {
+            get { return _engineImportService; }
+        }
+
         public ICollection<WriteablePropertyDescriptor> GetWriteableProperties(EventType eventType, bool allowAnyType)
         {
             return EventAdapterServiceHelper.GetWriteableProperties(eventType, allowAnyType);
         }
 
-        public EventBeanManufacturer GetManufacturer(EventType eventType, IList<WriteablePropertyDescriptor> properties, EngineImportService engineImportService, bool allowAnyType)
+        public EventBeanManufacturer GetManufacturer(
+            EventType eventType,
+            IList<WriteablePropertyDescriptor> properties,
+            EngineImportService engineImportService,
+            bool allowAnyType)
         {
-            return EventAdapterServiceHelper.GetManufacturer(this, eventType, properties, engineImportService, allowAnyType);
+            return EventAdapterServiceHelper.GetManufacturer(
+                this, eventType, properties, engineImportService, allowAnyType, _avroHandler);
         }
 
-        public void AddTypeByName(String name,
-                                  EventType eventType)
+        public void AddTypeByName(
+            String name,
+            EventType eventType)
         {
             using (_syncLock.Acquire())
             {
@@ -133,8 +155,9 @@ namespace com.espertech.esper.events
         {
             if (_plugInRepresentations.ContainsKey(eventRepURI))
             {
-                throw new EventAdapterException("Plug-in event representation URI by name " + eventRepURI +
-                                                " already exists");
+                throw new EventAdapterException(
+                    "Plug-in event representation URI by name " + eventRepURI +
+                    " already exists");
             }
             _plugInRepresentations.Put(eventRepURI, pluginEventRep);
         }
@@ -143,8 +166,9 @@ namespace com.espertech.esper.events
         {
             if (_nameToTypeMap.ContainsKey(eventTypeName))
             {
-                throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                "' has already been declared");
+                throw new EventAdapterException(
+                    "Event type named '" + eventTypeName +
+                    "' has already been declared");
             }
 
             PlugInEventRepresentation handlingFactory = null;
@@ -152,8 +176,9 @@ namespace com.espertech.esper.events
 
             if ((resolutionURIs == null) || (resolutionURIs.Count == 0))
             {
-                throw new EventAdapterException("Event type named '" + eventTypeName + "' could not be created as" +
-                                                " no resolution URIs for dynamic resolution of event type names through a plug-in event representation have been defined");
+                throw new EventAdapterException(
+                    "Event type named '" + eventTypeName + "' could not be created as" +
+                    " no resolution URIs for dynamic resolution of event type names through a plug-in event representation have been defined");
             }
 
             foreach (var eventTypeURI in resolutionURIs)
@@ -171,7 +196,8 @@ namespace com.espertech.esper.events
                 foreach (var entry in factories)
                 {
                     var factory = entry.Value;
-                    var context = new PlugInEventTypeHandlerContext(eventTypeURI, initializer, eventTypeName, _eventTypeIdGenerator.GetTypeId(eventTypeName));
+                    var context = new PlugInEventTypeHandlerContext(
+                        eventTypeURI, initializer, eventTypeName, _eventTypeIdGenerator.GetTypeId(eventTypeName));
                     if (factory.AcceptsType(context))
                     {
                         handlingFactory = factory;
@@ -188,23 +214,25 @@ namespace com.espertech.esper.events
 
             if (handlingFactory == null)
             {
-                throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                "' could not be created as none of the " +
-                                                "registered plug-in event representations accepts any of the resolution URIs '" +
-                                                resolutionURIs.Render() +
-                                                "' and initializer");
+                throw new EventAdapterException(
+                    "Event type named '" + eventTypeName +
+                    "' could not be created as none of the " +
+                    "registered plug-in event representations accepts any of the resolution URIs '" +
+                    resolutionURIs.Render() +
+                    "' and initializer");
             }
 
             var typeContext = new PlugInEventTypeHandlerContext(
-                handledEventTypeURI, 
-                initializer, 
+                handledEventTypeURI,
+                initializer,
                 eventTypeName,
                 _eventTypeIdGenerator.GetTypeId(eventTypeName));
             var handler = handlingFactory.GetTypeHandler(typeContext);
             if (handler == null)
             {
-                throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                "' could not be created as no handler was returned");
+                throw new EventAdapterException(
+                    "Event type named '" + eventTypeName +
+                    "' could not be created as no handler was returned");
             }
 
             var eventType = handler.EventType;
@@ -214,9 +242,10 @@ namespace com.espertech.esper.events
             return eventType;
         }
 
-        public EventSender GetStaticTypeEventSender(EPRuntimeEventSender runtimeEventSender,
-                                                    String eventTypeName,
-                                                    ThreadingService threadingService)
+        public EventSender GetStaticTypeEventSender(
+            EPRuntimeEventSender runtimeEventSender,
+            String eventTypeName,
+            ThreadingService threadingService)
         {
             var eventType = _nameToTypeMap.Get(eventTypeName);
             if (eventType == null)
@@ -229,17 +258,22 @@ namespace com.espertech.esper.events
             {
                 return new EventSenderBean(runtimeEventSender, (BeanEventType) eventType, this, threadingService);
             }
-            if (eventType is MapEventType)
+            else if (eventType is MapEventType)
             {
                 return new EventSenderMap(runtimeEventSender, (MapEventType) eventType, this, threadingService);
             }
-            if (eventType is ObjectArrayEventType)
+            else if (eventType is ObjectArrayEventType)
             {
-                return new EventSenderObjectArray(runtimeEventSender, (ObjectArrayEventType) eventType, this, threadingService);
+                return new EventSenderObjectArray(
+                    runtimeEventSender, (ObjectArrayEventType) eventType, this, threadingService);
             }
-            if (eventType is BaseXMLEventType)
+            else if (eventType is BaseXMLEventType)
             {
                 return new EventSenderXMLDOM(runtimeEventSender, (BaseXMLEventType) eventType, this, threadingService);
+            }
+            else if (eventType is AvroSchemaEventType)
+            {
+                return new EventSenderAvro(runtimeEventSender, eventType, this, threadingService);
             }
 
             var handlers = _nameToHandlerMap.Get(eventTypeName);
@@ -247,12 +281,14 @@ namespace com.espertech.esper.events
             {
                 return handlers.GetSender(runtimeEventSender);
             }
-            throw new EventTypeException("An event sender for event type named '" + eventTypeName +
-                                         "' could not be created as the type is internal");
+            throw new EventTypeException(
+                "An event sender for event type named '" + eventTypeName +
+                "' could not be created as the type is internal");
         }
 
-        public void UpdateMapEventType(String mapeventTypeName,
-                                       IDictionary<String, Object> typeMap)
+        public void UpdateMapEventType(
+            String mapeventTypeName,
+            IDictionary<String, Object> typeMap)
         {
             var type = _nameToTypeMap.Get(mapeventTypeName);
             if (type == null)
@@ -273,21 +309,24 @@ namespace com.espertech.esper.events
             var type = _nameToTypeMap.Get(objectArrayEventTypeName);
             if (type == null)
             {
-                throw new EventAdapterException("Event type named '" + objectArrayEventTypeName + "' has not been declared");
+                throw new EventAdapterException(
+                    "Event type named '" + objectArrayEventTypeName + "' has not been declared");
             }
 
             var objectArrayEventType = type as ObjectArrayEventType;
             if (objectArrayEventType == null)
             {
-                throw new EventAdapterException("Event type by name '" + objectArrayEventTypeName + "' is not an Object-array event type");
+                throw new EventAdapterException(
+                    "Event type by name '" + objectArrayEventTypeName + "' is not an Object-array event type");
             }
 
             objectArrayEventType.AddAdditionalProperties(typeMap, this);
         }
 
-        public EventSender GetDynamicTypeEventSender(EPRuntimeEventSender epRuntime,
-                                                     Uri[] uri,
-                                                     ThreadingService threadingService)
+        public EventSender GetDynamicTypeEventSender(
+            EPRuntimeEventSender epRuntime,
+            Uri[] uri,
+            ThreadingService threadingService)
         {
             var handlingFactories = new List<EventSenderURIDesc>();
             foreach (var resolutionURI in uri)
@@ -323,7 +362,8 @@ namespace com.espertech.esper.events
             if (handlingFactories.IsEmpty())
             {
                 throw new EventTypeException(
-                    "Event sender for resolution URIs '" + uri.Render() + "' did not return at least one event representation's event factory");
+                    "Event sender for resolution URIs '" + uri.Render() +
+                    "' did not return at least one event representation's event factory");
             }
 
             return new EventSenderImpl(handlingFactories, epRuntime, threadingService);
@@ -334,11 +374,12 @@ namespace com.espertech.esper.events
             get { return _beanEventAdapter; }
         }
 
-        public EventType AddBeanType(String eventTypeName,
-                                     Type clazz,
-                                     bool isPreconfiguredStatic,
-                                     bool isPreconfigured,
-                                     bool isConfigured)
+        public EventType AddBeanType(
+            String eventTypeName,
+            Type clazz,
+            bool isPreconfiguredStatic,
+            bool isPreconfigured,
+            bool isConfigured)
         {
             using (_syncLock.Acquire())
             {
@@ -355,23 +396,26 @@ namespace com.espertech.esper.events
                         return existingType;
                     }
 
-                    throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                    "' has already been declared with differing underlying type information:" +
-                                                    existingType.UnderlyingType.Name +
-                                                    " versus " + clazz.Name);
+                    throw new EventAdapterException(
+                        "Event type named '" + eventTypeName +
+                        "' has already been declared with differing underlying type information:" +
+                        existingType.UnderlyingType.Name +
+                        " versus " + clazz.Name);
                 }
 
-                EventType eventType = _beanEventAdapter.CreateBeanType(eventTypeName, clazz, isPreconfiguredStatic,
-                                                                       isPreconfigured, isConfigured);
+                EventType eventType = _beanEventAdapter.CreateBeanType(
+                    eventTypeName, clazz, isPreconfiguredStatic,
+                    isPreconfigured, isConfigured);
                 _nameToTypeMap.Put(eventTypeName, eventType);
 
                 return eventType;
             }
         }
 
-        public EventType AddBeanTypeByName(String eventTypeName,
-                                           Type clazz,
-                                           bool isNamedWindow)
+        public EventType AddBeanTypeByName(
+            String eventTypeName,
+            Type clazz,
+            bool isNamedWindow)
         {
             using (_syncLock.Acquire())
             {
@@ -404,18 +448,19 @@ namespace com.espertech.esper.events
                             }
                         }
                     }
-                    throw new EventAdapterException("An event type named '" + eventTypeName +
-                                                    "' has already been declared");
+                    throw new EventAdapterException(
+                        "An event type named '" + eventTypeName +
+                        "' has already been declared");
                 }
 
                 typeClass = isNamedWindow
-                                ? TypeClass.NAMED_WINDOW
-                                : TypeClass.STREAM;
+                    ? TypeClass.NAMED_WINDOW
+                    : TypeClass.STREAM;
                 var beanEventType =
                     new BeanEventType(
                         EventTypeMetadata.CreateBeanType(eventTypeName, clazz, false, false, false, typeClass),
                         _eventTypeIdGenerator.GetTypeId(eventTypeName), clazz, this,
-                        _beanEventAdapter.GetClassToLegacyConfigs(clazz.FullName));
+                        _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
                 _nameToTypeMap.Put(eventTypeName, beanEventType);
 
                 return beanEventType;
@@ -451,12 +496,13 @@ namespace com.espertech.esper.events
         /// <param name="isConfigured">if set to <c>true</c> [is configured].</param>
         /// <returns>event type</returns>
         /// <throws>EventAdapterException if the Class name cannot resolve or other error occured</throws>
-        public EventType AddBeanType(String eventTypeName,
-                                     String fullyQualClassName,
-                                     bool considerAutoName,
-                                     bool isPreconfiguredStatic,
-                                     bool isPreconfigured,
-                                     bool isConfigured)
+        public EventType AddBeanType(
+            String eventTypeName,
+            String fullyQualClassName,
+            bool considerAutoName,
+            bool isPreconfiguredStatic,
+            bool isPreconfigured,
+            bool isConfigured)
         {
             using (_syncLock.Acquire())
             {
@@ -468,7 +514,8 @@ namespace com.espertech.esper.events
                 var existingType = _nameToTypeMap.Get(eventTypeName);
                 if (existingType != null)
                 {
-                    if ((fullyQualClassName == existingType.UnderlyingType.FullName) ||
+                    if ((fullyQualClassName == existingType.UnderlyingType.AssemblyQualifiedName) ||
+                        (fullyQualClassName == existingType.UnderlyingType.FullName) ||
                         (fullyQualClassName == existingType.UnderlyingType.Name))
                     {
                         if (Log.IsDebugEnabled)
@@ -478,17 +525,18 @@ namespace com.espertech.esper.events
                         return existingType;
                     }
 
-                    throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                    "' has already been declared with differing underlying type information: Class " +
-                                                    existingType.UnderlyingType.FullName +
-                                                    " versus " + fullyQualClassName);
+                    throw new EventAdapterException(
+                        "Event type named '" + eventTypeName +
+                        "' has already been declared with differing underlying type information: Class " +
+                        existingType.UnderlyingType.FullName +
+                        " versus " + fullyQualClassName);
                 }
 
                 // Try to resolve as a fully-qualified class name first
                 Type clazz = null;
                 try
                 {
-                    clazz = TypeHelper.ResolveType(fullyQualClassName, true);
+                    clazz = _engineImportService.GetClassForNameProvider().ClassForName(fullyQualClassName);
                 }
                 catch (TypeLoadException ex)
                 {
@@ -504,7 +552,7 @@ namespace com.espertech.esper.events
                         var generatedClassName = @namespace + "." + fullyQualClassName;
                         try
                         {
-                            var resolvedClass = TypeHelper.ResolveType(generatedClassName, true);
+                            var resolvedClass = _engineImportService.GetClassForNameProvider().ClassForName(generatedClassName);
                             if (clazz != null)
                             {
                                 throw new EventAdapterException(
@@ -527,36 +575,39 @@ namespace com.espertech.esper.events
                     }
                 }
 
-                EventType eventType = _beanEventAdapter.CreateBeanType(eventTypeName, clazz, isPreconfiguredStatic,
-                                                                       isPreconfigured, isConfigured);
+                EventType eventType = _beanEventAdapter.CreateBeanType(
+                    eventTypeName, clazz, isPreconfiguredStatic,
+                    isPreconfigured, isConfigured);
                 _nameToTypeMap.Put(eventTypeName, eventType);
 
                 return eventType;
             }
         }
 
-        public EventType AddNestableMapType(String eventTypeName,
-                                            IDictionary<String, Object> propertyTypes,
-                                            ConfigurationEventTypeMap optionalConfig,
-                                            bool isPreconfiguredStatic,
-                                            bool isPreconfigured,
-                                            bool isConfigured,
-                                            bool namedWindow,
-                                            bool insertInto)
+        public EventType AddNestableMapType(
+            String eventTypeName,
+            IDictionary<String, Object> propertyTypes,
+            ConfigurationEventTypeMap optionalConfig,
+            bool isPreconfiguredStatic,
+            bool isPreconfigured,
+            bool isConfigured,
+            bool namedWindow,
+            bool insertInto)
         {
             using (_syncLock.Acquire())
             {
-                var mapSuperTypes = GetSuperTypesDepthFirst(
-                    optionalConfig != null ? optionalConfig.SuperTypes : null, true);
+                var mapSuperTypes = EventTypeUtility.GetSuperTypesDepthFirst(
+                    optionalConfig, EventUnderlyingType.MAP, _nameToTypeMap);
                 var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
-                    ApplicationType.MAP, 
-                    eventTypeName, isPreconfiguredStatic, 
-                    isPreconfigured, isConfigured, 
+                    ApplicationType.MAP,
+                    eventTypeName, isPreconfiguredStatic,
+                    isPreconfigured, isConfigured,
                     namedWindow, insertInto);
 
                 var typeId = _eventTypeIdGenerator.GetTypeId(eventTypeName);
-                var newEventType = new MapEventType(metadata, eventTypeName, typeId, this, propertyTypes,
-                                                    mapSuperTypes.First, mapSuperTypes.Second, optionalConfig);
+                var newEventType = new MapEventType(
+                    metadata, eventTypeName, typeId, this, propertyTypes,
+                    mapSuperTypes.First, mapSuperTypes.Second, optionalConfig);
 
                 var existingType = _nameToTypeMap.Get(eventTypeName);
                 if (existingType != null)
@@ -565,9 +616,10 @@ namespace com.espertech.esper.events
                     if (!newEventType.EqualsCompareType(existingType))
                     {
                         var message = newEventType.GetEqualsMessage(existingType);
-                        throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                        "' has already been declared with differing column name or type information: " +
-                                                        message);
+                        throw new EventAdapterException(
+                            "Event type named '" + eventTypeName +
+                            "' has already been declared with differing column name or type information: " +
+                            message);
                     }
 
                     // Since it's the same, return the existing type
@@ -599,8 +651,8 @@ namespace com.espertech.esper.events
                     throw new EventAdapterException(ConfigurationEventTypeObjectArray.SINGLE_SUPERTYPE_MSG);
                 }
 
-                var mapSuperTypes =
-                    GetSuperTypesDepthFirst(optionalConfig != null ? optionalConfig.SuperTypes : null, false);
+                var mapSuperTypes = EventTypeUtility.GetSuperTypesDepthFirst(
+                    optionalConfig, EventUnderlyingType.OBJECTARRAY, _nameToTypeMap);
 
                 EventTypeMetadata metadata;
                 if (table)
@@ -621,10 +673,11 @@ namespace com.espertech.esper.events
 
 
                 var typeId = _eventTypeIdGenerator.GetTypeId(eventTypeName);
-                var newEventType = new ObjectArrayEventType(metadata, eventTypeName, typeId, this,
-                                                                             propertyTypes, optionalConfig,
-                                                                             mapSuperTypes.First,
-                                                                             mapSuperTypes.Second);
+                var newEventType = new ObjectArrayEventType(
+                    metadata, eventTypeName, typeId, this,
+                    propertyTypes, optionalConfig,
+                    mapSuperTypes.First,
+                    mapSuperTypes.Second);
 
                 var existingType = _nameToTypeMap.Get(eventTypeName);
                 if (existingType != null)
@@ -633,9 +686,10 @@ namespace com.espertech.esper.events
                     if (!newEventType.EqualsCompareType(existingType))
                     {
                         var message = newEventType.GetEqualsMessage(existingType);
-                        throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                        "' has already been declared with differing column name or type information: " +
-                                                        message);
+                        throw new EventAdapterException(
+                            "Event type named '" + eventTypeName +
+                            "' has already been declared with differing column name or type information: " +
+                            message);
                     }
 
                     // Since it's the same, return the existing type
@@ -651,7 +705,8 @@ namespace com.espertech.esper.events
         public EventBean AdapterForMap(IDictionary<String, Object> theEvent, String eventTypeName)
         {
             var existingType = _nameToTypeMap.Get(eventTypeName);
-            if (!(existingType is MapEventType)) {
+            if (!(existingType is MapEventType))
+            {
                 throw new EPException(EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Map"));
             }
 
@@ -661,21 +716,24 @@ namespace com.espertech.esper.events
         public EventBean AdapterForObjectArray(Object[] theEvent, String eventTypeName)
         {
             var existingType = _nameToTypeMap.Get(eventTypeName);
-            if (!(existingType is ObjectArrayEventType)) {
-                throw new EPException(EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Object-array"));
+            if (!(existingType is ObjectArrayEventType))
+            {
+                throw new EPException(
+                    EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Object-array"));
             }
 
             return AdapterForTypedObjectArray(theEvent, existingType);
         }
 
-        public EventBean AdapterForLINQ(XElement element)
+        public EventBean AdapterForDOM(XElement element)
         {
             var rootElementName = element.Name.LocalName;
             var eventType = _xelementRootElementNames.Get(rootElementName);
             if (eventType == null)
             {
-                throw new EventAdapterException("DOM event root element name '" + rootElementName +
-                                                "' has not been configured");
+                throw new EventAdapterException(
+                    "DOM event root element name '" + rootElementName +
+                    "' has not been configured");
             }
 
             return new XEventBean(element, eventType);
@@ -694,8 +752,9 @@ namespace com.espertech.esper.events
             }
             else
             {
-                throw new EPException("Unexpected DOM node of type '" + node.GetType().Name +
-                                      "' encountered, please supply a Document or Element node");
+                throw new EPException(
+                    "Unexpected DOM node of type '" + node.GetType().Name +
+                    "' encountered, please supply a XmlDocument or XmlElement node");
             }
 
             var rootElementName = namedNode.LocalName;
@@ -707,15 +766,15 @@ namespace com.espertech.esper.events
             var eventType = _xmldomRootElementNames.Get(rootElementName);
             if (eventType == null)
             {
-                throw new EventAdapterException("DOM event root element name '" + rootElementName +
-                                                "' has not been configured");
+                throw new EventAdapterException(
+                    "DOM event root element name '" + rootElementName +
+                    "' has not been configured");
             }
 
             return new XMLEventBean(namedNode, eventType);
         }
 
-        public EventBean AdapterForTypedDOM(XmlNode node,
-                                            EventType eventType)
+        public EventBean AdapterForTypedDOM(XmlNode node, EventType eventType)
         {
             return new XMLEventBean(node, eventType);
         }
@@ -740,11 +799,12 @@ namespace com.espertech.esper.events
             return new ObjectArrayEventBean(properties, eventType);
         }
 
-        public EventType AddWrapperType(String eventTypeName,
-                                        EventType underlyingEventType,
-                                        IDictionary<String, Object> propertyTypes,
-                                        bool isNamedWindow,
-                                        bool isInsertInto)
+        public EventType AddWrapperType(
+            String eventTypeName,
+            EventType underlyingEventType,
+            IDictionary<String, Object> propertyTypes,
+            bool isNamedWindow,
+            bool isInsertInto)
         {
             using (_syncLock.Acquire())
             {
@@ -768,11 +828,13 @@ namespace com.espertech.esper.events
                     isPropertyAgnostic = ((EventTypeSPI) underlyingEventType).Metadata.IsPropertyAgnostic;
                 }
 
-                var metadata = EventTypeMetadata.CreateWrapper(eventTypeName, isNamedWindow, isInsertInto,
-                                                                             isPropertyAgnostic);
+                var metadata = EventTypeMetadata.CreateWrapper(
+                    eventTypeName, isNamedWindow, isInsertInto,
+                    isPropertyAgnostic);
                 var typeId = _eventTypeIdGenerator.GetTypeId(eventTypeName);
-                var newEventType = new WrapperEventType(metadata, eventTypeName, typeId,
-                                                        underlyingEventType, propertyTypes, this);
+                var newEventType = new WrapperEventType(
+                    metadata, eventTypeName, typeId,
+                    underlyingEventType, propertyTypes, this);
 
                 var existingType = _nameToTypeMap.Get(eventTypeName);
                 if (existingType != null)
@@ -787,9 +849,10 @@ namespace com.espertech.esper.events
                             return existingType;
                         }
 
-                        throw new EventAdapterException("Event type named '" + eventTypeName +
-                                                        "' has already been declared with differing column name or type information: " +
-                                                        message);
+                        throw new EventAdapterException(
+                            "Event type named '" + eventTypeName +
+                            "' has already been declared with differing column name or type information: " +
+                            message);
                     }
 
                     // Since it's the same, return the existing type
@@ -805,23 +868,44 @@ namespace com.espertech.esper.events
         public EventType CreateAnonymousMapType(string typeName, DataMap propertyTypes, bool isTransient)
         {
             var assignedTypeName = EventAdapterServiceConstants.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
-            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName);
-            var mapEventType = new MapEventType(metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), this, propertyTypes, null, null, null);
+            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName, ApplicationType.MAP);
+            var mapEventType = new MapEventType(
+                metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), this, propertyTypes, null,
+                null, null);
             return _anonymousTypeCache.AddReturnExistingAnonymousType(mapEventType);
         }
 
         public EventType CreateAnonymousObjectArrayType(String typeName, IDictionary<String, Object> propertyTypes)
         {
             var assignedTypeName = EventAdapterServiceConstants.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
-            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName);
-            var oaEventType = new ObjectArrayEventType(metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), this, propertyTypes, null, null, null);
+            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName, ApplicationType.OBJECTARR);
+            var oaEventType = new ObjectArrayEventType(
+                metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), this, propertyTypes, null,
+                null, null);
             return _anonymousTypeCache.AddReturnExistingAnonymousType(oaEventType);
         }
 
-        public EventType CreateSemiAnonymousMapType(String typeName,
-                                                    IDictionary<String, Pair<EventType, String>> taggedEventTypes,
-                                                    IDictionary<String, Pair<EventType, String>> arrayEventTypes,
-                                                    bool isUsedByChildViews)
+        public EventType CreateAnonymousAvroType(
+            String typeName,
+            IDictionary<String, Object> properties,
+            Attribute[] annotations,
+            String statementName,
+            String engineURI)
+        {
+            var assignedTypeName = EventAdapterServiceConstants.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
+            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName, ApplicationType.AVRO);
+            var typeId = _eventTypeIdGenerator.GetTypeId(assignedTypeName);
+            var newEventType = _avroHandler.NewEventTypeFromNormalized(
+                metadata, assignedTypeName, typeId, this, properties, annotations, null, null, null, statementName,
+                engineURI);
+            return _anonymousTypeCache.AddReturnExistingAnonymousType(newEventType);
+        }
+
+        public EventType CreateSemiAnonymousMapType(
+            String typeName,
+            IDictionary<String, Pair<EventType, String>> taggedEventTypes,
+            IDictionary<String, Pair<EventType, String>> arrayEventTypes,
+            bool isUsedByChildViews)
         {
             IDictionary<String, Object> mapProperties = new LinkedHashMap<String, Object>();
             foreach (var entry in taggedEventTypes)
@@ -830,17 +914,22 @@ namespace com.espertech.esper.events
             }
             foreach (var entry in arrayEventTypes)
             {
-                mapProperties.Put(entry.Key, new[] {entry.Value.First});
+                mapProperties.Put(
+                    entry.Key, new[]
+                    {
+                        entry.Value.First
+                    });
             }
             return CreateAnonymousMapType(typeName, mapProperties, true);
         }
 
-        public EventType CreateAnonymousWrapperType(String typeName,
-                                                    EventType underlyingEventType,
-                                                    IDictionary<String, Object> propertyTypes)
+        public EventType CreateAnonymousWrapperType(
+            String typeName,
+            EventType underlyingEventType,
+            IDictionary<String, Object> propertyTypes)
         {
             var assignedTypeName = EventAdapterServiceConstants.ANONYMOUS_TYPE_NAME_PREFIX + typeName;
-            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName);
+            var metadata = EventTypeMetadata.CreateAnonymous(assignedTypeName, ApplicationType.WRAPPER);
 
             // If we are wrapping an underlying type that is itself a wrapper, then this is a special case: unwrap
             if (underlyingEventType is WrapperEventType)
@@ -856,13 +945,16 @@ namespace com.espertech.esper.events
                 propertyTypes = propertiesSuperset;
             }
 
-            var wrapperEventType = new WrapperEventType(metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), underlyingEventType, propertyTypes, this);
+            var wrapperEventType = new WrapperEventType(
+                metadata, assignedTypeName, _eventTypeIdGenerator.GetTypeId(assignedTypeName), underlyingEventType,
+                propertyTypes, this);
             return _anonymousTypeCache.AddReturnExistingAnonymousType(wrapperEventType);
         }
 
-        public EventBean AdapterForTypedWrapper(EventBean theEvent,
-                                                IDictionary<String, Object> properties,
-                                                EventType eventType)
+        public EventBean AdapterForTypedWrapper(
+            EventBean theEvent,
+            IDictionary<String, Object> properties,
+            EventType eventType)
         {
             if (theEvent is DecoratingEventBean)
             {
@@ -870,7 +962,7 @@ namespace com.espertech.esper.events
                 properties.PutAll(wrapper.DecoratingProperties);
                 return new WrapperEventBean(wrapper.UnderlyingEvent, properties, eventType);
             }
-            
+
             return new WrapperEventBean(theEvent, properties, eventType);
         }
 
@@ -881,12 +973,16 @@ namespace com.espertech.esper.events
 
         public EventType CreateAnonymousBeanType(String eventTypeName, Type clazz)
         {
-            var beanEventType = new BeanEventType(EventTypeMetadata.CreateBeanType(
-                eventTypeName, clazz, false, false, false, TypeClass.ANONYMOUS), -1, clazz, this, _beanEventAdapter.GetClassToLegacyConfigs(clazz.FullName));
+            var beanEventType = new BeanEventType(
+                EventTypeMetadata.CreateBeanType(
+                    eventTypeName, clazz, false, false, false, TypeClass.ANONYMOUS), -1, clazz, this,
+                _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
             return _anonymousTypeCache.AddReturnExistingAnonymousType(beanEventType);
         }
 
-        private Pair<EventType[], ISet<EventType>> GetSuperTypesDepthFirst(ICollection<String> superTypesSet, bool expectMapType)
+        private Pair<EventType[], ISet<EventType>> GetSuperTypesDepthFirst(
+            ICollection<String> superTypesSet,
+            bool expectMapType)
         {
             if (superTypesSet == null || superTypesSet.IsEmpty())
             {
@@ -908,16 +1004,18 @@ namespace com.espertech.esper.events
                 {
                     if (!(type is MapEventType))
                     {
-                        throw new EventAdapterException("Supertype by name '" + superName +
-                                                        "' is not a Map, expected a Map event type as a supertype");
+                        throw new EventAdapterException(
+                            "Supertype by name '" + superName +
+                            "' is not a Map, expected a Map event type as a supertype");
                     }
                 }
                 else
                 {
                     if (!(type is ObjectArrayEventType))
                     {
-                        throw new EventAdapterException("Supertype by name '" + superName +
-                                                        "' is not an Object-array type, expected a Object-array event type as a supertype");
+                        throw new EventAdapterException(
+                            "Supertype by name '" + superName +
+                            "' is not an Object-array type, expected a Object-array event type as a supertype");
                     }
                 }
                 superTypes[count++] = type;
@@ -928,7 +1026,8 @@ namespace com.espertech.esper.events
             var superTypesListDepthFirst = new List<EventType>(deepSuperTypes);
             superTypesListDepthFirst.Reverse();
 
-            return new Pair<EventType[], ISet<EventType>>(superTypes, new LinkedHashSet<EventType>(superTypesListDepthFirst));
+            return new Pair<EventType[], ISet<EventType>>(
+                superTypes, new LinkedHashSet<EventType>(superTypesListDepthFirst));
         }
 
         public bool RemoveType(String name)
@@ -985,21 +1084,24 @@ namespace com.espertech.esper.events
         /// <param name="optionalSchemaModel">The optional schema model.</param>
         /// <param name="isPreconfiguredStatic">if set to <c>true</c> [is preconfigured static].</param>
         /// <returns></returns>
-        public EventType AddXMLDOMType(String eventTypeName,
-                                       ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
-                                       SchemaModel optionalSchemaModel,
-                                       bool isPreconfiguredStatic)
+        public EventType AddXMLDOMType(
+            String eventTypeName,
+            ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
+            SchemaModel optionalSchemaModel,
+            bool isPreconfiguredStatic)
         {
             using (_syncLock.Acquire())
             {
-                return AddXMLDOMType(eventTypeName, configurationEventTypeXMLDOM, optionalSchemaModel,
-                                     isPreconfiguredStatic, false);
+                return AddXMLDOMType(
+                    eventTypeName, configurationEventTypeXMLDOM, optionalSchemaModel,
+                    isPreconfiguredStatic, false);
             }
         }
 
-        public EventType ReplaceXMLEventType(String xmlEventTypeName,
-                                             ConfigurationEventTypeXMLDOM config,
-                                             SchemaModel schemaModel)
+        public EventType ReplaceXMLEventType(
+            String xmlEventTypeName,
+            ConfigurationEventTypeXMLDOM config,
+            SchemaModel schemaModel)
         {
             return AddXMLDOMType(xmlEventTypeName, config, schemaModel, false, true);
         }
@@ -1013,11 +1115,12 @@ namespace com.espertech.esper.events
         /// <param name="isPreconfiguredStatic">if set to <c>true</c> [is preconfigured static].</param>
         /// <param name="allowOverrideExisting">if set to <c>true</c> [allow override existing].</param>
         /// <returns></returns>
-        private EventType AddXMLDOMType(String eventTypeName,
-                                        ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
-                                        SchemaModel optionalSchemaModel,
-                                        bool isPreconfiguredStatic,
-                                        bool allowOverrideExisting)
+        private EventType AddXMLDOMType(
+            String eventTypeName,
+            ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM,
+            SchemaModel optionalSchemaModel,
+            bool isPreconfiguredStatic,
+            bool allowOverrideExisting)
         {
             using (_syncLock.Acquire())
             {
@@ -1032,7 +1135,7 @@ namespace com.espertech.esper.events
                     if (existingType != null)
                     {
                         var message = "Event type named '" + eventTypeName +
-                                         "' has already been declared with differing column name or type information";
+                                      "' has already been declared with differing column name or type information";
                         if (!(existingType is BaseXMLEventType))
                         {
                             throw new EventAdapterException(message);
@@ -1048,19 +1151,20 @@ namespace com.espertech.esper.events
                     }
                 }
 
-                var metadata = EventTypeMetadata.CreateXMLType(eventTypeName, isPreconfiguredStatic,
-                                                                             configurationEventTypeXMLDOM.SchemaResource ==
-                                                                             null &&
-                                                                             configurationEventTypeXMLDOM.SchemaText ==
-                                                                             null);
+                var metadata = EventTypeMetadata.CreateXMLType(
+                    eventTypeName, isPreconfiguredStatic,
+                    configurationEventTypeXMLDOM.SchemaResource ==
+                    null &&
+                    configurationEventTypeXMLDOM.SchemaText ==
+                    null);
                 EventType type;
                 if ((configurationEventTypeXMLDOM.SchemaResource == null) &&
                     (configurationEventTypeXMLDOM.SchemaText == null))
                 {
                     type = new SimpleXMLEventType(
-                        metadata, 
+                        metadata,
                         _eventTypeIdGenerator.GetTypeId(eventTypeName),
-                        configurationEventTypeXMLDOM, 
+                        configurationEventTypeXMLDOM,
                         this);
                 }
                 else
@@ -1069,14 +1173,15 @@ namespace com.espertech.esper.events
                     {
                         throw new EPException("Schema model has not been provided");
                     }
-                    type = new SchemaXMLEventType(metadata, _eventTypeIdGenerator.GetTypeId(eventTypeName),
-                                                  configurationEventTypeXMLDOM, optionalSchemaModel, this);
+                    type = new SchemaXMLEventType(
+                        metadata, _eventTypeIdGenerator.GetTypeId(eventTypeName),
+                        configurationEventTypeXMLDOM, optionalSchemaModel, this);
                 }
 
                 EventType xelementType = new SimpleXElementType(
                     metadata,
-                    _eventTypeIdGenerator.GetTypeId(eventTypeName), 
-                    configurationEventTypeXMLDOM, 
+                    _eventTypeIdGenerator.GetTypeId(eventTypeName),
+                    configurationEventTypeXMLDOM,
                     this);
 
                 _nameToTypeMap.Put(eventTypeName, type);
@@ -1092,9 +1197,10 @@ namespace com.espertech.esper.events
         /// <param name="underlyingType">is the proposed new wrapper type's underlying type</param>
         /// <param name="propertyTypes">is the additional properties</param>
         /// <returns>true for compatible, or false if not</returns>
-        public static String IsCompatibleWrapper(EventType existingType,
-                                                 EventType underlyingType,
-                                                 IDictionary<String, Object> propertyTypes)
+        public static String IsCompatibleWrapper(
+            EventType existingType,
+            EventType underlyingType,
+            IDictionary<String, Object> propertyTypes)
         {
             if (!(existingType is WrapperEventType))
             {
@@ -1150,8 +1256,9 @@ namespace com.espertech.esper.events
                 }
                 if (!(type is MapEventType))
                 {
-                    throw new EventAdapterException("Supertype by name '" + superName +
-                                                    "' is not a Map, expected a Map event type as a supertype");
+                    throw new EventAdapterException(
+                        "Supertype by name '" + superName +
+                        "' is not a Map, expected a Map event type as a supertype");
                 }
                 superTypes[count++] = type;
                 deepSuperTypes.Add(type);
@@ -1160,8 +1267,9 @@ namespace com.espertech.esper.events
             return new Pair<EventType[], ICollection<EventType>>(superTypes, deepSuperTypes);
         }
 
-        private static void AddRecursiveSupertypes(ICollection<EventType> superTypes,
-                                                   EventType child)
+        private static void AddRecursiveSupertypes(
+            ICollection<EventType> superTypes,
+            EventType child)
         {
             if (child.SuperTypes != null)
             {
@@ -1186,6 +1294,101 @@ namespace com.espertech.esper.events
         public EventBeanAdapterFactory GetAdapterFactoryForType(EventType eventType)
         {
             return EventAdapterServiceHelper.GetAdapterFactoryForType(eventType);
+        }
+
+        public EventType AddAvroType(
+            String eventTypeName,
+            ConfigurationEventTypeAvro avro,
+            bool isPreconfiguredStatic,
+            bool isPreconfigured,
+            bool isConfigured,
+            bool isNamedWindow,
+            bool isInsertInto)
+        {
+            var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
+                ApplicationType.AVRO, eventTypeName, isPreconfiguredStatic, isPreconfigured, isConfigured, isNamedWindow,
+                isInsertInto);
+
+            var typeId = _eventTypeIdGenerator.GetTypeId(eventTypeName);
+            var avroSuperTypes = EventTypeUtility.GetSuperTypesDepthFirst(
+                avro, EventUnderlyingType.AVRO, _nameToTypeMap);
+            var newEventType = _avroHandler.NewEventTypeFromSchema(
+                metadata, eventTypeName, typeId, this, avro, avroSuperTypes.First, avroSuperTypes.Second);
+
+            var existingType = _nameToTypeMap.Get(eventTypeName);
+            if (existingType != null)
+            {
+                _avroHandler.ValidateExistingType(existingType, newEventType);
+                return existingType;
+            }
+
+            _nameToTypeMap.Put(eventTypeName, newEventType);
+
+            return newEventType;
+        }
+
+        public EventType AddAvroType(
+            String eventTypeName,
+            IDictionary<String, Object> types,
+            bool isPreconfiguredStatic,
+            bool isPreconfigured,
+            bool isConfigured,
+            bool isNamedWindow,
+            bool isInsertInto,
+            Attribute[] annotations,
+            ConfigurationEventTypeAvro config,
+            String statementName,
+            String engineURI)
+        {
+            var metadata = EventTypeMetadata.CreateNonPonoApplicationType(
+                ApplicationType.AVRO, eventTypeName, isPreconfiguredStatic, isPreconfigured, isConfigured, isNamedWindow,
+                isInsertInto);
+
+            var typeId = _eventTypeIdGenerator.GetTypeId(eventTypeName);
+            var avroSuperTypes = EventTypeUtility.GetSuperTypesDepthFirst(
+                config, EventUnderlyingType.AVRO, _nameToTypeMap);
+            var newEventType = _avroHandler.NewEventTypeFromNormalized(
+                metadata, eventTypeName, typeId, this, types, annotations, config, avroSuperTypes.First,
+                avroSuperTypes.Second, statementName, engineURI);
+
+            var existingType = _nameToTypeMap.Get(eventTypeName);
+            if (existingType != null)
+            {
+                _avroHandler.ValidateExistingType(existingType, newEventType);
+                return existingType;
+            }
+
+            _nameToTypeMap.Put(eventTypeName, newEventType);
+
+            return newEventType;
+        }
+
+        public EventBean AdapterForAvro(Object avroGenericDataDotRecord, String eventTypeName)
+        {
+            EventType existingType = _nameToTypeMap.Get(eventTypeName);
+            if (!(existingType is AvroSchemaEventType))
+            {
+                throw new EPException(
+                    EventAdapterServiceHelper.GetMessageExpecting(eventTypeName, existingType, "Avro"));
+            }
+            return _avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, existingType);
+        }
+
+        public EventBean AdapterForTypedAvro(Object avroGenericDataDotRecord, EventType eventType)
+        {
+            return _avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, eventType);
+        }
+
+        public EventAdapterAvroHandler EventAdapterAvroHandler
+        {
+            get { return _avroHandler; }
+        }
+
+        public TypeWidenerCustomizer GetTypeWidenerCustomizer(EventType resultEventType)
+        {
+            return resultEventType is AvroSchemaEventType
+                ? _avroHandler.GetTypeWidenerCustomizer(resultEventType)
+                : null;
         }
     }
 }

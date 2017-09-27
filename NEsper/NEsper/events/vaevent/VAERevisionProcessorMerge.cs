@@ -24,12 +24,12 @@ namespace com.espertech.esper.events.vaevent
     /// <summary>
     /// Provides a set of merge-strategies for merging individual properties (rather then overlaying groups).
     /// </summary>
-    public class VAERevisionProcessorMerge 
+    public class VAERevisionProcessorMerge
         : VAERevisionProcessorBase
         , ValueAddEventProcessor
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly RevisionTypeDesc _infoFullType;
         private readonly IDictionary<Object, RevisionStateMerge> _statePerKey;
         private readonly UpdateStrategy _updateStrategy;
@@ -48,27 +48,27 @@ namespace com.espertech.esper.events.vaevent
             // on statement stop, remove versions
             statementStopService.StatementStopped += () => _statePerKey.Clear();
             _statePerKey = new Dictionary<Object, RevisionStateMerge>();
-    
+
             // For all changeset properties, add type descriptors (property number, getter etc)
             var propertyDesc = new Dictionary<String, RevisionPropertyTypeDesc>();
             var count = 0;
-    
+
             foreach (String property in spec.ChangesetPropertyNames)
             {
                 var fullGetter = spec.BaseEventType.GetGetter(property);
                 var propertyNumber = count;
                 var paramList = new RevisionGetterParameters(property, propertyNumber, fullGetter, null);
-    
+
                 // if there are no groups (full event property only), then simply use the full event getter
                 EventPropertyGetter revisionGetter = new ProxyEventPropertyGetter(
                     eventBean =>
                     {
-                        var riv = (RevisionEventBeanMerge) eventBean;
+                        var riv = (RevisionEventBeanMerge)eventBean;
                         return riv.GetVersionedValue(paramList);
                     },
                     eventBean => null,
                     eventBean => true);
-                        
+
                 var type = spec.BaseEventType.GetPropertyType(property);
                 if (type == null)
                 {
@@ -87,33 +87,35 @@ namespace com.espertech.esper.events.vaevent
                 propertyDesc.Put(property, propertyTypeDesc);
                 count++;
             }
-    
+
             count = 0;
             foreach (String property in spec.KeyPropertyNames)
             {
                 var keyPropertyNumber = count;
                 EventPropertyGetter revisionGetter;
-                if (spec.KeyPropertyNames.Length == 1) {
+                if (spec.KeyPropertyNames.Length == 1)
+                {
                     revisionGetter = new ProxyEventPropertyGetter
                     {
-                        ProcGet = eventBean => ((RevisionEventBeanMerge) eventBean).Key,
+                        ProcGet = eventBean => ((RevisionEventBeanMerge)eventBean).Key,
                         ProcIsExistsProperty = eventBean => true,
                         ProcGetFragment = eventBean => null
                     };
                 }
-                else {
+                else
+                {
                     revisionGetter = new ProxyEventPropertyGetter
                     {
                         ProcGet = eventBean =>
                         {
-                            var riv = (RevisionEventBeanMerge) eventBean;
-                            return ((MultiKeyUntyped) riv.Key).Keys[keyPropertyNumber];
+                            var riv = (RevisionEventBeanMerge)eventBean;
+                            return ((MultiKeyUntyped)riv.Key).Keys[keyPropertyNumber];
                         },
                         ProcIsExistsProperty = eventBean => true,
                         ProcGetFragment = eventBean => null
                     };
                 }
-    
+
                 var type = spec.BaseEventType.GetPropertyType(property);
                 if (type == null)
                 {
@@ -131,7 +133,7 @@ namespace com.espertech.esper.events.vaevent
                 propertyDesc.Put(property, propertyTypeDesc);
                 count++;
             }
-    
+
             // compile for each event type a list of getters and indexes within the overlay
             foreach (EventType deltaType in spec.DeltaTypes)
             {
@@ -139,7 +141,7 @@ namespace com.espertech.esper.events.vaevent
                 TypeDescriptors.Put(deltaType, typeDesc);
             }
             _infoFullType = MakeTypeDesc(spec.BaseEventType, spec.PropertyRevision);
-    
+
             // how to handle updates to a full event
             if (spec.PropertyRevision == PropertyRevisionEnum.MERGE_DECLARED)
             {
@@ -157,16 +159,16 @@ namespace com.espertech.esper.events.vaevent
             {
                 throw new ArgumentException("Unknown revision type '" + spec.PropertyRevision + "'");
             }
-    
+
             EventTypeMetadata metadata = EventTypeMetadata.CreateValueAdd(revisioneventTypeName, TypeClass.REVISION);
             RevisionEventType = new RevisionEventType(metadata, eventTypeIdGenerator.GetTypeId(revisioneventTypeName), propertyDesc, eventAdapterService);
         }
-    
+
         public override EventBean GetValueAddEventBean(EventBean theEvent)
         {
             return new RevisionEventBeanMerge(RevisionEventType, theEvent);
         }
-    
+
         public override void OnUpdate(EventBean[] newData, EventBean[] oldData, NamedWindowRootViewInstance namedWindowRootView, EventTableIndexRepository indexRepository)
         {
             // If new data is filled, it is not a delete
@@ -175,27 +177,27 @@ namespace com.espertech.esper.events.vaevent
             if ((newData == null) || (newData.Length == 0))
             {
                 // we are removing an event
-                revisionEvent = (RevisionEventBeanMerge) oldData[0];
+                revisionEvent = (RevisionEventBeanMerge)oldData[0];
                 key = revisionEvent.Key;
                 _statePerKey.Remove(key);
-    
+
                 // Insert into indexes for fast deletion, if there are any
                 foreach (EventTable table in indexRepository.GetTables())
                 {
                     table.Remove(oldData);
                 }
-    
+
                 // make as not the latest event since its due for removal
                 revisionEvent.IsLatest = false;
-    
+
                 namedWindowRootView.UpdateChildren(null, oldData);
                 return;
             }
-    
-            revisionEvent = (RevisionEventBeanMerge) newData[0];
+
+            revisionEvent = (RevisionEventBeanMerge)newData[0];
             EventBean underlyingEvent = revisionEvent.UnderlyingFullOrDelta;
             EventType underyingEventType = underlyingEvent.EventType;
-    
+
             // obtain key values
             key = null;
             RevisionTypeDesc typesDesc;
@@ -209,14 +211,14 @@ namespace com.espertech.esper.events.vaevent
             else
             {
                 typesDesc = TypeDescriptors.Get(underyingEventType);
-    
+
                 // if this type cannot be found, check all supertypes, if any
                 if (typesDesc == null)
                 {
                     EventType[] superTypes = underyingEventType.DeepSuperTypes;
                     if (superTypes != null)
                     {
-                        foreach(var superType in superTypes)
+                        foreach (var superType in superTypes)
                         {
                             if (superType == RevisionSpec.BaseEventType)
                             {
@@ -240,73 +242,73 @@ namespace com.espertech.esper.events.vaevent
                     key = PropertyUtility.GetKeys(underlyingEvent, typesDesc.KeyPropertyGetters);
                 }
             }
-    
+
             // get the state for this key value
             RevisionStateMerge revisionState = _statePerKey.Get(key);
-    
+
             // Delta event and no full
             if ((!isBaseEventType) && (revisionState == null))
             {
                 return; // Ignore the event, its a delta and we don't currently have a full event for it
             }
-    
+
             // New full event
             if (revisionState == null)
             {
                 revisionState = new RevisionStateMerge(underlyingEvent, null, null);
                 _statePerKey.Put(key, revisionState);
-    
+
                 // prepare revison event
                 revisionEvent.LastBaseEvent = underlyingEvent;
                 revisionEvent.Key = key;
                 revisionEvent.Overlay = null;
                 revisionEvent.IsLatest = true;
-    
+
                 // Insert into indexes for fast deletion, if there are any
                 foreach (EventTable table in indexRepository.GetTables())
                 {
                     table.Add(newData);
                 }
-    
+
                 // post to data window
                 revisionState.LastEvent = revisionEvent;
-                namedWindowRootView.UpdateChildren(new EventBean[] {revisionEvent}, null);
+                namedWindowRootView.UpdateChildren(new EventBean[] { revisionEvent }, null);
                 return;
             }
-    
+
             // handle Update, changing revision state and event as required
             _updateStrategy.HandleUpdate(isBaseEventType, revisionState, revisionEvent, typesDesc);
-    
+
             // prepare revision event
             revisionEvent.LastBaseEvent = revisionState.BaseEventUnderlying;
             revisionEvent.Overlay = revisionState.Overlays;
             revisionEvent.Key = key;
             revisionEvent.IsLatest = true;
-    
+
             // get prior event
             RevisionEventBeanMerge lastEvent = revisionState.LastEvent;
             lastEvent.IsLatest = false;
-    
+
             // data to post
-            var newDataPost = new EventBean[]{revisionEvent};
-            var oldDataPost = new EventBean[]{lastEvent};
-    
+            var newDataPost = new EventBean[] { revisionEvent };
+            var oldDataPost = new EventBean[] { lastEvent };
+
             // Update indexes
             foreach (EventTable table in indexRepository.GetTables())
             {
                 table.Remove(oldDataPost);
                 table.Add(newDataPost);
             }
-    
+
             // keep reference to last event
             revisionState.LastEvent = revisionEvent;
-    
+
             namedWindowRootView.UpdateChildren(newDataPost, oldDataPost);
         }
-    
+
         public override ICollection<EventBean> GetSnapshot(EPStatementAgentInstanceHandle createWindowStmtHandle, Viewable parent)
         {
-            using(createWindowStmtHandle.StatementAgentInstanceLock.AcquireReadLock())
+            using (createWindowStmtHandle.StatementAgentInstanceLock.AcquireReadLock())
             {
                 IEnumerator<EventBean> it = parent.GetEnumerator();
                 if (!it.MoveNext())
@@ -317,7 +319,7 @@ namespace com.espertech.esper.events.vaevent
                 var list = new LinkedList<EventBean>();
                 do
                 {
-                    var fullRevision = (RevisionEventBeanMerge) it.Current;
+                    var fullRevision = (RevisionEventBeanMerge)it.Current;
                     var key = fullRevision.Key;
                     var state = _statePerKey.Get(key);
                     list.AddLast(state.LastEvent);
@@ -325,13 +327,13 @@ namespace com.espertech.esper.events.vaevent
                 return list;
             }
         }
-    
+
         public override void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository)
         {
             foreach (EventBean anOldData in oldData)
             {
-                var theEvent = (RevisionEventBeanMerge) anOldData;
-    
+                var theEvent = (RevisionEventBeanMerge)anOldData;
+
                 // If the remove event is the latest event, remove from all caches
                 if (theEvent.IsLatest)
                 {
@@ -345,7 +347,7 @@ namespace com.espertech.esper.events.vaevent
                 }
             }
         }
-    
+
         private RevisionTypeDesc MakeTypeDesc(EventType eventType, PropertyRevisionEnum propertyRevision)
         {
             EventPropertyGetter[] keyPropertyGetters = PropertyUtility.GetGetters(eventType, RevisionSpec.KeyPropertyNames);
@@ -353,12 +355,12 @@ namespace com.espertech.esper.events.vaevent
             var len = RevisionSpec.ChangesetPropertyNames.Length;
             var listOfGetters = new List<EventPropertyGetter>();
             var listOfIndexes = new List<int>();
-    
+
             for (int i = 0; i < len; i++)
             {
                 String propertyName = RevisionSpec.ChangesetPropertyNames[i];
                 EventPropertyGetter getter = null;
-    
+
                 if (propertyRevision != PropertyRevisionEnum.MERGE_EXISTS)
                 {
                     getter = eventType.GetGetter(RevisionSpec.ChangesetPropertyNames[i]);
@@ -376,21 +378,21 @@ namespace com.espertech.esper.events.vaevent
                         }
                     }
                 }
-    
+
                 if (getter != null)
                 {
                     listOfGetters.Add(getter);
                     listOfIndexes.Add(i);
                 }
             }
-    
+
             var changesetPropertyGetters = listOfGetters.ToArray();
             var changesetPropertyIndex = new int[listOfIndexes.Count];
             for (int i = 0; i < listOfIndexes.Count; i++)
             {
                 changesetPropertyIndex[i] = listOfIndexes[i];
             }
-    
+
             return new RevisionTypeDesc(keyPropertyGetters, changesetPropertyGetters, changesetPropertyIndex);
         }
     }

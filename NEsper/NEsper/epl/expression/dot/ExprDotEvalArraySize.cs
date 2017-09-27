@@ -8,7 +8,7 @@
 
 using System;
 
-using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.rettype;
 
@@ -16,18 +16,23 @@ namespace com.espertech.esper.epl.expression.dot
 {
     public class ExprDotEvalArraySize : ExprDotEval
     {
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
-            var asArray = target as Array;
-            if (asArray == null) {
+            var targetArray = target as Array;
+            if (targetArray == null)
+            {
                 return null;
             }
-            return asArray.Length;
+
+            return targetArray.Length;
         }
 
         public EPType TypeInfo
         {
-            get { return EPTypeHelper.SingleValue(typeof(int)); }
+            get { return EPTypeHelper.SingleValue(typeof (int?)); }
         }
 
         public void Visit(ExprDotEvalVisitor visitor)
@@ -35,4 +40,4 @@ namespace com.espertech.esper.epl.expression.dot
             visitor.VisitArrayLength();
         }
     }
-}
+} // end of namespace

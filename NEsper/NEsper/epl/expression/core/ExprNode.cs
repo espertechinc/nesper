@@ -78,7 +78,7 @@ namespace com.espertech.esper.epl.expression.core
 
         /// <summary>Returns list of child nodes. </summary>
         /// <value>list of child nodes</value>
-        ExprNode[] ChildNodes { get; set; }
+        IList<ExprNode> ChildNodes { get; set; }
 
         void ReplaceUnlistedChildNode(ExprNode nodeToReplace, ExprNode newNode);
 

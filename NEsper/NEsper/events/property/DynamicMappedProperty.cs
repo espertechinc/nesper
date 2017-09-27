@@ -18,24 +18,25 @@ using com.espertech.esper.events.xml;
 
 namespace com.espertech.esper.events.property
 {
-    using DataMap = IDictionary<string, object>;
-
     /// <summary>
     /// Represents a dynamic mapped property of a given name.
     /// <para>
     /// Dynamic properties always exist, have an Object type and are resolved to a method during runtime.
     /// </para>
     /// </summary>
-    public class DynamicMappedProperty 
-        : PropertyBase
-        , DynamicProperty
+    public class DynamicMappedProperty
+        : PropertyBase,
+            DynamicProperty,
+            PropertyWithKey
     {
-        private readonly String _key;
+        private readonly string _key;
 
-        /// <summary>Ctor.</summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="propertyName">is the property name</param>
         /// <param name="key">is the mapped access key</param>
-        public DynamicMappedProperty(String propertyName, String key)
+        public DynamicMappedProperty(string propertyName, string key)
             : base(propertyName)
         {
             _key = key;
@@ -46,9 +47,12 @@ namespace com.espertech.esper.events.property
             get { return true; }
         }
 
-        public override String[] ToPropertyArray()
+        public override string[] ToPropertyArray()
         {
-            return new[] { PropertyNameAtomic };
+            return new string[]
+            {
+                PropertyNameAtomic
+            };
         }
 
         public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
@@ -58,20 +62,26 @@ namespace com.espertech.esper.events.property
 
         public override Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
-            return typeof(object);
+            return typeof (Object);
         }
 
-        public override GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType beanEventType, EventAdapterService eventAdapterService)
+        public override GenericPropertyDesc GetPropertyTypeGeneric(
+            BeanEventType beanEventType,
+            EventAdapterService eventAdapterService)
         {
             return GenericPropertyDesc.ObjectGeneric;
         }
 
-        public override Type GetPropertyTypeMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
+        public override Type GetPropertyTypeMap(
+            IDictionary<string, object> optionalMapPropTypes,
+            EventAdapterService eventAdapterService)
         {
-            return typeof(object);
+            return typeof (Object);
         }
 
-        public override MapEventPropertyGetter GetGetterMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
+        public override MapEventPropertyGetter GetGetterMap(
+            IDictionary<string, object> optionalMapPropTypes,
+            EventAdapterService eventAdapterService)
         {
             return new MapMappedPropertyGetter(PropertyNameAtomic, _key);
         }
@@ -85,14 +95,20 @@ namespace com.espertech.esper.events.property
             writer.Write('?');
         }
 
-        public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
+        public override EventPropertyGetter GetGetterDOM(
+            SchemaElementComplex complexProperty,
+            EventAdapterService eventAdapterService,
+            BaseXMLEventType eventType,
+            string propertyExpression)
         {
             return new DOMMapGetter(PropertyNameAtomic, _key, null);
         }
 
-        public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+        public override SchemaItem GetPropertyTypeSchema(
+            SchemaElementComplex complexProperty,
+            EventAdapterService eventAdapterService)
         {
-            return null;  // always returns Node
+            return null; // always returns Node
         }
 
         public override EventPropertyGetter GetGetterDOM()
@@ -101,13 +117,17 @@ namespace com.espertech.esper.events.property
         }
 
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
-            IDictionary<String, int> indexPerProperty, 
-            IDictionary<String, Object> nestableTypes,
+            IDictionary<string, int> indexPerProperty,
+            IDictionary<string, Object> nestableTypes,
             EventAdapterService eventAdapterService)
         {
             int propertyIndex;
+
             if (indexPerProperty.TryGetValue(PropertyNameAtomic, out propertyIndex))
+            {
                 return new ObjectArrayMappedPropertyGetter(propertyIndex, _key);
+            }
+
             return null;
         }
 
@@ -116,4 +136,4 @@ namespace com.espertech.esper.events.property
             get { return _key; }
         }
     }
-} // End of namespace
+} // end of namespace

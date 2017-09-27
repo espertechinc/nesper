@@ -17,6 +17,8 @@ using com.espertech.esper.core.context.stmt;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.declexpr;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.epl.named;
@@ -77,7 +79,34 @@ namespace com.espertech.esper.core.service
         /// <param name="statementUserObject">The statement user object.</param>
         /// <param name="statementSemiAnonymousTypeRegistry">The statement semi anonymous type registry.</param>
         /// <param name="priority">The priority.</param>
-        public StatementContext(StatementContextEngineServices stmtEngineServices, SchedulingService schedulingService, ScheduleBucket scheduleBucket, EPStatementHandle epStatementHandle, ViewResolutionService viewResultionService, PatternObjectResolutionService patternResolutionService, StatementExtensionSvcContext statementExtensionSvcContext, StatementStopService statementStopService, PatternContextFactory patternContextFactory, FilterService filterService, StatementResultService statementResultService, InternalEventRouteDest internalEventEngineRouteDest, Attribute[] annotations, StatementAIResourceRegistry statementAgentInstanceRegistry, IReaderWriterLock defaultAgentInstanceLock, ContextDescriptor contextDescriptor, PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc, MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc, bool statelessSelect, ContextControllerFactoryService contextControllerFactoryService, AgentInstanceScriptContext defaultAgentInstanceScriptContext, AggregationServiceFactoryService aggregationServiceFactoryService, ScriptingService scriptingService, bool writesToTables, object statementUserObject, StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry, int priority)
+        public StatementContext(
+            StatementContextEngineServices stmtEngineServices,
+            SchedulingService schedulingService,
+            ScheduleBucket scheduleBucket,
+            EPStatementHandle epStatementHandle,
+            ViewResolutionService viewResultionService,
+            PatternObjectResolutionService patternResolutionService,
+            StatementExtensionSvcContext statementExtensionSvcContext,
+            StatementStopService statementStopService,
+            PatternContextFactory patternContextFactory,
+            FilterService filterService,
+            StatementResultService statementResultService,
+            InternalEventRouteDest internalEventEngineRouteDest,
+            Attribute[] annotations,
+            StatementAIResourceRegistry statementAgentInstanceRegistry,
+            IReaderWriterLock defaultAgentInstanceLock,
+            ContextDescriptor contextDescriptor,
+            PatternSubexpressionPoolStmtSvc patternSubexpressionPoolSvc,
+            MatchRecognizeStatePoolStmtSvc matchRecognizeStatePoolStmtSvc,
+            bool statelessSelect,
+            ContextControllerFactoryService contextControllerFactoryService,
+            AgentInstanceScriptContext defaultAgentInstanceScriptContext,
+            AggregationServiceFactoryService aggregationServiceFactoryService,
+            ScriptingService scriptingService,
+            bool writesToTables,
+            object statementUserObject,
+            StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry,
+            int priority)
         {
             _stmtEngineServices = stmtEngineServices;
             SchedulingService = schedulingService;
@@ -91,7 +120,7 @@ namespace com.espertech.esper.core.service
             FilterService = filterService;
             _statementResultService = statementResultService;
             InternalEventEngineRouteDest = internalEventEngineRouteDest;
-            ScheduleAdjustmentService = stmtEngineServices.ConfigSnapshot.EngineDefaults.ExecutionConfig.IsAllowIsolatedService ? new ScheduleAdjustmentService() : null;
+            ScheduleAdjustmentService = stmtEngineServices.ConfigSnapshot.EngineDefaults.Execution.IsAllowIsolatedService ? new ScheduleAdjustmentService() : null;
             Annotations = annotations;
             StatementAgentInstanceRegistry = statementAgentInstanceRegistry;
             DefaultAgentInstanceLock = defaultAgentInstanceLock;
@@ -363,6 +392,11 @@ namespace com.espertech.esper.core.service
             get { return _stmtEngineServices.EngineSettingsService; }
         }
 
+        public ExprDeclaredService ExprDeclaredService
+        {
+            get { return _stmtEngineServices.ExprDeclaredService; }
+        }
+
         public TimeSourceService TimeSourceService
         {
             get { return _stmtEngineServices.TimeSourceService; }
@@ -372,7 +406,24 @@ namespace com.espertech.esper.core.service
         {
             get { return _stmtEngineServices.EngineImportService; }
         }
-        
+
+        public TimeAbacus TimeAbacus
+        {
+            get { return _stmtEngineServices.EngineImportService.TimeAbacus; }
+        }
+
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
+        {
+            get
+            {
+                if (DefaultAgentInstanceScriptContext == null)
+                {
+                    DefaultAgentInstanceScriptContext = AgentInstanceScriptContext.From(EventAdapterService);
+                }
+                return DefaultAgentInstanceScriptContext;
+            }
+        }
+
         public StatementEventTypeRef StatementEventTypeRef
         {
             get { return _stmtEngineServices.StatementEventTypeRef; }

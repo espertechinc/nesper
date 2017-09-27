@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern.guard;
 using com.espertech.esper.pattern.observer;
-using com.espertech.esper.support.pattern;
+using com.espertech.esper.supportunit.pattern;
 using com.espertech.esper.view;
 
 using NUnit.Framework;
@@ -32,7 +33,7 @@ namespace com.espertech.esper.pattern
             init.Add(MakeGuardSpec("g", "h", typeof(SupportGuardFactory).FullName));
             init.Add(MakeObserverSpec("a", "b", typeof(SupportObserverFactory).FullName));
             PluggableObjectCollection desc = new PluggableObjectCollection();
-            desc.AddPatternObjects(init);
+            desc.AddPatternObjects(init, SupportEngineImportServiceFactory.Make());
             desc.AddObjects(PatternObjectHelper.BuiltinPatternObjects);
             service = new PatternObjectResolutionServiceImpl(desc);
         }
@@ -63,7 +64,7 @@ namespace com.espertech.esper.pattern
             try
             {
                 PluggableObjectCollection desc = new PluggableObjectCollection();
-                desc.AddPatternObjects(config.ToList());
+                desc.AddPatternObjects(config.ToList(), SupportEngineImportServiceFactory.Make());
                 service = new PatternObjectResolutionServiceImpl(desc);
                 Assert.Fail();
             }

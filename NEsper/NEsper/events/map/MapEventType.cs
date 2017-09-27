@@ -25,29 +25,29 @@ namespace com.espertech.esper.events.map
     public class MapEventType : BaseNestableEventType
     {
         private static readonly EventTypeNestableGetterFactory GETTER_FACTORY = new EventTypeNestableGetterFactoryMap();
-    
+
         internal IDictionary<String, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> PropertyWriters;
         internal EventPropertyDescriptor[] WritablePropertyDescriptors;
-    
+
         public MapEventType(EventTypeMetadata metadata,
                             String typeName,
                             int eventTypeId,
                             EventAdapterService eventAdapterService,
                             IDictionary<String, Object> propertyTypes,
                             EventType[] optionalSuperTypes,
-                            ISet<EventType> optionalDeepSupertypes,
+                            ICollection<EventType> optionalDeepSupertypes,
                             ConfigurationEventTypeMap configMapType)
             : base(metadata, typeName, eventTypeId, eventAdapterService, propertyTypes, optionalSuperTypes, optionalDeepSupertypes, configMapType, GETTER_FACTORY)
         {
         }
-    
+
         protected override void PostUpdateNestableTypes()
         {
         }
 
         public override Type UnderlyingType
         {
-            get { return typeof (Map); }
+            get { return typeof(Map); }
         }
 
         public override EventBeanCopyMethod GetCopyMethod(String[] properties)
@@ -65,14 +65,14 @@ namespace com.espertech.esper.events.map
             }
         }
 
-        public override EventBeanReader GetReader()
+        public override EventBeanReader Reader
         {
-            return new MapEventBeanReader(this);
+            get { return new MapEventBeanReader(this); }
         }
-    
+
         public Object GetValue(String propertyName, Map values)
         {
-            var getter = (MapEventPropertyGetter) GetGetter(propertyName);
+            var getter = (MapEventPropertyGetter)GetGetter(propertyName);
             return getter.GetMap(values);
         }
 
@@ -88,16 +88,16 @@ namespace com.espertech.esper.events.map
                 return pair.Second;
             }
 
-            var property = PropertyParser.ParseAndWalk(propertyName, false);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
-                var mapProp = (MappedProperty) property;
+                var mapProp = (MappedProperty)property;
                 return new MapEventBeanPropertyWriterMapProp(mapProp.PropertyNameAtomic, mapProp.Key);
             }
 
             if (property is IndexedProperty)
             {
-                var indexedProp = (IndexedProperty) property;
+                var indexedProp = (IndexedProperty)property;
                 return new MapEventBeanPropertyWriterIndexedProp(indexedProp.PropertyNameAtomic, indexedProp.Index);
             }
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.events.map
                 return pair.First;
             }
 
-            var property = PropertyParser.ParseAndWalk(propertyName, false);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
                 var writer = GetWriter(propertyName);
@@ -124,9 +124,9 @@ namespace com.espertech.esper.events.map
                 {
                     return null;
                 }
-                var mapProp = (MappedProperty) property;
+                var mapProp = (MappedProperty)property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof (Object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic, typeof(Object), null, false, true, false, true, false);
             }
             if (property is IndexedProperty)
             {
@@ -135,9 +135,9 @@ namespace com.espertech.esper.events.map
                 {
                     return null;
                 }
-                var indexedProp = (IndexedProperty) property;
+                var indexedProp = (IndexedProperty)property;
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof (Object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic, typeof(Object), null, true, false, true, false, false);
             }
             return null;
         }
@@ -172,7 +172,7 @@ namespace com.espertech.esper.events.map
                 }
                 else
                 {
-                    writers[i] = (MapEventBeanPropertyWriter) GetWriter(properties[i]);
+                    writers[i] = (MapEventBeanPropertyWriter)GetWriter(properties[i]);
                     if (writers[i] == null)
                     {
                         return null;
@@ -202,7 +202,7 @@ namespace com.espertech.esper.events.map
                 var eventPropertyWriter = new MapEventBeanPropertyWriter(propertyName);
                 propertWritersMap.Put(propertyName, new Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>(prop, eventPropertyWriter));
             }
-    
+
             PropertyWriters = propertWritersMap;
             WritablePropertyDescriptors = writeableProps.ToArray();
         }

@@ -72,7 +72,7 @@ namespace com.espertech.esper.events.arr
         public object Underlying
         {
             get { return _propertyValues; }
-            set { _propertyValues = (Object[]) value; }
+            set { _propertyValues = (Object[])value; }
         }
 
         public Object GetFragment(String propertyExpression)
@@ -80,7 +80,7 @@ namespace com.espertech.esper.events.arr
             var getter = _eventType.GetGetter(propertyExpression);
             if (getter == null)
             {
-                throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+                throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
             return getter.GetFragment(this);
         }

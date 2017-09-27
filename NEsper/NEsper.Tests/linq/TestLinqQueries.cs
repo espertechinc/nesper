@@ -7,7 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.compat;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -171,8 +172,8 @@ namespace com.espertech.esper.linq
         public void TestOuterJoin()
         {
             var sample =
-                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from com.espertech.esper.support.bean.SupportTradeEvent as marketData " +
-                "left outer join com.espertech.esper.support.bean.SupportPriceEvent as priceEvent on marketData.CCYPair = priceEvent.Sym";
+                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from " + Name.Of<SupportTradeEvent>() + " as marketData " +
+                "left outer join " + Name.Of<SupportPriceEvent>() + " as priceEvent on marketData.CCYPair = priceEvent.Sym";
             var sampleModel = _serviceProvider.EPAdministrator.CompileEPL(sample);
             var sampleModelEPL = sampleModel.ToEPL();
 

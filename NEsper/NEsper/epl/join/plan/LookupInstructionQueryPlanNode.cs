@@ -78,7 +78,7 @@ namespace com.espertech.esper.epl.join.plan
                 _assemblyInstructionFactories);
         }
 
-        public override void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)
+        public override void AddIndexes(ISet<TableLookupIndexReqKey> usedIndexes)
         {
             foreach (LookupInstructionPlan plan in _lookupInstructions)
             {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.epl.join.plan
             }
         }
 
-        protected internal override void Print(IndentWriter writer)
+        public override void Print(IndentWriter writer)
         {
             writer.WriteLine("LookupInstructionQueryPlanNode" +
                              " rootStream=" + _rootStream +

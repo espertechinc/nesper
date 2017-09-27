@@ -9,14 +9,13 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -49,13 +48,14 @@ namespace com.espertech.esper.view.window
         public void TestCanReuse()
         {
             EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
-    
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {"LongBoxed", 1000}));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { "LongBoxed", 1000 }));
             _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsFalse(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongPrimitive"), null, new ExprTimePeriodEvalDeltaConstMsec(1000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext())));
-            Assert.IsFalse(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed"), null, new ExprTimePeriodEvalDeltaConstMsec(999), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext())));
-            Assert.IsTrue(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed"), null, new ExprTimePeriodEvalDeltaConstMsec(1000000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext())));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongPrimitive"), null, new ExprTimePeriodEvalDeltaConstGivenDelta(1000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed"), null, new ExprTimePeriodEvalDeltaConstGivenDelta(999), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new ExternallyTimedWindowView(_factory, SupportExprNodeFactory.MakeIdentNodeBean("LongBoxed"), null, new ExprTimePeriodEvalDeltaConstGivenDelta(1000000), null, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()), agentInstanceContext));
         }
     
         [Test]
@@ -113,7 +113,7 @@ namespace com.espertech.esper.view.window
             factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)), SupportStatementContextFactory.MakeContext(), null, null);
             ExternallyTimedWindowView view = (ExternallyTimedWindowView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
             Assert.AreEqual(fieldName, view.TimestampExpression.ToExpressionStringMinPrecedenceSafe());
-            Assert.IsTrue(new ExprTimePeriodEvalDeltaConstMsec(msec).EqualsTimePeriod(view.TimeDeltaComputation));
+            Assert.IsTrue(new ExprTimePeriodEvalDeltaConstGivenDelta(msec).EqualsTimePeriod(view.TimeDeltaComputation));
         }
     }
 }

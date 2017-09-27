@@ -8,35 +8,36 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 using XLR8.CGLib;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.epl.expression.dot
 {
     public class ExprDotMethodEvalNoDuckUnderlying : ExprDotMethodEvalNoDuck
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         public ExprDotMethodEvalNoDuckUnderlying(String statementName, FastMethod method, ExprEvaluator[] parameters)
             : base(statementName, method, parameters)
         {
         }
-    
-        public override Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override Object Evaluate(Object target, EvaluateParams evaluateParams)
         {
-            if (target == null) {
+            if (target == null)
+            {
                 return null;
             }
-            if (!(target is EventBean)) {
+            if (!(target is EventBean))
+            {
                 Log.Warn("Expected EventBean return value but received '" + target.GetType().FullName + "' for statement " + base.StatementName);
                 return null;
             }
-            var bean = (EventBean) target;
-            return base.Evaluate(bean.Underlying, eventsPerStream, isNewData, exprEvaluatorContext);
+            var bean = (EventBean)target;
+            return base.Evaluate(bean.Underlying, evaluateParams);
         }
     }
 }

@@ -32,8 +32,7 @@ namespace com.espertech.esper.events.bean
         /// <param name="index">is tge index within the array to get the property from</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         public ListFieldPropertyGetter(FieldInfo field, int index, EventAdapterService eventAdapterService)
-
-                    : base(eventAdapterService, TypeHelper.GetGenericFieldType(field, false), null)
+            : base(eventAdapterService, TypeHelper.GetGenericFieldType(field, false), null)
         {
             _index = index;
             _field = field;

@@ -31,7 +31,7 @@ namespace com.espertech.esper.rowregex
     /// <summary>
     /// View for match recognize support.
     /// </summary>
-    public class EventRowRegexNFAView 
+    public class EventRowRegexNFAView
         : ViewSupport
         , EventRowRegexNFAViewService
         , EventRowRegexNFAViewScheduleCallback
@@ -41,29 +41,29 @@ namespace com.espertech.esper.rowregex
         private const bool IS_DEBUG = false;
 
         private static readonly IEnumerator<EventBean> NULL_ITERATOR =
-            EnumerationHelper<EventBean>.CreateEmptyEnumerator();
-    
+            EnumerationHelper<EventBean>.Empty();
+
         private readonly EventRowRegexNFAViewFactory _factory;
         private readonly MatchRecognizeSpec _matchRecognizeSpec;
         private readonly bool _isUnbound;
         private readonly bool _isIterateOnly;
         private readonly bool _isCollectMultimatches;
         private readonly bool _isTrackMaxStates;
-    
+
         private readonly EventType _rowEventType;
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly AggregationServiceMatchRecognize _aggregationService;
-    
+
         // for interval-handling
         private readonly EventRowRegexNFAViewScheduler _scheduler;
         private readonly bool _isOrTerminated;
-    
+
         private readonly ExprEvaluator[] _columnEvaluators;
         private readonly string[] _columnNames;
-    
+
         private readonly RegexNFAState[] _startStates;
         private readonly RegexNFAState[] _allStates;
-    
+
         private readonly string[] _multimatchVariablesArray;
         private readonly int[] _multimatchStreamNumToVariable;
         private readonly int[] _multimatchVariableToStreamNum;
@@ -72,10 +72,10 @@ namespace com.espertech.esper.rowregex
         private readonly int _numEventsEventsPerStreamDefine;
         private readonly bool _isDefineAsksMultimatches;
         private readonly ObjectArrayBackedEventBean _defineMultimatchEventBean;
-    
+
         private readonly RegexPartitionStateRandomAccessGetter _prevGetter;
         private readonly ObjectArrayBackedEventBean _compositeEventBean;
-    
+
         // state
         private RegexPartitionStateRepo _regexPartitionStateRepo;
         private readonly LinkedHashSet<EventBean> _windowMatchedEventset; // this is NOT per partition - some optimizations are done for batch-processing (minus is out-of-sequence in partition) 
@@ -110,6 +110,9 @@ namespace com.espertech.esper.rowregex
         /// <param name="isUnbound">true if unbound stream</param>
         /// <param name="isIterateOnly">true for iterate-only</param>
         /// <param name="isCollectMultimatches">if asking for multimatches</param>
+        /// <param name="expandedPatternNode">the expanded pattern node</param>
+        /// <param name="matchRecognizeConfig">the match recognition configuration</param>
+        /// <param name="scheduler">the scheduler</param>
         public EventRowRegexNFAView(
             EventRowRegexNFAViewFactory factory,
             ObjectArrayEventType compositeEventType,
@@ -128,7 +131,7 @@ namespace com.espertech.esper.rowregex
             bool isIterateOnly,
             bool isCollectMultimatches,
             RowRegexExprNode expandedPatternNode,
-            ConfigurationEngineDefaults.MatchRecognize matchRecognizeConfig,
+            ConfigurationEngineDefaults.MatchRecognizeConfig matchRecognizeConfig,
             EventRowRegexNFAViewScheduler scheduler)
         {
             _factory = factory;
@@ -138,21 +141,25 @@ namespace com.espertech.esper.rowregex
             _rowEventType = rowEventType;
             _variableStreams = variableStreams;
             _scheduler = scheduler;
-    
+
             // determine names of multimatching variables
-            if (variablesSingle.Count == variableStreams.Count) {
+            if (variablesSingle.Count == variableStreams.Count)
+            {
                 _multimatchVariablesArray = new string[0];
                 _multimatchStreamNumToVariable = new int[0];
                 _multimatchVariableToStreamNum = new int[0];
             }
-            else {
+            else
+            {
                 _multimatchVariablesArray = new string[variableStreams.Count - variablesSingle.Count];
                 _multimatchVariableToStreamNum = new int[_multimatchVariablesArray.Length];
                 _multimatchStreamNumToVariable = new int[variableStreams.Count];
                 CompatExtensions.Fill(_multimatchStreamNumToVariable, -1);
                 var count = 0;
-                foreach (var entry in variableStreams) {
-                    if (entry.Value.Second) {
+                foreach (var entry in variableStreams)
+                {
+                    if (entry.Value.Second)
+                    {
                         var index = count;
                         _multimatchVariablesArray[index] = entry.Key;
                         _multimatchVariableToStreamNum[index] = entry.Value.First;
@@ -161,7 +168,7 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
+
             _streamsVariables = streamsVariables;
             _aggregationService = aggregationService;
             _isDefineAsksMultimatches = isDefineAsksMultimatches;
@@ -171,7 +178,7 @@ namespace com.espertech.esper.rowregex
             _isIterateOnly = isIterateOnly;
             _agentInstanceContext = agentInstanceContext;
             _isCollectMultimatches = isCollectMultimatches;
-    
+
             if (matchRecognizeSpec.Interval != null)
             {
                 agentInstanceContext.AddTerminationCallback(Stop);
@@ -181,9 +188,9 @@ namespace com.espertech.esper.rowregex
             {
                 _isOrTerminated = false;
             }
-    
+
             _windowMatchedEventset = new LinkedHashSet<EventBean>();
-    
+
             // handle "previous" function nodes (performance-optimized for direct index access)
             if (!callbacksPerIndex.IsEmpty())
             {
@@ -201,23 +208,23 @@ namespace com.espertech.esper.rowregex
             {
                 _prevGetter = null;
             }
-    
+
             IDictionary<string, ExprNode> variableDefinitions = new LinkedHashMap<string, ExprNode>();
             foreach (var defineItem in matchRecognizeSpec.Defines)
             {
                 variableDefinitions.Put(defineItem.Identifier, defineItem.Expression);
             }
-    
+
             // build states
             var strand = EventRowRegexHelper.RecursiveBuildStartStates(expandedPatternNode, variableDefinitions, variableStreams, isExprRequiresMultimatchState);
             _startStates = strand.StartStates.ToArray();
             _allStates = strand.AllStates.ToArray();
-    
+
             if (Log.IsDebugEnabled || IS_DEBUG)
             {
                 Log.Info("NFA tree:\n" + EventRowRegexNFAViewUtil.Print(_startStates));
             }
-    
+
             // create evaluators
             _columnNames = new string[matchRecognizeSpec.Measures.Count];
             _columnEvaluators = new ExprEvaluator[matchRecognizeSpec.Measures.Count];
@@ -228,7 +235,7 @@ namespace com.espertech.esper.rowregex
                 _columnEvaluators[countX] = measureItem.Expr.ExprEvaluator;
                 countX++;
             }
-    
+
             // create state repository
             var repoFactory = agentInstanceContext.StatementContext.RegexPartitionStateRepoFactory;
             var terminationStateCompare = new RegexPartitionTerminationStateComparator(_multimatchStreamNumToVariable, variableStreams);
@@ -244,7 +251,7 @@ namespace com.espertech.esper.rowregex
                 _regexPartitionStateRepo = repoFactory.MakePartitioned(_prevGetter, stateRepoGroupMeta, agentInstanceContext, this, matchRecognizeSpec.Interval != null, terminationStateCompare);
             }
         }
-    
+
         public void Stop()
         {
             if (_scheduler != null)
@@ -261,17 +268,17 @@ namespace com.espertech.esper.rowregex
 
             _regexPartitionStateRepo.Dispose();
         }
-    
+
         public void Init(EventBean[] newEvents)
         {
             UpdateInternal(newEvents, null, false);
         }
-    
+
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
             UpdateInternal(newData, oldData, true);
         }
-    
+
         private void UpdateInternal(EventBean[] newData, EventBean[] oldData, bool postOutput)
         {
             if (_isIterateOnly)
@@ -290,24 +297,24 @@ namespace com.espertech.esper.rowregex
                             partitionState.RandomAccess.NewEventPrepare(newEvent);
                         }
                     }
-                }            
+                }
                 return;
             }
-    
+
             if (oldData != null)
             {
                 var isOutOfSequenceRemove = false;
-    
+
                 EventBean first = null;
                 if (!_windowMatchedEventset.IsEmpty())
                 {
                     first = _windowMatchedEventset.First();
                 }
-    
+
                 // remove old data, if found in set
                 var found = new bool[oldData.Length];
                 var count = 0;
-    
+
                 // detect out-of-sequence removes
                 foreach (var oldEvent in oldData)
                 {
@@ -325,7 +332,7 @@ namespace com.espertech.esper.rowregex
                         }
                     }
                 }
-    
+
                 // reset, rebuilding state
                 if (isOutOfSequenceRemove)
                 {
@@ -355,7 +362,7 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
+
             if (newData == null)
             {
                 return;
@@ -363,22 +370,22 @@ namespace com.espertech.esper.rowregex
 
             IList<RegexNFAStateEntry> endStates = new List<RegexNFAStateEntry>();
             IList<RegexNFAStateEntry> terminationStatesAll = null;
-    
+
             foreach (var newEvent in newData)
             {
                 var nextStates = new List<RegexNFAStateEntry>();
                 int eventSequenceNumber = _regexPartitionStateRepo.IncrementAndGetEventSequenceNum();
-    
+
                 // get state holder for this event
                 var partitionState = _regexPartitionStateRepo.GetState(newEvent, true);
                 var currentStatesIterator = partitionState.CurrentStatesEnumerator;
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegEx(newEvent, partitionState); }
-    
+
                 if (partitionState.RandomAccess != null)
                 {
                     partitionState.RandomAccess.NewEventPrepare(newEvent);
                 }
-    
+
                 if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled) || (IS_DEBUG))
                 {
                     Log.Info("Evaluating event " + newEvent.Underlying + "\n" +
@@ -386,39 +393,42 @@ namespace com.espertech.esper.rowregex
                 }
 
                 var terminationStates = Step(false, currentStatesIterator, newEvent, nextStates, endStates, !_isUnbound, eventSequenceNumber, partitionState.OptionalKeys);
-    
+
                 if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled) || (IS_DEBUG))
                 {
                     Log.Info("Evaluated event " + newEvent.Underlying + "\n" +
                         "next : " + EventRowRegexNFAViewUtil.PrintStates(nextStates, _streamsVariables, _variableStreams, _multimatchStreamNumToVariable) + "\n" +
                         "end : " + EventRowRegexNFAViewUtil.PrintStates(endStates, _streamsVariables, _variableStreams, _multimatchStreamNumToVariable));
                 }
-    
+
                 // add termination states, for use with interval and "or terminated"
-                if (terminationStates != null) {
-                    if (terminationStatesAll == null) {
+                if (terminationStates != null)
+                {
+                    if (terminationStatesAll == null)
+                    {
                         terminationStatesAll = terminationStates;
                     }
-                    else {
+                    else
+                    {
                         terminationStatesAll.AddAll(terminationStates);
                     }
                 }
-    
+
                 partitionState.CurrentStates = nextStates;
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegEx(partitionState, endStates, terminationStates); }
             }
-    
+
             if (endStates.IsEmpty() && (!_isOrTerminated || terminationStatesAll == null))
             {
                 return;
             }
-    
+
             // perform inter-ranking and elimination of duplicate matches
             if (!_matchRecognizeSpec.IsAllMatches)
             {
                 endStates = RankEndStatesMultiPartition(endStates);
             }
-    
+
             // handle interval for the set of matches
             if (_matchRecognizeSpec.Interval != null)
             {
@@ -492,24 +502,27 @@ namespace com.espertech.esper.rowregex
                 }
 
                 // handle termination states - those that terminated the pattern and remove the callback
-                if (_isOrTerminated && terminationStatesAll != null) {
+                if (_isOrTerminated && terminationStatesAll != null)
+                {
                     foreach (var terminationState in terminationStatesAll)
                     {
                         var partitionState = _regexPartitionStateRepo.GetState(terminationState.PartitionKey);
-                        if (partitionState == null) {
+                        if (partitionState == null)
+                        {
                             Log.Warn("Null partition state encountered, skipping row");
                             continue;
                         }
-    
+
                         RemoveScheduleAddEndState(terminationState, endStates);
                     }
-    
+
                     // rank
-                    if (!_matchRecognizeSpec.IsAllMatches) {
+                    if (!_matchRecognizeSpec.IsAllMatches)
+                    {
                         endStates = RankEndStatesMultiPartition(endStates);
                     }
                 }
-    
+
                 if (endStates.IsEmpty())
                 {
                     return;
@@ -519,7 +532,7 @@ namespace com.espertech.esper.rowregex
             else if (_matchRecognizeSpec.Skip.Skip == MatchRecognizeSkipEnum.PAST_LAST_ROW)
             {
                 var endStateIter = endStates.GetEnumerator();
-                while(endStateIter.MoveNext())
+                while (endStateIter.MoveNext())
                 {
                     var endState = endStateIter.Current;
                     var partitionState = _regexPartitionStateRepo.GetState(endState.PartitionKey);
@@ -537,7 +550,7 @@ namespace com.espertech.esper.rowregex
             else if (_matchRecognizeSpec.Skip.Skip == MatchRecognizeSkipEnum.TO_NEXT_ROW)
             {
                 var endStateIter = endStates.GetEnumerator();
-                while(endStateIter.MoveNext())
+                while (endStateIter.MoveNext())
                 {
                     var endState = endStateIter.Current;
                     var partitionState = _regexPartitionStateRepo.GetState(endState.PartitionKey);
@@ -551,7 +564,7 @@ namespace com.espertech.esper.rowregex
                         state => state.MatchBeginEventSeqNo <= endState.MatchBeginEventSeqNo);
                 }
             }
-    
+
             var outBeans = new EventBean[endStates.Count];
             var countX = 0;
             foreach (var endState in endStates)
@@ -560,9 +573,10 @@ namespace com.espertech.esper.rowregex
                 outBeans[countX] = GenerateOutputRow(endState);
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegMeasure(outBeans[countX]); }
                 countX++;
-    
+
                 // check partition state - if empty delete (no states and no random access)
-                if (endState.PartitionKey != null) {
+                if (endState.PartitionKey != null)
+                {
                     var state = _regexPartitionStateRepo.GetState(endState.PartitionKey);
                     if (state.IsEmptyCurrentState && state.RandomAccess == null)
                     {
@@ -570,19 +584,20 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
-            if (postOutput) {
+
+            if (postOutput)
+            {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegOut(outBeans); }
                 UpdateChildren(outBeans, null);
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegOut(); }
             }
         }
-    
+
         private RegexNFAStateEntry RankEndStates(IList<RegexNFAStateEntry> endStates)
         {
             // sort by end-event descending (newest first)
             endStates.SortInPlace(EventRowRegexHelper.END_STATE_COMPARATOR);
-    
+
             // find the earliest begin-event
             RegexNFAStateEntry found = null;
             int min = int.MaxValue;
@@ -599,12 +614,12 @@ namespace com.espertech.esper.rowregex
                     multipleMinimums = true;
                 }
             }
-    
+
             if (!multipleMinimums)
             {
                 Collections.SingletonList(found);
             }
-    
+
             // compare greedy counts
             int[] best = null;
             found = null;
@@ -629,10 +644,10 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
+
             return found;
         }
-    
+
         private bool Compare(int[] current, int[] best)
         {
             foreach (var state in _allStates)
@@ -647,7 +662,8 @@ namespace com.espertech.esper.rowregex
                     {
                         return true;
                     }
-                } else
+                }
+                else
                 {
                     if (current[state.NodeNumFlat] < best[state.NodeNumFlat])
                     {
@@ -655,7 +671,7 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
+
             return false;
         }
 
@@ -673,7 +689,7 @@ namespace com.espertech.esper.rowregex
                 var nextStates = new List<RegexNFAStateEntry>();
                 var theEvent = events.Current;
                 eventSequenceNumber++;
-    
+
                 var partitionState = regexPartitionStateRepo.GetState(theEvent, false);
                 currentStates = partitionState.CurrentStatesEnumerator;
 
@@ -681,7 +697,7 @@ namespace com.espertech.esper.rowregex
                 {
                     partitionState.RandomAccess.ExistingEventPrepare(theEvent);
                 }
-    
+
                 if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled) || (IS_DEBUG))
                 {
                     Log.Info("Evaluating event " + theEvent.Underlying + "\n" +
@@ -689,17 +705,17 @@ namespace com.espertech.esper.rowregex
                 }
 
                 Step(!isOutOfSeqDelete, currentStates, theEvent, nextStates, endStates, false, eventSequenceNumber, partitionState.OptionalKeys);
-    
+
                 if ((ExecutionPathDebugLog.IsEnabled) && (Log.IsDebugEnabled) || (IS_DEBUG))
                 {
                     Log.Info("Evaluating event " + theEvent.Underlying + "\n" +
                         "next : " + EventRowRegexNFAViewUtil.PrintStates(nextStates, _streamsVariables, _variableStreams, _multimatchStreamNumToVariable) + "\n" +
                         "end : " + EventRowRegexNFAViewUtil.PrintStates(endStates, _streamsVariables, _variableStreams, _multimatchStreamNumToVariable));
                 }
-    
+
                 partitionState.CurrentStates = nextStates;
             }
-    
+
             return new EventRowRegexIteratorResult(endStates, eventSequenceNumber);
         }
 
@@ -714,9 +730,9 @@ namespace com.espertech.esper.rowregex
             {
                 return NULL_ITERATOR;
             }
-    
+
             IEnumerator<EventBean> it = Parent.GetEnumerator();
-    
+
             var regexPartitionStateRepoNew = _regexPartitionStateRepo.CopyForIterate(false);
 
             var iteratorResult = ProcessIterator(false, it, regexPartitionStateRepoNew);
@@ -729,11 +745,11 @@ namespace com.espertech.esper.rowregex
             {
                 endStates = RankEndStatesMultiPartition(endStates);
             }
-    
+
             var output = endStates.Select(GenerateOutputRow).ToList();
             return output.GetEnumerator();
         }
-    
+
         public void Accept(EventRowRegexNFAViewServiceVisitor visitor)
         {
             _regexPartitionStateRepo.Accept(visitor);
@@ -749,13 +765,13 @@ namespace com.espertech.esper.rowregex
             {
                 return endStates;
             }
-    
+
             // unpartitioned case -
             if (_matchRecognizeSpec.PartitionByExpressions.IsEmpty())
             {
                 return RankEndStatesWithinPartitionByStart(endStates);
             }
-    
+
             // partitioned case - structure end states by partition
             IDictionary<object, object> perPartition = new LinkedHashMap<object, object>();
             foreach (var endState in endStates)
@@ -767,13 +783,13 @@ namespace com.espertech.esper.rowregex
                 }
                 else if (value is IList<RegexNFAStateEntry>)
                 {
-                    var entries = (IList<RegexNFAStateEntry>) value;
+                    var entries = (IList<RegexNFAStateEntry>)value;
                     entries.Add(endState);
                 }
                 else
                 {
                     IList<RegexNFAStateEntry> entries = new List<RegexNFAStateEntry>();
-                    entries.Add((RegexNFAStateEntry) value);
+                    entries.Add((RegexNFAStateEntry)value);
                     entries.Add(endState);
                     perPartition.Put(endState.PartitionKey, entries);
                 }
@@ -784,13 +800,13 @@ namespace com.espertech.esper.rowregex
             {
                 if (entry.Value is RegexNFAStateEntry)
                 {
-                    finalEndStates.Add((RegexNFAStateEntry) entry.Value);
+                    finalEndStates.Add((RegexNFAStateEntry)entry.Value);
                 }
                 else
                 {
-                    var entries = (IList<RegexNFAStateEntry>) entry.Value;
+                    var entries = (IList<RegexNFAStateEntry>)entry.Value;
                     finalEndStates.AddAll(RankEndStatesWithinPartitionByStart(entries));
-                }            
+                }
             }
             return finalEndStates;
         }
@@ -805,7 +821,7 @@ namespace com.espertech.esper.rowregex
             {
                 return endStates;
             }
-    
+
             var endStatesPerBeginEvent = new SortedDictionary<int, object>();
             foreach (var entry in endStates)
             {
@@ -817,18 +833,18 @@ namespace com.espertech.esper.rowregex
                 }
                 else if (value is IList<RegexNFAStateEntry>)
                 {
-                    var entries = (IList<RegexNFAStateEntry>) value;
+                    var entries = (IList<RegexNFAStateEntry>)value;
                     entries.Add(entry);
                 }
                 else
                 {
                     List<RegexNFAStateEntry> entries = new List<RegexNFAStateEntry>();
-                    entries.Add((RegexNFAStateEntry) value);
+                    entries.Add((RegexNFAStateEntry)value);
                     entries.Add(entry);
                     endStatesPerBeginEvent.Put(beginNum, entries);
                 }
             }
-    
+
             if (endStatesPerBeginEvent.Count == 1)
             {
                 var endStatesUnranked = (List<RegexNFAStateEntry>)endStatesPerBeginEvent.Values.First();
@@ -839,7 +855,7 @@ namespace com.espertech.esper.rowregex
                 var chosen = RankEndStates(endStatesUnranked);
                 return Collections.SingletonList(chosen);
             }
-    
+
             IList<RegexNFAStateEntry> endStatesRanked = new List<RegexNFAStateEntry>();
             ICollection<int> keyset = endStatesPerBeginEvent.Keys;
             var keys = keyset.ToArray();
@@ -850,17 +866,17 @@ namespace com.espertech.esper.rowregex
                 {
                     continue;
                 }
-    
+
                 RegexNFAStateEntry entryTaken;
                 if (value is IList<RegexNFAStateEntry>)
                 {
-                    var endStatesUnranked = (IList<RegexNFAStateEntry>) value;
+                    var endStatesUnranked = (IList<RegexNFAStateEntry>)value;
                     if (endStatesUnranked.IsEmpty())
                     {
                         continue;
                     }
                     entryTaken = RankEndStates(endStatesUnranked);
-    
+
                     if (_matchRecognizeSpec.IsAllMatches)
                     {
                         endStatesRanked.AddAll(endStatesUnranked);  // we take all matches and don't rank except to determine skip-past
@@ -872,11 +888,11 @@ namespace com.espertech.esper.rowregex
                 }
                 else
                 {
-                    entryTaken = (RegexNFAStateEntry) value;
+                    entryTaken = (RegexNFAStateEntry)value;
                     endStatesRanked.Add(entryTaken);
                 }
                 // could be null as removals take place
-    
+
                 if (entryTaken != null)
                 {
                     if (_matchRecognizeSpec.Skip.Skip == MatchRecognizeSkipEnum.PAST_LAST_ROW)
@@ -891,10 +907,10 @@ namespace com.espertech.esper.rowregex
                     }
                 }
             }
-    
+
             return endStatesRanked;
         }
-    
+
         private void RemoveSkippedEndStates(IDictionary<int, object> endStatesPerEndEvent, int skipPastRow)
         {
             foreach (var entry in endStatesPerEndEvent.ToList())
@@ -902,14 +918,14 @@ namespace com.espertech.esper.rowregex
                 var value = entry.Value;
                 if (value is IList<RegexNFAStateEntry>)
                 {
-                    var endStatesUnranked = (IList<RegexNFAStateEntry>) value;
+                    var endStatesUnranked = (IList<RegexNFAStateEntry>)value;
 
                     endStatesUnranked.RemoveWhere(
                         endState => endState.MatchBeginEventSeqNo <= skipPastRow);
                 }
                 else
                 {
-                    var endState = (RegexNFAStateEntry) value;
+                    var endState = (RegexNFAStateEntry)value;
                     if (endState.MatchBeginEventSeqNo <= skipPastRow)
                     {
                         endStatesPerEndEvent.Put(entry.Key, null);
@@ -947,10 +963,11 @@ namespace com.espertech.esper.rowregex
                 var eventsPerStream = currentState.EventsPerStream;
                 var currentStateStreamNum = currentState.State.StreamNum;
                 eventsPerStream[currentStateStreamNum] = theEvent;
-                if (_isDefineAsksMultimatches) {
-                    eventsPerStream[_numEventsEventsPerStreamDefine-1] = GetMultimatchState(currentState);
+                if (_isDefineAsksMultimatches)
+                {
+                    eventsPerStream[_numEventsEventsPerStreamDefine - 1] = GetMultimatchState(currentState);
                 }
-    
+
                 if (currentState.State.Matches(eventsPerStream, _agentInstanceContext))
                 {
                     if (isRetainEventSet)
@@ -958,7 +975,7 @@ namespace com.espertech.esper.rowregex
                         _windowMatchedEventset.Add(theEvent);
                     }
                     var nextStatesFromHere = currentState.State.NextStates;
-    
+
                     // save state for each next state
                     var copy = nextStatesFromHere.Count > 1;
                     foreach (var next in nextStatesFromHere)
@@ -966,32 +983,33 @@ namespace com.espertech.esper.rowregex
                         var eventsForState = eventsPerStream;
                         var multimatches = currentState.OptionalMultiMatches;
                         int[] greedyCounts = currentState.GreedyCountPerState;
-    
+
                         if (copy)
                         {
                             eventsForState = new EventBean[eventsForState.Length];
                             Array.Copy(eventsPerStream, 0, eventsForState, 0, eventsForState.Length);
-    
+
                             var greedyCountsCopy = new int[greedyCounts.Length];
                             Array.Copy(greedyCounts, 0, greedyCountsCopy, 0, greedyCounts.Length);
                             greedyCounts = greedyCountsCopy;
-    
-                            if (_isCollectMultimatches) {
+
+                            if (_isCollectMultimatches)
+                            {
                                 multimatches = DeepCopy(multimatches);
                             }
                         }
-    
+
                         if ((_isCollectMultimatches) && (currentState.State.IsMultiple))
                         {
                             multimatches = AddTag(currentState.State.StreamNum, theEvent, multimatches);
                             eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
-    
+
                         if ((currentState.State.IsGreedy != null) && (currentState.State.IsGreedy.Value))
                         {
                             greedyCounts[currentState.State.NodeNumFlat]++;
                         }
-    
+
                         var entry = new RegexNFAStateEntry(currentState.MatchBeginEventSeqNo, currentState.MatchBeginEventTime, currentState.State, eventsForState, greedyCounts, multimatches, partitionKey);
                         if (next is RegexNFAStateEnd)
                         {
@@ -1021,24 +1039,30 @@ namespace com.espertech.esper.rowregex
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExState(nextStates, _variableStreams, _multimatchStreamNumToVariable); }
                 }
                 // when not-matches
-                else {
+                else
+                {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExState(Collections.GetEmptyList<RegexNFAStateEntry>(), _variableStreams, _multimatchStreamNumToVariable); }
-    
+
                     // determine interval and or-terminated
-                    if (_isOrTerminated) {
+                    if (_isOrTerminated)
+                    {
                         eventsPerStream[currentStateStreamNum] = null;  // deassign
                         var nextStatesFromHere = currentState.State.NextStates;
-    
+
                         // save state for each next state
                         RegexNFAState theEndState = null;
-                        foreach (var next in nextStatesFromHere) {
-                            if (next is RegexNFAStateEnd) {
+                        foreach (var next in nextStatesFromHere)
+                        {
+                            if (next is RegexNFAStateEnd)
+                            {
                                 theEndState = next;
                             }
                         }
-                        if (theEndState != null) {
+                        if (theEndState != null)
+                        {
                             var entry = new RegexNFAStateEntry(currentState.MatchBeginEventSeqNo, currentState.MatchBeginEventTime, theEndState, eventsPerStream, currentState.GreedyCountPerState, currentState.OptionalMultiMatches, partitionKey);
-                            if (terminationStates == null) {
+                            if (terminationStates == null)
+                            {
                                 terminationStates = new List<RegexNFAStateEntry>();
                             }
                             terminationStates.Add(entry);
@@ -1056,19 +1080,24 @@ namespace com.espertech.esper.rowregex
                 int currentStateStreamNum = startState.StreamNum;
                 eventsPerStream[currentStateStreamNum] = theEvent;
 
-                if (startState.Matches(eventsPerStream, _agentInstanceContext)) {
-                    if (isRetainEventSet) {
+                if (startState.Matches(eventsPerStream, _agentInstanceContext))
+                {
+                    if (isRetainEventSet)
+                    {
                         _windowMatchedEventset.Add(theEvent);
                     }
                     var nextStatesFromHere = startState.NextStates;
 
                     // save state for each next state
                     var copy = nextStatesFromHere.Count > 1;
-                    foreach (RegexNFAState next in nextStatesFromHere) {
-                        if (_isTrackMaxStates && !skipTrackMaxState) {
+                    foreach (RegexNFAState next in nextStatesFromHere)
+                    {
+                        if (_isTrackMaxStates && !skipTrackMaxState)
+                        {
                             var poolSvc = _agentInstanceContext.StatementContext.MatchRecognizeStatePoolStmtSvc;
                             var allow = poolSvc.EngineSvc.TryIncreaseCount(_agentInstanceContext);
-                            if (!allow) {
+                            if (!allow)
+                            {
                                 continue;
                             }
                             poolSvc.StmtHandler.IncreaseCount();
@@ -1078,7 +1107,8 @@ namespace com.espertech.esper.rowregex
                         var multimatches = _isCollectMultimatches ? new MultimatchState[_multimatchVariablesArray.Length] : null;
                         var greedyCounts = new int[_allStates.Length];
 
-                        if (copy) {
+                        if (copy)
+                        {
                             eventsForState = new EventBean[eventsForState.Length];
                             Array.Copy(eventsPerStream, 0, eventsForState, 0, eventsForState.Length);
 
@@ -1087,25 +1117,31 @@ namespace com.espertech.esper.rowregex
                             greedyCounts = greedyCountsCopy;
                         }
 
-                        if ((_isCollectMultimatches) && (startState.IsMultiple)) {
+                        if ((_isCollectMultimatches) && (startState.IsMultiple))
+                        {
                             multimatches = AddTag(startState.StreamNum, theEvent, multimatches);
                             eventsForState[currentStateStreamNum] = null; // remove event from evaluation list
                         }
 
-                        if ((startState.IsGreedy != null) && (startState.IsGreedy.Value)) {
+                        if ((startState.IsGreedy != null) && (startState.IsGreedy.Value))
+                        {
                             greedyCounts[startState.NodeNumFlat]++;
                         }
 
                         long time = 0;
-                        if (_matchRecognizeSpec.Interval != null) {
+                        if (_matchRecognizeSpec.Interval != null)
+                        {
                             time = _agentInstanceContext.StatementContext.SchedulingService.Time;
                         }
 
                         var entry = new RegexNFAStateEntry(currentEventSequenceNumber, time, startState, eventsForState, greedyCounts, multimatches, partitionKey);
-                        if (next is RegexNFAStateEnd) {
+                        if (next is RegexNFAStateEnd)
+                        {
                             entry.MatchEndEventSeqNo = currentEventSequenceNumber;
                             endStates.Add(entry);
-                        } else {
+                        }
+                        else
+                        {
                             entry.State = next;
                             nextStates.Add(entry);
                         }
@@ -1114,10 +1150,10 @@ namespace com.espertech.esper.rowregex
 
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegExStateStart(nextStates, _variableStreams, _multimatchStreamNumToVariable); }
             }
-    
+
             return terminationStates;   // only for immediate use, not for scheduled use as no copy of state
         }
-    
+
         private ObjectArrayBackedEventBean GetMultimatchState(RegexNFAStateEntry currentState)
         {
             if (currentState.OptionalMultiMatches == null || !currentState.State.IsExprRequiresMultimatchState)
@@ -1126,58 +1162,68 @@ namespace com.espertech.esper.rowregex
             }
             var props = _defineMultimatchEventBean.Properties;
             var states = currentState.OptionalMultiMatches;
-            for (var i = 0; i < props.Length; i++) {
+            for (var i = 0; i < props.Length; i++)
+            {
                 var state = states[i];
-                if (state == null) {
+                if (state == null)
+                {
                     props[i] = null;
                 }
-                else {
+                else
+                {
                     props[i] = state.ShrinkEventArray;
                 }
             }
             return _defineMultimatchEventBean;
         }
-    
-        private MultimatchState[] DeepCopy(MultimatchState[] multimatchStates) {
-            if (multimatchStates == null) {
+
+        private MultimatchState[] DeepCopy(MultimatchState[] multimatchStates)
+        {
+            if (multimatchStates == null)
+            {
                 return null;
             }
-    
+
             var copy = new MultimatchState[multimatchStates.Length];
-            for (var i = 0; i < copy.Length; i++) {
-                if (multimatchStates[i] != null) {
+            for (var i = 0; i < copy.Length; i++)
+            {
+                if (multimatchStates[i] != null)
+                {
                     copy[i] = new MultimatchState(multimatchStates[i]);
                 }
             }
-    
+
             return copy;
         }
-    
+
         private MultimatchState[] AddTag(int streamNum, EventBean theEvent, MultimatchState[] multimatches)
         {
-            if (multimatches == null) {
+            if (multimatches == null)
+            {
                 multimatches = new MultimatchState[_multimatchVariablesArray.Length];
             }
-    
+
             var index = _multimatchStreamNumToVariable[streamNum];
             var state = multimatches[index];
-            if (state == null) {
+            if (state == null)
+            {
                 multimatches[index] = new MultimatchState(theEvent);
                 return multimatches;
             }
-    
+
             multimatches[index].Add(theEvent);
             return multimatches;
         }
-    
+
         private EventBean GenerateOutputRow(RegexNFAStateEntry entry)
         {
             var rowDataRaw = _compositeEventBean.Properties;
-    
+
             // we first generate a raw row of <string, object> for each variable name.
             foreach (var variableDef in _variableStreams)
             {
-                if (!variableDef.Value.Second) {
+                if (!variableDef.Value.Second)
+                {
                     int index = variableDef.Value.First;
                     rowDataRaw[index] = entry.EventsPerStream[index];
                 }
@@ -1191,30 +1237,35 @@ namespace com.espertech.esper.rowregex
                 var multimatchState = entry.OptionalMultiMatches;
                 for (var i = 0; i < multimatchState.Length; i++)
                 {
-                    if (multimatchState[i] == null) {
+                    if (multimatchState[i] == null)
+                    {
                         rowDataRaw[_multimatchVariableToStreamNum[i]] = null;
                         continue;
                     }
                     EventBean[] multimatchEvents = multimatchState[i].ShrinkEventArray;
                     rowDataRaw[_multimatchVariableToStreamNum[i]] = multimatchEvents;
-    
-                    if (_aggregationService != null) {
+
+                    if (_aggregationService != null)
+                    {
                         var eventsPerStream = entry.EventsPerStream;
                         var streamNum = _multimatchVariableToStreamNum[i];
-    
-                        foreach (var multimatchEvent in multimatchEvents) {
+
+                        foreach (var multimatchEvent in multimatchEvents)
+                        {
                             eventsPerStream[streamNum] = multimatchEvent;
                             _aggregationService.ApplyEnter(eventsPerStream, streamNum, _agentInstanceContext);
                         }
                     }
                 }
             }
-            else {
-                foreach (var index in _multimatchVariableToStreamNum) {
+            else
+            {
+                foreach (var index in _multimatchVariableToStreamNum)
+                {
                     rowDataRaw[index] = null;
                 }
             }
-    
+
             IDictionary<string, object> row = new Dictionary<string, object>();
             var columnNum = 0;
             var eventsPerStreamX = new EventBean[1];
@@ -1225,17 +1276,17 @@ namespace com.espertech.esper.rowregex
                 row.Put(_columnNames[columnNum], result);
                 columnNum++;
             }
-    
+
             return _agentInstanceContext.StatementContext.EventAdapterService.AdapterForTypedMap(row, _rowEventType);
         }
-    
-        private void ScheduleCallback(long msecAfterCurrentTime, RegexNFAStateEntry endState)
+
+        private void ScheduleCallback(long timeDelta, RegexNFAStateEntry endState)
         {
             var matchBeginTime = endState.MatchBeginEventTime;
             if (_regexPartitionStateRepo.ScheduleState.IsEmpty())
             {
                 _regexPartitionStateRepo.ScheduleState.PutOrAdd(matchBeginTime, endState);
-                _scheduler.AddSchedule(msecAfterCurrentTime);
+                _scheduler.AddSchedule(timeDelta);
             }
             else
             {
@@ -1245,13 +1296,14 @@ namespace com.espertech.esper.rowregex
                     long currentFirstKey = _regexPartitionStateRepo.ScheduleState.FirstKey();
                     if (currentFirstKey > matchBeginTime)
                     {
-                        _scheduler.ChangeSchedule(msecAfterCurrentTime);
+                        _scheduler.ChangeSchedule(timeDelta);
                     }
                 }
             }
         }
-    
-        private void RemoveScheduleAddEndState(RegexNFAStateEntry terminationState, IList<RegexNFAStateEntry> foundEndStates) {
+
+        private void RemoveScheduleAddEndState(RegexNFAStateEntry terminationState, IList<RegexNFAStateEntry> foundEndStates)
+        {
             var matchBeginTime = terminationState.MatchBeginEventTime;
             var removedOne = _regexPartitionStateRepo.ScheduleState.FindRemoveAddToList(matchBeginTime, terminationState, foundEndStates);
             if (removedOne && _regexPartitionStateRepo.ScheduleState.IsEmpty())
@@ -1259,7 +1311,7 @@ namespace com.espertech.esper.rowregex
                 _scheduler.RemoveSchedule();
             }
         }
-    
+
         public void Triggered()
         {
             var currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
@@ -1268,7 +1320,7 @@ namespace com.espertech.esper.rowregex
             {
                 return;
             }
-    
+
             IList<RegexNFAStateEntry> indicatables = new List<RegexNFAStateEntry>();
             while (true)
             {
@@ -1285,7 +1337,7 @@ namespace com.espertech.esper.rowregex
                     break;
                 }
             }
-    
+
             // schedule next
             if (!_regexPartitionStateRepo.ScheduleState.IsEmpty())
             {
@@ -1297,7 +1349,7 @@ namespace com.espertech.esper.rowregex
             {
                 indicatables = RankEndStatesMultiPartition(indicatables);
             }
-    
+
             var outBeans = new EventBean[indicatables.Count];
             var count = 0;
             foreach (var endState in indicatables)
@@ -1307,7 +1359,7 @@ namespace com.espertech.esper.rowregex
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegMeasure(outBeans[count]); }
                 count++;
             }
-    
+
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QRegOut(outBeans); }
             UpdateChildren(outBeans, null);
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().ARegOut(); }

@@ -52,11 +52,11 @@ namespace com.espertech.esper.epl.spec
             _discardPartialsOnMatch = discardPartialsOnMatch;
             _evalFactoryNode = evalFactoryNode;
             _allTags = allTags;
-    
+
             var copy = new LinkedHashMap<String, Pair<EventType, String>>();
             copy.PutAll(taggedEventTypes);
             _taggedEventTypes = copy;
-    
+
             copy = new LinkedHashMap<String, Pair<EventType, String>>();
             copy.PutAll(arrayEventTypes);
             _arrayEventTypes = copy;

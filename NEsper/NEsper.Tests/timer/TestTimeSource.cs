@@ -22,7 +22,7 @@ namespace com.espertech.esper.timer
         [TearDown]
         public void TearDown()
         {
-            TimeSourceServiceImpl.IS_SYSTEM_CURRENT_TIME = true;
+            TimeSourceServiceImpl.IsSystemCurrentTime = true;
         }
 
         [Test]
@@ -47,10 +47,10 @@ namespace com.espertech.esper.timer
 
         private void AssertTimeWithinTolerance(long TOLERANCE_MILLISECS, TimeSourceService nanos, TimeSourceService millis)
         {
-            TimeSourceServiceImpl.IS_SYSTEM_CURRENT_TIME = true;
+            TimeSourceServiceImpl.IsSystemCurrentTime = true;
             long nanosWallClockTime = nanos.GetTimeMillis();
 
-            TimeSourceServiceImpl.IS_SYSTEM_CURRENT_TIME = false;
+            TimeSourceServiceImpl.IsSystemCurrentTime = false;
             long millisWallClockTime = millis.GetTimeMillis();
 
             long diff = nanosWallClockTime - millisWallClockTime;

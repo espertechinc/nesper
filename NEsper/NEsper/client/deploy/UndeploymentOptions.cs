@@ -14,31 +14,25 @@ namespace com.espertech.esper.client.deploy
     /// Options for use in undeployment of a module to control the behavior of the undeploy operation.
     /// </summary>
     [Serializable]
-    public class UndeploymentOptions
-    {
+    public class UndeploymentOptions  {
+        public UndeploymentOptions()
+        {
+            IsDestroyStatements = true;
+            DeploymentLockStrategy = DeploymentLockStrategyDefault.INSTANCE;
+        }
+
         /// <summary>
         /// Returns indicator whether undeploy will destroy any associated statements (true by default).
         /// </summary>
         /// <value>
-        /// flag indicating whether undeploy also destroys associated statements
+        ///   flag indicating whether undeploy also destroys associated statements
         /// </value>
         public bool IsDestroyStatements { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndeploymentOptions"/> class.
+        /// Return the deployment lock strategy, the default is <seealso cref="DeploymentLockStrategyDefault" />
         /// </summary>
-        public UndeploymentOptions()
-        {
-            IsDestroyStatements = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UndeploymentOptions"/> class.
-        /// </summary>
-        /// <param name="isDestroyStatements">if set to <c>true</c> [is destroy statements].</param>
-        public UndeploymentOptions(bool isDestroyStatements)
-        {
-            IsDestroyStatements = isDestroyStatements;
-        }
+        /// <value>lock strategy</value>
+        public DeploymentLockStrategy DeploymentLockStrategy { get; set; }
     }
-}
+} // end of namespace

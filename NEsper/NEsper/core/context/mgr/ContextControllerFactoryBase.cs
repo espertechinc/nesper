@@ -17,7 +17,7 @@ namespace com.espertech.esper.core.context.mgr
 {
     public abstract class ContextControllerFactoryBase : ContextControllerFactory
     {
-        protected readonly ContextControllerFactoryContext _factoryContext;
+        private readonly ContextControllerFactoryContext _factoryContext;
 
         protected ContextControllerFactoryBase(ContextControllerFactoryContext factoryContext)
         {

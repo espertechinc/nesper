@@ -34,7 +34,7 @@ namespace com.espertech.esper.filter
         private long _numEventsEvaluated = 0;
         private long _filtersVersion = 1;
         private readonly CopyOnWriteArraySet<FilterServiceListener> _filterServiceListeners;
-    
+
         /// <summary>Constructor. </summary>
         protected FilterServiceBase(FilterServiceGranularLockFactory lockFactory, bool allowIsolation)
         {
@@ -67,62 +67,68 @@ namespace com.espertech.esper.filter
             _filtersVersion++;
             return entry;
         }
-    
+
         protected void RemoveInternal(FilterHandle filterCallback, FilterServiceEntry filterServiceEntry)
         {
             _indexBuilder.Remove(filterCallback, filterServiceEntry);
             _filtersVersion++;
         }
-    
+
         protected long EvaluateInternal(EventBean theEvent, ICollection<FilterHandle> matches)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QFilter(theEvent);}
-    
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QFilter(theEvent); }
+
             long version = _filtersVersion;
             Interlocked.Increment(ref _numEventsEvaluated);
             //_numEventsEvaluated.IncrementAndGet();
-    
+
             // Finds all matching filters and return their callbacks.
             RetryableMatchEvent(theEvent, matches);
-    
-            if ((AuditPath.IsAuditEnabled) && (_filterServiceListeners.IsNotEmpty())) {
-                foreach (FilterServiceListener listener in _filterServiceListeners) {
+
+            if ((AuditPath.IsAuditEnabled) && (_filterServiceListeners.IsNotEmpty()))
+            {
+                foreach (FilterServiceListener listener in _filterServiceListeners)
+                {
                     listener.Filtering(theEvent, matches, null);
                 }
             }
-    
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AFilter(matches);}
-    
+
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AFilter(matches); }
+
             return version;
         }
-    
+
         protected long EvaluateInternal(EventBean theEvent, ICollection<FilterHandle> matches, int statementId)
         {
             long version = _filtersVersion;
             Interlocked.Increment(ref _numEventsEvaluated);
             //_numEventsEvaluated.IncrementAndGet();
-    
+
             ArrayDeque<FilterHandle> allMatches = new ArrayDeque<FilterHandle>();
-    
+
             // Finds all matching filters
             RetryableMatchEvent(theEvent, allMatches);
-    
+
             // Add statement matches to collection passed
-            foreach (FilterHandle match in allMatches) {
-                if (match.StatementId == statementId) {
+            foreach (FilterHandle match in allMatches)
+            {
+                if (match.StatementId == statementId)
+                {
                     matches.Add(match);
                 }
             }
-    
-            if ((AuditPath.IsAuditEnabled) && (_filterServiceListeners.IsNotEmpty())) {
-                foreach (FilterServiceListener listener in _filterServiceListeners) {
+
+            if ((AuditPath.IsAuditEnabled) && (_filterServiceListeners.IsNotEmpty()))
+            {
+                foreach (FilterServiceListener listener in _filterServiceListeners)
+                {
                     listener.Filtering(theEvent, matches, statementId);
                 }
             }
 
             return version;
         }
-    
+
         public long NumEventsEvaluated
         {
             get { return Interlocked.Read(ref _numEventsEvaluated); }
@@ -132,29 +138,29 @@ namespace com.espertech.esper.filter
         {
             Interlocked.Exchange(ref _numEventsEvaluated, 0);
         }
-    
+
         public void AddFilterServiceListener(FilterServiceListener filterServiceListener)
         {
             _filterServiceListeners.Add(filterServiceListener);
         }
-    
+
         public void RemoveFilterServiceListener(FilterServiceListener filterServiceListener)
         {
             _filterServiceListeners.Remove(filterServiceListener);
         }
-    
+
         protected FilterSet TakeInternal(ICollection<int> statementIds)
         {
             _filtersVersion++;
             return _indexBuilder.Take(statementIds);
         }
-    
+
         protected void ApplyInternal(FilterSet filterSet)
         {
             _filtersVersion++;
             _indexBuilder.Apply(filterSet, _lockFactory);
         }
-    
+
         //@JmxGetter(name="NumFiltersApprox", description = "Number of filters managed (approximately)")
         public int FilterCountApprox
         {
@@ -176,40 +182,48 @@ namespace com.espertech.esper.filter
         {
             _eventTypeIndex.RemoveType(type);
         }
-    
+
         private void RetryableMatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
         {
             // Install lock backoff exception handler that retries the evaluation.
-            try {
+            try
+            {
                 _eventTypeIndex.MatchEvent(theEvent, matches);
             }
-            catch (FilterLockBackoffException ex) {
+            catch (FilterLockBackoffException ex)
+            {
                 // retry on lock back-off
                 // lock-backoff may occur when stateful evaluations take place such as bool expressions that are subqueries
                 // statements that contain subqueries in pattern filter expression can themselves modify filters, leading to a theoretically possible deadlock
                 long delayNs = 10;
-                while(true) {
-                    try {
+                while (true)
+                {
+                    try
+                    {
                         // yield
-                        try {
+                        try
+                        {
                             Thread.Sleep(0);
                         }
-                        catch (ThreadInterruptedException e) {
+                        catch (ThreadInterruptedException e)
+                        {
                             Thread.CurrentThread.Interrupt();
                         }
-    
+
                         // delay
                         MicroThread.SleepNano(delayNs);
-                        if (delayNs < 1000000000) {
+                        if (delayNs < 1000000000)
+                        {
                             delayNs = delayNs * 2;
                         }
-    
+
                         // evaluate
                         matches.Clear();
                         _eventTypeIndex.MatchEvent(theEvent, matches);
                         break;
                     }
-                    catch (FilterLockBackoffException ex2) {
+                    catch (FilterLockBackoffException ex2)
+                    {
                         // retried
                     }
                 }

@@ -16,9 +16,9 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.filter;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl.parse;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl.parse;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -274,7 +274,7 @@ namespace com.espertech.esper.epl.spec
         private static FilterStreamSpecRaw MakeSpec(String expression)
         {
             EPLTreeWalkerListener walker = SupportParserHelper.ParseAndWalkEPL(expression);
-            return (FilterStreamSpecRaw)walker.GetStatementSpec().StreamSpecs[0];
+            return (FilterStreamSpecRaw)walker.StatementSpec.StreamSpecs[0];
         }
     }
 }

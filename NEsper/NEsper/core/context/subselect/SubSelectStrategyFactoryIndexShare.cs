@@ -10,13 +10,12 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.agg.service;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
@@ -32,15 +31,15 @@ using com.espertech.esper.view;
 namespace com.espertech.esper.core.context.subselect
 {
     /// <summary>
-    /// Record holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
+    ///     Entry holding lookup resource references for use by <seealso cref="SubSelectActivationCollection" />.
     /// </summary>
     public class SubSelectStrategyFactoryIndexShare : SubSelectStrategyFactory
     {
+        private readonly AggregationServiceFactoryDesc _aggregationServiceFactory;
+        private readonly ExprEvaluator _filterExprEval;
+        private readonly ExprEvaluator[] _groupByKeys;
         private readonly NamedWindowProcessor _optionalNamedWindowProcessor;
         private readonly TableMetadata _optionalTableMetadata;
-        private readonly ExprEvaluator _filterExprEval;
-        private readonly AggregationServiceFactoryDesc _aggregationServiceFactory;
-        private readonly ExprEvaluator[] _groupByKeys;
         private readonly TableService _tableService;
         private readonly SubordinateQueryPlanDesc _queryPlan;
 
@@ -59,7 +58,8 @@ namespace com.espertech.esper.core.context.subselect
             ExprEvaluator[] groupByKeys,
             TableService tableService,
             Attribute[] annotations,
-            StatementStopService statementStopService)
+            StatementStopService statementStopService,
+            EngineImportService engineImportService)
         {
             _optionalNamedWindowProcessor = optionalNamedWindowProcessor;
             _optionalTableMetadata = optionalTableMetadata;
@@ -67,16 +67,21 @@ namespace com.espertech.esper.core.context.subselect
             _aggregationServiceFactory = aggregationServiceFactory;
             _groupByKeys = groupByKeys;
             _tableService = tableService;
-    
+
             bool isLogging;
             ILog log;
-            if (optionalTableMetadata != null) {
+            if (optionalTableMetadata != null)
+            {
                 isLogging = optionalTableMetadata.IsQueryPlanLogging;
                 log = TableServiceImpl.QueryPlanLog;
-                _queryPlan = SubordinateQueryPlanner.PlanSubquery(outerEventTypesSelect, joinedPropPlan, false, fullTableScan, optionalIndexHint, true, subqueryNum,
-                        false, optionalTableMetadata.EventTableIndexMetadataRepo, optionalTableMetadata.UniqueKeyProps, true, statementName, statementId, annotations);
-                if (_queryPlan != null) {
-                    for (int i = 0; i < _queryPlan.IndexDescs.Length; i++) {
+                _queryPlan = SubordinateQueryPlanner.PlanSubquery(
+                    outerEventTypesSelect, joinedPropPlan, false, fullTableScan, optionalIndexHint, true, subqueryNum,
+                    false, optionalTableMetadata.EventTableIndexMetadataRepo, optionalTableMetadata.UniqueKeyProps, true,
+                    statementName, statementId, annotations);
+                if (_queryPlan != null)
+                {
+                    for (int i = 0; i < _queryPlan.IndexDescs.Length; i++)
+                    {
                         optionalTableMetadata.AddIndexReference(_queryPlan.IndexDescs[i].IndexName, statementName);
                     }
                 }
@@ -85,24 +90,35 @@ namespace com.espertech.esper.core.context.subselect
             {
                 isLogging = optionalNamedWindowProcessor.RootView.IsQueryPlanLogging;
                 log = NamedWindowRootView.QueryPlanLog;
-                _queryPlan = SubordinateQueryPlanner.PlanSubquery(outerEventTypesSelect, joinedPropPlan, false, fullTableScan, optionalIndexHint, true, subqueryNum,
-                        optionalNamedWindowProcessor.IsVirtualDataWindow, optionalNamedWindowProcessor.EventTableIndexMetadataRepo, optionalNamedWindowProcessor.OptionalUniqueKeyProps, false, statementName, statementId, annotations);
-                if (_queryPlan != null && _queryPlan.IndexDescs != null) {
-                    SubordinateQueryPlannerUtil.AddIndexMetaAndRef(_queryPlan.IndexDescs, optionalNamedWindowProcessor.EventTableIndexMetadataRepo, statementName);
+                _queryPlan = SubordinateQueryPlanner.PlanSubquery(
+                    outerEventTypesSelect, joinedPropPlan, false, fullTableScan, optionalIndexHint, true, subqueryNum,
+                    optionalNamedWindowProcessor.IsVirtualDataWindow,
+                    optionalNamedWindowProcessor.EventTableIndexMetadataRepo,
+                    optionalNamedWindowProcessor.OptionalUniqueKeyProps, false, statementName, statementId, annotations);
+                if (_queryPlan != null && _queryPlan.IndexDescs != null)
+                {
+                    SubordinateQueryPlannerUtil.AddIndexMetaAndRef(
+                        _queryPlan.IndexDescs, optionalNamedWindowProcessor.EventTableIndexMetadataRepo, statementName);
                     statementStopService.StatementStopped += () =>
                     {
-                        for (int i = 0; i < _queryPlan.IndexDescs.Length; i++) {
-                            bool last = optionalNamedWindowProcessor.EventTableIndexMetadataRepo.RemoveIndexReference(_queryPlan.IndexDescs[i].IndexMultiKey, statementName);
-                            if (last) {
-                                optionalNamedWindowProcessor.EventTableIndexMetadataRepo.RemoveIndex(_queryPlan.IndexDescs[i].IndexMultiKey);
-                                optionalNamedWindowProcessor.RemoveAllInstanceIndexes(_queryPlan.IndexDescs[i].IndexMultiKey);
+                        for (int i = 0; i < _queryPlan.IndexDescs.Length; i++)
+                        {
+                            bool last =
+                                optionalNamedWindowProcessor.EventTableIndexMetadataRepo.RemoveIndexReference(
+                                    _queryPlan.IndexDescs[i].IndexMultiKey, statementName);
+                            if (last)
+                            {
+                                optionalNamedWindowProcessor.EventTableIndexMetadataRepo.RemoveIndex(
+                                    _queryPlan.IndexDescs[i].IndexMultiKey);
+                                optionalNamedWindowProcessor.RemoveAllInstanceIndexes(
+                                    _queryPlan.IndexDescs[i].IndexMultiKey);
                             }
                         }
                     };
                 }
             }
-    
-            SubordinateQueryPlannerUtil.QueryPlanLogOnSubq(isLogging, log, _queryPlan, subqueryNum, annotations);
+            SubordinateQueryPlannerUtil.QueryPlanLogOnSubq(
+                isLogging, log, _queryPlan, subqueryNum, annotations, engineImportService);
         }
 
         public SubSelectStrategyRealization Instantiate(
@@ -118,8 +134,10 @@ namespace com.espertech.esper.core.context.subselect
             AggregationService aggregationService = null;
             if (_aggregationServiceFactory != null)
             {
-                aggregationService = _aggregationServiceFactory.AggregationServiceFactory.MakeService(
-                    agentInstanceContext, agentInstanceContext.StatementContext.EngineImportService, true, subqueryNumber);
+                aggregationService =
+                    _aggregationServiceFactory.AggregationServiceFactory.MakeService(
+                        agentInstanceContext, agentInstanceContext.StatementContext.EngineImportService, true,
+                        subqueryNumber);
                 if (_groupByKeys == null)
                 {
                     if (_filterExprEval == null)
@@ -131,7 +149,8 @@ namespace com.espertech.esper.core.context.subselect
                     else
                     {
                         subselectAggregationPreprocessor =
-                            new SubselectAggregationPreprocessorFilteredUngrouped(aggregationService, _filterExprEval, null);
+                            new SubselectAggregationPreprocessorFilteredUngrouped(
+                                aggregationService, _filterExprEval, null);
                     }
                 }
                 else
@@ -174,9 +193,8 @@ namespace com.espertech.esper.core.context.subselect
                     {
                         tables = SubordinateQueryPlannerUtil.RealizeTables(
                             _queryPlan.IndexDescs, instance.RootViewInstance.EventType,
-                            instance.RootViewInstance.IndexRepository,
-                            instance.RootViewInstance.DataWindowContents, agentInstanceContext,
-                            isRecoveringResilient);
+                            instance.RootViewInstance.IndexRepository, instance.RootViewInstance.DataWindowContents,
+                            agentInstanceContext, isRecoveringResilient);
                     }
                     SubordTableLookupStrategy strategy = _queryPlan.LookupStrategyFactory.MakeStrategy(
                         tables, instance.RootViewInstance.VirtualDataWindow);
@@ -188,30 +206,29 @@ namespace com.espertech.esper.core.context.subselect
             {
                 TableStateInstance state = _tableService.GetState(
                     _optionalTableMetadata.TableName, agentInstanceContext.AgentInstanceId);
-                ILockable iLock = agentInstanceContext.StatementContext.IsWritesToTables
+                var @lock = agentInstanceContext.StatementContext.IsWritesToTables
                     ? state.TableLevelRWLock.WriteLock
                     : state.TableLevelRWLock.ReadLock;
                 if (_queryPlan == null)
                 {
-                    subqueryLookup = new SubordFullTableScanTableLookupStrategy(iLock, state.IterableTableScan);
+                    subqueryLookup = new SubordFullTableScanTableLookupStrategy(@lock, state.IterableTableScan);
                 }
                 else
                 {
-                    EventTable[] indexes = new EventTable[_queryPlan.IndexDescs.Length];
+                    var indexes = new EventTable[_queryPlan.IndexDescs.Length];
                     for (int i = 0; i < indexes.Length; i++)
                     {
                         indexes[i] = state.IndexRepository.GetIndexByDesc(_queryPlan.IndexDescs[i].IndexMultiKey);
                     }
                     subqueryLookup = _queryPlan.LookupStrategyFactory.MakeStrategy(indexes, null);
-                    subqueryLookup = new SubordIndexedTableLookupTableStrategy(subqueryLookup, iLock);
+                    subqueryLookup = new SubordIndexedTableLookupTableStrategy(subqueryLookup, @lock);
                 }
             }
 
             return new SubSelectStrategyRealization(
                 subqueryLookup, subselectAggregationPreprocessor, aggregationService,
                 Collections.GetEmptyMap<ExprPriorNode, ExprPriorEvalStrategy>(),
-                Collections.GetEmptyMap<ExprPreviousNode, ExprPreviousEvalStrategy>(),
-                null, null);
+                Collections.GetEmptyMap<ExprPreviousNode, ExprPreviousEvalStrategy>(), null, null);
         }
     }
-}
+} // end of namespace

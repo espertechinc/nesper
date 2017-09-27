@@ -16,6 +16,7 @@ using System.Xml.XPath;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.soda;
+using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -46,85 +47,6 @@ namespace com.espertech.esper.client
                 ConfigurationParser.DoConfigure(_config, stream, uri.ToString());
                 AssertFileConfig(_config);
             }
-        }
-    
-        [Test]
-        public void TestEngineDefaults()
-        {
-            _config = new Configuration();
-    
-            Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder);
-            Assert.AreEqual(100, _config.EngineDefaults.ThreadingConfig.InsertIntoDispatchTimeout);
-            Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder);
-            Assert.AreEqual(1000, _config.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout);
-            Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled);
-            Assert.AreEqual(100, _config.EngineDefaults.ThreadingConfig.InternalTimerMsecResolution);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
-            Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolInbound);
-            Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound);
-            Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolRouteExec);
-            Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsThreadPoolTimerExec);
-            Assert.AreEqual(2, _config.EngineDefaults.ThreadingConfig.ThreadPoolInboundNumThreads);
-            Assert.AreEqual(2, _config.EngineDefaults.ThreadingConfig.ThreadPoolOutboundNumThreads);
-            Assert.AreEqual(2, _config.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecNumThreads);
-            Assert.AreEqual(2, _config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecNumThreads);
-            Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolInboundCapacity);
-            Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolOutboundCapacity);
-            Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecCapacity);
-            Assert.AreEqual(null, _config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecCapacity);
-            Assert.IsFalse(_config.EngineDefaults.ThreadingConfig.IsEngineFairlock);
-            //Assert.IsFalse(_config.EngineDefaults.MetricsReportingConfig.IsJmxEngineMetrics);
-            Assert.IsTrue(_config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
-            Assert.AreEqual(long.MaxValue, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SPIN, _config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
-    
-            Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, _config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle);
-            Assert.AreEqual(AccessorStyleEnum.NATIVE, _config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle);
-            Assert.AreEqual(EventRepresentation.MAP, _config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation);
-            Assert.AreEqual(5, _config.EngineDefaults.EventMetaConfig.AnonymousCacheSize);
-    
-            Assert.IsTrue(_config.EngineDefaults.ViewResourcesConfig.IsShareViews);
-            Assert.IsFalse(_config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies);
-            Assert.IsFalse(_config.EngineDefaults.ViewResourcesConfig.IsIterableUnbound);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug);
-            Assert.IsTrue(_config.EngineDefaults.LoggingConfig.IsEnableTimerDebug);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableQueryPlan);
-            Assert.IsFalse(_config.EngineDefaults.LoggingConfig.IsEnableADO);
-            Assert.IsNull(_config.EngineDefaults.LoggingConfig.AuditPattern);
-            Assert.AreEqual(15000, _config.EngineDefaults.VariablesConfig.MsecVersionRelease);
-            Assert.AreEqual(null, _config.EngineDefaults.PatternsConfig.MaxSubexpressions);
-            Assert.AreEqual(true, _config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
-            Assert.AreEqual(null, _config.EngineDefaults.MatchRecognizeConfig.MaxStates);
-            Assert.AreEqual(true, _config.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart);
-            Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.MILLI, _config.EngineDefaults.TimeSourceConfig.TimeSourceType);
-            Assert.IsFalse(_config.EngineDefaults.ExecutionConfig.IsPrioritized);
-            Assert.IsFalse(_config.EngineDefaults.ExecutionConfig.IsDisableLocking);
-            Assert.IsFalse(_config.EngineDefaults.ExecutionConfig.IsAllowIsolatedService);
-            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingProfile.NORMAL, _config.EngineDefaults.ExecutionConfig.ThreadingProfile);
-            Assert.AreEqual(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, _config.EngineDefaults.ExecutionConfig.FilterServiceProfile);
-            Assert.AreEqual(16, _config.EngineDefaults.ExecutionConfig.FilterServiceMaxFilterWidth);
-
-            Assert.AreEqual(StreamSelector.ISTREAM_ONLY, _config.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector);
-            Assert.IsFalse(_config.EngineDefaults.LanguageConfig.IsSortUsingCollator);
-            Assert.IsFalse(_config.EngineDefaults.ExpressionConfig.IsIntegerDivision);
-            Assert.IsFalse(_config.EngineDefaults.ExpressionConfig.IsDivisionByZeroReturnsNull);
-            Assert.IsTrue(_config.EngineDefaults.ExpressionConfig.IsSelfSubselectPreeval);
-            Assert.IsTrue(_config.EngineDefaults.ExpressionConfig.IsUdfCache);
-            Assert.IsTrue(_config.EngineDefaults.ExpressionConfig.IsExtendedAggregation);
-            Assert.IsFalse(_config.EngineDefaults.ExpressionConfig.IsDuckTyping);
-            Assert.IsNull(_config.EngineDefaults.ExpressionConfig.MathContext);
-            Assert.AreEqual(TimeZoneInfo.Local, _config.EngineDefaults.ExpressionConfig.TimeZone);
-            Assert.IsNull(_config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories);
-            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.WARN, _config.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy);
-            Assert.IsNull(_config.EngineDefaults.ConditionHandlingConfig.HandlerFactories);
-            Assert.AreEqual("js", _config.EngineDefaults.ScriptsConfig.DefaultDialect);
-    
-            var domType = new ConfigurationEventTypeXMLDOM();
-            Assert.IsFalse(domType.IsXPathPropertyExpr);
-            Assert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
-            Assert.IsTrue(domType.IsEventSenderValidatesRoot);
-            Assert.IsTrue(domType.IsAutoFragment);
         }
     
         internal static void AssertFileConfig(Configuration config)
@@ -223,7 +145,21 @@ namespace com.espertech.esper.client
             EPAssertionUtil.AssertEqualsExactOrder(new Object[]{"MyObjectArraySuperType1", "MyObjectArraySuperType2"}, superTypesOA.ToArray());
             Assert.AreEqual("startts", config.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").StartTimestampPropertyName);
             Assert.AreEqual("endts", config.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").EndTimestampPropertyName);
-    
+
+            // assert avro events
+            Assert.AreEqual(2, config.EventTypesAvro.Count);
+            ConfigurationEventTypeAvro avroOne = config.EventTypesAvro.Get("MyAvroEvent");
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"typename\",\"fields\":[{\"name\":\"num\",\"type\":\"int\"}]}", avroOne.AvroSchemaText);
+            Assert.IsNull(avroOne.AvroSchema);
+            Assert.IsNull(avroOne.StartTimestampPropertyName);
+            Assert.IsNull(avroOne.EndTimestampPropertyName);
+            Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
+            ConfigurationEventTypeAvro avroTwo = config.EventTypesAvro.Get("MyAvroEventTwo");
+            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}", avroTwo.AvroSchemaText);
+            Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
+            Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);
+            Assert.AreEqual("[SomeSuperAvro, SomeSuperAvroTwo]", CompatExtensions.Render(avroTwo.SuperTypes));
+
             // assert legacy type declaration
             Assert.AreEqual(1, config.EventTypesLegacy.Count);
             var legacy = config.EventTypesLegacy.Get("MyLegacyTypeEvent");
@@ -349,17 +285,18 @@ namespace com.espertech.esper.client
             Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod0", pluginSingleRow.FunctionClassName);
             Assert.AreEqual("method1", pluginSingleRow.FunctionMethodName);
             Assert.AreEqual("func3", pluginSingleRow.Name);
-            Assert.AreEqual(ValueCache.DISABLED, pluginSingleRow.ValueCache);
-            Assert.AreEqual(FilterOptimizable.ENABLED, pluginSingleRow.FilterOptimizable);
-            Assert.IsFalse(pluginSingleRow.RethrowExceptions);
+            Assert.AreEqual(ValueCacheEnum.DISABLED, pluginSingleRow.ValueCache);
+            Assert.AreEqual(FilterOptimizableEnum.ENABLED, pluginSingleRow.FilterOptimizable);
+            Assert.IsFalse(pluginSingleRow.IsRethrowExceptions);
             pluginSingleRow = config.PlugInSingleRowFunctions[1];
             Assert.AreEqual("com.mycompany.MyMatrixSingleRowMethod1", pluginSingleRow.FunctionClassName);
             Assert.AreEqual("func4", pluginSingleRow.Name);
             Assert.AreEqual("method2", pluginSingleRow.FunctionMethodName);
-            Assert.AreEqual(ValueCache.ENABLED, pluginSingleRow.ValueCache);
-            Assert.AreEqual(FilterOptimizable.DISABLED, pluginSingleRow.FilterOptimizable);
-            Assert.IsTrue(pluginSingleRow.RethrowExceptions);
-    
+            Assert.AreEqual(ValueCacheEnum.ENABLED, pluginSingleRow.ValueCache);
+            Assert.AreEqual(FilterOptimizableEnum.DISABLED, pluginSingleRow.FilterOptimizable);
+            Assert.IsTrue(pluginSingleRow.IsRethrowExceptions);
+            Assert.AreEqual("XYZEventTypeName", pluginSingleRow.EventTypeName);
+
             // assert plug-in guard objects loaded
             Assert.AreEqual(4, config.PlugInPatternObjects.Count);
             var pluginPattern = config.PlugInPatternObjects[0];
@@ -384,61 +321,67 @@ namespace com.espertech.esper.client
             Assert.AreEqual(ConfigurationPlugInPatternObject.PatternObjectTypeEnum.OBSERVER, pluginPattern.PatternObjectType);
     
             // assert engine defaults
-            Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsInsertIntoDispatchPreserveOrder);
-            Assert.AreEqual(3000, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.InsertIntoDispatchLocking);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder);
+            Assert.AreEqual(3000, config.EngineDefaults.Threading.InsertIntoDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.Threading.InsertIntoDispatchLocking);
 
-            Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsNamedWindowConsumerDispatchPreserveOrder);
-            Assert.AreEqual(4000, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.NamedWindowConsumerDispatchLocking);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
+            Assert.AreEqual(4000, config.EngineDefaults.Threading.NamedWindowConsumerDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking);
 
-            Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsListenerDispatchPreserveOrder);
-            Assert.AreEqual(2000, config.EngineDefaults.ThreadingConfig.ListenerDispatchTimeout);
-            Assert.AreEqual(ConfigurationEngineDefaults.Threading.Locking.SUSPEND, config.EngineDefaults.ThreadingConfig.ListenerDispatchLocking);
-            Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolInbound);
-            Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound);
-            Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolRouteExec);
-            Assert.IsTrue(config.EngineDefaults.ThreadingConfig.IsThreadPoolTimerExec);
-            Assert.AreEqual(1, config.EngineDefaults.ThreadingConfig.ThreadPoolInboundNumThreads);
-            Assert.AreEqual(2, config.EngineDefaults.ThreadingConfig.ThreadPoolOutboundNumThreads);
-            Assert.AreEqual(3, config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecNumThreads);
-            Assert.AreEqual(4, config.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecNumThreads);
-            Assert.AreEqual(1000, (int) config.EngineDefaults.ThreadingConfig.ThreadPoolInboundCapacity);
-            Assert.AreEqual(1500, (int) config.EngineDefaults.ThreadingConfig.ThreadPoolOutboundCapacity);
-            Assert.AreEqual(null, config.EngineDefaults.ThreadingConfig.ThreadPoolTimerExecCapacity);
-            Assert.AreEqual(2000, (int) config.EngineDefaults.ThreadingConfig.ThreadPoolRouteExecCapacity);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsListenerDispatchPreserveOrder);
+            Assert.AreEqual(2000, config.EngineDefaults.Threading.ListenerDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SUSPEND, config.EngineDefaults.Threading.ListenerDispatchLocking);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsThreadPoolInbound);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsThreadPoolOutbound);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsThreadPoolRouteExec);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsThreadPoolTimerExec);
+            Assert.AreEqual(1, config.EngineDefaults.Threading.ThreadPoolInboundNumThreads);
+            Assert.AreEqual(2, config.EngineDefaults.Threading.ThreadPoolOutboundNumThreads);
+            Assert.AreEqual(3, config.EngineDefaults.Threading.ThreadPoolTimerExecNumThreads);
+            Assert.AreEqual(4, config.EngineDefaults.Threading.ThreadPoolRouteExecNumThreads);
+            Assert.AreEqual(1000, (int) config.EngineDefaults.Threading.ThreadPoolInboundCapacity);
+            Assert.AreEqual(1500, (int) config.EngineDefaults.Threading.ThreadPoolOutboundCapacity);
+            Assert.AreEqual(null, config.EngineDefaults.Threading.ThreadPoolTimerExecCapacity);
+            Assert.AreEqual(2000, (int) config.EngineDefaults.Threading.ThreadPoolRouteExecCapacity);
     
-            Assert.IsFalse(config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled);
-            Assert.AreEqual(1234567, config.EngineDefaults.ThreadingConfig.InternalTimerMsecResolution);
-            Assert.IsFalse(config.EngineDefaults.ViewResourcesConfig.IsShareViews);
-            Assert.IsTrue(config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies);
-            Assert.IsTrue(config.EngineDefaults.ViewResourcesConfig.IsIterableUnbound);
-            Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle);
-            Assert.AreEqual(AccessorStyleEnum.PUBLIC, config.EngineDefaults.EventMetaConfig.DefaultAccessorStyle);
-            Assert.AreEqual(EventRepresentation.MAP, config.EngineDefaults.EventMetaConfig.DefaultEventRepresentation);
-            Assert.AreEqual(100, config.EngineDefaults.EventMetaConfig.AnonymousCacheSize);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableExecutionDebug);
-            Assert.IsFalse(config.EngineDefaults.LoggingConfig.IsEnableTimerDebug);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableQueryPlan);
-            Assert.IsTrue(config.EngineDefaults.LoggingConfig.IsEnableADO);
-            Assert.AreEqual("[%u] %m", config.EngineDefaults.LoggingConfig.AuditPattern);
-            Assert.AreEqual(30000, config.EngineDefaults.VariablesConfig.MsecVersionRelease);
-            Assert.AreEqual(3L, (long) config.EngineDefaults.PatternsConfig.MaxSubexpressions);
-            Assert.AreEqual(false, config.EngineDefaults.PatternsConfig.IsMaxSubexpressionPreventStart);
-            Assert.AreEqual(3L, (long)config.EngineDefaults.MatchRecognizeConfig.MaxStates);
-            Assert.AreEqual(false, config.EngineDefaults.MatchRecognizeConfig.IsMaxStatesPreventStart);
-            Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, config.EngineDefaults.StreamSelectionConfig.DefaultStreamSelector);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsInternalTimerEnabled);
+            Assert.AreEqual(1234567, config.EngineDefaults.Threading.InternalTimerMsecResolution);
+            Assert.IsFalse(config.EngineDefaults.ViewResources.IsShareViews);
+            Assert.IsTrue(config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies);
+            Assert.IsTrue(config.EngineDefaults.ViewResources.IsIterableUnbound);
+            Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.EngineDefaults.EventMeta.ClassPropertyResolutionStyle);
+            Assert.AreEqual(AccessorStyleEnum.PUBLIC, config.EngineDefaults.EventMeta.DefaultAccessorStyle);
+            Assert.AreEqual(EventUnderlyingType.MAP, config.EngineDefaults.EventMeta.DefaultEventRepresentation);
+            Assert.AreEqual(100, config.EngineDefaults.EventMeta.AnonymousCacheSize);
+            Assert.IsFalse(config.EngineDefaults.EventMeta.AvroSettings.IsEnableAvro);
+            Assert.IsFalse(config.EngineDefaults.EventMeta.AvroSettings.IsEnableNativeString);
+            Assert.IsFalse(config.EngineDefaults.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
+            Assert.AreEqual("myObjectValueTypeWidenerFactoryClass", config.EngineDefaults.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
+            Assert.AreEqual("myTypeToRepresentationMapperClass", config.EngineDefaults.EventMeta.AvroSettings.TypeRepresentationMapperClass);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableExecutionDebug);
+            Assert.IsFalse(config.EngineDefaults.Logging.IsEnableTimerDebug);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableQueryPlan);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableADO);
+            Assert.AreEqual("[%u] %m", config.EngineDefaults.Logging.AuditPattern);
+            Assert.AreEqual(30000, config.EngineDefaults.Variables.MsecVersionRelease);
+            Assert.AreEqual(3L, (long) config.EngineDefaults.Patterns.MaxSubexpressions);
+            Assert.AreEqual(false, config.EngineDefaults.Patterns.IsMaxSubexpressionPreventStart);
+            Assert.AreEqual(3L, (long)config.EngineDefaults.MatchRecognize.MaxStates);
+            Assert.AreEqual(false, config.EngineDefaults.MatchRecognize.IsMaxStatesPreventStart);
+            Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, config.EngineDefaults.StreamSelection.DefaultStreamSelector);
     
-            Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.NANO, config.EngineDefaults.TimeSourceConfig.TimeSourceType);
-            Assert.IsTrue(config.EngineDefaults.ExecutionConfig.IsPrioritized);
-            Assert.IsTrue(config.EngineDefaults.ExecutionConfig.IsFairlock);
-            Assert.IsTrue(config.EngineDefaults.ExecutionConfig.IsDisableLocking);
-            Assert.IsTrue(config.EngineDefaults.ExecutionConfig.IsAllowIsolatedService);
-            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingProfile.LARGE, config.EngineDefaults.ExecutionConfig.ThreadingProfile);
-            Assert.AreEqual(ConfigurationEngineDefaults.FilterServiceProfile.READWRITE, config.EngineDefaults.ExecutionConfig.FilterServiceProfile);
-            Assert.AreEqual(100, config.EngineDefaults.ExecutionConfig.FilterServiceMaxFilterWidth);
+            Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.NANO, config.EngineDefaults.TimeSource.TimeSourceType);
+            Assert.AreEqual(TimeUnit.MICROSECONDS, config.EngineDefaults.TimeSource.TimeUnit);
+            Assert.IsTrue(config.EngineDefaults.Execution.IsPrioritized);
+            Assert.IsTrue(config.EngineDefaults.Execution.IsFairlock);
+            Assert.IsTrue(config.EngineDefaults.Execution.IsDisableLocking);
+            Assert.IsTrue(config.EngineDefaults.Execution.IsAllowIsolatedService);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingProfile.LARGE, config.EngineDefaults.Execution.ThreadingProfile);
+            Assert.AreEqual(ConfigurationEngineDefaults.FilterServiceProfile.READWRITE, config.EngineDefaults.Execution.FilterServiceProfile);
+            Assert.AreEqual(100, config.EngineDefaults.Execution.FilterServiceMaxFilterWidth);
     
-            var metrics = config.EngineDefaults.MetricsReportingConfig;
+            var metrics = config.EngineDefaults.MetricsReporting;
             Assert.IsTrue(metrics.IsEnableMetricsReporting);
             Assert.AreEqual(4000L, metrics.EngineInterval);
             Assert.AreEqual(500L, metrics.StatementInterval);
@@ -462,25 +405,25 @@ namespace com.espertech.esper.client
             Assert.AreEqual(100, def.NumStatements);
             Assert.IsFalse(def.IsReportInactive);
             Assert.AreEqual(0, def.Patterns.Count);
-            Assert.IsTrue(config.EngineDefaults.LanguageConfig.IsSortUsingCollator);
-            Assert.IsTrue(config.EngineDefaults.ExpressionConfig.IsIntegerDivision);
-            Assert.IsTrue(config.EngineDefaults.ExpressionConfig.IsDivisionByZeroReturnsNull);
-            Assert.IsFalse(config.EngineDefaults.ExpressionConfig.IsSelfSubselectPreeval);
-            Assert.IsFalse(config.EngineDefaults.ExpressionConfig.IsUdfCache);
-            Assert.IsFalse(config.EngineDefaults.ExpressionConfig.IsExtendedAggregation);
-            Assert.IsTrue(config.EngineDefaults.ExpressionConfig.IsDuckTyping);
-            Assert.AreEqual(2, config.EngineDefaults.ExpressionConfig.MathContext.Precision);
-            Assert.AreEqual(MidpointRounding.ToEven, config.EngineDefaults.ExpressionConfig.MathContext.RoundingMode);
-            Assert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), config.EngineDefaults.ExpressionConfig.TimeZone);
-            Assert.AreEqual(2, config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories.Count);
-            Assert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories[0]);
-            Assert.AreEqual("my.company.cep.AlertExceptionHandlerFactory", config.EngineDefaults.ExceptionHandlingConfig.HandlerFactories[1]);
-            Assert.AreEqual(2, config.EngineDefaults.ConditionHandlingConfig.HandlerFactories.Count);
-            Assert.AreEqual("my.company.cep.LoggingConditionHandlerFactory", config.EngineDefaults.ConditionHandlingConfig.HandlerFactories[0]);
-            Assert.AreEqual("my.company.cep.AlertConditionHandlerFactory", config.EngineDefaults.ConditionHandlingConfig.HandlerFactories[1]);
-            Assert.AreEqual("abc", config.EngineDefaults.ScriptsConfig.DefaultDialect);
+            Assert.IsTrue(config.EngineDefaults.Language.IsSortUsingCollator);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsIntegerDivision);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsDivisionByZeroReturnsNull);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsSelfSubselectPreeval);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsUdfCache);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsExtendedAggregation);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsDuckTyping);
+            Assert.AreEqual(2, config.EngineDefaults.Expression.MathContext.Precision);
+            Assert.AreEqual(MidpointRounding.ToEven, config.EngineDefaults.Expression.MathContext.RoundingMode);
+            Assert.AreEqual(TimeZoneHelper.GetTimeZoneInfo("GMT-4:00"), config.EngineDefaults.Expression.TimeZone);
+            Assert.AreEqual(2, config.EngineDefaults.ExceptionHandling.HandlerFactories.Count);
+            Assert.AreEqual("my.company.cep.LoggingExceptionHandlerFactory", config.EngineDefaults.ExceptionHandling.HandlerFactories[0]);
+            Assert.AreEqual("my.company.cep.AlertExceptionHandlerFactory", config.EngineDefaults.ExceptionHandling.HandlerFactories[1]);
+            Assert.AreEqual(2, config.EngineDefaults.ConditionHandling.HandlerFactories.Count);
+            Assert.AreEqual("my.company.cep.LoggingConditionHandlerFactory", config.EngineDefaults.ConditionHandling.HandlerFactories[0]);
+            Assert.AreEqual("my.company.cep.AlertConditionHandlerFactory", config.EngineDefaults.ConditionHandling.HandlerFactories[1]);
+            Assert.AreEqual("abc", config.EngineDefaults.Scripts.DefaultDialect);
 
-            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST, config.EngineDefaults.ExceptionHandlingConfig.UndeployRethrowPolicy);
+            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.RETHROW_FIRST, config.EngineDefaults.ExceptionHandling.UndeployRethrowPolicy);
 
             // variables
             Assert.AreEqual(3, config.Variables.Count);
@@ -551,21 +494,105 @@ namespace com.espertech.esper.client
             Assert.IsTrue(configVStream.VariantTypeNames.Contains("MyEvenTypetNameTwo"));
             Assert.AreEqual(TypeVarianceEnum.ANY, configVStream.TypeVariance);
         }
-    }
 
-    public static class TransformExtensions
-    {
-        public static IDictionary<K, V> AsBasicDictionary<K, V>(this object anyEntity)
+        [Test]
+        public void TestRegressionFileConfig() 
         {
-            var asRawDictionary = anyEntity as Dictionary<K, V>;
-            if (asRawDictionary != null)
-                return asRawDictionary;
+            Configuration config = new Configuration();
 
-            var asFuzzyDictionary = anyEntity as IDictionary<K, V>;
-            if (asFuzzyDictionary != null)
-                return new Dictionary<K, V>(asFuzzyDictionary);
+            var uri = ResourceManager.ResolveResourceURL(TestConfiguration.ESPER_TEST_CONFIG);
+            var client = new WebClient();
+            using (var stream = client.OpenRead(uri))
+            {
+                ConfigurationParser.DoConfigure(_config, stream, uri.ToString());
+                AssertFileConfig(_config);
+            }
+        }
 
-            throw new ArgumentException("unable to translate dictionary", "anyEntity");
+        [Test]
+        public void TestEngineDefaults()
+        {
+            Configuration config = new Configuration();
+
+            Assert.IsTrue(config.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder);
+            Assert.AreEqual(100, config.EngineDefaults.Threading.InsertIntoDispatchTimeout);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsListenerDispatchPreserveOrder);
+            Assert.AreEqual(1000, config.EngineDefaults.Threading.ListenerDispatchTimeout);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsInternalTimerEnabled);
+            Assert.AreEqual(100, config.EngineDefaults.Threading.InternalTimerMsecResolution);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, config.EngineDefaults.Threading.InsertIntoDispatchLocking);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, config.EngineDefaults.Threading.ListenerDispatchLocking);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsThreadPoolInbound);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsThreadPoolOutbound);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsThreadPoolRouteExec);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsThreadPoolTimerExec);
+            Assert.AreEqual(2, config.EngineDefaults.Threading.ThreadPoolInboundNumThreads);
+            Assert.AreEqual(2, config.EngineDefaults.Threading.ThreadPoolOutboundNumThreads);
+            Assert.AreEqual(2, config.EngineDefaults.Threading.ThreadPoolRouteExecNumThreads);
+            Assert.AreEqual(2, config.EngineDefaults.Threading.ThreadPoolTimerExecNumThreads);
+            Assert.AreEqual(null, config.EngineDefaults.Threading.ThreadPoolInboundCapacity);
+            Assert.AreEqual(null, config.EngineDefaults.Threading.ThreadPoolOutboundCapacity);
+            Assert.AreEqual(null, config.EngineDefaults.Threading.ThreadPoolRouteExecCapacity);
+            Assert.AreEqual(null, config.EngineDefaults.Threading.ThreadPoolTimerExecCapacity);
+            Assert.IsFalse(config.EngineDefaults.Threading.IsEngineFairlock);
+            Assert.IsFalse(config.EngineDefaults.MetricsReporting.IsEnableMetricsReporting);
+            Assert.IsTrue(config.EngineDefaults.Threading.IsNamedWindowConsumerDispatchPreserveOrder);
+            Assert.AreEqual(Int64.MaxValue, config.EngineDefaults.Threading.NamedWindowConsumerDispatchTimeout);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN, config.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking);
+
+            Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, config.EngineDefaults.EventMeta.ClassPropertyResolutionStyle);
+            Assert.AreEqual(AccessorStyleEnum.NATIVE, config.EngineDefaults.EventMeta.DefaultAccessorStyle);
+            Assert.AreEqual(EventUnderlyingType.MAP, config.EngineDefaults.EventMeta.DefaultEventRepresentation);
+            Assert.AreEqual(5, config.EngineDefaults.EventMeta.AnonymousCacheSize);
+            Assert.IsTrue(config.EngineDefaults.EventMeta.AvroSettings.IsEnableAvro);
+            Assert.IsTrue(config.EngineDefaults.EventMeta.AvroSettings.IsEnableNativeString);
+            Assert.IsTrue(config.EngineDefaults.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
+            Assert.IsNull(config.EngineDefaults.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
+            Assert.IsNull(config.EngineDefaults.EventMeta.AvroSettings.TypeRepresentationMapperClass);
+
+            Assert.IsTrue(config.EngineDefaults.ViewResources.IsShareViews);
+            Assert.IsFalse(config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies);
+            Assert.IsFalse(config.EngineDefaults.ViewResources.IsIterableUnbound);
+            Assert.IsFalse(config.EngineDefaults.Logging.IsEnableExecutionDebug);
+            Assert.IsTrue(config.EngineDefaults.Logging.IsEnableTimerDebug);
+            Assert.IsFalse(config.EngineDefaults.Logging.IsEnableQueryPlan);
+            Assert.IsFalse(config.EngineDefaults.Logging.IsEnableADO);
+            Assert.IsNull(config.EngineDefaults.Logging.AuditPattern);
+            Assert.AreEqual(15000, config.EngineDefaults.Variables.MsecVersionRelease);
+            Assert.AreEqual(null, config.EngineDefaults.Patterns.MaxSubexpressions);
+            Assert.AreEqual(true, config.EngineDefaults.Patterns.IsMaxSubexpressionPreventStart);
+            Assert.AreEqual(null, config.EngineDefaults.MatchRecognize.MaxStates);
+            Assert.AreEqual(true, config.EngineDefaults.MatchRecognize.IsMaxStatesPreventStart);
+            Assert.AreEqual(ConfigurationEngineDefaults.TimeSourceType.MILLI, config.EngineDefaults.TimeSource.TimeSourceType);
+            Assert.AreEqual(TimeUnit.MILLISECONDS, config.EngineDefaults.TimeSource.TimeUnit);
+            Assert.IsFalse(config.EngineDefaults.Execution.IsPrioritized);
+            Assert.IsFalse(config.EngineDefaults.Execution.IsDisableLocking);
+            Assert.IsFalse(config.EngineDefaults.Execution.IsAllowIsolatedService);
+            Assert.AreEqual(ConfigurationEngineDefaults.ThreadingProfile.NORMAL, config.EngineDefaults.Execution.ThreadingProfile);
+            Assert.AreEqual(ConfigurationEngineDefaults.FilterServiceProfile.READMOSTLY, config.EngineDefaults.Execution.FilterServiceProfile);
+            Assert.AreEqual(16, config.EngineDefaults.Execution.FilterServiceMaxFilterWidth);
+            Assert.AreEqual(1, config.EngineDefaults.Execution.DeclaredExprValueCacheSize);
+
+            Assert.AreEqual(StreamSelector.ISTREAM_ONLY, config.EngineDefaults.StreamSelection.DefaultStreamSelector);
+            Assert.IsFalse(config.EngineDefaults.Language.IsSortUsingCollator);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsIntegerDivision);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsDivisionByZeroReturnsNull);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsSelfSubselectPreeval);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsUdfCache);
+            Assert.IsTrue(config.EngineDefaults.Expression.IsExtendedAggregation);
+            Assert.IsFalse(config.EngineDefaults.Expression.IsDuckTyping);
+            Assert.IsNull(config.EngineDefaults.Expression.MathContext);
+            Assert.AreEqual(TimeZoneInfo.Local, config.EngineDefaults.Expression.TimeZone);
+            Assert.IsNull(config.EngineDefaults.ExceptionHandling.HandlerFactories);
+            Assert.AreEqual(ConfigurationEngineDefaults.UndeployRethrowPolicy.WARN, config.EngineDefaults.ExceptionHandling.UndeployRethrowPolicy);
+            Assert.IsNull(config.EngineDefaults.ConditionHandling.HandlerFactories);
+            Assert.AreEqual("jscript", config.EngineDefaults.Scripts.DefaultDialect);
+
+            ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
+            Assert.IsFalse(domType.IsXPathPropertyExpr);
+            Assert.IsTrue(domType.IsXPathResolvePropertiesAbsolute);
+            Assert.IsTrue(domType.IsEventSenderValidatesRoot);
+            Assert.IsTrue(domType.IsAutoFragment);
         }
     }
 }

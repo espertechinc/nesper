@@ -14,6 +14,11 @@ namespace com.espertech.esper.compat
 {
     public class Name
     {
+        public static string Clean(Type type, bool useBoxed = true)
+        {
+            return (useBoxed ? type.GetBoxedType() : type).GetCleanName();
+        }
+
         public static string Clean<T>(bool useBoxed = true)
         {
             return (useBoxed ? typeof (T).GetBoxedType() : typeof (T)).GetCleanName();

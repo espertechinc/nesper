@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
 
 using com.espertech.esper.compat.logging;
 
@@ -15,17 +14,15 @@ namespace com.espertech.esper.events.bean
 {
     public class BeanInstantiatorByNewInstanceReflection : BeanInstantiator
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    
         private readonly Type _clazz;
-
+    
         public BeanInstantiatorByNewInstanceReflection(Type clazz)
         {
             _clazz = clazz;
         }
-
-        #region BeanInstantiator Members
-
+    
         public Object Instantiate()
         {
             try
@@ -37,15 +34,12 @@ namespace com.espertech.esper.events.bean
                 return Handle(e);
             }
         }
-
-        #endregion
-
+    
         private Object Handle(Exception e)
         {
-            String message = "Unexpected exception encountered invoking newInstance on class '" + _clazz.Name + "': " +
-                             e.Message;
+            var message = "Unexpected exception encountered invoking newInstance on class '" + _clazz.Name + "': " + e.Message;
             Log.Error(message, e);
             return null;
         }
     }
-}
+} // end of namespace

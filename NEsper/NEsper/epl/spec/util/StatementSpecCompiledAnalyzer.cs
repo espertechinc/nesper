@@ -14,40 +14,51 @@ using com.espertech.esper.pattern;
 
 namespace com.espertech.esper.epl.spec.util
 {
-    public class StatementSpecCompiledAnalyzer {
-    
-        public static StatementSpecCompiledAnalyzerResult AnalyzeFilters(StatementSpecCompiled spec) {
-            IList<FilterSpecCompiled> filters = new List<FilterSpecCompiled>();
-            IList<NamedWindowConsumerStreamSpec> namedWindows = new List<NamedWindowConsumerStreamSpec>();
-    
+    public class StatementSpecCompiledAnalyzer
+    {
+        public static StatementSpecCompiledAnalyzerResult AnalyzeFilters(StatementSpecCompiled spec)
+        {
+            var filters = new List<FilterSpecCompiled>();
+            var namedWindows = new List<NamedWindowConsumerStreamSpec>();
+
             AddFilters(spec.StreamSpecs, filters, namedWindows);
-    
-            foreach (ExprSubselectNode subselect in spec.SubSelectExpressions) {
+
+            foreach (ExprSubselectNode subselect in spec.SubSelectExpressions)
+            {
                 AddFilters(subselect.StatementSpecCompiled.StreamSpecs, filters, namedWindows);
             }
-    
+
             return new StatementSpecCompiledAnalyzerResult(filters, namedWindows);
         }
-    
-        private static void AddFilters(StreamSpecCompiled[] streams, IList<FilterSpecCompiled> filters, IList<NamedWindowConsumerStreamSpec> namedWindows) {
-            foreach (StreamSpecCompiled compiled in streams) {
-                if (compiled is FilterStreamSpecCompiled) {
-                    FilterStreamSpecCompiled c = (FilterStreamSpecCompiled) compiled;
+
+        private static void AddFilters(
+            StreamSpecCompiled[] streams,
+            List<FilterSpecCompiled> filters,
+            List<NamedWindowConsumerStreamSpec> namedWindows)
+        {
+            foreach (StreamSpecCompiled compiled in streams)
+            {
+                if (compiled is FilterStreamSpecCompiled)
+                {
+                    var c = (FilterStreamSpecCompiled) compiled;
                     filters.Add(c.FilterSpec);
                 }
-                if (compiled is PatternStreamSpecCompiled) {
-                    PatternStreamSpecCompiled r = (PatternStreamSpecCompiled) compiled;
-                    EvalNodeAnalysisResult evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes((r.EvalFactoryNode));
+                if (compiled is PatternStreamSpecCompiled)
+                {
+                    var r = (PatternStreamSpecCompiled) compiled;
+                    EvalNodeAnalysisResult evalNodeAnalysisResult =
+                        EvalNodeUtil.RecursiveAnalyzeChildNodes(r.EvalFactoryNode);
                     IList<EvalFilterFactoryNode> filterNodes = evalNodeAnalysisResult.FilterNodes;
                     foreach (EvalFilterFactoryNode filterNode in filterNodes)
                     {
                         filters.Add(filterNode.FilterSpec);
                     }
                 }
-                if (compiled is NamedWindowConsumerStreamSpec) {
+                if (compiled is NamedWindowConsumerStreamSpec)
+                {
                     namedWindows.Add((NamedWindowConsumerStreamSpec) compiled);
                 }
             }
         }
     }
-}
+} // end of namespace

@@ -43,19 +43,19 @@ namespace com.espertech.esper.filter
 
         public EventEvaluator Get(Object filterConstant)
         {
-            var keyValues = (ExprNodeAdapterBase) filterConstant;
+            var keyValues = (ExprNodeAdapterBase)filterConstant;
             return _evaluatorsMap.Get(keyValues);
         }
 
         public void Put(Object filterConstant, EventEvaluator evaluator)
         {
-            var keys = (ExprNodeAdapterBase) filterConstant;
+            var keys = (ExprNodeAdapterBase)filterConstant;
             _evaluatorsMap.Put(keys, evaluator);
         }
 
         public override bool Remove(Object filterConstant)
         {
-            var keys = (ExprNodeAdapterBase) filterConstant;
+            var keys = (ExprNodeAdapterBase)filterConstant;
             return _evaluatorsMap.Delete(keys) != null;
         }
 

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
@@ -18,23 +19,30 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.expression.subquery
 {
-    /// <summary>
-    /// Represents a subselect in an expression tree.
-    /// </summary>
+    /// <summary>Represents a subselect in an expression tree.</summary>
     [Serializable]
     public class ExprSubselectAllSomeAnyNode : ExprSubselectNode
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly bool _isNot;
         private readonly bool _isAll;
         private readonly RelationalOpEnum? _relationalOp;
-    
-        [NonSerialized] private SubselectEvalStrategy _evalStrategy;
-        /// <summary>Ctor. </summary>
+        [NonSerialized] private SubselectEvalStrategyNR _evalStrategy;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="statementSpec">is the lookup statement spec from the parser, unvalidated</param>
         /// <param name="not">when NOT</param>
         /// <param name="all">when ALL, false for ANY</param>
         /// <param name="relationalOpEnum">operator</param>
-        public ExprSubselectAllSomeAnyNode(StatementSpecRaw statementSpec, bool not, bool all, RelationalOpEnum? relationalOpEnum)
+        public ExprSubselectAllSomeAnyNode(
+            StatementSpecRaw statementSpec,
+            bool not,
+            bool all,
+            RelationalOpEnum? relationalOpEnum)
             : base(statementSpec)
         {
             _isNot = not;
@@ -42,21 +50,27 @@ namespace com.espertech.esper.epl.expression.subquery
             _relationalOp = relationalOpEnum;
         }
 
-        /// <summary>Returns true for not. </summary>
+        /// <summary>
+        /// Returns true for not.
+        /// </summary>
         /// <value>not indicator</value>
         public bool IsNot
         {
             get { return _isNot; }
         }
 
-        /// <summary>Returns true for all. </summary>
+        /// <summary>
+        /// Returns true for all.
+        /// </summary>
         /// <value>all indicator</value>
         public bool IsAll
         {
             get { return _isAll; }
         }
 
-        /// <summary>Returns relational op. </summary>
+        /// <summary>
+        /// Returns relational op.
+        /// </summary>
         /// <value>op</value>
         public RelationalOpEnum? RelationalOp
         {
@@ -70,12 +84,18 @@ namespace com.espertech.esper.epl.expression.subquery
 
         public override void ValidateSubquery(ExprValidationContext validationContext)
         {
-            _evalStrategy = SubselectEvalStrategyFactory.CreateStrategy(this, _isNot, _isAll, !_isAll, _relationalOp);
+            _evalStrategy = SubselectEvalStrategyNRFactory.CreateStrategyAnyAllIn(
+                this, _isNot, _isAll, !_isAll, _relationalOp);
         }
-    
-        public override Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override Object Evaluate(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return _evalStrategy.Evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+            return _evalStrategy.Evaluate(
+                eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext, SubselectAggregationService);
         }
 
         public override LinkedHashMap<string, object> TypableGetRowProperties
@@ -83,23 +103,44 @@ namespace com.espertech.esper.epl.expression.subquery
             get { return null; }
         }
 
-        public override Object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+        public override Object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             return null;
         }
-    
-        public override Object[][] EvaluateTypableMulti(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public override Object[][] EvaluateTypableMulti(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             return null;
         }
-    
-        public override ICollection<EventBean> EvaluateGetCollEvents(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext context) {
+
+        public override ICollection<EventBean> EvaluateGetCollEvents(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public override ICollection<object> EvaluateGetCollScalar(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public override ICollection<object> EvaluateGetCollScalar(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             return null;
         }
-    
-        public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId) {
+
+        public override EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
+        {
             return null;
         }
 
@@ -108,15 +149,22 @@ namespace com.espertech.esper.epl.expression.subquery
             get { return null; }
         }
 
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext) {
+        public override EventBean EvaluateGetEventBean(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
             return null;
         }
-    
-        public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId) {
+
+        public override EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
             return null;
         }
-    
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public override EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
+        {
             return null;
         }
 
@@ -125,4 +173,4 @@ namespace com.espertech.esper.epl.expression.subquery
             get { return false; }
         }
     }
-}
+} // end of namespace

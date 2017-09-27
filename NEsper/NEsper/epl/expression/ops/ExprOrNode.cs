@@ -39,7 +39,7 @@ namespace com.espertech.esper.epl.expression.ops
                 throw new ExprValidationException("Incorrect use of OR clause, sub-expressions do not return bool");
             }
     
-            if (ChildNodes.Length <= 1)
+            if (ChildNodes.Count <= 1)
             {
                 throw new ExprValidationException("The OR operator requires at least 2 child expressions");
             }

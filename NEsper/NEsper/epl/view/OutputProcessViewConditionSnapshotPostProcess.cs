@@ -20,7 +20,15 @@ namespace com.espertech.esper.epl.view
     {
         private readonly OutputStrategyPostProcess _postProcessor;
 
-        public OutputProcessViewConditionSnapshotPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
+        public OutputProcessViewConditionSnapshotPostProcess(
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext,
+            OutputStrategyPostProcess postProcessor)
             : base(resultSetProcessorHelperFactory, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
         {
             _postProcessor = postProcessor;

@@ -48,8 +48,8 @@ namespace com.espertech.esper.events
         EventBeanWriter GetWriter(string[] properties);
 
         /// <summary>Returns a reader for reading all properties of an event. This is completely optional and need only be implemented for performance. </summary>
-        /// <returns>reader</returns>
-        EventBeanReader GetReader();
+        /// <value>reader</value>
+        EventBeanReader Reader { get; }
 
         bool EqualsCompareType(EventType eventType);
     }

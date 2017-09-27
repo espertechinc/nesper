@@ -11,52 +11,49 @@ using System.Collections.Generic;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    /// <summary>
-    /// Implements an aggregation service for match recognize.
-    /// </summary>
+    /// <summary>Implements an aggregation service for match recognize.</summary>
     public class AggregationServiceMatchRecognizeFactoryImpl : AggregationServiceMatchRecognizeFactory
     {
         private readonly ExprEvaluator[][] _evaluatorsEachStream;
         private readonly AggregationMethodFactory[][] _factoryEachStream;
-    
-        /// <summary>Ctor. </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="countStreams">number of streams/variables</param>
         /// <param name="aggregatorsPerStream">aggregation methods per stream</param>
         /// <param name="evaluatorsPerStream">evaluation functions per stream</param>
-        public AggregationServiceMatchRecognizeFactoryImpl(int countStreams, IDictionary<int, AggregationMethodFactory[]> aggregatorsPerStream, IDictionary<int, ExprEvaluator[]> evaluatorsPerStream)
+        public AggregationServiceMatchRecognizeFactoryImpl(
+            int countStreams,
+            IEnumerable<KeyValuePair<int, AggregationMethodFactory[]>> aggregatorsPerStream,
+            IEnumerable<KeyValuePair<int, ExprEvaluator[]>> evaluatorsPerStream)
         {
             _evaluatorsEachStream = new ExprEvaluator[countStreams][];
             _factoryEachStream = new AggregationMethodFactory[countStreams][];
     
-            foreach (var agg in aggregatorsPerStream)
-            {
+            foreach (var agg in aggregatorsPerStream) {
                 _factoryEachStream[agg.Key] = agg.Value;
             }
     
-            foreach (var eval in evaluatorsPerStream)
-            {
+            foreach (var eval in evaluatorsPerStream) {
                 _evaluatorsEachStream[eval.Key] = eval.Value;
             }
         }
     
-        public AggregationServiceMatchRecognize MakeService(AgentInstanceContext agentInstanceContext)
-        {
+        public AggregationServiceMatchRecognize MakeService(AgentInstanceContext agentInstanceContext) {
+    
             var aggregatorsEachStream = new AggregationMethod[_factoryEachStream.Length][];
     
             int count = 0;
-            for (int stream = 0; stream < _factoryEachStream.Length; stream++)
-            {
+            for (int stream = 0; stream < _factoryEachStream.Length; stream++) {
                 AggregationMethodFactory[] thatStream = _factoryEachStream[stream];
                 if (thatStream != null) {
                     aggregatorsEachStream[stream] = new AggregationMethod[thatStream.Length];
-                    for (int aggId = 0; aggId < thatStream.Length; aggId++)
-                    {
-                        aggregatorsEachStream[stream][aggId] =
-                            _factoryEachStream[stream][aggId].Make();
+                    for (int aggId = 0; aggId < thatStream.Length; aggId++) {
+                        aggregatorsEachStream[stream][aggId] = _factoryEachStream[stream][aggId].Make();
                         count++;
                     }
                 }
@@ -76,4 +73,4 @@ namespace com.espertech.esper.epl.agg.service
             return new AggregationServiceMatchRecognizeImpl(_evaluatorsEachStream, aggregatorsEachStream, aggregatorsAll);
         }
     }
-}
+} // end of namespace

@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.view.stat;
 
 namespace com.espertech.esper.view.std
@@ -22,27 +21,27 @@ namespace com.espertech.esper.view.std
     public class SizeViewFactory : ViewFactory
     {
         public readonly static String NAME = "Count";
-    
+
         private IList<ExprNode> _viewParameters;
         private int _streamNumber;
-    
+
         protected StatViewAdditionalProps _additionalProps;
-    
+
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
             _viewParameters = expressionParameters;
             _streamNumber = viewFactoryContext.StreamNum;
         }
-    
+
         public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
         {
             ExprNode[] validated = ViewFactorySupport.Validate(ViewName, parentEventType, statementContext, _viewParameters, true);
             _additionalProps = StatViewAdditionalProps.Make(validated, 0, parentEventType);
             _eventType = SizeView.CreateEventType(statementContext, _additionalProps, _streamNumber);
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new SizeView(agentInstanceViewFactoryContext.AgentInstanceContext, _eventType, _additionalProps);
@@ -53,13 +52,14 @@ namespace com.espertech.esper.view.std
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             if (!(view is SizeView))
             {
                 return false;
             }
-            if (_additionalProps != null) {
+            if (_additionalProps != null)
+            {
                 return false;
             }
             return true;

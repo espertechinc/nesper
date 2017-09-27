@@ -9,12 +9,13 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.pattern.observer;
+using com.espertech.esper.epl.expression.funcs.cast;
 using com.espertech.esper.schedule;
 using com.espertech.esper.util;
 
@@ -26,21 +27,36 @@ namespace com.espertech.esper.epl.expression.funcs
     [Serializable]
     public class ExprCastNode : ExprNodeBase
     {
-        internal delegate Object ComputeCaster(Object input, EvaluateParams evaluateParams);
-
-        private readonly String _typeIdentifier;
-        private ComputeCaster _typeCaster;
+        private readonly string _classIdentifier;
         private Type _targetType;
-        private Type _sourceType;
         private bool _isConstant;
-
         [NonSerialized] private ExprEvaluator _exprEvaluator;
 
-        /// <summary>Ctor. </summary>
-        /// <param name="typeIdentifier">the the name of the type to cast to</param>
-        public ExprCastNode(String typeIdentifier)
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="classIdentifier">the the name of the type to cast to</param>
+        public ExprCastNode(string classIdentifier)
         {
-            _typeIdentifier = typeIdentifier;
+            _classIdentifier = classIdentifier;
+        }
+
+        public static void HandleParseException(string formatString, string date, Exception ex)
+        {
+            throw new EPException(
+                "Exception parsing date '" + date + "' format '" + formatString + "': " + ex.Message, ex);
+        }
+
+        public static void HandleParseISOException(string formatString, string date, Exception ex)
+        {
+            if (ex is ScheduleParameterException)
+            {
+                throw new EPException("Exception parsing iso8601 date '" + date + "': " + ex.Message, ex);
+            }
+            else
+            {
+                HandleParseException(formatString, date, ex);
+            }
         }
 
         public override ExprEvaluator ExprEvaluator
@@ -48,172 +64,277 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return _exprEvaluator; }
         }
 
-        /// <summary>Returns the name of the type of cast to. </summary>
+        /// <summary>
+        /// Returns the name of the type of cast to.
+        /// </summary>
         /// <value>type name</value>
-        public string TypeIdentifier
+        public string ClassIdentifier
         {
-            get { return _typeIdentifier; }
+            get { return _classIdentifier; }
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length == 0 || ChildNodes.Length > 2)
+            if (ChildNodes.Count == 0 || ChildNodes.Count > 2)
             {
                 throw new ExprValidationException("Cast function node must have one or two child expressions");
             }
 
             var valueEvaluator = ChildNodes[0].ExprEvaluator;
-            _sourceType = valueEvaluator.ReturnType;
-
-            var typeIdentifier = _typeIdentifier.Trim();
+            var fromType = valueEvaluator.ReturnType;
 
             // determine date format parameter
-            var namedParams = ExprNodeUtility.GetNamedExpressionsHandleDups(ChildNodes);
-            ExprNodeUtility.ValidateNamed(namedParams, new String[] {"dateformat"});
-            ExprNamedParameterNode dateFormatParameter = namedParams.Get("dateformat");
-            if (dateFormatParameter != null) {
-                ExprNodeUtility.ValidateNamedExpectType(dateFormatParameter, typeof(string));
+            var namedParams =
+                ExprNodeUtility.GetNamedExpressionsHandleDups(ChildNodes);
+            ExprNodeUtility.ValidateNamed(namedParams, new string[] { "dateformat" });
+            var dateFormatParameter = namedParams.Get("dateformat");
+            if (dateFormatParameter != null)
+            {
+                ExprNodeUtility.ValidateNamedExpectType(
+                    dateFormatParameter, new Type[]{ typeof (string) });
             }
 
             // identify target type
             // try the primitive names including "string"
-            _targetType = TypeHelper.GetPrimitiveTypeForName(typeIdentifier).GetBoxedType();
-            _isConstant = true;
+            _targetType = TypeHelper.GetPrimitiveTypeForName(_classIdentifier.Trim()).GetBoxedType();
 
-            if (dateFormatParameter != null) {
-                if (_sourceType != typeof (string)) {
-                    throw new ExprValidationException("Use of the '" + dateFormatParameter.ParameterName + "' named parameter requires a string-type input");
+            SimpleTypeCaster caster;
+            bool numeric;
+            CasterParserComputer casterParserComputer = null;
+
+            var classIdentifierInvariant = _classIdentifier.Trim().ToLowerInvariant();
+            if (dateFormatParameter != null)
+            {
+                if (fromType != typeof (string))
+                {
+                    throw new ExprValidationException(
+                        string.Format("Use of the '{0}' named parameter requires a string-type input", dateFormatParameter.ParameterName));
                 }
 
-                if (_targetType == null) {
-                    try {
-                        _targetType = TypeHelper.GetTypeForSimpleName(typeIdentifier);
+                if (_targetType == null)
+                {
+                    try
+                    {
+                        _targetType = TypeHelper.GetClassForName(
+                            _classIdentifier.Trim(), validationContext.EngineImportService.GetClassForNameProvider());
                     }
-                    catch (TypeLoadException e) {
+                    catch (TypeLoadException)
+                    {
                         // expected
                     }
                 }
 
                 // dynamic or static date format
-                String staticDateFormat = null;
-                ExprEvaluator dynamicDateFormat = null;
-                Boolean iso8601Format = false;
-                if (!dateFormatParameter.ChildNodes[0].IsConstantResult) {
-                    dynamicDateFormat = dateFormatParameter.ChildNodes[0].ExprEvaluator;
-                }
-                else {
-                    staticDateFormat = (string) dateFormatParameter.ChildNodes[0].ExprEvaluator.Evaluate(
-                        new EvaluateParams(null, true, validationContext.ExprEvaluatorContext));
-                    if (staticDateFormat.ToLower().Trim() == "iso") {
-                        iso8601Format = true;
-                    }
-                    else {
-                        try {
-                            DateTime dateTimeTemp;
-                            DateTime.TryParseExact("", staticDateFormat, null, DateTimeStyles.None, out dateTimeTemp);
-                            //new SimpleDateFormat(staticDateFormat);
+                numeric = false;
+                caster = null;
+
+
+                StringToDateTimeBaseComputer dateTimeComputer;
+
+                if (_targetType == typeof (DateTime) ||
+                    _targetType == typeof (DateTime?) ||
+                    classIdentifierInvariant.Equals("date"))
+                {
+                    _targetType = typeof (DateTime);
+                    
+                    var desc = ValidateDateFormat(dateFormatParameter, validationContext);
+                    if (desc.StaticDateFormat != null)
+                    {
+                        if (desc.Iso8601Format)
+                        {
+                            dateTimeComputer = new StringToDateTimeWStaticISOFormatComputer(validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseISOException;
                         }
-                        catch (Exception ex) {
-                            throw new ExprValidationException(
-                                "Invalid date format '" + staticDateFormat + "': " + ex.Message, ex);
-                        }
-                    }
-                }
-                if (_targetType == typeof(DateTime?) || typeIdentifier.ToLower() == "date") {
-                    _targetType = typeof(DateTime?);
-                    if (staticDateFormat != null) {
-                        if (iso8601Format) {
-                            _typeCaster = StringToDateTimeWStaticISOFormatComputer();
-                        }
-                        else {
-                            _typeCaster = StringToDateTimeWStaticFormatComputer(staticDateFormat, validationContext.EngineImportService.TimeZone);
+                        else
+                        {
+                            dateTimeComputer = new StringToDateTimeWStaticFormatComputer(desc.StaticDateFormat);
+                            dateTimeComputer.HandleParseException += HandleParseException;
                         }
                     }
-                    else {
-                        _typeCaster = StringToDateTimeWDynamicFormatComputer(dynamicDateFormat, validationContext.EngineImportService.TimeZone);
-                        _isConstant = false;
+                    else
+                    {
+                        dateTimeComputer = new StringToDateTimeWDynamicFormatComputer(desc.DynamicDateFormat);
+                        dateTimeComputer.HandleParseException += HandleParseException;
                     }
                 }
-                else if (_targetType == typeof(long?)) {
-                    _targetType = typeof(long?);
-                    if (staticDateFormat != null) {
-                        if (iso8601Format) {
-                            _typeCaster = StringToLongWStaticISOFormatComputer();
+                else if (_targetType == typeof (DateTimeOffset) ||
+                         _targetType == typeof (DateTimeOffset?) ||
+                         classIdentifierInvariant.Equals("dto") ||
+                         classIdentifierInvariant.Equals("datetimeoffset"))
+                {
+                    _targetType = typeof(DateTimeOffset);
+
+                    var desc = ValidateDateFormat(dateFormatParameter, validationContext);
+                    if (desc.StaticDateFormat != null)
+                    {
+                        if (desc.Iso8601Format)
+                        {
+                            dateTimeComputer = new StringToDtoWStaticISOFormatComputer(validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseISOException;
                         }
-                        else {
-                            _typeCaster = StringToLongWStaticFormatComputer(staticDateFormat, validationContext.EngineImportService.TimeZone);
+                        else
+                        {
+                            dateTimeComputer = new StringToDtoWStaticFormatComputer(desc.StaticDateFormat, validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseException;
                         }
                     }
-                    else {
-                        _typeCaster = StringToLongWDynamicFormatComputer(dynamicDateFormat, validationContext.EngineImportService.TimeZone);
-                        _isConstant = false;
+                    else
+                    {
+                        dateTimeComputer = new StringToDtoWDynamicFormatComputer(desc.DynamicDateFormat, validationContext.EngineImportService.TimeZone);
+                        dateTimeComputer.HandleParseException += HandleParseException;
                     }
                 }
-                else {
-                    throw new ExprValidationException("Use of the '" + dateFormatParameter.ParameterName + "' named parameter requires a target type of datetime or long");
+                else if (_targetType == typeof (DateTimeEx) ||
+                         classIdentifierInvariant.Equals("dtx") ||
+                         classIdentifierInvariant.Equals("datetimeex") ||
+                         classIdentifierInvariant.Equals("calendar"))
+                {
+                    _targetType = typeof(DateTimeEx);
+
+                    var desc = ValidateDateFormat(dateFormatParameter, validationContext);
+                    if (desc.StaticDateFormat != null)
+                    {
+                        if (desc.Iso8601Format)
+                        {
+                            dateTimeComputer = new StringToDtxWStaticISOFormatComputer(validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseISOException;
+                        }
+                        else
+                        {
+                            dateTimeComputer = new StringToDtxWStaticFormatComputer(desc.StaticDateFormat, validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseException;
+                        }
+                    }
+                    else
+                    {
+                        dateTimeComputer = new StringToDtxWDynamicFormatComputer(desc.DynamicDateFormat, validationContext.EngineImportService.TimeZone);
+                        dateTimeComputer.HandleParseException += HandleParseException;
+                    }
                 }
+                else if (_targetType == typeof (long) || _targetType == typeof(long?))
+                {
+                    _targetType = typeof (long);
+
+                    var desc = ValidateDateFormat(dateFormatParameter, validationContext);
+                    if (desc.StaticDateFormat != null)
+                    {
+                        if (desc.Iso8601Format)
+                        {
+                            dateTimeComputer = new StringToDateTimeLongWStaticISOFormatComputer(validationContext.EngineImportService.TimeZone);
+                            dateTimeComputer.HandleParseException += HandleParseISOException;
+                        }
+                        else
+                        {
+                            dateTimeComputer = new StringToDateTimeLongWStaticFormatComputer(desc.StaticDateFormat);
+                            dateTimeComputer.HandleParseException += HandleParseException;
+                        }
+                    }
+                    else
+                    {
+                        dateTimeComputer = new StringToDateTimeLongWDynamicFormatComputer(desc.DynamicDateFormat);
+                        dateTimeComputer.HandleParseException += HandleParseException;
+                    }
+                }
+                else
+                {
+                    throw new ExprValidationException(
+                        "Use of the '" + dateFormatParameter.ParameterName +
+                        "' named parameter requires a target type of long or datetime");
+                }
+
+                casterParserComputer = dateTimeComputer;
             }
-            else if (_targetType == null)
+            else if (_targetType != null)
+            {
+                _targetType = _targetType.GetBoxedType();
+                caster = SimpleTypeCasterFactory.GetCaster(fromType, _targetType);
+                numeric = _targetType.IsNumeric();
+            }
+            else if (String.Equals(classIdentifierInvariant, "bigint", StringComparison.InvariantCultureIgnoreCase) ||
+                     String.Equals(classIdentifierInvariant, "biginteger", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _targetType = typeof (BigInteger);
+                caster = SimpleTypeCasterFactory.GetCaster(fromType, _targetType);
+                numeric = true;
+            }
+            else if (classIdentifierInvariant.Equals("decimal".ToLowerInvariant()))
+            {
+                _targetType = typeof (decimal);
+                caster = SimpleTypeCasterFactory.GetCaster(fromType, _targetType);
+                numeric = true;
+            }
+            else
             {
                 try
                 {
-                    _targetType = TypeHelper.ResolveType(_typeIdentifier, true);
+                    _targetType = TypeHelper.GetClassForName(
+                        _classIdentifier.Trim(), validationContext.EngineImportService.GetClassForNameProvider());
                 }
-                catch (Exception e)
+                catch (TypeLoadException e)
                 {
                     throw new ExprValidationException(
-                        "Type as listed in cast function by name '" + _typeIdentifier + "' cannot be loaded", e);
+                        "Type as listed in cast function by name '" + _classIdentifier + "' cannot be loaded", e);
                 }
+                numeric = _targetType.IsNumeric();
+                caster = numeric
+                    ? SimpleTypeCasterFactory.GetCaster(fromType, _targetType)
+                    : SimpleTypeCasterFactory.GetCaster(_targetType);
             }
 
-            _sourceType = _sourceType.GetBoxedType();
-            _targetType = _targetType.GetBoxedType();
-
-
-            if (_typeCaster != null)
+            // assign a computer unless already assigned
+            if (casterParserComputer == null)
             {
-                // no-op
-            }
-            else if (_sourceType == _targetType)
-            {
-                _typeCaster = (o, evaluateParams) => o;
-            }
-            else if (_targetType == typeof(string))
-            {
-                _typeCaster = (o, evaluateParams) => Convert.ToString(o);
-            }
-            else if (_sourceType == typeof(string))
-            {
-                var typeParser = SimpleTypeParserFactory.GetParser(_targetType);
-                _typeCaster = (o, evaluateParams) => typeParser((string)o);
-            }
-            else
-            {
-                var typeCaster = CastHelper.GetTypeCaster(_sourceType, _targetType);
-                _typeCaster = (o, evaluateParams) => typeCaster.Invoke(o);
+                // to-string
+                if (_targetType == typeof (string))
+                {
+                    casterParserComputer = new StringXFormComputer();
+                }
+                else if (fromType == typeof (string))
+                {
+                    // parse
+                    var parser = SimpleTypeParserFactory.GetParser(_targetType.GetBoxedType());
+                    casterParserComputer = new StringParserComputer(parser);
+                }
+                else if (numeric)
+                {
+                    // numeric cast with check
+                    casterParserComputer = new NumericCasterComputer(caster);
+                }
+                else
+                {
+                    // non-numeric cast
+                    casterParserComputer = new NonnumericCasterComputer(caster);
+                }
             }
 
             // determine constant or not
-            // - basically, if the terms are constant then the cast can be computed now and stored away
-            // - for future use.
-            if (_isConstant && ChildNodes[0].IsConstantResult)
+            Object theConstant = null;
+            if (ChildNodes[0].IsConstantResult)
             {
-                var evaluateParams = new EvaluateParams(null, true, validationContext.ExprEvaluatorContext);
-                var inputValue = valueEvaluator.Evaluate(evaluateParams);
-                var constantValue = _typeCaster.Invoke(inputValue, evaluateParams);
-                _exprEvaluator = new ExprCastNodeConstEval(this, constantValue);
+                _isConstant = casterParserComputer.IsConstantForConstInput;
+                if (_isConstant)
+                {
+                    var evaluateParams = new EvaluateParams(null, true, validationContext.ExprEvaluatorContext);
+                    var @in = valueEvaluator.Evaluate(evaluateParams);
+                    theConstant = @in == null ? null : casterParserComputer.Compute(@in, evaluateParams);
+                }
+            }
+
+            // determine evaluator
+            if (_isConstant)
+            {
+                _exprEvaluator = new ExprCastNodeConstEval(this, theConstant);
             }
             else
             {
-                _exprEvaluator = new ExprCastNodeNonConstEval(this, valueEvaluator, _typeCaster);
+                _exprEvaluator = new ExprCastNodeNonConstEval(this, valueEvaluator, casterParserComputer);
             }
-
             return null;
         }
 
         public override bool IsConstantResult
         {
-            get { return _isConstant && ChildNodes[0].IsConstantResult; }
+            get { return _isConstant; }
         }
 
         public Type TargetType
@@ -221,90 +342,12 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return _targetType; }
         }
 
-        internal static EPException HandleParseException(string formatString, string date, FormatException ex)
-        {
-            return new EPException("Exception parsing date '" + date + "' format '" + formatString + "': " + ex.Message, ex);
-        }
-
-        internal static EPException HandleParseISOException(string date, ScheduleParameterException ex)
-        {
-            return new EPException("Exception parsing iso8601 date '" + date + "': " + ex.Message, ex);
-        }
-
-        internal static DateTimeOffset ParseSafe(string input, string dateFormat, TimeZoneInfo timeZone)
-        {
-            try
-            {
-                return DateTime.ParseExact(
-                    input, dateFormat, (IFormatProvider) null, DateTimeStyles.None);
-            }
-            catch (FormatException e)
-            {
-                throw HandleParseException(dateFormat, input.ToString(), e);
-            }
-        }
-
-        internal static DateTimeOffset StringToDateTimeWStaticISOFormat(object input)
-        {
-            try
-            {
-                return TimerScheduleISO8601Parser.ParseDate(input.ToString()).DateTime;
-            }
-            catch (ScheduleParameterException e)
-            {
-                throw HandleParseISOException(input.ToString(), e);
-            }
-        }
-
-        internal static ComputeCaster StringToLongWStaticISOFormatComputer()
-        {
-            return (input, evaluateParams) => StringToDateTimeWStaticISOFormat(input).TimeInMillis();
-        }
-
-        internal static ComputeCaster StringToDateTimeWStaticISOFormatComputer()
-        {
-            return (input, evaluateParams) => StringToDateTimeWStaticISOFormat(input);
-        }
-
-        internal static ComputeCaster StringToLongWStaticFormatComputer(string dateFormat, TimeZoneInfo timeZone)
-        {
-            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat, timeZone).TimeInMillis();
-        }
-        
-        internal static ComputeCaster StringToDateTimeWStaticFormatComputer(string dateFormat, TimeZoneInfo timeZone)
-        {
-            return (input, evaluateParams) => ParseSafe(input.ToString(), dateFormat, timeZone);
-        }
-
-        internal static DateTimeOffset StringToDateTimeWDynamicFormat(ExprEvaluator dateFormatEval, EvaluateParams evaluateParams, object input, TimeZoneInfo timeZone)
-        {
-            var format = dateFormatEval.Evaluate(evaluateParams);
-            if (format == null)
-            {
-                throw new EPException("Null date format returned by 'dateformat' expression");
-            }
-
-            return ParseSafe(input.ToString(), (string) format, timeZone);
-        }
-
-        internal static ComputeCaster StringToLongWDynamicFormatComputer(ExprEvaluator dateFormatEval, TimeZoneInfo timeZone)
-        {
-            return (input, evaluateParams) => StringToDateTimeWDynamicFormat(dateFormatEval, evaluateParams, input, timeZone).TimeInMillis();
-        }
-
-        internal static ComputeCaster StringToDateTimeWDynamicFormatComputer(ExprEvaluator dateFormatEval, TimeZoneInfo timeZone)
-        {
-            return (input, evaluateParams) => StringToDateTimeWDynamicFormat(dateFormatEval, evaluateParams, input, timeZone);
-        }
-
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
-        {
+        public override void ToPrecedenceFreeEPL(TextWriter writer) {
             writer.Write("cast(");
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             writer.Write(",");
-            writer.Write(_typeIdentifier);
-            for (int i = 1; i < ChildNodes.Length; i++)
-            {
+            writer.Write(_classIdentifier);
+            for (var i = 1; i < ChildNodes.Count; i++) {
                 writer.Write(",");
                 ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
             }
@@ -316,10 +359,59 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
-        {
+        public override bool EqualsNode(ExprNode node) {
             var other = node as ExprCastNode;
-            return (other != null) && (_typeIdentifier == other._typeIdentifier);
+            if (other == null)
+            {
+                return false;
+            }
+
+            return other._classIdentifier.Equals(_classIdentifier);
+        }
+
+        /// <summary>
+        /// Validates the date format.
+        /// </summary>
+        /// <param name="dateFormatParameter">The date format parameter.</param>
+        /// <param name="validationContext">The validation context.</param>
+        /// <returns></returns>
+
+        private ExprCastNodeDateDesc ValidateDateFormat(
+            ExprNamedParameterNode dateFormatParameter,
+            ExprValidationContext validationContext)
+        {
+            string staticDateFormat = null;
+            ExprEvaluator dynamicDateFormat = null;
+            var iso8601Format = false;
+
+            if (!dateFormatParameter.ChildNodes[0].IsConstantResult)
+            {
+                dynamicDateFormat = dateFormatParameter.ChildNodes[0].ExprEvaluator;
+            }
+            else
+            {
+                staticDateFormat = (string) dateFormatParameter.ChildNodes[0].ExprEvaluator.Evaluate(
+                    new EvaluateParams(null, true, validationContext.ExprEvaluatorContext));
+                if (staticDateFormat.ToLowerInvariant().Trim().Equals("iso"))
+                {
+                    iso8601Format = true;
+                }
+                else
+                {
+                    try
+                    {
+                        DateTime dateTimeTemp;
+                        DateTime.TryParseExact("", staticDateFormat, null, DateTimeStyles.None, out dateTimeTemp);
+                        //new SimpleDateFormat(staticDateFormat);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ExprValidationException(
+                            "Invalid date format '" + staticDateFormat + "': " + ex.Message, ex);
+                    }
+                }
+            }
+            return new ExprCastNodeDateDesc(staticDateFormat, dynamicDateFormat, iso8601Format);
         }
     }
-}
+} // end of namespace

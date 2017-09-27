@@ -15,7 +15,7 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.events.bean
 {
     /// <summary>
-    /// Implementation for a property list builder that considers POCO methods
+    /// Implementation for a property list builder that considers PONO methods
     /// and properties as the exposed event properties, plus any explicitly 
     /// configured props.
     /// </summary>

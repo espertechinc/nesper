@@ -16,7 +16,7 @@ namespace com.espertech.esper.client.util
     /// </summary>
     public interface EventPropertyRenderer
     {
-        /// <summary>Render an event property. </summary>
+        /// <summary>RenderAny an event property. </summary>
         /// <param name="context">provides information about the property</param>
         void Render(EventPropertyRendererContext context);
     }

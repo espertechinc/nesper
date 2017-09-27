@@ -18,9 +18,9 @@ namespace com.espertech.esper.epl.expression.dot
     public interface ExprDotEvalRootChildInnerEval
     {
         object Evaluate(EvaluateParams evaluateParams);
-        ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams);
+        ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams);
+        EventBean EvaluateGetEventBean(EvaluateParams evaluateParams);
 
         EventType EventTypeCollection { get; }
         EventType EventTypeSingle { get; }

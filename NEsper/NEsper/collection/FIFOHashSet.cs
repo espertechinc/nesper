@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 namespace com.espertech.esper.collection
 {
     /// <summary>
-    /// FIFOHashSet is a collection that implements "set" principals.  Members of a set
+    /// FIFOHashSet is a collection that : "set" principals.  Members of a set
     /// are unique and can only occur once.  Additionally, iteration of the set is
     /// governed by first-in first-out principal.  This means that the order in which
     /// items are added to the set is preserved through iteration.
@@ -76,32 +76,32 @@ namespace com.espertech.esper.collection
         }
 
         private static readonly int[] PrimeTable =
-            {
-                67,
-                131,
-                257,
-                521,
-                1031,
-                2053,
-                4099,
-                8209,
-                16411,
-                32771,
-                65537,
-                131101,
-                262147,
-                524309,
-                1048583,
-                2097169,
-                4194319,
-                8388617,
-                16777259,
-                33554467,
-                67108879,
-                134217757,
-                268435459,
-                536870923,
-            };
+        {
+            67,
+            131,
+            257,
+            521,
+            1031,
+            2053,
+            4099,
+            8209,
+            16411,
+            32771,
+            65537,
+            131101,
+            262147,
+            524309,
+            1048583,
+            2097169,
+            4194319,
+            8388617,
+            16777259,
+            33554467,
+            67108879,
+            134217757,
+            268435459,
+            536870923,
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FIFOHashSet&lt;T&gt;"/> class.
@@ -552,15 +552,6 @@ namespace com.espertech.esper.collection
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
         /// <exception cref="System.InvalidOperationException">Collection modified</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception>
-        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex" /> is less than 0.</exception>
-        /// <exception cref="T:System.ArgumentException"><paramref name="array" /> is multidimensional.
-        /// -or-
-        /// <paramref name="arrayIndex" /> is equal to or greater than the length of <paramref name="array" />.
-        /// -or-
-        /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.
-        /// -or-
-        /// Type <paramref name="T" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             var arrCount = array.Length - arrayIndex;

@@ -10,7 +10,6 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
 using com.espertech.esper.util;
 
@@ -27,20 +26,37 @@ namespace com.espertech.esper.filter
         [NonSerialized]
         private readonly Coercer _numberCoercer;
         private readonly string _propertyName;
+        [NonSerialized]
+        private readonly Type _returnType;
 
-        public InSetOfValuesContextProp(String propertyName, EventPropertyGetter getter, Coercer coercer) {
+        public InSetOfValuesContextProp(String propertyName, EventPropertyGetter getter, Coercer coercer, Type returnType)
+        {
             _propertyName = propertyName;
             _getter = getter;
             _numberCoercer = coercer;
+            _returnType = returnType;
         }
-    
-        public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext) {
-            if (evaluatorContext.ContextProperties == null) {
+
+        public Type ReturnType
+        {
+            get { return _returnType; }
+        }
+
+        public bool IsConstant
+        {
+            get { return false; }
+        }
+
+        public Object GetFilterValue(MatchedEventMap matchedEvents, ExprEvaluatorContext evaluatorContext)
+        {
+            if (evaluatorContext.ContextProperties == null)
+            {
                 return null;
             }
             Object result = _getter.Get(evaluatorContext.ContextProperties);
-    
-            if (_numberCoercer == null) {
+
+            if (_numberCoercer == null)
+            {
                 return result;
             }
             return _numberCoercer.Invoke(result);
@@ -64,8 +80,8 @@ namespace com.espertech.esper.filter
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (InSetOfValuesContextProp)) return false;
-            return Equals((InSetOfValuesContextProp) obj);
+            if (obj.GetType() != typeof(InSetOfValuesContextProp)) return false;
+            return Equals((InSetOfValuesContextProp)obj);
         }
 
         /// <summary>

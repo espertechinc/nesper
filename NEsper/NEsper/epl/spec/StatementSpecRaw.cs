@@ -101,11 +101,11 @@ namespace com.espertech.esper.epl.spec
         public bool HasVariables { get; set; }
 
         /// <summary>Returns the descriptor for create-variable statements. </summary>
-        /// <value>create-variable info</value>
+        /// <value>create-variable INFO</value>
         public CreateVariableDesc CreateVariableDesc { get; set; }
 
         /// <summary>Gets or sets the desciptor for create-table statements.</summary>
-        /// <value>create-table info</value>
+        /// <value>create-table INFO</value>
         public CreateTableDesc CreateTableDesc { get; set; }
 
         /// <summary>Returns the row limit, or null if none. </summary>

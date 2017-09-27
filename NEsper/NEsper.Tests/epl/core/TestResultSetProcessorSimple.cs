@@ -15,14 +15,12 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
-
-using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -42,8 +40,8 @@ namespace com.espertech.esper.epl.core
             var factory = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeNoAggregateSelectList(), 
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false,
-                new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null, 
-                selectExprEventTypeRegistry, statementContext.EngineImportService, 1, null,
+                new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null,
+                selectExprEventTypeRegistry, statementContext.EngineImportService, 1, "stmtname", null,
                 new Configuration(), null, new TableServiceImpl(), null);
             _selectExprProcessor = factory.Evaluator;
             _orderByProcessor = null;

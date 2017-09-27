@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+
 using com.espertech.esper.client;
 
 namespace com.espertech.esper.events.xml
@@ -22,7 +23,7 @@ namespace com.espertech.esper.events.xml
         , DOMPropertyGetter
     {
         private readonly String _propertyName;
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -31,7 +32,7 @@ namespace com.espertech.esper.events.xml
         {
             _propertyName = propertyName;
         }
-    
+
         public Object GetValueAsFragment(XmlNode node)
         {
             return null;
@@ -51,7 +52,7 @@ namespace com.espertech.esper.events.xml
         {
             return null;
         }
-        
+
         public XmlNode GetValueAsNode(XmlNode node)
         {
             var namedNodeMap = node.Attributes;
@@ -75,26 +76,32 @@ namespace com.espertech.esper.events.xml
                     }
                 }
             }
-    
+
             var list = node.ChildNodes;
-            for (int i = 0; i < list.Count; i++) {
+            for (int i = 0; i < list.Count; i++)
+            {
                 var childNode = list.Item(i);
-                if (childNode == null) {
+                if (childNode == null)
+                {
                     continue;
                 }
 
-                if (childNode.NodeType != XmlNodeType.Element) {
+                if (childNode.NodeType != XmlNodeType.Element)
+                {
                     continue;
                 }
 
-                if (!string.IsNullOrEmpty(childNode.LocalName)) {
-                    if (_propertyName == childNode.LocalName) {
+                if (!string.IsNullOrEmpty(childNode.LocalName))
+                {
+                    if (_propertyName == childNode.LocalName)
+                    {
                         return childNode;
                     }
                     continue;
                 }
 
-                if (childNode.Name == _propertyName) {
+                if (childNode.Name == _propertyName)
+                {
                     return childNode;
                 }
             }
@@ -104,9 +111,9 @@ namespace com.espertech.esper.events.xml
 
         public XObject GetValueAsNode(XObject node)
         {
-            var element = (XElement) node;
+            var element = (XElement)node;
             var namedNodeMap = element.Attributes();
-            foreach(var attrNode in namedNodeMap)
+            foreach (var attrNode in namedNodeMap)
             {
                 if (!string.IsNullOrEmpty(attrNode.Name.LocalName))
                 {
@@ -128,7 +135,7 @@ namespace com.espertech.esper.events.xml
                 .Where(c => c.NodeType == XmlNodeType.Element)
                 .Cast<XElement>();
 
-            foreach(var childNode in list)
+            foreach (var childNode in list)
             {
                 if (!string.IsNullOrEmpty(childNode.Name.LocalName))
                 {
@@ -151,20 +158,76 @@ namespace com.espertech.esper.events.xml
         public Object Get(EventBean eventBean)
         {
             XmlNode node = eventBean.Underlying as XmlNode;
-            if ( node == null )
+            if (node == null)
             {
                 throw new PropertyAccessException("Mismatched property getter to event bean type, " +
                         "the underlying data object is not of type Node");
             }
-    
+
             return GetValueAsNode(node);
         }
-    
+
         public bool IsExistsProperty(EventBean eventBean)
         {
-            return true;
+            // The underlying is expected to be a map
+            if (!(eventBean.Underlying is XmlNode))
+            {
+                throw new PropertyAccessException(
+                    "Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type Node");
+            }
+
+            var node = (XmlNode) eventBean.Underlying;
+            var namedNodeMap = node.Attributes;
+            if (namedNodeMap != null)
+            {
+                for (int i = 0; i < namedNodeMap.Count; i++)
+                {
+                    var attrNode = namedNodeMap.Item(i);
+                    if (!string.IsNullOrEmpty(attrNode.LocalName))
+                    {
+                        if (_propertyName.Equals(attrNode.LocalName))
+                        {
+                            return true;
+                        }
+                        continue;
+                    }
+                    if (_propertyName.Equals(attrNode.Name))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            var list = node.ChildNodes;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var childNode = list.Item(i);
+                if (childNode == null)
+                {
+                    continue;
+                }
+                if (childNode.NodeType != XmlNodeType.Element)
+                {
+                    continue;
+                }
+                if (!string.IsNullOrEmpty(childNode.LocalName))
+                {
+                    if (_propertyName.Equals(childNode.LocalName))
+                    {
+                        return true;
+                    }
+                    continue;
+                }
+                if (childNode.Name.Equals(_propertyName))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
-    
+
         public Object GetFragment(EventBean eventBean)
         {
             return null;  // Never a fragment

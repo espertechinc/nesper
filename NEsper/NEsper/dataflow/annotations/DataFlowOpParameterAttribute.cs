@@ -10,7 +10,7 @@ using System;
 
 namespace com.espertech.esper.dataflow.annotations
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
     public class DataFlowOpParameterAttribute : Attribute
     {
         public String Name { get; set; }

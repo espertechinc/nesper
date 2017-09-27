@@ -16,7 +16,7 @@ namespace com.espertech.esper.epl.expression.core
 {
     public class ExprNodeProxy : IInterceptor
     {
-        private static readonly MethodInfo Target =
+        private static readonly MethodInfo ExprEvaluatorGetterMethod =
             typeof(ExprNode).GetProperty("ExprEvaluator").GetGetMethod();
 
         private static readonly Assembly CastleAssembly =
@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.expression.core
         /// <param name="invocation">The invocation.</param>
         public void Intercept(IInvocation invocation)
         {
-            if (invocation.Method != Target)
+            if (invocation.Method != ExprEvaluatorGetterMethod)
             {
                 invocation.ReturnValue = invocation.Method.Invoke(_exprNode, invocation.Arguments);
             }

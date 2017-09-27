@@ -17,31 +17,28 @@ using com.espertech.esper.epl.@join.table;
 namespace com.espertech.esper.epl.join.pollindex
 {
     /// <summary>
-    /// Strategy for building an index out of poll-results knowing the properties to base 
-    /// the index on, and their coercion types.
+    /// Strategy for building an index out of poll-results knowing the properties to base the index on, and their
+    /// coercion types.
     /// </summary>
     public class PollResultIndexingStrategyIndexCoerceSingle : PollResultIndexingStrategy
     {
         private readonly int _streamNum;
         private readonly EventType _eventType;
-        private readonly String _propertyName;
+        private readonly string _propertyName;
         private readonly Type _coercionType;
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="streamNum">is the stream number of the indexed stream</param>
-        /// <param name="eventType">is the event type of the indexed stream</param>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <param name="coercionType">Type of the coercion.</param>
-        public PollResultIndexingStrategyIndexCoerceSingle(int streamNum, EventType eventType, String propertyName, Type coercionType)
+        public PollResultIndexingStrategyIndexCoerceSingle(
+            int streamNum,
+            EventType eventType,
+            string propertyName,
+            Type coercionType)
         {
             _streamNum = streamNum;
             _eventType = eventType;
             _propertyName = propertyName;
             _coercionType = coercionType;
         }
-    
+
         public EventTable[] Index(IList<EventBean> pollResult, bool isActiveCache, StatementContext statementContext)
         {
             if (!isActiveCache)
@@ -51,18 +48,19 @@ namespace com.espertech.esper.epl.join.pollindex
                     new UnindexedEventTableList(pollResult, _streamNum)
                 };
             }
-            var factory = new PropertyIndexedEventTableSingleCoerceAllFactory(_streamNum, _eventType, _propertyName, _coercionType);
-            var tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
-            foreach (var table in tables)
+            var factory = new PropertyIndexedEventTableSingleCoerceAllFactory(
+                _streamNum, _eventType, _propertyName, _coercionType);
+            EventTable[] tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
+            foreach (EventTable table in tables)
             {
                 table.Add(pollResult.ToArray());
             }
             return tables;
         }
-    
-        public String ToQueryPlan()
+
+        public string ToQueryPlan()
         {
-            return GetType().FullName + " property " + _propertyName + " coercion " + _coercionType;
+            return GetType().Name + " property " + _propertyName + " coercion " + _coercionType;
         }
     }
-}
+} // end of namespace

@@ -31,9 +31,13 @@ namespace com.espertech.esper.compat.collections
                 return false;
             if (t == typeof(string))
                 return true;
-            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.Generic.IList<>)))
-                return false;
+            if (t.IsGenericList())
+                return true;
             if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IList)))
+                return true;
+            if (t.IsGenericEnumerable())
+                return false;
+            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IEnumerable)))
                 return false;
             if (t.IsArray)
                 return false;
@@ -51,9 +55,15 @@ namespace com.espertech.esper.compat.collections
                 return null;
             if (t == typeof(string))
                 return typeof(char);
-            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.Generic.IList<>)))
+            if (t.IsGenericList())
                 return FindGenericInterface(t, typeof (System.Collections.Generic.IList<>)).GetGenericArguments()[0];
             if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IList)))
+                return typeof(object);
+            if (t.IsGenericDictionary())
+                return null;
+            if (t.IsGenericEnumerable())
+                return FindGenericInterface(t, typeof(System.Collections.Generic.IEnumerable<>)).GetGenericArguments()[0];
+            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IEnumerable)))
                 return typeof(object);
 
             return null;
@@ -69,9 +79,15 @@ namespace com.espertech.esper.compat.collections
                 return false;
             if (t == typeof(string))
                 return true;
-            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.Generic.IList<>)))
+            if (t.IsGenericList())
                 return true;
             if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IList)))
+                return true;
+            if (t.IsGenericDictionary())
+                return false;
+            if (t.IsGenericEnumerable())
+                return true;
+            if (util.TypeHelper.IsImplementsInterface(t, typeof(System.Collections.IEnumerable)))
                 return true;
 
             return false;
@@ -197,7 +213,7 @@ namespace com.espertech.esper.compat.collections
 
                 if (!CollectionAccessorTable.TryGetValue(t, out accessor))
                 {
-                    // Scan the object and make sure that it implements the collection interface
+                    // Scan the object and make sure that it : the collection interface
                     var rawInterface = FindGenericInterface(t, typeof(ICollection<>));
                     if (rawInterface == null) {
                         accessor = null;

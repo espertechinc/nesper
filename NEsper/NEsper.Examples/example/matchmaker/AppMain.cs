@@ -42,7 +42,7 @@ namespace NEsper.Example.MatchMaker
             Log.Info("Setting up EPL");
             // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
             var config = new Configuration();
-            config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
+            config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
 
             var listener = new MatchAlertListener();
             var epService = EPServiceProviderManager.GetProvider(_engineURI, config);

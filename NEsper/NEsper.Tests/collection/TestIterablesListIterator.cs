@@ -12,7 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

@@ -48,7 +48,7 @@ namespace com.espertech.esper.filter
         {
             _eventTypes.Clear();
         }
-    
+
         /// <summary>
         /// Add a new event type to the index and use the specified node for the root node of 
         /// its subtree. If the event type already existed, the method will throw an 
@@ -58,7 +58,7 @@ namespace com.espertech.esper.filter
         /// <param name="rootNode">is the root node of the subtree for filter constant indizes and callbacks</param>
         public void Add(EventType eventType, FilterHandleSetNode rootNode)
         {
-            using(_eventTypesLock.AcquireWriteLock())
+            using (_eventTypesLock.AcquireWriteLock())
             {
                 if (_eventTypes.ContainsKey(eventType))
                 {
@@ -67,16 +67,16 @@ namespace com.espertech.esper.filter
                 _eventTypes.Put(eventType, rootNode);
             }
         }
-    
-    
-        public void RemoveType(EventType type) 
+
+
+        public void RemoveType(EventType type)
         {
             using (_eventTypesLock.AcquireWriteLock())
             {
                 _eventTypes.Remove(type);
             }
         }
-    
+
         /// <summary>Returns the root node for the given event type, or null if this event type has not been seen before. </summary>
         /// <param name="eventType">is an event type</param>
         /// <returns>the subtree's root node</returns>
@@ -88,14 +88,14 @@ namespace com.espertech.esper.filter
                 return result;
             }
         }
-    
+
         public void MatchEvent(EventBean theTheEvent, ICollection<FilterHandle> matches)
         {
             EventType eventType = theTheEvent.EventType;
-    
+
             // Attempt to match exact type
             MatchType(eventType, theTheEvent, matches);
-    
+
             // No supertype means we are done
             if (eventType.SuperTypes == null)
             {

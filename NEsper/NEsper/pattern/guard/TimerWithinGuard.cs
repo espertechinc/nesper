@@ -6,75 +6,79 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.metrics.instrumentation;
+using com.espertech.esper.pattern;
 using com.espertech.esper.schedule;
 
 namespace com.espertech.esper.pattern.guard
 {
     /// <summary>
-    /// Guard implementation that keeps a timer instance and quits when the timer expired, letting all <seealso cref="MatchedEventMap"/> instances pass until then.
+    /// Guard implementation that keeps a timer instance and quits when the timer expired,
+    /// letting all <seealso cref="MatchedEventMap" /> instances pass until then.
     /// </summary>
-    public class TimerWithinGuard : Guard, ScheduleHandleCallback
-    {
-        private readonly long _msec;
-        private readonly Quitable _quitable;
-        private readonly long _scheduleSlot;
+    public class TimerWithinGuard : Guard, ScheduleHandleCallback {
+        private readonly long deltaTime;
+        private readonly Quitable quitable;
+        private readonly long scheduleSlot;
     
-        private bool _isTimerActive;
-        private EPStatementHandleCallback _scheduleHandle;
+        private bool isTimerActive;
+        private EPStatementHandleCallback scheduleHandle;
     
-        /// <summary>Ctor. </summary>
-        /// <param name="msec">number of millisecond to guard expiration</param>
-        /// <param name="quitable">to use to indicate that the gaurd quitted</param>
-        public TimerWithinGuard(long msec, Quitable quitable)
-        {
-            _msec = msec;
-            _quitable = quitable;
-            _scheduleSlot = quitable.Context.PatternContext.ScheduleBucket.AllocateSlot();
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="delta">- number of millisecond to guard expiration</param>
+        /// <param name="quitable">- to use to indicate that the gaurd quitted</param>
+        public TimerWithinGuard(long delta, Quitable quitable) {
+            this.deltaTime = delta;
+            this.quitable = quitable;
+            this.scheduleSlot = quitable.Context.PatternContext.ScheduleBucket.AllocateSlot();
         }
     
-        public void StartGuard()
-        {
-            if (_isTimerActive)
-            {
+        public void StartGuard() {
+            if (isTimerActive) {
                 throw new IllegalStateException("Timer already active");
             }
     
             // Start the stopwatch timer
-            _scheduleHandle = new EPStatementHandleCallback(_quitable.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
-            _quitable.Context.PatternContext.SchedulingService.Add(_msec, _scheduleHandle, _scheduleSlot);
-            _isTimerActive = true;
+            scheduleHandle = new EPStatementHandleCallback(quitable.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
+            quitable.Context.PatternContext.SchedulingService.Add(deltaTime, scheduleHandle, scheduleSlot);
+            isTimerActive = true;
         }
     
-        public void StopGuard()
-        {
-            if (_isTimerActive)
-            {
-                _quitable.Context.PatternContext.SchedulingService.Remove(_scheduleHandle, _scheduleSlot);
-                _scheduleHandle = null;
-                _isTimerActive = false;
+        public void StopGuard() {
+            if (isTimerActive) {
+                quitable.Context.PatternContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
+                scheduleHandle = null;
+                isTimerActive = false;
             }
         }
     
-        public bool Inspect(MatchedEventMap matchEvent)
-        {
+        public bool Inspect(MatchedEventMap matchEvent) {
             // no need to test: for timing only, if the timer expired the guardQuit stops any events from coming here
             return true;
         }
     
-        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext)
-        {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternGuardScheduledEval();}
+        public void ScheduledTrigger(EngineLevelExtensionServicesContext engineLevelExtensionServicesContext) {
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().QPatternGuardScheduledEval();
+            }
             // Timer callback is automatically removed when triggering
-            _isTimerActive = false;
-            _quitable.GuardQuit();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternGuardScheduledEval();}
+            isTimerActive = false;
+            quitable.GuardQuit();
+            if (InstrumentationHelper.ENABLED) {
+                InstrumentationHelper.Get().APatternGuardScheduledEval();
+            }
         }
     
         public void Accept(EventGuardVisitor visitor) {
-            visitor.VisitGuard(10, _scheduleSlot);
+            visitor.VisitGuard(10, scheduleSlot);
         }
     }
-}
+} // end of namespace

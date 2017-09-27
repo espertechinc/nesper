@@ -117,9 +117,9 @@ namespace com.espertech.esper.core.service
                     var result = whereClause.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
                     if ((result == null) || (false.Equals(result)))
                     {
-                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AUpdateIStreamApplyWhere((bool?) result); }
+                        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AUpdateIStreamApplyWhere((bool?)result); }
                         if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AUpdateIStreamApply(null, false); }
- 
+
                         continue;
                     }
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AUpdateIStreamApplyWhere(true); }
@@ -186,12 +186,15 @@ namespace com.espertech.esper.core.service
         {
             // evaluate
             Object[] values;
-            if (entry.HasSubselect) {
-                using(entry.AgentInstanceLock.AcquireWriteLock()) {
+            if (entry.HasSubselect)
+            {
+                using (entry.AgentInstanceLock.AcquireWriteLock())
+                {
                     values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext);
                 }
             }
-            else {
+            else
+            {
                 values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext);
             }
 

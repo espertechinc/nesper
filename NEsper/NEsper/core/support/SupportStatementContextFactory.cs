@@ -29,107 +29,92 @@ using com.espertech.esper.view;
 
 namespace com.espertech.esper.core.support
 {
-	public class SupportStatementContextFactory
-	{
-	    public static ExprEvaluatorContext MakeEvaluatorContext()
-        {
-	        return new ExprEvaluatorContextStatement(null, false);
-	    }
-
-	    public static AgentInstanceContext MakeAgentInstanceContext(SchedulingService stub)
-        {
-	        return new AgentInstanceContext(MakeContext(stub), null, -1, null, null, null);
-	    }
-
-	    public static AgentInstanceContext MakeAgentInstanceContext()
-        {
-	        return new AgentInstanceContext(MakeContext(), null, -1, null, null, null);
-	    }
-
-	    public static AgentInstanceViewFactoryChainContext MakeAgentInstanceViewFactoryContext(SchedulingService stub)
-        {
-	        AgentInstanceContext agentInstanceContext = MakeAgentInstanceContext(stub);
-	        return new AgentInstanceViewFactoryChainContext(agentInstanceContext, false, null, null);
-	    }
-
-	    public static AgentInstanceViewFactoryChainContext MakeAgentInstanceViewFactoryContext()
-        {
-	        AgentInstanceContext agentInstanceContext = MakeAgentInstanceContext();
-	        return new AgentInstanceViewFactoryChainContext(agentInstanceContext, false, null, null);
-	    }
-
-	    public static ViewFactoryContext MakeViewContext()
-	    {
-	        StatementContext stmtContext = MakeContext();
-	        return new ViewFactoryContext(stmtContext, 1, "somenamespacetest", "somenametest", false, -1, false);
-	    }
-
-	    public static StatementContext MakeContext()
-	    {
-	        SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
-	        return MakeContext(sched);
-	    }
-
-	    public static StatementContext MakeContext(int statementId)
-	    {
-	        SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
-	        return MakeContext(statementId, sched);
-	    }
-
-	    public static StatementContext MakeContext(SchedulingService stub)
-        {
-	        return MakeContext(1, stub);
-	    }
-
-	    public static StatementContext MakeContext(int statementId, SchedulingService stub)
-	    {
-	        Configuration config = new Configuration();
-	        config.EngineDefaults.ViewResourcesConfig.IsAllowMultipleExpiryPolicies = true;
-
-            TimeSourceServiceImpl timeSourceService = new TimeSourceServiceImpl();
-	        StatementContextEngineServices stmtEngineServices = new StatementContextEngineServices(
-	            "engURI",
-	            SupportEventAdapterService.GetService(),
-	            new NamedWindowMgmtServiceImpl(false, null),
-	            null, new TableServiceImpl(),
-	            new EngineSettingsService(new Configuration().EngineDefaults, new Uri[0]),
-	            new ValueAddEventServiceImpl(),
-	            config,
-	            null,
-	            null,
-	            null,
-	            null,
-                new StatementEventTypeRefImpl(), null, null, null, null, null, new ViewServicePreviousFactoryImpl(), null,
-                new PatternNodeFactoryImpl(), new FilterBooleanExpressionFactoryImpl(), timeSourceService,
-                SupportEngineImportServiceFactory.Make(), AggregationFactoryFactoryDefault.INSTANCE, 
-                new SchedulingServiceImpl(timeSourceService));
-
-	        return new StatementContext(
+    public class SupportStatementContextFactory {
+        public static ExprEvaluatorContext MakeEvaluatorContext() {
+            return new ExprEvaluatorContextStatement(null, false);
+        }
+    
+        public static AgentInstanceContext MakeAgentInstanceContext(SchedulingService stub) {
+            return new AgentInstanceContext(MakeContext(stub), null, -1, null, null, null);
+        }
+    
+        public static AgentInstanceContext MakeAgentInstanceContext() {
+            return new AgentInstanceContext(MakeContext(), null, -1, null, null, null);
+        }
+    
+        public static AgentInstanceViewFactoryChainContext MakeAgentInstanceViewFactoryContext(SchedulingService stub) {
+            AgentInstanceContext agentInstanceContext = MakeAgentInstanceContext(stub);
+            return new AgentInstanceViewFactoryChainContext(agentInstanceContext, false, null, null);
+        }
+    
+        public static AgentInstanceViewFactoryChainContext MakeAgentInstanceViewFactoryContext() {
+            AgentInstanceContext agentInstanceContext = MakeAgentInstanceContext();
+            return new AgentInstanceViewFactoryChainContext(agentInstanceContext, false, null, null);
+        }
+    
+        public static ViewFactoryContext MakeViewContext() {
+            StatementContext stmtContext = MakeContext();
+            return new ViewFactoryContext(stmtContext, 1, "somenamespacetest", "somenametest", false, -1, false);
+        }
+    
+        public static StatementContext MakeContext() {
+            var sched = new SupportSchedulingServiceImpl();
+            return MakeContext(sched);
+        }
+    
+        public static StatementContext MakeContext(int statementId) {
+            var sched = new SupportSchedulingServiceImpl();
+            return MakeContext(statementId, sched);
+        }
+    
+        public static StatementContext MakeContext(SchedulingService stub) {
+            return MakeContext(1, stub);
+        }
+    
+        public static StatementContext MakeContext(int statementId, SchedulingService stub) {
+            var config = new Configuration();
+            config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
+    
+            var timeSourceService = new TimeSourceServiceImpl();
+            var stmtEngineServices = new StatementContextEngineServices("engURI",
+                    SupportEventAdapterService.Service,
+                    new NamedWindowMgmtServiceImpl(false, null),
+                    null, new TableServiceImpl(),
+                    new EngineSettingsService(new Configuration().EngineDefaults, new Uri[0]),
+                    new ValueAddEventServiceImpl(),
+                    config,
+                    null,
+                    null,
+                    null,
+                    null,
+                    new StatementEventTypeRefImpl(), null, null, null, null, null, new ViewServicePreviousFactoryImpl(), null, new PatternNodeFactoryImpl(), new FilterBooleanExpressionFactoryImpl(), timeSourceService, SupportEngineImportServiceFactory.Make(), AggregationFactoryFactoryDefault.INSTANCE, new SchedulingServiceImpl(timeSourceService), null);
+    
+            return new StatementContext(
                 stmtEngineServices,
-	            stub,
-	            new ScheduleBucket(1),
-	            new EPStatementHandle(statementId, "name1", "epl1", StatementType.SELECT, "epl1", false, null, 0, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler()),
-	            new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[] {ViewEnumHelper.BuiltinViews}), null, null),
-	            new PatternObjectResolutionServiceImpl(null),
-	            null,
-	            null,
-	            null,
-	            null,
-	            new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.Threading())), // statement result svc
-	            null,
-	            null,
-	            null,
-	            null,
-	            null,
-	            null,
-	            null,
-	            false,
-	            null,
-	            null,
-	            AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
+                stub,
+                new ScheduleBucket(1),
+                new EPStatementHandle(statementId, "name1", "epl1", StatementType.SELECT, "epl1", false, null, 0, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler()),
+                new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{ViewEnumHelper.BuiltinViews}), null, null),
+                new PatternObjectResolutionServiceImpl(null),
                 null,
-	            false,
-	            null, new StatementSemiAnonymousTypeRegistryImpl(), 0);
-	    }
-	}
+                null,
+                null,
+                null,
+                new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig())), // statement result svc
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
+                null,
+                false,
+                null, new StatementSemiAnonymousTypeRegistryImpl(), 0);
+        }
+    }
 } // end of namespace

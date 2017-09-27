@@ -23,7 +23,7 @@ namespace com.espertech.esper.core.service
         private readonly bool _useSpin;
         private readonly TimeSourceService _timeSourceService;
         private readonly long _msecWait;
-    
+
         private InsertIntoLatchSpin _currentLatchSpin;
         private InsertIntoLatchWait _currentLatchWait;
 
@@ -35,15 +35,20 @@ namespace com.espertech.esper.core.service
         /// <param name="msecWait">the number of milliseconds latches will await maximually</param>
         /// <param name="locking">the blocking strategy to employ</param>
         /// <param name="timeSourceService">time source provider</param>
-        public InsertIntoLatchFactory(String name, bool stateless, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking, TimeSourceService timeSourceService)
+        public InsertIntoLatchFactory(
+            String name,
+            bool stateless,
+            long msecWait,
+            ConfigurationEngineDefaults.ThreadingConfig.Locking locking,
+            TimeSourceService timeSourceService)
         {
             _name = name;
             _msecWait = msecWait;
             _timeSourceService = timeSourceService;
             _stateless = stateless;
-    
-            _useSpin = (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
-    
+
+            _useSpin = (locking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN);
+
             // construct a completed latch as an initial root latch
             if (_useSpin)
             {
@@ -54,7 +59,7 @@ namespace com.espertech.esper.core.service
                 _currentLatchWait = new InsertIntoLatchWait(this);
             }
         }
-    
+
         /// <summary>Returns a new latch.
         /// <para>
         /// Need not be synchronized as there is one per statement and execution is during statement lock.

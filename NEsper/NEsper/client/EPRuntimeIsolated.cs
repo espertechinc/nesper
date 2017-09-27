@@ -96,8 +96,8 @@ namespace com.espertech.esper.client
         /// not inspect the event object other then perform basic checking.
         /// </para>
         /// <para>
-        /// For events backed by a class, the sender ensures that the object send in matches in class, or implements or 
-        /// extends the class underlying the event type for the given event type name.
+        /// For events backed by a class, the sender ensures that the object send in matches in class, or : or 
+        /// : the class underlying the event type for the given event type name.
         /// </para>
         /// <para>
         /// For events backed by a Object[] (Object-array events), the sender does not perform any checking other then checking 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.client
         /// </para>
         /// <para>
         /// For events backed by a DataMap (Map events), the sender does not perform any checking other then checking that the 
-        /// event object indeed implements Map. 
+        /// event object indeed : Map. 
         /// </para>
         /// <para>
         /// For events backed by a XmlNode (XML DOM events), the sender checks that the root element name indeed does match the 

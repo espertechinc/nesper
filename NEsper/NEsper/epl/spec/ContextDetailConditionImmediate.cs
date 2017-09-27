@@ -15,9 +15,15 @@ namespace com.espertech.esper.epl.spec
 {
     public class ContextDetailConditionImmediate : ContextDetailCondition
     {
+        public static readonly ContextDetailConditionImmediate INSTANCE = new ContextDetailConditionImmediate();
+
+        private ContextDetailConditionImmediate()
+        {
+        }
+
         public IList<FilterSpecCompiled> FilterSpecIfAny
         {
             get { return Collections.GetEmptyList<FilterSpecCompiled>(); }
         }
     }
-}
+} // end of namespace

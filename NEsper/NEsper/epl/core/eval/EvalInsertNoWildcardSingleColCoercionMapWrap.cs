@@ -8,32 +8,29 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.core.eval
 {
     public class EvalInsertNoWildcardSingleColCoercionMapWrap
-        : EvalBaseFirstProp,
-          SelectExprProcessor
+        : EvalBaseFirstPropFromWrap
+        , SelectExprProcessor
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public EvalInsertNoWildcardSingleColCoercionMapWrap(SelectExprContext selectExprContext,
-                                                            EventType resultEventType)
-            : base(selectExprContext, resultEventType)
+        public EvalInsertNoWildcardSingleColCoercionMapWrap(
+            SelectExprContext selectExprContext,
+            WrapperEventType wrapper)
+            : base(selectExprContext, wrapper)
         {
         }
 
         public override EventBean ProcessFirstCol(Object result)
         {
-            EventBean wrappedEvent = base.EventAdapterService.AdapterForTypedMap((IDictionary<string, object>) result,
-                                                                                 base.ResultEventType);
-            return base.EventAdapterService.AdapterForTypedWrapper(wrappedEvent, Collections.EmptyDataMap,
-                                                                   base.ResultEventType);
+            EventBean wrappedEvent = base.EventAdapterService.AdapterForTypedMap(
+                (IDictionary<string, object>) result, Wrapper.UnderlyingEventType);
+            return base.EventAdapterService.AdapterForTypedWrapper(wrappedEvent, Collections.EmptyDataMap, Wrapper);
         }
     }
-}
+} // end of namespace

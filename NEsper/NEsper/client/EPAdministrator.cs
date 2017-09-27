@@ -276,7 +276,7 @@ namespace com.espertech.esper.client
         /// </returns>
         /// <throws>EPException when the expression was not valid</throws>
         EPStatement Create(EPPreparedStatement prepared);
-  
+
         /// <summary>
         /// Returns the statement by the given statement name. Returns null if a statement
         /// of that name has not been created, or if the statement by that name has been

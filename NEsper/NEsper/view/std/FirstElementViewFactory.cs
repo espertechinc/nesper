@@ -10,38 +10,39 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.view;
 
 namespace com.espertech.esper.view.std
 {
     /// <summary>
-    /// Factory for <seealso cref="com.espertech.esper.view.std.FirstElementView"/> instances.
+    /// Factory for <seealso cref="com.espertech.esper.view.std.FirstElementView" /> instances.
     /// </summary>
     public class FirstElementViewFactory : AsymetricDataWindowViewFactory
     {
-        public readonly static String NAME = "First-Event";
-    
+        public static readonly string NAME = "First-Event";
+
         private EventType _eventType;
-    
+
         public void SetViewParameters(ViewFactoryContext viewFactoryContext, IList<ExprNode> expressionParameters)
         {
-            IList<Object> viewParameters = ViewFactorySupport.ValidateAndEvaluate(ViewName, viewFactoryContext.StatementContext, expressionParameters);
-            if (viewParameters.IsNotEmpty())
-            {
-                String errorMessage = ViewName + " view does not take any parameters";
-                throw new ViewParameterException(errorMessage);
-            }
+            ViewFactorySupport.ValidateNoParameters(ViewName, expressionParameters);
         }
-    
-        public void Attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, IList<ViewFactory> parentViewFactories)
+
+        public void Attach(
+            EventType parentEventType,
+            StatementContext statementContext,
+            ViewFactory optionalParentFactory,
+            IList<ViewFactory> parentViewFactories)
         {
             _eventType = parentEventType;
         }
-    
+
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new FirstElementView(this);
@@ -52,7 +53,7 @@ namespace com.espertech.esper.view.std
             get { return _eventType; }
         }
 
-        public bool CanReuse(View view)
+        public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
             return view is FirstElementView;
         }
@@ -62,4 +63,4 @@ namespace com.espertech.esper.view.std
             get { return NAME; }
         }
     }
-}
+} // end of namespace
