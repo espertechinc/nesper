@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "NEsper", "NEsper.shfbproj", "{30D3F30E-22B1-4E20-A455-B19FA98499F9}"
+Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "NEsperDocumentation", "NEsperDocumentation\NEsperDocumentation.shfbproj", "{09C3E32D-1F92-40C1-B3FC-B89953EC7DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{30D3F30E-22B1-4E20-A455-B19FA98499F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{30D3F30E-22B1-4E20-A455-B19FA98499F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{30D3F30E-22B1-4E20-A455-B19FA98499F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{30D3F30E-22B1-4E20-A455-B19FA98499F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09C3E32D-1F92-40C1-B3FC-B89953EC7DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09C3E32D-1F92-40C1-B3FC-B89953EC7DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09C3E32D-1F92-40C1-B3FC-B89953EC7DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09C3E32D-1F92-40C1-B3FC-B89953EC7DB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {87B2AAC7-40DA-45D0-9086-CC66D98D8DDE}
 	EndGlobalSection
 EndGlobal

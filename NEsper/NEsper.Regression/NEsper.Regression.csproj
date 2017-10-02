@@ -1134,10 +1134,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Github\avro\lang\csharp\src\apache\main\Avro.main.csproj">
-      <Project>{a0a5ca3c-f58c-4d07-98b0-2c7b62ab20f0}</Project>
-      <Name>Avro.main</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj">
       <Project>{ff1f81c2-1e8f-44da-a659-710c4a65a234}</Project>
       <Name>NEsper.Avro</Name>

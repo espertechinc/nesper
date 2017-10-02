@@ -273,7 +273,7 @@
 
   <Target Name="Documentation">
     <Message Text="Building NEsper Documentation - Configuration: $(Configuration)" />
-    <MSBuild Projects="NEsper.shfbproj" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\NEsper.chm')"/>
+    <MSBuild Projects="NEsper-Documentation.sln" Properties="Configuration=$(Configuration);Platform=Any CPU" Condition="!Exists('$(BuildRoot)\docs\NEsper.chm')"/>
     <Delete Files="$(BuildRoot)\docs\LastBuild.log"/>
   </Target>
 
