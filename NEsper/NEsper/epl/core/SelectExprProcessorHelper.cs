@@ -203,1135 +203,1140 @@ namespace com.espertech.esper.epl.core
             }
         }
 
-        public SelectExprProcessor GetEvaluator()
+        public SelectExprProcessor Evaluator
         {
-            // Get the named and un-named stream selectors (i.e. select s0.* from S0 as s0), if any
-            var namedStreams = new List<SelectClauseStreamCompiledSpec>();
-            var unnamedStreams = new List<SelectExprStreamDesc>();
-            foreach (SelectExprStreamDesc spec in _selectedStreams)
+            get
             {
-                // handle special "Transpose(...)" function
-                if ((spec.StreamSelected != null && spec.StreamSelected.OptionalName == null)
-                    ||
-                    (spec.ExpressionSelectedAsStream != null))
+                // Get the named and un-named stream selectors (i.e. select s0.* from S0 as s0), if any
+                var namedStreams = new List<SelectClauseStreamCompiledSpec>();
+                var unnamedStreams = new List<SelectExprStreamDesc>();
+                foreach (SelectExprStreamDesc spec in _selectedStreams)
                 {
-                    unnamedStreams.Add(spec);
-                }
-                else
-                {
-                    namedStreams.Add(spec.StreamSelected);
-                    if (spec.StreamSelected.IsProperty)
+                    // handle special "Transpose(...)" function
+                    if ((spec.StreamSelected != null && spec.StreamSelected.OptionalName == null)
+                        ||
+                        (spec.ExpressionSelectedAsStream != null))
                     {
-                        throw new ExprValidationException(
-                            "The property wildcard syntax must be used without column name");
+                        unnamedStreams.Add(spec);
+                    }
+                    else
+                    {
+                        namedStreams.Add(spec.StreamSelected);
+                        if (spec.StreamSelected.IsProperty)
+                        {
+                            throw new ExprValidationException(
+                                "The property wildcard syntax must be used without column name");
+                        }
                     }
                 }
-            }
 
-            // Error if there are more then one un-named streams (i.e. select s0.*, s1.* from S0 as s0, S1 as s1)
-            // Thus there is only 1 unnamed stream selector maximum.
-            if (unnamedStreams.Count > 1)
-            {
-                throw new ExprValidationException(
-                    "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
-            }
-
-            if (_selectedStreams.IsEmpty() && _selectionList.IsEmpty() && !_isUsingWildcard)
-            {
-                throw new ArgumentException("Empty selection list not supported");
-            }
-
-            foreach (SelectClauseExprCompiledSpec entry in _selectionList)
-            {
-                if (entry.AssignedName == null)
+                // Error if there are more then one un-named streams (i.e. select s0.*, s1.* from S0 as s0, S1 as s1)
+                // Thus there is only 1 unnamed stream selector maximum.
+                if (unnamedStreams.Count > 1)
                 {
-                    throw new ArgumentException("Expected name for each expression has not been supplied");
+                    throw new ExprValidationException(
+                        "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
                 }
-            }
 
-            // Verify insert into clause
-            if (_insertIntoDesc != null)
-            {
-                VerifyInsertInto(_insertIntoDesc, _selectionList);
-            }
-
-            // Build a subordinate wildcard processor for joins
-            SelectExprProcessor joinWildcardProcessor = null;
-            if (_typeService.StreamNames.Length > 1 && _isUsingWildcard)
-            {
-                joinWildcardProcessor = SelectExprJoinWildcardProcessorFactory.Create(
-                    _assignedTypeNumberStack, _statementId, _statementName, _typeService.StreamNames,
-                    _typeService.EventTypes, _eventAdapterService, null, _selectExprEventTypeRegistry,
-                    _engineImportService, _annotations, _configuration, _tableService, _typeService.EngineURIQualifier);
-            }
-
-            // Resolve underlying event type in the case of wildcard select
-            EventType eventType = null;
-            bool singleStreamWrapper = false;
-            if (_isUsingWildcard)
-            {
-                if (joinWildcardProcessor != null)
+                if (_selectedStreams.IsEmpty() && _selectionList.IsEmpty() && !_isUsingWildcard)
                 {
-                    eventType = joinWildcardProcessor.ResultEventType;
+                    throw new ArgumentException("EmptyFalse selection list not supported");
                 }
-                else
+
+                foreach (SelectClauseExprCompiledSpec entry in _selectionList)
                 {
-                    eventType = _typeService.EventTypes[0];
-                    if (eventType is WrapperEventType)
+                    if (entry.AssignedName == null)
                     {
-                        singleStreamWrapper = true;
+                        throw new ArgumentException("Expected name for each expression has not been supplied");
                     }
                 }
-            }
 
-            // Find if there is any fragments selected
-            EventType insertIntoTargetType = null;
-            if (_insertIntoDesc != null)
-            {
-                if (_optionalInsertIntoOverrideType != null)
-                {
-                    insertIntoTargetType = _optionalInsertIntoOverrideType;
-                }
-                else
-                {
-                    insertIntoTargetType = _eventAdapterService.GetEventTypeByName(_insertIntoDesc.EventTypeName);
-                    TableMetadata tableMetadata = _tableService.GetTableMetadata(_insertIntoDesc.EventTypeName);
-                    if (tableMetadata != null)
-                    {
-                        insertIntoTargetType = tableMetadata.InternalEventType;
-                        _optionalInsertIntoOverrideType = insertIntoTargetType;
-                    }
-                }
-            }
-
-            // Obtain insert-into per-column type information, when available
-            EPType[] insertIntoTargetsPerCol = DetermineInsertedEventTypeTargets(insertIntoTargetType, _selectionList);
-
-            // Get expression nodes
-            var exprEvaluators = new ExprEvaluator[_selectionList.Count];
-            var exprNodes = new ExprNode[_selectionList.Count];
-            var expressionReturnTypes = new Object[_selectionList.Count];
-            for (int i = 0; i < _selectionList.Count; i++)
-            {
-                SelectClauseExprCompiledSpec spec = _selectionList[i];
-                ExprNode expr = spec.SelectExpression;
-                ExprEvaluator evaluator = expr.ExprEvaluator;
-                exprNodes[i] = expr;
-
-                // if there is insert-into specification, use that
+                // Verify insert into clause
                 if (_insertIntoDesc != null)
                 {
-                    // handle insert-into, with well-defined target event-typed column, and enumeration
-                    TypeAndFunctionPair pairX = HandleInsertIntoEnumeration(
-                        spec.ProvidedName, insertIntoTargetsPerCol[i], evaluator, _engineImportService);
-                    if (pairX != null)
+                    VerifyInsertInto(_insertIntoDesc, _selectionList);
+                }
+
+                // Build a subordinate wildcard processor for joins
+                SelectExprProcessor joinWildcardProcessor = null;
+                if (_typeService.StreamNames.Length > 1 && _isUsingWildcard)
+                {
+                    joinWildcardProcessor = SelectExprJoinWildcardProcessorFactory.Create(
+                        _assignedTypeNumberStack, _statementId, _statementName, _typeService.StreamNames,
+                        _typeService.EventTypes, _eventAdapterService, null, _selectExprEventTypeRegistry,
+                        _engineImportService, _annotations, _configuration, _tableService, _typeService.EngineURIQualifier);
+                }
+
+                // Resolve underlying event type in the case of wildcard select
+                EventType eventType = null;
+                bool singleStreamWrapper = false;
+                if (_isUsingWildcard)
+                {
+                    if (joinWildcardProcessor != null)
                     {
-                        expressionReturnTypes[i] = pairX.Type;
-                        exprEvaluators[i] = pairX.Function;
-                        continue;
+                        eventType = joinWildcardProcessor.ResultEventType;
                     }
-
-                    // handle insert-into with well-defined target event-typed column, and typable expression
-                    pairX = HandleInsertIntoTypableExpression(
-                        insertIntoTargetsPerCol[i], evaluator, _engineImportService);
-                    if (pairX != null)
+                    else
                     {
-                        expressionReturnTypes[i] = pairX.Type;
-                        exprEvaluators[i] = pairX.Function;
-                        continue;
-                    }
-                }
-
-                // handle @eventbean annotation, i.e. well-defined type through enumeration
-                TypeAndFunctionPair pair = HandleAtEventbeanEnumeration(spec.IsEvents, evaluator);
-                if (pair != null)
-                {
-                    expressionReturnTypes[i] = pair.Type;
-                    exprEvaluators[i] = pair.Function;
-                    continue;
-                }
-
-                // handle typeable return, i.e. typable multi-column return without provided target type
-                pair = HandleTypableExpression(evaluator, i);
-                if (pair != null)
-                {
-                    expressionReturnTypes[i] = pair.Type;
-                    exprEvaluators[i] = pair.Function;
-                    continue;
-                }
-
-                // handle select-clause expressions that match group-by expressions with rollup and therefore should be boxed types as rollup can produce a null value
-                if (_groupByRollupInfo != null && _groupByRollupInfo.RollupDesc != null)
-                {
-                    Type returnType = evaluator.ReturnType;
-                    Type returnTypeBoxed = returnType.GetBoxedType();
-                    if (returnType != returnTypeBoxed && IsGroupByRollupNullableExpression(expr, _groupByRollupInfo))
-                    {
-                        exprEvaluators[i] = evaluator;
-                        expressionReturnTypes[i] = returnTypeBoxed;
-                        continue;
+                        eventType = _typeService.EventTypes[0];
+                        if (eventType is WrapperEventType)
+                        {
+                            singleStreamWrapper = true;
+                        }
                     }
                 }
 
-                // assign normal expected return type
-                exprEvaluators[i] = evaluator;
-                expressionReturnTypes[i] = exprEvaluators[i].ReturnType;
-            }
-
-            // Get column names
-            string[] columnNames;
-            string[] columnNamesAsProvided;
-            if ((_insertIntoDesc != null) && (!_insertIntoDesc.ColumnNames.IsEmpty()))
-            {
-                columnNames = _insertIntoDesc.ColumnNames.ToArray();
-                columnNamesAsProvided = columnNames;
-            }
-            else if (!_selectedStreams.IsEmpty())
-            {
-                // handle stream selection column names
-                int numStreamColumnsJoin = 0;
-                if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
+                // Find if there is any fragments selected
+                EventType insertIntoTargetType = null;
+                if (_insertIntoDesc != null)
                 {
-                    numStreamColumnsJoin = _typeService.EventTypes.Length;
-                }
-                columnNames = new string[_selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
-                columnNamesAsProvided = new string[columnNames.Length];
-                int countX = 0;
-                foreach (SelectClauseExprCompiledSpec aSelectionList in _selectionList)
-                {
-                    columnNames[countX] = aSelectionList.AssignedName;
-                    columnNamesAsProvided[countX] = aSelectionList.ProvidedName;
-                    countX++;
-                }
-                foreach (SelectClauseStreamCompiledSpec aSelectionList in namedStreams)
-                {
-                    columnNames[countX] = aSelectionList.OptionalName;
-                    columnNamesAsProvided[countX] = aSelectionList.OptionalName;
-                    countX++;
-                }
-                // for wildcard joins, add the streams themselves
-                if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
-                {
-                    foreach (string streamName in _typeService.StreamNames)
+                    if (_optionalInsertIntoOverrideType != null)
                     {
-                        columnNames[countX] = streamName;
-                        columnNamesAsProvided[countX] = streamName;
-                        countX++;
+                        insertIntoTargetType = _optionalInsertIntoOverrideType;
+                    }
+                    else
+                    {
+                        insertIntoTargetType = _eventAdapterService.GetEventTypeByName(_insertIntoDesc.EventTypeName);
+                        TableMetadata tableMetadata = _tableService.GetTableMetadata(_insertIntoDesc.EventTypeName);
+                        if (tableMetadata != null)
+                        {
+                            insertIntoTargetType = tableMetadata.InternalEventType;
+                            _optionalInsertIntoOverrideType = insertIntoTargetType;
+                        }
                     }
                 }
-            }
-            else
-            {
-                // handle regular column names
-                columnNames = new string[_selectionList.Count];
-                columnNamesAsProvided = new string[_selectionList.Count];
+
+                // Obtain insert-into per-column type information, when available
+                EPType[] insertIntoTargetsPerCol = DetermineInsertedEventTypeTargets(insertIntoTargetType, _selectionList);
+
+                // Get expression nodes
+                var exprEvaluators = new ExprEvaluator[_selectionList.Count];
+                var exprNodes = new ExprNode[_selectionList.Count];
+                var expressionReturnTypes = new Object[_selectionList.Count];
                 for (int i = 0; i < _selectionList.Count; i++)
                 {
-                    columnNames[i] = _selectionList[i].AssignedName;
-                    columnNamesAsProvided[i] = _selectionList[i].ProvidedName;
-                }
-            }
+                    SelectClauseExprCompiledSpec spec = _selectionList[i];
+                    ExprNode expr = spec.SelectExpression;
+                    ExprEvaluator evaluator = expr.ExprEvaluator;
+                    exprNodes[i] = expr;
 
-            // Find if there is any fragment event types:
-            // This is a special case for fragments: select a, b from pattern [a=A -> b=B]
-            // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
-            for (int i = 0; i < _selectionList.Count; i++)
-            {
-                if (!(exprNodes[i] is ExprIdentNode))
-                {
-                    continue;
+                    // if there is insert-into specification, use that
+                    if (_insertIntoDesc != null)
+                    {
+                        // handle insert-into, with well-defined target event-typed column, and enumeration
+                        TypeAndFunctionPair pairX = HandleInsertIntoEnumeration(
+                            spec.ProvidedName, insertIntoTargetsPerCol[i], evaluator, _engineImportService);
+                        if (pairX != null)
+                        {
+                            expressionReturnTypes[i] = pairX.Type;
+                            exprEvaluators[i] = pairX.Function;
+                            continue;
+                        }
+
+                        // handle insert-into with well-defined target event-typed column, and typable expression
+                        pairX = HandleInsertIntoTypableExpression(
+                            insertIntoTargetsPerCol[i], evaluator, _engineImportService);
+                        if (pairX != null)
+                        {
+                            expressionReturnTypes[i] = pairX.Type;
+                            exprEvaluators[i] = pairX.Function;
+                            continue;
+                        }
+                    }
+
+                    // handle @eventbean annotation, i.e. well-defined type through enumeration
+                    TypeAndFunctionPair pair = HandleAtEventbeanEnumeration(spec.IsEvents, evaluator);
+                    if (pair != null)
+                    {
+                        expressionReturnTypes[i] = pair.Type;
+                        exprEvaluators[i] = pair.Function;
+                        continue;
+                    }
+
+                    // handle typeable return, i.e. typable multi-column return without provided target type
+                    pair = HandleTypableExpression(evaluator, i);
+                    if (pair != null)
+                    {
+                        expressionReturnTypes[i] = pair.Type;
+                        exprEvaluators[i] = pair.Function;
+                        continue;
+                    }
+
+                    // handle select-clause expressions that match group-by expressions with rollup and therefore should be boxed types as rollup can produce a null value
+                    if (_groupByRollupInfo != null && _groupByRollupInfo.RollupDesc != null)
+                    {
+                        Type returnType = evaluator.ReturnType;
+                        Type returnTypeBoxed = returnType.GetBoxedType();
+                        if (returnType != returnTypeBoxed && IsGroupByRollupNullableExpression(expr, _groupByRollupInfo))
+                        {
+                            exprEvaluators[i] = evaluator;
+                            expressionReturnTypes[i] = returnTypeBoxed;
+                            continue;
+                        }
+                    }
+
+                    // assign normal expected return type
+                    exprEvaluators[i] = evaluator;
+                    expressionReturnTypes[i] = exprEvaluators[i].ReturnType;
                 }
 
-                var identNode = (ExprIdentNode) exprNodes[i];
-                string propertyName = identNode.ResolvedPropertyName;
-                int streamNum = identNode.StreamId;
-
-                EventType eventTypeStream = _typeService.EventTypes[streamNum];
-                if (eventTypeStream is NativeEventType)
+                // Get column names
+                string[] columnNames;
+                string[] columnNamesAsProvided;
+                if ((_insertIntoDesc != null) && (!_insertIntoDesc.ColumnNames.IsEmpty()))
                 {
-                    continue; // we do not transpose the native type for performance reasons
+                    columnNames = _insertIntoDesc.ColumnNames.ToArray();
+                    columnNamesAsProvided = columnNames;
                 }
-
-                FragmentEventType fragmentType = eventTypeStream.GetFragmentType(propertyName);
-                if ((fragmentType == null) || (fragmentType.IsNative))
+                else if (!_selectedStreams.IsEmpty())
                 {
-                    continue; // we also ignore native classes as fragments for performance reasons
-                }
-
-                // may need to unwrap the fragment if the target type has this underlying type
-                FragmentEventType targetFragment = null;
-                if (insertIntoTargetType != null)
-                {
-                    targetFragment = insertIntoTargetType.GetFragmentType(columnNames[i]);
-                }
-                if ((insertIntoTargetType != null) &&
-                    (fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i]) &&
-                    ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
-                {
-                    EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
-                    Type returnType = eventTypeStream.GetPropertyType(propertyName);
-                    exprEvaluators[i] = new SelectExprProcessorEvalByGetter(streamNum, getter, returnType);
-                }
-                else if ((insertIntoTargetType != null) && expressionReturnTypes[i] is Type &&
-                         (fragmentType.FragmentType.UnderlyingType == ((Type) expressionReturnTypes[i]).GetElementType()) &&
-                         ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
-                {
-                    // same for arrays: may need to unwrap the fragment if the target type has this underlying type
-                    EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
-                    Type returnType = TypeHelper.GetArrayType(eventTypeStream.GetPropertyType(propertyName));
-                    exprEvaluators[i] = new SelectExprProcessorEvalByGetter(streamNum, getter, returnType);
+                    // handle stream selection column names
+                    int numStreamColumnsJoin = 0;
+                    if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
+                    {
+                        numStreamColumnsJoin = _typeService.EventTypes.Length;
+                    }
+                    columnNames = new string[_selectionList.Count + namedStreams.Count + numStreamColumnsJoin];
+                    columnNamesAsProvided = new string[columnNames.Length];
+                    int countX = 0;
+                    foreach (SelectClauseExprCompiledSpec aSelectionList in _selectionList)
+                    {
+                        columnNames[countX] = aSelectionList.AssignedName;
+                        columnNamesAsProvided[countX] = aSelectionList.ProvidedName;
+                        countX++;
+                    }
+                    foreach (SelectClauseStreamCompiledSpec aSelectionList in namedStreams)
+                    {
+                        columnNames[countX] = aSelectionList.OptionalName;
+                        columnNamesAsProvided[countX] = aSelectionList.OptionalName;
+                        countX++;
+                    }
+                    // for wildcard joins, add the streams themselves
+                    if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
+                    {
+                        foreach (string streamName in _typeService.StreamNames)
+                        {
+                            columnNames[countX] = streamName;
+                            columnNamesAsProvided[countX] = streamName;
+                            countX++;
+                        }
+                    }
                 }
                 else
                 {
-                    EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
-                    FragmentEventType fragType = eventTypeStream.GetFragmentType(propertyName);
-                    Type undType = fragType.FragmentType.UnderlyingType;
-                    Type returnType = fragType.IsIndexed ? TypeHelper.GetArrayType(undType) : undType;
-                    exprEvaluators[i] = new SelectExprProcessorEvalByGetterFragment(streamNum, getter, returnType);
-                    if (!fragmentType.IsIndexed)
+                    // handle regular column names
+                    columnNames = new string[_selectionList.Count];
+                    columnNamesAsProvided = new string[_selectionList.Count];
+                    for (int i = 0; i < _selectionList.Count; i++)
                     {
-                        expressionReturnTypes[i] = fragmentType.FragmentType;
+                        columnNames[i] = _selectionList[i].AssignedName;
+                        columnNamesAsProvided[i] = _selectionList[i].ProvidedName;
+                    }
+                }
+
+                // Find if there is any fragment event types:
+                // This is a special case for fragments: select a, b from pattern [a=A -> b=B]
+                // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
+                for (int i = 0; i < _selectionList.Count; i++)
+                {
+                    if (!(exprNodes[i] is ExprIdentNode))
+                    {
+                        continue;
+                    }
+
+                    var identNode = (ExprIdentNode) exprNodes[i];
+                    string propertyName = identNode.ResolvedPropertyName;
+                    int streamNum = identNode.StreamId;
+
+                    EventType eventTypeStream = _typeService.EventTypes[streamNum];
+                    if (eventTypeStream is NativeEventType)
+                    {
+                        continue; // we do not transpose the native type for performance reasons
+                    }
+
+                    FragmentEventType fragmentType = eventTypeStream.GetFragmentType(propertyName);
+                    if ((fragmentType == null) || (fragmentType.IsNative))
+                    {
+                        continue; // we also ignore native classes as fragments for performance reasons
+                    }
+
+                    // may need to unwrap the fragment if the target type has this underlying type
+                    FragmentEventType targetFragment = null;
+                    if (insertIntoTargetType != null)
+                    {
+                        targetFragment = insertIntoTargetType.GetFragmentType(columnNames[i]);
+                    }
+                    if ((insertIntoTargetType != null) &&
+                        (fragmentType.FragmentType.UnderlyingType == expressionReturnTypes[i]) &&
+                        ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
+                    {
+                        EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
+                        Type returnType = eventTypeStream.GetPropertyType(propertyName);
+                        exprEvaluators[i] = new SelectExprProcessorEvalByGetter(streamNum, getter, returnType);
+                    }
+                    else if ((insertIntoTargetType != null) && expressionReturnTypes[i] is Type &&
+                             (fragmentType.FragmentType.UnderlyingType == ((Type) expressionReturnTypes[i]).GetElementType()) &&
+                             ((targetFragment == null) || (targetFragment != null && targetFragment.IsNative)))
+                    {
+                        // same for arrays: may need to unwrap the fragment if the target type has this underlying type
+                        EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
+                        Type returnType = TypeHelper.GetArrayType(eventTypeStream.GetPropertyType(propertyName));
+                        exprEvaluators[i] = new SelectExprProcessorEvalByGetter(streamNum, getter, returnType);
                     }
                     else
                     {
-                        expressionReturnTypes[i] = new EventType[]
+                        EventPropertyGetter getter = eventTypeStream.GetGetter(propertyName);
+                        FragmentEventType fragType = eventTypeStream.GetFragmentType(propertyName);
+                        Type undType = fragType.FragmentType.UnderlyingType;
+                        Type returnType = fragType.IsIndexed ? TypeHelper.GetArrayType(undType) : undType;
+                        exprEvaluators[i] = new SelectExprProcessorEvalByGetterFragment(streamNum, getter, returnType);
+                        if (!fragmentType.IsIndexed)
                         {
-                            fragmentType.FragmentType
-                        };
+                            expressionReturnTypes[i] = fragmentType.FragmentType;
+                        }
+                        else
+                        {
+                            expressionReturnTypes[i] = new EventType[]
+                            {
+                                fragmentType.FragmentType
+                            };
+                        }
                     }
                 }
-            }
 
-            // Find if there is any stream expression (ExprStreamNode) :
-            // This is a special case for stream selection: select a, b from A as a, B as b
-            // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
-            for (int i = 0; i < _selectionList.Count; i++)
-            {
-                Pair<ExprEvaluator, object> pair = HandleUnderlyingStreamInsert(
-                    exprEvaluators[i], _namedWindowMgmtService, _eventAdapterService);
-                if (pair != null)
+                // Find if there is any stream expression (ExprStreamNode) :
+                // This is a special case for stream selection: select a, b from A as a, B as b
+                // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
+                for (int i = 0; i < _selectionList.Count; i++)
                 {
-                    exprEvaluators[i] = pair.First;
-                    expressionReturnTypes[i] = pair.Second;
+                    Pair<ExprEvaluator, object> pair = HandleUnderlyingStreamInsert(
+                        exprEvaluators[i], _namedWindowMgmtService, _eventAdapterService);
+                    if (pair != null)
+                    {
+                        exprEvaluators[i] = pair.First;
+                        expressionReturnTypes[i] = pair.Second;
+                    }
                 }
-            }
 
-            // Build event type that reflects all selected properties
-            var selPropertyTypes = new LinkedHashMap<string, Object>();
-            int count = 0;
-            for (int i = 0; i < exprEvaluators.Length; i++)
-            {
-                object expressionReturnType = expressionReturnTypes[count];
-                selPropertyTypes.Put(columnNames[count], expressionReturnType);
-                count++;
-            }
-            if (!_selectedStreams.IsEmpty())
-            {
-                foreach (SelectClauseStreamCompiledSpec element in namedStreams)
+                // Build event type that reflects all selected properties
+                var selPropertyTypes = new LinkedHashMap<string, Object>();
+                int count = 0;
+                for (int i = 0; i < exprEvaluators.Length; i++)
                 {
-                    EventType eventTypeStream;
-                    if (element.TableMetadata != null)
-                    {
-                        eventTypeStream = element.TableMetadata.PublicEventType;
-                    }
-                    else
-                    {
-                        eventTypeStream = _typeService.EventTypes[element.StreamNumber];
-                    }
-                    selPropertyTypes.Put(columnNames[count], eventTypeStream);
+                    object expressionReturnType = expressionReturnTypes[count];
+                    selPropertyTypes.Put(columnNames[count], expressionReturnType);
                     count++;
                 }
-                if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
+                if (!_selectedStreams.IsEmpty())
                 {
-                    for (int i = 0; i < _typeService.EventTypes.Length; i++)
+                    foreach (SelectClauseStreamCompiledSpec element in namedStreams)
                     {
-                        EventType eventTypeStream = _typeService.EventTypes[i];
+                        EventType eventTypeStream;
+                        if (element.TableMetadata != null)
+                        {
+                            eventTypeStream = element.TableMetadata.PublicEventType;
+                        }
+                        else
+                        {
+                            eventTypeStream = _typeService.EventTypes[element.StreamNumber];
+                        }
                         selPropertyTypes.Put(columnNames[count], eventTypeStream);
                         count++;
                     }
-                }
-            }
-
-            // Handle stream selection
-            EventType underlyingEventType = null;
-            int underlyingStreamNumber = 0;
-            bool underlyingIsFragmentEvent = false;
-            EventPropertyGetter underlyingPropertyEventGetter = null;
-            ExprEvaluator underlyingExprEvaluator = null;
-            var representation = EventRepresentationUtil.GetRepresentation(
-                _annotations, _configuration, AssignedType.NONE);
-
-            if (!_selectedStreams.IsEmpty())
-            {
-                // Resolve underlying event type in the case of wildcard or non-named stream select.
-                // Determine if the we are considering a tagged event or a stream name.
-                if (_isUsingWildcard || (!unnamedStreams.IsEmpty()))
-                {
-                    if (!unnamedStreams.IsEmpty())
+                    if (_isUsingWildcard && _typeService.EventTypes.Length > 1)
                     {
-                        if (unnamedStreams[0].StreamSelected != null)
+                        for (int i = 0; i < _typeService.EventTypes.Length; i++)
                         {
-                            SelectClauseStreamCompiledSpec streamSpec = unnamedStreams[0].StreamSelected;
+                            EventType eventTypeStream = _typeService.EventTypes[i];
+                            selPropertyTypes.Put(columnNames[count], eventTypeStream);
+                            count++;
+                        }
+                    }
+                }
 
-                            // the tag.* syntax for :  select tag.* from pattern [tag = A]
-                            underlyingStreamNumber = streamSpec.StreamNumber;
-                            if (streamSpec.IsFragmentEvent)
-                            {
-                                EventType compositeMap = _typeService.EventTypes[underlyingStreamNumber];
-                                FragmentEventType fragment = compositeMap.GetFragmentType(streamSpec.StreamName);
-                                underlyingEventType = fragment.FragmentType;
-                                underlyingIsFragmentEvent = true;
-                            }
-                            else if (streamSpec.IsProperty)
-                            {
-                                // the property.* syntax for :  select property.* from A
-                                string propertyName = streamSpec.StreamName;
-                                Type propertyType = streamSpec.PropertyType;
-                                int streamNumber = streamSpec.StreamNumber;
+                // Handle stream selection
+                EventType underlyingEventType = null;
+                int underlyingStreamNumber = 0;
+                bool underlyingIsFragmentEvent = false;
+                EventPropertyGetter underlyingPropertyEventGetter = null;
+                ExprEvaluator underlyingExprEvaluator = null;
+                var representation = EventRepresentationUtil.GetRepresentation(
+                    _annotations, _configuration, AssignedType.NONE);
 
-                                if (streamSpec.PropertyType.IsBuiltinDataType())
+                if (!_selectedStreams.IsEmpty())
+                {
+                    // Resolve underlying event type in the case of wildcard or non-named stream select.
+                    // Determine if the we are considering a tagged event or a stream name.
+                    if (_isUsingWildcard || (!unnamedStreams.IsEmpty()))
+                    {
+                        if (!unnamedStreams.IsEmpty())
+                        {
+                            if (unnamedStreams[0].StreamSelected != null)
+                            {
+                                SelectClauseStreamCompiledSpec streamSpec = unnamedStreams[0].StreamSelected;
+
+                                // the tag.* syntax for :  select tag.* from pattern [tag = A]
+                                underlyingStreamNumber = streamSpec.StreamNumber;
+                                if (streamSpec.IsFragmentEvent)
                                 {
-                                    throw new ExprValidationException(
-                                        "The property wildcard syntax cannot be used on built-in types as returned by property '" +
-                                        propertyName + "'");
+                                    EventType compositeMap = _typeService.EventTypes[underlyingStreamNumber];
+                                    FragmentEventType fragment = compositeMap.GetFragmentType(streamSpec.StreamName);
+                                    underlyingEventType = fragment.FragmentType;
+                                    underlyingIsFragmentEvent = true;
                                 }
-
-                                // create or get an underlying type for that Class
-                                underlyingEventType = _eventAdapterService.AddBeanType(
-                                    propertyType.Name, propertyType, false, false, false);
-                                _selectExprEventTypeRegistry.Add(underlyingEventType);
-                                underlyingPropertyEventGetter =
-                                    _typeService.EventTypes[streamNumber].GetGetter(propertyName);
-                                if (underlyingPropertyEventGetter == null)
+                                else if (streamSpec.IsProperty)
                                 {
-                                    throw new ExprValidationException(
-                                        "Unexpected error resolving property getter for property " + propertyName);
+                                    // the property.* syntax for :  select property.* from A
+                                    string propertyName = streamSpec.StreamName;
+                                    Type propertyType = streamSpec.PropertyType;
+                                    int streamNumber = streamSpec.StreamNumber;
+
+                                    if (streamSpec.PropertyType.IsBuiltinDataType())
+                                    {
+                                        throw new ExprValidationException(
+                                            "The property wildcard syntax cannot be used on built-in types as returned by property '" +
+                                            propertyName + "'");
+                                    }
+
+                                    // create or get an underlying type for that Class
+                                    underlyingEventType = _eventAdapterService.AddBeanType(
+                                        propertyType.GetDefaultTypeName(), propertyType, false, false, false);
+                                    _selectExprEventTypeRegistry.Add(underlyingEventType);
+                                    underlyingPropertyEventGetter =
+                                        _typeService.EventTypes[streamNumber].GetGetter(propertyName);
+                                    if (underlyingPropertyEventGetter == null)
+                                    {
+                                        throw new ExprValidationException(
+                                            "Unexpected error resolving property getter for property " + propertyName);
+                                    }
+                                }
+                                else
+                                {
+                                    // the stream.* syntax for:  select a.* from A as a
+                                    underlyingEventType = _typeService.EventTypes[underlyingStreamNumber];
                                 }
                             }
                             else
                             {
-                                // the stream.* syntax for:  select a.* from A as a
-                                underlyingEventType = _typeService.EventTypes[underlyingStreamNumber];
-                            }
-                        }
-                        else
-                        {
-                            // handle case where the unnamed stream is a "transpose" function, for non-insert-into
-                            if (_insertIntoDesc == null || insertIntoTargetType == null)
-                            {
-                                ExprNode expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
-                                Type returnType = expression.ExprEvaluator.ReturnType;
-                                if (returnType == typeof (Object[]) || returnType.IsImplementsInterface(typeof (IDictionary<string, object>)) ||
-                                    returnType.IsBuiltinDataType())
+                                // handle case where the unnamed stream is a "transpose" function, for non-insert-into
+                                if (_insertIntoDesc == null || insertIntoTargetType == null)
                                 {
-                                    throw new ExprValidationException(
-                                        "Invalid expression return type '" + returnType.Name +
-                                        "' for transpose function");
+                                    ExprNode expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
+                                    Type returnType = expression.ExprEvaluator.ReturnType;
+                                    if (returnType == typeof (Object[]) ||
+                                        returnType.IsImplementsInterface(typeof (IDictionary<string, object>)) ||
+                                        returnType.IsBuiltinDataType())
+                                    {
+                                        throw new ExprValidationException(
+                                            "Invalid expression return type '" + Name.Clean(returnType) +
+                                            "' for transpose function");
+                                    }
+                                    underlyingEventType = _eventAdapterService.AddBeanType(
+                                        returnType.GetDefaultTypeName(), returnType, false, false, false);
+                                    _selectExprEventTypeRegistry.Add(underlyingEventType);
+                                    underlyingExprEvaluator = expression.ExprEvaluator;
                                 }
-                                underlyingEventType = _eventAdapterService.AddBeanType(
-                                    returnType.Name, returnType, false, false, false);
-                                _selectExprEventTypeRegistry.Add(underlyingEventType);
-                                underlyingExprEvaluator = expression.ExprEvaluator;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // no un-named stream selectors, but a wildcard was specified
-                        if (_typeService.EventTypes.Length == 1)
-                        {
-                            // not a join, we are using the selected event
-                            underlyingEventType = _typeService.EventTypes[0];
-                            if (underlyingEventType is WrapperEventType)
-                            {
-                                singleStreamWrapper = true;
                             }
                         }
                         else
                         {
-                            // For joins, all results are placed in a map with properties for each stream
-                            underlyingEventType = null;
+                            // no un-named stream selectors, but a wildcard was specified
+                            if (_typeService.EventTypes.Length == 1)
+                            {
+                                // not a join, we are using the selected event
+                                underlyingEventType = _typeService.EventTypes[0];
+                                if (underlyingEventType is WrapperEventType)
+                                {
+                                    singleStreamWrapper = true;
+                                }
+                            }
+                            else
+                            {
+                                // For joins, all results are placed in a map with properties for each stream
+                                underlyingEventType = null;
+                            }
                         }
                     }
                 }
-            }
 
-            var selectExprContext = new SelectExprContext(exprEvaluators, columnNames, _eventAdapterService);
+                var selectExprContext = new SelectExprContext(exprEvaluators, columnNames, _eventAdapterService);
 
-            if (_insertIntoDesc == null)
-            {
-                if (!_selectedStreams.IsEmpty())
+                if (_insertIntoDesc == null)
                 {
-                    EventType resultEventTypeX;
-                    if (underlyingEventType != null)
+                    if (!_selectedStreams.IsEmpty())
                     {
-                        TableMetadata tableMetadata = _tableService.GetTableMetadataFromEventType(underlyingEventType);
-                        if (tableMetadata != null)
+                        EventType resultEventTypeX;
+                        if (underlyingEventType != null)
                         {
-                            underlyingEventType = tableMetadata.PublicEventType;
+                            TableMetadata tableMetadata = _tableService.GetTableMetadataFromEventType(underlyingEventType);
+                            if (tableMetadata != null)
+                            {
+                                underlyingEventType = tableMetadata.PublicEventType;
+                            }
+                            resultEventTypeX =
+                                _eventAdapterService.CreateAnonymousWrapperType(
+                                    _statementId + "_wrapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                    underlyingEventType, selPropertyTypes);
+                            return new EvalSelectStreamWUnderlying(
+                                selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
+                                unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
+                                underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
                         }
-                        resultEventTypeX =
+                        else
+                        {
+                            resultEventTypeX =
+                                _eventAdapterService.CreateAnonymousMapType(
+                                    _statementId + "_mapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                    selPropertyTypes, true);
+                            return new EvalSelectStreamNoUnderlyingMap(
+                                selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
+                        }
+                    }
+
+                    if (_isUsingWildcard)
+                    {
+                        EventType resultEventTypeX =
                             _eventAdapterService.CreateAnonymousWrapperType(
-                                _statementId + "_wrapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                                underlyingEventType, selPropertyTypes);
-                        return new EvalSelectStreamWUnderlying(
-                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
-                            unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
-                            underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
+                                _statementId + "_wrapoutwild_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                eventType, selPropertyTypes);
+                        if (singleStreamWrapper)
+                        {
+                            return new EvalSelectWildcardSSWrapper(selectExprContext, resultEventTypeX);
+                        }
+                        if (joinWildcardProcessor == null)
+                        {
+                            return new EvalSelectWildcard(selectExprContext, resultEventTypeX);
+                        }
+                        return new EvalSelectWildcardJoin(selectExprContext, resultEventTypeX, joinWildcardProcessor);
                     }
-                    else
-                    {
-                        resultEventTypeX =
-                            _eventAdapterService.CreateAnonymousMapType(
-                                _statementId + "_mapout_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                                selPropertyTypes, true);
-                        return new EvalSelectStreamNoUnderlyingMap(
-                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
-                    }
-                }
 
-                if (_isUsingWildcard)
-                {
-                    EventType resultEventTypeX =
-                        _eventAdapterService.CreateAnonymousWrapperType(
-                            _statementId + "_wrapoutwild_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                            eventType, selPropertyTypes);
-                    if (singleStreamWrapper)
-                    {
-                        return new EvalSelectWildcardSSWrapper(selectExprContext, resultEventTypeX);
-                    }
-                    if (joinWildcardProcessor == null)
-                    {
-                        return new EvalSelectWildcard(selectExprContext, resultEventTypeX);
-                    }
-                    return new EvalSelectWildcardJoin(selectExprContext, resultEventTypeX, joinWildcardProcessor);
-                }
-
-                EventType resultEventType;
-                if (representation == EventUnderlyingType.OBJECTARRAY)
-                {
-                    resultEventType =
-                        _eventAdapterService.CreateAnonymousObjectArrayType(
-                            _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                            selPropertyTypes);
-                }
-                else if (representation == EventUnderlyingType.AVRO)
-                {
-                    resultEventType =
-                        _eventAdapterService.CreateAnonymousAvroType(
-                            _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                            selPropertyTypes, _annotations, _statementName, _typeService.EngineURIQualifier);
-                }
-                else
-                {
-                    resultEventType =
-                        _eventAdapterService.CreateAnonymousMapType(
-                            _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                            selPropertyTypes, true);
-                }
-
-                if (selectExprContext.ExpressionNodes.Length == 0)
-                {
-                    return new EvalSelectNoWildcardEmptyProps(selectExprContext, resultEventType);
-                }
-                else
-                {
+                    EventType resultEventType;
                     if (representation == EventUnderlyingType.OBJECTARRAY)
                     {
-                        return new EvalSelectNoWildcardObjectArray(selectExprContext, resultEventType);
+                        resultEventType =
+                            _eventAdapterService.CreateAnonymousObjectArrayType(
+                                _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                selPropertyTypes);
                     }
                     else if (representation == EventUnderlyingType.AVRO)
                     {
-                        return
-                            _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeSelectNoWildcard(
-                                selectExprContext, resultEventType, _tableService, _statementName,
-                                _typeService.EngineURIQualifier);
-                    }
-                    return new EvalSelectNoWildcardMap(selectExprContext, resultEventType);
-                }
-            }
-
-            EventType vaeInnerEventType = null;
-            bool singleColumnWrapOrBeanCoercion = false;
-                // Additional single-column coercion for non-wrapped type done by SelectExprInsertEventBeanFactory
-            bool isRevisionEvent = false;
-
-            try
-            {
-                if (!_selectedStreams.IsEmpty())
-                {
-                    EventType resultEventTypeX;
-
-                    // handle "transpose" special function with predefined target type
-                    if (insertIntoTargetType != null && _selectedStreams[0].ExpressionSelectedAsStream != null)
-                    {
-                        if (exprEvaluators.Length != 0)
-                        {
-                            throw new ExprValidationException(
-                                "Cannot transpose additional properties in the select-clause to target event type '" +
-                                insertIntoTargetType.Name +
-                                "' with underlying type '" + insertIntoTargetType.UnderlyingType.Name + "', the " +
-                                EngineImportServiceConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE +
-                                " function must occur alone in the select clause");
-                        }
-                        ExprNode expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
-                        Type returnType = expression.ExprEvaluator.ReturnType;
-                        if (insertIntoTargetType is ObjectArrayEventType && returnType == typeof (Object[]))
-                        {
-                            return
-                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceObjectArray(
-                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
-                        }
-                        else if (insertIntoTargetType is MapEventType && returnType.IsImplementsInterface(typeof (IDictionary<string, object>)))
-                        {
-                            return
-                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceMap(
-                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
-                        }
-                        else if (insertIntoTargetType is BeanEventType &&
-                                 TypeHelper.IsSubclassOrImplementsInterface(
-                                     returnType, insertIntoTargetType.UnderlyingType))
-                        {
-                            return
-                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceNative(
-                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
-                        }
-                        else if (insertIntoTargetType is AvroSchemaEventType &&
-                                 returnType.Name.Equals(AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME))
-                        {
-                            return
-                                new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceAvro(
-                                    insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
-                        }
-                        else if (insertIntoTargetType is WrapperEventType)
-                        {
-                            // for native event types as they got renamed, they become wrappers
-                            // check if the proposed wrapper is compatible with the existing wrapper
-                            var existing = (WrapperEventType) insertIntoTargetType;
-                            if (existing.UnderlyingEventType is BeanEventType)
-                            {
-                                var innerType = (BeanEventType) existing.UnderlyingEventType;
-                                ExprEvaluator evalExprEvaluator =
-                                    unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression.ExprEvaluator;
-                                if (
-                                    !TypeHelper.IsSubclassOrImplementsInterface(
-                                        evalExprEvaluator.ReturnType, innerType.UnderlyingType))
-                                {
-                                    throw new ExprValidationException(
-                                        "Invalid expression return type '" + evalExprEvaluator.ReturnType +
-                                        "' for transpose function, expected '" +
-                                        innerType.UnderlyingType.Name + "'");
-                                }
-                                resultEventTypeX = _eventAdapterService.AddWrapperType(
-                                    insertIntoTargetType.Name, existing.UnderlyingEventType, selPropertyTypes,
-                                    false, true);
-                                return new EvalSelectStreamWUnderlying(
-                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
-                                    unnamedStreams, false, false, underlyingStreamNumber, null,
-                                    evalExprEvaluator, null);
-                            }
-                        }
-                        throw EvalInsertUtil.MakeEventTypeCastException(returnType, insertIntoTargetType);
-                    }
-
-                    if (underlyingEventType != null)
-                    {
-                        // a single stream was selected via "stream.*" and there is no column name
-                        // recast as a Map-type
-                        if (underlyingEventType is MapEventType && insertIntoTargetType is MapEventType)
-                        {
-                            return EvalSelectStreamWUndRecastMapFactory.Make(
-                                _typeService.EventTypes, selectExprContext,
-                                _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
-                                _engineImportService, _statementName, _typeService.EngineURIQualifier);
-                        }
-
-                        // recast as a Object-array-type
-                        if (underlyingEventType is ObjectArrayEventType && insertIntoTargetType is ObjectArrayEventType)
-                        {
-                            return EvalSelectStreamWUndRecastObjectArrayFactory.Make(
-                                _typeService.EventTypes, selectExprContext,
-                                _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
-                                _engineImportService, _statementName, _typeService.EngineURIQualifier);
-                        }
-
-                        // recast as a Avro-type
-                        if (underlyingEventType is AvroSchemaEventType && insertIntoTargetType is AvroSchemaEventType)
-                        {
-                            return
-                                _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeRecast(
-                                    _typeService.EventTypes, selectExprContext,
-                                    _selectedStreams[0].StreamSelected.StreamNumber,
-                                    (AvroSchemaEventType) insertIntoTargetType, exprNodes, _statementName,
-                                    _typeService.EngineURIQualifier);
-                        }
-
-                        // recast as a Bean-type
-                        if (underlyingEventType is BeanEventType && insertIntoTargetType is BeanEventType)
-                        {
-                            return new EvalInsertBeanRecast(
-                                insertIntoTargetType, _eventAdapterService,
-                                _selectedStreams[0].StreamSelected.StreamNumber, _typeService.EventTypes);
-                        }
-
-                        // wrap if no recast possible
-                        TableMetadata tableMetadata = _tableService.GetTableMetadataFromEventType(underlyingEventType);
-                        if (tableMetadata != null)
-                        {
-                            underlyingEventType = tableMetadata.PublicEventType;
-                        }
-                        resultEventTypeX = _eventAdapterService.AddWrapperType(
-                            _insertIntoDesc.EventTypeName, underlyingEventType, selPropertyTypes, false, true);
-                        return new EvalSelectStreamWUnderlying(
-                            selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
-                            unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
-                            underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
+                        resultEventType =
+                            _eventAdapterService.CreateAnonymousAvroType(
+                                _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                selPropertyTypes, _annotations, _statementName, _typeService.EngineURIQualifier);
                     }
                     else
                     {
-                        // there are one or more streams selected with column name such as "stream.* as columnOne"
-                        if (insertIntoTargetType is BeanEventType)
+                        resultEventType =
+                            _eventAdapterService.CreateAnonymousMapType(
+                                _statementId + "_result_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                selPropertyTypes, true);
+                    }
+
+                    if (selectExprContext.ExpressionNodes.Length == 0)
+                    {
+                        return new EvalSelectNoWildcardEmptyProps(selectExprContext, resultEventType);
+                    }
+                    else
+                    {
+                        if (representation == EventUnderlyingType.OBJECTARRAY)
                         {
-                            string name = _selectedStreams[0].StreamSelected.StreamName;
-                            string alias = _selectedStreams[0].StreamSelected.OptionalName;
-                            string syntaxUsed = name + ".*" + (alias != null ? " as " + alias : "");
-                            string syntaxInstead = name + (alias != null ? " as " + alias : "");
-                            throw new ExprValidationException(
-                                "The '" + syntaxUsed +
-                                "' syntax is not allowed when inserting into an existing bean event type, use the '" +
-                                syntaxInstead + "' syntax instead");
+                            return new EvalSelectNoWildcardObjectArray(selectExprContext, resultEventType);
                         }
-                        if (insertIntoTargetType == null || insertIntoTargetType is MapEventType)
+                        else if (representation == EventUnderlyingType.AVRO)
                         {
-                            resultEventTypeX = _eventAdapterService.AddNestableMapType(
-                                _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false, false, true);
-                            ISet<string> propertiesToUnwrap = GetEventBeanToObjectProps(
-                                selPropertyTypes, resultEventTypeX);
-                            if (propertiesToUnwrap.IsEmpty())
-                            {
-                                return new EvalSelectStreamNoUnderlyingMap(
-                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
-                            }
-                            else
-                            {
-                                return new EvalSelectStreamNoUndWEventBeanToObj(
-                                    selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
-                                    propertiesToUnwrap);
-                            }
+                            return
+                                _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeSelectNoWildcard(
+                                    selectExprContext, resultEventType, _tableService, _statementName,
+                                    _typeService.EngineURIQualifier);
                         }
-                        else if (insertIntoTargetType is ObjectArrayEventType)
+                        return new EvalSelectNoWildcardMap(selectExprContext, resultEventType);
+                    }
+                }
+
+                EventType vaeInnerEventType = null;
+                bool singleColumnWrapOrBeanCoercion = false;
+                // Additional single-column coercion for non-wrapped type done by SelectExprInsertEventBeanFactory
+                bool isRevisionEvent = false;
+
+                try
+                {
+                    if (!_selectedStreams.IsEmpty())
+                    {
+                        EventType resultEventTypeX;
+
+                        // handle "transpose" special function with predefined target type
+                        if (insertIntoTargetType != null && _selectedStreams[0].ExpressionSelectedAsStream != null)
                         {
-                            ISet<string> propertiesToUnwrap = GetEventBeanToObjectProps(
-                                selPropertyTypes, insertIntoTargetType);
-                            if (propertiesToUnwrap.IsEmpty())
+                            if (exprEvaluators.Length != 0)
                             {
-                                return new EvalSelectStreamNoUnderlyingObjectArray(
-                                    selectExprContext, insertIntoTargetType, namedStreams, _isUsingWildcard);
+                                throw new ExprValidationException(
+                                    "Cannot transpose additional properties in the select-clause to target event type '" +
+                                    insertIntoTargetType.Name +
+                                    "' with underlying type '" + insertIntoTargetType.UnderlyingType.FullName + "', the " +
+                                    EngineImportServiceConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE +
+                                    " function must occur alone in the select clause");
                             }
-                            else
+                            ExprNode expression = unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression;
+                            Type returnType = expression.ExprEvaluator.ReturnType;
+                            if (insertIntoTargetType is ObjectArrayEventType && returnType == typeof (Object[]))
                             {
-                                return new EvalSelectStreamNoUndWEventBeanToObjObjArray(
-                                    selectExprContext, insertIntoTargetType, namedStreams, _isUsingWildcard,
-                                    propertiesToUnwrap);
+                                return
+                                    new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceObjectArray(
+                                        insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
                             }
+                            else if (insertIntoTargetType is MapEventType &&
+                                     returnType.IsImplementsInterface(typeof (IDictionary<string, object>)))
+                            {
+                                return
+                                    new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceMap(
+                                        insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
+                            }
+                            else if (insertIntoTargetType is BeanEventType &&
+                                     TypeHelper.IsSubclassOrImplementsInterface(
+                                         returnType, insertIntoTargetType.UnderlyingType))
+                            {
+                                return
+                                    new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceNative(
+                                        insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
+                            }
+                            else if (insertIntoTargetType is AvroSchemaEventType &&
+                                     returnType.FullName.Equals(AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME))
+                            {
+                                return
+                                    new SelectExprInsertEventBeanFactory.SelectExprInsertNativeExpressionCoerceAvro(
+                                        insertIntoTargetType, expression.ExprEvaluator, _eventAdapterService);
+                            }
+                            else if (insertIntoTargetType is WrapperEventType)
+                            {
+                                // for native event types as they got renamed, they become wrappers
+                                // check if the proposed wrapper is compatible with the existing wrapper
+                                var existing = (WrapperEventType) insertIntoTargetType;
+                                if (existing.UnderlyingEventType is BeanEventType)
+                                {
+                                    var innerType = (BeanEventType) existing.UnderlyingEventType;
+                                    ExprEvaluator evalExprEvaluator =
+                                        unnamedStreams[0].ExpressionSelectedAsStream.SelectExpression.ExprEvaluator;
+                                    if (
+                                        !TypeHelper.IsSubclassOrImplementsInterface(
+                                            evalExprEvaluator.ReturnType, innerType.UnderlyingType))
+                                    {
+                                        throw new ExprValidationException(
+                                            "Invalid expression return type '" + Name.Clean(evalExprEvaluator.ReturnType) +
+                                            "' for transpose function, expected '" +
+                                            innerType.UnderlyingType.Name + "'");
+                                    }
+                                    resultEventTypeX = _eventAdapterService.AddWrapperType(
+                                        insertIntoTargetType.Name, existing.UnderlyingEventType, selPropertyTypes,
+                                        false, true);
+                                    return new EvalSelectStreamWUnderlying(
+                                        selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
+                                        unnamedStreams, false, false, underlyingStreamNumber, null,
+                                        evalExprEvaluator, null);
+                                }
+                            }
+                            throw EvalInsertUtil.MakeEventTypeCastException(returnType, insertIntoTargetType);
                         }
-                        else if (insertIntoTargetType is AvroSchemaEventType)
+
+                        if (underlyingEventType != null)
                         {
-                            throw new ExprValidationException("Avro event type does not allow contained beans");
+                            // a single stream was selected via "stream.*" and there is no column name
+                            // recast as a Map-type
+                            if (underlyingEventType is MapEventType && insertIntoTargetType is MapEventType)
+                            {
+                                return EvalSelectStreamWUndRecastMapFactory.Make(
+                                    _typeService.EventTypes, selectExprContext,
+                                    _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
+                                    _engineImportService, _statementName, _typeService.EngineURIQualifier);
+                            }
+
+                            // recast as a Object-array-type
+                            if (underlyingEventType is ObjectArrayEventType && insertIntoTargetType is ObjectArrayEventType)
+                            {
+                                return EvalSelectStreamWUndRecastObjectArrayFactory.Make(
+                                    _typeService.EventTypes, selectExprContext,
+                                    _selectedStreams[0].StreamSelected.StreamNumber, insertIntoTargetType, exprNodes,
+                                    _engineImportService, _statementName, _typeService.EngineURIQualifier);
+                            }
+
+                            // recast as a Avro-type
+                            if (underlyingEventType is AvroSchemaEventType && insertIntoTargetType is AvroSchemaEventType)
+                            {
+                                return
+                                    _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeRecast(
+                                        _typeService.EventTypes, selectExprContext,
+                                        _selectedStreams[0].StreamSelected.StreamNumber,
+                                        (AvroSchemaEventType) insertIntoTargetType, exprNodes, _statementName,
+                                        _typeService.EngineURIQualifier);
+                            }
+
+                            // recast as a Bean-type
+                            if (underlyingEventType is BeanEventType && insertIntoTargetType is BeanEventType)
+                            {
+                                return new EvalInsertBeanRecast(
+                                    insertIntoTargetType, _eventAdapterService,
+                                    _selectedStreams[0].StreamSelected.StreamNumber, _typeService.EventTypes);
+                            }
+
+                            // wrap if no recast possible
+                            TableMetadata tableMetadata = _tableService.GetTableMetadataFromEventType(underlyingEventType);
+                            if (tableMetadata != null)
+                            {
+                                underlyingEventType = tableMetadata.PublicEventType;
+                            }
+                            resultEventTypeX = _eventAdapterService.AddWrapperType(
+                                _insertIntoDesc.EventTypeName, underlyingEventType, selPropertyTypes, false, true);
+                            return new EvalSelectStreamWUnderlying(
+                                selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
+                                unnamedStreams, singleStreamWrapper, underlyingIsFragmentEvent, underlyingStreamNumber,
+                                underlyingPropertyEventGetter, underlyingExprEvaluator, tableMetadata);
                         }
                         else
                         {
-                            throw new IllegalStateException("Unrecognized event type " + insertIntoTargetType);
+                            // there are one or more streams selected with column name such as "stream.* as columnOne"
+                            if (insertIntoTargetType is BeanEventType)
+                            {
+                                string name = _selectedStreams[0].StreamSelected.StreamName;
+                                string alias = _selectedStreams[0].StreamSelected.OptionalName;
+                                string syntaxUsed = name + ".*" + (alias != null ? " as " + alias : "");
+                                string syntaxInstead = name + (alias != null ? " as " + alias : "");
+                                throw new ExprValidationException(
+                                    "The '" + syntaxUsed +
+                                    "' syntax is not allowed when inserting into an existing bean event type, use the '" +
+                                    syntaxInstead + "' syntax instead");
+                            }
+                            if (insertIntoTargetType == null || insertIntoTargetType is MapEventType)
+                            {
+                                resultEventTypeX = _eventAdapterService.AddNestableMapType(
+                                    _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false, false, true);
+                                ISet<string> propertiesToUnwrap = GetEventBeanToObjectProps(
+                                    selPropertyTypes, resultEventTypeX);
+                                if (propertiesToUnwrap.IsEmpty())
+                                {
+                                    return new EvalSelectStreamNoUnderlyingMap(
+                                        selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard);
+                                }
+                                else
+                                {
+                                    return new EvalSelectStreamNoUndWEventBeanToObj(
+                                        selectExprContext, resultEventTypeX, namedStreams, _isUsingWildcard,
+                                        propertiesToUnwrap);
+                                }
+                            }
+                            else if (insertIntoTargetType is ObjectArrayEventType)
+                            {
+                                ISet<string> propertiesToUnwrap = GetEventBeanToObjectProps(
+                                    selPropertyTypes, insertIntoTargetType);
+                                if (propertiesToUnwrap.IsEmpty())
+                                {
+                                    return new EvalSelectStreamNoUnderlyingObjectArray(
+                                        selectExprContext, insertIntoTargetType, namedStreams, _isUsingWildcard);
+                                }
+                                else
+                                {
+                                    return new EvalSelectStreamNoUndWEventBeanToObjObjArray(
+                                        selectExprContext, insertIntoTargetType, namedStreams, _isUsingWildcard,
+                                        propertiesToUnwrap);
+                                }
+                            }
+                            else if (insertIntoTargetType is AvroSchemaEventType)
+                            {
+                                throw new ExprValidationException("Avro event type does not allow contained beans");
+                            }
+                            else
+                            {
+                                throw new IllegalStateException("Unrecognized event type " + insertIntoTargetType);
+                            }
                         }
                     }
-                }
 
-                ValueAddEventProcessor vaeProcessor =
-                    _valueAddEventService.GetValueAddProcessor(_insertIntoDesc.EventTypeName);
-                EventType resultEventType;
-                if (_isUsingWildcard)
-                {
-                    if (vaeProcessor != null)
+                    ValueAddEventProcessor vaeProcessor =
+                        _valueAddEventService.GetValueAddProcessor(_insertIntoDesc.EventTypeName);
+                    EventType resultEventType;
+                    if (_isUsingWildcard)
                     {
-                        resultEventType = vaeProcessor.ValueAddEventType;
-                        isRevisionEvent = true;
-                        vaeProcessor.ValidateEventType(eventType);
+                        if (vaeProcessor != null)
+                        {
+                            resultEventType = vaeProcessor.ValueAddEventType;
+                            isRevisionEvent = true;
+                            vaeProcessor.ValidateEventType(eventType);
+                        }
+                        else
+                        {
+                            if (insertIntoTargetType != null)
+                            {
+                                // handle insert-into with fast coercion (no additional properties selected)
+                                if (selPropertyTypes.IsEmpty())
+                                {
+                                    if (insertIntoTargetType is BeanEventType && eventType is BeanEventType)
+                                    {
+                                        return new EvalInsertBeanRecast(
+                                            insertIntoTargetType, _eventAdapterService, 0, _typeService.EventTypes);
+                                    }
+                                    if (insertIntoTargetType is ObjectArrayEventType && eventType is ObjectArrayEventType)
+                                    {
+                                        var target = (ObjectArrayEventType) insertIntoTargetType;
+                                        var source = (ObjectArrayEventType) eventType;
+                                        string msg = BaseNestableEventType.IsDeepEqualsProperties(
+                                            eventType.Name, source.Types, target.Types);
+                                        if (msg == null)
+                                        {
+                                            return new EvalInsertCoercionObjectArray(
+                                                insertIntoTargetType, _eventAdapterService);
+                                        }
+                                    }
+                                    if (insertIntoTargetType is MapEventType && eventType is MapEventType)
+                                    {
+                                        return new EvalInsertCoercionMap(insertIntoTargetType, _eventAdapterService);
+                                    }
+                                    if (insertIntoTargetType is AvroSchemaEventType && eventType is AvroSchemaEventType)
+                                    {
+                                        return new EvalInsertCoercionAvro(insertIntoTargetType, _eventAdapterService);
+                                    }
+                                    if (insertIntoTargetType is WrapperEventType && eventType is BeanEventType)
+                                    {
+                                        var wrapperType = (WrapperEventType) insertIntoTargetType;
+                                        if (wrapperType.UnderlyingEventType is BeanEventType)
+                                        {
+                                            return new EvalInsertBeanWrapRecast(
+                                                wrapperType, _eventAdapterService, 0, _typeService.EventTypes);
+                                        }
+                                    }
+                                }
+
+                                // handle insert-into by generating the writer with possible additional properties
+                                SelectExprProcessor existingTypeProcessor =
+                                    SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
+                                        _eventAdapterService, insertIntoTargetType, _isUsingWildcard, _typeService,
+                                        exprEvaluators, columnNames, expressionReturnTypes, _engineImportService,
+                                        _insertIntoDesc, columnNamesAsProvided, true, _statementName);
+                                if (existingTypeProcessor != null)
+                                {
+                                    return existingTypeProcessor;
+                                }
+                            }
+
+                            if (selPropertyTypes.IsEmpty() && eventType is BeanEventType)
+                            {
+                                var beanEventType = (BeanEventType) eventType;
+                                resultEventType = _eventAdapterService.AddBeanTypeByName(
+                                    _insertIntoDesc.EventTypeName, beanEventType.UnderlyingType, false);
+                            }
+                            else
+                            {
+                                resultEventType = _eventAdapterService.AddWrapperType(
+                                    _insertIntoDesc.EventTypeName, eventType, selPropertyTypes, false, true);
+                            }
+                        }
+
+                        if (singleStreamWrapper)
+                        {
+                            if (!isRevisionEvent)
+                            {
+                                return new EvalInsertWildcardSSWrapper(selectExprContext, resultEventType);
+                            }
+                            else
+                            {
+                                return new EvalInsertWildcardSSWrapperRevision(
+                                    selectExprContext, resultEventType, vaeProcessor);
+                            }
+                        }
+                        if (joinWildcardProcessor == null)
+                        {
+                            if (!isRevisionEvent)
+                            {
+                                if (resultEventType is WrapperEventType)
+                                {
+                                    return new EvalInsertWildcardWrapper(selectExprContext, resultEventType);
+                                }
+                                else
+                                {
+                                    return new EvalInsertWildcardBean(selectExprContext, resultEventType);
+                                }
+                            }
+                            else
+                            {
+                                if (exprEvaluators.Length == 0)
+                                {
+                                    return new EvalInsertWildcardRevision(selectExprContext, resultEventType, vaeProcessor);
+                                }
+                                else
+                                {
+                                    EventType wrappingEventType =
+                                        _eventAdapterService.AddWrapperType(
+                                            _insertIntoDesc.EventTypeName + "_wrapped", eventType, selPropertyTypes, false,
+                                            true);
+                                    return new EvalInsertWildcardRevisionWrapper(
+                                        selectExprContext, resultEventType, vaeProcessor, wrappingEventType);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!isRevisionEvent)
+                            {
+                                return new EvalInsertWildcardJoin(selectExprContext, resultEventType, joinWildcardProcessor);
+                            }
+                            else
+                            {
+                                return new EvalInsertWildcardJoinRevision(
+                                    selectExprContext, resultEventType, joinWildcardProcessor, vaeProcessor);
+                            }
+                        }
                     }
-                    else
+
+                    // not using wildcard
+                    resultEventType = null;
+                    if ((columnNames.Length == 1) && (_insertIntoDesc.ColumnNames.Count == 0))
                     {
                         if (insertIntoTargetType != null)
                         {
-                            // handle insert-into with fast coercion (no additional properties selected)
-                            if (selPropertyTypes.IsEmpty())
+                            // check if the existing type and new type are compatible
+                            object columnOneType = expressionReturnTypes[0];
+                            if (insertIntoTargetType is WrapperEventType)
                             {
-                                if (insertIntoTargetType is BeanEventType && eventType is BeanEventType)
+                                var wrapperType = (WrapperEventType) insertIntoTargetType;
+                                // Map and Object both supported
+                                if (wrapperType.UnderlyingEventType.UnderlyingType == columnOneType)
                                 {
-                                    return new EvalInsertBeanRecast(
-                                        insertIntoTargetType, _eventAdapterService, 0, _typeService.EventTypes);
-                                }
-                                if (insertIntoTargetType is ObjectArrayEventType && eventType is ObjectArrayEventType)
-                                {
-                                    var target = (ObjectArrayEventType) insertIntoTargetType;
-                                    var source = (ObjectArrayEventType) eventType;
-                                    string msg = BaseNestableEventType.IsDeepEqualsProperties(
-                                        eventType.Name, source.Types, target.Types);
-                                    if (msg == null)
-                                    {
-                                        return new EvalInsertCoercionObjectArray(
-                                            insertIntoTargetType, _eventAdapterService);
-                                    }
-                                }
-                                if (insertIntoTargetType is MapEventType && eventType is MapEventType)
-                                {
-                                    return new EvalInsertCoercionMap(insertIntoTargetType, _eventAdapterService);
-                                }
-                                if (insertIntoTargetType is AvroSchemaEventType && eventType is AvroSchemaEventType)
-                                {
-                                    return new EvalInsertCoercionAvro(insertIntoTargetType, _eventAdapterService);
-                                }
-                                if (insertIntoTargetType is WrapperEventType && eventType is BeanEventType)
-                                {
-                                    var wrapperType = (WrapperEventType) insertIntoTargetType;
-                                    if (wrapperType.UnderlyingEventType is BeanEventType)
-                                    {
-                                        return new EvalInsertBeanWrapRecast(
-                                            wrapperType, _eventAdapterService, 0, _typeService.EventTypes);
-                                    }
+                                    singleColumnWrapOrBeanCoercion = true;
+                                    resultEventType = insertIntoTargetType;
                                 }
                             }
-
-                            // handle insert-into by generating the writer with possible additional properties
-                            SelectExprProcessor existingTypeProcessor =
-                                SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
-                                    _eventAdapterService, insertIntoTargetType, _isUsingWildcard, _typeService,
-                                    exprEvaluators, columnNames, expressionReturnTypes, _engineImportService,
-                                    _insertIntoDesc, columnNamesAsProvided, true, _statementName);
-                            if (existingTypeProcessor != null)
+                            if ((insertIntoTargetType is BeanEventType) && (columnOneType is Type))
                             {
-                                return existingTypeProcessor;
+                                var beanType = (BeanEventType) insertIntoTargetType;
+                                // Map and Object both supported
+                                if (TypeHelper.IsSubclassOrImplementsInterface(
+                                    (Type) columnOneType, beanType.UnderlyingType))
+                                {
+                                    singleColumnWrapOrBeanCoercion = true;
+                                    resultEventType = insertIntoTargetType;
+                                }
                             }
                         }
-
-                        if (selPropertyTypes.IsEmpty() && eventType is BeanEventType)
-                        {
-                            var beanEventType = (BeanEventType) eventType;
-                            resultEventType = _eventAdapterService.AddBeanTypeByName(
-                                _insertIntoDesc.EventTypeName, beanEventType.UnderlyingType, false);
-                        }
-                        else
-                        {
-                            resultEventType = _eventAdapterService.AddWrapperType(
-                                _insertIntoDesc.EventTypeName, eventType, selPropertyTypes, false, true);
-                        }
                     }
-
-                    if (singleStreamWrapper)
-                    {
-                        if (!isRevisionEvent)
-                        {
-                            return new EvalInsertWildcardSSWrapper(selectExprContext, resultEventType);
-                        }
-                        else
-                        {
-                            return new EvalInsertWildcardSSWrapperRevision(
-                                selectExprContext, resultEventType, vaeProcessor);
-                        }
-                    }
-                    if (joinWildcardProcessor == null)
+                    if (singleColumnWrapOrBeanCoercion)
                     {
                         if (!isRevisionEvent)
                         {
                             if (resultEventType is WrapperEventType)
                             {
-                                return new EvalInsertWildcardWrapper(selectExprContext, resultEventType);
+                                var wrapper = (WrapperEventType) resultEventType;
+                                if (wrapper.UnderlyingEventType is MapEventType)
+                                {
+                                    return new EvalInsertNoWildcardSingleColCoercionMapWrap(selectExprContext, wrapper);
+                                }
+                                else if (wrapper.UnderlyingEventType is ObjectArrayEventType)
+                                {
+                                    return new EvalInsertNoWildcardSingleColCoercionObjectArrayWrap(
+                                        selectExprContext, wrapper);
+                                }
+                                else if (wrapper.UnderlyingEventType is AvroSchemaEventType)
+                                {
+                                    return new EvalInsertNoWildcardSingleColCoercionAvroWrap(selectExprContext, wrapper);
+                                }
+                                else if (wrapper.UnderlyingEventType is VariantEventType)
+                                {
+                                    var variantEventType = (VariantEventType) wrapper.UnderlyingEventType;
+                                    vaeProcessor = _valueAddEventService.GetValueAddProcessor(variantEventType.Name);
+                                    return new EvalInsertNoWildcardSingleColCoercionBeanWrapVariant(
+                                        selectExprContext, wrapper, vaeProcessor);
+                                }
+                                else
+                                {
+                                    return new EvalInsertNoWildcardSingleColCoercionBeanWrap(selectExprContext, wrapper);
+                                }
                             }
                             else
                             {
-                                return new EvalInsertWildcardBean(selectExprContext, resultEventType);
-                            }
-                        }
-                        else
-                        {
-                            if (exprEvaluators.Length == 0)
-                            {
-                                return new EvalInsertWildcardRevision(selectExprContext, resultEventType, vaeProcessor);
-                            }
-                            else
-                            {
-                                EventType wrappingEventType =
-                                    _eventAdapterService.AddWrapperType(
-                                        _insertIntoDesc.EventTypeName + "_wrapped", eventType, selPropertyTypes, false,
-                                        true);
-                                return new EvalInsertWildcardRevisionWrapper(
-                                    selectExprContext, resultEventType, vaeProcessor, wrappingEventType);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (!isRevisionEvent)
-                        {
-                            return new EvalInsertWildcardJoin(selectExprContext, resultEventType, joinWildcardProcessor);
-                        }
-                        else
-                        {
-                            return new EvalInsertWildcardJoinRevision(
-                                selectExprContext, resultEventType, joinWildcardProcessor, vaeProcessor);
-                        }
-                    }
-                }
-
-                // not using wildcard
-                resultEventType = null;
-                if ((columnNames.Length == 1) && (_insertIntoDesc.ColumnNames.Count == 0))
-                {
-                    if (insertIntoTargetType != null)
-                    {
-                        // check if the existing type and new type are compatible
-                        object columnOneType = expressionReturnTypes[0];
-                        if (insertIntoTargetType is WrapperEventType)
-                        {
-                            var wrapperType = (WrapperEventType) insertIntoTargetType;
-                            // Map and Object both supported
-                            if (wrapperType.UnderlyingEventType.UnderlyingType == columnOneType)
-                            {
-                                singleColumnWrapOrBeanCoercion = true;
-                                resultEventType = insertIntoTargetType;
-                            }
-                        }
-                        if ((insertIntoTargetType is BeanEventType) && (columnOneType is Type))
-                        {
-                            var beanType = (BeanEventType) insertIntoTargetType;
-                            // Map and Object both supported
-                            if (TypeHelper.IsSubclassOrImplementsInterface(
-                                (Type) columnOneType, beanType.UnderlyingType))
-                            {
-                                singleColumnWrapOrBeanCoercion = true;
-                                resultEventType = insertIntoTargetType;
-                            }
-                        }
-                    }
-                }
-                if (singleColumnWrapOrBeanCoercion)
-                {
-                    if (!isRevisionEvent)
-                    {
-                        if (resultEventType is WrapperEventType)
-                        {
-                            var wrapper = (WrapperEventType) resultEventType;
-                            if (wrapper.UnderlyingEventType is MapEventType)
-                            {
-                                return new EvalInsertNoWildcardSingleColCoercionMapWrap(selectExprContext, wrapper);
-                            }
-                            else if (wrapper.UnderlyingEventType is ObjectArrayEventType)
-                            {
-                                return new EvalInsertNoWildcardSingleColCoercionObjectArrayWrap(
-                                    selectExprContext, wrapper);
-                            }
-                            else if (wrapper.UnderlyingEventType is AvroSchemaEventType)
-                            {
-                                return new EvalInsertNoWildcardSingleColCoercionAvroWrap(selectExprContext, wrapper);
-                            }
-                            else if (wrapper.UnderlyingEventType is VariantEventType)
-                            {
-                                var variantEventType = (VariantEventType) wrapper.UnderlyingEventType;
-                                vaeProcessor = _valueAddEventService.GetValueAddProcessor(variantEventType.Name);
-                                return new EvalInsertNoWildcardSingleColCoercionBeanWrapVariant(
-                                    selectExprContext, wrapper, vaeProcessor);
-                            }
-                            else
-                            {
-                                return new EvalInsertNoWildcardSingleColCoercionBeanWrap(selectExprContext, wrapper);
+                                if (resultEventType is BeanEventType)
+                                {
+                                    return new EvalInsertNoWildcardSingleColCoercionBean(selectExprContext, resultEventType);
+                                }
                             }
                         }
                         else
                         {
                             if (resultEventType is BeanEventType)
                             {
-                                return new EvalInsertNoWildcardSingleColCoercionBean(selectExprContext, resultEventType);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (resultEventType is BeanEventType)
-                        {
-                            return new EvalInsertNoWildcardSingleColCoercionRevisionBean(
-                                selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType);
-                        }
-                        else
-                        {
-                            Func<EventAdapterService, object, EventType, EventBean> func;
-                            if (resultEventType is MapEventType)
-                            {
-                                func =
-                                    (eventAdapterService, und, type) =>
-                                        eventAdapterService.AdapterForTypedMap((IDictionary<string, object>) und, type);
-                            }
-                            else if (resultEventType is ObjectArrayEventType)
-                            {
-                                func =
-                                    (eventAdapterService, und, type) =>
-                                        eventAdapterService.AdapterForTypedObjectArray((Object[]) und, type);
-                            }
-                            else if (resultEventType is AvroSchemaEventType)
-                            {
-                                func =
-                                    (eventAdapterService, und, type) =>
-                                        eventAdapterService.AdapterForTypedAvro(und, type);
+                                return new EvalInsertNoWildcardSingleColCoercionRevisionBean(
+                                    selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType);
                             }
                             else
                             {
-                                func =
-                                    (eventAdapterService, und, type) =>
-                                        eventAdapterService.AdapterForTypedObject(und, type);
-                            }
-                            return new EvalInsertNoWildcardSingleColCoercionRevisionFunc(
-                                selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType, func);
-                        }
-                    }
-                }
-                if (resultEventType == null)
-                {
-                    if (vaeProcessor != null)
-                    {
-                        // Use an anonymous type if the target is not a variant stream
-                        if (_valueAddEventService.GetValueAddProcessor(_insertIntoDesc.EventTypeName) == null)
-                        {
-                            resultEventType =
-                                _eventAdapterService.CreateAnonymousMapType(
-                                    _statementId + "_vae_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
-                                    selPropertyTypes, true);
-                        }
-                        else
-                        {
-                            string statementName = "stmt_" + _statementId + "_insert";
-                            resultEventType = _eventAdapterService.AddNestableMapType(
-                                statementName, selPropertyTypes, null, false, false, false, false, true);
-                        }
-                    }
-                    else
-                    {
-                        EventType existingType = insertIntoTargetType;
-                        if (existingType == null)
-                        {
-                            // The type may however be an auto-import or fully-qualified class name
-                            Type clazz = null;
-                            try
-                            {
-                                clazz = _engineImportService.ResolveClass(_insertIntoDesc.EventTypeName, false);
-                            }
-                            catch (EngineImportException)
-                            {
-                                Log.Debug(
-                                    "Target stream name '" + _insertIntoDesc.EventTypeName +
-                                    "' is not resolved as a class name");
-                            }
-                            if (clazz != null)
-                            {
-                                existingType = _eventAdapterService.AddBeanType(clazz.Name, clazz, false, false, false);
-                            }
-                        }
-
-                        SelectExprProcessor selectExprInsertEventBean = null;
-                        if (existingType != null)
-                        {
-                            selectExprInsertEventBean =
-                                SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
-                                    _eventAdapterService, existingType, _isUsingWildcard, _typeService, exprEvaluators,
-                                    columnNames, expressionReturnTypes, _engineImportService, _insertIntoDesc,
-                                    columnNamesAsProvided, false, _statementName);
-                        }
-                        if (selectExprInsertEventBean != null)
-                        {
-                            return selectExprInsertEventBean;
-                        }
-                        else
-                        {
-                            // use the provided override-type if there is one
-                            if (_optionalInsertIntoOverrideType != null)
-                            {
-                                resultEventType = insertIntoTargetType;
-                            }
-                            else if (existingType is AvroSchemaEventType)
-                            {
-                                _eventAdapterService.EventAdapterAvroHandler.AvroCompat(existingType, selPropertyTypes);
-                                resultEventType = existingType;
-                            }
-                            else
-                            {
-                                var @out = EventRepresentationUtil.GetRepresentation(
-                                    _annotations, _configuration, AssignedType.NONE);
-                                if (@out == EventUnderlyingType.MAP)
+                                Func<EventAdapterService, object, EventType, EventBean> func;
+                                if (resultEventType is MapEventType)
                                 {
-                                    resultEventType =
-                                        _eventAdapterService.AddNestableMapType(
-                                            _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false,
-                                            false, true);
+                                    func =
+                                        (eventAdapterService, und, type) =>
+                                            eventAdapterService.AdapterForTypedMap((IDictionary<string, object>) und, type);
                                 }
-                                else if (@out == EventUnderlyingType.OBJECTARRAY)
+                                else if (resultEventType is ObjectArrayEventType)
                                 {
-                                    resultEventType =
-                                        _eventAdapterService.AddNestableObjectArrayType(
-                                            _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false,
-                                            false, true, false, null);
+                                    func =
+                                        (eventAdapterService, und, type) =>
+                                            eventAdapterService.AdapterForTypedObjectArray((Object[]) und, type);
                                 }
-                                else if (@out == EventUnderlyingType.AVRO)
+                                else if (resultEventType is AvroSchemaEventType)
                                 {
-                                    resultEventType = _eventAdapterService.AddAvroType(
-                                        _insertIntoDesc.EventTypeName, selPropertyTypes, false, false, false, false,
-                                        true, _annotations, null, _statementName, _typeService.EngineURIQualifier);
+                                    func =
+                                        (eventAdapterService, und, type) =>
+                                            eventAdapterService.AdapterForTypedAvro(und, type);
                                 }
                                 else
                                 {
-                                    throw new IllegalStateException("Unrecognized code " + @out);
+                                    func =
+                                        (eventAdapterService, und, type) =>
+                                            eventAdapterService.AdapterForTypedObject(und, type);
+                                }
+                                return new EvalInsertNoWildcardSingleColCoercionRevisionFunc(
+                                    selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType, func);
+                            }
+                        }
+                    }
+                    if (resultEventType == null)
+                    {
+                        if (vaeProcessor != null)
+                        {
+                            // Use an anonymous type if the target is not a variant stream
+                            if (_valueAddEventService.GetValueAddProcessor(_insertIntoDesc.EventTypeName) == null)
+                            {
+                                resultEventType =
+                                    _eventAdapterService.CreateAnonymousMapType(
+                                        _statementId + "_vae_" + CollectionUtil.ToString(_assignedTypeNumberStack, "_"),
+                                        selPropertyTypes, true);
+                            }
+                            else
+                            {
+                                string statementName = "stmt_" + _statementId + "_insert";
+                                resultEventType = _eventAdapterService.AddNestableMapType(
+                                    statementName, selPropertyTypes, null, false, false, false, false, true);
+                            }
+                        }
+                        else
+                        {
+                            EventType existingType = insertIntoTargetType;
+                            if (existingType == null)
+                            {
+                                // The type may however be an auto-import or fully-qualified class name
+                                Type clazz = null;
+                                try
+                                {
+                                    clazz = _engineImportService.ResolveType(_insertIntoDesc.EventTypeName, false);
+                                }
+                                catch (EngineImportException)
+                                {
+                                    Log.Debug(
+                                        "Target stream name '" + _insertIntoDesc.EventTypeName +
+                                        "' is not resolved as a class name");
+                                }
+                                if (clazz != null)
+                                {
+                                    existingType = _eventAdapterService.AddBeanType(clazz.GetDefaultTypeName(), clazz, false, false, false);
+                                }
+                            }
+
+                            SelectExprProcessor selectExprInsertEventBean = null;
+                            if (existingType != null)
+                            {
+                                selectExprInsertEventBean =
+                                    SelectExprInsertEventBeanFactory.GetInsertUnderlyingNonJoin(
+                                        _eventAdapterService, existingType, _isUsingWildcard, _typeService, exprEvaluators,
+                                        columnNames, expressionReturnTypes, _engineImportService, _insertIntoDesc,
+                                        columnNamesAsProvided, false, _statementName);
+                            }
+                            if (selectExprInsertEventBean != null)
+                            {
+                                return selectExprInsertEventBean;
+                            }
+                            else
+                            {
+                                // use the provided override-type if there is one
+                                if (_optionalInsertIntoOverrideType != null)
+                                {
+                                    resultEventType = insertIntoTargetType;
+                                }
+                                else if (existingType is AvroSchemaEventType)
+                                {
+                                    _eventAdapterService.EventAdapterAvroHandler.AvroCompat(existingType, selPropertyTypes);
+                                    resultEventType = existingType;
+                                }
+                                else
+                                {
+                                    var @out = EventRepresentationUtil.GetRepresentation(
+                                        _annotations, _configuration, AssignedType.NONE);
+                                    if (@out == EventUnderlyingType.MAP)
+                                    {
+                                        resultEventType =
+                                            _eventAdapterService.AddNestableMapType(
+                                                _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false,
+                                                false, true);
+                                    }
+                                    else if (@out == EventUnderlyingType.OBJECTARRAY)
+                                    {
+                                        resultEventType =
+                                            _eventAdapterService.AddNestableObjectArrayType(
+                                                _insertIntoDesc.EventTypeName, selPropertyTypes, null, false, false, false,
+                                                false, true, false, null);
+                                    }
+                                    else if (@out == EventUnderlyingType.AVRO)
+                                    {
+                                        resultEventType = _eventAdapterService.AddAvroType(
+                                            _insertIntoDesc.EventTypeName, selPropertyTypes, false, false, false, false,
+                                            true, _annotations, null, _statementName, _typeService.EngineURIQualifier);
+                                    }
+                                    else
+                                    {
+                                        throw new IllegalStateException("Unrecognized code " + @out);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (vaeProcessor != null)
-                {
-                    vaeProcessor.ValidateEventType(resultEventType);
-                    vaeInnerEventType = resultEventType;
-                    resultEventType = vaeProcessor.ValueAddEventType;
-                    isRevisionEvent = true;
-                }
+                    if (vaeProcessor != null)
+                    {
+                        vaeProcessor.ValidateEventType(resultEventType);
+                        vaeInnerEventType = resultEventType;
+                        resultEventType = vaeProcessor.ValueAddEventType;
+                        isRevisionEvent = true;
+                    }
 
-                if (!isRevisionEvent)
-                {
-                    if (resultEventType is MapEventType)
+                    if (!isRevisionEvent)
                     {
-                        return new EvalInsertNoWildcardMap(selectExprContext, resultEventType);
-                    }
-                    else if (resultEventType is ObjectArrayEventType)
-                    {
-                        return MakeObjectArrayConsiderReorder(
-                            selectExprContext, (ObjectArrayEventType) resultEventType, _statementName,
-                            _typeService.EngineURIQualifier);
-                    }
-                    else if (resultEventType is AvroSchemaEventType)
-                    {
-                        return
-                            _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeSelectNoWildcard(
-                                selectExprContext, resultEventType, _tableService, _statementName,
+                        if (resultEventType is MapEventType)
+                        {
+                            return new EvalInsertNoWildcardMap(selectExprContext, resultEventType);
+                        }
+                        else if (resultEventType is ObjectArrayEventType)
+                        {
+                            return MakeObjectArrayConsiderReorder(
+                                selectExprContext, (ObjectArrayEventType) resultEventType, _statementName,
                                 _typeService.EngineURIQualifier);
+                        }
+                        else if (resultEventType is AvroSchemaEventType)
+                        {
+                            return
+                                _eventAdapterService.EventAdapterAvroHandler.GetOutputFactory().MakeSelectNoWildcard(
+                                    selectExprContext, resultEventType, _tableService, _statementName,
+                                    _typeService.EngineURIQualifier);
+                        }
+                        else
+                        {
+                            throw new IllegalStateException("Unrecognized output type " + resultEventType);
+                        }
                     }
                     else
                     {
-                        throw new IllegalStateException("Unrecognized output type " + resultEventType);
+                        return new EvalInsertNoWildcardRevision(
+                            selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType);
                     }
                 }
-                else
+                catch (EventAdapterException ex)
                 {
-                    return new EvalInsertNoWildcardRevision(
-                        selectExprContext, resultEventType, vaeProcessor, vaeInnerEventType);
+                    Log.Debug("Exception provided by event adapter: " + ex.Message, ex);
+                    throw new ExprValidationException(ex.Message, ex);
                 }
-            }
-            catch (EventAdapterException ex)
-            {
-                Log.Debug("Exception provided by event adapter: " + ex.Message, ex);
-                throw new ExprValidationException(ex.Message, ex);
             }
         }
 
@@ -1533,10 +1538,7 @@ namespace com.espertech.esper.epl.core
                         ProcEvaluate = eventsParams =>
                         {
                             ICollection<EventBean> events =
-                                enumeration.EvaluateGetROCollectionEvents(
-                                    eventsParams.EventsPerStream,
-                                    eventsParams.IsNewData,
-                                    eventsParams.ExprEvaluatorContext);
+                                enumeration.EvaluateGetROCollectionEvents(eventsParams);
                             if (events == null)
                             {
                                 return null;
@@ -1555,10 +1557,7 @@ namespace com.espertech.esper.epl.core
                 {
                     ProcEvaluate = eventsParams =>
                     {
-                        EventBean @event = enumeration.EvaluateGetEventBean(
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext);
+                        EventBean @event = enumeration.EvaluateGetEventBean(eventsParams);
                         if (@event == null)
                         {
                             return null;
@@ -1583,10 +1582,7 @@ namespace com.espertech.esper.epl.core
             {
                 var evaluatorFragmentX = new ProxyExprEvaluator
                 {
-                    ProcEvaluate = eventsParams => enumeration.EvaluateGetEventBean(
-                        eventsParams.EventsPerStream,
-                        eventsParams.IsNewData,
-                        eventsParams.ExprEvaluatorContext),
+                    ProcEvaluate = eventsParams => enumeration.EvaluateGetEventBean(eventsParams),
                     ProcReturnType = () => targetType.UnderlyingType
                 };
                 return new TypeAndFunctionPair(targetType, evaluatorFragmentX);
@@ -1598,10 +1594,7 @@ namespace com.espertech.esper.epl.core
                 ProcEvaluate = eventsParams =>
                 {
                     ICollection<EventBean> events =
-                        enumeration.EvaluateGetROCollectionEvents(
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext);
+                        enumeration.EvaluateGetROCollectionEvents(eventsParams);
                     if (events == null || events.Count == 0)
                     {
                         return null;
@@ -1861,11 +1854,7 @@ namespace com.espertech.esper.epl.core
                 {
                     var evaluatorFragmentX = new ProxyExprEvaluator
                     {
-                        ProcEvaluate = eventsParams => enumEval.EvaluateGetEventBean(
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext
-                            ),
+                        ProcEvaluate = eventsParams => enumEval.EvaluateGetEventBean(eventsParams),
                         ProcReturnType = () => eventTypeSingle.UnderlyingType
                     };
                     return new TypeAndFunctionPair(eventTypeSingle, evaluatorFragmentX);
@@ -1874,21 +1863,12 @@ namespace com.espertech.esper.epl.core
                 {
                     ProcEvaluate = eventsParams =>
                     {
-                        EventBean @event = enumEval.EvaluateGetEventBean(
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext
-                            );
+                        EventBean @event = enumEval.EvaluateGetEventBean(eventsParams);
                         if (@event == null)
                         {
                             return null;
                         }
-                        return tableMetadata.EventToPublic.Convert(
-                            @event,
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext
-                            );
+                        return tableMetadata.EventToPublic.Convert(@event, eventsParams);
                     },
                     ProcReturnType = () => tableMetadata.PublicEventType.UnderlyingType
                 };
@@ -1906,11 +1886,7 @@ namespace com.espertech.esper.epl.core
                         ProcEvaluate = eventsParams =>
                         {
                             // the protocol is EventBean[]
-                            Object result = enumEval.EvaluateGetROCollectionEvents(
-                                eventsParams.EventsPerStream,
-                                eventsParams.IsNewData,
-                                eventsParams.ExprEvaluatorContext
-                                );
+                            Object result = enumEval.EvaluateGetROCollectionEvents(eventsParams);
                             if (result is ICollection<EventBean>)
                             {
                                 var events = (ICollection<EventBean>) result;
@@ -1931,11 +1907,7 @@ namespace com.espertech.esper.epl.core
                     ProcEvaluate = eventsParams =>
                     {
                         // the protocol is EventBean[]
-                        Object result = enumEval.EvaluateGetROCollectionEvents(
-                            eventsParams.EventsPerStream,
-                            eventsParams.IsNewData,
-                            eventsParams.ExprEvaluatorContext
-                            );
+                        Object result = enumEval.EvaluateGetROCollectionEvents(eventsParams);
                         if (result == null)
                         {
                             return null;
@@ -1948,10 +1920,7 @@ namespace com.espertech.esper.epl.core
                             foreach (EventBean @event in eventsX)
                             {
                                 @out[index++] = tableMetadata.EventToPublic.Convert(
-                                    @event,
-                                    eventsParams.EventsPerStream,
-                                    eventsParams.IsNewData,
-                                    eventsParams.ExprEvaluatorContext);
+                                    @event, eventsParams);
                             }
                             return @out;
                         }
@@ -1959,10 +1928,7 @@ namespace com.espertech.esper.epl.core
                         for (int i = 0; i < events.Length; i++)
                         {
                             events[i] = tableMetadata.EventToPublic.Convert(
-                                events[i],
-                                eventsParams.EventsPerStream,
-                                eventsParams.IsNewData,
-                                eventsParams.ExprEvaluatorContext);
+                                events[i], eventsParams);
                         }
                         return events;
                     },

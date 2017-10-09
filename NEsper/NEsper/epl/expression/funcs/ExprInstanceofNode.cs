@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 1)
+            if (ChildNodes.Count != 1)
             {
                 throw new ExprValidationException("Instanceof node must have 1 child expression node supplying the expression to test");
             }
@@ -193,7 +193,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 // try to look up the class, not a primitive type name
                 try
                 {
-                    clazz = TypeHelper.ResolveType(className.Trim(), engineImportService.GetClassForNameProvider());
+                    clazz = TypeHelper.GetClassForName(className.Trim(), engineImportService.GetClassForNameProvider());
                 }
                 catch (TypeLoadException e)
                 {

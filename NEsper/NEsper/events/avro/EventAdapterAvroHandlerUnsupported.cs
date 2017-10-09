@@ -18,8 +18,6 @@ namespace com.espertech.esper.events.avro
 {
     public class EventAdapterAvroHandlerUnsupported : EventAdapterAvroHandler
     {
-        public const string HANDLER_IMPL = "com.espertech.esper.avro.core.EventAdapterAvroHandlerImpl";
-
         public static readonly EventAdapterAvroHandlerUnsupported INSTANCE = new EventAdapterAvroHandlerUnsupported();
 
         public EventAdapterAvroHandlerUnsupported()
@@ -104,7 +102,7 @@ namespace com.espertech.esper.events.avro
 
         private UnsupportedOperationException GetUnsupported()
         {
-            throw new UnsupportedOperationException("Esper-Avro is not part of your classpath");
+            throw new UnsupportedOperationException("Esper-Avro is not part of your solution");
         }
     }
 } // end of namespace

@@ -20,6 +20,7 @@ using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
+using com.espertech.esper.view.internals;
 
 namespace com.espertech.esper.core.context.factory
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.core.context.factory
             var processors = new ResultSetProcessor[_items.Length];
             for (int i = 0; i < processors.Length; i++)
             {
-                ResultSetProcessorFactoryDesc factory = _items[i].GetFactoryDesc();
+                ResultSetProcessorFactoryDesc factory = _items[i].FactoryDesc;
                 ResultSetProcessor processor = factory.ResultSetProcessorFactory.Instantiate(
                     null, null, agentInstanceContext);
                 processors[i] = processor;
@@ -59,7 +60,7 @@ namespace com.espertech.esper.core.context.factory
             var tableStateInstances = new TableStateInstance[processors.Length];
             for (int i = 0; i < _items.Length; i++)
             {
-                string tableName = _items[i].GetInsertIntoTableNames();
+                string tableName = _items[i].InsertIntoTableNames;
                 if (tableName != null)
                 {
                     tableStateInstances[i] = agentInstanceContext.StatementContext.TableService.GetState(
@@ -70,7 +71,7 @@ namespace com.espertech.esper.core.context.factory
             var whereClauseEvals = new ExprEvaluator[_items.Length];
             for (int i = 0; i < _items.Length; i++)
             {
-                whereClauseEvals[i] = _items[i].GetWhereClause() == null ? null : _items[i].GetWhereClause().ExprEvaluator;
+                whereClauseEvals[i] = _items[i].WhereClause == null ? null : _items[i].WhereClause.ExprEvaluator;
             }
 
             var desc = (OnTriggerSplitStreamDesc) base.StatementSpec.OnTriggerDesc;

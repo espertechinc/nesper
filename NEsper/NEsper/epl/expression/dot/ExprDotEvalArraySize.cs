@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.rettype;
@@ -20,11 +19,7 @@ namespace com.espertech.esper.epl.expression.dot
         private static readonly ILog Log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public Object Evaluate(
-            Object target,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             var targetArray = target as Array;
             if (targetArray == null)

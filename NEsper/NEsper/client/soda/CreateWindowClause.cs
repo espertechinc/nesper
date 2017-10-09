@@ -45,7 +45,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="windowName">is the name of the window to create</param>
         /// <param name="views">is a list of data window views</param>
-        public CreateWindowClause(string windowName, List<View> views) {
+        public CreateWindowClause(string windowName, IList<View> views) {
             Columns = new List<SchemaColumnDesc>();
             WindowName = windowName;
             Views = views;
@@ -199,6 +199,24 @@ namespace com.espertech.esper.client.soda
         public void AddColumn(SchemaColumnDesc col)
         {
             Columns.Add(col);
+        }
+
+        public CreateWindowClause SetColumns(IList<SchemaColumnDesc> value)
+        {
+            Columns = value;
+            return this;
+        }
+
+        public CreateWindowClause SetIsInsert(bool value)
+        {
+            IsInsert = value;
+            return this;
+        }
+
+        public CreateWindowClause SetInsertWhereClause(Expression value)
+        {
+            InsertWhereClause = value;
+            return this;
         }
     
         /// <summary>

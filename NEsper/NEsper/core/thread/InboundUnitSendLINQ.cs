@@ -44,7 +44,7 @@ namespace com.espertech.esper.core.thread
         {
             try
             {
-                EventBean eventBean = _services.EventAdapterService.AdapterForLINQ(_event);
+                EventBean eventBean = _services.EventAdapterService.AdapterForDOM(_event);
                 _runtime.ProcessEvent(eventBean);
             }
             catch (Exception e)

@@ -11,8 +11,8 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.pattern;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

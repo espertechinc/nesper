@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             get
             {
-                if (ChildNodes.Length == 0)
+                if (ChildNodes.Count == 0)
                 {
                     return true;
                 }
@@ -71,7 +71,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 return new CronParameter(_cronOperator, null);
             }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (ChildNodes.Length != 0)
+            if (ChildNodes.Count != 0)
             {
                 ChildNodes[0].ToEPL(writer, Precedence);
                 writer.Write(" ");
@@ -115,7 +115,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 return null;
             }

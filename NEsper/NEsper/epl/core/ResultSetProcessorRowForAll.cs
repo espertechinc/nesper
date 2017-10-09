@@ -626,8 +626,8 @@ namespace com.espertech.esper.epl.core
 	    {
 	        var selectNewEvents = GetSelectListEvents(true, true, false);
 	        return selectNewEvents != null 
-                ? EnumerationHelper<EventBean>.CreateSingletonEnumerator(selectNewEvents[0])
-                : EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+                ? EnumerationHelper<EventBean>.Singleton(selectNewEvents[0])
+                : EnumerationHelper<EventBean>.Empty();
 	    }
 	}
 } // end of namespace

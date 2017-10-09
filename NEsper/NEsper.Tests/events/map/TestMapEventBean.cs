@@ -11,8 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -41,8 +42,9 @@ namespace com.espertech.esper.events.map
             _testValuesMap["aString"] = "test";
             _testValuesMap["anInt"] = 10;
             _testValuesMap["myComplexBean"] = _supportBean;
-    
-            _eventType = new MapEventType(null, "", 1, SupportEventAdapterService.Service, _testTypesMap, null, null, null);
+
+            EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.MAP, "testtype", true, true, true, false, false);
+            _eventType = new MapEventType(metadata, "", 1, SupportEventAdapterService.Service, _testTypesMap, null, null, null);
             _eventBean = new MapEventBean(_testValuesMap, _eventType);
         }
     

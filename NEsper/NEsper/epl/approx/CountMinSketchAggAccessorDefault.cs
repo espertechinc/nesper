@@ -25,19 +25,20 @@ namespace com.espertech.esper.epl.approx
         private CountMinSketchAggAccessorDefault() {
         }
     
-        public Object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public object GetValue(AggregationState state, EvaluateParams evalParams)
+        {
             return null;
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     }

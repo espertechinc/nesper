@@ -12,17 +12,18 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 
 namespace com.espertech.esper.epl.datetime.interval
 {
     public interface IntervalOp
     {
-        Object Evaluate(long startTs, long endTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(EventType[] typesPerStream,
-                                                              DatetimeMethodEnum currentMethod,
-                                                              IList<ExprNode> currentParameters,
-                                                              ExprDotNodeFilterAnalyzerInput inputDesc);
+        Object Evaluate(long startTs, long endTs, EvaluateParams evaluateParams);
+
+        ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(
+            EventType[] typesPerStream,
+            DatetimeMethodEnum currentMethod,
+            IList<ExprNode> currentParameters,
+            ExprDotNodeFilterAnalyzerInput inputDesc);
     }
 }

@@ -22,7 +22,7 @@ namespace com.espertech.esper.client.util
     public interface XMLEventRenderer
     {
         /// <summary>
-        /// Render a given event in the XML format.
+        /// RenderAny a given event in the XML format.
         /// </summary>
         /// <param name="rootElementName">the name of the root element, may include namespace information</param>
         /// <param name="theEvent">the event to render</param>

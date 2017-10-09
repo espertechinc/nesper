@@ -12,6 +12,7 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.epl.virtualdw
         public VirtualDWViewFactoryImpl(Type first, string namedWindowName, object customConfiguration)
         {
             if (!first.IsImplementsInterface(typeof(VirtualDataWindowFactory))) {
-                throw new ViewProcessingException("Virtual data window factory class " + first.Name + " does not implement the interface " + typeof(VirtualDataWindowFactory).Name);
+                throw new ViewProcessingException("Virtual data window factory class " + Name.Of(first) + " does not implement the interface " + Name.Of<VirtualDataWindowFactory>());
             }
             _customConfiguration = customConfiguration;
             _namedWindowName = namedWindowName;

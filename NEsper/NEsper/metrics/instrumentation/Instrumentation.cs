@@ -153,9 +153,9 @@ namespace com.espertech.esper.metrics.instrumentation
     
         void AExprIdent(Object result);
     
-        void QExprtypeof();
+        void QExprTypeof();
     
-        void AExprtypeof(string typeName);
+        void AExprTypeof(string typeName);
     
         void QExprOr(ExprOrNode exprOrNode);
     

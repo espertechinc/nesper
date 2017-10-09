@@ -18,30 +18,40 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.core.support
 {
-    public class SupportEventAdapterService {
+    public class SupportEventAdapterService
+    {
         private static EventAdapterService _eventAdapterService;
-    
+
         static SupportEventAdapterService()
         {
             _eventAdapterService = Allocate();
         }
-    
-        public static void Reset() {
+
+        public static void Reset()
+        {
             _eventAdapterService = Allocate();
         }
-    
-        public static EventAdapterService GetService() {
-            return _eventAdapterService;
+
+        public static EventAdapterService Service
+        {
+            get { return _eventAdapterService; }
         }
-    
-        private static EventAdapterService Allocate() {
+
+        private static EventAdapterService Allocate()
+        {
             EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
-            try {
-                avroHandler = (EventAdapterAvroHandler) TypeHelper.Instantiate(typeof(EventAdapterAvroHandler), EventAdapterAvroHandler.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
-            } catch {
+            try
+            {
+                avroHandler =
+                    TypeHelper.Instantiate<EventAdapterAvroHandler>(
+                        EventAdapterAvroHandlerConstants.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
+            }
+            catch
+            {
             }
 
-            return new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, avroHandler, SupportEngineImportServiceFactory.Make());
+            return new EventAdapterServiceImpl(
+                new EventTypeIdGeneratorImpl(), 5, avroHandler, SupportEngineImportServiceFactory.Make());
         }
     }
 } // end of namespace

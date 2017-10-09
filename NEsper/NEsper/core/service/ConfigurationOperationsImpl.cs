@@ -115,18 +115,18 @@ namespace com.espertech.esper.core.service
         }
     
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName) {
-            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum.DISABLED, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED, false, null);
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, FilterOptimizableEnum.ENABLED, false, null);
         }
     
-        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache) {
-            InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED, false, null);
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED, false, null);
         }
     
-        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable) {
-            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum.DISABLED, filterOptimizable, false, null);
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, FilterOptimizableEnum filterOptimizable) {
+            InternalAddPlugInSingleRowFunction(functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable, false, null);
         }
     
-        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
+        public void AddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions) {
             InternalAddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, null);
         }
     
@@ -142,37 +142,108 @@ namespace com.espertech.esper.core.service
                 config.EventTypeName);
         }
     
-        private void InternalAddPlugInSingleRowFunction(string functionName, string className, string methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string optionalEventTypeName) {
+        private void InternalAddPlugInSingleRowFunction(string functionName, string className, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string optionalEventTypeName) {
             try {
                 _engineImportService.AddSingleRow(functionName, className, methodName, valueCache, filterOptimizable, rethrowExceptions, optionalEventTypeName);
             } catch (EngineImportException e) {
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
-        public void AddImport(string importName) {
-            try {
-                _engineImportService.AddImport(importName);
-            } catch (EngineImportException e) {
+
+        public void AddAnnotationImport(string importName, string assemblyNameOrFile)
+        {
+            try
+            {
+                _engineImportService.AddAnnotationImport(new AutoImportDesc(importName, assemblyNameOrFile));
+            }
+            catch (EngineImportException e)
+            {
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
-        public void AddAnnotationImport(string importName) {
-            try {
-                _engineImportService.AddAnnotationImport(importName);
-            } catch (EngineImportException e) {
+
+        public void AddAnnotationImport(string importName)
+        {
+            AddAnnotationImport(importName, null);
+        }
+
+        public void AddAnnotationImport(Type autoImport)
+        {
+            AddAnnotationImport(autoImport.FullName, autoImport.AssemblyQualifiedName);
+        }
+
+        public void AddAnnotationImport<T>(bool importNamespace)
+        {
+            if (importNamespace)
+            {
+                AddAnnotationImport(typeof(T).Namespace, typeof(T).Assembly.FullName);
+            }
+            else
+            {
+                AddAnnotationImport(typeof(T).FullName, typeof(T).Assembly.FullName);
+            }
+        }
+
+        public void AddImport(string importName, string assemblyNameOrFile)
+        {
+            try
+            {
+                _engineImportService.AddImport(new AutoImportDesc(importName, assemblyNameOrFile));
+            }
+            catch (EngineImportException e)
+            {
                 throw new ConfigurationException(e.Message, e);
             }
         }
-    
-        public void AddImport(Type importClass) {
-            AddImport(importClass.Name);
+
+        public void AddImport(string importName)
+        {
+            string[] importParts = importName.Split(',');
+            if (importParts.Length == 1)
+            {
+                AddImport(importName, null);
+            }
+            else
+            {
+                AddImport(importParts[0], importParts[1]);
+            }
+        }
+
+        public void AddImport(Type importClass)
+        {
+            if (importClass.IsNested)
+                AddImport(importClass.DeclaringType.FullName, null);
+            else
+                AddImport(importClass.Namespace, null);
+        }
+
+        public void AddImport<T>()
+        {
+            AddImport(typeof(T));
+        }
+
+        public void AddNamespaceImport<T>()
+        {
+            var importClass = typeof(T);
+            if (importClass.IsNested)
+                AddImport(importClass.DeclaringType.FullName, null);
+            else
+                AddImport(importClass.Namespace, null);
         }
 
         public bool IsEventTypeExists(string eventTypeName)
         {
             return _eventAdapterService.GetEventTypeByName(eventTypeName) != null;
+        }
+
+        public void AddEventType<T>(String eventTypeName)
+        {
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName);
+        }
+
+        public void AddEventType<T>()
+        {
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName);
         }
 
         public void AddEventType(string eventTypeName, string eventTypeTypeName)
@@ -206,7 +277,8 @@ namespace com.espertech.esper.core.service
     
         public void AddEventType(string eventTypeName, Properties typeMap) {
             CheckTableExists(eventTypeName);
-            IDictionary<string, Object> types = TypeHelper.GetClassObjectFromPropertyTypeNames(typeMap, _engineImportService.GetClassForNameProvider());
+            IDictionary<string, Object> types = TypeHelper.GetClassObjectFromPropertyTypeNames(
+                typeMap, _engineImportService.GetClassForNameProvider());
             try {
                 _eventAdapterService.AddNestableMapType(eventTypeName, types, null, false, true, true, false, false);
             } catch (EventAdapterException t) {
@@ -255,8 +327,8 @@ namespace com.espertech.esper.core.service
         public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes, ConfigurationEventTypeObjectArray optionalConfiguration) {
             CheckTableExists(eventTypeName);
             try {
-                LinkedHashMap<string, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
-                IDictionary<string, Object> compiledProperties = EventTypeUtility.CompileMapTypeProperties(propertyTypesMap, _eventAdapterService);
+                var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+                var compiledProperties = EventTypeUtility.CompileMapTypeProperties(propertyTypesMap, _eventAdapterService);
                 _eventAdapterService.AddNestableObjectArrayType(eventTypeName, compiledProperties, optionalConfiguration, false, true, true, false, false, false, null);
             } catch (EventAdapterException t) {
                 throw new ConfigurationException(t.Message, t);
@@ -281,9 +353,14 @@ namespace com.espertech.esper.core.service
                 throw new ConfigurationException(t.Message, t);
             }
         }
-    
+
+        public void AddVariable<TValue>(string variableName, TValue initializationValue)
+        {
+            AddVariable(variableName, typeof(TValue).FullName, initializationValue, false);
+        }
+
         public void AddVariable(string variableName, Type type, Object initializationValue) {
-            AddVariable(variableName, type.Name, initializationValue, false);
+            AddVariable(variableName, type.FullName, initializationValue, false);
         }
     
         public void AddVariable(string variableName, string eventTypeName, Object initializationValue) {
@@ -347,7 +424,7 @@ namespace com.espertech.esper.core.service
     
         public void UpdateObjectArrayEventType(string objectArrayEventTypeName, string[] propertyNames, Object[] propertyTypes) {
             try {
-                LinkedHashMap<string, Object> typeMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
+                var typeMap = EventTypeUtility.ValidateObjectArrayDef(propertyNames, propertyTypes);
                 _eventAdapterService.UpdateObjectArrayEventType(objectArrayEventTypeName, typeMap);
             } catch (EventAdapterException e) {
                 throw new ConfigurationException("Error updating Object-array event type: " + e.Message, e);
@@ -488,7 +565,28 @@ namespace com.espertech.esper.core.service
             get { return _eventAdapterService.AllTypes; }
         }
 
-        public void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc) {
+        public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            // To ensure proper usage, we have to convert the type to its assembly qualified name.
+            try
+            {
+                eventClass = TypeHelper.ResolveType(eventClass, true).AssemblyQualifiedName;
+            }
+            catch (TypeLoadException ex)
+            {
+                throw new ConfigurationException("Failed to add legacy event type definition for type '" + eventTypeName + "': " + ex.Message, ex);
+            }
+
             CheckTableExists(eventTypeName);
             try {
                 var map = new Dictionary<string, ConfigurationEventTypeLegacy>();
@@ -519,7 +617,7 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public long MatchRecognizeMaxStates
+        public long? MatchRecognizeMaxStates
         {
             set
             {

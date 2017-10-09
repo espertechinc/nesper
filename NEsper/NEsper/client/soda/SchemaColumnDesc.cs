@@ -80,7 +80,7 @@ namespace com.espertech.esper.client.soda
         public bool IsPrimitiveArray { get; set; }
 
         /// <summary>
-        /// Render to EPL.
+        /// RenderAny to EPL.
         /// </summary>
         /// <param name="writer">to render to</param>
         public void ToEPL(TextWriter writer)

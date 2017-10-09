@@ -15,6 +15,8 @@ namespace com.espertech.esper.client.util
     /// </summary>
     public class ClassLoaderProviderDefault : ClassLoaderProvider
     {
+        public const string NAME = "ClassLoaderProvider";
+
         public static readonly ClassLoaderProviderDefault INSTANCE = new ClassLoaderProviderDefault();
 
         private ClassLoaderProviderDefault()

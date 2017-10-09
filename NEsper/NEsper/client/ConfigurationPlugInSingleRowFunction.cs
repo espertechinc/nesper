@@ -17,44 +17,6 @@ namespace com.espertech.esper.client
     public class ConfigurationPlugInSingleRowFunction
     {
         /// <summary>
-        ///     Controls whether a single-row function is eligible for optimization if it occurs in a filter expression.
-        /// </summary>
-        public enum FilterOptimizableEnum
-        {
-            /// <summary>
-            ///     The engine does not consider the single-row function for optimizing evaluation: The function gets evaluated for
-            ///     each event possibly multiple times.
-            /// </summary>
-            DISABLED,
-
-            /// <summary>
-            ///     The engine considers the single-row function for optimizing evaluation: The function gets evaluated only once per
-            ///     event.
-            /// </summary>
-            ENABLED
-        }
-
-        /// <summary>Enum for single-row function value cache setting.</summary>
-        public enum ValueCacheEnum
-        {
-            /// <summary>
-            ///     The default, the result of a single-row function is always computed anew.
-            /// </summary>
-            DISABLED,
-
-            /// <summary>
-            ///     Causes the engine to not actually invoke the single-row function and instead return a cached precomputed value
-            ///     when all parameters are constants or there are no parameters.
-            /// </summary>
-            ENABLED,
-
-            /// <summary>
-            ///     Causes the engine to follow the engine-wide policy as configured for user-defined functions.
-            /// </summary>
-            CONFIGURED
-        }
-
-        /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="name">UDF name</param>
@@ -133,5 +95,43 @@ namespace com.espertech.esper.client
         /// </summary>
         /// <value>event type name</value>
         public string EventTypeName { get; set; }
+    }
+
+    /// <summary>
+    ///     Controls whether a single-row function is eligible for optimization if it occurs in a filter expression.
+    /// </summary>
+    public enum FilterOptimizableEnum
+    {
+        /// <summary>
+        ///     The engine does not consider the single-row function for optimizing evaluation: The function gets evaluated for
+        ///     each event possibly multiple times.
+        /// </summary>
+        DISABLED,
+
+        /// <summary>
+        ///     The engine considers the single-row function for optimizing evaluation: The function gets evaluated only once per
+        ///     event.
+        /// </summary>
+        ENABLED
+    }
+
+    /// <summary>Enum for single-row function value cache setting.</summary>
+    public enum ValueCacheEnum
+    {
+        /// <summary>
+        ///     The default, the result of a single-row function is always computed anew.
+        /// </summary>
+        DISABLED,
+
+        /// <summary>
+        ///     Causes the engine to not actually invoke the single-row function and instead return a cached precomputed value
+        ///     when all parameters are constants or there are no parameters.
+        /// </summary>
+        ENABLED,
+
+        /// <summary>
+        ///     Causes the engine to follow the engine-wide policy as configured for user-defined functions.
+        /// </summary>
+        CONFIGURED
     }
 } // end of namespace

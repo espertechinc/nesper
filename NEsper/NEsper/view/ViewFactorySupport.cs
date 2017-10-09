@@ -268,7 +268,7 @@ namespace com.espertech.esper.view
             var returnType = sizeEvaluator.ReturnType.GetBoxedType();
             if (!returnType.IsNumeric() ||
                 returnType.IsFloatingPointClass() ||
-                returnType == typeof (long))
+                returnType.IsBoxedType<long>())
             {
                 throw new ViewParameterException(GetViewParamMessage(viewName));
             }
@@ -308,7 +308,7 @@ namespace com.espertech.esper.view
             return viewName + " view requires a positive integer for size but received " + size;
         }
 
-        public static void ValidateNoParameters(string viewName, List<ExprNode> expressionParameters)
+        public static void ValidateNoParameters(string viewName, IList<ExprNode> expressionParameters)
         {
             if (!expressionParameters.IsEmpty())
             {

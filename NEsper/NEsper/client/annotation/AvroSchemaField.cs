@@ -17,7 +17,7 @@ namespace com.espertech.esper.client.annotation
     /// <summary>
     /// Attribute for use with Avro to provide a schema for a given event property.
     /// </summary>
-    public class AvroSchemaField : Attribute 
+    public class AvroSchemaFieldAttribute : Attribute 
     {
         /// <summary>
         /// Property name.
@@ -32,18 +32,18 @@ namespace com.espertech.esper.client.annotation
         public string Schema { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AvroSchemaField"/> class.
+        /// Initializes a new instance of the <see cref="AvroSchemaFieldAttribute"/> class.
         /// </summary>
-        public AvroSchemaField()
+        public AvroSchemaFieldAttribute()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AvroSchemaField"/> class.
+        /// Initializes a new instance of the <see cref="AvroSchemaFieldAttribute"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="schema">The schema.</param>
-        public AvroSchemaField(string name = "", string schema = "")
+        public AvroSchemaFieldAttribute(string name = "", string schema = "")
         {
             Name = name;
             Schema = schema;

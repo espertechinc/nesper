@@ -20,12 +20,12 @@ namespace com.espertech.esper.epl.expression.core
     public interface ExprEvaluatorEnumeration
     {
         EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId);
-        ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams);
 
         Type ComponentTypeCollection { get; }
-        ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams);
 
         EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId);
-        EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        EventBean EvaluateGetEventBean(EvaluateParams evaluateParams);
     }
 }

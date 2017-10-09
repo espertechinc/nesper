@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
                 throw new ExprValidationException("The regexp operator requires 2 child expressions");
             }

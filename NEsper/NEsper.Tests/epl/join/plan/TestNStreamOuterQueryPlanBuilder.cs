@@ -13,7 +13,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 

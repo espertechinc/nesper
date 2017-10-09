@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.timer
 {
@@ -20,63 +16,70 @@ namespace com.espertech.esper.timer
     /// information on Java system time-call performance, accuracy and drift.
     /// </summary>
     /// <author>Jerry Shea</author>
-    public class TimeSourceServiceImpl : TimeSourceService {
-        private static readonly long MICROS_TO_MILLIS = 1000;
-        private static readonly long NANOS_TO_MICROS = 1000;
-    
+    public class TimeSourceServiceImpl : TimeSourceService
+    {
+        private const long MICROS_TO_MILLIS = 1000;
+        private const long NANOS_TO_MICROS = 1000;
+
         /// <summary>
         /// A public variable indicating whether to use the System millisecond time or
         /// nano time, to be configured through the engine settings.
         /// </summary>
-        public static bool isSystemCurrentTime = true;
+        public static bool IsSystemCurrentTime = true;
     
-        private readonly long wallClockOffset;
-        private readonly string description;
+        private readonly long _wallClockOffset;
+        private readonly string _description;
     
         /// <summary>Ctor.</summary>
-        public TimeSourceServiceImpl() {
-            this.wallClockOffset = System.CurrentTimeMillis() * MICROS_TO_MILLIS - this.TimeMicros;
-            this.description = string.Format("%s: resolution %d microsecs",
-                    this.GetType().Name, this.CalculateResolution());
+        public TimeSourceServiceImpl()
+        {
+            _wallClockOffset = DateTimeHelper.CurrentTimeMillis * MICROS_TO_MILLIS - GetTimeMicros();
+            _description = string.Format("{0}: resolution {1} microsecs", GetType().FullName, CalculateResolution());
         }
-    
+
         /// <summary>
         /// Convenience method to get time in milliseconds
         /// </summary>
         /// <returns>wall-clock time in milliseconds</returns>
-        public long GetTimeMillis() {
-            if (isSystemCurrentTime) {
-                return System.CurrentTimeMillis();
+        public long GetTimeMillis()
+        {
+            if (IsSystemCurrentTime)
+            {
+                return DateTimeHelper.CurrentTimeMillis;
             }
-            return GetTimeMicros() / MICROS_TO_MILLIS;
+            return GetTimeMicros()/MICROS_TO_MILLIS;
         }
-    
-        private long GetTimeMicros() {
-            return (System.NanoTime() / NANOS_TO_MICROS) + wallClockOffset;
+
+        private long GetTimeMicros()
+        {
+            return (DateTimeHelper.CurrentTimeNanos/NANOS_TO_MICROS) + _wallClockOffset;
         }
-    
-    
+
+
         /// <summary>
         /// Calculate resolution of this timer in microseconds i.e. what is the resolution
         /// of the underlying platform's timer.
         /// </summary>
         /// <returns>timer resolution</returns>
-        protected long CalculateResolution() {
-            int loops = 5;
+        protected long CalculateResolution()
+        {
+            const int loops = 5;
             long totalResolution = 0;
-            long time = this.TimeMicros, prevTime = time;
-            for (int i = 0; i < loops; i++) {
+            long time = this.GetTimeMicros(), prevTime = time;
+            for (int i = 0; i < loops; i++)
+            {
                 // wait until time changes
                 while (time == prevTime)
-                    time = this.TimeMicros;
+                    time = GetTimeMicros();
                 totalResolution += time - prevTime;
                 prevTime = time;
             }
             return totalResolution / loops;
         }
-    
-        public override string ToString() {
-            return description;
+
+        public override string ToString()
+        {
+            return _description;
         }
     }
 } // end of namespace

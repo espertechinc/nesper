@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.view
         public OutputProcessViewConditionLastAllUnord(
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
             ResultSetProcessor resultSetProcessor,
-            long afterConditionTime,
+            long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,

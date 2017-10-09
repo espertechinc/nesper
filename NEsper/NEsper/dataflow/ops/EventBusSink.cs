@@ -146,7 +146,7 @@ namespace com.espertech.esper.dataflow.ops
 
             public void SendEvent(XElement node)
             {
-                EventBean theEvent = _eventAdapterService.AdapterForLINQ(node);
+                EventBean theEvent = _eventAdapterService.AdapterForDOM(node);
                 _runtimeEventSender.ProcessWrappedEvent(theEvent);
             }
         }

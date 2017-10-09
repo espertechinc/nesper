@@ -222,10 +222,10 @@ namespace com.espertech.esper.core.service
             // may use resource tracking
             var statementResourceService = new StatementResourceService(optionalContextName != null);
             var extensionSvcContext = new ProxyStatementExtensionSvcContext() {
-                ProcGetStmtResources = () => statementResourceService,
+                ProcStmtResources = () => statementResourceService,
                 ProcExtractStatementResourceHolder = (resultOfStart) => StatementResourceHolderUtil.PopulateHolder(resultOfStart),
                 ProcPreStartWalk = (selectDesc) => {},
-                ProcPostProcessStart = (resultOfStart) => {},
+                ProcPostProcessStart = (resultOfStart, isRecoveringResilient) => { },
                 ProcContributeStopCallback = (selectResult, stopCallbacks) => {}
             };
     
@@ -255,6 +255,7 @@ namespace com.espertech.esper.core.service
                 contextControllerFactoryService,
                 defaultAgentInstanceScriptContext,
                 AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
+                engineServices.ScriptingService,
                 writesToTables,
                 statementUserObject,
                 StatementSemiAnonymousTypeRegistryImpl.INSTANCE,

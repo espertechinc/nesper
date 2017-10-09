@@ -359,7 +359,7 @@ namespace com.espertech.esper.view
                 var audit = AuditEnum.VIEW.GetAudit(statementContext.Annotations);
                 if (audit != null)
                 {
-                    viewFactory = (ViewFactory) ViewFactoryProxy.NewInstance(
+                    viewFactory = ViewFactoryProxy.NewInstance(
                         statementContext.EngineURI, statementContext.StatementName, viewFactory, spec.ObjectName);
                 }
                 factoryChain.Add(viewFactory);

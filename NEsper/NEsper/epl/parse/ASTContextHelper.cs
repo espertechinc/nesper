@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern;
 using com.espertech.esper.util;

@@ -350,8 +350,8 @@ namespace com.espertech.esper.core.service
                     }
                     var latchFactoryNameBack = "insert_stream_B_" + insertIntoStreamName + "_" + statementName;
                     var latchFactoryNameFront = "insert_stream_F_" + insertIntoStreamName + "_" + statementName;
-                    var msecTimeout = Services.EngineSettingsService.EngineSettings.ThreadingConfig.InsertIntoDispatchTimeout;
-                    var locking = Services.EngineSettingsService.EngineSettings.ThreadingConfig.InsertIntoDispatchLocking;
+                    var msecTimeout = Services.EngineSettingsService.EngineSettings.Threading.InsertIntoDispatchTimeout;
+                    var locking = Services.EngineSettingsService.EngineSettings.Threading.InsertIntoDispatchLocking;
                     var latchFactoryFront = new InsertIntoLatchFactory(latchFactoryNameFront, stateless, msecTimeout, locking, Services.TimeSource);
                     var latchFactoryBack = new InsertIntoLatchFactory(latchFactoryNameBack, stateless, msecTimeout, locking, Services.TimeSource);
                     statementContext.EpStatementHandle.InsertIntoFrontLatchFactory = latchFactoryFront;
@@ -376,7 +376,7 @@ namespace com.espertech.esper.core.service
                 }
 
                 MultiMatchHandler multiMatchHandler;
-                var isSubselectPreeval = Services.EngineSettingsService.EngineSettings.ExpressionConfig.IsSelfSubselectPreeval;
+                var isSubselectPreeval = Services.EngineSettingsService.EngineSettings.Expression.IsSelfSubselectPreeval;
                 if (!needDedup)
                 {
                     // no dedup
@@ -433,10 +433,10 @@ namespace com.espertech.esper.core.service
                     try
                     {
                         // create statement - may fail for parser and simple validation errors
-                        var preserveDispatchOrder = Services.EngineSettingsService.EngineSettings.ThreadingConfig.IsListenerDispatchPreserveOrder
+                        var preserveDispatchOrder = Services.EngineSettingsService.EngineSettings.Threading.IsListenerDispatchPreserveOrder
                                 && !stateless;
-                        var isSpinLocks = Services.EngineSettingsService.EngineSettings.ThreadingConfig.ListenerDispatchLocking == ConfigurationEngineDefaults.Threading.Locking.SPIN;
-                        var blockingTimeout = Services.EngineSettingsService.EngineSettings.ThreadingConfig.ListenerDispatchTimeout;
+                        var isSpinLocks = Services.EngineSettingsService.EngineSettings.Threading.ListenerDispatchLocking == ConfigurationEngineDefaults.ThreadingConfig.Locking.SPIN;
+                        var blockingTimeout = Services.EngineSettingsService.EngineSettings.Threading.ListenerDispatchTimeout;
                         var timeLastStateChange = Services.SchedulingService.Time;
                         var statement = Services.EpStatementFactory.Make(
                             statementSpec.ExpressionNoAnnotations, isPattern,
@@ -539,7 +539,7 @@ namespace com.espertech.esper.core.service
 
         private void ValidateScript(ExpressionScriptProvided script)
         {
-            var dialect = script.OptionalDialect ?? Services.ConfigSnapshot.EngineDefaults.ScriptsConfig.DefaultDialect;
+            var dialect = script.OptionalDialect ?? Services.ConfigSnapshot.EngineDefaults.Scripts.DefaultDialect;
             if (dialect == null)
             {
                 throw new ExprValidationException(
@@ -1474,7 +1474,7 @@ namespace com.espertech.esper.core.service
                 var filter = new FilterSpecRaw(proposedWindow, Collections.GetEmptyList<ExprNode>(), null);
                 raw.StreamSpecs.Add(new FilterStreamSpecRaw(filter, ViewSpec.EMPTY_VIEWSPEC_ARRAY, proposedWindow, StreamSpecOptions.DEFAULT));
 
-                var firstChain = dotNode.ChainSpec.Delete(0);
+                var firstChain = dotNode.ChainSpec.DeleteAt(0);
                 if (!firstChain.Parameters.IsEmpty())
                 {
                     if (firstChain.Parameters.Count == 1)
@@ -1751,7 +1751,7 @@ namespace com.espertech.esper.core.service
                 var asName = exprSpec.OptionalAsName;
                 if (asName == null)
                 {
-                    asName = validatedExpression.ToExpressionStringMinPrecedenceSafe();
+                    asName = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(validatedExpression);
                 }
 
                 // check for fragments

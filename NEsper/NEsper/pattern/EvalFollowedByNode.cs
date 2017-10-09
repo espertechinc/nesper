@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 namespace com.espertech.esper.pattern
 {
@@ -17,16 +18,16 @@ namespace com.espertech.esper.pattern
     public class EvalFollowedByNode : EvalNodeBase
     {
         private readonly EvalFollowedByFactoryNode _factoryNode;
-        private readonly EvalNode[] _childNodes;
+        private readonly IList<EvalNode> _childNodes;
 
-        public EvalFollowedByNode(PatternAgentInstanceContext context, EvalFollowedByFactoryNode factoryNode, EvalNode[] childNodes)
+        public EvalFollowedByNode(PatternAgentInstanceContext context, EvalFollowedByFactoryNode factoryNode, IList<EvalNode> childNodes)
             : base(context)
         {
             _factoryNode = factoryNode;
             _childNodes = childNodes;
         }
 
-        public EvalNode[] ChildNodes
+        public IList<EvalNode> ChildNodes
         {
             get { return _childNodes; }
         }

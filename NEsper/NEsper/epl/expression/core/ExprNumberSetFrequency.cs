@@ -17,6 +17,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.expression.core
 {
     /// <summary>Expression for use within crontab to specify a frequency.</summary>
+    [Serializable]
     public class ExprNumberSetFrequency
         : ExprNodeBase
         , ExprEvaluator

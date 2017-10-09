@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -139,7 +140,10 @@ namespace com.espertech.esper.epl.rettype
             {
                 throw new ArgumentException("Invalid null collection component type");
             }
-            return new ClassMultiValuedEPType(typeof(ICollection<object>), collectionComponentType);
+
+            var collectionType = typeof(ICollection<>).MakeGenericType(collectionComponentType);
+            return new ClassMultiValuedEPType(collectionType, collectionComponentType);
+            //return new ClassMultiValuedEPType(typeof(ICollection<object>), collectionComponentType);
         }
 
         /// <summary>
@@ -155,6 +159,7 @@ namespace com.espertech.esper.epl.rettype
             {
                 throw new ArgumentException("Invalid null event type");
             }
+
             return new EventMultiValuedEPType(typeof(ICollection<object>), eventTypeOfCollectionEvents);
         }
 
@@ -176,7 +181,7 @@ namespace com.espertech.esper.epl.rettype
         public static EPType FromMethod(MethodInfo method)
         {
             var returnType = method.ReturnType;
-            if (returnType.IsImplementsInterface(typeof(ICollection<object>)))
+            if (returnType.IsGenericCollection())
             {
                 var componentType = TypeHelper.GetGenericReturnType(method, true);
                 return CollectionOfSingleValue(componentType);

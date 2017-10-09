@@ -98,6 +98,12 @@ namespace com.espertech.esper.client.util
             return this;
         }
 
+        public TimePeriod SetMicros(int? microseconds)
+        {
+            Microseconds = microseconds;
+            return this;
+        }
+
         protected bool Equals(TimePeriod other)
         {
             return Years == other.Years &&

@@ -33,29 +33,29 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestGet()
         {
-            Assert.IsNull(_cache.GetCached(Make("a")));
+            Assert.IsNull(_cache.GetCached(Make("a"), 1));
             Assert.IsTrue(_cache.IsActive);
 
-            _cache.PutCached(Make("a"), new EventTable[] { _lists[0] });     // a
-            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"))[0]);
+            _cache.PutCached(Make("a"), 1, new EventTable[] { _lists[0] });     // a
+            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"), 1)[0]);
 
-            _cache.PutCached(Make("b"), new EventTable[] { _lists[1] });     // b, a
-            Assert.AreSame(_lists[1], _cache.GetCached(Make("b"))[0]); // b, a
+            _cache.PutCached(Make("b"), 1, new EventTable[] { _lists[1] });     // b, a
+            Assert.AreSame(_lists[1], _cache.GetCached(Make("b"), 1)[0]); // b, a
 
-            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"))[0]); // a, b
+            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"), 1)[0]); // a, b
 
-            _cache.PutCached(Make("c"), new EventTable[] { _lists[2] });     // c, a, b
-            _cache.PutCached(Make("d"), new EventTable[] { _lists[3] });     // d, c, a  (b gone)
+            _cache.PutCached(Make("c"), 1, new EventTable[] { _lists[2] });     // c, a, b
+            _cache.PutCached(Make("d"), 1, new EventTable[] { _lists[3] });     // d, c, a  (b gone)
 
-            Assert.IsNull(_cache.GetCached(Make("b")));
+            Assert.IsNull(_cache.GetCached(Make("b"), 1));
 
-            Assert.AreSame(_lists[2], _cache.GetCached(Make("c"))[0]); // c, d, a
-            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"))[0]); // a, c, d
+            Assert.AreSame(_lists[2], _cache.GetCached(Make("c"), 1)[0]); // c, d, a
+            Assert.AreSame(_lists[0], _cache.GetCached(Make("a"), 1)[0]); // a, c, d
 
-            _cache.PutCached(Make("e"), new EventTable[] { _lists[4] }); // e, a, c (d and b gone)
-    
-            Assert.IsNull(_cache.GetCached(Make("d")));
-            Assert.IsNull(_cache.GetCached(Make("b")));
+            _cache.PutCached(Make("e"), 1, new EventTable[] { _lists[4] }); // e, a, c (d and b gone)
+
+            Assert.IsNull(_cache.GetCached(Make("d"), 1));
+            Assert.IsNull(_cache.GetCached(Make("b"), 1));
         }
     
         private Object[] Make(String key)

@@ -8,7 +8,8 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.soda;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.compat;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -30,17 +31,17 @@ namespace com.espertech.esper.linq
         [Test]
         public void TestCreateNamedWindow()
         {
-            var view = View.Create("win", "keepall");
+            var view = View.Create("keepall");
             var selectA = _serviceProvider.From<SupportBean>(typeof(SupportBean));
 
             _serviceProvider.EPAdministrator.CreateEPL(
-                "create window testWindow1.win:keepall() as select * from com.espertech.esper.support.bean.SupportBean");
+                "create window testWindow1#keepall as select * from " + Name.Of<SupportBean>());
 
             using (var statement = _serviceProvider.CreateWindow("testWindow2", view, selectA))
             {
                 Assert.AreEqual(
                     statement.Text,
-                    "@IterableUnbound create window testWindow2.win:keepall() as select * from com.espertech.esper.support.bean.SupportBean as s0");
+                    "@IterableUnbound create window testWindow2#keepall as select * from " + Name.Of<SupportBean>() + " as s0");
             }
         }
 
@@ -105,7 +106,7 @@ namespace com.espertech.esper.linq
             // Create a window
             _serviceProvider.CreateWindow(
                 "testWindow",
-                View.Create("win", "keepall"),
+                View.Create("keepall"),
                 _serviceProvider.From<SupportBean>());
 
             // Create a select trigger - with no expression criteria
@@ -152,7 +153,7 @@ namespace com.espertech.esper.linq
             // Create a window
             _serviceProvider.CreateWindow(
                 "testWindow",
-                View.Create("win", "keepall"),
+                View.Create("keepall"),
                 _serviceProvider.From<SupportBean>());
 
             // Create a delete trigger - with no expression criteria

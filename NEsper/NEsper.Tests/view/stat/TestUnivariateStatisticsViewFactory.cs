@@ -9,13 +9,14 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.view;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -46,18 +47,19 @@ namespace com.espertech.esper.view.stat
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new Object[] {"Price"}));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new Object[]{ "Price" }));
             _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
             EventType type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
             UnivariateStatisticsViewFactory factoryOne = new UnivariateStatisticsViewFactory();
             factoryOne.EventType = type;
             factoryOne.FieldExpression = SupportExprNodeFactory.MakeIdentNodeMD("Volume");
             UnivariateStatisticsViewFactory factoryTwo = new UnivariateStatisticsViewFactory();
-            factoryTwo.EventType =type;
+            factoryTwo.EventType = type;
             factoryTwo.FieldExpression = SupportExprNodeFactory.MakeIdentNodeMD("Price");
-            Assert.IsFalse(_factory.CanReuse(new UnivariateStatisticsView(factoryOne, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext())));
-            Assert.IsTrue(_factory.CanReuse(new UnivariateStatisticsView(factoryTwo, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext())));
+            Assert.IsFalse(_factory.CanReuse(new UnivariateStatisticsView(factoryOne, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new UnivariateStatisticsView(factoryTwo, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()), agentInstanceContext));
         }
     
         [Test]

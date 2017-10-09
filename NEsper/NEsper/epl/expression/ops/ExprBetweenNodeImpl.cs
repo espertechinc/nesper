@@ -81,7 +81,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (((ExprNode)this).ChildNodes.Length != 3)
+            if (((ExprNode)this).ChildNodes.Count != 3)
             {
                 throw new ExprValidationException("The Between operator requires exactly 3 child expressions");
             }

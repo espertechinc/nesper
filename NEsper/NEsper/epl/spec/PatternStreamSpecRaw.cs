@@ -520,10 +520,20 @@ namespace com.espertech.esper.epl.spec
                             }
 
                             var secondsExpire = expr.ExprEvaluator.Evaluate(evaluateParams);
-                            var timeExpire = secondsExpire == null ? null : context.TimeAbacus.DeltaForSecondsNumber(secondsExpire);
+
+                            long? timeExpire;
+                            if (secondsExpire == null)
+                            {
+                                timeExpire = null;
+                            }
+                            else
+                            {
+                                timeExpire = context.TimeAbacus.DeltaForSecondsNumber(secondsExpire);
+                            }
+
                             if (timeExpire != null && timeExpire > 0)
                             {
-                                timeDeltaComputation = new ExprTimePeriodEvalDeltaConstGivenDelta(timeExpire);
+                                timeDeltaComputation = new ExprTimePeriodEvalDeltaConstGivenDelta(timeExpire.Value);
                                 expiryTimeExp = expr;
                             }
                             else
@@ -619,7 +629,7 @@ namespace com.espertech.esper.epl.spec
             }
             else if (evalNode is EvalFollowedByFactoryNode)
             {
-                var followedByNode = (EvalFollowedByFactoryNode)evalNode;
+                var followedByNode = (EvalFollowedByFactoryNode) evalNode;
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(context.EngineURI, false);
                 var validationContext = new ExprValidationContext(
                     streamTypeService,

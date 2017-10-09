@@ -84,14 +84,14 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { return _functionName; }
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return AggregationResultFuture.GetCollectionOfEvents(Column, eventsPerStream, isNewData, context);
+            return AggregationResultFuture.GetCollectionOfEvents(Column, evaluateParams);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            var result = AggregationResultFuture.GetValue(Column, context.AgentInstanceId, eventsPerStream, isNewData, context);
+            var result = AggregationResultFuture.GetValue(Column, evaluateParams.ExprEvaluatorContext.AgentInstanceId, evaluateParams);
             if (result == null)
             {
                 return null;
@@ -115,9 +115,9 @@ namespace com.espertech.esper.epl.expression.accessagg
             return _factory.EventTypeSingle;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            return AggregationResultFuture.GetEventBean(Column, eventsPerStream, isNewData, context);
+            return AggregationResultFuture.GetEventBean(Column, evaluateParams);
         }
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

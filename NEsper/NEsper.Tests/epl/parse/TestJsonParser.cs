@@ -16,7 +16,7 @@ using com.espertech.esper.client.scopetest;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.generated;
-using com.espertech.esper.support.epl.parse;
+using com.espertech.esper.supportunit.epl.parse;
 
 using NUnit.Framework;
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.epl.parse
             ITree tree = ParseJson(json).First;
             ASTUtil.DumpAST(tree);
             Object loaded = ParseLoadJson(json);
-            Assert.AreEqual("{glossary={title=example glossary, GlossDiv={title=S, GlossList={GlossEntry={ID=SGML, SortAs=SGML, GlossTerm=Standard Generalized Markup Language, Acronym=SGML, Abbrev=ISO 8879:1986, GlossDef={para=A meta-markup language, used to create markup languages such as DocBook., GlossSeeAlso=[GML, XML]}, GlossSee=markup}}}}}", loaded.Render());
+            Assert.AreEqual("{glossary={title=example glossary, GlossDiv={title=S, GlossList={GlossEntry={ID=SGML, SortAs=SGML, GlossTerm=Standard Generalized Markup Language, Acronym=SGML, Abbrev=ISO 8879:1986, GlossDef={para=A meta-markup language, used to create markup languages such as DocBook., GlossSeeAlso=[GML, XML]}, GlossSee=markup}}}}}", loaded.RenderAny());
         }
 
         private Object ParseLoadJson(String expression)

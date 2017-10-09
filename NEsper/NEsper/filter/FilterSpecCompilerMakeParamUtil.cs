@@ -9,13 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.epl.expression.ops;
@@ -28,7 +26,8 @@ namespace com.espertech.esper.filter
     /// <summary>
     /// Helper to compile (validate and optimize) filter expressions as used in pattern and filter-based streams.
     /// </summary>
-    public sealed class FilterSpecCompilerMakeParamUtil {
+    public sealed class FilterSpecCompilerMakeParamUtil
+    {
         /// <summary>
         /// For a given expression determine if this is optimizable and create the filter parameter
         /// representing the expression, or null if not optimizable.
@@ -39,480 +38,682 @@ namespace com.espertech.esper.filter
         /// <param name="exprEvaluatorContext">context</param>
         /// <exception cref="com.espertech.esper.epl.expression.core.ExprValidationException">if the expression is invalid</exception>
         /// <returns>filter parameter representing the expression, or null</returns>
-        internal static FilterSpecParam MakeFilterParam(ExprNode constituent, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName)
-                {
+        internal static FilterSpecParam MakeFilterParam(
+            ExprNode constituent,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName)
+        {
             // Is this expresson node a simple compare, i.e. a=5 or b<4; these can be indexed
             if ((constituent is ExprEqualsNode) ||
-                    (constituent is ExprRelationalOpNode)) {
-                FilterSpecParam param = HandleEqualsAndRelOp(constituent, arrayEventTypes, exprEvaluatorContext, statementName);
-                if (param != null) {
+                (constituent is ExprRelationalOpNode))
+            {
+                var param = HandleEqualsAndRelOp(
+                    constituent, arrayEventTypes, exprEvaluatorContext, statementName);
+                if (param != null)
+                {
                     return param;
                 }
             }
-    
+
             constituent = RewriteOrToInIfApplicable(constituent);
-    
+
             // Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
-            if (constituent is ExprInNode) {
-                FilterSpecParam param = HandleInSetNode((ExprInNode) constituent, arrayEventTypes, exprEvaluatorContext, statementName);
-                if (param != null) {
+            if (constituent is ExprInNode)
+            {
+                var param = HandleInSetNode(
+                    (ExprInNode) constituent, arrayEventTypes, exprEvaluatorContext, statementName);
+                if (param != null)
+                {
                     return param;
                 }
             }
-    
-            if (constituent is ExprBetweenNode) {
-                FilterSpecParam param = HandleRangeNode((ExprBetweenNode) constituent, arrayEventTypes, exprEvaluatorContext, statementName);
-                if (param != null) {
+
+            if (constituent is ExprBetweenNode)
+            {
+                var param = HandleRangeNode(
+                    (ExprBetweenNode) constituent, arrayEventTypes, exprEvaluatorContext, statementName);
+                if (param != null)
+                {
                     return param;
                 }
             }
-    
-            if (constituent is ExprPlugInSingleRowNode) {
-                FilterSpecParam param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
-                if (param != null) {
+
+            if (constituent is ExprPlugInSingleRowNode)
+            {
+                var param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
+                if (param != null)
+                {
                     return param;
                 }
             }
-    
+
             return null;
         }
-    
-        public static ExprNode RewriteOrToInIfApplicable(ExprNode constituent) {
-            if (!(constituent is ExprOrNode) || constituent.ChildNodes.Length < 2) {
+
+        public static ExprNode RewriteOrToInIfApplicable(ExprNode constituent)
+        {
+            if (!(constituent is ExprOrNode) || constituent.ChildNodes.Count < 2)
+            {
                 return constituent;
             }
-    
+
             // check eligibility
-            ExprNode[] childNodes = constituent.ChildNodes;
-            foreach (ExprNode child in childNodes) {
-                if (!(child is ExprEqualsNode)) {
+            var childNodes = constituent.ChildNodes;
+            foreach (var child in childNodes)
+            {
+                if (!(child is ExprEqualsNode))
+                {
                     return constituent;
                 }
-                ExprEqualsNode equalsNode = (ExprEqualsNode) child;
-                if (equalsNode.IsIs || equalsNode.IsNotEquals) {
+                var equalsNode = (ExprEqualsNode) child;
+                if (equalsNode.IsIs || equalsNode.IsNotEquals)
+                {
                     return constituent;
                 }
             }
-    
+
             // find common-expression node
             ExprNode commonExpressionNode;
-            ExprNode lhs = childNodes[0].ChildNodes[0];
-            ExprNode rhs = childNodes[0].ChildNodes[1];
-            if (ExprNodeUtility.DeepEquals(lhs, rhs)) {
+            var lhs = childNodes[0].ChildNodes[0];
+            var rhs = childNodes[0].ChildNodes[1];
+            if (ExprNodeUtility.DeepEquals(lhs, rhs))
+            {
                 return constituent;
             }
-            if (IsExprExistsInAllEqualsChildNodes(childNodes, lhs)) {
+            if (IsExprExistsInAllEqualsChildNodes(childNodes, lhs))
+            {
                 commonExpressionNode = lhs;
-            } else if (IsExprExistsInAllEqualsChildNodes(childNodes, rhs)) {
+            }
+            else if (IsExprExistsInAllEqualsChildNodes(childNodes, rhs))
+            {
                 commonExpressionNode = rhs;
-            } else {
+            }
+            else
+            {
                 return constituent;
             }
-    
+
             // build node
-            var in = new ExprInNodeImpl(false);
-            in.AddChildNode(commonExpressionNode);
-            for (int i = 0; i < constituent.ChildNodes.Length; i++) {
-                ExprNode child = constituent.ChildNodes[i];
-                int nodeindex = ExprNodeUtility.DeepEquals(commonExpressionNode, childNodes[i].ChildNodes[0]) ? 1 : 0;
-                in.AddChildNode(child.ChildNodes[nodeindex]);
+            var @in = new ExprInNodeImpl(false);
+            @in.AddChildNode(commonExpressionNode);
+            for (var i = 0; i < constituent.ChildNodes.Count; i++)
+            {
+                var child = constituent.ChildNodes[i];
+                var nodeindex = ExprNodeUtility.DeepEquals(commonExpressionNode, childNodes[i].ChildNodes[0]) ? 1 : 0;
+                @in.AddChildNode(child.ChildNodes[nodeindex]);
             }
-    
+
             // validate
-            try {
-                in.ValidateWithoutContext();
-            } catch (ExprValidationException ex) {
+            try
+            {
+                @in.ValidateWithoutContext();
+            }
+            catch (ExprValidationException)
+            {
                 return constituent;
             }
-    
-            return in;
+
+            return @in;
         }
-    
-        private static FilterSpecParam HandlePlugInSingleRow(ExprPlugInSingleRowNode constituent) {
-            if (TypeHelper.GetBoxedType(constituent.ExprEvaluator.Type) != typeof(bool?)) {
+
+        private static FilterSpecParam HandlePlugInSingleRow(ExprPlugInSingleRowNode constituent)
+        {
+            if (constituent.ExprEvaluator.ReturnType.GetBoxedType() != typeof (bool?))
+            {
                 return null;
             }
-            if (!constituent.FilterLookupEligible) {
+            if (!constituent.IsFilterLookupEligible)
+            {
                 return null;
             }
-            FilterSpecLookupable lookupable = constituent.FilterLookupable;
+            var lookupable = constituent.FilterLookupable;
             return new FilterSpecParamConstant(lookupable, FilterOperator.EQUAL, true);
         }
-    
-        private static FilterSpecParam HandleRangeNode(ExprBetweenNode betweenNode, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName) {
-            ExprNode left = betweenNode.ChildNodes[0];
-            if (left is ExprFilterOptimizableNode) {
-                ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) left;
-                FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-                FilterOperator op = FilterOperator.ParseRangeOperator(betweenNode.IsLowEndpointIncluded, betweenNode.IsHighEndpointIncluded,
-                        betweenNode.IsNotBetween);
-    
-                FilterSpecParamRangeValue low = HandleRangeNodeEndpoint(betweenNode.ChildNodes[1], arrayEventTypes, exprEvaluatorContext, statementName);
-                FilterSpecParamRangeValue high = HandleRangeNodeEndpoint(betweenNode.ChildNodes[2], arrayEventTypes, exprEvaluatorContext, statementName);
-    
-                if ((low != null) && (high != null)) {
+
+        private static FilterSpecParam HandleRangeNode(
+            ExprBetweenNode betweenNode,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName)
+        {
+            var left = betweenNode.ChildNodes[0];
+            if (left is ExprFilterOptimizableNode)
+            {
+                var filterOptimizableNode = (ExprFilterOptimizableNode) left;
+                var lookupable = filterOptimizableNode.FilterLookupable;
+                var op = FilterOperatorExtensions.ParseRangeOperator(
+                    betweenNode.IsLowEndpointIncluded, betweenNode.IsHighEndpointIncluded,
+                    betweenNode.IsNotBetween);
+
+                var low = HandleRangeNodeEndpoint(
+                    betweenNode.ChildNodes[1], arrayEventTypes, exprEvaluatorContext, statementName);
+                var high = HandleRangeNodeEndpoint(
+                    betweenNode.ChildNodes[2], arrayEventTypes, exprEvaluatorContext, statementName);
+
+                if ((low != null) && (high != null))
+                {
                     return new FilterSpecParamRange(lookupable, op, low, high);
                 }
             }
             return null;
         }
-    
-        private static FilterSpecParamRangeValue HandleRangeNodeEndpoint(ExprNode endpoint, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName) {
+
+        private static FilterSpecParamRangeValue HandleRangeNodeEndpoint(
+            ExprNode endpoint,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName)
+        {
             // constant
-            if (ExprNodeUtility.IsConstantValueExpr(endpoint)) {
-                ExprConstantNode node = (ExprConstantNode) endpoint;
-                Object value = node.GetConstantValue(exprEvaluatorContext);
-                if (value == null) {
+            if (ExprNodeUtility.IsConstantValueExpr(endpoint))
+            {
+                var node = (ExprConstantNode) endpoint;
+                var value = node.GetConstantValue(exprEvaluatorContext);
+                if (value == null)
+                {
                     return null;
                 }
-                if (value is string) {
+                if (value is string)
+                {
                     return new RangeValueString((string) value);
-                } else {
-                    return new RangeValueDouble(((Number) value).DoubleValue());
+                }
+                else
+                {
+                    return new RangeValueDouble(value.AsDouble());
                 }
             }
-    
-            if (endpoint is ExprContextPropertyNode) {
-                ExprContextPropertyNode node = (ExprContextPropertyNode) endpoint;
+
+            if (endpoint is ExprContextPropertyNode)
+            {
+                var node = (ExprContextPropertyNode) endpoint;
                 return new RangeValueContextProp(node.Getter);
             }
-    
+
             // or property
-            if (endpoint is ExprIdentNode) {
-                ExprIdentNode identNodeInner = (ExprIdentNode) endpoint;
-                if (identNodeInner.StreamId == 0) {
+            if (endpoint is ExprIdentNode)
+            {
+                var identNodeInner = (ExprIdentNode) endpoint;
+                if (identNodeInner.StreamId == 0)
+                {
                     return null;
                 }
-    
-                if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(identNodeInner.ResolvedStreamName)) {
-                    Pair<int?, string> indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
-                    return new RangeValueEventPropIndexed(identNodeInner.ResolvedStreamName, indexAndProp.First, indexAndProp.Second, statementName);
-                } else {
-                    return new RangeValueEventProp(identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName);
+
+                if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() &&
+                    arrayEventTypes.ContainsKey(identNodeInner.ResolvedStreamName))
+                {
+                    var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
+                    return new RangeValueEventPropIndexed(
+                        identNodeInner.ResolvedStreamName, indexAndProp.First, indexAndProp.Second, statementName);
+                }
+                else
+                {
+                    return new RangeValueEventProp(
+                        identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName);
                 }
             }
-    
+
             return null;
         }
-    
-        private static FilterSpecParam HandleInSetNode(ExprInNode constituent, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName)
-                {
-            ExprNode left = constituent.ChildNodes[0];
-            if (!(left is ExprFilterOptimizableNode)) {
+
+        private static FilterSpecParam HandleInSetNode(
+            ExprInNode constituent,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName)
+        {
+            var left = constituent.ChildNodes[0];
+            if (!(left is ExprFilterOptimizableNode))
+            {
                 return null;
             }
-    
-            ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) left;
-            FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-            FilterOperator op = FilterOperator.IN_LIST_OF_VALUES;
-            if (constituent.IsNotIn) {
+
+            var filterOptimizableNode = (ExprFilterOptimizableNode) left;
+            var lookupable = filterOptimizableNode.FilterLookupable;
+            var op = FilterOperator.IN_LIST_OF_VALUES;
+            if (constituent.IsNotIn)
+            {
                 op = FilterOperator.NOT_IN_LIST_OF_VALUES;
             }
-    
-            int expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
+
+            var expectedNumberOfConstants = constituent.ChildNodes.Count - 1;
             var listofValues = new List<FilterSpecParamInValue>();
-            IEnumerator<ExprNode> it = Arrays.AsList(constituent.ChildNodes).GetEnumerator();
-            it.Next();  // ignore the first node as it's the identifier
-            while (it.HasNext()) {
-                ExprNode subNode = it.Next();
-                if (ExprNodeUtility.IsConstantValueExpr(subNode)) {
-                    ExprConstantNode constantNode = (ExprConstantNode) subNode;
-                    Object constant = constantNode.GetConstantValue(exprEvaluatorContext);
-                    if (constant is Collection) {
-                        return null;
+            IEnumerator<ExprNode> it = constituent.ChildNodes.GetEnumerator();
+            it.MoveNext(); // ignore the first node as it's the identifier
+            while (it.MoveNext())
+            {
+                ExprNode subNode = it.Current;
+                if (ExprNodeUtility.IsConstantValueExpr(subNode))
+                {
+                    var constantNode = (ExprConstantNode) subNode;
+                    var constant = constantNode.GetConstantValue(exprEvaluatorContext);
+
+                    if (constant != null && !constant.GetType().IsArray)
+                    {
+                        var constantType = constant.GetType();
+                        if (constantType.IsGenericCollection())
+                            return null;
+                        if (constantType.IsGenericDictionary())
+                            return null;
                     }
-                    if (constant is Map) {
-                        return null;
-                    }
-                    if ((constant != null) && (constant.Class.IsArray)) {
-                        for (int i = 0; i < Array.GetLength(constant); i++) {
-                            Object arrayElement = Array.Get(constant, i);
-                            Object arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
+
+                    var constantAsArray = constant as Array;
+                    if (constantAsArray != null)
+                    {
+                        for (var i = 0; i < constantAsArray.Length; i++)
+                        {
+                            var arrayElement = constantAsArray.GetValue(i);
+                            var arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
                             listofValues.Add(new InSetOfValuesConstant(arrayElementCoerced));
-                            if (i > 0) {
+                            if (i > 0)
+                            {
                                 expectedNumberOfConstants++;
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         constant = HandleConstantsCoercion(lookupable, constant);
                         listofValues.Add(new InSetOfValuesConstant(constant));
                     }
                 }
-                if (subNode is ExprContextPropertyNode) {
-                    ExprContextPropertyNode contextPropertyNode = (ExprContextPropertyNode) subNode;
-                    Type returnType = contextPropertyNode.Type;
+                if (subNode is ExprContextPropertyNode)
+                {
+                    var contextPropertyNode = (ExprContextPropertyNode) subNode;
+                    var returnType = contextPropertyNode.ReturnType;
                     Coercer coercer;
-                    if (TypeHelper.IsCollectionMapOrArray(returnType)) {
+                    Type coercerType;
+
+                    if (returnType.IsCollectionMapOrArray())
+                    {
                         CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
                         coercer = null;
-                    } else {
-                        coercer = GetNumberCoercer(left.ExprEvaluator.Type, contextPropertyNode.Type, lookupable.Expression);
+                        coercerType = returnType;
                     }
-                    Type finalReturnType = coercer != null ? Coercer.ReturnType : returnType;
-                    listofValues.Add(new InSetOfValuesContextProp(contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer, finalReturnType));
+                    else
+                    {
+                        coercer = GetNumberCoercer(
+                            left.ExprEvaluator.ReturnType, contextPropertyNode.ReturnType, lookupable.Expression, out coercerType);
+                    }
+                    var finalReturnType = coercerType;
+                    listofValues.Add(
+                        new InSetOfValuesContextProp(
+                            contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer, finalReturnType));
                 }
-                if (subNode is ExprIdentNode) {
-                    ExprIdentNode identNodeInner = (ExprIdentNode) subNode;
-                    if (identNodeInner.StreamId == 0) {
+                if (subNode is ExprIdentNode)
+                {
+                    var identNodeInner = (ExprIdentNode) subNode;
+                    if (identNodeInner.StreamId == 0)
+                    {
                         break; // for same event evals use the bool expression, via count compare failing below
                     }
-    
-                    bool isMustCoerce = false;
-                    Type coerceToType = TypeHelper.GetBoxedType(lookupable.ReturnType);
-                    Type identReturnType = identNodeInner.ExprEvaluator.Type;
-    
-                    if (TypeHelper.IsCollectionMapOrArray(identReturnType)) {
+
+                    var isMustCoerce = false;
+                    var coerceToType = lookupable.ReturnType.GetBoxedType();
+                    var identReturnType = identNodeInner.ExprEvaluator.ReturnType;
+
+                    if (identReturnType.IsCollectionMapOrArray())
+                    {
                         CheckArrayCoercion(identReturnType, lookupable.ReturnType, lookupable.Expression);
                         coerceToType = identReturnType;
                         // no action
-                    } else if (identReturnType != lookupable.ReturnType) {
-                        if (TypeHelper.IsNumeric(lookupable.ReturnType)) {
-                            if (!TypeHelper.CanCoerce(identReturnType, lookupable.ReturnType)) {
+                    }
+                    else if (identReturnType != lookupable.ReturnType)
+                    {
+                        if (lookupable.ReturnType.IsNumeric())
+                        {
+                            if (!identReturnType.CanCoerce(lookupable.ReturnType))
+                            {
                                 ThrowConversionError(identReturnType, lookupable.ReturnType, lookupable.Expression);
                             }
                             isMustCoerce = true;
-                        } else {
-                            break;  // assumed not compatible
+                        }
+                        else
+                        {
+                            break; // assumed not compatible
                         }
                     }
-    
+
                     FilterSpecParamInValue inValue;
-                    string streamName = identNodeInner.ResolvedStreamName;
-                    if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName)) {
-                        Pair<int?, string> indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
-                        inValue = new InSetOfValuesEventPropIndexed(identNodeInner.ResolvedStreamName, indexAndProp.First,
-                                indexAndProp.Second, isMustCoerce, coerceToType, statementName);
-                    } else {
-                        inValue = new InSetOfValuesEventProp(identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName, isMustCoerce, coerceToType);
+                    var streamName = identNodeInner.ResolvedStreamName;
+                    if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName))
+                    {
+                        var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
+                        inValue = new InSetOfValuesEventPropIndexed(
+                            identNodeInner.ResolvedStreamName, indexAndProp.First,
+                            indexAndProp.Second, isMustCoerce, coerceToType, statementName);
                     }
-    
+                    else
+                    {
+                        inValue = new InSetOfValuesEventProp(
+                            identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName, isMustCoerce,
+                            coerceToType);
+                    }
+
                     listofValues.Add(inValue);
                 }
             }
-    
+
             // Fallback if not all values in the in-node can be resolved to properties or constants
-            if (listofValues.Count == expectedNumberOfConstants) {
+            if (listofValues.Count == expectedNumberOfConstants)
+            {
                 return new FilterSpecParamIn(lookupable, op, listofValues);
             }
             return null;
         }
-    
-        private static void CheckArrayCoercion(Type returnTypeValue, Type returnTypeLookupable, string propertyName) {
-            if (returnTypeValue == null || !returnTypeValue.IsArray) {
+
+        private static void CheckArrayCoercion(Type returnTypeValue, Type returnTypeLookupable, string propertyName)
+        {
+            if (returnTypeValue == null || !returnTypeValue.IsArray)
+            {
                 return;
             }
-            if (!TypeHelper.IsArrayTypeCompatible(returnTypeLookupable, returnTypeValue.ComponentType)) {
-                ThrowConversionError(returnTypeValue.ComponentType, returnTypeLookupable, propertyName);
+            if (!returnTypeLookupable.IsArrayTypeCompatible(returnTypeValue.GetElementType()))
+            {
+                ThrowConversionError(returnTypeValue.GetElementType(), returnTypeLookupable, propertyName);
             }
         }
-    
-        private static FilterSpecParam HandleEqualsAndRelOp(ExprNode constituent, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, ExprEvaluatorContext exprEvaluatorContext, string statementName)
-                {
+
+        private static FilterSpecParam HandleEqualsAndRelOp(
+            ExprNode constituent,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ExprEvaluatorContext exprEvaluatorContext,
+            string statementName)
+        {
             FilterOperator op;
-            if (constituent is ExprEqualsNode) {
-                ExprEqualsNode equalsNode = (ExprEqualsNode) constituent;
-                if (!equalsNode.IsIs) {
+            if (constituent is ExprEqualsNode)
+            {
+                var equalsNode = (ExprEqualsNode) constituent;
+                if (!equalsNode.IsIs)
+                {
                     op = FilterOperator.EQUAL;
-                    if (equalsNode.IsNotEquals) {
+                    if (equalsNode.IsNotEquals)
+                    {
                         op = FilterOperator.NOT_EQUAL;
                     }
-                } else {
+                }
+                else
+                {
                     op = FilterOperator.IS;
-                    if (equalsNode.IsNotEquals) {
+                    if (equalsNode.IsNotEquals)
+                    {
                         op = FilterOperator.IS_NOT;
                     }
                 }
-            } else {
-                ExprRelationalOpNode relNode = (ExprRelationalOpNode) constituent;
-                if (relNode.RelationalOpEnum == RelationalOpEnum.GT) {
+            }
+            else
+            {
+                var relNode = (ExprRelationalOpNode) constituent;
+                if (relNode.RelationalOpEnum == RelationalOpEnum.GT)
+                {
                     op = FilterOperator.GREATER;
-                } else if (relNode.RelationalOpEnum == RelationalOpEnum.LT) {
+                }
+                else if (relNode.RelationalOpEnum == RelationalOpEnum.LT)
+                {
                     op = FilterOperator.LESS;
-                } else if (relNode.RelationalOpEnum == RelationalOpEnum.LE) {
+                }
+                else if (relNode.RelationalOpEnum == RelationalOpEnum.LE)
+                {
                     op = FilterOperator.LESS_OR_EQUAL;
-                } else if (relNode.RelationalOpEnum == RelationalOpEnum.GE) {
+                }
+                else if (relNode.RelationalOpEnum == RelationalOpEnum.GE)
+                {
                     op = FilterOperator.GREATER_OR_EQUAL;
-                } else {
+                }
+                else
+                {
                     throw new IllegalStateException("Opertor '" + relNode.RelationalOpEnum + "' not mapped");
                 }
             }
-    
-            ExprNode left = constituent.ChildNodes[0];
-            ExprNode right = constituent.ChildNodes[1];
-    
+
+            var left = constituent.ChildNodes[0];
+            var right = constituent.ChildNodes[1];
+
             // check identifier and constant combination
-            if ((ExprNodeUtility.IsConstantValueExpr(right)) && (left is ExprFilterOptimizableNode)) {
-                ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) left;
-                if (filterOptimizableNode.FilterLookupEligible) {
-                    ExprConstantNode constantNode = (ExprConstantNode) right;
-                    FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-                    Object constant = constantNode.GetConstantValue(exprEvaluatorContext);
+            if ((ExprNodeUtility.IsConstantValueExpr(right)) && (left is ExprFilterOptimizableNode))
+            {
+                var filterOptimizableNode = (ExprFilterOptimizableNode) left;
+                if (filterOptimizableNode.IsFilterLookupEligible)
+                {
+                    var constantNode = (ExprConstantNode) right;
+                    var lookupable = filterOptimizableNode.FilterLookupable;
+                    var constant = constantNode.GetConstantValue(exprEvaluatorContext);
                     constant = HandleConstantsCoercion(lookupable, constant);
                     return new FilterSpecParamConstant(lookupable, op, constant);
                 }
             }
-            if ((ExprNodeUtility.IsConstantValueExpr(left)) && (right is ExprFilterOptimizableNode)) {
-                ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) right;
-                if (filterOptimizableNode.FilterLookupEligible) {
-                    ExprConstantNode constantNode = (ExprConstantNode) left;
-                    FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-                    Object constant = constantNode.GetConstantValue(exprEvaluatorContext);
+            if ((ExprNodeUtility.IsConstantValueExpr(left)) && (right is ExprFilterOptimizableNode))
+            {
+                var filterOptimizableNode = (ExprFilterOptimizableNode) right;
+                if (filterOptimizableNode.IsFilterLookupEligible)
+                {
+                    var constantNode = (ExprConstantNode) left;
+                    var lookupable = filterOptimizableNode.FilterLookupable;
+                    var constant = constantNode.GetConstantValue(exprEvaluatorContext);
                     constant = HandleConstantsCoercion(lookupable, constant);
-                    FilterOperator opReversed = op.IsComparisonOperator ? Op.ReversedRelationalOp() : op;
+                    var opReversed = op.IsComparisonOperator() ? op.ReversedRelationalOp() : op;
                     return new FilterSpecParamConstant(lookupable, opReversed, constant);
                 }
             }
             // check identifier and expression containing other streams
-            if ((left is ExprIdentNode) && (right is ExprIdentNode)) {
-                ExprIdentNode identNodeLeft = (ExprIdentNode) left;
-                ExprIdentNode identNodeRight = (ExprIdentNode) right;
-    
-                if ((identNodeLeft.StreamId == 0) && (identNodeLeft.FilterLookupEligible) && (identNodeRight.StreamId != 0)) {
+            if ((left is ExprIdentNode) && (right is ExprIdentNode))
+            {
+                var identNodeLeft = (ExprIdentNode) left;
+                var identNodeRight = (ExprIdentNode) right;
+
+                if ((identNodeLeft.StreamId == 0) && (identNodeLeft.IsFilterLookupEligible) &&
+                    (identNodeRight.StreamId != 0))
+                {
                     return HandleProperty(op, identNodeLeft, identNodeRight, arrayEventTypes, statementName);
                 }
-                if ((identNodeRight.StreamId == 0) && (identNodeRight.FilterLookupEligible) && (identNodeLeft.StreamId != 0)) {
-                    op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                if ((identNodeRight.StreamId == 0) && (identNodeRight.IsFilterLookupEligible) &&
+                    (identNodeLeft.StreamId != 0))
+                {
+                    op = GetReversedOperator(constituent, op);
+                    // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     return HandleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes, statementName);
                 }
             }
-    
-            if ((left is ExprFilterOptimizableNode) && (right is ExprContextPropertyNode)) {
-                ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) left;
-                ExprContextPropertyNode ctxNode = (ExprContextPropertyNode) right;
-                FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-                if (filterOptimizableNode.FilterLookupEligible) {
-                    Coercer numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
-                    return new FilterSpecParamContextProp(lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
+
+            if ((left is ExprFilterOptimizableNode) && (right is ExprContextPropertyNode))
+            {
+                var filterOptimizableNode = (ExprFilterOptimizableNode) left;
+                var ctxNode = (ExprContextPropertyNode) right;
+                var lookupable = filterOptimizableNode.FilterLookupable;
+                if (filterOptimizableNode.IsFilterLookupEligible)
+                {
+                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
+                    return new FilterSpecParamContextProp(
+                        lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
-            if ((left is ExprContextPropertyNode) && (right is ExprFilterOptimizableNode)) {
-                ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) right;
-                ExprContextPropertyNode ctxNode = (ExprContextPropertyNode) left;
-                FilterSpecLookupable lookupable = filterOptimizableNode.FilterLookupable;
-                if (filterOptimizableNode.FilterLookupEligible) {
-                    op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
-                    Coercer numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
-                    return new FilterSpecParamContextProp(lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
+            if ((left is ExprContextPropertyNode) && (right is ExprFilterOptimizableNode))
+            {
+                var filterOptimizableNode = (ExprFilterOptimizableNode) right;
+                var ctxNode = (ExprContextPropertyNode) left;
+                var lookupable = filterOptimizableNode.FilterLookupable;
+                if (filterOptimizableNode.IsFilterLookupEligible)
+                {
+                    op = GetReversedOperator(constituent, op);
+                    // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.ReturnType, lookupable.Expression);
+                    return new FilterSpecParamContextProp(
+                        lookupable, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
             return null;
         }
-    
-        private static FilterOperator GetReversedOperator(ExprNode constituent, FilterOperator op) {
-            if (!(constituent is ExprRelationalOpNode)) {
+
+        private static FilterOperator GetReversedOperator(ExprNode constituent, FilterOperator op)
+        {
+            if (!(constituent is ExprRelationalOpNode))
+            {
                 return op;
             }
-    
-            ExprRelationalOpNode relNode = (ExprRelationalOpNode) constituent;
-            RelationalOpEnum relationalOpEnum = relNode.RelationalOpEnum;
-    
-            if (relationalOpEnum == RelationalOpEnum.GT) {
+
+            var relNode = (ExprRelationalOpNode) constituent;
+            var relationalOpEnum = relNode.RelationalOpEnum;
+
+            if (relationalOpEnum == RelationalOpEnum.GT)
+            {
                 return FilterOperator.LESS;
-            } else if (relationalOpEnum == RelationalOpEnum.LT) {
+            }
+            else if (relationalOpEnum == RelationalOpEnum.LT)
+            {
                 return FilterOperator.GREATER;
-            } else if (relationalOpEnum == RelationalOpEnum.LE) {
+            }
+            else if (relationalOpEnum == RelationalOpEnum.LE)
+            {
                 return FilterOperator.GREATER_OR_EQUAL;
-            } else if (relationalOpEnum == RelationalOpEnum.GE) {
+            }
+            else if (relationalOpEnum == RelationalOpEnum.GE)
+            {
                 return FilterOperator.LESS_OR_EQUAL;
             }
             return op;
         }
-    
-        private static FilterSpecParam HandleProperty(FilterOperator op, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, string statementName)
-                {
-            string propertyName = identNodeLeft.ResolvedPropertyName;
-    
-            Type leftType = identNodeLeft.ExprEvaluator.Type;
-            Type rightType = identNodeRight.ExprEvaluator.Type;
-    
-            Coercer numberCoercer = GetNumberCoercer(leftType, rightType, propertyName);
-            bool isMustCoerce = numberCoercer != null;
-            Type numericCoercionType = TypeHelper.GetBoxedType(leftType);
-    
-            string streamName = identNodeRight.ResolvedStreamName;
-            if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName)) {
-                Pair<int?, string> indexAndProp = GetStreamIndex(identNodeRight.ResolvedPropertyName);
-                return new FilterSpecParamEventPropIndexed(identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName, indexAndProp.First,
-                        indexAndProp.Second, isMustCoerce, numberCoercer, numericCoercionType, statementName);
+
+        private static FilterSpecParam HandleProperty(
+            FilterOperator op,
+            ExprIdentNode identNodeLeft,
+            ExprIdentNode identNodeRight,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            string statementName)
+        {
+            var propertyName = identNodeLeft.ResolvedPropertyName;
+
+            var leftType = identNodeLeft.ExprEvaluator.ReturnType;
+            var rightType = identNodeRight.ExprEvaluator.ReturnType;
+
+            var numberCoercer = GetNumberCoercer(leftType, rightType, propertyName);
+            var isMustCoerce = numberCoercer != null;
+            var numericCoercionType = leftType.GetBoxedType();
+
+            var streamName = identNodeRight.ResolvedStreamName;
+            if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName))
+            {
+                var indexAndProp = GetStreamIndex(identNodeRight.ResolvedPropertyName);
+                return new FilterSpecParamEventPropIndexed(
+                    identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName, indexAndProp.First,
+                    indexAndProp.Second, isMustCoerce, numberCoercer, numericCoercionType, statementName);
             }
-            return new FilterSpecParamEventProp(identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName, identNodeRight.ResolvedPropertyName,
-                    isMustCoerce, numberCoercer, numericCoercionType, statementName);
+            return new FilterSpecParamEventProp(
+                identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName,
+                identNodeRight.ResolvedPropertyName,
+                isMustCoerce, numberCoercer, numericCoercionType, statementName);
         }
-    
-        private static Coercer GetNumberCoercer(Type leftType, Type rightType, string expression) {
-            Type numericCoercionType = TypeHelper.GetBoxedType(leftType);
-            if (rightType != leftType) {
-                if (TypeHelper.IsNumeric(rightType)) {
-                    if (!TypeHelper.CanCoerce(rightType, leftType)) {
+
+        private static Coercer GetNumberCoercer(Type leftType, Type rightType, string expression)
+        {
+            var numericCoercionType = leftType.GetBoxedType();
+            if (rightType != leftType)
+            {
+                if (rightType.IsNumeric())
+                {
+                    if (!rightType.CanCoerce(leftType))
+                    {
                         ThrowConversionError(rightType, leftType, expression);
                     }
-                    return SimpleNumberCoercerFactory.GetCoercer(rightType, numericCoercionType);
+                    return CoercerFactory.GetCoercer(rightType, numericCoercionType);
                 }
             }
+
             return null;
         }
-    
-        private static Pair<int?, string> GetStreamIndex(string resolvedPropertyName) {
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(resolvedPropertyName);
-            if (!(property is NestedProperty)) {
-                throw new IllegalStateException("Expected a nested property providing an index for array match '" + resolvedPropertyName + "'");
+
+        private static Coercer GetNumberCoercer(Type leftType, Type rightType, string expression, out Type coercionType)
+        {
+            var numericCoercionType = leftType.GetBoxedType();
+            if (rightType != leftType)
+            {
+                if (rightType.IsNumeric())
+                {
+                    if (!rightType.CanCoerce(leftType))
+                    {
+                        ThrowConversionError(rightType, leftType, expression);
+                    }
+                    coercionType = numericCoercionType;
+                    return CoercerFactory.GetCoercer(rightType, numericCoercionType);
+                }
             }
-            NestedProperty nested = (NestedProperty) property;
-            if (nested.Properties.Count < 2) {
-                throw new IllegalStateException("Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
+
+            coercionType = null;
+            return null;
+        }
+
+        private static Pair<int, string> GetStreamIndex(string resolvedPropertyName)
+        {
+            var property = PropertyParser.ParseAndWalkLaxToSimple(resolvedPropertyName);
+            if (!(property is NestedProperty))
+            {
+                throw new IllegalStateException(
+                    "Expected a nested property providing an index for array match '" + resolvedPropertyName + "'");
             }
-            if (!(nested.Properties[0] is IndexedProperty)) {
-                throw new IllegalStateException("Expected an indexed property for array match '" + resolvedPropertyName + "', please provide an index");
+            var nested = (NestedProperty) property;
+            if (nested.Properties.Count < 2)
+            {
+                throw new IllegalStateException(
+                    "Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
             }
-            int index = ((IndexedProperty) nested.Properties[0]).Index;
-            nested.Properties.Remove(0);
+            if (!(nested.Properties[0] is IndexedProperty))
+            {
+                throw new IllegalStateException(
+                    "Expected an indexed property for array match '" + resolvedPropertyName +
+                    "', please provide an index");
+            }
+            var index = ((IndexedProperty) nested.Properties[0]).Index;
+            nested.Properties.DeleteAt(0);
             var writer = new StringWriter();
             nested.ToPropertyEPL(writer);
-            return new Pair<int?, string>(index, writer.ToString());
+            return new Pair<int, string>(index, writer.ToString());
         }
-    
+
         private static void ThrowConversionError(Type fromType, Type toType, string propertyName)
-                {
-            string text = "Implicit conversion from datatype '" +
-                    fromType.SimpleName +
-                    "' to '" +
-                    toType.SimpleName +
-                    "' for property '" +
-                    propertyName +
-                    "' is not allowed (strict filter type coercion)";
+        {
+            var text =
+                string.Format(
+                    "Implicit conversion from datatype '{0}' to '{1}' for property '{2}' is not allowed (strict filter type coercion)",
+                    Name.Of(fromType), Name.Of(toType), propertyName);
             throw new ExprValidationException(text);
         }
-    
+
         // expressions automatically coerce to the most upwards type
         // filters require the same type
         private static Object HandleConstantsCoercion(FilterSpecLookupable lookupable, Object constant)
-                {
-            Type identNodeType = lookupable.ReturnType;
-            if (!TypeHelper.IsNumeric(identNodeType)) {
-                return constant;    // no coercion required, other type checking performed by expression this comes from
+        {
+            var identNodeType = lookupable.ReturnType;
+            if (!identNodeType.IsNumeric())
+            {
+                return constant; // no coercion required, other type checking performed by expression this comes from
             }
-    
-            if (constant == null) {
+
+            if (constant == null)
+            {
                 // null constant type
                 return null;
             }
-    
-            if (!TypeHelper.CanCoerce(constant.Class, identNodeType)) {
-                ThrowConversionError(constant.Class, identNodeType, lookupable.Expression);
+
+            if (!constant.GetType().CanCoerce(identNodeType))
+            {
+                ThrowConversionError(constant.GetType(), identNodeType, lookupable.Expression);
             }
-    
-            Type identNodeTypeBoxed = TypeHelper.GetBoxedType(identNodeType);
-            return TypeHelper.CoerceBoxed((Number) constant, identNodeTypeBoxed);
+
+            var identNodeTypeBoxed = identNodeType.GetBoxedType();
+            return CoercerFactory.CoerceBoxed(constant, identNodeTypeBoxed);
         }
-    
-        private static bool IsExprExistsInAllEqualsChildNodes(ExprNode[] childNodes, ExprNode search) {
-            foreach (ExprNode child in childNodes) {
-                ExprNode lhs = child.ChildNodes[0];
-                ExprNode rhs = child.ChildNodes[1];
-                if (!ExprNodeUtility.DeepEquals(lhs, search) && !ExprNodeUtility.DeepEquals(rhs, search)) {
+
+        private static bool IsExprExistsInAllEqualsChildNodes(IEnumerable<ExprNode> childNodes, ExprNode search)
+        {
+            foreach (var child in childNodes)
+            {
+                var lhs = child.ChildNodes[0];
+                var rhs = child.ChildNodes[1];
+                if (!ExprNodeUtility.DeepEquals(lhs, search) && !ExprNodeUtility.DeepEquals(rhs, search))
+                {
                     return false;
                 }
-                if (ExprNodeUtility.DeepEquals(lhs, rhs)) {
+                if (ExprNodeUtility.DeepEquals(lhs, rhs))
+                {
                     return false;
                 }
             }

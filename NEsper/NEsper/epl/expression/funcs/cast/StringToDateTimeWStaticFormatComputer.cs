@@ -7,39 +7,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Globalization;
-
-using com.espertech.esper.client;
-using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.funcs.cast
 {
-    public class StringToDateTimeWStaticFormatComputer : StringToDateLongWStaticFormat
+    public class StringToDateTimeWStaticFormatComputer : StringToDateTimeBaseWStaticFormatComputer<DateTime>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringToDateTimeWStaticFormatComputer"/> class.
+        /// </summary>
+        /// <param name="dateFormat">The date format.</param>
         public StringToDateTimeWStaticFormatComputer(string dateFormat)
             : base(dateFormat)
         {
         }
 
-        internal static Object ParseSafe(string formatString, string format, Object input)
+        /// <summary>
+        /// Computes from format.
+        /// </summary>
+        /// <param name="dateFormat">The date format.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        protected override DateTime ComputeFromFormat(string dateFormat, string input)
         {
-            var inputAsString = input.ToString();
-
-            try
-            {
-                DateTime dateTimeTemp;
-                DateTime.TryParseExact(inputAsString, format, null, DateTimeStyles.None, out dateTimeTemp);
-                //return format.Parse(input.ToString());
-            }
-            catch (Exception e)
-            {
-                throw HandleParseException(formatString, input.ToString(), e);
-            }
-        }
-
-        public override Object Compute(Object input, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return ParseSafe(base.DateFormat, formats.Get(), input);
+            return ParseDateTime(input, dateFormat, TimeZoneInfo.Utc).DateTime;
         }
     }
 }

@@ -28,15 +28,10 @@ namespace com.espertech.esper.dataflow.ops
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 #pragma warning disable 649
-        [DataFlowOpParameterAttribute]
-        private String _statementName;
-        [DataFlowOpParameterAttribute]
-        private EPDataFlowEPStatementFilter _statementFilter;
-        [DataFlowOpParameterAttribute]
-        private EPDataFlowIRStreamCollector _collector;
-
-        [DataFlowContextAttribute]
-        private EPDataFlowEmitter _graphContext;
+        [DataFlowOpParameterAttribute] private String statementName;
+        [DataFlowOpParameterAttribute] private EPDataFlowEPStatementFilter statementFilter;
+        [DataFlowOpParameterAttribute] private EPDataFlowIRStreamCollector collector;
+        [DataFlowContextAttribute] private EPDataFlowEmitter graphContext;
 #pragma warning restore 649
 
         private StatementLifecycleSvc _statementLifecycleSvc;
@@ -65,13 +60,13 @@ namespace com.espertech.esper.dataflow.ops
                 throw new ArgumentException("EPStatementSource operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
             }
 
-            if (_statementName == null && _statementFilter == null)
+            if (statementName == null && statementFilter == null)
             {
-                throw new EPException("Failed to find required 'StatementName' or 'statementFilter' parameter");
+                throw new EPException("Failed to find required 'StatementName' or 'StatementFilter' parameter");
             }
-            if (_statementName != null && _statementFilter != null)
+            if (statementName != null && statementFilter != null)
             {
-                throw new EPException("Both 'StatementName' or 'statementFilter' parameters were provided, only either one is expected");
+                throw new EPException("Both 'StatementName' or 'StatementFilter' parameters were provided, only either one is expected");
             }
 
             DataFlowOpOutputPort portZero = context.OutputPorts[0];
@@ -90,16 +85,16 @@ namespace com.espertech.esper.dataflow.ops
             if (next is EPDataFlowSignal)
             {
                 var signal = (EPDataFlowSignal)next;
-                _graphContext.SubmitSignal(signal);
+                graphContext.SubmitSignal(signal);
             }
             else if (next is PortAndMessagePair)
             {
                 var pair = (PortAndMessagePair)next;
-                _graphContext.SubmitPort(pair.Port, pair.Message);
+                graphContext.SubmitPort(pair.Port, pair.Message);
             }
             else
             {
-                _graphContext.Submit(next);
+                graphContext.Submit(next);
             }
         }
 
@@ -110,9 +105,9 @@ namespace com.espertech.esper.dataflow.ops
                 // start observing statement management
                 _statementLifecycleSvc.LifecycleEvent += _lifeCycleEventHandler;
 
-                if (_statementName != null)
+                if (statementName != null)
                 {
-                    EPStatement stmt = _statementLifecycleSvc.GetStatementByName(_statementName);
+                    EPStatement stmt = _statementLifecycleSvc.GetStatementByName(statementName);
                     if (stmt != null)
                     {
                         AddStatement(stmt);
@@ -124,7 +119,7 @@ namespace com.espertech.esper.dataflow.ops
                     foreach (String name in statements)
                     {
                         EPStatement stmt = _statementLifecycleSvc.GetStatementByName(name);
-                        if (_statementFilter.Pass(stmt))
+                        if (statementFilter.Pass(stmt))
                         {
                             AddStatement(stmt);
                         }
@@ -150,16 +145,16 @@ namespace com.espertech.esper.dataflow.ops
                     }
                     if (theEvent.Statement.IsStarted)
                     {
-                        if (_statementFilter == null)
+                        if (statementFilter == null)
                         {
-                            if (theEvent.Statement.Name.Equals(_statementName))
+                            if (theEvent.Statement.Name.Equals(statementName))
                             {
                                 AddStatement(stmt);
                             }
                         }
                         else
                         {
-                            if (_statementFilter.Pass(stmt))
+                            if (statementFilter.Pass(stmt))
                             {
                                 AddStatement(stmt);
                             }
@@ -196,7 +191,7 @@ namespace com.espertech.esper.dataflow.ops
 
             // attach listener
             UpdateEventHandler updateEventHandler;
-            if (_collector == null)
+            if (collector == null)
             {
                 updateEventHandler = new EmitterUpdateListener(
                     _emittables, _submitEventBean).Update;
@@ -205,7 +200,7 @@ namespace com.espertech.esper.dataflow.ops
             {
                 var emitterForCollector = new LocalEmitter(_emittables);
                 updateEventHandler = new EmitterCollectorUpdateListener(
-                    _collector, emitterForCollector, _collectorDataTL, _submitEventBean).Update;
+                    collector, emitterForCollector, _collectorDataTL, _submitEventBean).Update;
             }
             stmt.Events += updateEventHandler;
 

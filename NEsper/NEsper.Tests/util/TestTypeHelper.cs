@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 using NUnit.Framework;
 
 using DataMap = System.Collections.Generic.IDictionary<string, object>;
@@ -130,14 +130,12 @@ namespace com.espertech.esper.util
         public void TestCanCoerce()
         {
             Type[] primitiveClasses = {
-                                          typeof(float), typeof(double), typeof(byte), typeof(short?), typeof(int),
-                                          typeof(long)
-                                      };
+                typeof(float), typeof(double), typeof(byte), typeof(short?), typeof(int), typeof(long)
+            };
 
             Type[] boxedClasses = {
-                                      typeof(float?), typeof(double?), typeof(byte?), typeof(short?), typeof(int?),
-                                      typeof(long?)
-                                  };
+                typeof(float?), typeof(double?), typeof(byte?), typeof(short?), typeof(int?), typeof(long?)
+            };
 
             for (int i = 0; i < primitiveClasses.Length; i++) {
                 Assert.IsTrue(TypeHelper.CanCoerce(primitiveClasses[i], boxedClasses[i]));
@@ -186,16 +184,16 @@ namespace com.espertech.esper.util
         public void TestClassForName()
         {
             var tests = new[]
-                        {
-                            new object[] {typeof(int), typeof(int).FullName},
-                            new object[] {typeof(long), typeof(long).FullName},
-                            new object[] {typeof(short), typeof(short).Name},
-                            new object[] {typeof(double), typeof(double).FullName},
-                            new object[] {typeof(float), typeof(float).FullName},
-                            new object[] {typeof(bool), typeof(bool).FullName},
-                            new object[] {typeof(byte), typeof(byte).FullName},
-                            new object[] {typeof(char), typeof(char).FullName}
-                        };
+            {
+                new object[] {typeof(int), typeof(int).FullName},
+                new object[] {typeof(long), typeof(long).FullName},
+                new object[] {typeof(short), typeof(short).Name},
+                new object[] {typeof(double), typeof(double).FullName},
+                new object[] {typeof(float), typeof(float).FullName},
+                new object[] {typeof(bool), typeof(bool).FullName},
+                new object[] {typeof(byte), typeof(byte).FullName},
+                new object[] {typeof(char), typeof(char).FullName}
+            };
 
             for (int i = 0; i < tests.Length; i++) {
                 Assert.AreEqual(tests[i][0], TypeHelper.GetTypeForSimpleName((String) tests[i][1]));
@@ -206,37 +204,37 @@ namespace com.espertech.esper.util
         public void TestClassForSimpleName()
         {
             var tests = new[]
-                        {
-                            new object[] {"Boolean", typeof(bool)},
-                            new object[] {"Bool", typeof(bool)},
-                            new object[] {"boolean", typeof(bool)},
-                            new object[] {"System.Boolean", typeof(bool)},
-                            new object[] {"int", typeof(int)},
-                            new object[] {"inTeger", typeof(int)},
-                            new object[] {"System.Int32", typeof(int)},
-                            new object[] {"long", typeof(long)},
-                            new object[] {"LONG", typeof(long)},
-                            new object[] {"System.Int16", typeof(short)},
-                            new object[] {"short", typeof(short)},
-                            new object[] {"  short  ", typeof(short)},
-                            new object[] {"double", typeof(double)},
-                            new object[] {" douBle", typeof(double)},
-                            new object[] {"System.Double", typeof(double)},
-                            new object[] {"float", typeof(float)},
-                            new object[] {"float  ", typeof(float)},
-                            new object[] {"System.Single", typeof(float)},
-                            new object[] {"byte", typeof(byte)},
-                            new object[] {"   bYte ", typeof(byte)},
-                            new object[] {"System.Byte", typeof(byte)},
-                            new object[] {"char", typeof(char)},
-                            new object[] {"character", typeof(char)},
-                            new object[] {"System.Char", typeof(char)},
-                            new object[] {"String", typeof(string)},
-                            new object[] {"System.String", typeof(string)},
-                            new object[] {"varchar", typeof(string)},
-                            new object[] {"varchar2", typeof(string)},
-                            new object[] {typeof(SupportBean).FullName, typeof(SupportBean)},
-                        };
+            {
+                new object[] {"Boolean", typeof(bool)},
+                new object[] {"Bool", typeof(bool)},
+                new object[] {"boolean", typeof(bool)},
+                new object[] {"System.Boolean", typeof(bool)},
+                new object[] {"int", typeof(int)},
+                new object[] {"inTeger", typeof(int)},
+                new object[] {"System.Int32", typeof(int)},
+                new object[] {"long", typeof(long)},
+                new object[] {"LONG", typeof(long)},
+                new object[] {"System.Int16", typeof(short)},
+                new object[] {"short", typeof(short)},
+                new object[] {"  short  ", typeof(short)},
+                new object[] {"double", typeof(double)},
+                new object[] {" douBle", typeof(double)},
+                new object[] {"System.Double", typeof(double)},
+                new object[] {"float", typeof(float)},
+                new object[] {"float  ", typeof(float)},
+                new object[] {"System.Single", typeof(float)},
+                new object[] {"byte", typeof(byte)},
+                new object[] {"   bYte ", typeof(byte)},
+                new object[] {"System.Byte", typeof(byte)},
+                new object[] {"char", typeof(char)},
+                new object[] {"character", typeof(char)},
+                new object[] {"System.Char", typeof(char)},
+                new object[] {"String", typeof(string)},
+                new object[] {"System.String", typeof(string)},
+                new object[] {"varchar", typeof(string)},
+                new object[] {"varchar2", typeof(string)},
+                new object[] {typeof(SupportBean).FullName, typeof(SupportBean)},
+            };
 
             for (int i = 0; i < tests.Length; i++) {
                 Assert.AreEqual(tests[i][1], TypeHelper.GetTypeForSimpleName((String) tests[i][0]), "error in row:" + i);
@@ -296,41 +294,40 @@ namespace com.espertech.esper.util
         public void TestGetBoxed()
         {
             Type[] primitiveClasses = {
-                                          typeof(bool),
-                                          typeof(float),
-                                          typeof(double),
-                                          typeof(decimal),
-                                          typeof(byte),
-                                          typeof(short?),
-                                          typeof(int),
-                                          typeof(long),
-                                          typeof(sbyte),
-                                          typeof(ushort),
-                                          typeof(uint),
-                                          typeof(ulong),
-                                          typeof(char)
-                                      };
+                typeof(bool),
+                typeof(float),
+                typeof(double),
+                typeof(decimal),
+                typeof(byte),
+                typeof(short?),
+                typeof(int),
+                typeof(long),
+                typeof(sbyte),
+                typeof(ushort),
+                typeof(uint),
+                typeof(ulong),
+                typeof(char)
+            };
 
             Type[] boxedClasses = {
-                                      typeof(bool?),
-                                      typeof(float?),
-                                      typeof(double?),
-                                      typeof(decimal?),
-                                      typeof(byte?),
-                                      typeof(short?),
-                                      typeof(int?),
-                                      typeof(long?),
-                                      typeof(sbyte?),
-                                      typeof(ushort?),
-                                      typeof(uint?),
-                                      typeof(ulong?),
-                                      typeof(char?)
-                                  };
-
+                typeof(bool?),
+                typeof(float?),
+                typeof(double?),
+                typeof(decimal?),
+                typeof(byte?),
+                typeof(short?),
+                typeof(int?),
+                typeof(long?),
+                typeof(sbyte?),
+                typeof(ushort?),
+                typeof(uint?),
+                typeof(ulong?),
+                typeof(char?)
+            };
 
             Type[] otherClasses = {
-                                      typeof(string), typeof(EventArgs)
-                                  };
+                typeof(string), typeof(EventArgs)
+            };
 
             for (int i = 0; i < primitiveClasses.Length; i++) {
                 Type boxed = TypeHelper.GetBoxedType(primitiveClasses[i]);
@@ -352,16 +349,16 @@ namespace com.espertech.esper.util
         public void TestGetBoxedClassName()
         {
             var tests = new[]
-                        {
-                            new[] {typeof(int?).FullName, typeof(int).FullName},
-                            new[] {typeof(long?).FullName, typeof(long).FullName},
-                            new[] {typeof(short?).FullName, typeof(short).FullName},
-                            new[] {typeof(double?).FullName, typeof(double).FullName},
-                            new[] {typeof(float?).FullName, typeof(float).FullName},
-                            new[] {typeof(bool?).FullName, typeof(bool).FullName},
-                            new[] {typeof(byte?).FullName, typeof(byte).FullName},
-                            new[] {typeof(char?).FullName, typeof(char).FullName}
-                        };
+            {
+                new[] {typeof(int?).FullName, typeof(int).FullName},
+                new[] {typeof(long?).FullName, typeof(long).FullName},
+                new[] {typeof(short?).FullName, typeof(short).FullName},
+                new[] {typeof(double?).FullName, typeof(double).FullName},
+                new[] {typeof(float?).FullName, typeof(float).FullName},
+                new[] {typeof(bool?).FullName, typeof(bool).FullName},
+                new[] {typeof(byte?).FullName, typeof(byte).FullName},
+                new[] {typeof(char?).FullName, typeof(char).FullName}
+            };
 
             for (int i = 0; i < tests.Length; i++) {
                 Assert.AreEqual(tests[i][0], TypeHelper.GetBoxedTypeName(tests[i][1]));
@@ -412,19 +409,9 @@ namespace com.espertech.esper.util
             Assert.AreEqual(typeof(char?),
                             TypeHelper.GetCommonCoercionType(new[] {typeof(char), typeof(char), typeof(char)}));
             Assert.AreEqual(typeof(long?),
-                            TypeHelper.GetCommonCoercionType(new[]
-                                                             {
-                                                                 typeof(int), typeof(int), typeof(int), typeof(long)
-                                                                 ,
-                                                                 typeof(int), typeof(int)
-                                                             }));
+                            TypeHelper.GetCommonCoercionType(new[] { typeof(int), typeof(int), typeof(int), typeof(long), typeof(int), typeof(int) }));
             Assert.AreEqual(typeof(double?),
-                            TypeHelper.GetCommonCoercionType(new[]
-                                                             {
-                                                                 typeof(int), typeof(long), typeof(int),
-                                                                 typeof(double)
-                                                                 , typeof(int), typeof(int)
-                                                             }));
+                            TypeHelper.GetCommonCoercionType(new[] { typeof(int), typeof(long), typeof(int), typeof(double) , typeof(int), typeof(int) }));
             Assert.AreEqual(null, TypeHelper.GetCommonCoercionType(new Type[] {null, null}));
             Assert.AreEqual(null, TypeHelper.GetCommonCoercionType(new Type[] {null, null, null}));
             Assert.AreEqual(typeof(SupportBean),

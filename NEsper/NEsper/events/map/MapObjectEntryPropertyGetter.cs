@@ -18,7 +18,7 @@ namespace com.espertech.esper.events.map
     using DataMap = IDictionary<string, object>;
 
     /// <summary>
-    /// A getter that works on POCO events residing within a Map as an event property.
+    /// A getter that works on PONO events residing within a Map as an event property.
     /// </summary>
     public class MapObjectEntryPropertyGetter : BaseNativePropertyGetter, MapEventPropertyGetter
     {

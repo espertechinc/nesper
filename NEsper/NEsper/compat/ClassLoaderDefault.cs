@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.IO;
+
 namespace com.espertech.esper.compat
 {
     public class ClassLoaderDefault : ClassLoader
@@ -13,6 +15,11 @@ namespace com.espertech.esper.compat
         public static ClassLoader GetInstance()
         {
             return new ClassLoaderDefault();
+        }
+
+        public Stream GetResourceAsStream(string resourceName)
+        {
+            return ResourceManager.GetResourceAsStream(resourceName);
         }
     }
 }

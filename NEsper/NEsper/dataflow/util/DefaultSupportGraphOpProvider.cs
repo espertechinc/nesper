@@ -28,7 +28,15 @@ namespace com.espertech.esper.dataflow.util
 
         public Object Provide(EPDataFlowOperatorProviderContext context)
         {
-            return _ops.FirstOrDefault(op => context.OperatorName == op.GetType().Name);
+            for (var ii = 0; ii < _ops.Length; ii++)
+            {
+                if (context.OperatorName == _ops[ii].GetType().Name)
+                {
+                    return _ops[ii];
+                }
+            }
+
+            return null;
         }
     }
 }

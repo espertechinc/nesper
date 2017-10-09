@@ -8,116 +8,160 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.pattern.guard;
 using com.espertech.esper.pattern.observer;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.pattern
 {
     /// <summary>
     /// Resolves pattern object namespace and name to guard or observer factory class, using configuration.
     /// </summary>
-    public class PatternObjectResolutionServiceImpl : PatternObjectResolutionService {
+    public class PatternObjectResolutionServiceImpl : PatternObjectResolutionService
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        private readonly PluggableObjectCollection patternObjects;
-    
-        /// <summary>
-        /// Ctor.
-        /// </summary>
+
+        private readonly PluggableObjectCollection _patternObjects;
+
+        /// <summary>Ctor. </summary>
         /// <param name="patternObjects">is the pattern plug-in objects configured</param>
-        public PatternObjectResolutionServiceImpl(PluggableObjectCollection patternObjects) {
-            this.patternObjects = patternObjects;
+        public PatternObjectResolutionServiceImpl(PluggableObjectCollection patternObjects)
+        {
+            _patternObjects = patternObjects;
         }
-    
-        public ObserverFactory Create(PatternObserverSpec spec) {
+
+        public ObserverFactory Create(PatternObserverSpec spec)
+        {
             Object result = CreateFactory(spec, PluggableObjectType.PATTERN_OBSERVER);
             ObserverFactory factory;
-            try {
-                factory = (ObserverFactory) result;
-    
-                if (Log.IsDebugEnabled) {
+            try
+            {
+                factory = (ObserverFactory)result;
+
+                if (Log.IsDebugEnabled)
+                {
                     Log.Debug(".create Successfully instantiated observer");
                 }
-            } catch (ClassCastException e) {
-                string message = "Error casting observer factory instance to " + typeof(ObserverFactory).Name + " interface for observer '" + spec.ObjectName + "'";
+            }
+            catch (InvalidCastException e)
+            {
+                String message = "Error casting observer factory instance to " + typeof(ObserverFactory).FullName + " interface for observer '" + spec.ObjectName + "'";
                 throw new PatternObjectException(message, e);
             }
             return factory;
         }
-    
-        public GuardFactory Create(PatternGuardSpec spec) {
+
+        public GuardFactory Create(PatternGuardSpec spec)
+        {
             Object result = CreateFactory(spec, PluggableObjectType.PATTERN_GUARD);
             GuardFactory factory;
-            try {
-                factory = (GuardFactory) result;
-    
-                if (Log.IsDebugEnabled) {
+            try
+            {
+                factory = (GuardFactory)result;
+
+                if (Log.IsDebugEnabled)
+                {
                     Log.Debug(".create Successfully instantiated guard");
                 }
-            } catch (ClassCastException e) {
-                string message = "Error casting guard factory instance to " + typeof(GuardFactory).Name + " interface for guard '" + spec.ObjectName + "'";
+            }
+            catch (InvalidCastException e)
+            {
+                String message = "Error casting guard factory instance to " + typeof(GuardFactory).FullName + " interface for guard '" + spec.ObjectName + "'";
                 throw new PatternObjectException(message, e);
             }
             return factory;
         }
-    
-        private Object CreateFactory(ObjectSpec spec, PluggableObjectType type) {
-            if (Log.IsDebugEnabled) {
-                Log.Debug(".create Creating factory, spec=" + spec.ToString());
+
+        private Object CreateFactory(ObjectSpec spec, PluggableObjectType type)
+        {
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug(".create Creating factory, spec=" + spec);
             }
-    
+
             // Find the factory class for this pattern object
             Type factoryClass = null;
-    
-            IDictionary<string, Pair<Type, PluggableObjectEntry>> namespaceMap = patternObjects.Pluggables.Get(spec.ObjectNamespace);
-            if (namespaceMap != null) {
+
+            IDictionary<String, Pair<Type, PluggableObjectEntry>> namespaceMap = _patternObjects.Pluggables.Get(spec.ObjectNamespace);
+            if (namespaceMap != null)
+            {
                 Pair<Type, PluggableObjectEntry> pair = namespaceMap.Get(spec.ObjectName);
-                if (pair != null) {
-                    if (pair.Second.Type == type) {
+                if (pair != null)
+                {
+                    if (pair.Second.PluggableType == type)
+                    {
                         factoryClass = pair.First;
-                    } else {
+                    }
+                    else
+                    {
                         // invalid type: expecting observer, got guard
-                        if (type == PluggableObjectType.PATTERN_GUARD) {
+                        if (type == PluggableObjectType.PATTERN_GUARD)
+                        {
                             throw new PatternObjectException("Pattern observer function '" + spec.ObjectName + "' cannot be used as a pattern guard");
-                        } else {
+                        }
+                        else
+                        {
                             throw new PatternObjectException("Pattern guard function '" + spec.ObjectName + "' cannot be used as a pattern observer");
                         }
                     }
                 }
             }
-    
-            if (factoryClass == null) {
-                if (type == PluggableObjectType.PATTERN_GUARD) {
-                    string message = "Pattern guard name '" + spec.ObjectName + "' is not a known pattern object name";
+
+            if (factoryClass == null)
+            {
+                if (type == PluggableObjectType.PATTERN_GUARD)
+                {
+                    String message = "Pattern guard name '" + spec.ObjectName + "' is not a known pattern object name";
                     throw new PatternObjectException(message);
-                } else if (type == PluggableObjectType.PATTERN_OBSERVER) {
-                    string message = "Pattern observer name '" + spec.ObjectName + "' is not a known pattern object name";
+                }
+                else if (type == PluggableObjectType.PATTERN_OBSERVER)
+                {
+                    String message = "Pattern observer name '" + spec.ObjectName + "' is not a known pattern object name";
                     throw new PatternObjectException(message);
-                } else {
+                }
+                else
+                {
                     throw new PatternObjectException("Pattern object type '" + type + "' not known");
                 }
             }
-    
+
             Object result;
-            try {
-                result = factoryClass.NewInstance();
-            } catch (IllegalAccessException e) {
-                string message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "', no invocation access for Type.newInstance";
-                throw new PatternObjectException(message, e);
-            } catch (InstantiationException e) {
-                string message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
-                message += "' using Type.newInstance";
-                throw new PatternObjectException(message, e);
+            try
+            {
+                result = Activator.CreateInstance(factoryClass);
             }
-    
+            catch (TypeInstantiationException ex)
+            {
+                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+                message += "' using Activator.CreateInstance";
+                throw new PatternObjectException(message, ex);
+            }
+            catch (TargetInvocationException ex)
+            {
+                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+                message += "' using Activator.CreateInstance";
+                throw new PatternObjectException(message, ex);
+            }
+            catch (MethodAccessException ex)
+            {
+                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+                message += "', no invocation access for Activator.CreateInstance";
+                throw new PatternObjectException(message, ex);
+            }
+            catch (MemberAccessException ex)
+            {
+                String message = "Error invoking pattern object factory constructor for object '" + spec.ObjectName;
+                message += "', no invocation access for Activator.CreateInstance";
+                throw new PatternObjectException(message, ex);
+            }
+
             return result;
         }
     }
-} // end of namespace
+}

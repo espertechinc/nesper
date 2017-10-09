@@ -61,7 +61,7 @@ namespace NEsper.Examples.MSMQ
             configuration.AddEventType<MarketDataTrade>();
             configuration.AddEventType<EndOfTest>();
             // set to true to decouple event processing from msmq latency
-            configuration.EngineDefaults.ThreadingConfig.IsThreadPoolOutbound = false;
+            configuration.EngineDefaults.Threading.IsThreadPoolOutbound = false;
 
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
             _serviceProvider.EPAdministrator.CreateEPL("select * from MarketDataTrade").

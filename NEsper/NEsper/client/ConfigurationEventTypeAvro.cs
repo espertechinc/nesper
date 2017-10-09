@@ -7,66 +7,73 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.client
 {
     /// <summary>Configuration for Avro event types.</summary>
     [Serializable]
-    public class ConfigurationEventTypeAvro : ConfigurationEventTypeWithSupertype, MetaDefItem {
-        private string avroSchemaText;
-        private Object avroSchema;
-    
+    public class ConfigurationEventTypeAvro
+        : ConfigurationEventTypeWithSupertype,
+          MetaDefItem
+    {
+        private string _avroSchemaText;
+        private Object _avroSchema;
+
         /// <summary>Ctor.</summary>
-        public ConfigurationEventTypeAvro() {
+        public ConfigurationEventTypeAvro()
+        {
         }
-    
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="avroSchema">avro schema</param>
-        public ConfigurationEventTypeAvro(Object avroSchema) {
-            this.avroSchema = avroSchema;
+        public ConfigurationEventTypeAvro(Object avroSchema)
+        {
+            _avroSchema = avroSchema;
         }
-    
+
         /// <summary>
         /// Returns the avro schema
         /// </summary>
-        /// <returns>avro schema</returns>
-        public Object GetAvroSchema() {
-            return avroSchema;
+        /// <value>avro schema</value>
+        public object AvroSchema
+        {
+            get { return _avroSchema; }
+            set { _avroSchema = value; }
         }
-    
+
         /// <summary>
         /// Sets the avro schema
         /// </summary>
         /// <param name="avroSchema">avro schema</param>
         /// <returns>this</returns>
-        public ConfigurationEventTypeAvro SetAvroSchema(Object avroSchema) {
-            this.avroSchema = avroSchema;
+        public ConfigurationEventTypeAvro SetAvroSchema(Object avroSchema)
+        {
+            _avroSchema = avroSchema;
             return this;
         }
-    
+
         /// <summary>
         /// Returns the avro schema text
         /// </summary>
-        /// <returns>avro schema text</returns>
-        public string GetAvroSchemaText() {
-            return avroSchemaText;
+        /// <value>avro schema text</value>
+        public string AvroSchemaText
+        {
+            get { return _avroSchemaText; }
+            set { _avroSchemaText = value; }
         }
-    
+
         /// <summary>
         /// Returns the avro schema text
         /// </summary>
         /// <param name="avroSchemaText">avro schema text</param>
         /// <returns>this</returns>
-        public ConfigurationEventTypeAvro SetAvroSchemaText(string avroSchemaText) {
-            this.avroSchemaText = avroSchemaText;
+        public ConfigurationEventTypeAvro SetAvroSchemaText(string avroSchemaText)
+        {
+            _avroSchemaText = avroSchemaText;
             return this;
         }
     }

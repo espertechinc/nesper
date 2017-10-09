@@ -37,13 +37,13 @@ namespace com.espertech.esper.epl.join.@base
             var table = (PropertyIndexedEventTableSingle) indexTable[0];
             _eventsPerStream[_lookupStream] = lookupEvent;
 
-            ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+            var result = InKeywordTableLookupUtil.SingleIndexLookup(
                 _evaluators, _eventsPerStream, exprEvaluatorContext, table);
             if (result == null)
             {
                 return null;
             }
-            return Result.GetEnumerator();
+            return result.GetEnumerator();
         }
 
         public string ToQueryPlan()

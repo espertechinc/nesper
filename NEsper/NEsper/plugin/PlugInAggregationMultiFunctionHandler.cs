@@ -47,42 +47,42 @@ namespace com.espertech.esper.plugin
 	    /// <value>accessor</value>
 	    AggregationAccessor Accessor { get; }
 
-	    /// <summary>
-	    /// Provide return type.
-	    /// <para />
-	    /// The accessor return values must match the return type declared herein.
-	    /// <para />
-	    /// Use <seealso cref="com.espertech.esper.epl.rettype.EPTypeHelper.SingleValue(Type)" /> to indicate that the accessor
-	    /// returns a single value. The accessor should return the single value upon invocation of
-	    /// <seealso cref="AggregationAccessor.GetValue(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor should return a null value for all other accessor methods.
-	    /// <para />
-        /// Use <seealso cref="com.espertech.esper.epl.rettype.EPTypeHelper.CollectionOfEvents(com.espertech.esper.client.EventType)" /> to indicate that the accessor
-	    /// returns a collection of events. The accessor should return a value in
-	    /// <seealso cref="AggregationAccessor.GetEnumerableEvents(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor can also return an array of underlying event objects in
-	    /// <seealso cref="AggregationAccessor.GetValue(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor should return a null value for all other accessor methods.
-	    /// <para />
-        /// Use <seealso cref="com.espertech.esper.epl.rettype.EPTypeHelper.SingleEvent(com.espertech.esper.client.EventType)" /> to indicate that the accessor
-	    /// returns a single event. The accessor should return a value in
-	    /// <seealso cref="AggregationAccessor.GetEnumerableEvent(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor can also return the underlying event object in
-	    /// <seealso cref="AggregationAccessor.GetValue(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor should return a null value for all other accessor methods.
-	    /// <para />
-        /// Use <seealso cref="com.espertech.esper.epl.rettype.EPTypeHelper.CollectionOfSingleValue(Type)" /> to indicate that the accessor
-	    /// returns a collection of single values (scalar, object etc.). The accessor should return a java.util.Collection in
-	    /// <seealso cref="AggregationAccessor.GetValue(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor should return a null value for all other accessor methods.
-	    /// <para />
-        /// Use <seealso cref="com.espertech.esper.epl.rettype.EPTypeHelper.Array(Type)" /> to indicate that the accessor
-	    /// returns an array of single values. The accessor should return an array in
-	    /// <seealso cref="AggregationAccessor.GetValue(com.espertech.esper.epl.agg.access.AggregationState, com.espertech.esper.client.EventBean[], bool, com.espertech.esper.epl.expression.core.ExprEvaluatorContext)" />.
-	    /// The accessor should return a null value for all other accessor methods.
-	    /// </summary>
-	    /// <value>expression result type</value>
-	    EPType ReturnType { get; }
+        /// <summary>
+        /// Provide return type.
+        /// <para />
+        /// The accessor return values must match the return type declared herein.
+        /// <para />
+        /// Use <seealso cref="EPTypeHelper.SingleValue(Type)" /> to indicate that the accessor
+        /// returns a single value. The accessor should return the single value upon invocation of
+        /// <seealso cref="AggregationAccessor.GetValue(AggregationState, epl.expression.core.EvaluateParams)" />.
+        /// The accessor should return a null value for all other accessor methods.
+        /// <para />
+        /// Use <seealso cref="EPTypeHelper.CollectionOfEvents(client.EventType)" /> to indicate that the accessor
+        /// returns a collection of events. The accessor should return a value in
+        /// <seealso cref="AggregationAccessor.GetEnumerableEvents" />.
+        /// The accessor can also return an array of underlying event objects in
+        /// <seealso cref="AggregationAccessor.GetValue(AggregationState, epl.expression.core.EvaluateParams)" />.
+        /// The accessor should return a null value for all other accessor methods.
+        /// <para />
+        /// Use <seealso cref="EPTypeHelper.SingleEvent(client.EventType)" /> to indicate that the accessor
+        /// returns a single event. The accessor should return a value in
+        /// <seealso cref="AggregationAccessor.GetEnumerableEvent" />.
+        /// The accessor can also return the underlying event object in
+        /// <seealso cref="AggregationAccessor.GetValue(AggregationState, epl.expression.core.EvaluateParams)" />.
+        /// The accessor should return a null value for all other accessor methods.
+        /// <para />
+        /// Use <seealso cref="EPTypeHelper.CollectionOfSingleValue(Type)" /> to indicate that the accessor
+        /// returns a collection of single values (scalar, object etc.). The accessor should return a Collection in
+        /// <seealso cref="AggregationAccessor.GetValue(AggregationState, epl.expression.core.EvaluateParams)" />.
+        /// The accessor should return a null value for all other accessor methods.
+        /// <para />
+        /// Use <seealso cref="EPTypeHelper.Array(Type)" /> to indicate that the accessor
+        /// returns an array of single values. The accessor should return an array in
+        /// <seealso cref="AggregationAccessor.GetValue(AggregationState, epl.expression.core.EvaluateParams)" />.
+        /// The accessor should return a null value for all other accessor methods.
+        /// </summary>
+        /// <value>expression result type</value>
+        EPType ReturnType { get; }
 
 	    /// <summary>
 	    /// Return a state-key object that determines how the engine shares aggregation state

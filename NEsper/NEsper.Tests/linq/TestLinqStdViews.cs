@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-using com.espertech.esper.regression.epl;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.compat;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
@@ -25,7 +25,7 @@ namespace com.espertech.esper.linq
             Configuration configuration = new Configuration();
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportPriceEvent>();
-            configuration.AddEventType<TestSubselectOrderOfEval.TradeEvent>();
+            configuration.AddEventType<SupportTradeEvent>();
 
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
             _serviceProvider.Initialize();
@@ -36,7 +36,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().Unique(x => x.TheString),
-                "select * from com.espertech.esper.support.bean.SupportBean.std:unique(x.TheString)");
+                "select * from " + Name.Of<SupportBean>() + "#unique(x.TheString)");
         }
 
         private void AssertModelEquality(EsperQuery<SupportBean> stream, string sample)

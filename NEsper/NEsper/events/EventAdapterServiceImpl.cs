@@ -460,7 +460,7 @@ namespace com.espertech.esper.events
                     new BeanEventType(
                         EventTypeMetadata.CreateBeanType(eventTypeName, clazz, false, false, false, typeClass),
                         _eventTypeIdGenerator.GetTypeId(eventTypeName), clazz, this,
-                        _beanEventAdapter.GetClassToLegacyConfigs(clazz.FullName));
+                        _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
                 _nameToTypeMap.Put(eventTypeName, beanEventType);
 
                 return beanEventType;
@@ -514,7 +514,8 @@ namespace com.espertech.esper.events
                 var existingType = _nameToTypeMap.Get(eventTypeName);
                 if (existingType != null)
                 {
-                    if ((fullyQualClassName == existingType.UnderlyingType.FullName) ||
+                    if ((fullyQualClassName == existingType.UnderlyingType.AssemblyQualifiedName) ||
+                        (fullyQualClassName == existingType.UnderlyingType.FullName) ||
                         (fullyQualClassName == existingType.UnderlyingType.Name))
                     {
                         if (Log.IsDebugEnabled)
@@ -551,8 +552,7 @@ namespace com.espertech.esper.events
                         var generatedClassName = @namespace + "." + fullyQualClassName;
                         try
                         {
-                            var resolvedClass =
-                                _engineImportService.GetClassForNameProvider().ClassForName(generatedClassName);
+                            var resolvedClass = _engineImportService.GetClassForNameProvider().ClassForName(generatedClassName);
                             if (clazz != null)
                             {
                                 throw new EventAdapterException(
@@ -725,7 +725,7 @@ namespace com.espertech.esper.events
             return AdapterForTypedObjectArray(theEvent, existingType);
         }
 
-        public EventBean AdapterForLINQ(XElement element)
+        public EventBean AdapterForDOM(XElement element)
         {
             var rootElementName = element.Name.LocalName;
             var eventType = _xelementRootElementNames.Get(rootElementName);
@@ -754,7 +754,7 @@ namespace com.espertech.esper.events
             {
                 throw new EPException(
                     "Unexpected DOM node of type '" + node.GetType().Name +
-                    "' encountered, please supply a Document or Element node");
+                    "' encountered, please supply a XmlDocument or XmlElement node");
             }
 
             var rootElementName = namedNode.LocalName;
@@ -976,7 +976,7 @@ namespace com.espertech.esper.events
             var beanEventType = new BeanEventType(
                 EventTypeMetadata.CreateBeanType(
                     eventTypeName, clazz, false, false, false, TypeClass.ANONYMOUS), -1, clazz, this,
-                _beanEventAdapter.GetClassToLegacyConfigs(clazz.FullName));
+                _beanEventAdapter.GetClassToLegacyConfigs(clazz.AssemblyQualifiedName));
             return _anonymousTypeCache.AddReturnExistingAnonymousType(beanEventType);
         }
 

@@ -19,6 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
+namespace com.espertech.esper.epl.generated {
 
   using System;
   using System.Collections.Generic;
@@ -2787,3 +2788,4 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitJsonpair([NotNull] EsperEPL2GrammarParser.JsonpairContext context);
 }
+} // namespace com.espertech.esper.epl.generated

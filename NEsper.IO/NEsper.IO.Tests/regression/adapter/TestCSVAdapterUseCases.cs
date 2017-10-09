@@ -78,7 +78,7 @@ namespace com.espertech.esperio.regression.adapter
             EPService.Initialize();
             InputAdapter feed = new CSVInputAdapter(EPService, spec);
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select * from TypeC.win:length(100)");
+            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select * from TypeC#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -108,7 +108,7 @@ namespace com.espertech.esperio.regression.adapter
             EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA"));
             EPService.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA.win:length(100)");
+            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -157,11 +157,11 @@ namespace com.espertech.esperio.regression.adapter
             var inputTrades = new CSVInputAdapter(inputTradesSpec);
 
             EPStatement stmtPrices =
-                EPService.EPAdministrator.CreateEPL("select symbol, price from PriceEvent.win:length(100)");
+                EPService.EPAdministrator.CreateEPL("select symbol, price from PriceEvent#length(100)");
             var listenerPrice = new SupportUpdateListener();
             stmtPrices.Events += listenerPrice.Update;
             EPStatement stmtTrade =
-                EPService.EPAdministrator.CreateEPL("select symbol, notional from TradeEvent.win:length(100)");
+                EPService.EPAdministrator.CreateEPL("select symbol, notional from TradeEvent#length(100)");
             var listenerTrade = new SupportUpdateListener();
             stmtTrade.Events += listenerTrade.Update;
 
@@ -206,14 +206,14 @@ namespace com.espertech.esperio.regression.adapter
                                                "TypeB");
 
             var config = new Configuration();
-            config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
+            config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             EPService = EPServiceProviderManager.GetDefaultProvider(config);
             EPService.Initialize();
 
             InputAdapter feed = new CSVInputAdapter(EPService, spec);
 
             EPStatement stmt =
-                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeB.win:length(100)");
+                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeB#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -235,7 +235,7 @@ namespace com.espertech.esperio.regression.adapter
             EPService.Initialize();
 
             EPStatement stmt =
-                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA.win:length(100)");
+                EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -260,7 +260,7 @@ namespace com.espertech.esperio.regression.adapter
             EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA"));
             EPService.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA.win:length(100)");
+            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
@@ -291,7 +291,7 @@ namespace com.espertech.esperio.regression.adapter
             EPService = EPServiceProviderManager.GetProvider("testExistingTypeNoOptions", MakeConfig("TypeA", _useBean));
             EPService.Initialize();
 
-            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA.win:length(100)");
+            EPStatement stmt = EPService.EPAdministrator.CreateEPL("select symbol, price, volume from TypeA#length(100)");
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 

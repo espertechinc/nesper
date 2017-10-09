@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
@@ -36,8 +37,8 @@ namespace com.espertech.esper.epl.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly IList<string> _imports;
-        private readonly IList<string> _annotationImports;
+        private readonly IList<AutoImportDesc> _imports;
+        private readonly IList<AutoImportDesc> _annotationImports;
         private readonly IDictionary<string, ConfigurationPlugInAggregationFunction> _aggregationFunctions;
         private readonly IList<Pair<ISet<string>, ConfigurationPlugInAggregationMultiFunction>> _aggregationAccess;
         private readonly IDictionary<string, EngineImportSingleRowDesc> _singleRowFunctions;
@@ -65,8 +66,8 @@ namespace com.espertech.esper.epl.core
             IDictionary<string, Object> transientConfiguration,
             AggregationFactoryFactory aggregationFactoryFactory)
         {
-            _imports = new List<string>();
-            _annotationImports = new List<string>(2);
+            _imports = new List<AutoImportDesc>();
+            _annotationImports = new List<AutoImportDesc>(2);
             _aggregationFunctions = new Dictionary<string, ConfigurationPlugInAggregationFunction>();
             _aggregationAccess = new List<Pair<ISet<string>, ConfigurationPlugInAggregationMultiFunction>>();
             _singleRowFunctions = new Dictionary<string, EngineImportSingleRowDesc>();
@@ -83,26 +84,6 @@ namespace com.espertech.esper.epl.core
             _aggregationFactoryFactory = aggregationFactoryFactory;
         }
     
-        private static bool IsFunctionName(string functionName) {
-            var classNameRegEx = "\\w+";
-            return functionName.Matches(classNameRegEx);
-        }
-    
-        private static bool IsClassName(string importName) {
-            var classNameRegEx = "(\\w+\\.)*\\w+(\\$\\w+)?";
-            return importName.Matches(classNameRegEx);
-        }
-    
-        private static bool IsPackageName(string importName) {
-            var classNameRegEx = "(\\w+\\.)+\\*";
-            return importName.Matches(classNameRegEx);
-        }
-    
-        // Strip off the final ".*"
-        private static string GetPackageName(string importName) {
-            return importName.Substring(0, importName.Length - 2);
-        }
-
         public bool IsUdfCache
         {
             get { return _isUdfCache; }
@@ -138,20 +119,30 @@ namespace com.espertech.esper.epl.core
             _methodInvocationRef.PutAll(configs);
         }
 
-        public void AddImport(string importName)
+        public void AddImport(String namespaceOrType)
         {
-            ValidateImportAndAdd(importName, _imports);
+            ValidateImportAndAdd(new AutoImportDesc(namespaceOrType), _imports);
         }
 
-        public void AddAnnotationImport(string importName)
+        public void AddImport(AutoImportDesc importDesc)
         {
-            ValidateImportAndAdd(importName, _annotationImports);
+            ValidateImportAndAdd(importDesc, _imports);
+        }
+
+        public void AddAnnotationImport(String namespaceOrType)
+        {
+            ValidateImportAndAdd(new AutoImportDesc(namespaceOrType), _annotationImports);
+        }
+
+        public void AddAnnotationImport(AutoImportDesc importDesc)
+        {
+            ValidateImportAndAdd(importDesc, _annotationImports);
         }
 
         public void AddAggregation(string functionName, ConfigurationPlugInAggregationFunction aggregationDesc)
         {
             ValidateFunctionName("aggregation function", functionName);
-            if (aggregationDesc.FactoryClassName == null || !IsClassName(aggregationDesc.FactoryClassName))
+            if (aggregationDesc.FactoryClassName == null || !IsTypeName(aggregationDesc.FactoryClassName))
             {
                 throw new EngineImportException(
                     "Invalid class name for aggregation factory '" + aggregationDesc.FactoryClassName + "'");
@@ -163,14 +154,14 @@ namespace com.espertech.esper.epl.core
             string functionName,
             string singleRowFuncClass,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions,
             string optionalEventTypeName)
         {
             ValidateFunctionName("single-row", functionName);
 
-            if (!IsClassName(singleRowFuncClass))
+            if (!IsTypeName(singleRowFuncClass))
             {
                 throw new EngineImportException("Invalid class name for aggregation '" + singleRowFuncClass + "'");
             }
@@ -181,7 +172,8 @@ namespace com.espertech.esper.epl.core
                     optionalEventTypeName));
         }
 
-        public AggregationFunctionFactory ResolveAggregationFactory(string name) {
+        public AggregationFunctionFactory ResolveAggregationFactory(string name)
+        {
             var desc = _aggregationFunctions.Get(name);
             if (desc == null) {
                 desc = _aggregationFunctions.Get(name.ToLowerInvariant());
@@ -200,11 +192,23 @@ namespace com.espertech.esper.epl.core
     
             Object @object;
             try {
-                @object = clazz.NewInstance();
-            } catch (InstantiationException e) {
-                throw new EngineImportException("Error instantiating aggregation factory class by name '" + className + "'", e);
-            } catch (IllegalAccessException e) {
-                throw new EngineImportException("Illegal access instatiating aggregation factory class by name '" + className + "'", e);
+                @object = Activator.CreateInstance(clazz);
+            }
+            catch (TypeLoadException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class", e);
+            }
+            catch (MissingMethodException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class - Default constructor was not found", e);
+            }
+            catch (MethodAccessException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class - Caller does not have permission to use constructor", e);
+            }
+            catch (ArgumentException e)
+            {
+                throw new EngineImportException("Error instantiating aggregation class - Type is not a RuntimeType", e);
             }
     
             if (!(@object is AggregationFunctionFactory)) {
@@ -219,7 +223,7 @@ namespace com.espertech.esper.epl.core
                 orderedImmutableFunctionNames.Add(functionName.ToLowerInvariant());
                 ValidateFunctionName("aggregation multi-function", functionName.ToLowerInvariant());
             }
-            if (!IsClassName(desc.MultiFunctionFactoryClassName)) {
+            if (!IsTypeName(desc.MultiFunctionFactoryClassName)) {
                 throw new EngineImportException("Invalid class name for aggregation multi-function factory '" + desc.MultiFunctionFactoryClassName + "'");
             }
             _aggregationAccess.Add(new Pair<ISet<string>, ConfigurationPlugInAggregationMultiFunction>(orderedImmutableFunctionNames, desc));
@@ -266,7 +270,7 @@ namespace com.espertech.esper.epl.core
                 {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, false, false);
+                clazz = ResolveTypeInternal(className, false, false);
             }
             catch (TypeLoadException e)
             {
@@ -291,7 +295,7 @@ namespace com.espertech.esper.epl.core
         public MethodInfo ResolveMethodOverloadChecked(string className, string methodName) {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, false, false);
+                clazz = ResolveTypeInternal(className, false, false);
             }
             catch (TypeLoadException e)
             {
@@ -308,10 +312,10 @@ namespace com.espertech.esper.epl.core
             return ResolveMethodInternalCheckOverloads(clazz, methodName, MethodModifiers.REQUIRE_NONSTATIC_AND_PUBLIC);
         }
     
-        public Type ResolveClass(string className, bool forAnnotation) {
+        public Type ResolveType(string className, bool forAnnotation) {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, false, forAnnotation);
+                clazz = ResolveTypeInternal(className, false, forAnnotation);
             } catch (TypeLoadException e) {
                 throw new EngineImportException("Could not load class by name '" + className + "', please check imports", e);
             }
@@ -322,7 +326,7 @@ namespace com.espertech.esper.epl.core
         public Type ResolveAnnotation(string className) {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, true, true);
+                clazz = ResolveTypeInternal(className, true, true);
             }
             catch (TypeLoadException e)
             {
@@ -338,14 +342,14 @@ namespace com.espertech.esper.epl.core
         /// <param name="className">is the class name to find</param>
         /// <param name="requireAnnotation">whether the class must be an annotation</param>
         /// <param name="forAnnotationUse">whether resolving class for use with annotations</param>
-        /// <exception cref="ClassNotFoundException">if the class cannot be loaded</exception>
         /// <returns>class</returns>
-        protected Type ResolveClassInternal(string className, bool requireAnnotation, bool forAnnotationUse) {
+        public Type ResolveTypeInternal(string className, bool requireAnnotation, bool forAnnotationUse)
+        {
             // Attempt to retrieve the class with the name as-is
             try {
                 return GetClassForNameProvider().ClassForName(className);
             }
-            catch (TypeLoadException e)
+            catch (TypeLoadException)
             {
                 if (Log.IsDebugEnabled) {
                     Log.Debug("Type not found for resolving from name as-is '" + className + "'");
@@ -376,7 +380,7 @@ namespace com.espertech.esper.epl.core
                                 return found;
                             }
                         }
-                        catch (TypeLoadException e1)
+                        catch (TypeLoadException)
                         {
                             if (Log.IsDebugEnabled) {
                                 Log.Debug("Type not found for resolving from method invocation ref:" + name);
@@ -404,7 +408,14 @@ namespace com.espertech.esper.epl.core
             }
             catch (EngineNoSuchMethodException e)
             {
-                throw Convert(clazz, methodName, paramTypes, e, true);
+                var method = MethodResolver.ResolveExtensionMethod(
+                    clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanType);
+                if (method == null)
+                {
+                    throw Convert(clazz, methodName, paramTypes, e, true);
+                }
+
+                return method;
             }
         }
 
@@ -428,7 +439,7 @@ namespace com.espertech.esper.epl.core
 
             if (paramTypes.Length > 0)
             {
-                message += string.Format("method named '{0}' in class '{1}' with matching parameter number and expected parameter Type(s) '{2}'", methodName, clazz.GetTypeNameFullyQualPretty(), expected);
+                message += string.Format("method named '{0}' in class '{1}' with matching parameter number and expected parameter type(s) '{2}'", methodName, clazz.GetTypeNameFullyQualPretty(), expected);
             }
             else
             {
@@ -444,7 +455,7 @@ namespace com.espertech.esper.epl.core
                 }
                 else
                 {
-                    message += "' taking Type(s) '" +
+                    message += "' taking type(s) '" +
                                TypeHelper.GetParameterAsString(e.NearestMissMethod.GetParameterTypes()) + "'";
                 }
                 message += ")";
@@ -459,7 +470,7 @@ namespace com.espertech.esper.epl.core
             if (paramTypes.Length > 0)
             {
                 message += "in class '" + clazz.GetTypeNameFullyQualPretty() +
-                           "' with matching parameter number and expected parameter Type(s) '" + expected + "'";
+                           "' with matching parameter number and expected parameter type(s) '" + expected + "'";
             }
             else
             {
@@ -475,7 +486,7 @@ namespace com.espertech.esper.epl.core
                 }
                 else
                 {
-                    message += "taking Type(s) '" +
+                    message += "taking type(s) '" +
                                TypeHelper.GetParameterAsString(e.NearestMissCtor.GetParameterTypes()) + "'";
                 }
                 message += ")";
@@ -583,7 +594,7 @@ namespace com.espertech.esper.epl.core
         /// For testing, returns imports.
         /// </summary>
         /// <value>returns auto-import list as array</value>
-        protected string[] Imports
+        public AutoImportDesc[] Imports
         {
             get { return _imports.ToArray(); }
         }
@@ -600,19 +611,66 @@ namespace com.espertech.esper.epl.core
             {
                 throw new EngineImportException("Single-row function by name '" + functionName + "' is already defined");
             }
-            foreach (var pairs in _aggregationAccess)
+            if (_aggregationAccess.Any(pairs => pairs.First.Contains(functionNameLower)))
             {
-                if (pairs.First.Contains(functionNameLower))
-                {
-                    throw new EngineImportException(
-                        "Aggregation multi-function by name '" + functionName + "' is already defined");
-                }
+                throw new EngineImportException(
+                    "Aggregation multi-function by name '" + functionName + "' is already defined");
             }
             if (!IsFunctionName(functionName))
             {
                 throw new EngineImportException("Invalid " + functionType + " name '" + functionName + "'");
             }
         }
+
+        private static readonly Regex FunctionRegEx1 = new Regex(@"^\w+$", RegexOptions.None);
+
+        private static bool IsFunctionName(String functionName)
+        {
+            return FunctionRegEx1.IsMatch(functionName);
+        }
+
+        private static readonly Regex TypeNameRegEx1 = new Regex(@"^(\w+\.)*\w+$", RegexOptions.None);
+        private static readonly Regex TypeNameRegEx2 = new Regex(@"^(\w+\.)*\w+\+(\w+|)$", RegexOptions.None);
+
+        private static bool IsTypeName(String importName)
+        {
+            if (TypeNameRegEx1.IsMatch(importName) || TypeNameRegEx2.IsMatch(importName))
+                return true;
+
+            return TypeHelper.ResolveType(importName, false) != null;
+        }
+
+        private static bool IsTypeNameOrNamespace(String importName)
+        {
+            if (TypeNameRegEx1.IsMatch(importName) || TypeNameRegEx2.IsMatch(importName))
+                return true;
+
+            return TypeHelper.ResolveType(importName, false) != null;
+        }
+
+        public bool IsStrictTypeMatch(AutoImportDesc importDesc, String typeName)
+        {
+            var importName = importDesc.TypeOrNamespace;
+            if (importName == typeName)
+            {
+                return true;
+            }
+
+            var lastIndex = importName.LastIndexOf(typeName);
+            if (lastIndex == -1)
+            {
+                return false;
+            }
+
+            if ((importName[lastIndex - 1] == '.') ||
+                (importName[lastIndex - 1] == '+'))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
 
         private MethodInfo ResolveMethodInternalCheckOverloads(Type clazz, string methodName, MethodModifiers methodModifiers)
         {
@@ -621,112 +679,143 @@ namespace com.espertech.esper.epl.core
             MethodInfo methodByName = null;
     
             // check each method by name, add to overloads when multiple methods for the same name
-            foreach (var method in methods) {
-                if (method.Name.Equals(methodName)) {
-                    int modifiers = method.Modifiers;
-                    bool isPublic = Modifier.IsPublic(modifiers);
-                    bool isStatic = Modifier.IsStatic(modifiers);
-                    if (methodModifiers.AcceptsPublicFlag(isPublic) && methodModifiers.AcceptsStaticFlag(isStatic)) {
-                        if (methodByName != null) {
-                            if (overloadeds == null) {
-                                overloadeds = new HashSet<>();
+            foreach (var method in methods)
+            {
+                if (method.Name == methodName)
+                {
+                    var isPublic = method.IsPublic;
+                    var isStatic = method.IsStatic;
+                    if (methodModifiers.AcceptsPublicFlag(isPublic) && 
+                        methodModifiers.AcceptsStaticFlag(isStatic))
+                    {
+                        if (methodByName != null)
+                        {
+                            if (overloadeds == null)
+                            {
+                                overloadeds = new HashSet<MethodInfo>();
                             }
                             overloadeds.Add(method);
-                        } else {
+                        }
+                        else
+                        {
                             methodByName = method;
                         }
                     }
                 }
             }
             if (methodByName == null) {
-                throw new EngineImportException("Could not find " + methodModifiers.Text + " method named '" + methodName + "' in class '" + clazz.Name + "'");
+                throw new EngineImportException("Could not find " + methodModifiers.Text + " method named '" + methodName + "' in class '" + clazz.FullName + "'");
             }
             if (overloadeds == null) {
                 return methodByName;
             }
     
             // determine that all overloads have the same result type
-            foreach (var overloaded in overloadeds) {
-                if (overloaded.ReturnType != methodByName.ReturnType) {
-                    throw new EngineImportException("Method by name '" + methodName + "' is overloaded in class '" + clazz.Name + "' and overloaded methods do not return the same type");
-                }
+            if (overloadeds.Any(overloaded => overloaded.ReturnType != methodByName.ReturnType))
+            {
+                throw new EngineImportException("Method by name '" + methodName + "' is overloaded in class '" + clazz.FullName + "' and overloaded methods do not return the same type");
             }
     
             return methodByName;
         }
-    
-        private Type CheckImports(IEnumerable<string> imports, bool requireAnnotation, string className)
+
+        private Type CheckImports(IList<AutoImportDesc> imports, bool requireAnnotation, String typeName)
         {
-            // Try all the imports
-            foreach (var importName in imports)
+            foreach (var importDesc in imports)
             {
-                var isClassName = IsClassName(importName);
-                var containsPackage = importName.IndexOf('.') != -1;
-                var classNameWithDot = "." + className;
-                var classNameWithDollar = "$" + className;
-    
-                // Import is a class name
-                if (isClassName) {
-                    if ((containsPackage && importName.EndsWith(classNameWithDot)) ||
-                            (containsPackage && importName.EndsWith(classNameWithDollar)) ||
-                            (!containsPackage && importName.Equals(className)) ||
-                            (!containsPackage && importName.EndsWith(classNameWithDollar))) {
-                        return GetClassForNameProvider().ClassForName(importName);
-                    }
-    
-                    var prefixedClassName = importName + '$' + className;
-                    try {
-                        var clazz = GetClassForNameProvider().ClassForName(prefixedClassName);
-                        if (!requireAnnotation || clazz.IsAttribute()) {
-                            return clazz;
-                        }
-                    }
-                    catch (TypeLoadException e)
+                var importName = importDesc.TypeOrNamespace;
+
+                // Test as a class name
+                if (IsStrictTypeMatch(importDesc, typeName))
+                {
+                    var type = TypeHelper.ResolveType(importName, importDesc.AssemblyNameOrFile);
+                    if (type != null)
                     {
-                        if (Log.IsDebugEnabled) {
-                            Log.Debug("Type not found for resolving from name '" + prefixedClassName + "'");
-                        }
+                        return type;
                     }
-                } else {
-                    if (requireAnnotation && importName.Equals(Configuration.ANNOTATION_IMPORT)) {
-                        var clazz = BuiltinAnnotation.BUILTIN.Get(className.ToLowerInvariant());
-                        if (clazz != null) {
-                            return clazz;
-                        }
-                    }
-    
-                    // Import is a package name
-                    var prefixedClassName = GetPackageName(importName) + '.' + className;
-                    try {
-                        var clazz = GetClassForNameProvider().ClassForName(prefixedClassName);
-                        if (!requireAnnotation || clazz.IsAttribute()) {
-                            return clazz;
-                        }
-                    }
-                    catch (TypeLoadException e)
+
+                    Log.Warn("Type not found for resolving from name as-is: '{0}'", typeName);
+                }
+                else
+                {
+                    if (requireAnnotation && (importName == Configuration.ANNOTATION_IMPORT))
                     {
-                        if (Log.IsDebugEnabled) {
-                            Log.Debug("Type not found for resolving from name '" + prefixedClassName + "'");
+                        var clazz = BuiltinAnnotation.BUILTIN.Get(typeName.ToLower());
+                        if (clazz != null)
+                        {
+                            return clazz;
                         }
                     }
+
+                    if (importDesc.TypeOrNamespace.EndsWith("." + typeName) ||
+                        importDesc.TypeOrNamespace.EndsWith("+" + typeName) ||
+                        importDesc.TypeOrNamespace.Equals(typeName))
+                    {
+                        try
+                        {
+                            var type = TypeHelper.ResolveType(importDesc.TypeOrNamespace, importDesc.AssemblyNameOrFile);
+                            if (type != null)
+                            {
+                                return type;
+                            }
+
+                            Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                        }
+                        catch (TypeLoadException)
+                        {
+                        }
+                    }
+
+                    // Import is a namespace
+                    var prefixedClassName = importDesc.TypeOrNamespace + '.' + typeName;
+
+                    try
+                    {
+                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
+                        if (type != null)
+                        {
+                            return type;
+                        }
+
+                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                    }
+                    catch (TypeLoadException)
+                    {
+                    }
+
+                    prefixedClassName = importDesc.TypeOrNamespace + '+' + typeName;
+
+                    try
+                    {
+                        var type = TypeHelper.ResolveType(prefixedClassName, importDesc.AssemblyNameOrFile);
+                        if (type != null)
+                        {
+                            return type;
+                        }
+
+                        Log.Warn("Type not found for resolving from name as-is: {0}", typeName);
+                    }
+                    catch (TypeLoadException)
+                    {
+                    }
+
+                    // Import is a type
                 }
             }
-    
+
             return null;
         }
 
-        private void ValidateImportAndAdd(string importName, IList<string> imports)
+        private void ValidateImportAndAdd(AutoImportDesc autoImportDesc, ICollection<AutoImportDesc> imports)
         {
-            if (!IsClassName(importName) && !IsPackageName(importName))
+            if (!IsTypeNameOrNamespace(autoImportDesc.TypeOrNamespace))
             {
-                throw new EngineImportException("Invalid import name '" + importName + "'");
-            }
-            if (Log.IsDebugEnabled)
-            {
-                Log.Debug("Adding import " + importName);
+                throw new EngineImportException("Invalid import name '" + autoImportDesc + "'");
             }
 
-            imports.Add(importName);
+            Log.Debug("Adding import {0}", autoImportDesc);
+
+            imports.Add(autoImportDesc);
         }
 
         internal class MethodModifiers

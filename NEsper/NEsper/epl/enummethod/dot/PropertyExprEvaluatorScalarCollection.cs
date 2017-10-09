@@ -37,14 +37,14 @@ namespace com.espertech.esper.epl.enummethod.dot
             _componentType = componentType;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return EvaluateInternal<object>(eventsPerStream[_streamId]);
+            return EvaluateInternal<object>(evaluateParams.EventsPerStream[_streamId]);
         }
 
         public ICollection<EventBean> EvaluateEventGetROCollectionEvents(EventBean @event, ExprEvaluatorContext context)
@@ -60,14 +60,13 @@ namespace com.espertech.esper.epl.enummethod.dot
                 return null;
             }
 
-            var resultAsCollection = result as ICollection<object>;
-            if (resultAsCollection == null)
+            if (!result.GetType().IsGenericCollection())
             {
                 Log.Warn("Expected collection-type input from property '" + _propertyName + "' but received " + result.GetType());
                 return null;
             }
 
-            return resultAsCollection.Unwrap<T>();
+            return result.Unwrap<T>();
         }
 
         public Type ComponentTypeCollection
@@ -95,7 +94,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

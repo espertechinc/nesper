@@ -14,13 +14,11 @@ using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
-
-using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -40,9 +38,9 @@ namespace com.espertech.esper.epl.core
             var engineImportService = SupportEngineImportServiceFactory.Make();
 
             _methodOne = new SelectExprProcessorHelper(
-                Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(), null,
-                null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService,
-                selectExprEventTypeRegistry, engineImportService, 1, null, new Configuration(), null,
+                Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(),
+                null, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, 
+                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, new Configuration(), null, 
                 new TableServiceImpl(), null);
 
 	        var insertIntoDesc = new InsertIntoDesc(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "Hello");
@@ -52,7 +50,7 @@ namespace com.espertech.esper.epl.core
             _methodTwo = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), selectList, Collections.GetEmptyList<SelectExprStreamDesc>(),
                 insertIntoDesc, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService,
-                selectExprEventTypeRegistry, engineImportService, 1, null, new Configuration(), null,
+                selectExprEventTypeRegistry, engineImportService, 1, "stmtname", null, new Configuration(), null, 
                 new TableServiceImpl(), null);
 	    }
 

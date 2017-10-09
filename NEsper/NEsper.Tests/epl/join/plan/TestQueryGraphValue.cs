@@ -6,10 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

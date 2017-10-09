@@ -58,7 +58,7 @@ namespace com.espertech.esper.core.context.factory
                     tableMetadata.AddIndexReference(_queryPlanResult.IndexDescs[i].IndexName, statementContext.StatementName);
                 }
             }
-            SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(tableMetadata.IsQueryPlanLogging, TableServiceImpl.GetQueryPlanLog(),
+            SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(tableMetadata.IsQueryPlanLogging, TableServiceImpl.QueryPlanLog,
                     _queryPlanResult, statementContext.Annotations, statementContext.EngineImportService);
         }
 

@@ -115,6 +115,10 @@ namespace com.espertech.esper.util
             {
                 return CastHelper.PrimitiveCastByte;
             }
+            if (targetType == typeof(System.Numerics.BigInteger))
+            {
+                return CastHelper.PrimitiveCastBigInteger;
+            }
 
             isNumeric = false;
 

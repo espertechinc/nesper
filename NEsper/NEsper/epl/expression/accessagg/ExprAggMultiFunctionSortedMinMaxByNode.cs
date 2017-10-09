@@ -13,9 +13,7 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.service;
@@ -27,6 +25,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.expression.accessagg
 {
+    [Serializable]
     public class ExprAggMultiFunctionSortedMinMaxByNode
         : ExprAggregateNodeBase
         , ExprEvaluatorEnumeration
@@ -229,7 +228,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                 throw new ExprValidationException("Missing the sort criteria expression");
             }
 
-            var message = "For tables columns, the aggregation function requires the 'Sorted(*)' declaration";
+            var message = "For tables columns, the aggregation function requires the 'sorted(*)' declaration";
             if (!_sortedwin && !_ever)
             {
                 throw new ExprValidationException(message);
@@ -329,18 +328,12 @@ namespace com.espertech.esper.epl.expression.accessagg
             ExprNodeUtility.ToExpressionStringParams(writer, PositionalParams);
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return base.AggregationResultFuture.GetCollectionOfEvents(base.Column, eventsPerStream, isNewData, context);
+            return base.AggregationResultFuture.GetCollectionOfEvents(base.Column, evaluateParams);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -368,9 +361,9 @@ namespace com.espertech.esper.epl.expression.accessagg
             return _containedType;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            return base.AggregationResultFuture.GetEventBean(base.Column, eventsPerStream, isNewData, context);
+            return base.AggregationResultFuture.GetEventBean(base.Column, evaluateParams);
         }
 
         public bool IsMax

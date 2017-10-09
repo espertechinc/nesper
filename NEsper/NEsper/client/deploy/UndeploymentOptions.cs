@@ -7,11 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.client.deploy
 {
@@ -20,42 +15,24 @@ namespace com.espertech.esper.client.deploy
     /// </summary>
     [Serializable]
     public class UndeploymentOptions  {
-    
-        private bool destroyStatements = true;
-        private DeploymentLockStrategy deploymentLockStrategy = DeploymentLockStrategyDefault.INSTANCE;
-    
+        public UndeploymentOptions()
+        {
+            IsDestroyStatements = true;
+            DeploymentLockStrategy = DeploymentLockStrategyDefault.INSTANCE;
+        }
+
         /// <summary>
         /// Returns indicator whether undeploy will destroy any associated statements (true by default).
         /// </summary>
-        /// <returns>
-        /// flag indicating whether undeploy also destroys associated statements
-        /// </returns>
-        public bool IsDestroyStatements() {
-            return destroyStatements;
-        }
-    
-        /// <summary>
-        /// Sets indicator whether undeploy will destroy any associated statements.
-        /// </summary>
-        /// <param name="destroyStatements">flag indicating whether undeploy also destroys associated statements</param>
-        public void SetDestroyStatements(bool destroyStatements) {
-            this.destroyStatements = destroyStatements;
-        }
-    
+        /// <value>
+        ///   flag indicating whether undeploy also destroys associated statements
+        /// </value>
+        public bool IsDestroyStatements { get; set; }
+
         /// <summary>
         /// Return the deployment lock strategy, the default is <seealso cref="DeploymentLockStrategyDefault" />
         /// </summary>
-        /// <returns>lock strategy</returns>
-        public DeploymentLockStrategy GetDeploymentLockStrategy() {
-            return deploymentLockStrategy;
-        }
-    
-        /// <summary>
-        /// Sets the deployment lock strategy, the default is <seealso cref="DeploymentLockStrategyDefault" />
-        /// </summary>
-        /// <param name="deploymentLockStrategy">lock strategy</param>
-        public void SetDeploymentLockStrategy(DeploymentLockStrategy deploymentLockStrategy) {
-            this.deploymentLockStrategy = deploymentLockStrategy;
-        }
+        /// <value>lock strategy</value>
+        public DeploymentLockStrategy DeploymentLockStrategy { get; set; }
     }
 } // end of namespace

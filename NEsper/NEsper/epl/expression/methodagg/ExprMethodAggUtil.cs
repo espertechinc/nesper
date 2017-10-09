@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
@@ -46,9 +47,9 @@ namespace com.espertech.esper.epl.expression.methodagg
             return evaluator;
         }
 
-        public static ExprEvaluator GetMultiNodeEvaluator(ExprNode[] childNodes, bool join, EventType[] typesPerStream)
+        public static ExprEvaluator GetMultiNodeEvaluator(IList<ExprNode> childNodes, bool join, EventType[] typesPerStream)
         {
-            var evaluators = new ExprEvaluator[childNodes.Length];
+            var evaluators = new ExprEvaluator[childNodes.Count];
 
             // determine constant nodes
             int count = 0;

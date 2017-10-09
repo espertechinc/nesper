@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.funcs.cast
@@ -16,7 +15,7 @@ namespace com.espertech.esper.epl.expression.funcs.cast
     /// <summary>Casting and parsing computer.</summary>
     public class StringXFormComputer : CasterParserComputer
     {
-        public Object Compute(Object input, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Compute(Object input, EvaluateParams evaluateParams)
         {
             return input.ToString();
         }

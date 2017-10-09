@@ -47,9 +47,9 @@ namespace com.espertech.esper.epl.core
     	/// <param name="fullExpr">the full expression corresponding to the name</param>
     	private static void VisitChildren(ExprNode node, String name, ExprNode fullExpr)
     	{
-    		ExprNode[] childNodes = node.ChildNodes;
+    		var childNodes = node.ChildNodes;
     
-    		for (int i = 0; i < childNodes.Length; i++)
+    		for (int i = 0; i < childNodes.Count; i++)
     		{
     			ExprNode childNode = childNodes[i];
     			if(IsColumnNameNode(childNode, name))
@@ -67,7 +67,7 @@ namespace com.espertech.esper.epl.core
     	{
     		if(node is ExprIdentNode)
     		{
-    			if(node.ChildNodes.Length > 0)
+    			if(node.ChildNodes.Count > 0)
     			{
     				throw new IllegalStateException("Ident node has unexpected child nodes");
     			}

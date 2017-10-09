@@ -108,7 +108,7 @@ namespace com.espertech.esper.client
 
         /// <summary>
         /// Get the class that represents the type of the event type.
-        /// Returns an event class if the schema represents a POCO event type.
+        /// Returns an event class if the schema represents a PONO event type.
         /// Returns IDictionary is the schema represents a collection of values in a Map.
         /// </summary>
         /// <returns>type of the event object</returns>
@@ -162,8 +162,8 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Returns an enumeration of event types that are super to this event type, from which this event type inherited event properties.
         /// <para/>
-        /// For POCO instances underlying the event this method returns the event types for all superclasses extended by
-        /// the POCO and all interfaces implemented by the POCO.
+        /// For PONO instances underlying the event this method returns the event types for all superclasses extended by
+        /// the PONO and all interfaces implemented by the PONO.
         /// </summary>
         /// <value>The super types.</value>
         /// <returns>an array of event types</returns>

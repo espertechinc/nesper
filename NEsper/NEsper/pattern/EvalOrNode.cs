@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.pattern
@@ -18,9 +20,9 @@ namespace com.espertech.esper.pattern
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EvalOrFactoryNode _factoryNode;
-        private readonly EvalNode[] _childNodes;
-    
-        public EvalOrNode(PatternAgentInstanceContext context, EvalOrFactoryNode factoryNode, EvalNode[] childNodes)
+        private readonly IList<EvalNode> _childNodes;
+
+        public EvalOrNode(PatternAgentInstanceContext context, EvalOrFactoryNode factoryNode, IList<EvalNode> childNodes)
             : base(context)
         {
             _factoryNode = factoryNode;
@@ -32,7 +34,7 @@ namespace com.espertech.esper.pattern
             get { return _factoryNode; }
         }
 
-        public EvalNode[] ChildNodes
+        public IList<EvalNode> ChildNodes
         {
             get { return _childNodes; }
         }

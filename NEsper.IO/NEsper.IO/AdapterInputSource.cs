@@ -12,11 +12,11 @@ namespace com.espertech.esperio
 	/// </summary>
 	public class AdapterInputSource
 	{
-		private readonly Uri url;
-		private readonly String resource;
-		private readonly FileInfo file;
-		private readonly Stream inputStream;
-		private readonly TextReader reader;
+		private readonly Uri _url;
+		private readonly String _resource;
+		private readonly FileInfo _file;
+		private readonly Stream _inputStream;
+		private readonly TextReader _reader;
 		
 		/// <summary>
 		/// Ctor.
@@ -25,15 +25,11 @@ namespace com.espertech.esperio
 		
 		public AdapterInputSource(String resource)
 		{
-			if(resource == null)
-			{
-                throw new ArgumentException("Cannot create AdapterInputStream from a null resource");
-			}
-			this.resource = resource;
-			this.url = null;
-			this.file = null;
-			this.inputStream = null;
-			this.reader = null;
+		    _resource = resource ?? throw new ArgumentException("Cannot create AdapterInputStream from a null resource");
+			_url = null;
+			_file = null;
+			_inputStream = null;
+			_reader = null;
 		}
 		
 		/// <summary>
@@ -42,15 +38,11 @@ namespace com.espertech.esperio
 		/// <param name="url">the URL for the resource to use as source for an adapter</param>
 		public AdapterInputSource(Uri url)
 		{
-			if(url == null)
-			{
-                throw new ArgumentException("Cannot create AdapterInputStream from a null URL");
-			}
-			this.url = url;
-			this.resource = null;
-			this.file = null;
-			this.inputStream = null;
-			this.reader = null;
+			_url = url ?? throw new ArgumentException("Cannot create AdapterInputStream from a null URL");
+			_resource = null;
+			_file = null;
+			_inputStream = null;
+			_reader = null;
 		}
 		
 		/// <summary>
@@ -59,15 +51,11 @@ namespace com.espertech.esperio
 		/// <param name="file">the file to use as a source</param>
 		public AdapterInputSource(FileInfo file)
 		{
-			if(file == null)
-			{
-				throw new ArgumentException("file cannot be null");
-			}
-			this.file = file;
-			this.url = null;
-			this.resource = null;
-			this.inputStream = null;
-			this.reader = null;
+		    _file = file ?? throw new ArgumentException("file cannot be null");
+			_url = null;
+			_resource = null;
+			_inputStream = null;
+			_reader = null;
 		}
 		
 		/// <summary>
@@ -76,15 +64,11 @@ namespace com.espertech.esperio
 		/// <param name="inputStream">the stream to use as a source</param>
 		public AdapterInputSource(Stream inputStream)
 		{
-			if(inputStream == null)
-			{
-                throw new ArgumentException("stream cannot be null");
-			}
-			this.inputStream = inputStream;
-			this.file = null;
-			this.url = null;
-			this.resource = null;
-			this.reader = null;
+		    _inputStream = inputStream ?? throw new ArgumentException("stream cannot be null");
+			_file = null;
+			_url = null;
+			_resource = null;
+			_reader = null;
 		}
 
 	    /// <summary>
@@ -93,15 +77,11 @@ namespace com.espertech.esperio
 	    /// <param name="reader">reader is any reader for reading a file or string</param>
 	    public AdapterInputSource(TextReader reader)
 		{
-			if(reader == null)
-			{
-                throw new ArgumentException("reader cannot be null");
-			}
-			this.reader = reader;
-			this.url = null;
-			this.resource = null;
-			this.file = null;
-			this.inputStream  = null;
+		    _reader = reader ?? throw new ArgumentException("reader cannot be null");
+			_url = null;
+			_resource = null;
+			_file = null;
+			_inputStream  = null;
 		}
 		
 		/// <summary>
@@ -112,31 +92,31 @@ namespace com.espertech.esperio
 		/// <returns>a stream from the resource</returns>
 		public Stream GetAsStream()
 		{
-			if(reader != null)
+			if(_reader != null)
 			{
 				return null;
 			}
-			if(inputStream != null)
+			if(_inputStream != null)
 			{
-				return inputStream;
+				return _inputStream;
 			}
-			if(file != null)
+			if(_file != null)
 			{
 				try
 				{
-					return file.OpenRead() ;
+					return _file.OpenRead() ;
 				} 
 				catch (IOException e)
 				{
 					throw new EPException(e);
 				}
 			}
-			if(url != null)
+			if(_url != null)
 			{
 				try
 				{
 					WebClient webClient = new WebClient() ;
-					return webClient.OpenRead(url) ;
+					return webClient.OpenRead(_url) ;
 				} 
 				catch (IOException e)
 				{
@@ -145,7 +125,7 @@ namespace com.espertech.esperio
 			}
 			else 
 			{
-				return ResolvePathAsStream(resource);
+				return ResolvePathAsStream(_resource);
 			}
 		}
 		
@@ -155,7 +135,7 @@ namespace com.espertech.esperio
 		/// <returns>the Reader</returns>
 		public TextReader GetAsReader()
 		{
-			return reader;
+			return _reader;
 		}
 		
 		/// <summary>
@@ -170,13 +150,13 @@ namespace com.espertech.esperio
 		/// </returns>
 		public bool IsResettable
 		{
-			get { return inputStream == null && reader == null; }
+			get { return _inputStream == null && _reader == null; }
 		}
 		
 		private static Stream ResolvePathAsStream(String path)
 	    {
-            Stream stream = ResourceManager.GetResourceAsStream(path ) ;
-            if ( stream == null )
+            var stream = ResourceManager.GetResourceAsStream(path ) ;
+            if (stream == null)
             {
                 throw new EPException(path + " not found");
             }

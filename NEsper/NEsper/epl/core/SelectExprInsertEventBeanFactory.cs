@@ -588,7 +588,7 @@ namespace com.espertech.esper.epl.core
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var result = ExprEvaluator.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                 if (result == null)
                 {
                     return null;
@@ -613,7 +613,7 @@ namespace com.espertech.esper.epl.core
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var result = ExprEvaluator.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                 if (result == null)
                 {
                     return null;
@@ -638,7 +638,7 @@ namespace com.espertech.esper.epl.core
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var result = ExprEvaluator.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                 if (result == null)
                 {
                     return null;
@@ -663,7 +663,7 @@ namespace com.espertech.esper.epl.core
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                var result = ExprEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var result = ExprEvaluator.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                 if (result == null)
                 {
                     return null;
@@ -721,10 +721,11 @@ namespace com.espertech.esper.epl.core
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 var values = new Object[ExprEvaluators.Length];
+                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 for (var i = 0; i < ExprEvaluators.Length; i++)
                 {
-                    var evalResult = ExprEvaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                    var evalResult = ExprEvaluators[i].Evaluate(evaluateParams);
                     if ((evalResult != null) && (_wideners[i] != null))
                     {
                         evalResult = _wideners[i].Invoke(evalResult);
@@ -756,7 +757,7 @@ namespace com.espertech.esper.epl.core
 
                 for (var i = 0; i < ExprEvaluators.Length; i++)
                 {
-                    var evalResult = ExprEvaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                    var evalResult = ExprEvaluators[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                     values[i] = evalResult;
                 }
 

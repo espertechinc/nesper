@@ -10,45 +10,34 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.expression.dot.inner
 {
     public class InnerEvaluatorEnumerableScalarCollection : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluatorEnumeration rootLambdaEvaluator;
-        private readonly Type componentType;
+        private readonly ExprEvaluatorEnumeration _rootLambdaEvaluator;
+        private readonly Type _componentType;
     
         public InnerEvaluatorEnumerableScalarCollection(ExprEvaluatorEnumeration rootLambdaEvaluator, Type componentType)
         {
-            this.rootLambdaEvaluator = rootLambdaEvaluator;
-            this.componentType = componentType;
+            _rootLambdaEvaluator = rootLambdaEvaluator;
+            _componentType = componentType;
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
-        }
-
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(evaluateParams);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams) {
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(evaluateParams);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return rootLambdaEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionScalar(evaluateParams);
         }
 
         public EventType EventTypeCollection
@@ -58,10 +47,10 @@ namespace com.espertech.esper.epl.expression.dot.inner
 
         public Type ComponentTypeCollection
         {
-            get { return componentType; }
+            get { return _componentType; }
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams) {
             return null;
         }
 
@@ -72,7 +61,7 @@ namespace com.espertech.esper.epl.expression.dot.inner
 
         public EPType TypeInfo
         {
-            get { return EPTypeHelper.CollectionOfSingleValue(componentType); }
+            get { return EPTypeHelper.CollectionOfSingleValue(_componentType); }
         }
     }
 }

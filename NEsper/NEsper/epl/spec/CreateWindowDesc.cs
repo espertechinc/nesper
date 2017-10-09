@@ -30,13 +30,14 @@ namespace com.espertech.esper.epl.spec
         /// <param name="insertFilter">optional filter expression</param>
         /// <param name="columns">list of columns, if using column syntax</param>
         /// <param name="asEventTypeName">Name of as event type.</param>
-        public CreateWindowDesc(String windowName,
-                                IList<ViewSpec> viewSpecs,
-                                StreamSpecOptions streamSpecOptions,
-                                bool insert,
-                                ExprNode insertFilter,
-                                IList<ColumnDesc> columns,
-                                String asEventTypeName)
+        public CreateWindowDesc(
+            String windowName,
+            IList<ViewSpec> viewSpecs,
+            StreamSpecOptions streamSpecOptions,
+            bool insert,
+            ExprNode insertFilter,
+            IList<ColumnDesc> columns,
+            String asEventTypeName)
         {
             WindowName = windowName;
             ViewSpecs = viewSpecs;

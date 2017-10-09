@@ -9,14 +9,12 @@
 using System;
 using System.Reflection;
 
-using com.espertech.esper.epl.expression.core;
-
-using XLR8.CGLib;
-
-using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.rettype;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
+
+using XLR8.CGLib;
 
 namespace com.espertech.esper.epl.expression.dot
 {
@@ -41,7 +39,7 @@ namespace com.espertech.esper.epl.expression.dot
             visitor.VisitMethod(Method.Name);
         }
 
-        public virtual Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public virtual object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
@@ -49,10 +47,9 @@ namespace com.espertech.esper.epl.expression.dot
             }
 
             var args = new Object[_parameters.Length];
-            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             for (int i = 0; i < args.Length; i++)
             {
-                args[i] = _parameters[i].Evaluate(evaluateParams);
+                args[i] = _parameters[i].Evaluate(evalParams);
             }
 
             try

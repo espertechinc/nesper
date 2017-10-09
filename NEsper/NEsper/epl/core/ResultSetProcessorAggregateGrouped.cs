@@ -45,8 +45,8 @@ namespace com.espertech.esper.epl.core
 
         // For output limiting, keep a representative of each group-by group
         private readonly ResultSetProcessorGroupedOutputAllGroupReps _outputAllGroupReps;
-        private readonly IDictionary<object, EventBean[]> _workCollection = new LinkedHashMap<object, EventBean[]>();
-        private readonly IDictionary<object, EventBean[]> _workCollectionTwo = new LinkedHashMap<object, EventBean[]>();
+        private readonly IDictionary<object, EventBean[]> _workCollection = new Dictionary<object, EventBean[]>();
+        private readonly IDictionary<object, EventBean[]> _workCollectionTwo = new Dictionary<object, EventBean[]>();
 
         private readonly ResultSetProcessorAggregateGroupedOutputLastHelper _outputLastHelper;
         private readonly ResultSetProcessorAggregateGroupedOutputAllHelper _outputAllHelper;
@@ -880,21 +880,21 @@ namespace com.espertech.esper.epl.core
 
         private UniformPair<EventBean[]> ProcessOutputLimitedJoinLast(IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet, bool generateSynthetic)
         {
-            IDictionary<object, EventBean> lastPerGroupNew = new LinkedHashMap<object, EventBean>();
+            IDictionary<object, EventBean> lastPerGroupNew = new Dictionary<object, EventBean>();
             IDictionary<object, EventBean> lastPerGroupOld = null;
             if (Prototype.IsSelectRStream)
             {
-                lastPerGroupOld = new LinkedHashMap<object, EventBean>();
+                lastPerGroupOld = new Dictionary<object, EventBean>();
             }
 
             IDictionary<object, object> newEventsSortKey = null; // group key to sort key
             IDictionary<object, object> oldEventsSortKey = null;
             if (_orderByProcessor != null)
             {
-                newEventsSortKey = new LinkedHashMap<object, object>();
+                newEventsSortKey = new Dictionary<object, object>();
                 if (Prototype.IsSelectRStream)
                 {
-                    oldEventsSortKey = new LinkedHashMap<object, object>();
+                    oldEventsSortKey = new Dictionary<object, object>();
                 }
             }
 
@@ -1354,21 +1354,21 @@ namespace com.espertech.esper.epl.core
 
         private UniformPair<EventBean[]> ProcessOutputLimitedViewLast(IList<UniformPair<EventBean[]>> viewEventsList, bool generateSynthetic)
         {
-            IDictionary<object, EventBean> lastPerGroupNew = new LinkedHashMap<object, EventBean>();
+            IDictionary<object, EventBean> lastPerGroupNew = new Dictionary<object, EventBean>();
             IDictionary<object, EventBean> lastPerGroupOld = null;
             if (Prototype.IsSelectRStream)
             {
-                lastPerGroupOld = new LinkedHashMap<object, EventBean>();
+                lastPerGroupOld = new Dictionary<object, EventBean>();
             }
 
             IDictionary<object, object> newEventsSortKey = null; // group key to sort key
             IDictionary<object, object> oldEventsSortKey = null;
             if (_orderByProcessor != null)
             {
-                newEventsSortKey = new LinkedHashMap<object, object>();
+                newEventsSortKey = new Dictionary<object, object>();
                 if (Prototype.IsSelectRStream)
                 {
-                    oldEventsSortKey = new LinkedHashMap<object, object>();
+                    oldEventsSortKey = new Dictionary<object, object>();
                 }
             }
 

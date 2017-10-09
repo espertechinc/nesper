@@ -288,7 +288,7 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     i++;
                     InstrumentationHelper.Get().QExprDotChainElement(i, methodEval);
-                    inner = methodEval.Evaluate(inner, eventsPerStream, isNewData, context);
+                    inner = methodEval.Evaluate(inner, new EvaluateParams(eventsPerStream, isNewData, context));
                     InstrumentationHelper.Get().AExprDotChainElement(methodEval.TypeInfo, inner);
                     if (inner == null)
                     {
@@ -301,7 +301,7 @@ namespace com.espertech.esper.epl.expression.dot
             {
                 foreach (var methodEval in evaluators)
                 {
-                    inner = methodEval.Evaluate(inner, eventsPerStream, isNewData, context);
+                    inner = methodEval.Evaluate(inner, new EvaluateParams(eventsPerStream, isNewData, context));
                     if (inner == null)
                     {
                         break;
@@ -330,6 +330,8 @@ namespace com.espertech.esper.epl.expression.dot
                 result = resultWrapLambda.Convert(result);
             }
 
+            var evaluateParams = new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext);
+
             if (InstrumentationHelper.ENABLED)
             {
                 EPType typeInfo;
@@ -355,7 +357,7 @@ namespace com.espertech.esper.epl.expression.dot
                 {
                     i++;
                     InstrumentationHelper.Get().QExprDotChainElement(i, aChainEval);
-                    result = aChainEval.Evaluate(result, eventsPerStream, newData, exprEvaluatorContext);
+                    result = aChainEval.Evaluate(result, evaluateParams);
                     InstrumentationHelper.Get().AExprDotChainElement(aChainEval.TypeInfo, result);
                     if (result == null)
                     {
@@ -369,7 +371,7 @@ namespace com.espertech.esper.epl.expression.dot
 
             foreach (var aChainEval in chainEval)
             {
-                result = aChainEval.Evaluate(result, eventsPerStream, newData, exprEvaluatorContext);
+                result = aChainEval.Evaluate(result, evaluateParams);
                 if (result == null)
                 {
                     return result;
@@ -448,7 +450,7 @@ namespace com.espertech.esper.epl.expression.dot
                 var desc = EventTypeUtility.GetNestablePropertyDescriptor(streamType, propertyName);
                 if (desc != null && desc.IsIndexed && !desc.RequiresIndex && desc.PropertyComponentType != null)
                 {
-                    if (propertyType.IsImplementsInterface(typeof(ICollection<object>)))
+                    if (propertyType.IsGenericCollection())
                     {
                         enumEvaluator = new PropertyExprEvaluatorScalarCollection(propertyName, streamId, getter, desc.PropertyComponentType);
                     }

@@ -27,7 +27,7 @@ namespace com.espertech.esper.core.context.mgr
         private readonly ContextControllerHashFactoryImpl _factory;
 
         private readonly IList<ContextControllerHashedFilterCallback> _filterCallbacks = new List<ContextControllerHashedFilterCallback>();
-        private readonly IDictionary<int, ContextControllerInstanceHandle> _partitionKeys = new LinkedHashMap<int, ContextControllerInstanceHandle>();
+        private readonly IDictionary<int, ContextControllerInstanceHandle> _partitionKeys = new Dictionary<int, ContextControllerInstanceHandle>();
 
         private ContextInternalFilterAddendum _activationFilterAddendum;
         private int _currentSubpathId;

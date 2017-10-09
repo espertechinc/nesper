@@ -50,7 +50,7 @@ namespace com.espertech.esper.epl.expression.dot
             visitor.VisitMethod(_methodName);
         }
 
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
@@ -74,11 +74,10 @@ namespace com.espertech.esper.epl.expression.dot
                 return null;
             }
 
-            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             var args = new Object[_parameters.Length];
             for (int i = 0; i < args.Length; i++)
             {
-                args[i] = _parameters[i].Evaluate(evaluateParams);
+                args[i] = _parameters[i].Evaluate(evalParams);
             }
 
             try

@@ -86,7 +86,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return null;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -96,7 +96,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             get { return null; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -138,14 +138,14 @@ namespace com.espertech.esper.epl.expression.accessagg
             // validate number of parameters
             if (_aggType == CountMinSketchAggType.ADD || _aggType == CountMinSketchAggType.FREQ)
             {
-                if (ChildNodes.Length == 0 || ChildNodes.Length > 1)
+                if (ChildNodes.Count == 0 || ChildNodes.Count > 1)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a single parameter expression");
                 }
             }
             else
             {
-                if (ChildNodes.Length != 0)
+                if (ChildNodes.Count != 0)
                 {
                     throw new ExprValidationException(MessagePrefix + "requires a no parameter expressions");
                 }
@@ -184,13 +184,13 @@ namespace com.espertech.esper.epl.expression.accessagg
             var spec = new CountMinSketchSpec(new CountMinSketchSpecHashes(DEFAULT_EPS_OF_TOTAL_COUNT, DEFAULT_CONFIDENCE, DEFAULT_SEED), null, DEFAULT_AGENT);
 
             // no parameters
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 return spec;
             }
 
             // check expected parameter type: a json object
-            if (ChildNodes.Length > 1 || !(ChildNodes[0] is ExprConstantNode))
+            if (ChildNodes.Count > 1 || !(ChildNodes[0] is ExprConstantNode))
             {
                 throw DeclaredWrongParameterExpr;
             }
@@ -219,7 +219,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                         if (vv != null) {
                             CountMinSketchAgent transform;
                             try {
-                                var transformClass = exprValidationContext.EngineImportService.ResolveClass((string)vv, false);
+                                var transformClass = exprValidationContext.EngineImportService.ResolveType((string)vv, false);
                                 transform = TypeHelper.Instantiate<CountMinSketchAgent>(transformClass);
                             }
                             catch (Exception e) {

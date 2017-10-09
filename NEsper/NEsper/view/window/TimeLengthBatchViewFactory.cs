@@ -83,7 +83,7 @@ namespace com.espertech.esper.view.window
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             return new TimeLengthBatchView(
-                this, agentInstanceViewFactoryContext, timeDeltaComputation, size, isForceUpdate, isStartEager,
+                this, agentInstanceViewFactoryContext, timeDeltaComputation, size, IsForceUpdate, IsStartEager,
                 viewUpdatedCollection);
         }
 
@@ -113,7 +113,7 @@ namespace com.espertech.esper.view.window
                 return false;
             }
 
-            if (myView.IsForceOutput != isForceUpdate)
+            if (myView.IsForceOutput != IsForceUpdate)
             {
                 return false;
             }

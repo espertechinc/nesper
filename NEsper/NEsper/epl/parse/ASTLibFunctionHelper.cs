@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -14,7 +13,6 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.client;
-using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
@@ -26,8 +24,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.epl.expression.methodagg;
-using com.espertech.esper.epl.expression.table;
-using com.espertech.esper.epl.script;
+using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
@@ -40,14 +37,13 @@ namespace com.espertech.esper.epl.parse
     public class ASTLibFunctionHelper
     {
         public static IList<ExprChainedSpec> GetLibFuncChain(
-            List<EsperEPL2GrammarParser.LibFunctionNoClassContext> ctxs,
+            ICollection<EsperEPL2GrammarParser.LibFunctionNoClassContext> ctxs,
             IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-
             var chained = new List<ExprChainedSpec>(ctxs.Count);
-            foreach (EsperEPL2GrammarParser.LibFunctionNoClassContext ctx in ctxs)
+            foreach (var ctx in ctxs)
             {
-                ExprChainedSpec chainSpec = GetLibFunctionChainSpec(ctx, astExprNodeMap);
+                var chainSpec = GetLibFunctionChainSpec(ctx, astExprNodeMap);
                 chained.Add(chainSpec);
             }
             return chained;
@@ -57,10 +53,10 @@ namespace com.espertech.esper.epl.parse
             EsperEPL2GrammarParser.LibFunctionNoClassContext ctx,
             IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-            string methodName = ASTConstantHelper.RemoveTicks(ctx.funcIdentChained().GetText());
+            var methodName = ASTConstantHelper.RemoveTicks(ctx.funcIdentChained().GetText());
 
-            IList<ExprNode> parameters = GetExprNodesLibFunc(ctx.libFunctionArgs(), astExprNodeMap);
-            bool property = ctx.l == null;
+            var parameters = GetExprNodesLibFunc(ctx.libFunctionArgs(), astExprNodeMap);
+            var property = ctx.l == null;
             return new ExprChainedSpec(methodName, parameters, property);
         }
 
@@ -78,20 +74,20 @@ namespace com.espertech.esper.epl.parse
                 return Collections.GetEmptyList<ExprNode>();
             }
             var parameters = new List<ExprNode>(args.Count);
-            foreach (EsperEPL2GrammarParser.LibFunctionArgItemContext arg in args)
+            foreach (var arg in args)
             {
                 if (arg.expressionLambdaDecl() != null)
                 {
-                    IList<string> lambdaparams = GetLambdaGoesParams(arg.expressionLambdaDecl());
+                    var lambdaparams = GetLambdaGoesParams(arg.expressionLambdaDecl());
                     var goes = new ExprLambdaGoesNode(lambdaparams);
-                    ExprNode lambdaExpr =
+                    var lambdaExpr =
                         ASTExprHelper.ExprCollectSubNodes(arg.expressionWithNamed(), 0, astExprNodeMap)[0];
                     goes.AddChildNode(lambdaExpr);
                     parameters.Add(goes);
                 }
                 else
                 {
-                    ExprNode parameter =
+                    var parameter =
                         ASTExprHelper.ExprCollectSubNodes(arg.expressionWithNamed(), 0, astExprNodeMap)[0];
                     parameters.Add(parameter);
                 }
@@ -120,8 +116,7 @@ namespace com.espertech.esper.epl.parse
             ConfigurationInformation configurationInformation,
             EngineImportService engineImportService,
             IDictionary<ITree, ExprNode> astExprNodeMap,
-            LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>
-                plugInAggregations,
+            LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> plugInAggregations,
             string engineURI,
             ExpressionDeclDesc expressionDeclarations,
             ExprDeclaredService exprDeclaredService,
@@ -132,9 +127,9 @@ namespace com.espertech.esper.epl.parse
             VariableService variableService)
         {
 
-            ASTLibModel model = GetModel(ctx, tokenStream);
-            bool duckType = configurationInformation.EngineDefaults.Expression.IsDuckTyping;
-            bool udfCache = configurationInformation.EngineDefaults.Expression.IsUdfCache;
+            var model = GetModel(ctx, tokenStream);
+            var duckType = configurationInformation.EngineDefaults.Expression.IsDuckTyping;
+            var udfCache = configurationInformation.EngineDefaults.Expression.IsUdfCache;
 
             // handle "some.Xyz(...)" or "some.other.Xyz(...)"
             if (model.ChainElements.Count == 1 &&
@@ -142,9 +137,9 @@ namespace com.espertech.esper.epl.parse
                 ASTTableExprHelper.CheckTableNameGetExprForProperty(tableService, model.OptionalClassIdent) == null)
             {
 
-                ExprChainedSpec chainSpec = GetLibFunctionChainSpec(model.ChainElements[0], astExprNodeMap);
+                var chainSpec = GetLibFunctionChainSpec(model.ChainElements[0], astExprNodeMap);
 
-                ExprDeclaredNodeImpl declaredNodeX = ExprDeclaredHelper.GetExistsDeclaredExpr(
+                var declaredNodeX = ExprDeclaredHelper.GetExistsDeclaredExpr(
                     model.OptionalClassIdent, Collections.GetEmptyList<ExprNode>(), expressionDeclarations.Expressions,
                     exprDeclaredService, contextDescriptor);
                 if (declaredNodeX != null)
@@ -170,7 +165,7 @@ namespace com.espertech.esper.epl.parse
             }
 
             // try additional built-in single-row function
-            ExprNode singleRowExtNode =
+            var singleRowExtNode =
                 engineImportService.ResolveSingleRowExtendedBuiltin(model.ChainElements[0].FuncName);
             if (singleRowExtNode != null)
             {
@@ -180,8 +175,8 @@ namespace com.espertech.esper.epl.parse
                     return;
                 }
                 var spec = new List<ExprChainedSpec>();
-                EsperEPL2GrammarParser.LibFunctionArgsContext firstArgs = model.ChainElements[0].Args;
-                IList<ExprNode> childExpressions = GetExprNodesLibFunc(firstArgs, astExprNodeMap);
+                var firstArgs = model.ChainElements[0].Args;
+                var childExpressions = GetExprNodesLibFunc(firstArgs, astExprNodeMap);
                 singleRowExtNode.AddChildNodes(childExpressions);
                 AddChainRemainderFromOffset(model.ChainElements, 1, spec, astExprNodeMap);
                 var dotNodeX = new ExprDotNodeImpl(
@@ -195,13 +190,13 @@ namespace com.espertech.esper.epl.parse
             // try plug-in single-row function
             try
             {
-                string firstFunctionX = model.ChainElements[0].FuncName;
-                bool firstFunctionIsProperty = !model.ChainElements[0].HasLeftParen;
-                Pair<Type, EngineImportSingleRowDesc> classMethodPair =
+                var firstFunctionX = model.ChainElements[0].FuncName;
+                var firstFunctionIsProperty = !model.ChainElements[0].HasLeftParen;
+                var classMethodPair =
                     engineImportService.ResolveSingleRow(firstFunctionX);
                 var spec = new List<ExprChainedSpec>();
-                EsperEPL2GrammarParser.LibFunctionArgsContext firstArgs = model.ChainElements[0].Args;
-                IList<ExprNode> childExpressions = GetExprNodesLibFunc(firstArgs, astExprNodeMap);
+                var firstArgs = model.ChainElements[0].Args;
+                var childExpressions = GetExprNodesLibFunc(firstArgs, astExprNodeMap);
                 spec.Add(
                     new ExprChainedSpec(classMethodPair.Second.MethodName, childExpressions, firstFunctionIsProperty));
                 AddChainRemainderFromOffset(model.ChainElements, 1, spec, astExprNodeMap);
@@ -220,21 +215,21 @@ namespace com.espertech.esper.epl.parse
             }
 
             // special case for min,max
-            string firstFunction = model.ChainElements[0].FuncName;
+            var firstFunction = model.ChainElements[0].FuncName;
             if ((firstFunction.ToLowerInvariant().Equals("max")) || (firstFunction.ToLowerInvariant().Equals("min")) ||
                 (firstFunction.ToLowerInvariant().Equals("fmax")) || (firstFunction.ToLowerInvariant().Equals("fmin")))
             {
-                EsperEPL2GrammarParser.LibFunctionArgsContext firstArgs = model.ChainElements[0].Args;
+                var firstArgs = model.ChainElements[0].Args;
                 HandleMinMax(firstFunction, firstArgs, astExprNodeMap);
                 return;
             }
 
             // obtain chain with actual expressions
-            var chain = new List<ExprChainedSpec>();
+            IList<ExprChainedSpec> chain = new List<ExprChainedSpec>();
             AddChainRemainderFromOffset(model.ChainElements, 0, chain, astExprNodeMap);
 
             // add chain element for class INFO, if any
-            bool distinct = model.ChainElements[0].Args != null && model.ChainElements[0].Args.DISTINCT() != null;
+            var distinct = model.ChainElements[0].Args != null && model.ChainElements[0].Args.DISTINCT() != null;
             if (model.OptionalClassIdent != null)
             {
                 chain.Insert(
@@ -244,11 +239,11 @@ namespace com.espertech.esper.epl.parse
             firstFunction = chain[0].Name;
 
             // try plug-in aggregation function
-            ExprNode aggregationNode = ASTAggregationHelper.TryResolveAsAggregation(
+            var aggregationNode = ASTAggregationHelper.TryResolveAsAggregation(
                 engineImportService, distinct, firstFunction, plugInAggregations, engineURI);
             if (aggregationNode != null)
             {
-                ExprChainedSpec firstSpec = chain.Delete(0);
+                var firstSpec = chain.DeleteAt(0);
                 aggregationNode.AddChildNodes(firstSpec.Parameters);
                 ExprNode exprNode;
                 if (chain.IsEmpty())
@@ -265,7 +260,7 @@ namespace com.espertech.esper.epl.parse
             }
 
             // try declared or alias expression
-            ExprDeclaredNodeImpl declaredNode = ExprDeclaredHelper.GetExistsDeclaredExpr(
+            var declaredNode = ExprDeclaredHelper.GetExistsDeclaredExpr(
                 firstFunction, chain[0].Parameters, expressionDeclarations.Expressions, exprDeclaredService,
                 contextDescriptor);
             if (declaredNode != null)
@@ -286,7 +281,7 @@ namespace com.espertech.esper.epl.parse
             }
 
             // try script
-            ExprNodeScript scriptNode =
+            var scriptNode =
                 ExprDeclaredHelper.GetExistsScript(
                     configurationInformation.EngineDefaults.Scripts.DefaultDialect, chain[0].Name, chain[0].Parameters,
                     scriptExpressions, exprDeclaredService);
@@ -347,9 +342,9 @@ namespace com.espertech.esper.epl.parse
             IList<ExprChainedSpec> specList,
             IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-            for (int i = offset; i < chainElements.Count; i++)
+            for (var i = offset; i < chainElements.Count; i++)
             {
-                ExprChainedSpec spec = GetLibFunctionChainSpec(chainElements[i], astExprNodeMap);
+                var spec = GetLibFunctionChainSpec(chainElements[i], astExprNodeMap);
                 specList.Add(spec);
             }
         }
@@ -358,8 +353,8 @@ namespace com.espertech.esper.epl.parse
             ASTLibModelChainElement element,
             IDictionary<ITree, ExprNode> astExprNodeMap)
         {
-            string methodName = ASTConstantHelper.RemoveTicks(element.FuncName);
-            IList<ExprNode> parameters = GetExprNodesLibFunc(element.Args, astExprNodeMap);
+            var methodName = ASTConstantHelper.RemoveTicks(element.FuncName);
+            var parameters = GetExprNodesLibFunc(element.Args, astExprNodeMap);
             return new ExprChainedSpec(methodName, parameters, !element.HasLeftParen);
         }
 
@@ -367,24 +362,24 @@ namespace com.espertech.esper.epl.parse
             EsperEPL2GrammarParser.LibFunctionContext ctx,
             CommonTokenStream tokenStream)
         {
-            EsperEPL2GrammarParser.LibFunctionWithClassContext root = ctx.libFunctionWithClass();
+            var root = ctx.libFunctionWithClass();
             IList<EsperEPL2GrammarParser.LibFunctionNoClassContext> ctxElements = ctx.libFunctionNoClass();
 
             // there are no additional methods
             if (ctxElements == null || ctxElements.IsEmpty())
             {
-                string classIdent = root.classIdentifier() == null
+                var classIdent = root.classIdentifier() == null
                     ? null
                     : ASTUtil.UnescapeClassIdent(root.classIdentifier());
-                ASTLibModelChainElement ele = FromRoot(root);
+                var ele = FromRoot(root);
                 return new ASTLibModel(classIdent, Collections.SingletonList(ele));
             }
 
             // add root and chain to just a list of elements
             var chainElements = new List<ASTLibModelChainElement>(ctxElements.Count + 1);
-            ASTLibModelChainElement rootElement = FromRoot(root);
+            var rootElement = FromRoot(root);
             chainElements.Add(rootElement);
-            foreach (EsperEPL2GrammarParser.LibFunctionNoClassContext chainedCtx in ctxElements)
+            foreach (var chainedCtx in ctxElements)
             {
                 var chainedElement = new ASTLibModelChainElement(
                     chainedCtx.funcIdentChained().GetText(), chainedCtx.libFunctionArgs(), chainedCtx.l != null);
@@ -393,9 +388,9 @@ namespace com.espertech.esper.epl.parse
 
             // determine/remove the list of chain elements, from the start and uninterrupted, that don't have parameters (no parenthesis 'l')
             var chainElementsNoArgs = new List<ASTLibModelChainElement>(chainElements.Count);
-            for (int ii = 0; ii < chainElements.Count; ii++) 
+            for (var ii = 0; ii < chainElements.Count; ii++) 
             {
-                ASTLibModelChainElement element = chainElements[ii];
+                var element = chainElements[ii];
                 if (!element.HasLeftParen)
                 {
                     // has no parenthesis, therefore part of class identifier
@@ -412,13 +407,13 @@ namespace com.espertech.esper.epl.parse
 
             // write the class identifier including the no-arg chain elements
             var classIdentBuf = new StringWriter();
-            string delimiter = "";
+            var delimiter = "";
             if (root.classIdentifier() != null)
             {
                 classIdentBuf.Write(ASTUtil.UnescapeClassIdent(root.classIdentifier()));
                 delimiter = ".";
             }
-            foreach (ASTLibModelChainElement noarg in chainElementsNoArgs)
+            foreach (var noarg in chainElementsNoArgs)
             {
                 classIdentBuf.Write(delimiter);
                 classIdentBuf.Write(noarg.FuncName);
@@ -432,8 +427,8 @@ namespace com.espertech.esper.epl.parse
             }
 
             // class ident can be null if empty
-            string classIdentifierString = classIdentBuf.ToString();
-            string classIdentifier = classIdentifierString.Length > 0 ? classIdentifierString : null;
+            var classIdentifierString = classIdentBuf.ToString();
+            var classIdentifier = classIdentifierString.Length > 0 ? classIdentifierString : null;
 
             return new ASTLibModel(classIdentifier, chainElements);
         }
@@ -459,9 +454,9 @@ namespace com.espertech.esper.epl.parse
             IDictionary<ITree, ExprNode> astExprNodeMap)
         {
             // Determine min or max
-            string childNodeText = ident;
+            var childNodeText = ident;
             MinMaxTypeEnum minMaxTypeEnum;
-            bool filtered = childNodeText.StartsWith("f");
+            var filtered = childNodeText.StartsWith("f");
             if (childNodeText.ToLowerInvariant().Equals("min") || childNodeText.ToLowerInvariant().Equals("fmin"))
             {
                 minMaxTypeEnum = MinMaxTypeEnum.MIN;
@@ -475,14 +470,14 @@ namespace com.espertech.esper.epl.parse
                 throw ASTWalkException.From("Uncountered unrecognized min or max node '" + ident + "'");
             }
 
-            IList<ExprNode> args = Collections.GetEmptyList<ExprNode>();
+            var args = Collections.GetEmptyList<ExprNode>();
             if (ctxArgs != null && ctxArgs.libFunctionArgItem() != null)
             {
                 args = ASTExprHelper.ExprCollectSubNodes(ctxArgs, 0, astExprNodeMap);
             }
-            int numArgsPositional = ExprAggregateNodeUtil.CountPositionalArgs(args);
+            var numArgsPositional = ExprAggregateNodeUtil.CountPositionalArgs(args);
 
-            bool isDistinct = ctxArgs != null && ctxArgs.DISTINCT() != null;
+            var isDistinct = ctxArgs != null && ctxArgs.DISTINCT() != null;
             if (numArgsPositional > 1 && isDistinct && !filtered)
             {
                 throw ASTWalkException.From(

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.pattern;
 using com.espertech.esper.util;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.filter
 {
@@ -69,11 +70,11 @@ namespace com.espertech.esper.filter
                     {
                         _adders[i] = InValueAdderArray.INSTANCE;
                     }
-                    else if (TypeHelper.IsImplementsInterface(returnType, typeof (IDictionary<string, object>)))
+                    else if (returnType.IsGenericDictionary())
                     {
                         _adders[i] = InValueAdderMap.INSTANCE;
                     }
-                    else if (TypeHelper.IsImplementsInterface(returnType, typeof (ICollection<object>)))
+                    else if (returnType.IsGenericCollection())
                     {
                         _adders[i] = InValueAdderColl.INSTANCE;
                     }
@@ -150,8 +151,7 @@ namespace com.espertech.esper.filter
                 return false;
             }
     
-
-            if (!(Arrays.DeepEquals(_listOfValues.ToArray(), other._listOfValues.ToArray()))) {
+            if (!(CompatExtensions.DeepEquals(_listOfValues, other._listOfValues))) {
                 return false;
             }
             return true;
@@ -167,12 +167,12 @@ namespace com.espertech.esper.filter
         private MultiKeyUntyped GetFilterValues(MatchedEventMap matchedEvents, AgentInstanceContext agentInstanceContext)
         {
             if (!_hasCollMapOrArray) {
-                var constants = new Object[_listOfValues.Count];
-                int count = 0;
+                var constantsX = new Object[_listOfValues.Count];
+                int countX = 0;
                 foreach (FilterSpecParamInValue valuePlaceholder in _listOfValues) {
-                    constants[count++] = valuePlaceholder.GetFilterValue(matchedEvents, agentInstanceContext);
+                    constantsX[countX++] = valuePlaceholder.GetFilterValue(matchedEvents, agentInstanceContext);
                 }
-                return new MultiKeyUntyped(constants);
+                return new MultiKeyUntyped(constantsX);
             }
     
             var constants = new ArrayDeque<object>(_listOfValues.Count);
@@ -221,8 +221,14 @@ namespace com.espertech.esper.filter
 
             public void Add(ICollection<Object> constants, Object value)
             {
-                var map = (IDictionary<string, object>) value;
-                constants.AddAll(map.Keys);
+                IEnumerable<object> mapKeys;
+
+                if (value.GetType().IsGenericDictionary())
+                    mapKeys = MagicMarker.GetDictionaryFactory(value.GetType()).Invoke(value).Keys;
+                else
+                    throw new ArgumentException("invalid value", nameof(value));
+
+                constants.AddAll(mapKeys);
             }
         }
 
@@ -236,8 +242,16 @@ namespace com.espertech.esper.filter
 
             public void Add(ICollection<Object> constants, Object value)
             {
-                var coll = (ICollection<object>) value;
-                constants.AddAll(coll);
+                ICollection<object> collection;
+
+                if (value is ICollection<object>)
+                    collection = (ICollection<object>)value;
+                else if (value.GetType().IsGenericCollection())
+                    collection = MagicMarker.GetCollectionFactory(value.GetType()).Invoke(value);
+                else
+                    throw new ArgumentException("invalid value", nameof(value));
+
+                constants.AddAll(collection);
             }
         }
 

@@ -35,12 +35,13 @@ namespace com.espertech.esper.epl.db
             _cache.ShuffleOnAccess = true;
             _cache.RemoveEldest += delegate { return _cache.Count > _cacheSize; };
         }
-    
+
         /// <summary>
         /// Retrieves an entry from the _cache.
         /// The retrieved entry becomes the MRU (most recently used) entry.
         /// </summary>
         /// <param name="methodParams">the key whose associated value is to be returned.</param>
+        /// <param name="numInputParameters">The number input parameters.</param>
         /// <returns>
         /// the value associated to this key, or null if no value with this key exists in the _cache.
         /// </returns>
@@ -48,12 +49,13 @@ namespace com.espertech.esper.epl.db
             var key = DataCacheUtil.GetLookupKey(methodParams, numInputParameters);
             return _cache.Get(key);
         }
-    
+
         /// <summary>
         /// Adds an entry to this _cache.
         /// If the _cache is full, the LRU (least recently used) entry is dropped.
         /// </summary>
         /// <param name="methodParams">the keys with which the specified value is to be associated.</param>
+        /// <param name="numLookupKeys">number of method param keys, from the start, that are for cache lookup</param>
         /// <param name="rows">a value to be associated with the specified key.</param>
         public void PutCached(Object[] methodParams, int numLookupKeys, EventTable[] rows)
         {

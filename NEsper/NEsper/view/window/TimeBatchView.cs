@@ -209,7 +209,7 @@ namespace com.espertech.esper.view.window
         /// This method updates child views and clears the batch of events.
         /// We schedule a new callback at this time if there were events in the batch.
         /// </summary>
-        protected void SendBatch()
+        public void SendBatch()
         {
             _isCallbackScheduled = false;
 
@@ -299,7 +299,7 @@ namespace com.espertech.esper.view.window
         {
             long current = _agentInstanceContext.StatementContext.SchedulingService.Time;
             ExprTimePeriodEvalDeltaResult deltaWReference = _timeDeltaComputation.DeltaAddWReference(
-                current, _currentReferencePoint);
+                current, _currentReferencePoint.Value);
             long afterTime = deltaWReference.Delta;
             _currentReferencePoint = deltaWReference.LastReference;
 

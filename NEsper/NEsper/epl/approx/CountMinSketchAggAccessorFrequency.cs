@@ -17,29 +17,31 @@ using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.approx
 {
-    public class CountMinSketchAggAccessorFrequency : AggregationAccessor {
+    public class CountMinSketchAggAccessorFrequency : AggregationAccessor
+    {
+        private readonly ExprEvaluator _evaluator;
     
-        private readonly ExprEvaluator evaluator;
-    
-        public CountMinSketchAggAccessorFrequency(ExprEvaluator evaluator) {
-            this.evaluator = evaluator;
+        public CountMinSketchAggAccessorFrequency(ExprEvaluator evaluator)
+        {
+            this._evaluator = evaluator;
         }
-    
-        public object GetValue(AggregationState aggregationState, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            object value = evaluator.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+
+        public object GetValue(AggregationState aggregationState, EvaluateParams evalParams)
+        {
+            object value = _evaluator.Evaluate(new EvaluateParams(evalParams.EventsPerStream, true, evalParams.ExprEvaluatorContext));
             CountMinSketchAggState state = (CountMinSketchAggState) aggregationState;
             return state.Frequency(value);
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     }

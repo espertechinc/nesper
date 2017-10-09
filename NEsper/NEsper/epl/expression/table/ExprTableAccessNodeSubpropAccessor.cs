@@ -22,6 +22,7 @@ using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.expression.table
 {
+    [Serializable]
     public class ExprTableAccessNodeSubpropAccessor
         : ExprTableAccessNode
         , ExprEvaluator
@@ -115,12 +116,9 @@ namespace com.espertech.esper.epl.expression.table
                     eventAdapterService, statementId);
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return Strategy.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return Strategy.EvaluateGetROCollectionEvents(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
 
         public Type ComponentTypeCollection
@@ -128,12 +126,9 @@ namespace com.espertech.esper.epl.expression.table
             get { return ((ExprAggregateAccessMultiValueNode) _aggregateAccessMultiValueNode).ComponentTypeCollection; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return Strategy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            return Strategy.EvaluateGetROCollectionScalar(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
 
         public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
@@ -143,9 +138,9 @@ namespace com.espertech.esper.epl.expression.table
                     eventAdapterService, statementId);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            return Strategy.EvaluateGetEventBean(eventsPerStream, isNewData, context);
+            return Strategy.EvaluateGetEventBean(evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

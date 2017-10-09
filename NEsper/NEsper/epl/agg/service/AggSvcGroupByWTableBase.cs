@@ -161,7 +161,7 @@ namespace com.espertech.esper.epl.agg.service
             CurrentGroupKey = groupByKey;
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             if (column < CurrentAggregatorMethods.Length)
             {
@@ -170,11 +170,11 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = Accessors[column - CurrentAggregatorMethods.Length];
-                return pair.Accessor.GetValue(CurrentAggregatorStates[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+                return pair.Accessor.GetValue(CurrentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             if (column < CurrentAggregatorMethods.Length)
             {
@@ -183,11 +183,11 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = Accessors[column - CurrentAggregatorMethods.Length];
-                return pair.Accessor.GetEnumerableEvents(CurrentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableEvents(CurrentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             if (column < CurrentAggregatorMethods.Length)
             {
@@ -196,11 +196,11 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = Accessors[column - CurrentAggregatorMethods.Length];
-                return pair.Accessor.GetEnumerableScalar(CurrentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableScalar(CurrentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             if (column < CurrentAggregatorMethods.Length)
             {
@@ -209,7 +209,7 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = Accessors[column - CurrentAggregatorMethods.Length];
-                return pair.Accessor.GetEnumerableEvent(CurrentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableEvent(CurrentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 

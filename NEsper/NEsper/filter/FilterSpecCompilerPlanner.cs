@@ -50,7 +50,7 @@ namespace com.espertech.esper.filter
 
             // determine max-width
             int filterServiceMaxFilterWidth =
-                args.ConfigurationInformation.EngineDefaults.ExecutionConfig.FilterServiceMaxFilterWidth;
+                args.ConfigurationInformation.EngineDefaults.Execution.FilterServiceMaxFilterWidth;
             HintAttribute hint = HintEnum.MAX_FILTER_WIDTH.GetHint(args.Annotations);
             if (hint != null)
             {
@@ -104,8 +104,8 @@ namespace com.espertech.esper.filter
             foreach (ExprOrNode orNode in orNodes)
             {
                 expressionsWithoutOr.RemoveNode(orNode);
-                orNodesMaps[countOr] = new FilterParamExprMap[orNode.ChildNodes.Length];
-                int len = orNode.ChildNodes.Length;
+                orNodesMaps[countOr] = new FilterParamExprMap[orNode.ChildNodes.Count];
+                int len = orNode.ChildNodes.Count;
 
                 for (int i = 0; i < len; i++)
                 {
@@ -235,13 +235,15 @@ namespace com.espertech.esper.filter
             bool hasTableAccess = DetermineTableAccessFilterStream(exprNode);
             var lookupable = new FilterSpecLookupable(FilterSpecCompiler.PROPERTY_NAME_BOOLEAN_EXPRESSION, null, exprNode.ExprEvaluator.ReturnType, false);
             return new FilterSpecParamExprNode(
-                lookupable, FilterOperator.BOOLEAN_EXPRESSION, exprNode, args.TaggedEventTypes, args.ArrayEventTypes,
-                args.VariableService, 
+                lookupable, FilterOperator.BOOLEAN_EXPRESSION, exprNode,
+                args.TaggedEventTypes, 
+                args.ArrayEventTypes,
+                args.VariableService,
                 args.TableService, 
                 args.EventAdapterService,
                 args.FilterBooleanExpressionFactory, 
                 args.ConfigurationInformation,
-                args.StatementName, hasSubselectFilterStream, hasTableAccess);
+                hasSubselectFilterStream, hasTableAccess);
         }
 
         private static ExprAndNode MakeValidateAndNode(IList<ExprNode> remainingExprNodes, FilterSpecCompilerArgs args)

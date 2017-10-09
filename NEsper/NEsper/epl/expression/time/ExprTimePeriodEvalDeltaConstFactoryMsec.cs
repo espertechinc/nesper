@@ -6,32 +6,34 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.time
 {
-    public class ExprTimePeriodEvalDeltaConstFactoryMsec : ExprTimePeriodEvalDeltaConstFactory {
-        private readonly ExprEvaluator secondsEvaluator;
-        private readonly TimeAbacus timeAbacus;
-    
-        public ExprTimePeriodEvalDeltaConstFactoryMsec(ExprEvaluator secondsEvaluator, TimeAbacus timeAbacus) {
-            this.secondsEvaluator = secondsEvaluator;
-            this.timeAbacus = timeAbacus;
+    public class ExprTimePeriodEvalDeltaConstFactoryMsec : ExprTimePeriodEvalDeltaConstFactory
+    {
+        private readonly ExprEvaluator _secondsEvaluator;
+        private readonly TimeAbacus _timeAbacus;
+
+        public ExprTimePeriodEvalDeltaConstFactoryMsec(ExprEvaluator secondsEvaluator, TimeAbacus timeAbacus)
+        {
+            _secondsEvaluator = secondsEvaluator;
+            _timeAbacus = timeAbacus;
         }
-    
-        public ExprTimePeriodEvalDeltaConst Make(string validateMsgName, string validateMsgValue, AgentInstanceContext agentInstanceContext) {
-            Number time = (Number) secondsEvaluator.Evaluate(null, true, agentInstanceContext);
-            if (!ExprTimePeriodUtil.ValidateTime(time, agentInstanceContext.StatementContext.TimeAbacus)) {
+
+        public ExprTimePeriodEvalDeltaConst Make(
+            string validateMsgName,
+            string validateMsgValue,
+            AgentInstanceContext agentInstanceContext)
+        {
+            object time = _secondsEvaluator.Evaluate(new EvaluateParams(null, true, agentInstanceContext));
+            if (!ExprTimePeriodUtil.ValidateTime(time, agentInstanceContext.StatementContext.TimeAbacus))
+            {
                 throw new EPException(ExprTimePeriodUtil.GetTimeInvalidMsg(validateMsgName, validateMsgValue, time));
             }
-            return new ExprTimePeriodEvalDeltaConstGivenDelta(timeAbacus.DeltaForSecondsNumber(time));
+            return new ExprTimePeriodEvalDeltaConstGivenDelta(_timeAbacus.DeltaForSecondsNumber(time));
         }
     }
 } // end of namespace

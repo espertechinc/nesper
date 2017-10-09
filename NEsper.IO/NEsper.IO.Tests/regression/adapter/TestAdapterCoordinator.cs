@@ -55,7 +55,7 @@ namespace com.espertech.esperio.regression.adapter
     		epService = EPServiceProviderManager.GetProvider("Adapter", configuration);
     		epService.Initialize();
     		EPAdministrator administrator = epService.EPAdministrator;
-    		String statementText = "select * from mapEvent.win:length(5)";
+    		String statementText = "select * from mapEvent#length(5)";
     		EPStatement statement = administrator.CreateEPL(statementText);
     		listener = new SupportUpdateListener();
     		statement.Events += listener.Update;

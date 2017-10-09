@@ -87,7 +87,7 @@ namespace com.espertech.esper.client
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache);
+            ValueCacheEnum valueCache);
 
         /// <summary>
         ///     Adds a plug-in single-row function given a EPL function name, a class name, method name and setting for value-cache
@@ -108,7 +108,7 @@ namespace com.espertech.esper.client
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable);
+            FilterOptimizableEnum filterOptimizable);
 
         /// <summary>
         ///     Adds a plug-in single-row function given a EPL function name, a class name and a method name.
@@ -143,41 +143,71 @@ namespace com.espertech.esper.client
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions);
 
         /// <summary>
-        ///     Adds a namespace or class to the list of automatically-imported classes and namespaces.
-        ///     <para>
-        ///         To import a single class offering a static method, simply supply the fully-qualified name of the class
-        ///         and use the syntax <code>classname.Methodname(...)</code>
-        ///     </para>
-        ///     <para>
-        ///         To import a whole namespace and use the <code>classname.Methodname(...)</code> syntax, specify a namespace
-        ///         with wildcard, such as <code>com.mycompany.staticlib.*</code>.
-        ///     </para>
+        /// Adds a package or class to the list of automatically-imported types.
+        /// <para/>
+        /// To import a single class offering a static method, simply supply the fully-qualified name of the
+        /// class and use the syntax <code>classname.Methodname(...)</code>
+        /// 	<para/>
+        /// To import a whole package and use the <code>classname.Methodname(...)</code> syntax.
         /// </summary>
-        /// <param name="importName">is a fully-qualified class name or a namespace name with wildcard</param>
-        /// <exception cref="ConfigurationException">if incorrect namespace or class names are encountered</exception>
-        void AddImport(string importName);
+        /// <param name="importName">is a fully-qualified class name or a package name with wildcard</param>
+        /// <throws>ConfigurationException if incorrect package or class names are encountered</throws>
+        void AddImport(String importName);
 
         /// <summary>
-        ///     Adds a namespace or class to the list of automatically-imported classes and namespaces for use by annotations only.
+        /// Adds the class or namespace (importName) ot the list of automatically imported types.
         /// </summary>
-        /// <param name="importName">import such as namespace name, class name, or namespace with ".*".</param>
-        /// <exception cref="ConfigurationException">if incorrect namespace or class names are encountered</exception>
-        void AddAnnotationImport(string importName);
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        void AddImport(String importName, String assemblyNameOrFile);
 
         /// <summary>
-        ///     Adds a class to the list of automatically-imported classes.
-        ///     <para>
-        ///         Use #AddImport(string) to import a namespace.
-        ///     </para>
+        /// Adds a class to the list of automatically-imported classes.
         /// </summary>
-        /// <param name="importClass">is a class to import</param>
-        /// <exception cref="ConfigurationException">if incorrect namespace or class names are encountered</exception>
         void AddImport(Type importClass);
+
+        /// <summary>
+        /// Adds the import.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        void AddImport<T>();
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        void AddAnnotationImport(String importName, String assemblyNameOrFile);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        void AddAnnotationImport(String autoImport);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        void AddAnnotationImport(Type autoImport);
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importNamespace"></param>
+        /// <typeparam name="T"></typeparam>
+        void AddAnnotationImport<T>(bool importNamespace = false);
+
+        /// <summary>
+        /// Adds an import for the namespace associated with the given type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        void AddNamespaceImport<T>();
 
         /// <summary>
         ///     Checks if an eventTypeName has already been registered for that name.
@@ -233,6 +263,20 @@ namespace com.espertech.esper.client
         /// <param name="eventClass">is the event class for which to create the name from the class simple name</param>
         /// <exception cref="ConfigurationException">if the name is already in used for a different type</exception>
         void AddEventType(Type eventClass);
+
+        /// <summary>
+        ///     Add a name for an event type represented by object events,
+        ///     using the simple name of the type as the name.
+        /// </summary>
+        /// <param name="eventTypeName">is the event class for which to create the name from the class simple name</param>
+        /// <exception cref="ConfigurationException">if the name is already in used for a different type</exception>
+        void AddEventType<T>(String eventTypeName);
+
+        /// <summary>
+        /// Adds a name for an event type represented by the type parameter.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        void AddEventType<T>();
 
         /// <summary>
         ///     Add an event type that represents IDictionary events.
@@ -366,6 +410,26 @@ namespace com.espertech.esper.client
         ///     is already in use
         /// </exception>
         void AddVariable(string variableName, Type type, Object initializationValue);
+
+        /// <summary>
+        ///     Add a global variable.
+        ///     <para>
+        ///         Use the runtime API to set variable values or EPL statements to change variable values.
+        ///     </para>
+        /// </summary>
+        /// <param name="variableName">name of the variable to add</param>
+        /// <param name="initializationValue">
+        ///     is the first assigned value.
+        ///     For static initialization via the <seealso cref="com.espertech.esper.client.Configuration" /> object the value can
+        ///     be string-typed and will be parsed.
+        ///     For static initialization the initialization value, if provided, must be
+        ///     Serializable.
+        /// </param>
+        /// <exception cref="ConfigurationException">
+        ///     if the type and initialization value don't match or the variable name
+        ///     is already in use
+        /// </exception>
+        void AddVariable<TValue>(string variableName, TValue initializationValue);
 
         /// <summary>
         ///     Add a global variable.
@@ -684,9 +748,38 @@ namespace com.espertech.esper.client
         ///         alias to the same event type since event type identity for types is per type.
         ///     </para>
         /// </summary>
+        /// <typeparam name="T">class of the event type</typeparam>
+        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
+        void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc);
+
+        /// <summary>
+        ///     Add an name for an event type that represents legacy type events.
+        ///     <para>
+        ///         This operation cannot be used to change an existing type.
+        ///     </para>
+        ///     <para>
+        ///         Note that when adding multiple names for the same type the names represent an
+        ///         alias to the same event type since event type identity for types is per type.
+        ///     </para>
+        /// </summary>
+        /// <typeparam name="T">class of the event type</typeparam>
         /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="eventClass">fully-qualified class name of the event type</param>
-        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for Legacy Java type events</param>
+        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
+        void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc);
+
+        /// <summary>
+        ///     Add an name for an event type that represents legacy type events.
+        ///     <para>
+        ///         This operation cannot be used to change an existing type.
+        ///     </para>
+        ///     <para>
+        ///         Note that when adding multiple names for the same type the names represent an
+        ///         alias to the same event type since event type identity for types is per type.
+        ///     </para>
+        /// </summary>
+        /// <param name="eventTypeName">is the name for the event type</param>
+        /// <param name="eventClass">assembly qualified class name of the event type</param>
+        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
         void AddEventType(string eventTypeName, string eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc);
 
         /// <summary>
@@ -713,7 +806,7 @@ namespace com.espertech.esper.client
         ///     </para>
         /// </summary>
         /// <value>to set</value>
-        long MatchRecognizeMaxStates { set; }
+        long? MatchRecognizeMaxStates { set; }
 
         /// <summary>
         ///     Updates an existing Object-array event type with additional properties.

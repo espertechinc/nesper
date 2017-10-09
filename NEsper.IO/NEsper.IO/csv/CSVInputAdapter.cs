@@ -532,9 +532,9 @@ namespace com.espertech.esperio.csv
             {
                 return false;
             }
-            ICollection<String> firstRowSet = new SortedSet<String>(firstRow);
-            ICollection<String> propertyOrderSet = new SortedSet<String>(propertyOrder);
-            return Equals(firstRowSet, propertyOrderSet);
+            ISet<String> firstRowSet = new SortedSet<String>(firstRow);
+            ISet<String> propertyOrderSet = new SortedSet<String>(propertyOrder);
+            return firstRowSet.SetEquals(propertyOrderSet);
         }
 
         /// <summary>

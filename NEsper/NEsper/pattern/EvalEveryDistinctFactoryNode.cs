@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern
         ///     Ctor.
         /// </summary>
         /// <param name="expressions">distinct-value expressions</param>
-        protected EvalEveryDistinctFactoryNode(IList<ExprNode> expressions)
+        public EvalEveryDistinctFactoryNode(IList<ExprNode> expressions)
         {
             _expressions = expressions;
         }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.pattern
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write("every-Distinct(");
+            writer.Write("every-distinct(");
             ExprNodeUtility.ToExpressionStringParameterList(_distinctExpressions, writer);
             if (_expiryTimeExp != null)
             {

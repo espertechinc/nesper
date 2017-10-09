@@ -32,7 +32,13 @@ namespace com.espertech.esper.epl.script
         protected readonly EventType EventTypeCollection;
         protected readonly Coercer Coercer;
 
-        protected ExprNodeScriptEvalBase(String scriptName, String statementName, String[] names, ExprEvaluator[] parameters, Type returnType, EventType eventTypeCollection)
+        protected ExprNodeScriptEvalBase(
+            String scriptName,
+            String statementName,
+            String[] names,
+            ExprEvaluator[] parameters,
+            Type returnType,
+            EventType eventTypeCollection)
         {
             ScriptName = scriptName;
             StatementName = statementName;
@@ -61,9 +67,9 @@ namespace com.espertech.esper.epl.script
             return EventTypeCollection;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            var result = Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+            var result = Evaluate(evaluateParams);
             if (result == null)
             {
                 return null;
@@ -84,9 +90,9 @@ namespace com.espertech.esper.epl.script
             }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            var result = Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+            var result = Evaluate(evaluateParams);
             if (result == null)
             {
                 return null;
@@ -110,7 +116,7 @@ namespace com.espertech.esper.epl.script
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

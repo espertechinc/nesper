@@ -12,32 +12,33 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
-    using CalendarEval = Func<DateTimeEx, object>;
+    using CalendarIntEval = Func<DateTimeEx, int>;
+    using CalendarDowEval = Func<DateTimeEx, DayOfWeek>;
 
     public class CalendarEvalStatics
     {
-        public static readonly CalendarEval MINUTE_OF_HOUR = dtx => dtx.Minute;
+        public static readonly CalendarIntEval MINUTE_OF_HOUR = dtx => dtx.Minute;
     
-        public static readonly CalendarEval MONTH_OF_YEAR = dtx => dtx.Month;
+        public static readonly CalendarIntEval MONTH_OF_YEAR = dtx => dtx.Month;
     
-        public static readonly CalendarEval DAY_OF_MONTH = dtx => dtx.Day;
+        public static readonly CalendarIntEval DAY_OF_MONTH = dtx => dtx.Day;
     
-        public static readonly CalendarEval DAY_OF_WEEK = dtx => dtx.DayOfWeek;
+        public static readonly CalendarDowEval DAY_OF_WEEK = dtx => dtx.DayOfWeek;
+
+        public static readonly CalendarIntEval DAY_OF_YEAR = dtx => dtx.DayOfYear;
     
-        public static readonly CalendarEval DAY_OF_YEAR = dtx => dtx.Year;
-    
-        public static readonly CalendarEval ERA = dtx => {
+        public static readonly CalendarIntEval ERA = dtx => {
                 throw new NotSupportedException();
             };
     
-        public static readonly CalendarEval HOUR_OF_DAY = dtx => dtx.Hour;
+        public static readonly CalendarIntEval HOUR_OF_DAY = dtx => dtx.Hour;
     
-        public static readonly CalendarEval MILLIS_OF_SECOND = dtx => dtx.Millisecond;
+        public static readonly CalendarIntEval MILLIS_OF_SECOND = dtx => dtx.Millisecond;
     
-        public static readonly CalendarEval SECOND_OF_MINUTE = dtx => dtx.Second;
+        public static readonly CalendarIntEval SECOND_OF_MINUTE = dtx => dtx.Second;
     
-        public static readonly CalendarEval WEEKYEAR = dtx => dtx.DateTime.GetWeekOfYear();
+        public static readonly CalendarIntEval WEEKYEAR = dtx => dtx.DateTime.GetWeekOfYear();
     
-        public static readonly CalendarEval YEAR = dtx => dtx.Year;
+        public static readonly CalendarIntEval YEAR = dtx => dtx.Year;
     }
 } // end of namespace

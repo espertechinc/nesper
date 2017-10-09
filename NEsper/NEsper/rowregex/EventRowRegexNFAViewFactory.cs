@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
@@ -273,8 +274,9 @@ namespace com.espertech.esper.rowregex
                         statementContext.ContextDescriptor,
                         statementContext.ScriptingService,
                         false, false, true, false, null, false);
-	                foreach (var child in aggregateNode.ChildNodes)
-	                {
+                    for (int ii = 0 ; ii < aggregateNode.ChildNodes.Count ; ii++)
+                    {
+                        var child = aggregateNode.ChildNodes[ii];
 	                    var validated = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.MATCHRECOGMEASURE, child, validationContext);
 	                    validated.Accept(visitor);
 	                    aggregateNode.SetChildNode(count++, new ExprNodeValidated(validated));
@@ -477,12 +479,12 @@ namespace com.espertech.esper.rowregex
 	            var previousNode = previousNodePair.Second;
 	            var matchRecogPrevNode = new ExprPreviousMatchRecognizeNode();
 
-	            if (previousNodePair.Second.ChildNodes.Length == 1)
+	            if (previousNodePair.Second.ChildNodes.Count == 1)
 	            {
 	                matchRecogPrevNode.AddChildNode(previousNode.ChildNodes[0]);
 	                matchRecogPrevNode.AddChildNode(new ExprConstantNodeImpl(1));
 	            }
-	            else if (previousNodePair.Second.ChildNodes.Length == 2)
+                else if (previousNodePair.Second.ChildNodes.Count == 2)
 	            {
 	                var first = previousNode.ChildNodes[0];
 	                var second = previousNode.ChildNodes[1];

@@ -7,9 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.util
@@ -80,14 +83,60 @@ namespace com.espertech.esper.util
                     return TypeWidenerStringToCharCoercer.Widen;
                 }
 
+                if (allowObjectArrayToCollectionConversion
+                    && columnClassBoxed.IsArray
+                    && !columnClassBoxed.GetElementType().IsPrimitive
+                    && targetClassBoxed.IsGenericCollection())
+                {
+                    return OBJECT_ARRAY_TO_COLLECTION_COERCER;
+                }
+
+                if (columnClassBoxed.IsGenericDictionary() && targetClassBoxed.IsGenericDictionary())
+                {
+                    var columnClassGenerics = columnClassBoxed.GetGenericArguments();
+                    var targetClassGenerics = targetClassBoxed.GetGenericArguments();
+                    var transformMethod = typeof(TransformDictionaryFactory)
+                        .GetMethod("Create", new[] { typeof(object) })
+                        .MakeGenericMethod(targetClassGenerics[0], targetClassGenerics[1], columnClassGenerics[0], columnClassGenerics[1]);
+
+                    return source =>
+                    {
+                        var parameters = new object[] { source };
+                        return transformMethod.Invoke(null, BindingFlags.Static | BindingFlags.Public, null, parameters, null);
+                    };
+                }
+
+                if ((columnClassBoxed == typeof(string)) &&
+                    (targetClassBoxed == typeof(char[])))
+                {
+                    return source =>
+                    {
+                        var sourceAsString = (string)source;
+                        return sourceAsString != null ? sourceAsString.ToCharArray() : null;
+                    };
+                }
+
+                if ((columnClassBoxed == typeof(char[])) &&
+                    (targetClassBoxed == typeof(string)))
+                {
+                    return source =>
+                    {
+                        var sourceAsCharArray = (char[])source;
+                        return sourceAsCharArray != null ? new string(sourceAsCharArray) : null;
+                    };
+                }
+
                 if (columnClassBoxed.IsArray && targetClassBoxed.IsArray)
                 {
                     var columnClassElement = columnClassBoxed.GetElementType();
                     var targetClassElement = targetClassBoxed.GetElementType();
-                    // By definition, columnClassElement and targetClassElement should be
-                    // incompatible.  Question is, can we find a coercer between them?
-                    var coercer = CoercerFactory.GetCoercer(columnClassElement, targetClassElement);
-                    return source => WidenArray(source, targetClassElement, coercer);
+                    if (columnClassElement.IsAssignmentCompatible(targetClassElement))
+                    {
+                        // By definition, columnClassElement and targetClassElement should be
+                        // incompatible.  Question is, can we find a coercer between them?
+                        var coercer = CoercerFactory.GetCoercer(columnClassElement, targetClassElement);
+                        return source => WidenArray(source, targetClassElement, coercer);
+                    }
                 }
 
                 if (!columnClassBoxed.IsAssignmentCompatible(targetClassBoxed))

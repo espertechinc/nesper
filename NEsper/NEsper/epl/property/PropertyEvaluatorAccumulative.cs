@@ -8,9 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
@@ -21,16 +21,17 @@ namespace com.espertech.esper.epl.property
     /// A property evaluator that returns a full row of events for each stream, i.e. flattened inner-join results for
     /// property-upon-property.
     /// </summary>
-    public class PropertyEvaluatorAccumulative {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+    public class PropertyEvaluatorAccumulative
+    {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly ContainedEventEval[] containedEventEvals;
-        private readonly FragmentEventType[] fragmentEventType;
-        private readonly ExprEvaluator[] whereClauses;
-        private readonly int lastLevel;
-        private readonly int levels;
-        private readonly List<string> propertyNames;
-    
+        private readonly ContainedEventEval[] _containedEventEvals;
+        private readonly FragmentEventType[] _fragmentEventType;
+        private readonly ExprEvaluator[] _whereClauses;
+        private readonly int _lastLevel;
+        private readonly int _levels;
+        private readonly IList<string> _propertyNames;
+
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -38,13 +39,18 @@ namespace com.espertech.esper.epl.property
         /// <param name="fragmentEventType">property fragment types</param>
         /// <param name="whereClauses">filters, if any</param>
         /// <param name="propertyNames">the property names that are staggered</param>
-        public PropertyEvaluatorAccumulative(ContainedEventEval[] containedEventEvals, FragmentEventType[] fragmentEventType, ExprEvaluator[] whereClauses, List<string> propertyNames) {
-            this.fragmentEventType = fragmentEventType;
-            this.containedEventEvals = containedEventEvals;
-            this.whereClauses = whereClauses;
-            lastLevel = fragmentEventType.Length - 1;
-            levels = fragmentEventType.Length + 1;
-            this.propertyNames = propertyNames;
+        public PropertyEvaluatorAccumulative(
+            ContainedEventEval[] containedEventEvals,
+            FragmentEventType[] fragmentEventType,
+            ExprEvaluator[] whereClauses,
+            IList<string> propertyNames)
+        {
+            _fragmentEventType = fragmentEventType;
+            _containedEventEvals = containedEventEvals;
+            _whereClauses = whereClauses;
+            _lastLevel = fragmentEventType.Length - 1;
+            _levels = fragmentEventType.Length + 1;
+            _propertyNames = propertyNames;
         }
     
         /// <summary>
@@ -55,7 +61,7 @@ namespace com.espertech.esper.epl.property
         /// <returns>events per stream for each row</returns>
         public ArrayDeque<EventBean[]> GetAccumulative(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext) {
             var resultEvents = new ArrayDeque<EventBean[]>();
-            var eventsPerStream = new EventBean[levels];
+            var eventsPerStream = new EventBean[_levels];
             eventsPerStream[0] = theEvent;
             PopulateEvents(eventsPerStream, theEvent, 0, resultEvents, exprEvaluatorContext);
             if (resultEvents.IsEmpty()) {
@@ -66,33 +72,33 @@ namespace com.espertech.esper.epl.property
     
         private void PopulateEvents(EventBean[] eventsPerStream, EventBean branch, int level, ICollection<EventBean[]> events, ExprEvaluatorContext exprEvaluatorContext) {
             try {
-                Object result = containedEventEvals[level].GetFragment(branch, eventsPerStream, exprEvaluatorContext);
+                Object result = _containedEventEvals[level].GetFragment(branch, eventsPerStream, exprEvaluatorContext);
     
-                if (fragmentEventType[level].IsIndexed) {
+                if (_fragmentEventType[level].IsIndexed) {
                     EventBean[] fragments = (EventBean[]) result;
-                    if (level == lastLevel) {
-                        if (whereClauses[level] != null) {
+                    if (level == _lastLevel) {
+                        if (_whereClauses[level] != null) {
                             foreach (EventBean theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
-                                if (ExprNodeUtility.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
-                                    var eventsPerRow = new EventBean[levels];
-                                    Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
+                                if (ExprNodeUtility.ApplyFilterExpression(_whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                    var eventsPerRow = new EventBean[_levels];
+                                    Array.Copy(eventsPerStream, 0, eventsPerRow, 0, _levels);
                                     events.Add(eventsPerRow);
                                 }
                             }
                         } else {
                             foreach (EventBean theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
-                                var eventsPerRow = new EventBean[levels];
-                                Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
+                                var eventsPerRow = new EventBean[_levels];
+                                Array.Copy(eventsPerStream, 0, eventsPerRow, 0, _levels);
                                 events.Add(eventsPerRow);
                             }
                         }
                     } else {
-                        if (whereClauses[level] != null) {
+                        if (_whereClauses[level] != null) {
                             foreach (EventBean next in fragments) {
                                 eventsPerStream[level + 1] = next;
-                                if (ExprNodeUtility.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                if (ExprNodeUtility.ApplyFilterExpression(_whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
                                     PopulateEvents(eventsPerStream, next, level + 1, events, exprEvaluatorContext);
                                 }
                             }
@@ -105,24 +111,24 @@ namespace com.espertech.esper.epl.property
                     }
                 } else {
                     EventBean fragment = (EventBean) result;
-                    if (level == lastLevel) {
-                        if (whereClauses[level] != null) {
+                    if (level == _lastLevel) {
+                        if (_whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
-                            if (ExprNodeUtility.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
-                                var eventsPerRow = new EventBean[levels];
-                                Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
+                            if (ExprNodeUtility.ApplyFilterExpression(_whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                var eventsPerRow = new EventBean[_levels];
+                                Array.Copy(eventsPerStream, 0, eventsPerRow, 0, _levels);
                                 events.Add(eventsPerRow);
                             }
                         } else {
                             eventsPerStream[level + 1] = fragment;
-                            var eventsPerRow = new EventBean[levels];
-                            Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
+                            var eventsPerRow = new EventBean[_levels];
+                            Array.Copy(eventsPerStream, 0, eventsPerRow, 0, _levels);
                             events.Add(eventsPerRow);
                         }
                     } else {
-                        if (whereClauses[level] != null) {
+                        if (_whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
-                            if (ExprNodeUtility.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                            if (ExprNodeUtility.ApplyFilterExpression(_whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
                                 PopulateEvents(eventsPerStream, fragment, level + 1, events, exprEvaluatorContext);
                             }
                         } else {
@@ -131,11 +137,12 @@ namespace com.espertech.esper.epl.property
                         }
                     }
                 }
-            } catch (RuntimeException ex) {
-                Log.Error("Unexpected error evaluating property expression for event of type '" +
-                        branch.EventType.Name +
-                        "' and property '" +
-                        propertyNames.Get(level + 1) + "': " + ex.Message, ex);
+            } catch (Exception ex)
+            {
+                Log.Error(
+                    string.Format(
+                        "Unexpected error evaluating property expression for event of type '{0}' and property '{1}': {2}",
+                        branch.EventType.Name, _propertyNames[level + 1], ex.Message), ex);
             }
         }
     }

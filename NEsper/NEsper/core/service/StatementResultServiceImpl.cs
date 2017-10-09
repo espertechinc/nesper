@@ -219,7 +219,7 @@ namespace com.espertech.esper.core.service
         {
             if (results != null)
             {
-                if ((MetricReportingPath.IsMetricsEnabledValue) && (_statementMetricHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabled) && (_statementMetricHandle.IsEnabled))
                 {
                     int numIStream = (results.First != null) ? results.First.Length : 0;
                     int numRStream = (results.Second != null) ? results.Second.Length : 0;

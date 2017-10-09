@@ -14,8 +14,9 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.script;
+using com.espertech.esper.util;
 
-#if X86 || X64
+#if true
 using Jurassic;
 #endif
 
@@ -35,7 +36,7 @@ namespace NEsper.Scripting.Jurassic
 
         public Func<ScriptArgs, Object> Compile(ExpressionScriptProvided expressionScript)
         {
-#if X86 || X64
+#if true
             var script = new StringScriptSource(expressionScript.Expression);
             return args => ExecuteWithScriptArgs(script, args);
 #else
@@ -43,10 +44,12 @@ namespace NEsper.Scripting.Jurassic
 #endif
         }
 
-#if X86 || X64
+#if true
         private object ExecuteWithScriptArgs(ScriptSource script, ScriptArgs args)
         {
             var engine = new ScriptEngine();
+            engine.EnableExposedClrTypes = true;
+            engine.CompatibilityMode = CompatibilityMode.Latest;
 
             foreach (var binding in args.Bindings)
             {
@@ -55,7 +58,7 @@ namespace NEsper.Scripting.Jurassic
 
             engine.SetGlobalValue("clr", new ClrBinding());
             engine.SetGlobalFunction("print", new Action<object>(value => Console.Out.WriteLine(value)));
-            engine.SetGlobalFunction("render", new Action<object>(value => value.Render()));
+            engine.SetGlobalFunction("render", new Action<object>(value => CompatExtensions.RenderAny(value)));
 
             return engine.Evaluate(script);
         }
@@ -63,12 +66,27 @@ namespace NEsper.Scripting.Jurassic
 
         public void Verify(ExpressionScriptProvided expressionScript)
         {
-#if X86 || X64
+#if true
             var script = new StringScriptSource(expressionScript.Expression);
             ScopeTestHelper.AssertNotNull(script);
 #else
             throw new UnsupportedOperationException("jurassic engine is not supported outside of x86 and x64 builds");
 #endif
+        }
+
+        public class TypeWrapper
+        {
+            public Type Type { get; set; }
+
+            public TypeWrapper(Type type)
+            {
+                Type = type;
+            }
+
+            public object New(object[] args)
+            {
+                return ConstructorHelper.InvokeConstructor(Type, args);
+            }
         }
 
         public class ClrBinding
@@ -91,6 +109,18 @@ namespace NEsper.Scripting.Jurassic
             public AppDomain CurrentAppDomain
             {
                 get { return AppDomain.CurrentDomain; }
+            }
+
+            public object New(string typeName, object[] args)
+            {
+                var type = TypeHelper.ResolveType(typeName, true);
+                return ConstructorHelper.InvokeConstructor(type, args);
+            }
+
+            public object ImportClass(string typeName)
+            {
+                var type = TypeHelper.ResolveType(typeName, true);
+                return new TypeWrapper(type);
             }
         }
     }

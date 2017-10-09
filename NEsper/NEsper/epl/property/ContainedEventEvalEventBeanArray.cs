@@ -9,23 +9,25 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.property
 {
-    public class ContainedEventEvalEventBeanArray : ContainedEventEval {
-    
-        private readonly ExprEvaluator evaluator;
-    
-        public ContainedEventEvalEventBeanArray(ExprEvaluator evaluator) {
-            this.evaluator = evaluator;
+    public class ContainedEventEvalEventBeanArray : ContainedEventEval
+    {
+        private readonly ExprEvaluator _evaluator;
+
+        public ContainedEventEvalEventBeanArray(ExprEvaluator evaluator)
+        {
+            _evaluator = evaluator;
         }
-    
-        public Object GetFragment(EventBean eventBean, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
-            return Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+
+        public Object GetFragment(
+            EventBean eventBean,
+            EventBean[] eventsPerStream,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return _evaluator.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
         }
     }
 } // end of namespace

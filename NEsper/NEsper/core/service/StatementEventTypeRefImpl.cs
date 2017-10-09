@@ -130,10 +130,7 @@ namespace com.espertech.esper.core.service
             String[] types = _stmtToType.Get(statementName);
             if (types == null)
             {
-                types = new String[]
-                {
-                    eventTypeName
-                };
+                types = new String[]{ eventTypeName };
             }
             else
             {

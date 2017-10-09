@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
@@ -18,13 +14,10 @@ using com.espertech.esper.core.thread;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
-
-using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {

@@ -31,7 +31,7 @@ namespace com.espertech.esper.dataflow.ops
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly List<string> PARAMETER_PROPERTIES = new List<string>()
+        private static readonly List<string> PARAMETER_PROPERTIES = new List<string>
         {
             "interval",
             "iterations",
@@ -56,8 +56,7 @@ namespace com.espertech.esper.dataflow.ops
     
         private static WriteablePropertyDescriptor[] SetupProperties(string[] propertyNamesOffered, EventType outputEventType, StatementContext statementContext)
         {
-            ISet<WriteablePropertyDescriptor> writeables = statementContext.EventAdapterService.GetWriteableProperties(outputEventType, false);
-    
+            var writeables = statementContext.EventAdapterService.GetWriteableProperties(outputEventType, false);
             var writablesList = new List<WriteablePropertyDescriptor>();
     
             for (var i = 0; i < propertyNamesOffered.Length; i++) {
@@ -69,7 +68,7 @@ namespace com.espertech.esper.dataflow.ops
                 writablesList.Add(writable);
             }
     
-            return WritablesList.ToArray(new WriteablePropertyDescriptor[writablesList.Count]);
+            return writablesList.ToArray();
         }
     
         [DataFlowOpParameter(All=true)]
@@ -119,23 +118,20 @@ namespace com.espertech.esper.dataflow.ops
                         var validated = ExprNodeUtility.ValidateSimpleGetSubtree(
                             ExprNodeOrigin.DATAFLOWBEACON, exprNode, context.StatementContext, null, false);
                         var exprEvaluator = validated.ExprEvaluator;
-                        var widener =
-                            TypeWidenerFactory.GetCheckPropertyAssignType(
-                                ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(validated), exprEvaluator.Type,
-                                writeable.Type, writeable.PropertyName, false, typeWidenerCustomizer,
-                                context.StatementContext.StatementName, context.Engine.URI);
+                        var widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                            ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(validated), exprEvaluator.ReturnType,
+                            writeable.PropertyType, writeable.PropertyName, false, typeWidenerCustomizer,
+                            context.StatementContext.StatementName, context.Engine.URI);
                         if (widener != null)
                         {
-                            _evaluators[index] = new ProxyExprEvaluator()
+                            _evaluators[index] = new ProxyExprEvaluator
                             {
-                                ProcEvaluate = (eventsPerStream, isNewData, context) =>
+                                ProcEvaluate = evaluateParams =>
                                 {
-                                    var value = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
-                                    return Widener.Widen(value);
+                                    var value = exprEvaluator.Evaluate(evaluateParams);
+                                    return widener.Invoke(value);
                                 },
-                                ProcReturnType = () => {
-                                    return null;
-                                }
+                                ProcReturnType = () => null
                             };
                         }
                         else
@@ -145,26 +141,18 @@ namespace com.espertech.esper.dataflow.ops
                     }
                     else if (providedProperty == null)
                     {
-                        _evaluators[index] = new ProxyExprEvaluator()
+                        _evaluators[index] = new ProxyExprEvaluator
                         {
-                            ProcEvaluate = (eventsPerStream, isNewData, context) => {
-                                return null;
-                            },
-                            ProcReturnType = () => {
-                                return null;
-                            }
+                            ProcEvaluate = evaluateParams => null,
+                            ProcReturnType = () => null
                         };
                     }
                     else
                     {
-                        _evaluators[index] = new ProxyExprEvaluator()
+                        _evaluators[index] = new ProxyExprEvaluator
                         {
-                            ProcEvaluate = (eventsPerStream, isNewData, context) => {
-                                return providedProperty;
-                            },
-                            ProcReturnType = () => {
-                                return ProvidedProperty.Class;
-                            }
+                            ProcEvaluate = evaluateParams => providedProperty,
+                            ProcReturnType = () => providedProperty.GetType()
                         };
                     }
                     index++;
@@ -184,25 +172,21 @@ namespace com.espertech.esper.dataflow.ops
             foreach (var propertyName in props)
             {
                 var exprNode = (ExprNode) _allProperties.Get(propertyName);
-                var validated = ExprNodeUtility.ValidateSimpleGetSubtree(
-                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, context.StatementContext, null, false);
-                var value = validated.ExprEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+                var validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.DATAFLOWBEACON, exprNode, context.StatementContext, null, false);
+                var evaluateParamsX = new EvaluateParams(null, true, context.AgentInstanceContext);
+                var value = validated.ExprEvaluator.Evaluate(evaluateParamsX);
                 if (value == null)
                 {
                     types.Put(propertyName, null);
                 }
                 else
                 {
-                    types.Put(propertyName, value.Class);
+                    types.Put(propertyName, value.GetType());
                 }
                 _evaluators[count] = new ProxyExprEvaluator()
                 {
-                    ProcEvaluate = (eventsPerStream, isNewData, context) => {
-                        return value;
-                    },
-                    ProcReturnType = () => {
-                        return null;
-                    }
+                    ProcEvaluate = (evaluateParams) => value,
+                    ProcReturnType = () => null
                 };
                 count++;
             }
@@ -259,17 +243,18 @@ namespace com.espertech.esper.dataflow.ops
                 _iterationNumber++;
                 if (_evaluators != null)
                 {
+                    var evaluateParams = new EvaluateParams(null, true, null);
                     var row = new Object[_evaluators.Length];
                     for (var i = 0; i < row.Length; i++)
                     {
                         if (_evaluators[i] != null)
                         {
-                            row[i] = _evaluators[i].Evaluate(null, true, null);
+                            row[i] = _evaluators[i].Evaluate(evaluateParams);
                         }
                     }
                     if (Log.IsDebugEnabled)
                     {
-                        Log.Debug("BeaconSource submitting row " + Arrays.ToString(row));
+                        Log.Debug("BeaconSource submitting row " + CompatExtensions.Render(row));
                     }
 
                     Object outputEvent = row;
@@ -297,7 +282,7 @@ namespace com.espertech.esper.dataflow.ops
 
                 if (interval > 0)
                 {
-                    _lastSendTime = System.NanoTime();
+                    _lastSendTime = PerformanceObserver.NanoTime;
                 }
             }
         }

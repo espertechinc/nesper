@@ -154,7 +154,7 @@ namespace com.espertech.esper.epl.declexpr
                 return null; // already evaluated
             }
 
-            if (ChildNodes.Length > 0) {
+            if (ChildNodes.Count > 0) {
                 throw new IllegalStateException("Execution node has its own child nodes");
             }
     
@@ -279,7 +279,7 @@ namespace com.espertech.esper.epl.declexpr
         public override void Accept(ExprNodeVisitor visitor)
         {
             base.Accept(visitor);
-            if (ChildNodes.Length == 0) {
+            if (ChildNodes.Count == 0) {
                 _expressionBodyCopy.Accept(visitor);
             }
         }
@@ -287,7 +287,7 @@ namespace com.espertech.esper.epl.declexpr
         public override void Accept(ExprNodeVisitorWithParent visitor)
         {
             base.Accept(visitor);
-            if (ChildNodes.Length == 0) {
+            if (ChildNodes.Count == 0) {
                 _expressionBodyCopy.Accept(visitor);
             }
         }
@@ -295,7 +295,7 @@ namespace com.espertech.esper.epl.declexpr
         public override void AcceptChildnodes(ExprNodeVisitorWithParent visitor, ExprNode parent)
         {
             base.AcceptChildnodes(visitor, parent);
-            if (visitor.IsVisit(this) && ChildNodes.Length == 0) {
+            if (visitor.IsVisit(this) && ChildNodes.Count == 0) {
                 _expressionBodyCopy.Accept(visitor);
             }
         }

@@ -47,7 +47,7 @@ namespace com.espertech.esper.epl.core
 
             var @event = eventsPerStream == null ? null : eventsPerStream[_streamNum];
             if (@event != null) {
-                @event = _tableMetadata.EventToPublic.Convert(@event, eventsPerStream, isNewData, exprEvaluatorContext);
+                @event = _tableMetadata.EventToPublic.Convert(@event, new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
             }
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().AExprStreamUndSelectClause(@event);

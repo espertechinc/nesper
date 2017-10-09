@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.epl.datetime.eval
 {
     public class DatetimeLongCoercerLong : DatetimeLongCoercer
@@ -18,6 +20,12 @@ namespace com.espertech.esper.epl.datetime.eval
                 return ((long) value);
             if (value is int)
                 return ((int) value);
+            if (value is DateTime)
+                return ((DateTime) value).UtcMillis();
+            if (value is DateTimeOffset)
+                return ((DateTimeOffset) value).TimeInMillis();
+            if (value is DateTimeEx)
+                return ((DateTimeEx) value).TimeInMillis;
 
             throw new ArgumentException("invalid value for datetime", "value");
         }

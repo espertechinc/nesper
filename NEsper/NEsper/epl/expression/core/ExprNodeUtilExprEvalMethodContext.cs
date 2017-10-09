@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 
 namespace com.espertech.esper.epl.expression.core
@@ -28,15 +27,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext
-                );
-        }
-
-        public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
+            var context = evaluateParams.ExprEvaluatorContext;
             if (context == null)
             {
                 return _defaultContextForFilters;

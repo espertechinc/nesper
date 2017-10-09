@@ -53,9 +53,9 @@ namespace com.espertech.esper.core.context.mgr
         {
             var filterCallback = new ProxyFilterHandleCallback
             {
-                ProcStatementId = () => { return AgentInstanceContext.StatementContext.StatementId; },
-                ProcMatchFound = (theEvent, allStmtMatches) => { FilterMatchFound(theEvent); },
-                ProcIsSubselect = () => { return false; }
+                ProcStatementId = () => _agentInstanceContext.StatementContext.StatementId,
+                ProcMatchFound = (theEvent, allStmtMatches) => FilterMatchFound(theEvent),
+                ProcIsSubselect = () => false
             };
 
             // determine addendum, if any

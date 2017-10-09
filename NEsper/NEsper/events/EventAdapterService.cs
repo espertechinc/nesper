@@ -8,10 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.hook;
 using com.espertech.esper.collection;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
@@ -31,7 +30,7 @@ namespace com.espertech.esper.events
     /// <summary>
     /// Interface for a service to resolve event names to event type.
     /// </summary>
-    public interface EventAdapterService
+    public interface EventAdapterService : EventBeanService
     {
         /// <summary>
         /// Returns descriptors for all writable properties.
@@ -57,6 +56,7 @@ namespace com.espertech.esper.events
             EngineImportService engineImportService,
             bool allowAnyType);
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Creates a thin adaper for an event object given an event type.
         /// </summary>
@@ -66,6 +66,7 @@ namespace com.espertech.esper.events
         /// event
         /// </returns>
         EventBean AdapterForTypedObject(Object bean, EventType eventType);
+#endif
 
         /// <summary>
         /// Adds an event type to the registery available for use, and originating outside
@@ -76,6 +77,7 @@ namespace com.espertech.esper.events
         /// <throws>EventAdapterException if the name is already in used by another type</throws>
         void AddTypeByName(String name, EventType eventType);
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Return the event type for a given event name, or null if none is registered for
         /// that name.
@@ -85,6 +87,7 @@ namespace com.espertech.esper.events
         /// event type for named event, or null if unknown/unnamed type
         /// </returns>
         EventType GetEventTypeByName(String eventTypeName);
+#endif
 
         /// <summary>
         /// Return all known event types.
@@ -217,6 +220,7 @@ namespace com.espertech.esper.events
 
         EventType AddBeanTypeByName(String eventTypeName, Type clazz, bool isNamedWindow);
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Wrap the native event returning an <seealso cref="EventBean"/>.
         /// </summary>
@@ -225,7 +229,9 @@ namespace com.espertech.esper.events
         /// event bean wrapping native underlying event
         /// </returns>
         EventBean AdapterForObject(Object theEvent);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Wrap the Map-type event returning an <seealso cref="EventBean"/> using the event type name to identify the EventType that the event should carry.
         /// </summary>
@@ -236,9 +242,13 @@ namespace com.espertech.esper.events
         /// </returns>
         /// <throws>EventAdapterException if the name has not been declared, or the event cannot be wrapped using thatname's event type </throws>
         EventBean AdapterForMap(DataMap theEvent, String eventTypeName);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         EventBean AdapterForObjectArray(Object[] theEvent, String eventTypeName);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Create an event map bean from a set of event properties (name and value
         /// objectes) stored in a Map.
@@ -247,7 +257,9 @@ namespace com.espertech.esper.events
         /// <param name="eventType">is the type metadata for any maps of that type</param>
         /// <returns>EventBean instance</returns>
         EventBean AdapterForTypedMap(DataMap properties, EventType eventType);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Returns an adapter for the LINQ element that exposes it's data as event
         /// properties for use in statements.
@@ -256,8 +268,10 @@ namespace com.espertech.esper.events
         /// <returns>
         /// event wrapper for document
         /// </returns>
-        EventBean AdapterForLINQ(XElement element);
+        EventBean AdapterForDOM(XElement element);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Returns an adapter for the XML DOM document that exposes it's data as event
         /// properties for use in statements.
@@ -265,7 +279,9 @@ namespace com.espertech.esper.events
         /// <param name="node">is the node to wrap</param>
         /// <returns>event wrapper for document</returns>
         EventBean AdapterForDOM(XmlNode node);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Returns an adapter for the XML DOM document that exposes it's data as event
         /// properties for use in statements.
@@ -274,7 +290,9 @@ namespace com.espertech.esper.events
         /// <param name="eventType">the event type associated with the node</param>
         /// <returns>event wrapper for document</returns>
         EventBean AdapterForTypedDOM(XmlNode node, EventType eventType);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Returns an adapter for the XML LINQ object that exposes it's data as event
         /// properties for use in statements.
@@ -285,7 +303,9 @@ namespace com.espertech.esper.events
         /// event wrapper for document
         /// </returns>
         EventBean AdapterForTypedDOM(XObject node, EventType eventType);
+#endif
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         /// <summary>
         /// Returns an adapter for an event underlying object when the event type is known.
         /// </summary>
@@ -293,6 +313,7 @@ namespace com.espertech.esper.events
         /// <param name="eventType">type</param>
         /// <returns>event wrapper for object</returns>
         EventBean AdapterForType(Object theEvent, EventType eventType);
+#endif
 
         /// <summary>
         /// Create a new anonymous event type with the given underlying event type, as well as the additional given properties.
@@ -440,8 +461,12 @@ namespace com.espertech.esper.events
 
         IDictionary<string, EventType> DeclaredEventTypes { get; }
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         EventBean AdapterForTypedObjectArray(Object[] props, EventType resultEventType);
+#endif
+
         EventType CreateAnonymousObjectArrayType(String typeName, IDictionary<String, Object> propertyTypes);
+        EventType CreateAnonymousAvroType(String typeName, IDictionary<String, Object> properties, Attribute[] annotations, String statementName, String engineURI);
 
         EventType AddNestableObjectArrayType(
             String eventTypeName,
@@ -482,11 +507,15 @@ namespace com.espertech.esper.events
             String statementName,
             String engineURI);
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         EventBean AdapterForAvro(Object avroGenericDataDotRecord, String eventTypeName);
+#endif
 
         EventAdapterAvroHandler EventAdapterAvroHandler { get; }
 
+#if DUPLICATE_IN_EVENT_BEAN_SERVICE
         EventBean AdapterForTypedAvro(Object avroGenericDataDotRecord, EventType eventType);
+#endif
 
         TypeWidenerCustomizer GetTypeWidenerCustomizer(EventType resultEventType);
 

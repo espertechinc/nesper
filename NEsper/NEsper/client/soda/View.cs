@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -17,6 +18,7 @@ namespace com.espertech.esper.client.soda
     /// A view provides a projection upon a stream, such as a data window, grouping or unique.
     /// For views, the namespace is an optional value and can be null for any-namespace.
     /// </summary>
+    [Serializable]
     public class View : EPBaseNamedObject
     {
 
@@ -64,7 +66,7 @@ namespace com.espertech.esper.client.soda
         /// <param name="name">is the view name, i.e. "length" for length window</param>
         /// <param name="parameters">is a list of view parameters, or empty if there are no parameters for the view</param>
         /// <returns>view</returns>
-        public static View Create(string @namespace, string name, List<Expression> parameters)
+        public static View Create(string @namespace, string name, IList<Expression> parameters)
         {
             return new View(@namespace, name, parameters);
         }
@@ -118,7 +120,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        /// Render view.
+        /// RenderAny view.
         /// </summary>
         /// <param name="writer">to render to</param>
         public void ToEPLWithHash(TextWriter writer)

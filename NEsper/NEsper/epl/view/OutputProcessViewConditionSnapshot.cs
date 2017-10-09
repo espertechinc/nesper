@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.view
         public OutputProcessViewConditionSnapshot(
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
             ResultSetProcessor resultSetProcessor,
-            long afterConditionTime,
+            long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,

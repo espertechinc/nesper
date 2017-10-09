@@ -30,8 +30,9 @@ namespace com.espertech.esper.epl.agg.access
             _componentType = componentType;
             _tableMetadata = tableMetadata;
         }
-    
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public object GetValue(AggregationState state, EvaluateParams evalParams)
+        {
             var sorted = (AggregationStateSorted) state;
             if (sorted.Count == 0) {
                 return null;
@@ -50,21 +51,21 @@ namespace com.espertech.esper.epl.agg.access
             while(it.MoveNext())
             {
                 EventBean bean = it.Current;
-                object und = _tableMetadata.EventToPublic.ConvertToUnd(bean, eventsPerStream, isNewData, exprEvaluatorContext);
+                object und = _tableMetadata.EventToPublic.ConvertToUnd(bean, evalParams);
                 array.SetValue(und, count++);
             }
             return array;
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams) {
             return ((AggregationStateSorted) state).CollectionReadOnly();
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams) {
             return null;
         }
     }

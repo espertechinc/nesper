@@ -129,15 +129,15 @@ namespace com.espertech.esper.epl.core
                 var handler = new ProxyExprNodeUtilResolveExceptionHandler {
                     ProcHandle = e => {
                         if (_methodStreamSpec.Expressions.Count == 0) {
-                            return new ExprValidationException("Method footprint does not match the number or type of expression parameters, expecting no parameters in method: " + e.Message);
+                            return new ExprValidationException("Method footprint does not match the number or type of expression parameters, expecting no parameters in method: " + e.Message, e);
                         }
                         var resultTypes = ExprNodeUtility.GetExprResultTypes(validatedInputParameters);
                         return new ExprValidationException(
-                            string.Format("Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '{0}': {1}", TypeHelper.GetParameterAsString(resultTypes), e.Message));
+                            string.Format("Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '{0}': {1}", TypeHelper.GetParameterAsString(resultTypes), e.Message), e);
                     }
                 };
                 var desc = ExprNodeUtility.ResolveMethodAllowWildcardAndStream(
-                        _metadata.MethodProviderClass.Name, _metadata.IsStaticMethod ? null : _metadata.MethodProviderClass,
+                        _metadata.MethodProviderClass.FullName, _metadata.IsStaticMethod ? null : _metadata.MethodProviderClass,
                         _methodStreamSpec.MethodName, validatedInputParameters, engineImportService, eventAdapterService, statementContext.StatementId,
                         false, null, handler, _methodStreamSpec.MethodName, tableService, statementContext.EngineURI);
                 _validatedExprNodes = desc.ChildEvals;

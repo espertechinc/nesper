@@ -133,6 +133,11 @@ namespace com.espertech.esper.epl.join.table
             get { return IndexTable; }
         }
 
+        public virtual IDictionary<object, object> MapIndex
+        {
+            get { return IndexTable; }
+        }
+
         public EventTableOrganization Organization
 	    {
 	        get { return _organization; }

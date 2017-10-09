@@ -52,7 +52,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("MinMax node must have at least 2 parameters");
             }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.expression.funcs
             var childTypeTwo = _evaluators[1].ReturnType;
             _resultType = childTypeOne.GetArithmaticCoercionType(childTypeTwo);
 
-            for (int i = 2; i < ChildNodes.Length; i++)
+            for (int i = 2; i < ChildNodes.Count; i++)
             {
                 _resultType = _resultType.GetArithmaticCoercionType(_evaluators[i].ReturnType);
             }
@@ -139,7 +139,7 @@ namespace com.espertech.esper.epl.expression.funcs
             writer.Write(',');
             ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
 
-            for (int i = 2; i < ChildNodes.Length; i++)
+            for (int i = 2; i < ChildNodes.Count; i++)
             {
                 writer.Write(',');
                 ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);

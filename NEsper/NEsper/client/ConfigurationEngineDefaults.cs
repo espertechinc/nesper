@@ -9,12 +9,11 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.client.hook;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using Sharpen;
 
 namespace com.espertech.esper.client
 {
@@ -228,6 +227,11 @@ namespace com.espertech.esper.client
                 ThreadPoolInboundNumThreads = 2;
                 ThreadPoolRouteExecNumThreads = 2;
                 ThreadPoolOutboundNumThreads = 2;
+
+                ThreadPoolInboundBlocking = Locking.SUSPEND;
+                ThreadPoolOutboundBlocking = Locking.SUSPEND;
+                ThreadPoolRouteExecBlocking = Locking.SUSPEND;
+                ThreadPoolTimerExecBlocking = Locking.SUSPEND;
             }
 
             /// <summary>
@@ -361,6 +365,11 @@ namespace com.espertech.esper.client
             /// <value>capacity or null if none defined</value>
             public int? ThreadPoolOutboundCapacity { get; set; }
 
+            public Locking ThreadPoolInboundBlocking { get; set; }
+            public Locking ThreadPoolOutboundBlocking { get; set; }
+            public Locking ThreadPoolTimerExecBlocking { get; set; }
+            public Locking ThreadPoolRouteExecBlocking { get; set; }
+
             /// <summary>
             /// Returns true if the engine-level lock is configured as a fair lock (default is false).
             /// <para>
@@ -461,7 +470,7 @@ namespace com.espertech.esper.client
                 AnonymousCacheSize = 5;
                 ClassPropertyResolutionStyle = PropertyResolutionStyle.DEFAULT;
                 DefaultAccessorStyle = AccessorStyleEnum.NATIVE;
-                DefaultEventRepresentation = EnumUnderlyingTypeExtensions.GetDefault();
+                DefaultEventRepresentation = EventUnderlyingTypeExtensions.GetDefault();
                 AvroSettings = new AvroSettings();
             }
 
@@ -473,7 +482,7 @@ namespace com.espertech.esper.client
 
             /// <summary>
             /// Returns the property resolution style to use for resolving property names
-            /// of Java classes.
+            /// of classes.
             /// </summary>
             /// <value>style of property resolution</value>
             public PropertyResolutionStyle ClassPropertyResolutionStyle { get; set; }
@@ -515,7 +524,7 @@ namespace com.espertech.esper.client
             public bool IsEnableAvro { get; set; }
 
             /// <summary>
-            /// Returns indicator whether for string-type values to use the "avro.java.string=string" (true by default)
+            /// Returns indicator whether for string-type values to use the "avro.string=string" (true by default)
             /// </summary>
             /// <value>indicator</value>
             public bool IsEnableNativeString { get; set; }
@@ -639,7 +648,7 @@ namespace com.espertech.esper.client
         {
             public ScriptsConfig()
             {
-                DefaultDialect = "js";
+                DefaultDialect = "jscript";
             }
 
             /// <summary>
@@ -662,7 +671,7 @@ namespace com.espertech.esper.client
             /// Returns the maximum number of subexpressions
             /// </summary>
             /// <value>subexpression count</value>
-            public long MaxSubexpressions { get; set; }
+            public long? MaxSubexpressions { get; set; }
 
             /// <summary>
             /// Returns true, the default, to indicate that if there is a maximum defined
@@ -685,7 +694,7 @@ namespace com.espertech.esper.client
             /// Returns the maximum number of states
             /// </summary>
             /// <value>state count</value>
-            public long MaxStates { get; set; }
+            public long? MaxStates { get; set; }
 
             /// <summary>
             /// Returns true, the default, to indicate that if there is a maximum defined
@@ -1035,7 +1044,16 @@ namespace com.espertech.esper.client
             /// <param name="exceptionHandlerFactoryClass">class of implementation</param>
             public void AddClass(Type exceptionHandlerFactoryClass)
             {
-                AddClass(exceptionHandlerFactoryClass.Name);
+                AddClass(exceptionHandlerFactoryClass.AssemblyQualifiedName);
+            }
+
+            /// <summary>
+            /// Add an exception handler factory class.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            public void AddClass<T>() where T : ExceptionHandlerFactory
+            {
+                AddClass(typeof(T).AssemblyQualifiedName);
             }
 
             /// <summary>
@@ -1106,7 +1124,7 @@ namespace com.espertech.esper.client
             }
 
             /// <summary>
-            /// Add an condition handler factory class.
+            /// Add a condition handler factory class.
             /// <para>
             /// The class provided should implement the
             /// <seealso cref="com.espertech.esper.client.hook.ConditionHandlerFactory" />
@@ -1116,7 +1134,16 @@ namespace com.espertech.esper.client
             /// <param name="clazz">class of implementation</param>
             public void AddClass(Type clazz)
             {
-                AddClass(clazz.Name);
+                AddClass(clazz.AssemblyQualifiedName);
+            }
+
+            /// <summary>
+            /// Add a condition handler factory class.
+            /// </summary>
+            /// <typeparam name="T"></typeparam>
+            public void AddClass<T>() where T : ConditionHandlerFactory
+            {
+                AddClass(typeof(T).AssemblyQualifiedName);
             }
         }
     }

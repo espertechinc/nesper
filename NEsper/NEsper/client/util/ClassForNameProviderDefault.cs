@@ -8,22 +8,24 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.client.util
 {
     /// <summary>Default provider for classname lookups.</summary>
-    public class ClassForNameProviderDefault : ClassForNameProvider {
+    public class ClassForNameProviderDefault : ClassForNameProvider
+    {
+        public const string NAME = "ClassForNameProvider";
+        
         public static readonly ClassForNameProviderDefault INSTANCE = new ClassForNameProviderDefault();
-    
-        private ClassForNameProviderDefault() {
+
+        private ClassForNameProviderDefault()
+        {
         }
-    
-        public Type ClassForName(string className) {
-            ClassLoader cl = Thread.CurrentThread().ContextClassLoader;
-            return Type.ForName(className, true, cl);
+
+        public Type ClassForName(string className)
+        {
+            return TypeHelper.GetTypeForSimpleName(className, false, true);
         }
     }
 } // end of namespace

@@ -6,15 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
-
 namespace com.espertech.esper.events.avro
 {
     public class AvroConstantsNoDep {
-        public static readonly string GENERIC_RECORD_CLASSNAME = "org.apache.avro.generic.GenericData$Record";
+        public static readonly string GENERIC_RECORD_CLASSNAME = "Avro.Generic.GenericRecord";
     }
 } // end of namespace

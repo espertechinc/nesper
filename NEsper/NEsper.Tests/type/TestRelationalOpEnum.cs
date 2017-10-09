@@ -9,33 +9,23 @@
 using System;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.type
 {
+    using Computer = Func<object, object, bool>;
+
     [TestFixture]
     public class TestRelationalOpEnum
     {
-        private readonly bool[][] expected = new bool[][]
+        private readonly bool[][] _expected = new bool[][]
         {
-            new bool[]
-            {
-                false, false, true
-            }, // GT
-            new bool[]
-            {
-                false, true, true
-            }, // GE
-            new bool[]
-            {
-                true, false, false
-            }, // LT
-            new bool[]
-            {
-                true, true, false
-            }, // LE
+            new bool[] { false, false, true }, // GT
+            new bool[] { false, true, true }, // GE
+            new bool[] { true, false, false }, // LT
+            new bool[] { true, true, false }, // LE
         };
     
         [Test]
@@ -43,18 +33,9 @@ namespace com.espertech.esper.type
         {
             var parameters = new String[][]
             {
-                new string[]
-                {
-                    "a", "b"
-                },
-                new string[]
-                {
-                    "a", "a"
-                },
-                new string[]
-                {
-                    "b", "a"
-                }
+                new string[] { "a", "b" },
+                new string[] { "a", "a" },
+                new string[] { "b", "a" }
             };
     
             foreach (RelationalOpEnum op in EnumHelper.GetValues<RelationalOpEnum>()) {
@@ -62,7 +43,7 @@ namespace com.espertech.esper.type
                     var result = op.GetComputer(typeof(string), typeof(string), typeof(string)).Invoke(
                             parameters[i][0], parameters[i][1]);
 
-                    Assert.AreEqual(expected[(int) op][i], result, "op=" + op + ",i=" + i);
+                    Assert.AreEqual(_expected[(int) op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }
@@ -72,18 +53,9 @@ namespace com.espertech.esper.type
         {
             long[][] parameters = new long[][]
             {
-                new long[]
-                {
-                    1, 2
-                },
-                new long[]
-                {
-                    1, 1
-                },
-                new long[]
-                {
-                    2, 1
-                }
+                new long[] { 1, 2 },
+                new long[] { 1, 1 },
+                new long[] { 2, 1 }
             };
 
             foreach (RelationalOpEnum op in EnumHelper.GetValues<RelationalOpEnum>())
@@ -92,7 +64,7 @@ namespace com.espertech.esper.type
                     var result = op.GetComputer(typeof(long), typeof(long), typeof(long)).Invoke(
                             parameters[i][0], parameters[i][1]);
     
-                    Assert.AreEqual(expected[(int) op][i], result, "op=" + op + ",i=" + i);
+                    Assert.AreEqual(_expected[(int) op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }
@@ -102,18 +74,9 @@ namespace com.espertech.esper.type
         {
             var parameters = new double[][]
             {
-                new double[]
-                {
-                    1, 2
-                },
-                new double[]
-                {
-                    1, 1
-                },
-                new double[]
-                {
-                    2, 1
-                }
+                new double[] { 1, 2 },
+                new double[] { 1, 1 },
+                new double[] { 2, 1 }
             };
 
             foreach (RelationalOpEnum op in EnumHelper.GetValues<RelationalOpEnum>())
@@ -122,7 +85,7 @@ namespace com.espertech.esper.type
                     var result = op.GetComputer(typeof(double?), typeof(double), typeof(double?)).Invoke(
                             parameters[i][0], parameters[i][1]);
     
-                    Assert.AreEqual(expected[(int) op][i], result, "op=" + op + ",i=" + i);
+                    Assert.AreEqual(_expected[(int) op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }
@@ -132,58 +95,18 @@ namespace com.espertech.esper.type
         {
             var parameters = new Object[][]
             {
-                new Object[]
-                {
-                    true, 9, RelationalOpEnum.GE, 10.0m, false
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.LT, 6.0m,
-                    false
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.GT, 6.0m,
-                    false
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.GE, 6.0m,
-                    true
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.LE, 6.0m,
-                    true
-                },
-                new Object[]
-                {
-                    true, 10.0m, RelationalOpEnum.LE, (long) 10, true
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.LT, (byte) 7, true
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.GT, (byte) 7, false
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.GT, (double) 6, false
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.GE, (double) 6, true
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.LE, (double) 6, true
-                },
-                new Object[]
-                {
-                    true, 6.0m, RelationalOpEnum.LT, (double) 6, false
-                },
+                new Object[] { true, 9, RelationalOpEnum.GE, 10.0m, false },
+                new Object[] { true, 6.0m, RelationalOpEnum.LT, 6.0m, false },
+                new Object[] { true, 6.0m, RelationalOpEnum.GT, 6.0m, false },
+                new Object[] { true, 6.0m, RelationalOpEnum.GE, 6.0m, true },
+                new Object[] { true, 6.0m, RelationalOpEnum.LE, 6.0m, true },
+                new Object[] { true, 10.0m, RelationalOpEnum.LE, (long) 10, true },
+                new Object[] { true, 6.0m, RelationalOpEnum.LT, (byte) 7, true },
+                new Object[] { true, 6.0m, RelationalOpEnum.GT, (byte) 7, false },
+                new Object[] { true, 6.0m, RelationalOpEnum.GT, (double) 6, false },
+                new Object[] { true, 6.0m, RelationalOpEnum.GE, (double) 6, true },
+                new Object[] { true, 6.0m, RelationalOpEnum.LE, (double) 6, true },
+                new Object[] { true, 6.0m, RelationalOpEnum.LT, (double) 6, false },
             };
     
             for (int i = 0; i < parameters.Length; i++) {
@@ -193,12 +116,11 @@ namespace com.espertech.esper.type
                 var rhs = parameters[i][3];
                 var expected = parameters[i][4];
     
-                RelationalOpEnumExtensions.Computer computer;
+                Computer computer;
 
                 if (isBigDec.GetValueOrDefault())
                 {
-                    computer = e.GetComputer(typeof(decimal), lhs.GetType(),
-                            rhs.GetType());
+                    computer = e.GetComputer(typeof(decimal), lhs.GetType(), rhs.GetType());
                 }
                 else
                 {
@@ -233,7 +155,7 @@ namespace com.espertech.esper.type
             try {
                 RelationalOpEnum.GE.GetComputer(clazz, clazz, clazz);
                 Assert.Fail();
-            } catch (ArgumentException ex) {// Expected
+            } catch (ArgumentException) {// Expected
             }
         }
     }

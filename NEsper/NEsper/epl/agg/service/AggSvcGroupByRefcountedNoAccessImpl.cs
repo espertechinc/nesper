@@ -149,22 +149,22 @@ namespace com.espertech.esper.epl.agg.service
             _currentGroupKey = groupByKey;
         }
 
-        public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public override object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             return _currentAggregatorRow[column].Value;
         }
 
-        public override ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public override ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public override EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             return null;
         }

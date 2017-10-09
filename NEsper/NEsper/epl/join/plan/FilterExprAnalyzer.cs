@@ -104,7 +104,7 @@ namespace com.espertech.esper.epl.join.plan
                 return;
             }
 
-            var perStreamExprs = new LinkedHashMap<int?, IList<ExprNode>>();
+            var perStreamExprs = new Dictionary<int?, IList<ExprNode>>();
             foreach (ExprNode exprNodeSet in setExpressions)
             {
                 if (!(exprNodeSet is ExprIdentNode))
@@ -238,9 +238,9 @@ namespace com.espertech.esper.epl.join.plan
 
         private static ExprNode[] GetInNodeSetExpressions(ExprInNode inNode)
         {
-            var setExpressions = new ExprNode[inNode.ChildNodes.Length - 1];
+            var setExpressions = new ExprNode[inNode.ChildNodes.Count - 1];
             var count = 0;
-            for (int i = 1; i < inNode.ChildNodes.Length; i++)
+            for (int i = 1; i < inNode.ChildNodes.Count; i++)
             {
                 setExpressions[count++] = inNode.ChildNodes[i];
             }

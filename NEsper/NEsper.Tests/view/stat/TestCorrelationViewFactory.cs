@@ -6,18 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
-using com.espertech.esper.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -27,13 +22,13 @@ namespace com.espertech.esper.view.stat
     [TestFixture]
 	public class TestCorrelationViewFactory 
 	{
-	    private CorrelationViewFactory factory;
-	    private ViewFactoryContext viewFactoryContext = new ViewFactoryContext(null, 1, null, null, false, -1, false);
+	    private CorrelationViewFactory _factory;
+	    private readonly ViewFactoryContext _viewFactoryContext = new ViewFactoryContext(null, 1, null, null, false, -1, false);
 
         [SetUp]
 	    public void SetUp()
 	    {
-	        factory = new CorrelationViewFactory();
+	        _factory = new CorrelationViewFactory();
 	    }
 
         [Test]
@@ -51,13 +46,14 @@ namespace com.espertech.esper.view.stat
         [Test]
 	    public void TestCanReuse()
 	    {
-	        factory.SetViewParameters(new ViewFactoryContext(null, 1, null, null, false, -1 , false), TestViewSupport.ToExprListMD(new object[] {"Price", "Volume"}));
-	        factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
-	        Assert.IsFalse(factory.CanReuse(new FirstElementView(null)));
-	        EventType type = CorrelationView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
-	        Assert.IsFalse(factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), SupportExprNodeFactory.MakeIdentNodeMD("Price"), type, null)));
-	        Assert.IsFalse(factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Feed"), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), type, null)));
-	        Assert.IsTrue(factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Price"), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), type, null)));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(new ViewFactoryContext(null, 1, null, null, false, -1, false), TestViewSupport.ToExprListMD(new object[]{"Price", "Volume"}));
+            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            EventType type = CorrelationView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+            Assert.IsFalse(_factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), SupportExprNodeFactory.MakeIdentNodeMD("Price"), type, null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Feed"), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), type, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new CorrelationView(null, SupportStatementContextFactory.MakeAgentInstanceContext(), SupportExprNodeFactory.MakeIdentNodeMD("Price"), SupportExprNodeFactory.MakeIdentNodeMD("Volume"), type, null), agentInstanceContext));
 	    }
 
         [Test]
@@ -66,14 +62,14 @@ namespace com.espertech.esper.view.stat
 	        // Should attach to anything as long as the fields exists
 	        EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 
-	        factory.SetViewParameters(viewFactoryContext, TestViewSupport.ToExprListMD(new object[] {"Price", "Volume"}));
-	        factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
-	        Assert.AreEqual(typeof(double?), factory.EventType.GetPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.GetName()));
+	        _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new object[] {"Price", "Volume"}));
+	        _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
+	        Assert.AreEqual(typeof(double?), _factory.EventType.GetPropertyType(ViewFieldEnum.CORRELATION__CORRELATION.GetName()));
 
 	        try
 	        {
-	            factory.SetViewParameters(viewFactoryContext, TestViewSupport.ToExprListMD(new object[] {"Symbol", "Volume"}));
-	            factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
+	            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(new object[] {"Symbol", "Volume"}));
+	            _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
                 Assert.Fail();
 	        }
 	        catch (ViewParameterException)
@@ -86,8 +82,8 @@ namespace com.espertech.esper.view.stat
 	    {
 	        try
 	        {
-	            factory.SetViewParameters(viewFactoryContext, TestViewSupport.ToExprListMD(parameters));
-	            factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+	            _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(parameters));
+	            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
 	            Assert.Fail();
 	        }
 	        catch (ViewParameterException)
@@ -98,9 +94,9 @@ namespace com.espertech.esper.view.stat
 
 	    private void TryParameter(object[] parameters, string fieldNameX, string fieldNameY)
 	    {
-	        factory.SetViewParameters(viewFactoryContext, TestViewSupport.ToExprListMD(parameters));
-	        factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
-	        CorrelationView view = (CorrelationView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+	        _factory.SetViewParameters(_viewFactoryContext, TestViewSupport.ToExprListMD(parameters));
+	        _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+	        CorrelationView view = (CorrelationView) _factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
 	        Assert.AreEqual(fieldNameX, ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(view.ExpressionX));
 	        Assert.AreEqual(fieldNameY, ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(view.ExpressionY));
 	    }

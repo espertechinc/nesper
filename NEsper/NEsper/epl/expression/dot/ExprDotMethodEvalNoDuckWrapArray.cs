@@ -8,12 +8,10 @@
 
 using System;
 
+using com.espertech.esper.epl.rettype;
 using com.espertech.esper.epl.expression.core;
 
 using XLR8.CGLib;
-
-using com.espertech.esper.client;
-using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.expression.dot
 {
@@ -23,10 +21,10 @@ namespace com.espertech.esper.epl.expression.dot
             : base(statementName, method, parameters)
         {
         }
-    
-        public override Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public override Object Evaluate(Object target, EvaluateParams evaluateParams)
         {
-            var result = base.Evaluate(target, eventsPerStream, isNewData, exprEvaluatorContext);
+            var result = base.Evaluate(target, evaluateParams);
             if (result == null || !result.GetType().IsArray) {
                 return null;
             }

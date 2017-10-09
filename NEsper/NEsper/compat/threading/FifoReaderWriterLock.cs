@@ -118,11 +118,11 @@ namespace com.espertech.esper.compat.threading
             }
         }
 
-        /// <summary>
-        /// Acquires the reader lock.
-        /// </summary>
-        /// <param name="timeout">The timeout.</param>
-        public Node AcquireReaderLock(int timeout)
+	    /// <summary>
+	    /// Acquires the reader lock.
+	    /// </summary>
+	    /// <param name="timeout">The timeout.</param>
+	    public Node AcquireReaderLock(long timeout)
         {
             var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;
@@ -160,11 +160,11 @@ namespace com.espertech.esper.compat.threading
             }
         }
 
-        /// <summary>
-        /// Acquires the writer lock.
-        /// </summary>
-        /// <param name="timeout">The timeout.</param>
-        public Node AcquireWriterLock(int timeout)
+	    /// <summary>
+	    /// Acquires the writer lock.
+	    /// </summary>
+	    /// <param name="timeout">The timeout.</param>
+	    public Node AcquireWriterLock(long timeout)
         {
         	var timeCur = DateTimeHelper.CurrentTimeMillis;
             var timeEnd = timeCur + timeout;

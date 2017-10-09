@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.view
         protected readonly ExprEvaluator[] scheduleSpecEvaluators;
         protected readonly bool isStartConditionOnCreation;
     
-        public OutputConditionCrontabFactory(List<ExprNode> scheduleSpecExpressionList,
+        public OutputConditionCrontabFactory(IList<ExprNode> scheduleSpecExpressionList,
                                              StatementContext statementContext,
                                              bool isStartConditionOnCreation)
                 {

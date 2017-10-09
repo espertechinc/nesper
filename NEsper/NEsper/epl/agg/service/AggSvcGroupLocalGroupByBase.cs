@@ -28,12 +28,7 @@ namespace com.espertech.esper.epl.agg.service
         protected internal readonly bool IsJoin;
         protected internal readonly AggregationLocalGroupByPlan LocalGroupByPlan;
 
-        public abstract object GetValue(
-            int column,
-            int agentInstanceId,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext);
+        public abstract object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams);
 
         public abstract void SetCurrentAccess(object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel);
 
@@ -160,55 +155,43 @@ namespace com.espertech.esper.epl.agg.service
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AAggregationGroupedApplyEnterLeave(false); }
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             var col = LocalGroupByPlan.Columns[column];
             if (col.PartitionEvaluators.Length == 0)
             {
                 return col.Pair.Accessor.GetEnumerableEvents(
-                    StatesTopLevel[col.Pair.Slot], eventsPerStream, isNewData, context);
+                    StatesTopLevel[col.Pair.Slot], evaluateParams);
             }
-            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, eventsPerStream, isNewData, context);
+            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
             var row = AggregatorsPerLevelAndGroup[col.LevelNum].Get(groupByKey);
-            return col.Pair.Accessor.GetEnumerableEvents(row.States[col.Pair.Slot], eventsPerStream, isNewData, context);
+            return col.Pair.Accessor.GetEnumerableEvents(row.States[col.Pair.Slot], evaluateParams);
         }
 
-        public ICollection<object> GetCollectionScalar(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             var col = LocalGroupByPlan.Columns[column];
             if (col.PartitionEvaluators.Length == 0)
             {
                 return col.Pair.Accessor.GetEnumerableScalar(
-                    StatesTopLevel[col.Pair.Slot], eventsPerStream, isNewData, context);
+                    StatesTopLevel[col.Pair.Slot], evaluateParams);
             }
-            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, eventsPerStream, isNewData, context);
+            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
             var row = AggregatorsPerLevelAndGroup[col.LevelNum].Get(groupByKey);
-            return col.Pair.Accessor.GetEnumerableScalar(row.States[col.Pair.Slot], eventsPerStream, isNewData, context);
+            return col.Pair.Accessor.GetEnumerableScalar(row.States[col.Pair.Slot], evaluateParams);
         }
 
-        public EventBean GetEventBean(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             var col = LocalGroupByPlan.Columns[column];
             if (col.PartitionEvaluators.Length == 0)
             {
                 return col.Pair.Accessor.GetEnumerableEvent(
-                    StatesTopLevel[col.Pair.Slot], eventsPerStream, isNewData, context);
+                    StatesTopLevel[col.Pair.Slot], evaluateParams);
             }
-            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, eventsPerStream, isNewData, context);
+            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
             var row = AggregatorsPerLevelAndGroup[col.LevelNum].Get(groupByKey);
-            return col.Pair.Accessor.GetEnumerableEvent(row.States[col.Pair.Slot], eventsPerStream, isNewData, context);
+            return col.Pair.Accessor.GetEnumerableEvent(row.States[col.Pair.Slot], evaluateParams);
         }
 
         public virtual bool IsGrouped

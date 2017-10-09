@@ -166,19 +166,24 @@ namespace com.espertech.esper.epl.spec
                 throw new ConfigurationException("Name has not been supplied for object in namespace '" + @namespace + "'");
             }
 
-            var clazz = engineImportService.GetClassForNameProvider().ClassForName(factoryClassName);
-            if (clazz == null)
+            try
             {
-                throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded");
-            }
+                var clazz = engineImportService.GetClassForNameProvider().ClassForName(factoryClassName);
 
-            var namespaceMap = Pluggables.Get(@namespace);
-            if (namespaceMap == null)
-            {
-                namespaceMap = new Dictionary<String, Pair<Type, PluggableObjectEntry>>();
-                Pluggables.Put(@namespace, namespaceMap);
+                var namespaceMap = Pluggables.Get(@namespace);
+                if (namespaceMap == null)
+                {
+                    namespaceMap = new Dictionary<String, Pair<Type, PluggableObjectEntry>>();
+                    Pluggables.Put(@namespace, namespaceMap);
+                }
+                namespaceMap.Put(
+                    name,
+                    new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, optionalCustomConfig)));
             }
-            namespaceMap.Put(name, new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, optionalCustomConfig)));
+            catch (TypeLoadException e)
+            {
+                throw new ConfigurationException("View factory class " + factoryClassName + " could not be loaded", e);
+            }
         }
 
         private void InitPatterns(IEnumerable<ConfigurationPlugInPatternObject> configEntries, EngineImportService engineImportService)

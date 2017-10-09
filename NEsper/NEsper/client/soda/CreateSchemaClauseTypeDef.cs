@@ -54,8 +54,10 @@ namespace com.espertech.esper.client.soda
                 case CreateSchemaClauseTypeDef.AVRO:
                     writer.Write(" avro");
                     break;
+                case CreateSchemaClauseTypeDef.NONE:
+                    break;
                 default:
-                    throw new ArgumentException("invalid value", "typeDef");
+                    throw new ArgumentException("invalid value", nameof(typeDef));
             }
         }
     }

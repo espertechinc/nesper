@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.expression.dot.inner
@@ -25,31 +23,23 @@ namespace com.espertech.esper.epl.expression.dot.inner
     
         public InnerEvaluatorEnumerableEventCollection(ExprEvaluatorEnumeration rootLambdaEvaluator, EventType eventType)
         {
-            this._rootLambdaEvaluator = rootLambdaEvaluator;
-            this._eventType = eventType;
+            _rootLambdaEvaluator = rootLambdaEvaluator;
+            _eventType = eventType;
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
-        }
-
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(evaluateParams);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(evaluateParams);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context).Unwrap<object>();
+            return _rootLambdaEvaluator.EvaluateGetROCollectionEvents(evaluateParams).Unwrap<object>();
         }
 
         public EventType EventTypeCollection
@@ -62,7 +52,8 @@ namespace com.espertech.esper.epl.expression.dot.inner
             get { return null; }
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
+        {
             return null;
         }
 

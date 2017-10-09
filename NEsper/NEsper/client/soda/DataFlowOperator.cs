@@ -64,7 +64,7 @@ namespace com.espertech.esper.client.soda
         /// <value>map of parameters</value>
         public IList<DataFlowOperatorParameter> Parameters { get; set; }
 
-        /// <summary>Render to string. </summary>
+        /// <summary>RenderAny to string. </summary>
         /// <param name="writer">to render</param>
         /// <param name="formatter">for formatting</param>
         public void ToEPL(TextWriter writer, EPStatementFormatter formatter)

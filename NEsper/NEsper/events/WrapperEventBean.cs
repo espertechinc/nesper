@@ -63,7 +63,7 @@ namespace com.espertech.esper.events
                 {
                     throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
                 }
-                return _eventType.GetGetter(property).Get(this);
+                return getter.Get(this);
             }
         }
 

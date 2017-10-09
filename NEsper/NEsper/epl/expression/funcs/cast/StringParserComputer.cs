@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
@@ -21,10 +20,10 @@ namespace com.espertech.esper.epl.expression.funcs.cast
 
         public StringParserComputer(SimpleTypeParser parser)
         {
-            this._parser = parser;
+            _parser = parser;
         }
 
-        public Object Compute(Object input, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        public Object Compute(Object input, EvaluateParams evaluateParams)
         {
             return _parser.Invoke(input.ToString());
         }

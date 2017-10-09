@@ -9,7 +9,7 @@
 
 using System;
 
-using com.espertech.esper.support.util;
+using com.espertech.esper.supportunit.util;
 
 using NUnit.Framework;
 

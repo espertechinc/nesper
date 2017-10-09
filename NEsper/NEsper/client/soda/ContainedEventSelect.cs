@@ -31,7 +31,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        /// Render contained-event select
+        /// RenderAny contained-event select
         /// </summary>
         /// <param name="writer">to render to</param>
         /// <param name="formatter">to use</param>

@@ -13,10 +13,8 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.core.context.activator;
 using com.espertech.esper.core.context.subselect;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -25,8 +23,6 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.prev;
-using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.join.hint;
@@ -34,10 +30,7 @@ using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.join.util;
 using com.espertech.esper.epl.lookup;
-using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.epl.subquery;
-using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
 using com.espertech.esper.view;
@@ -48,8 +41,7 @@ namespace com.espertech.esper.core.start
     {
         private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
-        private static readonly string MSG_SUBQUERY_REQUIRES_WINDOW =
-            "Subqueries require one or more views to limit the stream, consider declaring a length or time window (applies to correlated or non-fully-aggregated subqueries)";
+        private const string MSG_SUBQUERY_REQUIRES_WINDOW = "Subqueries require one or more views to limit the stream, consider declaring a length or time window (applies to correlated or non-fully-aggregated subqueries)";
 
         internal static SubSelectActivationCollection CreateSubSelectActivation(
             EPServicesContext services,
@@ -228,7 +220,7 @@ namespace com.espertech.esper.core.start
             EPServicesContext services,
             SubSelectStrategyCollection subSelectStrategyCollection,
             AgentInstanceContext agentInstanceContext,
-            List<StopCallback> stopCallbackList,
+            IList<StopCallback> stopCallbackList,
             bool isRecoveringResilient)
         {
 
@@ -316,7 +308,7 @@ namespace com.espertech.esper.core.start
             StreamTypeService subselectTypeService,
             bool fullTableScan,
             bool queryPlanLogging,
-            ISet<string> optionalUniqueProps,
+            ICollection<string> optionalUniqueProps,
             StatementContext statementContext,
             int subqueryNum)
         {
@@ -353,7 +345,7 @@ namespace com.espertech.esper.core.start
             EventType[] outerEventTypes,
             StreamTypeService subselectTypeService,
             bool fullTableScan,
-            ISet<string> optionalUniqueProps,
+            ICollection<string> optionalUniqueProps,
             StatementContext statementContext)
         {
             // No filter expression means full table scan
@@ -756,7 +748,7 @@ namespace com.espertech.esper.core.start
                     ExprNodeOrigin.HAVING, statementSpec.HavingExprRootNode, validationContext);
                 if (validatedHavingClause.ExprEvaluator.ReturnType.GetBoxedType() != typeof (bool?))
                 {
-                    throw new ExprValidationException("Subselect having-clause expression must return a bool value");
+                    throw new ExprValidationException("Subselect having-clause expression must return a boolean value");
                 }
                 aggExpressionNodesHaving = new List<ExprAggregateNode>();
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(validatedHavingClause, aggExpressionNodesHaving);
@@ -773,7 +765,7 @@ namespace com.espertech.esper.core.start
                     else
                     {
                         statementSpec.FilterExprRootNode = ExprNodeUtility.ConnectExpressionsByLogicalAnd(
-                            Arrays.AsList(statementSpec.FilterRootNode, statementSpec.HavingExprRootNode));
+                            Collections.List(statementSpec.FilterRootNode, statementSpec.HavingExprRootNode));
                     }
                     statementSpec.HavingExprRootNode = null;
                 }
@@ -970,7 +962,7 @@ namespace com.espertech.esper.core.start
                 filterExpr = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.FILTER, filterExpr, validationContext);
                 if (filterExpr.ExprEvaluator.ReturnType.GetBoxedType() != typeof (bool?))
                 {
-                    throw new ExprValidationException("Subselect filter expression must return a bool value");
+                    throw new ExprValidationException("Subselect filter expression must return a boolean value");
                 }
 
                 // check the presence of a correlated filter, not allowed with aggregation
@@ -1104,7 +1096,7 @@ namespace com.espertech.esper.core.start
             }
 
             // determine unique keys, if any
-            ISet<string> optionalUniqueProps = null;
+            ICollection<string> optionalUniqueProps = null;
             if (viewFactoryChain.DataWindowViewFactoryCount > 0)
             {
                 optionalUniqueProps = ViewServiceHelper.GetUniqueCandidateProperties(

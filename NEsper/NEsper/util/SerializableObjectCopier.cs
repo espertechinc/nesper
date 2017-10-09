@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace com.espertech.esper.util
@@ -26,7 +27,10 @@ namespace com.espertech.esper.util
         public static Object Copy(Object orig)
         {
             // Create the formatter
-            IFormatter formatter = new BinaryFormatter();
+            var formatter = new BinaryFormatter();
+            formatter.FilterLevel = TypeFilterLevel.Full;
+            formatter.AssemblyFormat = FormatterAssemblyStyle.Full;
+
             using (MemoryStream stream = new MemoryStream())
             {
                 // Serialize the object graph to the stream

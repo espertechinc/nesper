@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
 
@@ -21,21 +17,21 @@ namespace com.espertech.esper.epl.agg.access
     /// </summary>
     public class AggregationAccessorMinMaxByTable : AggregationAccessorMinMaxByBase
     {
-        private readonly TableMetadata tableMetadata;
+        private readonly TableMetadata _tableMetadata;
     
         public AggregationAccessorMinMaxByTable(bool max, TableMetadata tableMetadata)
             : base(max)
         {
-            this.tableMetadata = tableMetadata;
+            _tableMetadata = tableMetadata;
         }
     
-        public override object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override object GetValue(AggregationState state, EvaluateParams evaluateParams)
         {
-            EventBean @event = GetEnumerableEvent(state, eventsPerStream, isNewData, context);
+            EventBean @event = GetEnumerableEvent(state, evaluateParams);
             if (@event == null) {
                 return null;
             }
-            return tableMetadata.EventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, context);
+            return _tableMetadata.EventToPublic.ConvertToUnd(@event, evaluateParams);
         }
     }
 }

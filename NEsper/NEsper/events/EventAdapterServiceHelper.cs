@@ -84,7 +84,7 @@ namespace com.espertech.esper.events
         /// <param name="eventType">to reflect on</param>
         /// <param name="allowAnyType">whether any type property can be populated</param>
         /// <returns>list of writable properties</returns>
-        public static ISet<WriteablePropertyDescriptor> GetWriteableProperties(EventType eventType, bool allowAnyType)
+        public static ICollection<WriteablePropertyDescriptor> GetWriteableProperties(EventType eventType, bool allowAnyType)
         {
             if (!(eventType is EventTypeSPI))
             {

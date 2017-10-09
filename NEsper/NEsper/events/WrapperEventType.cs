@@ -79,7 +79,7 @@ namespace com.espertech.esper.events
 
             _metadata = metadata;
             _underlyingEventType = eventType;
-            EventTypeMetadata metadataMapType = EventTypeMetadata.CreateAnonymous(typeName, EventTypeMetadata.ApplicationType.MAP);
+            EventTypeMetadata metadataMapType = EventTypeMetadata.CreateAnonymous(typeName, ApplicationType.MAP);
             _underlyingMapType = new MapEventType(metadataMapType, typeName, 0, eventAdapterService, properties, null, null, null);
             _isNoMapProperties = properties.IsEmpty();
             _eventAdapterService = eventAdapterService;
@@ -88,7 +88,7 @@ namespace com.espertech.esper.events
 
             UpdatePropertySet();
 
-            if (metadata.TypeClass == EventTypeMetadata.TypeClass.NAMED_WINDOW)
+            if (metadata.TypeClass == TypeClass.NAMED_WINDOW)
             {
                 StartTimestampPropertyName = eventType.StartTimestampPropertyName;
                 EndTimestampPropertyName = eventType.EndTimestampPropertyName;

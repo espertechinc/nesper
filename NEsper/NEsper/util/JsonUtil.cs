@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.parse;
 
 namespace com.espertech.esper.util

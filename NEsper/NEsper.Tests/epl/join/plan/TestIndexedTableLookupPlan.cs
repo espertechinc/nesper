@@ -16,8 +16,8 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.exec.@base;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.virtualdw;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

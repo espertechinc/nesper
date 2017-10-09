@@ -77,7 +77,7 @@ namespace com.espertech.esper.core.start
             var optionalRevisionProcessor = statementContext.ValueAddEventService.GetValueAddProcessor(windowName);
 
             // add named window processor (one per named window for all agent instances)
-            var isPrioritized = services.EngineSettingsService.EngineSettings.ExecutionConfig.IsPrioritized;
+            var isPrioritized = services.EngineSettingsService.EngineSettings.Execution.IsPrioritized;
             var isEnableSubqueryIndexShare = HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(_statementSpec.Annotations) != null;
             if (!isEnableSubqueryIndexShare && unmaterializedViewChain.FactoryChain[0] is VirtualDWViewFactory)
             {

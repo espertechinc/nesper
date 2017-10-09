@@ -45,7 +45,7 @@ using XLR8.CGLib;
 
 namespace com.espertech.esper.epl.expression.core
 {
-    public class ExprNodeUtility
+    public static class ExprNodeUtility
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.expression.core
         public static readonly ExprDeclaredNode[] EMPTY_DECLARED_ARR = new ExprDeclaredNode[0];
         public static readonly ExpressionScriptProvided[] EMPTY_SCRIPTS = new ExpressionScriptProvided[0];
     
-        public static bool DeepEqualsIsSubset(ExprNode[] subset, ExprNode[] superset) {
+        public static bool DeepEqualsIsSubset(IList<ExprNode> subset, ExprNode[] superset) {
             foreach (var subsetNode in subset) {
                 var found = false;
                 foreach (var supersetNode in superset) {
@@ -69,16 +69,18 @@ namespace com.espertech.esper.epl.expression.core
             return true;
         }
     
-        public static bool DeepEqualsIgnoreDupAndOrder(ExprNode[] setOne, ExprNode[] setTwo) {
-            if ((setOne.Length == 0 && setTwo.Length != 0) || (setOne.Length != 0 && setTwo.Length == 0)) {
+        public static bool DeepEqualsIgnoreDupAndOrder(IList<ExprNode> setOne, IList<ExprNode> setTwo) {
+            if ((setOne.Count == 0 && setTwo.Count != 0) || (setOne.Count != 0 && setTwo.Count == 0))
+            {
                 return false;
             }
     
             // find set-one expressions in set two
-            var foundTwo = new bool[setTwo.Length];
+            var foundTwo = new bool[setTwo.Count];
             foreach (var one in setOne) {
                 var found = false;
-                for (var i = 0; i < setTwo.Length; i++) {
+                for (var i = 0; i < setTwo.Count; i++)
+                {
                     if (DeepEquals(one, setTwo[i])) {
                         found = true;
                         foundTwo[i] = true;
@@ -135,7 +137,7 @@ namespace com.espertech.esper.epl.expression.core
             return calledToCallerMap;
         }
 
-        public static string ToExpressionStringMinPrecedenceSafe(ExprNode node)
+        public static string ToExpressionStringMinPrecedenceSafe(this ExprNode node)
         {
             try
             {
@@ -150,7 +152,7 @@ namespace com.espertech.esper.epl.expression.core
             }
         }
 
-        public static string ToExpressionStringMinPrecedence(ExprNode[] nodes)
+        public static string ToExpressionStringMinPrecedence(IList<ExprNode> nodes)
         {
             var writer = new StringWriter();
             var delimiter = "";
@@ -212,13 +214,14 @@ namespace com.espertech.esper.epl.expression.core
         {
             ExprEvaluator[] evaluators = GetEvaluators(filterExpressions);
             var events = new EventBean[1];
+            var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
             foreach (var theEvent in iterable)
             {
                 events[0] = theEvent;
                 var add = true;
                 foreach (var filter in evaluators)
                 {
-                    var result = filter.Evaluate(events, true, exprEvaluatorContext);
+                    var result = filter.Evaluate(evaluateParams);
                     if ((result == null) || (false.Equals(result)))
                     {
                         add = false;
@@ -233,16 +236,17 @@ namespace com.espertech.esper.epl.expression.core
         }
 
         public static void ApplyFilterExpressionIterable(
-            IEnumerator<EventBean> iterator,
+            IEnumerator<EventBean> enumerator,
             ExprEvaluator filterExpression,
             ExprEvaluatorContext exprEvaluatorContext,
             ICollection<EventBean> eventsInWindow)
         {
             var events = new EventBean[1];
-            for (; iterator.HasNext();)
+            var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
+            while (enumerator.MoveNext())
             {
-                events[0] = iterator.Next();
-                var result = filterExpression.Evaluate(events, true, exprEvaluatorContext);
+                events[0] = enumerator.Current;
+                var result = filterExpression.Evaluate(evaluateParams);
                 if ((result == null) || (false.Equals(result)))
                 {
                     continue;
@@ -267,7 +271,7 @@ namespace com.espertech.esper.epl.expression.core
             }
             if (nodes.Count == 1)
             {
-                return ConnectExpressionsByLogicalAnd(Arrays.AsList(nodes[0], optionalAdditionalFilter));
+                return ConnectExpressionsByLogicalAnd(Collections.List(nodes[0], optionalAdditionalFilter));
             }
             var andNode = ConnectExpressionsByLogicalAnd(nodes);
             andNode.AddChildNode(optionalAdditionalFilter);
@@ -367,24 +371,29 @@ namespace com.espertech.esper.epl.expression.core
                         text + ": " +
                         ex.Message, ex);
                 }
+                catch (ExprValidationException)
+                {
+                    throw;
+                }
                 catch (Exception rtex)
                 {
                     Log.Debug("Failed to render nice validation message text: " + rtex.Message, rtex);
-                    throw ex;
                 }
+
+                throw;
             }
         }
 
         public static void GetValidatedSubtree(
             ExprNodeOrigin origin,
-            ExprNode[] exprNode,
+            IList<ExprNode> exprNode,
             ExprValidationContext validationContext)
         {
             if (exprNode == null)
             {
                 return;
             }
-            for (var i = 0; i < exprNode.Length; i++)
+            for (var i = 0; i < exprNode.Count; i++)
             {
                 exprNode[i] = GetValidatedSubtree(origin, exprNode[i], validationContext);
             }
@@ -427,7 +436,7 @@ namespace com.espertech.esper.epl.expression.core
                 return exprNode;
             }
 
-            for (var i = 0; i < exprNode.ChildNodes.Length; i++)
+            for (var i = 0; i < exprNode.ChildNodes.Count; i++)
             {
                 var childNode = exprNode.ChildNodes[i];
                 if (childNode is ExprDeclaredOrLambdaNode)
@@ -712,7 +721,7 @@ namespace com.espertech.esper.epl.expression.core
             // find which element represents the method, its the element with the parenthesis
             var indexMethod = -1;
             for (var i = 0; i < splitDots.Length; i++) {
-                if (splitDots[i].Contains("(")) {
+                if (splitDots[i].Contains('(')) {
                     indexMethod = i;
                     break;
                 }
@@ -722,7 +731,7 @@ namespace com.espertech.esper.epl.expression.core
             }
     
             var method = splitDots[indexMethod];
-            var indexParan = method.IndexOf("(");
+            var indexParan = method.IndexOf('(');
             method = method.Substring(0, indexParan);
             if (method.Length == 0) {
                 return null;
@@ -748,14 +757,7 @@ namespace com.espertech.esper.epl.expression.core
 
         public static bool IsAllConstants(IEnumerable<ExprNode> parameters)
         {
-            foreach (var node in parameters)
-            {
-                if (!node.IsConstantResult)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return parameters.All(node => node.IsConstantResult);
         }
 
         public static ExprIdentNode GetExprIdentNode(EventType[] typesPerStream, int streamId, string property)
@@ -802,7 +804,7 @@ namespace com.espertech.esper.epl.expression.core
             var childEvalsEventBeanReturnTypes = new ExprEvaluator[parameters.Count];
             var allConstants = true;
             foreach (var childNode in parameters) {
-                if (!EnumMethodEnumExtensions.IsEnumerationMethod(methodName) && childNode is ExprLambdaGoesNode) {
+                if (!methodName.IsEnumerationMethod() && childNode is ExprLambdaGoesNode) {
                     throw new ExprValidationException("Unexpected lambda-expression encountered as parameter to UDF or static method '" + methodName + "'");
                 }
                 if (childNode is ExprWildcard) {
@@ -871,14 +873,17 @@ namespace com.espertech.esper.epl.expression.core
                 } else {
                     method = engineImportService.ResolveMethodOverloadChecked(className, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
                 }
-                var declaringClass = FastClass.Create(engineImportService.GetFastClassClassLoader(method.DeclaringClass), method.DeclaringClass);
+                var declaringClass = FastClass.Create(method.DeclaringType);
                 staticMethod = declaringClass.GetMethod(method);
             } catch (Exception e) {
                 throw exceptionHandler.Handle(e);
             }
     
             // rewrite those evaluator that should return the event itself
-            var parameterTypes = method.GetParameterTypes();
+            var parameterTypes = method.IsExtensionMethod()
+                ? method.GetParameterTypes().Skip(1).ToArray()
+                : method.GetParameterTypes();
+
             if (CollectionUtil.IsAnySet(allowEventBeanType)) {
                 for (var i = 0; i < parameters.Count; i++) {
                     if (allowEventBeanType[i] && parameterTypes[i] == typeof(EventBean)) {
@@ -890,7 +895,7 @@ namespace com.espertech.esper.epl.expression.core
             // rewrite those evaluators that should return the event collection
             if (CollectionUtil.IsAnySet(allowEventBeanCollType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanCollType[i] && parameterTypes[i] == typeof(ICollection<object>)) {
+                    if (allowEventBeanCollType[i] && parameterTypes[i].IsGenericCollection()) {
                         childEvals[i] = childEvalsEventBeanReturnTypes[i];
                     }
                 }
@@ -1029,8 +1034,9 @@ namespace com.espertech.esper.epl.expression.core
                 FindExpressionChildRecursive(child, searchExpression, pairs);
             }
         }
-    
-        public static void ToExpressionStringParameterList(ExprNode[] childNodes, TextWriter buffer) {
+
+        public static void ToExpressionStringParameterList(ExprNode[] childNodes, TextWriter buffer)
+        {
             var delimiter = "";
             foreach (var childNode in childNodes) {
                 buffer.Write(delimiter);
@@ -1039,7 +1045,7 @@ namespace com.espertech.esper.epl.expression.core
             }
         }
     
-        public static void ToExpressionStringWFunctionName(string functionName, ExprNode[] childNodes, TextWriter writer) {
+        public static void ToExpressionStringWFunctionName(string functionName, IList<ExprNode> childNodes, TextWriter writer) {
             writer.Write(functionName);
             writer.Write("(");
             ToExpressionStringParameterList(childNodes, writer);
@@ -1084,7 +1090,7 @@ namespace com.espertech.esper.epl.expression.core
             return false;
         }
     
-        public static void ValidateNoSpecialsGroupByExpressions(ExprNode[] groupByNodes) {
+        public static void ValidateNoSpecialsGroupByExpressions(IList<ExprNode> groupByNodes) {
             var visitorSubselects = new ExprNodeSubselectDeclaredDotVisitor();
             var visitorGrouping = new ExprNodeGroupingVisitorWParent();
             var aggNodesInGroupBy = new List<ExprAggregateNode>(1);
@@ -1152,12 +1158,12 @@ namespace com.espertech.esper.epl.expression.core
         }
     
         public static bool ValidateNamedExpectType(ExprNamedParameterNode namedParameterNode, Type[] expectedTypes) {
-            if (namedParameterNode.ChildNodes.Length != 1) {
+            if (namedParameterNode.ChildNodes.Count != 1) {
                 throw GetNamedValidationException(namedParameterNode.ParameterName, expectedTypes);
             }
     
             var childNode = namedParameterNode.ChildNodes[0];
-            Type returnType = TypeHelper.GetBoxedType(childNode.ExprEvaluator.ReturnType);
+            Type returnType = childNode.ExprEvaluator.ReturnType.GetBoxedType();
     
             var found = false;
             foreach (var expectedType in expectedTypes) {
@@ -1165,7 +1171,7 @@ namespace com.espertech.esper.epl.expression.core
                     found = true;
                     break;
                 }
-                if (returnType == TypeHelper.GetBoxedType(expectedType)) {
+                if (returnType == expectedType.GetBoxedType()) {
                     found = true;
                     break;
                 }
@@ -1233,7 +1239,7 @@ namespace com.espertech.esper.epl.expression.core
         }
     
         private static int FindChildNode(ExprNode parentNode, ExprNode childNode) {
-            for (var i = 0; i < parentNode.ChildNodes.Length; i++) {
+            for (var i = 0; i < parentNode.ChildNodes.Count; i++) {
                 if (parentNode.ChildNodes[i] == childNode) {
                     return i;
                 }
@@ -1311,7 +1317,7 @@ namespace com.espertech.esper.epl.expression.core
             {
                 visitor.Reset();
                 selectAggExprNode.Accept(visitor);
-                List<ExprNodePropOrStreamDesc> properties = visitor.GetRefs();
+                IList<ExprNodePropOrStreamDesc> properties = visitor.GetRefs();
                 propertiesAggregated.AddAll(properties);
             }
 
@@ -1424,11 +1430,13 @@ namespace com.espertech.esper.epl.expression.core
     
             var filtered = new EventBean[streamOneEvents.Length];
             var countPass = 0;
-    
-            foreach (var eventBean in streamOneEvents) {
+
+            var evaluateParams = new EvaluateParams(eventsPerStream, true, exprEvaluatorContext);
+            foreach (var eventBean in streamOneEvents)
+            {
                 eventsPerStream[1] = eventBean;
-    
-                var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+
+                var result = filter.Evaluate(evaluateParams);
                 if ((result != null) && true.Equals(result)) {
                     filtered[countPass] = eventBean;
                     countPass++;
@@ -1450,8 +1458,8 @@ namespace com.espertech.esper.epl.expression.core
         /// <returns>pass indicator</returns>
         public static bool ApplyFilterExpression(ExprEvaluator filter, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = filter.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            return (result != null) && true.Equals(result);
+            var result = filter.Evaluate(new EvaluateParams(eventsPerStream, true, exprEvaluatorContext));
+            return true.Equals(result);
         }
     
         /// <summary>
@@ -1468,13 +1476,15 @@ namespace com.espertech.esper.epl.expression.core
         /// false if this or all child nodes are not equal, true if equal
         /// </returns>
         public static bool DeepEquals(ExprNode nodeOne, ExprNode nodeTwo) {
-            if (nodeOne.ChildNodes.Length != nodeTwo.ChildNodes.Length) {
+            if (nodeOne.ChildNodes.Count != nodeTwo.ChildNodes.Count)
+            {
                 return false;
             }
             if (!nodeOne.EqualsNode(nodeTwo)) {
                 return false;
             }
-            for (var i = 0; i < nodeOne.ChildNodes.Length; i++) {
+            for (var i = 0; i < nodeOne.ChildNodes.Count; i++)
+            {
                 var childNodeOne = nodeOne.ChildNodes[i];
                 var childNodeTwo = nodeTwo.ChildNodes[i];
     
@@ -1543,7 +1553,7 @@ namespace com.espertech.esper.epl.expression.core
             return null;
         }
     
-        public static void ToExpressionString(List<ExprChainedSpec> chainSpec, StringWriter buffer, bool prefixDot, string functionName) {
+        public static void ToExpressionString(IList<ExprChainedSpec> chainSpec, TextWriter buffer, bool prefixDot, string functionName) {
             var delimiterOuter = "";
             if (prefixDot) {
                 delimiterOuter = ".";
@@ -1608,7 +1618,7 @@ namespace com.espertech.esper.epl.expression.core
             return result;
         }
     
-        public static void ToExpressionStringParams(TextWriter writer, ExprNode[] @params) {
+        public static void ToExpressionStringParams(TextWriter writer, IList<ExprNode> @params) {
             writer.Write('(');
             var delimiter = "";
             foreach (var childNode in @params) {
@@ -1672,11 +1682,12 @@ namespace com.espertech.esper.epl.expression.core
         }
     
         public static Object[] EvaluateExpressions(ExprEvaluator[] parameters, ExprEvaluatorContext exprEvaluatorContext) {
+            var evaluateParams = new EvaluateParams(null, true, exprEvaluatorContext);
             var results = new Object[parameters.Length];
             var count = 0;
             foreach (var expr in parameters) {
                 try {
-                    results[count] = expr.Evaluate(null, true, exprEvaluatorContext);
+                    results[count] = expr.Evaluate(evaluateParams);
                     count++;
                 } catch (Exception ex) {
                     var message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " + ex.Message;
@@ -1726,8 +1737,8 @@ namespace com.espertech.esper.epl.expression.core
         private static ExprEvaluator[] MakeVarargArrayEval(MethodInfo method, ExprEvaluator[] childEvals) {
             var parameterTypes = method.GetParameterTypes();
             var evals = new ExprEvaluator[parameterTypes.Length];
-            Type varargClass = parameterTypes[parameterTypes.Length - 1].GetElementType();
-            var varargClassBoxed = TypeHelper.GetBoxedType(varargClass);
+            var varargClass = parameterTypes[parameterTypes.Length - 1].GetElementType();
+            var varargClassBoxed = varargClass.GetBoxedType();
             if (parameterTypes.Length > 1)
             {
                 Array.Copy(childEvals, 0, evals, 0, evals.Length - 1);
@@ -1758,7 +1769,7 @@ namespace com.espertech.esper.epl.expression.core
                     continue;
                 }
     
-                if (TypeHelper.GetBoxedType(resultType) != varargClassBoxed) {
+                if (resultType.GetBoxedType() != varargClassBoxed) {
                     needCoercion = true;
                     coercers[i] = CoercerFactory.GetCoercer(resultType, varargClassBoxed);
                 }
@@ -1823,19 +1834,10 @@ namespace com.espertech.esper.epl.expression.core
 
             public object Evaluate(EvaluateParams evaluateParams)
             {
-                return Evaluate(
-                    evaluateParams.EventsPerStream,
-                    evaluateParams.IsNewData,
-                    evaluateParams.ExprEvaluatorContext
-                    );
-            }
-
-            public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-            {
                 var array = Array.CreateInstance(_varargClass, _evals.Length);
                 for (var i = 0; i < _evals.Length; i++)
                 {
-                    var value = _evals[i].Evaluate(eventsPerStream, isNewData, context);
+                    var value = _evals[i].Evaluate(evaluateParams);
                     array.SetValue(value, i);
                 }
                 return array;
@@ -1862,19 +1864,10 @@ namespace com.espertech.esper.epl.expression.core
 
             public object Evaluate(EvaluateParams evaluateParams)
             {
-                return Evaluate(
-                    evaluateParams.EventsPerStream,
-                    evaluateParams.IsNewData,
-                    evaluateParams.ExprEvaluatorContext
-                    );
-            }
-
-            public Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-            {
                 var array = Array.CreateInstance(_varargClass, _evals.Length);
                 for (var i = 0; i < _evals.Length; i++)
                 {
-                    var value = _evals[i].Evaluate(eventsPerStream, isNewData, context);
+                    var value = _evals[i].Evaluate(evaluateParams);
                     if (_coercers[i] != null)
                     {
                         value = _coercers[i].Invoke(value);

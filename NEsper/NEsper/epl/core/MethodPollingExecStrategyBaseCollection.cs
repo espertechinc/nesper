@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.core
 	{
 	    public MethodPollingExecStrategyBaseCollection(EventAdapterService eventAdapterService, FastMethod method, EventType eventType, object invocationTarget, MethodPollingExecStrategyEnum strategy, VariableReader variableReader, string variableName, VariableService variableService)
 	        : base(eventAdapterService, method, eventType, invocationTarget, strategy, variableReader, variableName, variableService)
-        {
+	    {
 	    }
 
 	    protected abstract EventBean GetEventBean(object value);

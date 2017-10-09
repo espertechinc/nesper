@@ -66,10 +66,11 @@ namespace com.espertech.esper.core.context.mgr
         public Object Get(EventBean eventBean)
         {
             var events = new EventBean[]{eventBean};
-    
+            var evaluateParams = new EvaluateParams(events, true, null);
             var parameters = new Object[_evaluators.Length];
-            for (int i = 0; i < _evaluators.Length; i++) {
-                parameters[i] = _evaluators[i].Evaluate(events, true, null);
+            for (int i = 0; i < _evaluators.Length; i++)
+            {
+                parameters[i] = _evaluators[i].Evaluate(evaluateParams);
             }
 
             try

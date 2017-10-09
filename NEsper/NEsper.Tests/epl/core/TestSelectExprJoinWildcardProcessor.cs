@@ -9,10 +9,11 @@
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -28,9 +29,9 @@ namespace com.espertech.esper.epl.core
         {
             var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
             var supportTypes = new SupportStreamTypeSvc3Stream();
-    
-            _processor = SelectExprJoinWildcardProcessorFactory.Create(Collections.GetEmptyList<int>(), 1, supportTypes.StreamNames, supportTypes.EventTypes,
-                    SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, null, null, new Configuration(), new TableServiceImpl());
+
+            _processor = SelectExprJoinWildcardProcessorFactory.Create(Collections.GetEmptyList<int>(), 1, "stmtname", supportTypes.StreamNames, supportTypes.EventTypes,
+                SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, null, null, new Configuration(), new TableServiceImpl(), "default");
         }
     
         [Test]

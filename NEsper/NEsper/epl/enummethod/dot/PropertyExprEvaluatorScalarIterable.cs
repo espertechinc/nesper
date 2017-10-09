@@ -43,9 +43,9 @@ namespace com.espertech.esper.epl.enummethod.dot
             _componentType = componentType;
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            return EvaluateInternal<object>(eventsPerStream[_streamId]);
+            return EvaluateInternal<object>(evaluateParams.EventsPerStream[_streamId]);
         }
 
         public ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context)
@@ -61,20 +61,17 @@ namespace com.espertech.esper.epl.enummethod.dot
                 return null;
             }
 
-            var resultType = result.GetType();
-            if (result is ICollection<T>)
+            try
             {
-                return (ICollection<T>)result;
+                return result.Unwrap<T>(true);
             }
-
-            if (resultType.IsGenericCollection() || resultType is IEnumerable)
+            catch (ArgumentException e)
             {
-                return result.UnwrapWithNulls<T>();
+                var resultType = result.GetType();
+                Log.Warn("Expected iterable-type input from property '" + _propertyName + "' but received " + resultType.FullName);
+                throw;
+                //return null;
             }
-
-            Log.Warn(
-                "Expected iterable-type input from property '" + _propertyName + "' but received " + resultType.FullName);
-            return null;
         }
 
         public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
@@ -92,7 +89,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -107,7 +104,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             return null;
         }

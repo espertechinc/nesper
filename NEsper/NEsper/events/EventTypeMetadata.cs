@@ -283,7 +283,7 @@ namespace com.espertech.esper.events
         VARIANT,
 
         /// <summary>
-        ///     An application-defined event type such as JavaBean or legacy Java, XML or Map.
+        ///     An application-defined event type such as legacy object, XML or Map.
         /// </summary>
         APPLICATION,
 

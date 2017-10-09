@@ -34,8 +34,9 @@ namespace com.espertech.esper.epl.agg.access
             _childNode = childNode;
             _eventsPerStream = new EventBean[streamNum + 1];
         }
-    
-        public object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public object GetValue(AggregationState state, EvaluateParams evalParams)
+        {
             EventBean bean = ((AggregationStateLinear) state).FirstValue;
             if (bean == null) {
                 return null;
@@ -44,7 +45,7 @@ namespace com.espertech.esper.epl.agg.access
             return _childNode.Evaluate(new EvaluateParams(_eventsPerStream, true, null));
         }
     
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams) {
             EventBean bean = ((AggregationStateLinear) state).FirstValue;
             if (bean == null) {
                 return null;
@@ -52,15 +53,15 @@ namespace com.espertech.esper.epl.agg.access
             return Collections.SingletonList(bean);
         }
     
-        public ICollection<object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            object value = GetValue(state, eventsPerStream, isNewData, exprEvaluatorContext);
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams) {
+            object value = GetValue(state, evalParams);
             if (value == null) {
                 return null;
             }
             return Collections.SingletonList(value);
         }
     
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams) {
             return ((AggregationStateLinear) state).FirstValue;
         }
     }

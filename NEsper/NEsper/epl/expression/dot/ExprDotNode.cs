@@ -24,8 +24,8 @@ namespace com.espertech.esper.epl.expression.dot
         IList<ExprChainedSpec> ChainSpec { get; }
 
         string IsVariableOpGetName(VariableService variableService);
-    
-        ExprDotNodeFilterAnalyzerDesc GetExprDotNodeFilterAnalyzerDesc();
+
+        ExprDotNodeFilterAnalyzerDesc ExprDotNodeFilterAnalyzerDesc { get; }
     }
     
 } // end of namespace

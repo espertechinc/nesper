@@ -21,12 +21,13 @@
 		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		<TargetDir>$(MSBuildProjectDirectory)\..\NEsper\epl\generated</TargetDir>
 		<Antlr4AbstractGrammar>EsperEPL2Grammar.g4</Antlr4AbstractGrammar>
+		<AntlrTargetNamespace>com.espertech.esper.epl.generated</AntlrTargetNamespace>
 	</PropertyGroup>
 
 	<Target Name="Build-Grammar">
 		<Message Text="Testing: %(Antlr4.CustomToolNamespace)" />
 		<Exec
-			Command="$(Antlr4JavaExecutable) -jar $(Antlr4ToolLocation) -Dlanguage=CSharp -visitor -listener -long-messages $(MSBuildProjectDirectory)\EsperEPL2Grammar.g4"
+			Command="$(Antlr4JavaExecutable) -jar $(Antlr4ToolLocation) -Dlanguage=CSharp -visitor -listener -long-messages -package $(AntlrTargetNamespace) $(MSBuildProjectDirectory)\EsperEPL2Grammar.g4"
 			WorkingDirectory="$(MSBuildProjectDirectory)"
 			/>
 	</Target>
@@ -58,30 +59,7 @@
 		<Message Text="MSBuildToolsPath: $(MSBuildToolsPath)" />
 	</Target>
 
-	<Target Name="Repair-Grammar" DependsOnTargets="Build-Grammar">
-		<!--
-		<ReplaceFileText
-			InputFilename="$(OutputPath)EsperEPL2Ast.cs"
-			OutputFilename="$(OutputPath)EsperEPL2Ast.cs"
-			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
-			ReplacementText="$1)"
-			/>
-		<ReplaceFileText
-			InputFilename="$(OutputPath)EsperEPL2GrammarParser.cs"
-			OutputFilename="$(OutputPath)EsperEPL2GrammarParser.cs"
-			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
-			ReplacementText="$1)"
-			/>
-		<ReplaceFileText
-			InputFilename="$(OutputPath)EsperEPL2GrammarLexer.cs"
-			OutputFilename="$(OutputPath)EsperEPL2GrammarLexer.cs"
-			MatchExpression='(new NoViableAltException\(".*", \d+, \d+, \w+), \d+\)'
-			ReplacementText="$1)"
-			/>
-		-->
-	</Target>
-
-	<Target Name="Deploy-Grammar" DependsOnTargets="Repair-Grammar">
+	<Target Name="Deploy-Grammar" DependsOnTargets="Build-Grammar">
 		<ItemGroup>
 			<SourceFiles Include="$(MSBuildProjectDirectory)\*.cs" />
 		</ItemGroup>

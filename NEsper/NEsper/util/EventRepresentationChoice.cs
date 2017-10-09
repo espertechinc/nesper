@@ -13,9 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 
 namespace com.espertech.esper.util
@@ -52,11 +50,11 @@ namespace com.espertech.esper.util
             switch (enumValue)
             {
                 case EventRepresentationChoice.ARRAY:
-                    return "objectarray";
+                    return " objectarray";
                 case EventRepresentationChoice.MAP:
-                    return "map";
+                    return " map";
                 case EventRepresentationChoice.AVRO:
-                    return "avro";
+                    return " avro";
                 case EventRepresentationChoice.DEFAULT:
                     return "";
             }
@@ -75,8 +73,7 @@ namespace com.espertech.esper.util
                 case EventRepresentationChoice.AVRO:
                     return EventUnderlyingType.AVRO.GetUnderlyingClassName();
                 case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingType.DEFAULT.GetUnderlyingClassName();
-                    //DEFAULT(EventUnderlyingType.Default, "", "");
+                    return EventUnderlyingTypeExtensions.GetDefault().GetUnderlyingClassName();
             }
 
             throw new ArgumentException("invalid value for enumValue", "enumValue");
@@ -94,8 +91,7 @@ namespace com.espertech.esper.util
                 case EventRepresentationChoice.AVRO:
                     return EventUnderlyingType.AVRO;
                 case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingType.DEFAULT;
-                    //DEFAULT(EventUnderlyingType.Default, "", "");
+                    return EventUnderlyingTypeExtensions.GetDefault();
             }
 
             throw new ArgumentException("invalid value for enumValue", "enumValue");
@@ -110,7 +106,7 @@ namespace com.espertech.esper.util
             supers.Add(representationType);
             foreach (Type clazz in supers)
             {
-                if (clazz.Name.Equals(outputTypeClassName))
+                if (clazz.FullName == outputTypeClassName)
                 {
                     return true;
                 }
@@ -121,7 +117,7 @@ namespace com.espertech.esper.util
         public static EventRepresentationChoice GetEngineDefault(EPServiceProvider engine)
         {
             var spi = (EPServiceProviderSPI) engine;
-            var configured = spi.GetConfigurationInformation().EngineDefaults.EventMeta.DefaultEventRepresentation;
+            var configured = spi.ConfigurationInformation.EngineDefaults.EventMeta.DefaultEventRepresentation;
             if (configured == EventUnderlyingType.OBJECTARRAY)
             {
                 return EventRepresentationChoice.ARRAY;
@@ -149,7 +145,7 @@ namespace com.espertech.esper.util
             {
                 return "";
             }
-            return annotationText;
+            return GetAnnotationText(enumValue);
         }
 
         public static void AddAnnotationForNonMap(this EventRepresentationChoice enumValue, EPStatementObjectModel model)
@@ -158,7 +154,7 @@ namespace com.espertech.esper.util
             {
                 return;
             }
-            var part = new AnnotationPart(typeof(EventRepresentationAttribute).Name);
+            var part = new AnnotationPart("EventRepresentation");
             if (enumValue == EventRepresentationChoice.ARRAY)
             {
                 part.AddValue("objectarray");
@@ -167,7 +163,7 @@ namespace com.espertech.esper.util
             {
                 part.AddValue("avro");
             }
-            model.SetAnnotations(Collections.SingletonList(part));
+            model.Annotations = Collections.SingletonList(part);
         }
 
         public static bool IsAvroEvent(this EventRepresentationChoice enumValue)

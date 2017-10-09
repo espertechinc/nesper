@@ -30,11 +30,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             this._tableMetadata = tableMetadata;
         }
 
-        public object Evaluate(
-            object target,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
@@ -44,8 +40,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             var underlyings = new ArrayDeque<object>(events.Count);
             foreach (var @event in events)
             {
-                underlyings.Add(
-                    _tableMetadata.EventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, exprEvaluatorContext));
+                underlyings.Add(_tableMetadata.EventToPublic.ConvertToUnd(@event, evalParams));
             }
             return underlyings;
         }

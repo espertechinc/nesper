@@ -16,10 +16,6 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalOrFactoryNode : EvalNodeFactoryBase
     {
-        protected EvalOrFactoryNode()
-        {
-        }
-    
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
         {
             EvalNode[] children = EvalNodeUtil.MakeEvalNodeChildren(this.ChildNodes, agentInstanceContext, parentNode);

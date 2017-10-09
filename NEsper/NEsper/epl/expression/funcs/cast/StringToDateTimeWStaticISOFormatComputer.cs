@@ -8,30 +8,34 @@
 
 using System;
 
-using com.espertech.esper.client;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.pattern.observer;
-using com.espertech.esper.schedule;
-
 namespace com.espertech.esper.epl.expression.funcs.cast
 {
-    public class StringToDateTimeWStaticISOFormatComputer : CasterParserComputer
+    public class StringToDateTimeWStaticISOFormatComputer : StringToDateTimeBaseWStaticISOFormatComputer<DateTime>
     {
-        public Object Compute(Object input, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringToDateTimeWStaticISOFormatComputer"/> class.
+        /// </summary>
+        public StringToDateTimeWStaticISOFormatComputer() : base(null)
         {
-            try
-            {
-                return TimerScheduleISO8601Parser.ParseDate(input.ToString()).DateTime.DateTime;
-            }
-            catch (ScheduleParameterException e)
-            {
-                throw HandleParseISOException(input.ToString(), e);
-            }
         }
 
-        public bool IsConstantForConstInput
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringToDateTimeWStaticISOFormatComputer"/> class.
+        /// </summary>
+        /// <param name="timeZoneInfo">The time zone information.</param>
+        public StringToDateTimeWStaticISOFormatComputer(TimeZoneInfo timeZoneInfo) : base(timeZoneInfo)
         {
-            get { return true; }
+        }
+
+        /// <summary>
+        /// Computes datetime from the dateFormat and input.
+        /// </summary>
+        /// <param name="dateFormat">The date format.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        protected override DateTime ComputeFromFormat(string dateFormat, string input)
+        {
+            return ParseISO(input).DateTime.DateTime;
         }
     }
 }

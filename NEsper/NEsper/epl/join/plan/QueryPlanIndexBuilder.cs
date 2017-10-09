@@ -205,20 +205,20 @@ namespace com.espertech.esper.epl.join.plan
                         var relOpThis = (QueryGraphValueEntryRangeRelOp) rangeDesc;
     
                         QueryGraphRangeConsolidateDesc opsDesc = QueryGraphRangeUtil.GetCanConsolidate(
-                            relOpthis.RangeType, 
+                            relOpThis.RangeType, 
                             relOpOther.RangeType);
                         if (opsDesc != null) {
                             ExprNode start;
                             ExprNode end;
                             if (!opsDesc.IsReverse) {
                                 start = relOpOther.Expression;
-                                end = relOpthis.Expression;
+                                end = relOpThis.Expression;
                             }
                             else {
-                                start = relOpthis.Expression;
+                                start = relOpThis.Expression;
                                 end = relOpOther.Expression;
                             }
-                            var allowRangeReversal = relOpOther.IsBetweenPart && relOpthis.IsBetweenPart;
+                            var allowRangeReversal = relOpOther.IsBetweenPart && relOpThis.IsBetweenPart;
                             var rangeIn = new QueryGraphValueEntryRangeIn(opsDesc.RangeType, start, end, allowRangeReversal);
     
                             var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();

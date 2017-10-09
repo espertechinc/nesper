@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.filter
 {
@@ -37,8 +36,8 @@ namespace com.espertech.esper.filter
         ///     A matching pair of filter parameter and index, if any matches were found. Null if no matches were found.
         /// </returns>
         public static Pair<FilterValueSetParam, FilterParamIndexBase> FindIndex(
-            ArrayDeque<FilterValueSetParam> parameters,
-            List<FilterParamIndexBase> indizes)
+            ICollection<FilterValueSetParam> parameters,
+            IList<FilterParamIndexBase> indizes)
         {
             foreach (FilterValueSetParam parameter in parameters)
             {
@@ -80,7 +79,7 @@ namespace com.espertech.esper.filter
         /// <param name="index">is a filter parameter constant value index</param>
         /// <returns>filter parameter, or null if no matching parameter found.</returns>
         public static FilterValueSetParam FindParameter(
-            ArrayDeque<FilterValueSetParam> parameters,
+            ICollection<FilterValueSetParam> parameters,
             FilterParamIndexBase index)
         {
             if (index is FilterParamIndexLookupableBase)

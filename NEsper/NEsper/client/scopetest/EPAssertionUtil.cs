@@ -17,6 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
+using com.espertech.esper.core.support;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.client.scopetest
@@ -1354,7 +1355,7 @@ namespace com.espertech.esper.client.scopetest
 
         private static EventAdapterService GetEventAdapterService()
         {
-            return new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 0);
+            return SupportEventAdapterService.Service;
         }
 
         /// <summary>Assert that the event properties of the event match the properties provided by the map, taking the map properties as the comparison source. </summary>

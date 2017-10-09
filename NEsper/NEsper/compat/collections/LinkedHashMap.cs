@@ -643,7 +643,7 @@ namespace com.espertech.esper.compat.collections
             return
                 "{" +
                 _hashList
-                    .Select(subPair => string.Format("{0}={1}", subPair.First.Render(), subPair.Second.Render()))
+                    .Select(subPair => string.Format("{0}={1}", subPair.First.RenderAny(), subPair.Second.RenderAny()))
                     .Aggregate((a, b) => a + ", " + b) +
                 "}";
         }

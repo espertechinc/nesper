@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.context;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.core.context.mgr
 
         // Compare filters in statement with filters in segmented context, addendum filter compilation
         public static void GetAddendumFilters(
-            IdentityDictionary<FilterSpecCompiled, FilterValueSetParam[][]> addendums,
+            IDictionary<FilterSpecCompiled, FilterValueSetParam[][]> addendums,
             int hashCode,
             IList<FilterSpecCompiled> filtersSpecs,
             ContextDetailHash hashSpec,
@@ -164,8 +165,8 @@ namespace com.espertech.esper.core.context.mgr
             return new ContextControllerStatementCtxCacheFilters(streamAnalysis.Filters);
         }
 
-        public void PopulateFilterAddendums(
-            IdentityDictionary<FilterSpecCompiled, FilterValueSetParam[][]> filterAddendum,
+        public override void PopulateFilterAddendums(
+            IDictionary<FilterSpecCompiled, FilterValueSetParam[][]> filterAddendum,
             ContextControllerStatementDesc statement,
             Object key,
             int contextId)
@@ -245,12 +246,9 @@ namespace com.espertech.esper.core.context.mgr
 
         private ICollection<EventType> GetItemEventTypes(ContextDetailHash hashedSpec)
         {
-            var itemEventTypes = new List<EventType>();
-            foreach (var item in hashedSpec.Items)
-            {
-                itemEventTypes.Add(item.FilterSpecCompiled.FilterForEventType);
-            }
-            return itemEventTypes;
+            return hashedSpec.Items
+                .Select(item => item.FilterSpecCompiled.FilterForEventType)
+                .ToList();
         }
 
         private void ValidatePopulateContextDesc()
@@ -258,7 +256,7 @@ namespace com.espertech.esper.core.context.mgr
 
             if (_hashedSpec.Items.IsEmpty())
             {
-                throw new ExprValidationException("Empty list of hash items");
+                throw new ExprValidationException("EmptyFalse list of hash items");
             }
 
             var factoryContext = base.FactoryContext;

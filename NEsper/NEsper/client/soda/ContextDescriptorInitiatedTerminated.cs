@@ -85,7 +85,7 @@ namespace com.espertech.esper.client.soda
             writer.Write(IsOverlapping ? "initiated by " : "start ");
             if (OptionalDistinctExpressions != null && OptionalDistinctExpressions.Count > 0)
             {
-                writer.Write("Distinct(");
+                writer.Write("distinct(");
                 string delimiter = "";
                 foreach (Expression expression in OptionalDistinctExpressions)
                 {

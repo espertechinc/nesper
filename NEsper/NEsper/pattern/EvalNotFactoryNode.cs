@@ -18,8 +18,8 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalNotFactoryNode : EvalNodeFactoryBase{
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        protected EvalNotFactoryNode() {
+
+        public EvalNotFactoryNode() {
         }
     
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)

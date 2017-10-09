@@ -27,7 +27,6 @@ using com.espertech.esper.dataflow.runnables;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.epl.annotation;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
@@ -345,7 +344,9 @@ namespace com.espertech.esper.dataflow.core
 
             // Obtain realization
             var dataFlowSignalManager = new DataFlowSignalManager();
-            var startDesc = RealizationFactoryInterface.Realize(dataFlowName, operators, operatorMetadata, operatorBuildOrder, operatorChannelBindings, dataFlowSignalManager, options, servicesContext, statementContext);
+            var startDesc = RealizationFactoryInterface.Realize(
+                dataFlowName, operators, operatorMetadata, operatorBuildOrder, operatorChannelBindings,
+                dataFlowSignalManager, options, servicesContext, statementContext);
 
             // For each GraphSource add runnable
             var sourceRunnables = new List<GraphSourceRunnable>();
@@ -850,7 +851,7 @@ namespace com.espertech.esper.dataflow.core
                     else
                     {
                         var typeName = outputType.TypeName;
-                        clazz = TypeHelper.GetTypeForSimpleName(typeName, engineImportService.GetClassForNameProvider());
+                        clazz = TypeHelper.GetTypeForSimpleName(typeName);
                         if (clazz == null)
                         {
                             try

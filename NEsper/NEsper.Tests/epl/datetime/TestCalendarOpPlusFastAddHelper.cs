@@ -6,11 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.datetime.calop;
+using com.espertech.esper.epl.expression.time;
 
 using NUnit.Framework;
 
@@ -157,10 +156,10 @@ namespace com.espertech.esper.epl.datetime
         {
             var referenceDate = DateTimeParser.ParseDefaultEx(reference);
             // new DateTimeEx(DateTimeParser.ParseDefault(reference), TimeZoneInfo.Local);
-            var result = CalendarOpPlusFastAddHelper.ComputeNextDue(current, timePeriod, referenceDate);
+            var result = CalendarOpPlusFastAddHelper.ComputeNextDue(current, timePeriod, referenceDate, TimeAbacusMilliseconds.INSTANCE, 0);
             Assert.AreEqual(
-                DateTimeParser.ParseDefault(expectedTarget), result.Scheduled,
-                string.Format("\nExpected {0}\n" + "Received {1}\n", expectedTarget, DateTimeHelper.Print(result.Scheduled)));
+                DateTimeParser.ParseDefaultEx(expectedTarget), result.Scheduled,
+                string.Format("\nExpected {0}\n" + "Received {1}\n", expectedTarget, DateTimeHelper.Print(result.Scheduled.DateTime)));
             factorAssertion.AssertLong(result.Factor);
         }
 

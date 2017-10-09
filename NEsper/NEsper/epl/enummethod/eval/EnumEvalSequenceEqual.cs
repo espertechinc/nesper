@@ -36,7 +36,7 @@ namespace com.espertech.esper.epl.enummethod.eval
                 return false;
             }
 
-            var other = otherObj.UnwrapWithNulls<object>();
+            var other = otherObj.Unwrap<object>(true);
             if (other == null)
             {
                 Log.Warn("Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" + otherObj.GetType().FullName + "'");

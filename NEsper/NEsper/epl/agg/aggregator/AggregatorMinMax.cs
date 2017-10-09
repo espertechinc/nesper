@@ -20,10 +20,11 @@ namespace com.espertech.esper.epl.agg.aggregator
         private readonly MinMaxTypeEnum _minMaxTypeEnum;
     
         private readonly SortedRefCountedSet<Object> _refSet;
-    
-        /// <summary>Ctor.  </summary>
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="minMaxTypeEnum">enum indicating to return minimum or maximum values</param>
-        /// <param name="returnType">is the value type returned by aggregator</param>
         public AggregatorMinMax(MinMaxTypeEnum minMaxTypeEnum)
         {
             _minMaxTypeEnum = minMaxTypeEnum;

@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.generated;
@@ -22,7 +19,8 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.parse
 {
     /// <summary>Walker to annotation stuctures.</summary>
-    public class ASTAnnotationHelper {
+    public class ASTAnnotationHelper
+    {
         /// <summary>
         /// Walk an annotation root name or child node (nested annotations).
         /// </summary>
@@ -30,69 +28,109 @@ namespace com.espertech.esper.epl.parse
         /// <param name="engineImportService">for engine imports</param>
         /// <exception cref="ASTWalkException">if the walk failed</exception>
         /// <returns>annotation descriptor</returns>
-        public static AnnotationDesc Walk(EsperEPL2GrammarParser.AnnotationEnumContext ctx, EngineImportService engineImportService) {
-            string name = ASTUtil.UnescapeClassIdent(typeof(ctx)Identifier());
+        public static AnnotationDesc Walk(
+            EsperEPL2GrammarParser.AnnotationEnumContext ctx,
+            EngineImportService engineImportService)
+        {
+            string name = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
             var values = new List<Pair<string, Object>>();
-            if (ctx.ElementValueEnum() != null) {
-                Object value = WalkValue(ctx.ElementValueEnum(), engineImportService);
-                values.Add(new Pair<string, Object>("value", value));
-            } else if (ctx.ElementValuePairsEnum() != null) {
-                WalkValuePairs(ctx.ElementValuePairsEnum(), values, engineImportService);
+            if (ctx.elementValueEnum() != null)
+            {
+                Object value = WalkValue(ctx.elementValueEnum(), engineImportService);
+                values.Add(new Pair<string, Object>("Value", value));
             }
-    
+            else if (ctx.elementValuePairsEnum() != null)
+            {
+                WalkValuePairs(ctx.elementValuePairsEnum(), values, engineImportService);
+            }
+
             return new AnnotationDesc(name, values);
         }
-    
-        private static void WalkValuePairs(EsperEPL2GrammarParser.ElementValuePairsEnumContext elementValuePairsEnumContext,
-                                           List<Pair<string, Object>> values,
-                                           EngineImportService engineImportService) {
-    
-            foreach (EsperEPL2GrammarParser.ElementValuePairEnumContext ctx in elementValuePairsEnumContext.ElementValuePairEnum()) {
+
+        private static void WalkValuePairs(
+            EsperEPL2GrammarParser.ElementValuePairsEnumContext elementValuePairsEnumContext,
+            IList<Pair<string, Object>> values,
+            EngineImportService engineImportService)
+        {
+
+            foreach (
+                EsperEPL2GrammarParser.ElementValuePairEnumContext ctx in
+                    elementValuePairsEnumContext.elementValuePairEnum())
+            {
                 Pair<string, Object> pair = WalkValuePair(ctx, engineImportService);
                 values.Add(pair);
             }
         }
-    
-        private static Object WalkValue(EsperEPL2GrammarParser.ElementValueEnumContext ctx, EngineImportService engineImportService) {
-            if (ctx.ElementValueArrayEnum() != null) {
-                return WalkArray(ctx.ElementValueArrayEnum(), engineImportService);
+
+        private static Object WalkValue(
+            EsperEPL2GrammarParser.ElementValueEnumContext ctx,
+            EngineImportService engineImportService)
+        {
+            if (ctx.elementValueArrayEnum() != null)
+            {
+                return WalkArray(ctx.elementValueArrayEnum(), engineImportService);
             }
-            if (ctx.AnnotationEnum() != null) {
-                return Walk(ctx.AnnotationEnum(), engineImportService);
-            } else if (ctx.v != null) {
-                return Ctx.v.Text;
-            } else if (typeof(ctx)Identifier() != null) {
-                return WalkClassIdent(typeof(ctx)Identifier(), engineImportService);
-            } else {
-                return ASTConstantHelper.Parse(ctx.Constant());
+            if (ctx.annotationEnum() != null)
+            {
+                return Walk(ctx.annotationEnum(), engineImportService);
+            }
+            else if (ctx.v != null)
+            {
+                return ctx.v.Text;
+            }
+            else if (ctx.classIdentifier() != null)
+            {
+                return WalkClassIdent(ctx.classIdentifier(), engineImportService);
+            }
+            else
+            {
+                return ASTConstantHelper.Parse(ctx.constant());
             }
         }
-    
-        private static Pair<string, Object> WalkValuePair(EsperEPL2GrammarParser.ElementValuePairEnumContext ctx, EngineImportService engineImportService) {
-            string name = ctx.KeywordAllowedIdent().Text;
-            Object value = WalkValue(ctx.ElementValueEnum(), engineImportService);
+
+        private static Pair<string, Object> WalkValuePair(
+            EsperEPL2GrammarParser.ElementValuePairEnumContext ctx,
+            EngineImportService engineImportService)
+        {
+            string name = ctx.keywordAllowedIdent().GetText();
+            Object value = WalkValue(ctx.elementValueEnum(), engineImportService);
             return new Pair<string, Object>(name, value);
         }
-    
-        private static Object WalkClassIdent(EsperEPL2GrammarParser.ClassIdentifierContext ctx, EngineImportService engineImportService) {
-            string enumValueText = ctx.Text;
+
+        private static Object WalkClassIdent(
+            EsperEPL2GrammarParser.ClassIdentifierContext ctx,
+            EngineImportService engineImportService)
+        {
+            string enumValueText = ctx.GetText();
             Object enumValue;
-            try {
+            try
+            {
                 enumValue = TypeHelper.ResolveIdentAsEnumConst(enumValueText, engineImportService, true);
-            } catch (ExprValidationException e) {
-                throw ASTWalkException.From("Annotation value '" + enumValueText + "' is not recognized as an enumeration value, please check imports or use a primitive or string type");
             }
-            if (enumValue != null) {
+            catch (ExprValidationException)
+            {
+                throw ASTWalkException.From(
+                    "Annotation value '" + enumValueText +
+                    "' is not recognized as an enumeration value, please check imports or use a primitive or string type");
+            }
+            if (enumValue != null)
+            {
                 return enumValue;
             }
-            throw ASTWalkException.From("Annotation enumeration value '" + enumValueText + "' not recognized as an enumeration class, please check imports or type used");
+            throw ASTWalkException.From(
+                "Annotation enumeration value '" + enumValueText +
+                "' not recognized as an enumeration class, please check imports or type used");
         }
-    
-        private static Object[] WalkArray(EsperEPL2GrammarParser.ElementValueArrayEnumContext ctx, EngineImportService engineImportService) {
-            List<EsperEPL2GrammarParser.ElementValueEnumContext> elements = ctx.ElementValueEnum();
-            var values = new Object[elements.Count];
-            for (int i = 0; i < elements.Count; i++) {
-                values[i] = WalkValue(elements.Get(i), engineImportService);
+
+        private static Object[] WalkArray(
+            EsperEPL2GrammarParser.ElementValueArrayEnumContext ctx,
+            EngineImportService engineImportService)
+        {
+            var elements = ctx.elementValueEnum();
+            var values = new Object[elements.Length];
+            for (int i = 0; i < elements.Length; i++)
+            {
+                values[i] = WalkValue(elements[i], engineImportService);
             }
             return values;
         }

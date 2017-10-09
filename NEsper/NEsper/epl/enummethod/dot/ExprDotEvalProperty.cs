@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
@@ -26,14 +23,10 @@ namespace com.espertech.esper.epl.enummethod.dot
             _getter = getter;
             _returnType = returnType;
         }
-    
-        public Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
-            if (!(target is EventBean))
-            {
-                return null;
-            }
-            return _getter.Get((EventBean) target);
+            return target is EventBean ? _getter.Get((EventBean) target) : null;
         }
 
         public EPType TypeInfo

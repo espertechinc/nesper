@@ -46,7 +46,7 @@ namespace com.espertech.esper.epl.enummethod.dot
                 {
                     return new ExprDotStaticMethodWrapArrayScalar(method.Name, componentType);
                 }
-                var type = (BeanEventType)eventAdapterService.AddBeanType(componentType.Name, componentType, false, false, false);
+                var type = (BeanEventType)eventAdapterService.AddBeanType(componentType.GetDefaultTypeName(), componentType, false, false, false);
                 return new ExprDotStaticMethodWrapArrayEvents(eventAdapterService, type);
             }
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.epl.enummethod.dot
                 {
                     return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType);
                 }
-                var type = (BeanEventType)eventAdapterService.AddBeanType(genericType.Name, genericType, false, false, false);
+                var type = (BeanEventType)eventAdapterService.AddBeanType(genericType.GetDefaultTypeName(), genericType, false, false, false);
                 return new ExprDotStaticMethodWrapIterableEvents(eventAdapterService, type);
             }
             return null;

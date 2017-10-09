@@ -123,8 +123,7 @@ namespace com.espertech.esper.events.vaevent
                     return null;
                 }
                 var nestedClass = (Type) desc.PropertyType;
-                var complexProperty =
-                    (BeanEventType) _eventAdapterService.AddBeanType(nestedClass.Name, nestedClass, false, false, false);
+                var complexProperty = (BeanEventType) _eventAdapterService.AddBeanType(nestedClass.GetDefaultTypeName(), nestedClass, false, false, false);
                 return prop.GetGetter(complexProperty, _eventAdapterService);
             }
 
@@ -210,8 +209,7 @@ namespace com.espertech.esper.events.vaevent
             else if (desc.PropertyType is Type)
             {
                 var simpleClass = (Type) desc.PropertyType;
-                var nestedEventType = _eventAdapterService.AddBeanType(
-                    simpleClass.Name, simpleClass, false, false, false);
+                var nestedEventType = _eventAdapterService.AddBeanType(simpleClass.GetDefaultTypeName(), simpleClass, false, false, false);
                 return nestedEventType.GetPropertyType(propertyNested);
             }
             else

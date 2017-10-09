@@ -99,7 +99,7 @@ namespace com.espertech.esper.client.soda
         /// <value>The name of the tree object.</value>
         public string TreeObjectName { get; set; }
 
-        /// <summary>Render as EPL. </summary>
+        /// <summary>RenderAny as EPL. </summary>
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {

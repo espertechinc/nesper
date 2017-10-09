@@ -849,16 +849,18 @@ namespace com.espertech.esper.core.start
                 if (desiredContextName != null)
                 {
                     throw new ExprValidationException(
-                        "Cannot create on-trigger expression: " + title + " was declared with context '" +
-                        desiredContextName + "', please declare the same context name");
+                        string.Format(
+                            "Cannot create on-trigger expression: {0} was declared with context '{1}', please declare the same context name",
+                            title, CompatExtensions.RenderAny(desiredContextName)));
                 }
                 return;
             }
             if (!onExprContextName.Equals(desiredContextName))
             {
                 throw new ExprValidationException(
-                    "Cannot create on-trigger expression: " + title + " was declared with context '" +
-                    desiredContextName + "', please use the same context instead");
+                    string.Format(
+                        "Cannot create on-trigger expression: {0} was declared with context '{1}', please use the same context instead",
+                        title, CompatExtensions.RenderAny(desiredContextName)));
             }
         }
 

@@ -10,186 +10,263 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.expression.core
 {
-    public class ExprIdentNodeUtil {
-        public static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(StreamTypeService streamTypeService, string propertyNameNestable, bool explicitPropertiesOnly, bool obtainFragment)
-                {
+    public class ExprIdentNodeUtil
+    {
+        public static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(
+            StreamTypeService streamTypeService,
+            string propertyNameNestable,
+            bool explicitPropertiesOnly,
+            bool obtainFragment)
+        {
             string streamOrProp = null;
-            string prop = propertyNameNestable;
-            if (propertyNameNestable.IndexOf('.') != -1) {
+            var prop = propertyNameNestable;
+            if (propertyNameNestable.IndexOf('.') != -1)
+            {
                 prop = propertyNameNestable.Substring(propertyNameNestable.IndexOf('.') + 1);
                 streamOrProp = propertyNameNestable.Substring(0, propertyNameNestable.IndexOf('.'));
             }
-            if (explicitPropertiesOnly) {
+            if (explicitPropertiesOnly)
+            {
                 return GetTypeFromStreamExplicitProperties(streamTypeService, prop, streamOrProp, obtainFragment);
             }
             return GetTypeFromStream(streamTypeService, prop, streamOrProp, obtainFragment);
         }
-    
-        internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(StreamTypeService streamTypeService, string unresolvedPropertyName, string streamOrPropertyName, bool obtainFragment)
-                {
+
+        internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStream(
+            StreamTypeService streamTypeService,
+            string unresolvedPropertyName,
+            string streamOrPropertyName,
+            bool obtainFragment)
+        {
             PropertyResolutionDescriptor propertyInfo = null;
-    
+
             // no stream/property name supplied
-            if (streamOrPropertyName == null) {
-                try {
+            if (streamOrPropertyName == null)
+            {
+                try
+                {
                     propertyInfo = streamTypeService.ResolveByPropertyName(unresolvedPropertyName, obtainFragment);
-                } catch (StreamTypesException ex) {
-                    throw GetSuggestionException(ex);
-                } catch (PropertyAccessException ex) {
-                    throw new ExprValidationPropertyException("Failed to find property '" + unresolvedPropertyName + "', the property name does not parse (are you sure?): " + ex.Message, ex);
                 }
-    
+                catch (StreamTypesException ex)
+                {
+                    throw GetSuggestionException(ex);
+                }
+                catch (PropertyAccessException ex)
+                {
+                    throw new ExprValidationPropertyException(
+                        "Failed to find property '" + unresolvedPropertyName +
+                        "', the property name does not parse (are you sure?): " + ex.Message, ex);
+                }
+
                 // resolves without a stream name, return descriptor and null stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, propertyInfo.StreamName);
             }
-    
+
             // try to resolve the property name and stream name as it is (ie. stream name as a stream name)
             StreamTypesException typeExceptionOne;
-            try {
-                propertyInfo = streamTypeService.ResolveByStreamAndPropName(streamOrPropertyName, unresolvedPropertyName, obtainFragment);
+            try
+            {
+                propertyInfo = streamTypeService.ResolveByStreamAndPropName(
+                    streamOrPropertyName, unresolvedPropertyName, obtainFragment);
                 // resolves with a stream name, return descriptor and stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, streamOrPropertyName);
-            } catch (StreamTypesException ex) {
+            }
+            catch (StreamTypesException ex)
+            {
                 typeExceptionOne = ex;
             }
-    
+
             // try to resolve the property name to a nested property 's0.p0'
             StreamTypesException typeExceptionTwo;
-            string propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
-            try {
+            var propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
+            try
+            {
                 propertyInfo = streamTypeService.ResolveByPropertyName(propertyNameCandidate, obtainFragment);
                 // resolves without a stream name, return null for stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, null);
-            } catch (StreamTypesException ex) {
+            }
+            catch (StreamTypesException ex)
+            {
                 typeExceptionTwo = ex;
             }
-    
+
             // not resolved yet, perhaps the table name did not match an event type
-            if (streamTypeService.HasTableTypes() && streamOrPropertyName != null) {
-                for (int i = 0; i < streamTypeService.EventTypes.Length; i++) {
-                    EventType eventType = streamTypeService.EventTypes[i];
-                    string tableName = TableServiceUtil.GetTableNameFromEventType(eventType);
-                    if (tableName != null && tableName.Equals(streamOrPropertyName)) {
-                        try {
-                            propertyInfo = streamTypeService.ResolveByStreamAndPropName(eventType.Name, unresolvedPropertyName, obtainFragment);
-                        } catch (Exception ex) {
+            if (streamTypeService.HasTableTypes && streamOrPropertyName != null)
+            {
+                for (var i = 0; i < streamTypeService.EventTypes.Length; i++)
+                {
+                    var eventType = streamTypeService.EventTypes[i];
+                    var tableName = TableServiceUtil.GetTableNameFromEventType(eventType);
+                    if (tableName != null && tableName.Equals(streamOrPropertyName))
+                    {
+                        try
+                        {
+                            propertyInfo = streamTypeService.ResolveByStreamAndPropName(
+                                eventType.Name, unresolvedPropertyName, obtainFragment);
                         }
-                        if (propertyInfo != null) {
+                        catch (Exception ex)
+                        {
+                        }
+                        if (propertyInfo != null)
+                        {
                             return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, streamOrPropertyName);
                         }
                     }
                 }
             }
-    
+
             // see if the stream or property name (the prefix) can be resolved by itself, without suffix
             // the property available may be indexed or mapped
-            try {
-                PropertyResolutionDescriptor desc = streamTypeService.ResolveByPropertyName(streamOrPropertyName, false);
-                if (desc != null) {
-                    EventPropertyDescriptor d2 = desc.StreamEventType.GetPropertyDescriptor(streamOrPropertyName);
-                    if (d2 != null) {
+            try
+            {
+                var desc = streamTypeService.ResolveByPropertyName(streamOrPropertyName, false);
+                if (desc != null)
+                {
+                    var d2 = desc.StreamEventType.GetPropertyDescriptor(streamOrPropertyName);
+                    if (d2 != null)
+                    {
                         string text = null;
-                        if (d2.IsIndexed) {
+                        if (d2.IsIndexed)
+                        {
                             text = "an indexed property and requires an index or enumeration method to access values";
                         }
-                        if (d2.IsMapped) {
+                        if (d2.IsMapped)
+                        {
                             text = "a mapped property and requires keyed access";
                         }
-                        if (text != null) {
-                            throw new ExprValidationPropertyException("Failed to resolve property '" + propertyNameCandidate + "' (property '" + streamOrPropertyName + "' is " + text + ")");
+                        if (text != null)
+                        {
+                            throw new ExprValidationPropertyException(
+                                "Failed to resolve property '" + propertyNameCandidate + "' (property '" +
+                                streamOrPropertyName + "' is " + text + ")");
                         }
                     }
                 }
-            } catch (StreamTypesException e) {
+            }
+            catch (StreamTypesException e)
+            {
                 // need not be handled
             }
-    
+
             throw GetSuggestionExceptionSecondStep(propertyNameCandidate, typeExceptionOne, typeExceptionTwo);
         }
-    
-        internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStreamExplicitProperties(StreamTypeService streamTypeService, string unresolvedPropertyName, string streamOrPropertyName, bool obtainFragment)
-                {
+
+        internal static Pair<PropertyResolutionDescriptor, string> GetTypeFromStreamExplicitProperties(
+            StreamTypeService streamTypeService,
+            string unresolvedPropertyName,
+            string streamOrPropertyName,
+            bool obtainFragment)
+        {
             PropertyResolutionDescriptor propertyInfo;
-    
+
             // no stream/property name supplied
-            if (streamOrPropertyName == null) {
-                try {
-                    propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(unresolvedPropertyName, obtainFragment);
-                } catch (StreamTypesException ex) {
+            if (streamOrPropertyName == null)
+            {
+                try
+                {
+                    propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(
+                        unresolvedPropertyName, obtainFragment);
+                }
+                catch (StreamTypesException ex)
+                {
                     throw GetSuggestionException(ex);
-                } catch (PropertyAccessException ex) {
+                }
+                catch (PropertyAccessException ex)
+                {
                     throw new ExprValidationPropertyException(ex.Message);
                 }
-    
+
                 // resolves without a stream name, return descriptor and null stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, propertyInfo.StreamName);
             }
-    
+
             // try to resolve the property name and stream name as it is (ie. stream name as a stream name)
             StreamTypesException typeExceptionOne;
-            try {
-                propertyInfo = streamTypeService.ResolveByStreamAndPropNameExplicitProps(streamOrPropertyName, unresolvedPropertyName, obtainFragment);
+            try
+            {
+                propertyInfo = streamTypeService.ResolveByStreamAndPropNameExplicitProps(
+                    streamOrPropertyName, unresolvedPropertyName, obtainFragment);
                 // resolves with a stream name, return descriptor and stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, streamOrPropertyName);
-            } catch (StreamTypesException ex) {
+            }
+            catch (StreamTypesException ex)
+            {
                 typeExceptionOne = ex;
             }
-    
+
             // try to resolve the property name to a nested property 's0.p0'
             StreamTypesException typeExceptionTwo;
-            string propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
-            try {
-                propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(propertyNameCandidate, obtainFragment);
+            var propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
+            try
+            {
+                propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(
+                    propertyNameCandidate, obtainFragment);
                 // resolves without a stream name, return null for stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, null);
-            } catch (StreamTypesException ex) {
+            }
+            catch (StreamTypesException ex)
+            {
                 typeExceptionTwo = ex;
             }
-    
+
             throw GetSuggestionExceptionSecondStep(propertyNameCandidate, typeExceptionOne, typeExceptionTwo);
         }
-    
-        private static ExprValidationPropertyException GetSuggestionExceptionSecondStep(string propertyNameCandidate, StreamTypesException typeExceptionOne, StreamTypesException typeExceptionTwo) {
-            string suggestionOne = GetSuggestion(typeExceptionOne);
-            string suggestionTwo = GetSuggestion(typeExceptionTwo);
-            if (suggestionOne != null) {
+
+        private static ExprValidationPropertyException GetSuggestionExceptionSecondStep(
+            string propertyNameCandidate,
+            StreamTypesException typeExceptionOne,
+            StreamTypesException typeExceptionTwo)
+        {
+            var suggestionOne = GetSuggestion(typeExceptionOne);
+            var suggestionTwo = GetSuggestion(typeExceptionTwo);
+            if (suggestionOne != null)
+            {
                 return new ExprValidationPropertyException(typeExceptionOne.Message + suggestionOne);
             }
-            if (suggestionTwo != null) {
+            if (suggestionTwo != null)
+            {
                 return new ExprValidationPropertyException(typeExceptionTwo.Message + suggestionTwo);
             }
-    
+
             // fail to resolve
-            return new ExprValidationPropertyException("Failed to resolve property '" + propertyNameCandidate + "' to a stream or nested property in a stream");
+            return
+                new ExprValidationPropertyException(
+                    "Failed to resolve property '" + propertyNameCandidate +
+                    "' to a stream or nested property in a stream");
         }
-    
-        private static ExprValidationPropertyException GetSuggestionException(StreamTypesException ex) {
-            string suggestion = GetSuggestion(ex);
-            if (suggestion != null) {
+
+        private static ExprValidationPropertyException GetSuggestionException(StreamTypesException ex)
+        {
+            var suggestion = GetSuggestion(ex);
+            if (suggestion != null)
+            {
                 return new ExprValidationPropertyException(ex.Message + suggestion);
-            } else {
+            }
+            else
+            {
                 return new ExprValidationPropertyException(ex.Message);
             }
         }
-    
-        private static string GetSuggestion(StreamTypesException ex) {
-            if (ex == null) {
+
+        private static string GetSuggestion(StreamTypesException ex)
+        {
+            if (ex == null)
+            {
                 return null;
             }
-            Pair<int?, string> suggestion = ex.OptionalSuggestion;
-            if (suggestion == null) {
+            var suggestion = ex.OptionalSuggestion;
+            if (suggestion == null)
+            {
                 return null;
             }
-            if (suggestion.First > LevenshteinDistance.ACCEPTABLE_DISTANCE) {
+            if (suggestion.First > LevenshteinDistance.ACCEPTABLE_DISTANCE)
+            {
                 return null;
             }
             return " (did you mean '" + ex.OptionalSuggestion.Second + "'?)";

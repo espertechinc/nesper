@@ -19,6 +19,7 @@ using com.espertech.esper.events;
 namespace com.espertech.esper.epl.expression.subquery
 {
     /// <summary>Represents an exists-subselect in an expression tree.</summary>
+    [Serializable]
     public class ExprSubselectExistsNode : ExprSubselectNode
     {
         private static readonly ILog Log =
@@ -51,7 +52,7 @@ namespace com.espertech.esper.epl.expression.subquery
             ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return SubselectEvalStrategyNR.Evaluate(
+            return _subselectEvalStrategyNr.Evaluate(
                 eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext, SubselectAggregationService);
         }
 
@@ -125,7 +126,7 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
 
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public override EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

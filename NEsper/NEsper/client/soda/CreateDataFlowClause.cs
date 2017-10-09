@@ -44,7 +44,7 @@ namespace com.espertech.esper.client.soda
         /// <value>operator definitions</value>
         public IList<DataFlowOperator> Operators { get; set; }
 
-        /// <summary>Render as EPL. </summary>
+        /// <summary>RenderAny as EPL. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">to use</param>
         public void ToEPL(TextWriter writer, EPStatementFormatter formatter)

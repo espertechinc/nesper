@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.events.property;
@@ -149,7 +150,8 @@ namespace com.espertech.esper.events
                 _propertyGetterCache = new Dictionary<String, EventPropertyGetter>();
             }
             return EventTypeUtility.GetNestableGetter(
-                propertyName, _propertyItems, _propertyGetterCache, NestableTypes, _eventAdapterService, GetterFactory);
+                propertyName, _propertyItems, _propertyGetterCache, NestableTypes, _eventAdapterService, GetterFactory,
+                _metadata.OptionalApplicationType == ApplicationType.OBJECTARR);
         }
 
         public EventPropertyGetterMapped GetGetterMapped(String mappedPropertyName)
@@ -542,7 +544,7 @@ namespace com.espertech.esper.events
         {
             if (!(otherType is BaseNestableEventType))
             {
-                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, otherType.UnderlyingType.Name);
+                return string.Format("Type by name '{0}' is not a compatible type (target type underlying is '{1}')", otherType.Name, compat.Name.Of(otherType.UnderlyingType));
             }
 
             var other = (BaseNestableEventType)otherType;

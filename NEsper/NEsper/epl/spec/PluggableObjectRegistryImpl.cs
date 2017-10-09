@@ -10,26 +10,26 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.epl.spec
 {
-    public class PluggableObjectRegistryImpl : PluggableObjectRegistry {
-        private PluggableObjectCollection[] collections;
+    public class PluggableObjectRegistryImpl : PluggableObjectRegistry
+    {
+        private readonly PluggableObjectCollection[] _collections;
     
-        public PluggableObjectRegistryImpl(PluggableObjectCollection[] collections) {
-            this.collections = collections;
+        public PluggableObjectRegistryImpl(PluggableObjectCollection[] collections)
+        {
+            _collections = collections;
         }
     
-        public Pair<Type, PluggableObjectEntry> Lookup(string nameSpace, string name) {
-    
+        public Pair<Type, PluggableObjectEntry> Lookup(string nameSpace, string name)
+        {
             // Handle namespace-provided
             if (nameSpace != null) {
-                for (int i = 0; i < collections.Length; i++) {
-                    IDictionary<string, Pair<Type, PluggableObjectEntry>> names = collections[i].Pluggables.Get(nameSpace);
+                for (int i = 0; i < _collections.Length; i++) {
+                    IDictionary<string, Pair<Type, PluggableObjectEntry>> names = _collections[i].Pluggables.Get(nameSpace);
                     if (names == null) {
                         continue;
                     }
@@ -44,14 +44,14 @@ namespace com.espertech.esper.epl.spec
     
             // Handle namespace-not-provided
             ISet<string> entriesDuplicate = null;
-            var found = null;
-            for (int i = 0; i < collections.Length; i++) {
-                for (var collEntry : collections[i].Pluggables) {
+            KeyValuePair<string, Pair<Type, PluggableObjectEntry>>? found = null;
+            for (int i = 0; i < _collections.Length; i++) {
+                foreach (var collEntry in _collections[i].Pluggables) {
                     foreach (var viewEntry in collEntry.Value) {
                         if (viewEntry.Key.Equals(name)) {
                             if (found != null) {
                                 if (entriesDuplicate == null) {
-                                    entriesDuplicate = new HashSet<>();
+                                    entriesDuplicate = new HashSet<string>();
                                 }
                                 entriesDuplicate.Add(viewEntry.Key);
                             } else {
@@ -63,11 +63,11 @@ namespace com.espertech.esper.epl.spec
             }
     
             if (entriesDuplicate != null) {
-                entriesDuplicate.Add(found.Key);
-                throw new ViewProcessingException("Duplicate entries for view '" + name + "' found in namespaces " + Arrays.ToString(entriesDuplicate.ToArray()));
+                entriesDuplicate.Add(found.Value.Key);
+                throw new ViewProcessingException("Duplicate entries for view '" + name + "' found in namespaces " + entriesDuplicate.Render());
             }
     
-            return found == null ? null : found.Value;
+            return found == null ? null : found.Value.Value;
         }
     }
 } // end of namespace

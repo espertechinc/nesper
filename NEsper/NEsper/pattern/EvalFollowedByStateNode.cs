@@ -81,7 +81,7 @@ namespace com.espertech.esper.pattern
                 }
 
                 // If the match came from the very last filter, need to escalate
-                int numChildNodes = EvalFollowedByNode.ChildNodes.Length;
+                int numChildNodes = EvalFollowedByNode.ChildNodes.Count;
                 if (index == (numChildNodes - 1))
                 {
                     if (Nodes.IsEmpty())

@@ -97,7 +97,7 @@ namespace com.espertech.esper.epl.core.eval
                 theEvent = eventsPerStream[_underlyingStreamNumber];
                 if (_tableMetadata != null && theEvent != null)
                 {
-                    theEvent = _tableMetadata.EventToPublic.Convert(theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+                    theEvent = _tableMetadata.EventToPublic.Convert(theEvent, new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
                 }
             }
 

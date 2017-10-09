@@ -36,7 +36,7 @@ namespace com.espertech.esper.pattern
         /// table used when indicating truth value of true.
         /// </param>
         /// <param name="consumptionLevel">when using @consume</param>
-        protected EvalFilterFactoryNode(FilterSpecRaw filterSpecification,
+        public EvalFilterFactoryNode(FilterSpecRaw filterSpecification,
                                         string eventAsName,
                                         int? consumptionLevel)
         {

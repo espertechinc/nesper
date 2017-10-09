@@ -23,39 +23,23 @@ namespace com.espertech.esper.epl.approx
         {
         }
 
-        public object GetValue(
-            AggregationState aggregationState,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(AggregationState aggregationState, EvaluateParams evalParams)
         {
             var state = (CountMinSketchAggState) aggregationState;
             return state.GetFromBytes();
         }
 
-        public ICollection<EventBean> GetEnumerableEvents(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams)
         {
             return null;
         }
 
-        public EventBean GetEnumerableEvent(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams)
         {
             return null;
         }
 
-        public ICollection<object> GetEnumerableScalar(
-            AggregationState state,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams)
         {
             return null;
         }

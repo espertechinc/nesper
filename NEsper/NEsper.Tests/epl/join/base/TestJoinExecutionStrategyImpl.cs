@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 

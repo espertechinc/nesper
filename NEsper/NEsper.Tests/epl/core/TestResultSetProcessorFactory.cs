@@ -16,8 +16,8 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.view;
 using com.espertech.esper.util;
 
 using NUnit.Framework;

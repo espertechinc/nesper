@@ -11,8 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -222,7 +220,7 @@ namespace com.espertech.esper.epl.property
                                     " cannot be assigned a value of type " + TypeHelper.GetTypeNameFullyQualPretty(returnType));
                             }
                         }
-                        else if (GenericExtensions.IsGenericEnumerable(returnType))
+                        else if (GenericExtensions.IsGenericEnumerable(returnType) || returnType.IsImplementsInterface<IEnumerable>())
                         {
                             // fine, assumed to return the right type
                         }

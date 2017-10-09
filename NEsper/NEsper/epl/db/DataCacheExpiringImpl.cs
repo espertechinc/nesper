@@ -124,7 +124,7 @@ namespace com.espertech.esper.epl.db
         /// Returns the maximum age in milliseconds.
         /// </summary>
         /// <value>millisecon max age</value>
-        protected double MaxAgeSec
+        public double MaxAgeSec
         {
             get { return _maxAgeSec; }
         }
@@ -143,7 +143,7 @@ namespace com.espertech.esper.epl.db
         /// Returns the current cache size.
         /// </summary>
         /// <value>cache size</value>
-        protected long Count
+        public long Count
         {
             get { return _cache.Count; }
         }

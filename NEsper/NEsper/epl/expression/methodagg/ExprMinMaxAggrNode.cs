@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.baseagg;
@@ -17,6 +19,7 @@ namespace com.espertech.esper.epl.expression.methodagg
     /// <summary>
     /// Represents the min/Max(distinct? ...) aggregate function is an expression tree.
     /// </summary>
+    [Serializable]
     public class ExprMinMaxAggrNode : ExprAggregateNodeBase
     {
         private readonly MinMaxTypeEnum _minMaxTypeEnum;

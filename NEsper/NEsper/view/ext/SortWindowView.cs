@@ -164,7 +164,7 @@ namespace com.espertech.esper.view.ext
                     if (lastEntry is IList<EventBean>)
                     {
                         var events = (IList<EventBean>)lastEntry;
-                        var theEvent = events.Delete(events.Count - 1);  // remove oldest event, newest events are first in list
+                        var theEvent = events.DeleteAt(events.Count - 1);  // remove oldest event, newest events are first in list
                         _eventCount--;
                         if (events.IsEmpty())
                         {

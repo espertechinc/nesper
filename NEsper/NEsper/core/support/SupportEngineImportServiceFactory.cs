@@ -7,22 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.factory;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.core.support
 {
-    public class SupportEngineImportServiceFactory {
-    
-        public static EngineImportServiceImpl Make() {
-            return new EngineImportServiceImpl(true, true, true, false, null, TimeZone.Default, TimeAbacusMilliseconds.INSTANCE, ConfigurationEngineDefaults.ThreadingProfile.NORMAL, null, AggregationFactoryFactoryDefault.INSTANCE);
+    public class SupportEngineImportServiceFactory
+    {
+        public static EngineImportServiceImpl Make()
+        {
+            return new EngineImportServiceImpl(
+                true, true, true, false, null,
+                TimeZoneInfo.Local, 
+                TimeAbacusMilliseconds.INSTANCE,
+                ConfigurationEngineDefaults.ThreadingProfile.NORMAL, null,
+                AggregationFactoryFactoryDefault.INSTANCE);
         }
     }
 } // end of namespace

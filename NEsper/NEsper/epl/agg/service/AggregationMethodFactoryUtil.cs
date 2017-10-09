@@ -7,12 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
@@ -20,15 +16,18 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.agg.service
 {
-    public class AggregationMethodFactoryUtil {
-        public static void ValidateAggregationType(AggregationMethodFactory requiredFactory,
-                                                   AggregationMethodFactory providedFactory) {
-            if (!TypeHelper.IsSubclassOrImplementsInterface(providedFactory.Class, requiredFactory.Class)) {
+    public class AggregationMethodFactoryUtil
+    {
+        public static void ValidateAggregationType(AggregationMethodFactory requiredFactory, AggregationMethodFactory providedFactory)
+        {
+            if (!TypeHelper.IsSubclassOrImplementsInterface(providedFactory.GetType(), requiredFactory.GetType()))
+            {
                 throw new ExprValidationException("Not a '" + requiredFactory.AggregationExpression.AggregationFunctionName + "' aggregation");
             }
             ExprAggregateNode aggNodeRequired = requiredFactory.AggregationExpression;
             ExprAggregateNode aggNodeProvided = providedFactory.AggregationExpression;
-            if (aggNodeRequired.IsDistinct != aggNodeProvided.IsDistinct) {
+            if (aggNodeRequired.IsDistinct != aggNodeProvided.IsDistinct)
+            {
                 throw new ExprValidationException("The aggregation declares " +
                         (aggNodeRequired.IsDistinct ? "a" : "no") +
                         " distinct and provided is " +
@@ -37,22 +36,23 @@ namespace com.espertech.esper.epl.agg.service
             }
         }
     
-        public static void ValidateAggregationInputType(Type requiredParam,
-                                                        Type providedParam) {
-            Type boxedRequired = TypeHelper.GetBoxedType(requiredParam);
-            Type boxedProvided = TypeHelper.GetBoxedType(providedParam);
-            if (boxedRequired != boxedProvided &&
-                    !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
+        public static void ValidateAggregationInputType(Type requiredParam, Type providedParam)
+        {
+            var boxedRequired = requiredParam.GetBoxedType();
+            var boxedProvided = providedParam.GetBoxedType();
+            if (boxedRequired != boxedProvided && !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired))
+            {
                 throw new ExprValidationException("The required parameter type is " +
-                        TypeHelper.GetTypeNameFullyQualPretty(requiredParam) +
+                        requiredParam.GetTypeNameFullyQualPretty() +
                         " and provided is " +
-                        TypeHelper.GetTypeNameFullyQualPretty(providedParam));
+                        providedParam.GetTypeNameFullyQualPretty());
             }
         }
     
-        public static void ValidateAggregationFilter(bool requireFilter,
-                                                     bool provideFilter) {
-            if (requireFilter != provideFilter) {
+        public static void ValidateAggregationFilter(bool requireFilter, bool provideFilter)
+        {
+            if (requireFilter != provideFilter)
+            {
                 throw new ExprValidationException("The aggregation declares " +
                         (requireFilter ? "a" : "no") +
                         " filter expression and provided is " +
@@ -62,8 +62,9 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateAggregationUnbound(bool requiredHasDataWindows, bool providedHasDataWindows)
-                {
-            if (requiredHasDataWindows != providedHasDataWindows) {
+        {
+            if (requiredHasDataWindows != providedHasDataWindows)
+            {
                 throw new ExprValidationException("The aggregation declares " +
                         (requiredHasDataWindows ? "use with data windows" : "unbound") +
                         " and provided is " +
@@ -72,8 +73,9 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateEventType(EventType requiredType, EventType providedType)
-                {
-            if (!EventTypeUtility.IsTypeOrSubTypeOf(providedType, requiredType)) {
+        {
+            if (!EventTypeUtility.IsTypeOrSubTypeOf(providedType, requiredType))
+            {
                 throw new ExprValidationException("The required event type is '" +
                         requiredType.Name +
                         "' and provided is '" + providedType.Name + "'");
@@ -81,15 +83,18 @@ namespace com.espertech.esper.epl.agg.service
         }
     
         public static void ValidateAggFuncName(string requiredName, string providedName)
-                {
-            if (!requiredName.ToLowerInvariant().Equals(providedName)) {
+        {
+            if (!requiredName.ToLowerInvariant().Equals(providedName))
+            {
                 throw new ExprValidationException("The required aggregation function name is '" +
                         requiredName + "' and provided is '" + providedName + "'");
             }
         }
     
-        public static void ValidateStreamNumZero(int streamNum) {
-            if (streamNum != 0) {
+        public static void ValidateStreamNumZero(int streamNum)
+        {
+            if (streamNum != 0)
+            {
                 throw new ExprValidationException("The from-clause order requires the stream in position zero");
             }
         }

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Topics>
+  <Topic id="ca7ccfc2-2663-4255-8173-dc3ddaeb7cbf" visible="True" isDefault="true" title="Welcome to the NEsper Project" linkText="https://www.espertech.com/">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Welcome" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="9ad50a6d-6316-467e-a21c-17cc268c6e20" visible="True" isExpanded="true" title="Version History">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="version, history" />
+    </HelpKeywords>
+    <Topic id="d2ef4ce0-dff8-4eb3-baa7-414571e60f5e" visible="True" isSelected="true" title="Version 1.0.0.0">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="version, 1.0.0.0" />
+      </HelpKeywords>
+    </Topic>
+  </Topic>
+</Topics>

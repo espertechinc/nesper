@@ -8,10 +8,9 @@
 
 using System;
 
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
@@ -48,9 +47,9 @@ namespace com.espertech.esper.epl.core
     		_resultingTree = ColumnNamedNodeSwapper.Swap(_exprTree, _alias, _fullExpr);
     
     		Assert.IsTrue(_resultingTree == _exprTree);
-    		ExprNode[] childNodes = _resultingTree.ChildNodes;
-    		ExprNode[] oldChildNodes = _exprTree.ChildNodes;
-    		Assert.IsTrue(childNodes.Length == 2);
+    		var childNodes = _resultingTree.ChildNodes;
+    		var oldChildNodes = _exprTree.ChildNodes;
+    		Assert.IsTrue(childNodes.Count == 2);
     		Assert.IsTrue(childNodes[0] == _fullExpr);
     		Assert.IsTrue(childNodes[1] == oldChildNodes[1]);
     
@@ -58,7 +57,7 @@ namespace com.espertech.esper.epl.core
     		_alias = "IntBoxed";
     		_resultingTree = ColumnNamedNodeSwapper.Swap(_exprTree, _alias, _fullExpr);
     		childNodes = _resultingTree.ChildNodes;
-    		Assert.IsTrue(childNodes.Length == 2);
+    		Assert.IsTrue(childNodes.Count == 2);
     		Assert.IsTrue(childNodes[0] == _fullExpr);
     		Assert.IsTrue(childNodes[1] == _fullExpr);
     
@@ -67,7 +66,7 @@ namespace com.espertech.esper.epl.core
     		_alias = "full expression";
     		_resultingTree = ColumnNamedNodeSwapper.Swap(_exprTree, _alias, newFullExpr);
     		childNodes = _resultingTree.ChildNodes;
-    		Assert.IsTrue(childNodes.Length == 2);
+    		Assert.IsTrue(childNodes.Count == 2);
     		Assert.IsTrue(childNodes[0] == newFullExpr);
     		Assert.IsTrue(childNodes[1] == newFullExpr);
     	}

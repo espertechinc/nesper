@@ -90,7 +90,7 @@ namespace com.espertech.esper.collection
             Object o2 = Second;
 
             return
-                (o1 != null ? o1.GetHashCode() * 397 : 0) +
+                (o1 != null ? o1.GetHashCode() * 397 : 0) ^
                 (o2 != null ? o2.GetHashCode() : 0);
         }
 

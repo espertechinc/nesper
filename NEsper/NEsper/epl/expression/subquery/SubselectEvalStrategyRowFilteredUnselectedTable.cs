@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.expression.subquery
                 return null;
             }
             return _tableMetadata.EventToPublic.ConvertToUnd(
-                subSelectResult, eventsPerStream, newData, exprEvaluatorContext);
+                subSelectResult, new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
         }
     }
 } // end of namespace

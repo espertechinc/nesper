@@ -76,30 +76,17 @@ namespace com.espertech.esper.epl.agg.service
             get { return false; }
         }
 
-        public Object GetValue(
-            int column,
-            int agentInstanceId,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             throw HandleNotSupported();
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             throw HandleNotSupported();
         }
 
-        public EventBean GetEventBean(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             throw HandleNotSupported();
         }
@@ -114,11 +101,7 @@ namespace com.espertech.esper.epl.agg.service
             throw HandleNotSupported();
         }
 
-        public ICollection<Object> GetCollectionScalar(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             throw HandleNotSupported();
         }

@@ -62,7 +62,7 @@ namespace com.espertech.esper.collection
         /// <param name="bean">event to add</param>
         public void Add(long timestamp, EventBean bean)
         {
-            // Empty window
+            // EmptyFalse window
             if (_window.IsEmpty())
             {
                 var pairX = new TimeWindowPair(timestamp, bean);

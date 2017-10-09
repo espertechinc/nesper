@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.spec
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         public AnnotationDesc(String name, String value)
-            : this(name, Collections.SingletonList<Pair<String, Object>>(new Pair<String, Object>("value", value)))
+            : this(name, Collections.SingletonList<Pair<String, Object>>(new Pair<String, Object>("Value", value)))
         {
         }
 

@@ -21,4 +21,9 @@ namespace com.espertech.esper.client.util
         /// <returns>classloader</returns>
         ClassLoader Classloader();
     }
+
+    public class ClassLoaderProviderConstants
+    {
+        public const string NAME = "ClassLoaderProvider";
+    }
 } // end of namespace

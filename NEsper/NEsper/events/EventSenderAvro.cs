@@ -17,7 +17,7 @@ namespace com.espertech.esper.events
     /// <summary>
     /// Event sender for avro-backed events.
     /// <para>
-    /// Allows sending only event objects of type GenericData.Record, does not check contents. Any other event object generates an error.
+    /// Allows sending only event objects of type GenericRecord, does not check contents. Any other event object generates an error.
     /// </para>
     /// </summary>
     public class EventSenderAvro : EventSender
@@ -52,7 +52,7 @@ namespace com.espertech.esper.events
 
             if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
             {
-                _threadingService.SubmitInbound(new InboundUnitSendWrapped(eventBean, _runtimeEventSender));
+                _threadingService.SubmitInbound(new InboundUnitSendWrapped(eventBean, _runtimeEventSender).Run);
             }
             else
             {

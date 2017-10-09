@@ -95,14 +95,14 @@ namespace com.espertech.esper.view.window
             if (agentInstanceViewFactoryContext.IsRemoveStream)
             {
                 return new TimeBatchViewRStream(
-                    this, agentInstanceViewFactoryContext, timeDeltaComputation, _optionalReferencePoint, isForceUpdate,
-                    isStartEager);
+                    this, agentInstanceViewFactoryContext, timeDeltaComputation, _optionalReferencePoint, IsForceUpdate,
+                    IsStartEager);
             }
             else
             {
                 return new TimeBatchView(
-                    this, agentInstanceViewFactoryContext, timeDeltaComputation, _optionalReferencePoint, isForceUpdate,
-                    isStartEager, viewUpdatedCollection);
+                    this, agentInstanceViewFactoryContext, timeDeltaComputation, _optionalReferencePoint, IsForceUpdate,
+                    IsStartEager, viewUpdatedCollection);
             }
         }
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.view.window
                 return false;
             }
 
-            if (myView.IsForceOutput != isForceUpdate)
+            if (myView.IsForceOutput != IsForceUpdate)
             {
                 return false;
             }

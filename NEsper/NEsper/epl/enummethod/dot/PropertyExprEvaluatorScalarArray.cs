@@ -37,10 +37,10 @@ namespace com.espertech.esper.epl.enummethod.dot
             _componentType = componentType;
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            EventBean eventInQuestion = eventsPerStream[_streamId];
-            return EvaluateEventGetROCollectionScalar(eventInQuestion, context);
+            EventBean eventInQuestion = evaluateParams.EventsPerStream[_streamId];
+            return EvaluateEventGetROCollectionScalar(eventInQuestion, evaluateParams.ExprEvaluatorContext);
         }
 
         public ICollection<object> EvaluateEventGetROCollectionScalar(EventBean @event, ExprEvaluatorContext context)
@@ -67,7 +67,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             return null;
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             return null;
         }

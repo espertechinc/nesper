@@ -80,12 +80,12 @@ namespace com.espertech.esper.epl.agg.service
                 foreach (AggregationServiceAggExpressionDesc aggregation in equivalencyPerStream.Value)
                 {
                     ExprAggregateNode aggregateNode = aggregation.AggregationNode;
-                    if (aggregateNode.ChildNodes.Length > 1)
+                    if (aggregateNode.ChildNodes.Count > 1)
                     {
                         evaluators[index] = ExprMethodAggUtil.GetMultiNodeEvaluator(
                             aggregateNode.ChildNodes, typesPerStream.Length > 1, typesPerStream);
                     }
-                    else if (aggregateNode.ChildNodes.Length > 0)
+                    else if (aggregateNode.ChildNodes.Count > 0)
                     {
                         // Use the evaluation node under the aggregation node to obtain the aggregation value
                         evaluators[index] = aggregateNode.ChildNodes[0].ExprEvaluator;
@@ -219,6 +219,7 @@ namespace com.espertech.esper.epl.agg.service
                 aggregations, groupByNodes, groupByRollupDesc, intoTableSpec);
 
             // determine binding
+            AggregationServiceFactory serviceFactory;
             if (intoTableSpec != null)
             {
                 // obtain metadata
@@ -244,7 +245,6 @@ namespace com.espertech.esper.epl.agg.service
                     declaredExpressions);
 
                 // return factory
-                AggregationServiceFactory serviceFactory;
                 if (!hasGroupByClause)
                 {
                     serviceFactory = factoryService.GetNoGroupWBinding(
@@ -297,8 +297,6 @@ namespace com.espertech.esper.epl.agg.service
                 AggregationMultiFunctionAnalysisHelper.AnalyzeAccessAggregations(aggregations);
             AggregationAccessorSlotPair[] accessorPairs = multiFunctionAggPlan.AccessorPairs;
             AggregationStateFactory[] accessAggregations = multiFunctionAggPlan.StateFactories;
-
-            AggregationServiceFactory serviceFactory;
 
             // analyze local group by
             AggregationLocalGroupByPlan localGroupByPlan = null;
@@ -458,7 +456,7 @@ namespace com.espertech.esper.epl.agg.service
             {
                 ExprAggregateLocalGroupByDesc localGroupBy = desc.AggregationNode.OptionalLocalGroupBy;
 
-                ExprNode[] partitionExpressions = localGroupBy == null
+                IList<ExprNode> partitionExpressions = localGroupBy == null
                     ? groupByNodes
                     : localGroupBy.PartitionExpressions;
                 IList<AggregationServiceAggExpressionDesc> found = FindPartition(partitions, partitionExpressions);
@@ -482,7 +480,7 @@ namespace com.espertech.esper.epl.agg.service
 
         private static IList<AggregationServiceAggExpressionDesc> FindPartition(
             IList<AggregationGroupByLocalGroupLevel> partitions,
-            ExprNode[] partitionExpressions)
+            IList<ExprNode> partitionExpressions)
         {
             foreach (AggregationGroupByLocalGroupLevel level in partitions)
             {

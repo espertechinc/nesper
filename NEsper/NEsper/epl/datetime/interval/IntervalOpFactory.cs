@@ -9,9 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
@@ -19,12 +16,18 @@ using com.espertech.esper.epl.expression.time;
 
 namespace com.espertech.esper.epl.datetime.interval
 {
-    public class IntervalOpFactory : OpFactory {
-        public IntervalOp GetOp(StreamTypeService streamTypeService, DatetimeMethodEnum method, string methodNameUsed, List<ExprNode> parameters, TimeZone timeZone, TimeAbacus timeAbacus)
-                {
-    
+    public class IntervalOpFactory : OpFactory
+    {
+        public IntervalOp GetOp(
+            StreamTypeService streamTypeService,
+            DatetimeMethodEnum method,
+            string methodNameUsed,
+            IList<ExprNode> parameters,
+            TimeZoneInfo timeZone,
+            TimeAbacus timeAbacus)
+        {
+
             return new IntervalOpImpl(method, methodNameUsed, streamTypeService, parameters, timeZone, timeAbacus);
         }
-    
     }
 } // end of namespace

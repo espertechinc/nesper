@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 namespace com.espertech.esper.pattern
 {
     /// <summary>
@@ -13,7 +15,7 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalAndNode : EvalNodeBase
     {
-        public EvalAndNode(PatternAgentInstanceContext context, EvalAndFactoryNode factoryNode, EvalNode[] childNodes) 
+        public EvalAndNode(PatternAgentInstanceContext context, EvalAndFactoryNode factoryNode, IList<EvalNode> childNodes) 
             : base(context)
         {
             FactoryNode = factoryNode;
@@ -22,7 +24,7 @@ namespace com.espertech.esper.pattern
 
         public EvalAndFactoryNode FactoryNode { get; private set; }
 
-        public EvalNode[] ChildNodes { get; private set; }
+        public IList<EvalNode> ChildNodes { get; private set; }
 
         public override EvalStateNode NewState(Evaluator parentNode, EvalStateNodeNumber stateNodeNumber, long stateNodeId)
         {

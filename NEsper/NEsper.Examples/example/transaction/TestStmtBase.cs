@@ -21,7 +21,7 @@ namespace NEsper.Example.Transaction
 	    public virtual void SetUp()
 	    {
 	        Configuration configuration = new Configuration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
             configuration.AddEventType("TxnEventA", typeof(TxnEventA).FullName);
             configuration.AddEventType("TxnEventB", typeof(TxnEventB).FullName);
             configuration.AddEventType("TxnEventC", typeof(TxnEventC).FullName);

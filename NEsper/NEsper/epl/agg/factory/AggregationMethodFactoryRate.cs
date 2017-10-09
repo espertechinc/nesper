@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
@@ -89,8 +87,8 @@ namespace com.espertech.esper.epl.agg.factory
 
         public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-            AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-            AggregationMethodFactoryRate that = (AggregationMethodFactoryRate) intoTableAgg;
+            service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryRate) intoTableAgg;
             if (_intervalTime != that._intervalTime)
             {
                 throw new ExprValidationException(
@@ -99,7 +97,7 @@ namespace com.espertech.esper.epl.agg.factory
                     " and provided is " +
                     that._intervalTime);
             }
-            AggregationMethodFactoryUtil.ValidateAggregationUnbound(!_isEver, !that._isEver);
+            service.AggregationMethodFactoryUtil.ValidateAggregationUnbound(!_isEver, !that._isEver);
         }
 
         public AggregationAgent AggregationStateAgent

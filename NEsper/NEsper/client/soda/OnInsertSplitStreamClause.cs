@@ -52,7 +52,6 @@ namespace com.espertech.esper.client.soda
         /// <param name="formatter">for NewLine-whitespace formatting</param>
         public void ToEPL(TextWriter writer, EPStatementFormatter formatter)
         {
-            String delimiter = "";
             foreach (OnInsertSplitStreamItem item in Items)
             {
                 item.InsertInto.ToEPL(writer, formatter, true);

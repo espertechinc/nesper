@@ -19,6 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
+namespace com.espertech.esper.epl.generated {
 
   using System;
   using System.Collections.Generic;
@@ -3346,3 +3347,4 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <remarks>The default implementation does nothing.</remarks>
 	public virtual void VisitErrorNode([NotNull] IErrorNode node) { }
 }
+} // namespace com.espertech.esper.epl.generated

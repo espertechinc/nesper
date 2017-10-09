@@ -141,7 +141,7 @@ namespace com.espertech.esper.epl.parse
                 {
                     throw ASTWalkException.From(
                         "Invalid use of variable '" + classIdent + "', unrecognized use of function '" + funcName +
-                        "', expected 'Keys()'");
+                        "', expected 'keys()'");
                 }
             }
 

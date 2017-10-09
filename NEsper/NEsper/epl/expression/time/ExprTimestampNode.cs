@@ -32,7 +32,7 @@ namespace com.espertech.esper.epl.expression.time
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 0)
+            if (ChildNodes.Count != 0)
             {
                 throw new ExprValidationException("current_timestamp function node cannot have a child node");
             }

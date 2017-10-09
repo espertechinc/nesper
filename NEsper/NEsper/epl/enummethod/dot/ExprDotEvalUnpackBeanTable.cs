@@ -29,22 +29,19 @@ namespace com.espertech.esper.epl.enummethod.dot
             _returnType = EPTypeHelper.SingleValue(tableMetadata.PublicEventType.UnderlyingType);
         }
 
-        public object Evaluate(
-            object target,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
                 return null;
             }
-            EventBean theEvent = (EventBean) target;
+
+            var theEvent = target as EventBean;
             if (theEvent == null)
             {
                 return null;
             }
-            return _tableMetadata.EventToPublic.ConvertToUnd(theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+            return _tableMetadata.EventToPublic.ConvertToUnd(theEvent, evalParams);
         }
 
         public EPType TypeInfo

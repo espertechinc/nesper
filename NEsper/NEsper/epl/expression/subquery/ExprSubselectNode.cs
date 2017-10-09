@@ -23,6 +23,7 @@ using com.espertech.esper.metrics.instrumentation;
 namespace com.espertech.esper.epl.expression.subquery
 {
     /// <summary>Represents a subselect in an expression tree.</summary>
+    [Serializable]
     public abstract class ExprSubselectNode
         : ExprNodeBase
         , ExprEvaluator
@@ -189,19 +190,19 @@ namespace com.espertech.esper.epl.expression.subquery
             return Evaluate(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            ICollection<EventBean> matchingEvents = EvaluateMatching(eventsPerStream, exprEvaluatorContext);
-            return EvaluateGetCollEvents(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams) {
+            ICollection<EventBean> matchingEvents = EvaluateMatching(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
+            return EvaluateGetCollEvents(evaluateParams.EventsPerStream, evaluateParams.IsNewData, matchingEvents, evaluateParams.ExprEvaluatorContext);
         }
     
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            ICollection<EventBean> matchingEvents = EvaluateMatching(eventsPerStream, exprEvaluatorContext);
-            return EvaluateGetCollScalar(eventsPerStream, isNewData, matchingEvents, exprEvaluatorContext);
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams) {
+            ICollection<EventBean> matchingEvents = EvaluateMatching(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
+            return EvaluateGetCollScalar(evaluateParams.EventsPerStream, evaluateParams.IsNewData, matchingEvents, evaluateParams.ExprEvaluatorContext);
         }
     
-        public virtual EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            ICollection<EventBean> matchingEvents = EvaluateMatching(eventsPerStream, context);
-            return EvaluateGetEventBean(eventsPerStream, isNewData, matchingEvents, context);
+        public virtual EventBean EvaluateGetEventBean(EvaluateParams evaluateParams) {
+            ICollection<EventBean> matchingEvents = EvaluateMatching(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
+            return EvaluateGetEventBean(evaluateParams.EventsPerStream, evaluateParams.IsNewData, matchingEvents, evaluateParams.ExprEvaluatorContext);
         }
     
         private ICollection<EventBean> EvaluateMatching(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {

@@ -10,8 +10,8 @@ using System;
 
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 

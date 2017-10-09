@@ -28,6 +28,14 @@ namespace com.espertech.esper.events
     {
         public static IDictionary<String, Object> CheckedCastUnderlyingMap(EventBean theEvent)
         {
+#if CHECKED_CAST
+            if (!(theEvent.Underlying is IDictionary<string, object>))
+            {
+                System.Diagnostics.Debug.Assert(true, "invalid dictionary");
+                throw new InvalidCastException("checked cast to IDictionary<string,object> failed");
+            }
+#endif
+
             return (IDictionary<String, Object>)theEvent.Underlying;
         }
 
@@ -362,7 +370,7 @@ namespace com.espertech.esper.events
             {
                 return eventAdapterService.AdapterForTypedMap((IDictionary<String, Object>)fragmentUnderlying, fragmentEventType);
             }
-            return eventAdapterService.AdapterForTypedObjectArray((Object[])fragmentUnderlying, fragmentEventType);
+            return eventAdapterService.AdapterForTypedObjectArray(fragmentUnderlying.UnwrapIntoArray<object>(true), fragmentEventType);
         }
 
         public static Object GetFragmentArray(EventAdapterService eventAdapterService, Object value, EventType fragmentEventType)
@@ -567,7 +575,8 @@ namespace com.espertech.esper.events
                 {
                     if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis))
                     {
-                        return "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis + " but receives " + boxedOther;
+                        return string.Format("Type by name '{0}' in property '{1}' expected {2} but receives {3}",
+                            otherName, propName, Name.Of(boxedThis), Name.Of(boxedOther));
                     }
                 }
             }

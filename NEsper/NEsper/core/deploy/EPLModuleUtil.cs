@@ -407,8 +407,18 @@ namespace com.espertech.esper.core.deploy
 
         public static Module ReadResource(String resource, EngineImportService engineImportService)
         {
+            Stream stream = null;
+
             var stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
-            var stream = ResourceManager.GetResourceAsStream(stripped);
+            var classLoader = engineImportService.GetClassLoader();
+            if (classLoader != null)
+            {
+                stream = classLoader.GetResourceAsStream(stripped);
+            }
+            if (stream == null)
+            {
+                stream = ResourceManager.GetResourceAsStream(stripped);
+            }
             if (stream == null)
             {
                 throw new IOException("Failed to find resource '" + resource + "' in classpath");

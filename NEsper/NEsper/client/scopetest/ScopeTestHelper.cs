@@ -9,6 +9,10 @@
 using System;
 using System.Text;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
+
 namespace com.espertech.esper.client.scopetest
 {
     /// <summary>
@@ -52,6 +56,45 @@ namespace com.espertech.esper.client.scopetest
             }
         }
 
+        private static bool AreCollectionsEqual(Object expected, Object actual)
+        {
+            var magicExpected = MagicMarker.GetCollectionFactory(expected.GetType())
+                .Invoke(expected);
+            var magicActual = MagicMarker.GetCollectionFactory(actual.GetType())
+                .Invoke(actual);
+            if (magicExpected.Count == magicActual.Count)
+            {
+                using (var magicExpectedEnum = magicExpected.GetEnumerator())
+                {
+                    using (var magicActualEnum = magicActual.GetEnumerator())
+                    {
+                        while (true)
+                        {
+                            var mvExpected = magicExpectedEnum.MoveNext();
+                            var mvActual = magicActualEnum.MoveNext();
+                            if (mvExpected && mvActual)
+                            {
+                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current))
+                                {
+                                    break;
+                                }
+                            }
+                            else if (!mvExpected && !mvActual)
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                throw new IllegalStateException("collection has been modified");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>Assert that two values equal. </summary>
         /// <param name="message">an optional message</param>
         /// <param name="expected">expected value</param>
@@ -65,6 +108,16 @@ namespace com.espertech.esper.client.scopetest
             if (expected != null && expected.Equals(actual))
             {
                 return;
+            }
+            if (expected != null && actual != null)
+            {
+                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection())
+                {
+                    if (AreCollectionsEqual(expected, actual))
+                    {
+                        return;
+                    }
+                }
             }
             FailNotEquals(message, expected, actual);
         }
@@ -121,6 +174,16 @@ namespace com.espertech.esper.client.scopetest
         public static void AssertNotNull(Object @object)
         {
             AssertTrue(@object != null);
+        }
+
+        /// <summary>
+        /// Assert that a value is not null.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="object">the object to check</param>
+        public static void AssertNotNull(String message, Object @object)
+        {
+            AssertTrue(message, @object != null);
         }
 
         /// <summary>Assert that a value is null. </summary>

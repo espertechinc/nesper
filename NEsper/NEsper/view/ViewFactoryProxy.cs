@@ -7,26 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using Castle.DynamicProxy;
+
+using com.espertech.esper.client;
+using com.espertech.esper.core.context.util;
+using com.espertech.esper.core.service;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.view
 {
     public class ViewFactoryProxy : IInterceptor
     {
-        private static readonly MethodInfo Target =
-            typeof(ViewFactory).GetMethod("MakeView");
+        private static readonly MethodInfo MakeViewMethod = typeof(ViewFactory).GetMethod("MakeView");
 
         private readonly String _engineURI;
         private readonly String _statementName;
         private readonly ViewFactory _viewFactory;
         private readonly String _viewName;
 
-        public static Object NewInstance(String engineURI, String statementName, ViewFactory viewFactory, String viewName)
+        public static ViewFactory NewInstance(String engineURI, String statementName, ViewFactory viewFactory, String viewName)
         {
             var generator = new ProxyGenerator();
-            return generator.CreateInterfaceProxyWithoutTarget(
+            return (ViewFactory) generator.CreateInterfaceProxyWithoutTarget(
                 typeof(ViewFactory),
                 viewFactory.GetType().GetInterfaces(),
                 new ViewFactoryProxy(engineURI, statementName, viewFactory, viewName));
@@ -38,7 +43,7 @@ namespace com.espertech.esper.view
         /// <param name="invocation">The invocation.</param>
         public void Intercept(IInvocation invocation)
         {
-            if (invocation.Method != Target)
+            if (invocation.Method != MakeViewMethod)
             {
                 invocation.ReturnValue = invocation.Method.Invoke(
                     _viewFactory, invocation.Arguments);

@@ -129,6 +129,7 @@ namespace com.espertech.esper.epl.annotation
             // resolve attribute type
             try
             {
+                engineImportService.GetClassLoader(); // Currently unused
                 return engineImportService.ResolveAnnotation(attributeTypeNameForCLR);
             }
             catch (EngineImportException e)

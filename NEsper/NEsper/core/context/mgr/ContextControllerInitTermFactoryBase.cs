@@ -41,8 +41,8 @@ namespace com.espertech.esper.core.context.mgr
         {
             _contextBuiltinProps = ContextPropertyEventType.GetInitiatedTerminatedType();
 	        LinkedHashSet<string> allTags = new LinkedHashSet<string>();
-	        ContextPropertyEventType.AddEndpointTypes(_factoryContext.ContextName, _detail.Start, _contextBuiltinProps, allTags);
-	        ContextPropertyEventType.AddEndpointTypes(_factoryContext.ContextName, _detail.End, _contextBuiltinProps, allTags);
+	        ContextPropertyEventType.AddEndpointTypes(FactoryContext.ContextName, _detail.Start, _contextBuiltinProps, allTags);
+	        ContextPropertyEventType.AddEndpointTypes(FactoryContext.ContextName, _detail.End, _contextBuiltinProps, allTags);
 	        _matchedEventMapMeta = new MatchedEventMapMeta(allTags, false);
 	    }
 
@@ -92,27 +92,27 @@ namespace com.espertech.esper.core.context.mgr
 
 	    public long AllocateSlot()
         {
-	        return _factoryContext.AgentInstanceContextCreate.StatementContext.ScheduleBucket.AllocateSlot();
+	        return FactoryContext.AgentInstanceContextCreate.StatementContext.ScheduleBucket.AllocateSlot();
 	    }
 
 	    public TimeProvider TimeProvider
 	    {
-	        get { return _factoryContext.AgentInstanceContextCreate.StatementContext.TimeProvider; }
+	        get { return FactoryContext.AgentInstanceContextCreate.StatementContext.TimeProvider; }
 	    }
 
 	    public SchedulingService SchedulingService
 	    {
-	        get { return _factoryContext.AgentInstanceContextCreate.StatementContext.SchedulingService; }
+	        get { return FactoryContext.AgentInstanceContextCreate.StatementContext.SchedulingService; }
 	    }
 
 	    public EPStatementHandle EpStatementHandle
 	    {
-	        get { return _factoryContext.AgentInstanceContextCreate.StatementContext.EpStatementHandle; }
+	        get { return FactoryContext.AgentInstanceContextCreate.StatementContext.EpStatementHandle; }
 	    }
 
 	    public StatementContext StatementContext
 	    {
-	        get { return _factoryContext.AgentInstanceContextCreate.StatementContext; }
+	        get { return FactoryContext.AgentInstanceContextCreate.StatementContext; }
 	    }
 
 	    public override ContextPartitionIdentifier KeyPayloadToIdentifier(object payload)

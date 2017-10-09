@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public ExprNewInstanceNode(string classIdent)
         {
-            this._classIdent = classIdent;
+            _classIdent = classIdent;
         }
 
         public override ExprEvaluator ExprEvaluator
@@ -67,9 +67,9 @@ namespace com.espertech.esper.epl.expression.ops
             get { return false; }
         }
 
-        public string GetClassIdent()
+        public string ClassIdent
         {
-            return _classIdent;
+            get { return _classIdent; }
         }
 
         public override bool EqualsNode(ExprNode node)

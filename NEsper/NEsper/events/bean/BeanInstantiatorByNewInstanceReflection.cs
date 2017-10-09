@@ -8,33 +8,36 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.events.bean
 {
-    public class BeanInstantiatorByNewInstanceReflection : BeanInstantiator {
+    public class BeanInstantiatorByNewInstanceReflection : BeanInstantiator
+    {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly Type clazz;
+        private readonly Type _clazz;
     
-        public BeanInstantiatorByNewInstanceReflection(Type clazz) {
-            this.clazz = clazz;
+        public BeanInstantiatorByNewInstanceReflection(Type clazz)
+        {
+            _clazz = clazz;
         }
     
-        public Object Instantiate() {
-            try {
-                return Clazz.NewInstance();
-            } catch (IllegalAccessException e) {
-                return Handle(e);
-            } catch (InstantiationException e) {
+        public Object Instantiate()
+        {
+            try
+            {
+                return Activator.CreateInstance(_clazz);
+            }
+            catch (MemberAccessException e)
+            {
                 return Handle(e);
             }
         }
     
-        private Object Handle(Exception e) {
-            string message = "Unexpected exception encountered invoking newInstance on class '" + clazz.Name + "': " + e.Message;
+        private Object Handle(Exception e)
+        {
+            var message = "Unexpected exception encountered invoking newInstance on class '" + _clazz.Name + "': " + e.Message;
             Log.Error(message, e);
             return null;
         }

@@ -8,29 +8,26 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.rettype;
 
 namespace com.espertech.esper.epl.expression.dot.inner
 {
     public class InnerEvaluatorArrPrimitiveToColl : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
     
         public InnerEvaluatorArrPrimitiveToColl(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            _rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            var array = rootEvaluator.Evaluate(evaluateParams) as Array;
+            var array = _rootEvaluator.Evaluate(evaluateParams) as Array;
             if (array == null) {
                 return null;
             }
@@ -47,11 +44,11 @@ namespace com.espertech.esper.epl.expression.dot.inner
             return array.Unwrap<object>();
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams) {
             return null;
         }
     
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams) {
             return null;
         }
 
@@ -65,7 +62,7 @@ namespace com.espertech.esper.epl.expression.dot.inner
             get { return null; }
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams) {
             return null;
         }
 
@@ -76,7 +73,7 @@ namespace com.espertech.esper.epl.expression.dot.inner
 
         public EPType TypeInfo
         {
-            get { return EPTypeHelper.CollectionOfSingleValue(rootEvaluator.ReturnType.GetElementType()); }
+            get { return EPTypeHelper.CollectionOfSingleValue(_rootEvaluator.ReturnType.GetElementType()); }
         }
     }
 }

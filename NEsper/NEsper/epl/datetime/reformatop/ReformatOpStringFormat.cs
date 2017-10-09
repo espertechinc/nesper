@@ -19,7 +19,8 @@ namespace com.espertech.esper.epl.datetime.reformatop
 {
     public class ReformatOpStringFormat : ReformatOp
     {
-        private static string Action(DateTimeOffset d) {
+        private static string Action(DateTimeOffset d)
+        {
             return d.ToString();
         }
     

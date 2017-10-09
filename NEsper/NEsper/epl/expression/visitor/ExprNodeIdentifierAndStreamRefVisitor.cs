@@ -6,70 +6,67 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.enummethod.dot;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.visitor
 {
-    public class ExprNodeIdentifierAndStreamRefVisitor : ExprNodeVisitor {
-        private readonly bool isVisitAggregateNodes;
-        private List<ExprNodePropOrStreamDesc> refs;
+    public class ExprNodeIdentifierAndStreamRefVisitor : ExprNodeVisitor
+    {
+        private readonly bool _isVisitAggregateNodes;
+        private List<ExprNodePropOrStreamDesc> _refs;
     
         public ExprNodeIdentifierAndStreamRefVisitor(bool isVisitAggregateNodes) {
-            this.isVisitAggregateNodes = isVisitAggregateNodes;
+            _isVisitAggregateNodes = isVisitAggregateNodes;
         }
     
         public bool IsVisit(ExprNode exprNode) {
             if (exprNode is ExprLambdaGoesNode) {
                 return false;
             }
-            if (isVisitAggregateNodes) {
+            if (_isVisitAggregateNodes) {
                 return true;
             }
             return !(exprNode is ExprAggregateNode);
         }
     
-        public List<ExprNodePropOrStreamDesc> GetRefs() {
-            if (refs == null) {
-                return Collections.EmptyList();
+        public IList<ExprNodePropOrStreamDesc> GetRefs() {
+            if (_refs == null) {
+                return Collections.GetEmptyList<ExprNodePropOrStreamDesc>();
             }
-            return refs;
+            return _refs;
         }
     
         public void Visit(ExprNode exprNode) {
             if (exprNode is ExprIdentNode) {
-                ExprIdentNode identNode = (ExprIdentNode) exprNode;
-    
-                int streamId = identNode.StreamId;
-                string propertyName = identNode.ResolvedPropertyName;
+                var identNode = (ExprIdentNode) exprNode;
+                var streamId = identNode.StreamId;
+                var propertyName = identNode.ResolvedPropertyName;
                 CheckAllocatedRefs();
-                refs.Add(new ExprNodePropOrStreamPropDesc(streamId, propertyName));
+                _refs.Add(new ExprNodePropOrStreamPropDesc(streamId, propertyName));
             } else if (exprNode is ExprStreamRefNode) {
-                ExprStreamRefNode streamRefNode = (ExprStreamRefNode) exprNode;
-                int? stream = streamRefNode.StreamReferencedIfAny;
+                var streamRefNode = (ExprStreamRefNode) exprNode;
+                var stream = streamRefNode.StreamReferencedIfAny;
                 CheckAllocatedRefs();
                 if (stream != null) {
-                    refs.Add(new ExprNodePropOrStreamExprDesc(stream, streamRefNode));
+                    _refs.Add(new ExprNodePropOrStreamExprDesc(stream.Value, streamRefNode));
                 }
             }
         }
     
         public void Reset() {
-            if (refs != null) {
-                refs.Clear();
+            if (_refs != null) {
+                _refs.Clear();
             }
         }
     
         private void CheckAllocatedRefs() {
-            if (refs == null) {
-                refs = new List<ExprNodePropOrStreamDesc>(4);
+            if (_refs == null) {
+                _refs = new List<ExprNodePropOrStreamDesc>(4);
             }
         }
     }

@@ -9,47 +9,59 @@
 using System;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.events.arr
 {
     /// <summary>
     /// Getter for a dynamic property (syntax field.inner?), using vanilla reflection.
     /// </summary>
-    public class ObjectArrayDynamicPropertyGetter : ObjectArrayEventPropertyGetter {
-        private readonly string propertyName;
+    public class ObjectArrayDynamicPropertyGetter : ObjectArrayEventPropertyGetter
+    {
+        private readonly string _propertyName;
     
-        public ObjectArrayDynamicPropertyGetter(string propertyName) {
-            this.propertyName = propertyName;
+        public ObjectArrayDynamicPropertyGetter(string propertyName)
+        {
+            _propertyName = propertyName;
         }
     
-        public Object GetObjectArray(Object[] array) {
+        public Object GetObjectArray(Object[] array)
+        {
             return null;
         }
     
-        public bool IsObjectArrayExistsProperty(Object[] array) {
+        public bool IsObjectArrayExistsProperty(Object[] array)
+        {
             return false;
         }
     
-        public Object Get(EventBean eventBean) {
-            ObjectArrayEventType objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes.Get(propertyName);
-            if (index == null) {
+        public Object Get(EventBean eventBean)
+        {
+            int index;
+
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
+            if (!objectArrayEventType.PropertiesIndexes.TryGetValue(_propertyName, out index))
+            {
                 return null;
             }
-            Object[] theEvent = (Object[]) eventBean.Underlying;
-            return theEvent[index];
+
+            return ((Object[]) eventBean.Underlying)[index];
         }
     
-        public bool IsExistsProperty(EventBean eventBean) {
-            ObjectArrayEventType objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes.Get(propertyName);
-            return index != null;
+        public bool IsExistsProperty(EventBean eventBean)
+        {
+            int index;
+
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
+            if (objectArrayEventType.PropertiesIndexes.TryGetValue(_propertyName, out index))
+            {
+                return true;
+            }
+
+            return false;
         }
     
-        public Object GetFragment(EventBean eventBean) {
+        public Object GetFragment(EventBean eventBean)
+        {
             return null;
         }
     }

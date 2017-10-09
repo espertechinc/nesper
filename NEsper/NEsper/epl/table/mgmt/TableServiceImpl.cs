@@ -73,9 +73,33 @@ namespace com.espertech.esper.epl.table.mgmt
             return _tables.Get(tableName);
         }
 
-        public TableMetadata AddTable(string tableName, string eplExpression, string statementName, Type[] keyTypes, IDictionary<String, TableMetadataColumn> tableColumns, TableStateRowFactory tableStateRowFactory, int numberMethodAggregations, StatementContext statementContext, ObjectArrayEventType internalEventType, ObjectArrayEventType publicEventType, TableMetadataInternalEventToPublic eventToPublic, bool queryPlanLogging)
+        public TableMetadata AddTable(
+            string tableName, 
+            string eplExpression, 
+            string statementName, 
+            Type[] keyTypes, 
+            IDictionary<String, TableMetadataColumn> tableColumns,
+            TableStateRowFactory tableStateRowFactory,
+            int numberMethodAggregations,
+            StatementContext statementContext,
+            ObjectArrayEventType internalEventType,
+            ObjectArrayEventType publicEventType,
+            TableMetadataInternalEventToPublic eventToPublic,
+            bool queryPlanLogging)
         {
-            var metadata = new TableMetadata(tableName, eplExpression, statementName, keyTypes, tableColumns, tableStateRowFactory, numberMethodAggregations, statementContext, internalEventType, publicEventType, eventToPublic, queryPlanLogging);
+            var metadata = new TableMetadata(
+                tableName,
+                eplExpression,
+                statementName,
+                keyTypes,
+                tableColumns,
+                tableStateRowFactory,
+                numberMethodAggregations,
+                statementContext,
+                internalEventType,
+                publicEventType,
+                eventToPublic,
+                queryPlanLogging);
 
             // determine table state factory
             TableStateFactory tableStateFactory;

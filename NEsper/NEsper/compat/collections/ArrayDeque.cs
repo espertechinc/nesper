@@ -356,11 +356,14 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
-        /// Retrieves and removes the head of the queue represented by this deque or returns null if deque is empty.
+        /// Retrieves and removes the head of the queue represented by 
+        /// this deque or returns default(T) if deque is empty.
         /// </summary>
         /// <returns></returns>
         public T Poll()
         {
+            if (_head == _tail)
+                return default(T);
             return RemoveFirst();
         }
 
@@ -375,11 +378,17 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
-        /// Retrieves, but does not remove, the head of the queue represented by this deque, or returns null if this deque is empty.
+        /// Retrieves, but does not remove, the head of the queue represented by this deque, 
+        /// or returns default(T) if this deque is empty.
         /// </summary>
         /// <returns></returns>
         public T Peek()
         {
+            if (_head == _tail)
+            {
+                return default(T);
+            }
+
             return First;
         }
 
@@ -388,7 +397,10 @@ namespace com.espertech.esper.compat.collections
             get
             {
                 if (_head == _tail)
+                {
                     throw new ArgumentOutOfRangeException();
+                }
+
                 int indx = _head;
                 if (indx == _array.Length)
                     indx = 0;
@@ -402,7 +414,10 @@ namespace com.espertech.esper.compat.collections
             get
             {
                 if (_head == _tail)
+                {
                     throw new ArgumentOutOfRangeException();
+                }
+
                 int indx = _tail - 1;
                 if (indx == -1)
                     indx = _array.Length - 1;

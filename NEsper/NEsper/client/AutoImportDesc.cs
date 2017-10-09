@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
+
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.client
 {
@@ -53,6 +56,12 @@ namespace com.espertech.esper.client
         {
             TypeOrNamespace = namespaceOrType;
             AssemblyNameOrFile = assemblyNameOrFile;
+        }
+
+        public AutoImportDesc(string namespaceOrType, Assembly assembly)
+        {
+            TypeOrNamespace = namespaceOrType;
+            AssemblyNameOrFile = assembly.FullName;
         }
 
         /// <summary>

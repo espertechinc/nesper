@@ -25,13 +25,21 @@ namespace com.espertech.esper.epl.view
     public class OutputProcessViewConditionFirstPostProcess : OutputProcessViewConditionFirst
     {
         private readonly OutputStrategyPostProcess _postProcessor;
-    
-        public OutputProcessViewConditionFirstPostProcess(ResultSetProcessorHelperFactory resultSetProcessorHelperFactory, ResultSetProcessor resultSetProcessor, long? afterConditionTime, int? afterConditionNumberOfEvents, bool afterConditionSatisfied, OutputProcessViewConditionFactory parent, AgentInstanceContext agentInstanceContext, OutputStrategyPostProcess postProcessor)
+
+        public OutputProcessViewConditionFirstPostProcess(
+            ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            ResultSetProcessor resultSetProcessor,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
+            bool afterConditionSatisfied,
+            OutputProcessViewConditionFactory parent,
+            AgentInstanceContext agentInstanceContext,
+            OutputStrategyPostProcess postProcessor)
             : base(resultSetProcessorHelperFactory, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext)
         {
             _postProcessor = postProcessor;
         }
-    
+
         public void Output(bool forceUpdate, UniformPair<EventBean[]> results)
         {
             // Child view can be null in replay from named window

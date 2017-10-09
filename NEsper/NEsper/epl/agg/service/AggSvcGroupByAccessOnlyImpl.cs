@@ -76,28 +76,28 @@ namespace com.espertech.esper.epl.agg.service
             _currentGroupKey = groupKey;
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetValue(_currentAccesses[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+            return pair.Accessor.GetValue(_currentAccesses[pair.Slot], evaluateParams);
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableEvents(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetEnumerableEvents(_currentAccesses[pair.Slot], evaluateParams);
         }
 
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableScalar(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetEnumerableScalar(_currentAccesses[pair.Slot], evaluateParams);
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             AggregationAccessorSlotPair pair = _accessors[column];
-            return pair.Accessor.GetEnumerableEvent(_currentAccesses[pair.Slot], eventsPerStream, isNewData, context);
+            return pair.Accessor.GetEnumerableEvent(_currentAccesses[pair.Slot], evaluateParams);
         }
 
         public void ClearResults(ExprEvaluatorContext exprEvaluatorContext)

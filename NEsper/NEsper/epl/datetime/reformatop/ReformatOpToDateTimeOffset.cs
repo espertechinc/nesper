@@ -26,11 +26,14 @@ namespace com.espertech.esper.epl.datetime.reformatop
         public ReformatOpToDateTimeOffset(TimeZoneInfo timeZone, TimeAbacus timeAbacus)
         {
             _timeZone = timeZone;
+            _timeAbacus = timeAbacus;
         }
 
         public Object Evaluate(long ts, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            return ts.TimeFromMillis(_timeZone);
+            return _timeAbacus.ToDate(ts)
+                .DateTime
+                .TranslateTo(_timeZone);
         }
 
         public object Evaluate(DateTime d, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext)
@@ -48,10 +51,9 @@ namespace com.espertech.esper.epl.datetime.reformatop
             return d.DateTime.TranslateTo(_timeZone);
         }
 
-
         public Type ReturnType
         {
-            get { return typeof(DateTimeOffset?); }
+            get { return typeof(DateTimeOffset); }
         }
 
         public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(

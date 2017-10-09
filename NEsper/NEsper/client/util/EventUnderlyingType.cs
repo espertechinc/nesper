@@ -23,15 +23,15 @@ namespace com.espertech.esper.client.util
         OBJECTARRAY,
 
         /// <summary>
-        /// Event representation is Map (any java.util.Map interface implementation).
+        /// Event representation is Map (any IDictionary interface implementation).
         /// </summary>
         MAP,
 
-        /// <summary>Event representation is Avro (GenericData.Record).</summary>
+        /// <summary>Event representation is Avro (GenericRecord).</summary>
         AVRO
     }
 
-    public static class EnumUnderlyingTypeExtensions
+    public static class EventUnderlyingTypeExtensions
     {
         private static readonly string OA_TYPE_NAME = typeof(Object[]).FullName;
         private static readonly string MAP_TYPE_NAME = typeof(IDictionary<string, object>).FullName;

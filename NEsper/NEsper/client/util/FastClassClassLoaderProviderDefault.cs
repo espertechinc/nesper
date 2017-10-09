@@ -17,6 +17,8 @@ namespace com.espertech.esper.client.util
     /// </summary>
     public class FastClassClassLoaderProviderDefault : FastClassClassLoaderProvider
     {
+        public const string NAME = "FastClassClassLoaderProvider";
+
         public static readonly FastClassClassLoaderProviderDefault INSTANCE = new FastClassClassLoaderProviderDefault();
 
         private FastClassClassLoaderProviderDefault()

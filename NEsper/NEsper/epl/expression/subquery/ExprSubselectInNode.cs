@@ -18,6 +18,7 @@ using com.espertech.esper.events;
 namespace com.espertech.esper.epl.expression.subquery
 {
     /// <summary>Represents a subselect in an expression tree.</summary>
+    [Serializable]
     public class ExprSubselectInNode : ExprSubselectNode
     {
         private readonly bool _isNotIn;
@@ -94,7 +95,7 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
     
-        public override EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+        public override EventBean EvaluateGetEventBean(EvaluateParams evaluateParams) {
             return null;
         }
     }

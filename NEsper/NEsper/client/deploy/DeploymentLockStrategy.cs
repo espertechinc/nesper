@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Threading;
+
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.client.deploy
@@ -21,7 +23,7 @@ namespace com.espertech.esper.client.deploy
         /// </summary>
         /// <param name="engineWideLock">the engine-wide event processing read-write lock</param>
         /// <exception cref="DeploymentLockException">to indicate lock attempt failed</exception>
-        /// <exception cref="InterruptedException">when lock-taking is interrupted</exception>
+        /// <exception cref="ThreadInterruptedException">when lock-taking is interrupted</exception>
         void Acquire(IReaderWriterLock engineWideLock) ;
     
         /// <summary>

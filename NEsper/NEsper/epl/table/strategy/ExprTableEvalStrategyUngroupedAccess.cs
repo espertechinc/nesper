@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return _accessor.GetValue(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetValue(aggregationState, new EvaluateParams(eventsPerStream, isNewData, context));
         }
     
         public object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -59,7 +59,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return _accessor.GetEnumerableEvents(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvents(aggregationState, new EvaluateParams(eventsPerStream, isNewData, context));
         }
     
         public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -70,7 +70,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return _accessor.GetEnumerableEvent(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableEvent(aggregationState, new EvaluateParams(eventsPerStream, isNewData, context));
         }
     
         public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
@@ -81,7 +81,7 @@ namespace com.espertech.esper.epl.table.strategy
                 return null;
             }
             AggregationState aggregationState = GetAndLock(@event, context);
-            return _accessor.GetEnumerableScalar(aggregationState, eventsPerStream, isNewData, context);
+            return _accessor.GetEnumerableScalar(aggregationState, new EvaluateParams(eventsPerStream, isNewData, context));
         }
     
         private AggregationState GetAndLock(ObjectArrayBackedEventBean @event, ExprEvaluatorContext exprEvaluatorContext)

@@ -26,19 +26,11 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
-        }
-
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-            var @event = eventsPerStream[_streamNum];
+            var @event = evaluateParams.EventsPerStream[_streamNum];
             if (@event == null) {
                 return null;
             }
-            return _tableMetadata.EventToPublic.Convert(@event, eventsPerStream, isNewData, context);
+            return _tableMetadata.EventToPublic.Convert(@event, evaluateParams);
         }
 
         public Type ReturnType

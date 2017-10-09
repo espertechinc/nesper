@@ -188,7 +188,7 @@ namespace com.espertech.esper.view.ext
                         var existingList = (IList<EventBean>)existing;
                         while (_numberOfEvents > _sortWindowSize && !existingList.IsEmpty())
                         {
-                            var newestEvent = existingList.Delete(0);
+                            var newestEvent = existingList.DeleteAt(0);
                             var uniqueKey = GetUniqueValues(newestEvent);
                             _uniqueKeySortKeys.Remove(uniqueKey);
                             _numberOfEvents--;

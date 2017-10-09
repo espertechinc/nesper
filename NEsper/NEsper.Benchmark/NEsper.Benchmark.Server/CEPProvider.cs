@@ -53,7 +53,7 @@ namespace NEsper.Benchmark.Server
             public void Init(int sleepListenerMillis)
             {
                 Configuration configuration = new Configuration();
-                configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle =
+                configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
                     PropertyResolutionStyle.CASE_INSENSITIVE;
                 configuration.AddEventType("Market", typeof(MarketData));
                 EPServiceProvider epService = EPServiceProviderManager.GetProvider("benchmark", configuration);

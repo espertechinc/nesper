@@ -19,9 +19,9 @@ namespace com.espertech.esper.epl.expression.methodagg
     /// <summary>
     /// Represents the Rate(...) and aggregate function is an expression tree.
     /// </summary>
+    [Serializable]
     public class ExprRateAggNode : ExprAggregateNodeBase
     {
-
         /// <summary>
         /// Ctor.
         /// </summary>

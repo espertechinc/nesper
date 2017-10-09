@@ -268,8 +268,7 @@ namespace com.espertech.esper.view.window
         protected void ScheduleCallback()
         {
             long current = _agentInstanceContext.StatementContext.SchedulingService.Time;
-            ExprTimePeriodEvalDeltaResult deltaWReference = _timeDeltaComputation.DeltaAddWReference(
-                current, _currentReferencePoint);
+            ExprTimePeriodEvalDeltaResult deltaWReference = _timeDeltaComputation.DeltaAddWReference(current, _currentReferencePoint.Value);
             long afterTime = deltaWReference.Delta;
             _currentReferencePoint = deltaWReference.LastReference;
 

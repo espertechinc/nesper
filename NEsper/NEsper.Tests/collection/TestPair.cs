@@ -24,8 +24,8 @@ namespace com.espertech.esper.collection
         [Test]
         public void TestHashCode()
         {
-            Assert.IsTrue(_pair1.GetHashCode() == "a".GetHashCode()*397 + "b".GetHashCode());
-            Assert.IsTrue(_pair3.GetHashCode() == "a".GetHashCode()*397);
+            Assert.IsTrue(_pair1.GetHashCode() == ("a".GetHashCode()*397 ^ "b".GetHashCode()));
+            Assert.IsTrue(_pair3.GetHashCode() == ("a".GetHashCode()*397));
             Assert.IsTrue(_pair4.GetHashCode() == "b".GetHashCode());
             Assert.IsTrue(_pair5.GetHashCode() == 0);
     

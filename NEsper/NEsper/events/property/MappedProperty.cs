@@ -189,14 +189,15 @@ namespace com.espertech.esper.events.property
 
         public override Type GetPropertyTypeMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
-            Object type = optionalMapPropTypes.Get(PropertyNameAtomic);
+            var type = optionalMapPropTypes.Get(PropertyNameAtomic);
             if (type == null)
             {
                 return null;
             }
             if (type is Type)
             {
-                if (TypeHelper.IsImplementsInterface((Type)type, typeof(DataMap)))
+                var trueType = (Type)type;
+                if (trueType.IsGenericStringDictionary())
                 {
                     return typeof(Object);
                 }
@@ -206,19 +207,20 @@ namespace com.espertech.esper.events.property
 
         public override MapEventPropertyGetter GetGetterMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
-            Object type = optionalMapPropTypes.Get(PropertyNameAtomic);
+            var type = optionalMapPropTypes.Get(PropertyNameAtomic);
             if (type == null)
             {
                 return null;
             }
             if (type is Type)
             {
-                if (TypeHelper.IsImplementsInterface((Type)type, typeof(DataMap)))
+                var trueType = (Type)type;
+                if (trueType.IsGenericStringDictionary())
                 {
                     return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
                 }
             }
-            if (type is DataMap)
+            if (type.GetType().IsGenericStringDictionary())
             {
                 return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
             }
@@ -290,7 +292,7 @@ namespace com.espertech.esper.events.property
             var typeAsType = type as Type;
             if (typeAsType != null)
             {
-                if (typeAsType.IsImplementsInterface(typeof(DataMap)))
+                if (typeAsType.IsGenericStringDictionary())
                 {
                     return new ObjectArrayMappedPropertyGetter(index, Key);
                 }

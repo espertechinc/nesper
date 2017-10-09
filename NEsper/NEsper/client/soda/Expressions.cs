@@ -62,8 +62,8 @@ namespace com.espertech.esper.client.soda
         /// returns null if the type cannot be casted to the type.
         /// <para>
         /// The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, bool.
-        /// Alternatively to "java.lang.string" the simple "string" is also permitted.
+        /// primitive type names: byte, char, short, int, long, float, double, bool.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// </para>
         /// <para>
         /// Type checks include all superclasses and interfaces of the value returned by the expression.
@@ -82,8 +82,8 @@ namespace com.espertech.esper.client.soda
         /// returns null if the type cannot be casted to the type.
         /// <para>
         /// The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, bool.
-        /// Alternatively to "java.lang.string" the simple "string" is also permitted.
+        /// primitive type names: byte, char, short, int, long, float, double, bool.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// </para>
         /// <para>
         /// Type checks include all superclasses and interfaces of the value returned by the expression.
@@ -101,8 +101,8 @@ namespace com.espertech.esper.client.soda
         /// Instance-of function, tests if the type of the return value of an expression is in a list of types.
         /// <para>
         /// The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, bool.
-        /// Alternatively to "java.lang.string" the simple "string" is also permitted.
+        /// primitive type names: byte, char, short, int, long, float, double, bool.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// </para>
         /// <para>
         /// Type checks include all superclasses and interfaces of the value returned by the expression.
@@ -124,8 +124,8 @@ namespace com.espertech.esper.client.soda
         /// </para>
         /// <para>
         /// The list of types can include fully-qualified class names plus any of the
-        /// Java primitive type names: byte, char, short, int, long, float, double, bool.
-        /// Alternatively to "java.lang.string" the simple "string" is also permitted.
+        /// primitive type names: byte, char, short, int, long, float, double, bool.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// </para>
         /// <para>
         /// Type checks include all superclasses and interfaces of the value returned by the expression.
@@ -554,7 +554,7 @@ namespace com.espertech.esper.client.soda
         public static PreviousExpression PreviousTail(Expression expression, string property)
         {
             var expr = new PreviousExpression(expression, property);
-            expr.Type = PreviousExpressionType.PREVTAIL;
+            expr.ExpressionType = PreviousExpressionType.PREVTAIL;
             return expr;
         }
 
@@ -567,7 +567,7 @@ namespace com.espertech.esper.client.soda
         public static PreviousExpression PreviousTail(int index, string property)
         {
             var expr = new PreviousExpression(index, property);
-            expr.Type = PreviousExpressionType.PREVTAIL;
+            expr.ExpressionType = PreviousExpressionType.PREVTAIL;
             return expr;
         }
 
@@ -1675,6 +1675,32 @@ namespace com.espertech.esper.client.soda
             Expression minutesExpr = (minutes != null) ? Constant(minutes) : null;
             Expression secondsExpr = (seconds != null) ? Constant(seconds) : null;
             Expression millisecondsExpr = (milliseconds != null) ? Constant(milliseconds) : null;
+            return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
+        }
+
+        /// <summary>
+        /// Returns a time period expression for the specified parts.
+        /// <para />Each part can be a null value in which case the part is left out.
+        /// <para />Each object value may be a String value for an event property, or a number for a constant.
+        /// </summary>
+        /// <param name="days">day part</param>
+        /// <param name="hours">hour part</param>
+        /// <param name="minutes">minute part</param>
+        /// <param name="seconds">seconds part</param>
+        /// <param name="milliseconds">milliseconds part</param>
+        /// <returns>time period expression</returns>
+        public static TimePeriodExpression TimePeriod(
+            int? days, 
+            int? hours, 
+            int? minutes, 
+            int? seconds, 
+            int? milliseconds)
+        {
+            Expression daysExpr = ConvertVariableNumeric(days);
+            Expression hoursExpr = ConvertVariableNumeric(hours);
+            Expression minutesExpr = ConvertVariableNumeric(minutes);
+            Expression secondsExpr = ConvertVariableNumeric(seconds);
+            Expression millisecondsExpr = ConvertVariableNumeric(milliseconds);
             return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
         }
 

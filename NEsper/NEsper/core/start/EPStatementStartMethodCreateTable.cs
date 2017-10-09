@@ -76,7 +76,7 @@ namespace com.espertech.esper.core.start
                 var tableStateRowFactory = plan.StateRowFactory;
 
                 // register new table
-                var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
+                var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
                 metadata = services.TableService.AddTable(createDesc.TableName, statementContext.Expression, statementContext.StatementName, keyTypes, plan.TableColumns, tableStateRowFactory, plan.NumberMethodAggregations, statementContext, plan.InternalEventType,
                         plan.PublicEventType, plan.EventToPublic, queryPlanLogging);
             }
@@ -197,13 +197,13 @@ namespace com.espertech.esper.core.start
                 statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false, null, false);
 
             // substitute parameter nodes
-            foreach (var childNode in columnExpressionType.ChildNodes)
+            foreach (var childNode in columnExpressionType.ChildNodes.ToArray())
             {
                 if (childNode is ExprIdentNode)
                 {
-                    var identNode = (ExprIdentNode)childNode;
+                    var identNode = (ExprIdentNode) childNode;
                     var propname = identNode.FullUnresolvedName.Trim();
-                    Type clazz = TypeHelper.GetTypeForSimpleName(propname);
+                    var clazz = TypeHelper.GetTypeForSimpleName(propname);
                     if (propname.ToLower().Trim() == "object")
                     {
                         clazz = typeof(object);

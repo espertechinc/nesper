@@ -8,8 +8,8 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.support.view;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -41,10 +41,11 @@ namespace com.espertech.esper.view.window
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {1000}));
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsFalse(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1, null)));
-            Assert.IsTrue(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1000, null)));
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { 1000 }));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new LengthWindowView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), _factory, 1000, null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)

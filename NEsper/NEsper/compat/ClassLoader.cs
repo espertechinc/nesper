@@ -6,9 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.IO;
+
 namespace com.espertech.esper.compat
 {
     public interface ClassLoader
     {
+        Stream GetResourceAsStream(string resourceName);
     }
 }

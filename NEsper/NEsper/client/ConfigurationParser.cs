@@ -17,6 +17,7 @@ using System.Xml.XPath;
 using System.Xml.Xsl;
 
 using com.espertech.esper.client.soda;
+using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,10 +25,10 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.type;
 using com.espertech.esper.util;
 
-using Stream = System.IO.Stream;
-
 namespace com.espertech.esper.client
 {
+    using Stream = System.IO.Stream;
+
     /// <summary>Parser for configuration XML.</summary>
     public class ConfigurationParser
     {
@@ -106,9 +107,12 @@ namespace com.espertech.esper.client
         /// <exception cref="EPException">to indicate parse errors</exception>
         internal static void DoConfigure(Configuration configuration, XmlDocument doc)
         {
-            var root = doc.DocumentElement;
+            DoConfigure(configuration, doc.DocumentElement);
+        }
 
-            foreach (var element in CreateElementEnumerable(root.ChildNodes))
+        internal static void DoConfigure(Configuration configuration, XmlElement rootElement)
+        {
+            foreach (var element in CreateElementEnumerable(rootElement.ChildNodes))
             {
                 var nodeName = element.Name;
                 switch (nodeName)
@@ -214,7 +218,7 @@ namespace com.espertech.esper.client
                 {
                     HandleXMLDOM(name, configuration, eventTypeElement);
                 }
-                else if (nodeName == "java-util-map")
+                else if (nodeName == "map")
                 {
                     HandleMap(name, configuration, eventTypeElement);
                 }
@@ -238,14 +242,13 @@ namespace com.espertech.esper.client
             ConfigurationEventTypeMap config;
             var startTimestampProp = GetOptionalAttribute(eventTypeElement, "start-timestamp-property-name");
             var endTimestampProp = GetOptionalAttribute(eventTypeElement, "end-timestamp-property-name");
-            var superTypesList = eventTypeElement.Attributes.GetNamedItem("supertype-names");
+            var superTypesList = GetOptionalAttribute(eventTypeElement, "supertype-names");
             if (superTypesList != null || startTimestampProp != null || endTimestampProp != null)
             {
                 config = new ConfigurationEventTypeMap();
                 if (superTypesList != null)
                 {
-                    var value = superTypesList.InnerText;
-                    var names = value.SplitCsv();
+                    var names = superTypesList.SplitCsv();
                     foreach (var superTypeName in names)
                     {
                         config.SuperTypes.Add(superTypeName.Trim());
@@ -499,7 +502,8 @@ namespace com.espertech.esper.client
         private static void HandleAutoImports(Configuration configuration, XmlElement element)
         {
             var name = GetRequiredAttribute(element, "import-name");
-            configuration.AddImport(name);
+            var assembly = GetOptionalAttribute(element, "assembly");
+            configuration.AddImport(name, assembly);
         }
 
         private static void HandleAutoImportAnnotations(Configuration configuration, XmlElement element)
@@ -631,7 +635,7 @@ namespace com.espertech.esper.client
                 {
                     var maxAge = GetRequiredAttribute(subElement, "max-age-seconds");
                     var purgeInterval = GetRequiredAttribute(subElement, "purge-interval-seconds");
-                    ConfigurationCacheReferenceType refTypeEnum = ConfigurationCacheReferenceType.Default;
+                    ConfigurationCacheReferenceType refTypeEnum = ConfigurationCacheReferenceTypeHelper.GetDefault();
                     if (subElement.Attributes.GetNamedItem("ref-type") != null)
                     {
                         var refType = subElement.Attributes.GetNamedItem("ref-type").InnerText;
@@ -701,26 +705,28 @@ namespace com.espertech.esper.client
             var name = element.Attributes.GetNamedItem("name").InnerText;
             var functionClassName = element.Attributes.GetNamedItem("function-class").InnerText;
             var functionMethodName = element.Attributes.GetNamedItem("function-method").InnerText;
-            var valueCache =
-                ConfigurationPlugInSingleRowFunction.ValueCache.DISABLED;
-            var filterOptimizable =
-                ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED;
-            var valueCacheStr = GetOptionalAttribute(element, "value-cache");
-            if (valueCacheStr != null)
-            {
-                valueCache = EnumHelper.Parse<ConfigurationPlugInSingleRowFunction.ValueCacheEnum>(valueCacheStr);
-            }
-            var filterOptimizableStr = GetOptionalAttribute(element, "filter-optimizable");
-            if (filterOptimizableStr != null)
-            {
-                filterOptimizable = EnumHelper.Parse<ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum>(filterOptimizableStr);
-            }
+            var valueCache = ValueCacheEnum.DISABLED;
+            var filterOptimizable = FilterOptimizableEnum.ENABLED;
+
+            WhenOptionalAttribute(
+                element, "value-cache", valueCacheStr =>
+                {
+                    valueCache = EnumHelper.Parse<ValueCacheEnum>(valueCacheStr);
+                });
+
+            WhenOptionalAttribute(
+                element, "filter-optimizable", filterOptimizableStr =>
+                {
+                    filterOptimizable = EnumHelper.Parse<FilterOptimizableEnum>(filterOptimizableStr);
+                });
+
             var rethrowExceptionsStr = GetOptionalAttribute(element, "rethrow-exceptions");
             var rethrowExceptions = false;
             if (rethrowExceptionsStr != null)
             {
                 rethrowExceptions = Boolean.Parse(rethrowExceptionsStr);
             }
+
             var eventTypeName = GetOptionalAttribute(element, "event-type-name");
             configuration.AddPlugInSingleRowFunction(
                 new ConfigurationPlugInSingleRowFunction(
@@ -749,7 +755,7 @@ namespace com.espertech.esper.client
             var variableName = GetRequiredAttribute(element, "name");
             var type = GetRequiredAttribute(element, "type");
 
-            var variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
+            var variableType = TypeHelper.GetTypeForSimpleName(type);
             if (variableType == null)
             {
                 throw new ConfigurationException(
@@ -973,11 +979,10 @@ namespace com.espertech.esper.client
             if (element.Attributes.GetNamedItem("property-revision") != null)
             {
                 var propertyRevision = element.Attributes.GetNamedItem("property-revision").InnerText;
-                ConfigurationRevisionEventType.PropertyRevision propertyRevisionEnum;
+                PropertyRevisionEnum propertyRevisionEnum;
                 try
                 {
-                    propertyRevisionEnum = ConfigurationRevisionEventType.PropertyRevision.ValueOf(
-                            propertyRevision.Trim().ToUpperInvariant());
+                    propertyRevisionEnum = EnumHelper.Parse<PropertyRevisionEnum>(propertyRevision);
                     revEventType.PropertyRevision = propertyRevisionEnum;
                 }
                 catch
@@ -1148,19 +1153,19 @@ namespace com.espertech.esper.client
                     var preserveOrder = Boolean.Parse(preserveOrderText);
                     configuration.EngineDefaults.Threading.IsListenerDispatchPreserveOrder = preserveOrder;
 
-                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                    {
-                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
-                        var timeoutMSec = Int64.Parse(timeoutMSecText);
-                        configuration.EngineDefaults.Threading.ListenerDispatchTimeout = timeoutMSec;
-                    }
+                    WhenOptionalAttribute(
+                        subElement, "timeout-msec", timeoutMSecText =>
+                        {
+                            var timeoutMSec = Int64.Parse(timeoutMSecText);
+                            configuration.EngineDefaults.Threading.ListenerDispatchTimeout = timeoutMSec;
+                        });
 
-                    if (subElement.Attributes.GetNamedItem("locking") != null)
-                    {
-                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
-                        configuration.EngineDefaults.Threading.ListenerDispatchLocking =
-                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
-                    }
+                    WhenOptionalAttribute(
+                        subElement, "locking", value =>
+                        {
+                            configuration.EngineDefaults.Threading.ListenerDispatchLocking =
+                                EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                        });
                 }
                 else if (subElement.Name == "insert-into-dispatch")
                 {
@@ -1168,18 +1173,19 @@ namespace com.espertech.esper.client
                     var preserveOrder = Boolean.Parse(preserveOrderText);
                     configuration.EngineDefaults.Threading.IsInsertIntoDispatchPreserveOrder = preserveOrder;
 
-                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                    {
-                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
-                        var timeoutMSec = Int64.Parse(timeoutMSecText);
-                        configuration.EngineDefaults.Threading.InsertIntoDispatchTimeout = timeoutMSec;
-                    }
-                    else if (subElement.Attributes.GetNamedItem("locking") != null)
-                    {
-                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
-                        configuration.EngineDefaults.Threading.InsertIntoDispatchLocking =
-                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
-                    }
+                    WhenOptionalAttribute(
+                        subElement, "timeout-msec", value =>
+                        {
+                            var timeoutMSec = Int64.Parse(value);
+                            configuration.EngineDefaults.Threading.InsertIntoDispatchTimeout = timeoutMSec;
+                        });
+
+                    WhenOptionalAttribute(
+                        subElement, "locking", value =>
+                        {
+                            configuration.EngineDefaults.Threading.InsertIntoDispatchLocking =
+                                EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                        });
                 }
                 else if (subElement.Name == "named-window-consumer-dispatch")
                 {
@@ -1188,19 +1194,19 @@ namespace com.espertech.esper.client
                     configuration.EngineDefaults.Threading.IsNamedWindowConsumerDispatchPreserveOrder =
                         preserveOrder;
 
-                    if (subElement.Attributes.GetNamedItem("timeout-msec") != null)
-                    {
-                        var timeoutMSecText = subElement.Attributes.GetNamedItem("timeout-msec").InnerText;
-                        var timeoutMSec = Int64.Parse(timeoutMSecText);
-                        configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchTimeout = timeoutMSec;
-                    }
+                    WhenOptionalAttribute(
+                        subElement, "timeout-msec", value =>
+                        {
+                            var timeoutMSec = Int64.Parse(value);
+                            configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchTimeout = timeoutMSec;
+                        });
 
-                    if (subElement.Attributes.GetNamedItem("locking") != null)
-                    {
-                        var value = subElement.Attributes.GetNamedItem("locking").InnerText;
-                        configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking =
-                            EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
-                    }
+                    WhenOptionalAttribute(
+                        subElement, "locking", value =>
+                        {
+                            configuration.EngineDefaults.Threading.NamedWindowConsumerDispatchLocking =
+                                EnumHelper.Parse<ConfigurationEngineDefaults.ThreadingConfig.Locking>(value);
+                        });
                 }
                 else if (subElement.Name == "internal-timer")
                 {
@@ -1457,13 +1463,13 @@ namespace com.espertech.esper.client
                     }
                     try
                     {
-                        TimeUnit timeUnit = TimeUnit.ValueOf(valueText.ToUpperInvariant());
+                        TimeUnit timeUnit = EnumHelper.Parse<TimeUnit>(valueText);
                         configuration.EngineDefaults.TimeSource.TimeUnit = timeUnit;
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         throw new ConfigurationException(
-                            "Value attribute for time-unit element invalid: " + t.Message, t);
+                            "Value attribute for time-unit element invalid: " + ex.Message, ex);
                     }
                 }
             }
@@ -1592,7 +1598,7 @@ namespace com.espertech.esper.client
             var timeZoneStr = GetOptionalAttribute(parentElement, "time-zone");
             if (timeZoneStr != null)
             {
-                TimeZoneInfo timeZone = TimeZoneInfo.GetTimeZone(timeZoneStr);
+                TimeZoneInfo timeZone = TimeZoneHelper.GetTimeZoneInfo(timeZoneStr);
                 configuration.EngineDefaults.Expression.TimeZone = timeZone;
             }
         }
@@ -1741,8 +1747,8 @@ namespace com.espertech.esper.client
                     if (typeNode != null)
                     {
                         var typeText = typeNode.InnerText;
-                        EventUnderlyingType value = EventUnderlyingType.ValueOf(typeText.ToUpperInvariant());
-                        configuration.EngineDefaults.EventMetaConfig.DefaultEventRepresentation = value;
+                        var value = EnumHelper.Parse<EventUnderlyingType>(typeText);
+                        configuration.EngineDefaults.EventMeta.DefaultEventRepresentation = value;
                     }
                 }
 
@@ -1844,6 +1850,15 @@ namespace com.espertech.esper.client
                 throw new EPException(resource + " not found");
             }
             return stream;
+        }
+
+        private static void WhenOptionalAttribute(XmlNode node, String key, Action<string> action)
+        {
+            var valueNode = node.Attributes.GetNamedItem(key);
+            if (valueNode != null)
+            {
+                action.Invoke(valueNode.InnerText);
+            }
         }
 
         private static String GetOptionalAttribute(XmlNode node, String key)

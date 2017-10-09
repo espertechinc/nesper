@@ -62,7 +62,7 @@ namespace com.espertech.esper.view.internals
                     InstrumentationHelper.Get().QSplitStreamWhere(index);
                 }
                 
-                var passEvent = WhereClauses[index].Evaluate(EventsPerStream, true, exprEvaluatorContext);
+                var passEvent = WhereClauses[index].Evaluate(new EvaluateParams(EventsPerStream, true, exprEvaluatorContext));
                 if ((passEvent == null) || (false.Equals(passEvent)))
                 {
                     pass = false;
@@ -109,7 +109,7 @@ namespace com.espertech.esper.view.internals
             }
             else
             {
-                bool isNamedWindowInsert = Items[index].IsNamedWindowInsert();
+                bool isNamedWindowInsert = Items[index].IsNamedWindowInsert;
                 InternalEventRouter.Route(
                     routed, EPStatementHandle, AgentInstanceContext.StatementContext.InternalEventEngineRouteDest,
                     exprEvaluatorContext, isNamedWindowInsert);

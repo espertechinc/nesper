@@ -17,7 +17,7 @@ namespace com.espertech.esper.client.soda
     /// </summary>
     public interface GroupByClauseExpression
     {
-        /// <summary>Render group by expression </summary>
+        /// <summary>RenderAny group by expression </summary>
         /// <param name="writer">to render to</param>
         void ToEPL(TextWriter writer);
     }

@@ -9,8 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.pattern
@@ -21,8 +19,8 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalAndFactoryNode : EvalNodeFactoryBase{
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-    
-        protected EvalAndFactoryNode() {
+
+        public EvalAndFactoryNode() {
         }
     
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)

@@ -19,7 +19,7 @@ namespace com.espertech.esper.util
     {
         public static object Widen(Object input)
         {
-            return input.Unwrap<object>();
+            return input.Unwrap<object>(true);
         }
     }
 } // end of namespace

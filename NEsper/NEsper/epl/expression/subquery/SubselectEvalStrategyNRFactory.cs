@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.type;
@@ -45,7 +46,7 @@ namespace com.espertech.esper.epl.expression.subquery
                                                                      bool isAny,
                                                                      RelationalOpEnum? relationalOp)
         {
-            if (subselectExpression.ChildNodes.Length != 1) {
+            if (subselectExpression.ChildNodes.Count != 1) {
                 throw new ExprValidationException("The Subselect-IN requires 1 child expression");
             }
             ExprNode valueExpr = subselectExpression.ChildNodes[0];
@@ -77,14 +78,10 @@ namespace com.espertech.esper.epl.expression.subquery
             if (relationalOp != null) {
                 if ((typeOne != typeof(string)) || (typeTwo != typeof(string))) {
                     if (!typeOne.IsNumeric()) {
-                        throw new ExprValidationException("Implicit conversion from datatype '" +
-                                typeOne.Name +
-                                "' to numeric is not allowed");
+                        throw new ExprValidationException("Implicit conversion from datatype '" + Name.Of(typeOne) + "' to numeric is not allowed");
                     }
                     if (!typeTwo.IsNumeric()) {
-                        throw new ExprValidationException("Implicit conversion from datatype '" +
-                                typeTwo.Name +
-                                "' to numeric is not allowed");
+                        throw new ExprValidationException("Implicit conversion from datatype '" + Name.Of(typeTwo) + "' to numeric is not allowed");
                     }
                 }
     
@@ -149,7 +146,7 @@ namespace com.espertech.esper.epl.expression.subquery
             try {
                 coercionType = typeOne.GetCompareToCoercionType(typeTwo);
             } catch (CoercionException ) {
-                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", typeTwo.Name, typeOne.Name));
+                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", Name.Of(typeTwo), Name.Of(typeOne)));
             }
     
             // Check if we need to coerce

@@ -207,8 +207,7 @@ namespace com.espertech.esper.core.service
             MatchRecognizeStatePoolEngineSvc = matchRecognizeStatePoolEngineSvc;
             DataFlowService = dataFlowService;
             ExprDeclaredService = exprDeclaredService;
-            ExpressionResultCacheSharable = new ExpressionResultCacheService(
-                configSnapshot.EngineDefaults.ExecutionConfig.DeclaredExprValueCacheSize);
+            ExpressionResultCacheSharable = new ExpressionResultCacheService(configSnapshot.EngineDefaults.Execution.DeclaredExprValueCacheSize);
             ContextControllerFactoryFactorySvc = contextControllerFactoryFactorySvc;
             ContextManagerFactoryService = contextManagerFactoryService;
             EpStatementFactory = epStatementFactory;

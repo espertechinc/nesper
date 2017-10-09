@@ -22,44 +22,59 @@ namespace com.espertech.esper.pattern
         private readonly string _patternExpr;
         [NonSerialized] private readonly EvalAuditInstanceCount _instanceCount;
         private readonly bool _filterChildNonQuitting;
-    
-        public EvalAuditFactoryNode(bool auditPattern, bool auditPatternInstance, string patternExpr, EvalAuditInstanceCount instanceCount, bool filterChildNonQuitting) {
+
+        public EvalAuditFactoryNode(
+            bool auditPattern,
+            bool auditPatternInstance,
+            string patternExpr,
+            EvalAuditInstanceCount instanceCount,
+            bool filterChildNonQuitting)
+        {
             _auditPattern = auditPattern;
             _auditPatternInstance = auditPatternInstance;
             _patternExpr = patternExpr;
             _instanceCount = instanceCount;
             _filterChildNonQuitting = filterChildNonQuitting;
         }
-    
-        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
+
+        public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode)
+        {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalAuditNode(agentInstanceContext, this, child);
         }
-    
-        public bool IsAuditPattern() {
-            return _auditPattern;
+
+        public bool IsAuditPattern
+        {
+            get { return _auditPattern; }
         }
-    
-        public string GetPatternExpr() {
-            return _patternExpr;
+
+        public string PatternExpr
+        {
+            get { return _patternExpr; }
         }
-    
+
         public override String ToString() {
             return "EvalAuditFactoryNode children=" + ChildNodes.Count;
         }
-    
-        public void DecreaseRefCount(EvalAuditStateNode current, PatternContext patternContext) {
-            if (!_auditPatternInstance) {
+
+        public void DecreaseRefCount(EvalAuditStateNode current, PatternContext patternContext)
+        {
+            if (!_auditPatternInstance)
+            {
                 return;
             }
-            _instanceCount.DecreaseRefCount(ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
+            _instanceCount.DecreaseRefCount(
+                ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
         }
-    
-        public void IncreaseRefCount(EvalAuditStateNode current, PatternContext patternContext) {
-            if (!_auditPatternInstance) {
+
+        public void IncreaseRefCount(EvalAuditStateNode current, PatternContext patternContext)
+        {
+            if (!_auditPatternInstance)
+            {
                 return;
             }
-            _instanceCount.IncreaseRefCount(ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
+            _instanceCount.IncreaseRefCount(
+                ChildNodes[0], current, _patternExpr, patternContext.StatementName, patternContext.EngineURI);
         }
 
         public override bool IsFilterChildNonQuitting

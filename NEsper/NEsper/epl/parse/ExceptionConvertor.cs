@@ -291,9 +291,12 @@ namespace com.espertech.esper.epl.parse
         private static string GetTokenText(EsperEPL2GrammarParser parser, int tokenIndex)
         {
             var expected = END_OF_INPUT_TEXT;
-            if ((tokenIndex >= 0) && (tokenIndex < parser.TokenNames.Length))
+
+            Vocabulary vocabulary = (Vocabulary) parser.Vocabulary;
+
+            if ((tokenIndex >= 0) && (tokenIndex <= vocabulary.getMaxTokenType()))
             {
-                expected = parser.TokenNames[tokenIndex];
+                expected = parser.Vocabulary.GetSymbolicName(tokenIndex);
             }
             var lexerTokenParaphrases = EsperEPL2GrammarLexer.GetLexerTokenParaphrases();
             if (lexerTokenParaphrases.Get(tokenIndex) != null)

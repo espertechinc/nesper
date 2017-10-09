@@ -31,20 +31,34 @@ namespace com.espertech.esper.epl.core
         /// <param name="className">the class name providing the method</param>
         /// <returns>cache configs</returns>
         ConfigurationMethodRef GetConfigurationMethodRef(string className);
-    
+
         /// <summary>
         /// Add an import, such as "com.mypackage.*" or "com.mypackage.MyClass".
         /// </summary>
-        /// <param name="importName">is the import to add</param>
+        /// <param name="namespaceOrType">Type of the namespace or.</param>
         /// <exception cref="EngineImportException">if the information or format is invalid</exception>
-        void AddImport(string importName) ;
-    
+        void AddImport(String namespaceOrType);
+
+        /// <summary>
+        /// Add an import, such as "com.mypackage.*" or "com.mypackage.MyClass".
+        /// </summary>
+        /// <param name="import">The automatic import desc.</param>
+        /// <exception cref="EngineImportException">if the information or format is invalid</exception>
+        void AddImport(AutoImportDesc import);
+
+        /// <summary>
+        /// Add an import annotation-only use, such as "com.mypackage.*" or "com.mypackage.MyClass".
+        /// </summary>
+        /// <param name="namespaceOrType">Type of the namespace or.</param>
+        /// <exception cref="EngineImportException">if the information or format is invalid</exception>
+        void AddAnnotationImport(String namespaceOrType);
+
         /// <summary>
         /// Add an import for annotation-only use, such as "com.mypackage.*" or "com.mypackage.MyClass".
         /// </summary>
-        /// <param name="importName">is the import to add</param>
+        /// <param name="autoImportDesc">The automatic import desc.</param>
         /// <exception cref="EngineImportException">if the information or format is invalid</exception>
-        void AddAnnotationImport(string importName) ;
+        void AddAnnotationImport(AutoImportDesc autoImportDesc);
     
         /// <summary>
         /// Add an aggregation function.
@@ -65,7 +79,7 @@ namespace com.espertech.esper.epl.core
         /// <param name="rethrowExceptions">for whether to rethrow</param>
         /// <param name="optionalEventTypeName">event type name when provided</param>
         /// <exception cref="EngineImportException">throw if format or information is invalid</exception>
-        void AddSingleRow(string functionName, string singleRowFuncClass, string methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache, ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string optionalEventTypeName) ;
+        void AddSingleRow(string functionName, string singleRowFuncClass, string methodName, ValueCacheEnum valueCache, FilterOptimizableEnum filterOptimizable, bool rethrowExceptions, string optionalEventTypeName) ;
     
         /// <summary>
         /// Used at statement compile-time to try and resolve a given function name into an
@@ -119,7 +133,7 @@ namespace com.espertech.esper.epl.core
         /// <param name="forAnnotation">whether we are resolving an annotation</param>
         /// <exception cref="EngineImportException">if there was an error resolving the class</exception>
         /// <returns>class this resolves to</returns>
-        Type ResolveClass(string className, bool forAnnotation) ;
+        Type ResolveType(string className, bool forAnnotation) ;
     
         /// <summary>
         /// Resolves a given class name, either fully qualified and simple and imported to a annotation.
@@ -201,6 +215,10 @@ namespace com.espertech.esper.epl.core
         AggregationFactoryFactory AggregationFactoryFactory { get; }
 
         ClassForNameProvider GetClassForNameProvider();
+
+        ClassLoader GetFastClassClassLoader(Type clazz);
+
+        ClassLoader GetClassLoader();
     }
 
     public class EngineImportServiceConstants

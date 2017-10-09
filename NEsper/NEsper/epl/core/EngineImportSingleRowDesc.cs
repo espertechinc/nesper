@@ -19,8 +19,8 @@ namespace com.espertech.esper.epl.core
         public EngineImportSingleRowDesc(
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions,
             string optionalEventTypeName)
         {
@@ -36,9 +36,9 @@ namespace com.espertech.esper.epl.core
 
         public string MethodName { get; private set; }
 
-        public ConfigurationPlugInSingleRowFunction.ValueCacheEnum ValueCache { get; private set; }
+        public ValueCacheEnum ValueCache { get; private set; }
 
-        public ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum FilterOptimizable { get; private set; }
+        public FilterOptimizableEnum FilterOptimizable { get; private set; }
 
         public bool IsRethrowExceptions { get; private set; }
 

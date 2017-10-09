@@ -15,11 +15,13 @@ using System.Xml;
 
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.dataflow.ops;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.client
 {
@@ -33,9 +35,10 @@ namespace com.espertech.esper.client
     /// only as an initialization-time object. <tt>EPServiceProvider</tt>s are
     /// immutable and do not retain any association back to the
     /// <tt>Configuration</tt>.
-    /// <br>
+    /// <para>
     /// The format of an Esper XML configuration file is defined in
     /// <tt>esper-configuration-x.y.xsd</tt>.
+    /// </para>
     /// </summary>
     [Serializable]
     public class Configuration
@@ -66,13 +69,13 @@ namespace com.espertech.esper.client
         private IDictionary<string, ConfigurationEventTypeLegacy> _eventTypesLegacy;
 
         /// <summary>
-        /// The type names for events that are backed by java.util.Map,
+        /// The type names for events that are backed by IDictionary,
         /// not containing strongly-typed nested maps.
         /// </summary>
         private IDictionary<string, Properties> _mapNames;
 
         /// <summary>
-        /// The type names for events that are backed by java.util.Map,
+        /// The type names for events that are backed by IDictionary,
         /// possibly containing strongly-typed nested maps.
         /// <para>
         /// Each entrie's value must be either a Type or a Map&lt;string,Object&gt; to
@@ -82,7 +85,7 @@ namespace com.espertech.esper.client
         private IDictionary<string, IDictionary<string, Object>> _nestableMapNames;
 
         /// <summary>
-        /// The type names for events that are backed by java.util.Map,
+        /// The type names for events that are backed by IDictionary,
         /// possibly containing strongly-typed nested maps.
         /// <para>
         /// Each entrie's value must be either a Type or a Map&lt;string,Object&gt; to
@@ -101,13 +104,13 @@ namespace com.espertech.esper.client
         /// The class and package name imports that
         /// will be used to resolve partial class names.
         /// </summary>
-        private IList<string> _imports;
+        private IList<AutoImportDesc> _imports;
 
         /// <summary>
         /// For annotations only, the class and package name imports that
         /// will be used to resolve partial class names (not available in EPL statements unless used in an annotation).
         /// </summary>
-        private IList<string> _annotationImports;
+        private IList<AutoImportDesc> _annotationImports;
 
         /// <summary>
         /// The class and package name imports that
@@ -177,13 +180,12 @@ namespace com.espertech.esper.client
         /// </summary>
         private IDictionary<string, ConfigurationVariantStream> _variantStreams;
 
-
         [NonSerialized] private IDictionary<string, Object> _transientConfiguration;
 
         /// <summary>
         /// Constructs an empty configuration. The auto import values
-        /// are set by default to java.lang, java.math, java.text and
-        /// java.util.
+        /// are set by default to System, System.Collections and
+        /// System.Text.
         /// </summary>
         public Configuration()
         {
@@ -235,7 +237,7 @@ namespace com.espertech.esper.client
         /// <returns>input stream for resource</returns>
         internal static Stream GetResourceAsStream(String resource)
         {
-            String stripped = resource.StartsWith("/") ? resource.Substring(1) : resource;
+            String stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase) ? resource.Substring(1) : resource;
             Stream stream = ResourceManager.GetResourceAsStream(resource) ??
                             ResourceManager.GetResourceAsStream(stripped);
             if (stream == null)
@@ -303,29 +305,27 @@ namespace com.espertech.esper.client
         public void AddPlugInSingleRowFunction(string functionName, string className, string methodName)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
+                functionName, className, methodName, ValueCacheEnum.DISABLED);
         }
 
         public void AddPlugInSingleRowFunction(
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache)
+            ValueCacheEnum valueCache)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName, valueCache,
-                ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
+                functionName, className, methodName, valueCache, FilterOptimizableEnum.ENABLED);
         }
 
         public void AddPlugInSingleRowFunction(
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
+            FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName, ConfigurationPlugInSingleRowFunction.ValueCacheEnum .DISABLED,
-                filterOptimizable);
+                functionName, className, methodName, ValueCacheEnum.DISABLED, filterOptimizable);
         }
 
         /// <summary>
@@ -335,15 +335,7 @@ namespace com.espertech.esper.client
         public IDictionary<string, object> TransientConfiguration
         {
             get { return _transientConfiguration; }
-        }
-
-        /// <summary>
-        /// Sets transient configuration, i.e. information that is passed along as a reference and not as a value
-        /// </summary>
-        /// <param name="transientConfiguration">map of transients</param>
-        public void SetTransientConfiguration(IDictionary<string, Object> transientConfiguration)
-        {
-            this._transientConfiguration = transientConfiguration;
+            set { this._transientConfiguration = value; }
         }
 
         /// <summary>
@@ -359,8 +351,8 @@ namespace com.espertech.esper.client
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(functionName, className, methodName, valueCache, filterOptimizable, false);
         }
@@ -373,13 +365,14 @@ namespace com.espertech.esper.client
         /// <param name="methodName">providing method name</param>
         /// <param name="valueCache">value cache settings</param>
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
+        /// <param name="rethrowExceptions">whether exceptions generated by the UDF are rethrown</param>
         /// <exception cref="ConfigurationException">thrown to indicate that the configuration is invalid</exception>
         public void AddPlugInSingleRowFunction(
             string functionName,
             string className,
             string methodName,
-            ConfigurationPlugInSingleRowFunction.ValueCacheEnum valueCache,
-            ConfigurationPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable,
+            ValueCacheEnum valueCache,
+            FilterOptimizableEnum filterOptimizable,
             bool rethrowExceptions)
         {
             var entry = new ConfigurationPlugInSingleRowFunction();
@@ -409,9 +402,9 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
-        /// Add an name for an event type represented by Java-bean plain-old Java object events.
-        /// Note that when adding multiple names for the same Java class the names represent an
-        /// alias to the same event type since event type identity for Java classes is per Java class.
+        /// Add an name for an event type represented by object events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="eventClassName">fully-qualified class name of the event type</param>
@@ -421,22 +414,22 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
-        /// Add an name for an event type represented by Java-bean plain-old Java object events.
-        /// Note that when adding multiple names for the same Java class the names represent an
-        /// alias to the same event type since event type identity for Java classes is per Java class.
+        /// Add an name for an event type represented by plain-old object events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
-        /// <param name="eventClass">is the Java event class for which to add the name</param>
+        /// <param name="eventClass">is the event class for which to add the name</param>
         public void AddEventType(string eventTypeName, Type eventClass)
         {
             AddEventType(eventTypeName, eventClass.AssemblyQualifiedName);
         }
 
         /// <summary>
-        /// Add an name for an event type represented by Java-bean plain-old Java object events,
+        /// Add event type represented by plain-old object events,
         /// and the name is the simple class name of the class.
         /// </summary>
-        /// <param name="eventClass">is the Java event class for which to add the name</param>
+        /// <param name="eventClass">is the event class for which to add the name</param>
         public void AddEventType(Type eventClass)
         {
             AddEventType(eventClass.Name, eventClass.AssemblyQualifiedName);
@@ -462,10 +455,10 @@ namespace com.espertech.esper.client
         }
 
         /// <summary>
-        /// Add an name for an event type that represents java.util.Map events.
+        /// Add an name for an event type that represents IDictionary events.
         /// <para>
         /// Each entry in the type map is the property name and the fully-qualified
-        /// Java class name or primitive type name.
+        /// class name or primitive type name.
         /// </para>
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
@@ -480,12 +473,12 @@ namespace com.espertech.esper.client
 
         public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap)
         {
-            _nestableMapNames.Put(eventTypeName, new LinkedHashMap<string, Object>(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
         }
 
         public void AddEventType(string eventTypeName, IDictionary<string, Object> typeMap, string[] superTypes)
         {
-            _nestableMapNames.Put(eventTypeName, new LinkedHashMap<string, Object>(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
             if (superTypes != null)
             {
                 for (int i = 0; i < superTypes.Length; i++)
@@ -500,7 +493,7 @@ namespace com.espertech.esper.client
             IDictionary<string, Object> typeMap,
             ConfigurationEventTypeMap mapConfig)
         {
-            _nestableMapNames.Put(eventTypeName, new LinkedHashMap<string, Object>(typeMap));
+            _nestableMapNames.Put(eventTypeName, new Dictionary<string, Object>(typeMap));
             _mapTypeConfigurations.Put(eventTypeName, mapConfig);
         }
 
@@ -582,7 +575,7 @@ namespace com.espertech.esper.client
 
         public void AddEventType(string eventTypeName, string[] propertyNames, Object[] propertyTypes)
         {
-            LinkedHashMap<string, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
+            var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
                 propertyNames, propertyTypes);
             _nestableObjectArrayNames.Put(eventTypeName, propertyTypesMap);
         }
@@ -593,7 +586,7 @@ namespace com.espertech.esper.client
             Object[] propertyTypes,
             ConfigurationEventTypeObjectArray config)
         {
-            LinkedHashMap<string, Object> propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
+            var propertyTypesMap = EventTypeUtility.ValidateObjectArrayDef(
                 propertyNames, propertyTypes);
             _nestableObjectArrayNames.Put(eventTypeName, propertyTypesMap);
             _objectArrayTypeConfigurations.Put(eventTypeName, config);
@@ -620,54 +613,152 @@ namespace com.espertech.esper.client
             _databaseReferences.Put(name, configurationDBRef);
         }
 
+        public void AddEventType<T>(ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(typeof(T).Name, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
+        public void AddEventType<T>(string eventTypeName, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+        {
+            AddEventType(eventTypeName, typeof(T).AssemblyQualifiedName, legacyEventTypeDesc);
+        }
+
         /// <summary>
-        /// Add an name for an event type that represents legacy Java type (non-JavaBean style) events.
-        /// Note that when adding multiple names for the same Java class the names represent an
-        /// alias to the same event type since event type identity for Java classes is per Java class.
+        /// Add an name for an event type that represents legacy object type events.
+        /// Note that when adding multiple names for the same class the names represent an
+        /// alias to the same event type since event type identity for classes is per class.
         /// </summary>
         /// <param name="eventTypeName">is the name for the event type</param>
         /// <param name="eventClass">fully-qualified class name of the event type</param>
-        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for Legacy Java type events</param>
+        /// <param name="legacyEventTypeDesc">descriptor containing property and mapping information for legacy type events</param>
         public void AddEventType(
             string eventTypeName,
             string eventClass,
             ConfigurationEventTypeLegacy legacyEventTypeDesc)
         {
+            eventClass = TypeHelper.TryResolveAbsoluteTypeName(eventClass);
             _eventClasses.Put(eventTypeName, eventClass);
             _eventTypesLegacy.Put(eventTypeName, legacyEventTypeDesc);
         }
 
-        public void AddImport(string autoImport)
+        /// <summary>
+        /// Add a namespace. Adding will suppress the use of the default namespaces.
+        /// </summary>
+        /// <param name="importName">is a fully-qualified class name or a package name with wildcard</param>
+        /// <throws>
+        /// ConfigurationException if incorrect package or class names are encountered
+        /// </throws>
+        public void AddImport(string importName)
         {
-            _imports.Add(autoImport);
-        }
-
-        public void AddImport(Type autoImport)
-        {
-            AddImport(autoImport.Name);
-        }
-
-        public void AddAnnotationImport(string autoImport)
-        {
-            _annotationImports.Add(autoImport);
+            string[] importParts = importName.Split(',');
+            if (importParts.Length == 1)
+            {
+                AddImport(importName, null);
+            }
+            else
+            {
+                AddImport(importParts[0], importName.Substring(importParts[0].Length + 1).TrimStart());
+            }
         }
 
         /// <summary>
-        /// Add a class to the imports available for annotations only
+        /// Adds the class or namespace (importName) ot the list of automatically imported types.
         /// </summary>
-        /// <param name="autoImport">class to add</param>
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        public void AddImport(String importName, String assemblyNameOrFile)
+        {
+            _imports.Add(new AutoImportDesc(importName, assemblyNameOrFile));
+        }
+
+        /// <summary>
+        /// Adds an import for a specific type.
+        /// </summary>
+        /// <param name="autoImport">The auto import.</param>
+        public void AddImport(Type autoImport)
+        {
+            AddImport(autoImport.AssemblyQualifiedName);
+        }
+
+        /// <summary>
+        /// Adds the import.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void AddImport<T>()
+        {
+            AddImport(typeof(T));
+        }
+
+        /// <summary>
+        /// Adds an import for the namespace associated with the given type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void AddNamespaceImport<T>()
+        {
+            AddImport(typeof(T).Namespace);
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importName">Name of the import.</param>
+        /// <param name="assemblyNameOrFile">The assembly name or file.</param>
+        public void AddAnnotationImport(String importName, String assemblyNameOrFile)
+        {
+            _annotationImports.Add(new AutoImportDesc(importName, assemblyNameOrFile));
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void AddAnnotationImport(string autoImport)
+        {
+            string[] importParts = autoImport.Split(',');
+            if (importParts.Length == 1)
+            {
+                AddAnnotationImport(autoImport, null);
+            }
+            else
+            {
+                AddAnnotationImport(importParts[0], importParts[1]);
+            }
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="autoImport">The automatic import.</param>
         public void AddAnnotationImport(Type autoImport)
         {
-            AddAnnotationImport(autoImport.Name);
+            AddAnnotationImport(autoImport.FullName, autoImport.Assembly.FullName);
+        }
+
+        /// <summary>
+        /// Adds the annotation import.
+        /// </summary>
+        /// <param name="importNamespace"></param>
+        /// <typeparam name="T"></typeparam>
+        public void AddAnnotationImport<T>(bool importNamespace = false)
+        {
+            if (importNamespace)
+            {
+                AddAnnotationImport(typeof(T).Namespace, typeof(T).Assembly.FullName);
+            }
+            else
+            {
+                AddAnnotationImport(typeof(T).FullName, typeof(T).Assembly.FullName);
+            }
         }
 
         /// <summary>
         /// Remove an import.
         /// </summary>
-        /// <param name="name">to remove</param>
-        public void RemoveImport(string name)
+        /// <param name="autoImportDesc"></param>
+        public void RemoveImport(AutoImportDesc autoImportDesc)
         {
-            _imports.Remove(name);
+            _imports.Remove(autoImportDesc);
         }
 
         /// <summary>
@@ -725,12 +816,12 @@ namespace com.espertech.esper.client
             get { return _eventTypesLegacy; }
         }
 
-        public IList<string> Imports
+        public IList<AutoImportDesc> Imports
         {
             get { return _imports; }
         }
 
-        public IList<string> AnnotationImports
+        public IList<AutoImportDesc> AnnotationImports
         {
             get { return _annotationImports; }
         }
@@ -803,7 +894,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
         /// <para>
-        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" /></p>.
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
         /// </para>
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
@@ -817,7 +908,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader) without any additional loader configuration
         /// <para>
-        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" /></p>.
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
         /// </para>
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
@@ -830,7 +921,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Add a plugin loader (f.e. an input/output adapter loader).
         /// <para>
-        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" /></p>.
+        /// The class is expected to implement <seealso cref="com.espertech.esper.plugin.PluginLoader" />.
         /// </para>
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
@@ -935,9 +1026,14 @@ namespace com.espertech.esper.client
             _eventTypeAutoNamePackages.Add(packageName);
         }
 
+        public void AddVariable<TValue>(string variableName, TValue initializationValue)
+        {
+            AddVariable(variableName, typeof(TValue).FullName, initializationValue, false);
+        }
+
         public void AddVariable(string variableName, Type type, Object initializationValue)
         {
-            AddVariable(variableName, type.Name, initializationValue, false);
+            AddVariable(variableName, type.FullName, initializationValue, false);
         }
 
         /// <summary>
@@ -949,7 +1045,7 @@ namespace com.espertech.esper.client
         /// <param name="constant">constant indicator</param>
         public void AddVariable(string variableName, Type type, Object initializationValue, bool constant)
         {
-            AddVariable(variableName, type.Name, initializationValue, constant);
+            AddVariable(variableName, type.FullName, initializationValue, constant);
         }
 
         public void AddVariable(string variableName, string type, Object initializationValue)
@@ -1117,7 +1213,7 @@ namespace com.espertech.esper.client
             set { EngineDefaults.Patterns.MaxSubexpressions = value; }
         }
 
-        public long MatchRecognizeMaxStates
+        public long? MatchRecognizeMaxStates
         {
             set { EngineDefaults.MatchRecognize.MaxStates = value; }
         }
@@ -1236,7 +1332,7 @@ namespace com.espertech.esper.client
 
         public bool RemoveVariable(string name, bool force)
         {
-            return _variables.Remove(name) != null;
+            return _variables.Remove(name);
         }
 
         public void AddEventTypeAvro(string eventTypeName, ConfigurationEventTypeAvro avro)
@@ -1265,16 +1361,16 @@ namespace com.espertech.esper.client
         /// <summary>Reset to an empty configuration.</summary>
         protected void Reset()
         {
-            _eventClasses = new LinkedHashMap<string, string>();
-            _mapNames = new LinkedHashMap<string, Properties>();
-            _nestableMapNames = new LinkedHashMap<string, IDictionary<string, Object>>();
-            _nestableObjectArrayNames = new LinkedHashMap<string, IDictionary<string, Object>>();
-            _eventTypesXmldom = new LinkedHashMap<string, ConfigurationEventTypeXMLDOM>();
-            _eventTypesAvro = new LinkedHashMap<string, ConfigurationEventTypeAvro>();
-            _eventTypesLegacy = new LinkedHashMap<string, ConfigurationEventTypeLegacy>();
+            _eventClasses = new Dictionary<string, string>();
+            _mapNames = new Dictionary<string, Properties>();
+            _nestableMapNames = new Dictionary<string, IDictionary<string, Object>>();
+            _nestableObjectArrayNames = new Dictionary<string, IDictionary<string, Object>>();
+            _eventTypesXmldom = new Dictionary<string, ConfigurationEventTypeXMLDOM>();
+            _eventTypesAvro = new Dictionary<string, ConfigurationEventTypeAvro>();
+            _eventTypesLegacy = new Dictionary<string, ConfigurationEventTypeLegacy>();
             _databaseReferences = new Dictionary<string, ConfigurationDBRef>();
-            _imports = new List<string>();
-            _annotationImports = new List<string>();
+            _imports = new List<AutoImportDesc>();
+            _annotationImports = new List<AutoImportDesc>();
             AddDefaultImports();
             _plugInViews = new List<ConfigurationPlugInView>();
             _plugInVirtualDataWindows = new List<ConfigurationPlugInVirtualDataWindow>();
@@ -1284,12 +1380,12 @@ namespace com.espertech.esper.client
             _plugInSingleRowFunctions = new List<ConfigurationPlugInSingleRowFunction>();
             _plugInPatternObjects = new List<ConfigurationPlugInPatternObject>();
             _engineDefaults = new ConfigurationEngineDefaults();
-            _eventTypeAutoNamePackages = new LinkedHashSet<string>();
+            _eventTypeAutoNamePackages = new FIFOHashSet<string>();
             _variables = new Dictionary<string, ConfigurationVariable>();
             _methodInvocationReferences = new Dictionary<string, ConfigurationMethodRef>();
-            _plugInEventRepresentation = new LinkedHashMap<Uri, ConfigurationPlugInEventRepresentation>();
-            _plugInEventTypes = new LinkedHashMap<string, ConfigurationPlugInEventType>();
-            _revisionEventTypes = new LinkedHashMap<string, ConfigurationRevisionEventType>();
+            _plugInEventRepresentation = new Dictionary<Uri, ConfigurationPlugInEventRepresentation>();
+            _plugInEventTypes = new Dictionary<string, ConfigurationPlugInEventType>();
+            _revisionEventTypes = new Dictionary<string, ConfigurationRevisionEventType>();
             _variantStreams = new Dictionary<string, ConfigurationVariantStream>();
             _mapTypeConfigurations = new Dictionary<string, ConfigurationEventTypeMap>();
             _objectArrayTypeConfigurations = new Dictionary<string, ConfigurationEventTypeObjectArray>();
@@ -1299,11 +1395,11 @@ namespace com.espertech.esper.client
         /// <summary>Use these imports until the user specifies something else.</summary>
         private void AddDefaultImports()
         {
-            _imports.Add("System");
-            _imports.Add("System.Collections");
-            _imports.Add("System.Text");
-            _imports.Add(ANNOTATION_IMPORT);
-            _imports.Add(typeof(BeaconSource).Namespace);
+            _imports.Add(new AutoImportDesc("System"));
+            _imports.Add(new AutoImportDesc("System.Collections"));
+            _imports.Add(new AutoImportDesc("System.Text"));
+            _imports.Add(new AutoImportDesc(ANNOTATION_IMPORT));
+            _imports.Add(new AutoImportDesc(typeof(BeaconSource).Namespace, (string) null));
         }
     }
 } // end of namespace

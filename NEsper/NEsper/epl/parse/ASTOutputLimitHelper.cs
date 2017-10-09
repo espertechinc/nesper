@@ -31,12 +31,16 @@ namespace com.espertech.esper.epl.parse
         /// <summary>
         /// Build an output limit spec from the AST node supplied.
         /// </summary>
+        /// <param name="tokenStream">The token stream.</param>
+        /// <param name="ctx">The context.</param>
         /// <param name="astExprNodeMap">is the map of current AST tree nodes to their respective expression root node</param>
+        /// <param name="variableService">provides variable resolution</param>
         /// <param name="engineURI">the engine uri</param>
         /// <param name="timeProvider">provides time</param>
-        /// <param name="variableService">provides variable resolution</param>
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
-        /// <returns>output limit spec</returns>
+        /// <returns>
+        /// output limit spec
+        /// </returns>
         public static OutputLimitSpec BuildOutputLimitSpec(
             CommonTokenStream tokenStream,
             EsperEPL2GrammarParser.OutputLimitContext ctx,
@@ -46,7 +50,7 @@ namespace com.espertech.esper.epl.parse
             TimeProvider timeProvider,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            OutputLimitLimitType displayLimit = OutputLimitLimitType.DEFAULT;
+            var displayLimit = OutputLimitLimitType.DEFAULT;
             if (ctx.k != null)
             {
                 switch (ctx.k.Type)

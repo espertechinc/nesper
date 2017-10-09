@@ -35,7 +35,7 @@ namespace com.espertech.esper.pattern
         {
             EvalFollowedByNode = evalFollowedByNode;
             Nodes = new Dictionary<EvalStateNode, int>();
-            CountActivePerChild = evalFollowedByNode.IsTrackWithMax ? new int[evalFollowedByNode.ChildNodes.Length - 1] : null;
+            CountActivePerChild = evalFollowedByNode.IsTrackWithMax ? new int[evalFollowedByNode.ChildNodes.Count - 1] : null;
         }
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
@@ -87,7 +87,7 @@ namespace com.espertech.esper.pattern
             }
 
             // If the match came from the very last filter, need to escalate
-            int numChildNodes = EvalFollowedByNode.ChildNodes.Length;
+            int numChildNodes = EvalFollowedByNode.ChildNodes.Count;
             if (index == (numChildNodes - 1))
             {
                 bool isFollowedByQuitted = Nodes.IsEmpty();

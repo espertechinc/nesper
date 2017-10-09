@@ -8,10 +8,6 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
-
 namespace com.espertech.esper.client.util
 {
     /// <summary>
@@ -19,15 +15,16 @@ namespace com.espertech.esper.client.util
     /// </summary>
     public interface ClassForNameProvider
     {
-        /// <summary>Name.</summary>
-        // string NAME = "ClassForNameProvider";
-    
         /// <summary>
         /// Lookup class name returning class.
         /// </summary>
         /// <param name="className">to look up</param>
-        /// <exception cref="ClassNotFoundException">if the class cannot be found</exception>
         /// <returns>class</returns>
         Type ClassForName(string className) ;
+    }
+
+    public class ClassForNameProviderConstants
+    {
+        public const string NAME = "ClassForNameProvider";
     }
 } // end of namespace

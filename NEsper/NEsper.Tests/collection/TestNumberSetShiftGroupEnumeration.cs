@@ -63,7 +63,7 @@ namespace com.espertech.esper.collection
 #if false
             var enumeration = NumberSetShiftGroupEnumeration.Create(set).GetEnumerator();
             while(enumeration.MoveNext()) {
-                Console.WriteLine(enumeration.Current.Render());
+                Console.WriteLine(enumeration.Current.RenderAny());
             }
 #endif
     

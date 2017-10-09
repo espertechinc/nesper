@@ -7,11 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.epl.agg.access
 {
@@ -28,9 +25,15 @@ namespace com.espertech.esper.epl.agg.access
 
     public static class AggregationStateTypeExtensions
     {
-        public static AggregationStateType? FromString(string text)
+        public static AggregationStateType? FromString(string text, bool throwException = false)
         {
-            return EnumHelper.ParseBoxed<AggregationStateType>(text, true);
+            var value = EnumHelper.ParseBoxed<AggregationStateType>(text, true);
+            if ((value == null) && throwException)
+            {
+                throw new ArgumentException("illegal value for enumeration");
+            }
+
+            return value;
         }
     }
 } // end of namespace

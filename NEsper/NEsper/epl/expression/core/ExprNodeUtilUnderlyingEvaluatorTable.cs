@@ -30,22 +30,15 @@ namespace com.espertech.esper.epl.expression.core
 
         public object Evaluate(EvaluateParams evaluateParams)
         {
-            return Evaluate(
-                evaluateParams.EventsPerStream,
-                evaluateParams.IsNewData,
-                evaluateParams.ExprEvaluatorContext);
-        }
-    
-        public object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
-        {
-            if (eventsPerStream == null) {
+            if (evaluateParams.EventsPerStream == null)
+            {
                 return null;
             }
-            EventBean @event = eventsPerStream[_streamNum];
+            var @event = evaluateParams.EventsPerStream[_streamNum];
             if (@event == null) {
                 return null;
             }
-            return _tableMetadata.EventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, context);
+            return _tableMetadata.EventToPublic.ConvertToUnd(@event, evaluateParams);
         }
 
         public Type ReturnType

@@ -12,17 +12,13 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
-
-using SupportEventAdapterService = com.espertech.esper.support.events.SupportEventAdapterService;
 
 namespace com.espertech.esper.epl.core
 {
@@ -42,9 +38,8 @@ namespace com.espertech.esper.epl.core
             var factory = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeSelectListFromIdent("TheString", "s0"),
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false, new SupportStreamTypeSvc1Stream(),
-                SupportEventAdapterService.Service, null, selectExprEventTypeRegistry,
-                _agentInstanceContext.StatementContext.EngineImportService,
-                1, null, new Configuration(), null, new TableServiceImpl(), null);
+                SupportEventAdapterService.Service, null, selectExprEventTypeRegistry, _agentInstanceContext.StatementContext.EngineImportService,
+                1, "stmtname", null, new Configuration(), null, new TableServiceImpl(), null);
             var selectProcessor = factory.Evaluator;
             _supportAggregationService = new SupportAggregationService();
     

@@ -31,15 +31,17 @@ namespace com.espertech.esper.epl.join.hint
     
         static ExcludePlanHintExprUtil()
         {
-            var properties = new LinkedHashMap<string, Object>();
+            var properties = new Dictionary<string, Object>();
             properties.Put("from_streamnum", typeof(int));
             properties.Put("to_streamnum", typeof(int));
             properties.Put("from_streamname", typeof(string));
             properties.Put("to_streamname", typeof(string));
             properties.Put("opname", typeof(string));
             properties.Put("exprs", typeof(string[]));
-            OAEXPRESSIONTYPE = new ObjectArrayEventType(EventTypeMetadata.CreateAnonymous(typeof(ExcludePlanHintExprUtil).SimpleName, EventTypeMetadata.ApplicationType.OBJECTARR),
-                    typeof(ExcludePlanHintExprUtil).SimpleName, 0, null, properties, null, null, null);
+            OAEXPRESSIONTYPE =
+                new ObjectArrayEventType(
+                    EventTypeMetadata.CreateAnonymous(typeof (ExcludePlanHintExprUtil).Name, ApplicationType.OBJECTARR),
+                    typeof (ExcludePlanHintExprUtil).Name, 0, null, properties, null, null, null);
         }
     
         public static EventBean ToEvent(int fromStreamnum,
@@ -49,24 +51,24 @@ namespace com.espertech.esper.epl.join.hint
                                         string opname,
                                         ExprNode[] expressions) {
             var texts = new string[expressions.Length];
-            for (int i = 0; i < expressions.Length; i++) {
+            for (var i = 0; i < expressions.Length; i++) {
                 texts[i] = ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(expressions[i]);
             }
-            Object[] @event = new Object[]{fromStreamnum, toStreamnum, fromStreamname, toStreamname, opname, texts};
+            var @event = new Object[]{fromStreamnum, toStreamnum, fromStreamname, toStreamname, opname, texts};
             return new ObjectArrayEventBean(@event, OAEXPRESSIONTYPE);
         }
     
         public static ExprEvaluator ToExpression(string hint, StatementContext statementContext) {
-            string toCompile = "select * from java.lang.Object#TimeInMillis(" + hint + ")";
-            StatementSpecRaw raw = EPAdministratorHelper.CompileEPL(toCompile, hint, false, null,
+            var toCompile = "select * from com.esper.espertech.compat.DateTimeOffsetHelper#TimeInMillis(" + hint + ")";
+            var raw = EPAdministratorHelper.CompileEPL(toCompile, hint, false, null,
                     SelectClauseStreamSelectorEnum.ISTREAM_ONLY, statementContext.EngineImportService,
                     statementContext.VariableService, statementContext.SchedulingService,
                     statementContext.EngineURI, statementContext.ConfigSnapshot,
                     new PatternNodeFactoryImpl(), new ContextManagementServiceImpl(),
                     new ExprDeclaredServiceImpl(), new TableServiceImpl());
-            ExprNode expr = raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
-            ExprNode validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, statementContext, OAEXPRESSIONTYPE, false);
-            return Validated.ExprEvaluator;
+            var expr = raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
+            var validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, statementContext, OAEXPRESSIONTYPE, false);
+            return validated.ExprEvaluator;
         }
     }
 } // end of namespace

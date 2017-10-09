@@ -46,7 +46,7 @@ namespace com.espertech.esper.core.context.mgr
         {
             if (_categorySpec.Items.IsEmpty())
             {
-                throw new ExprValidationException("Empty list of partition items");
+                throw new ExprValidationException("EmptyFalse list of partition items");
             }
             _contextBuiltinProps = ContextPropertyEventType.GetCategorizedType();
         }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.core.context.mgr
             object categoryIndex,
             int contextId)
         {
-            var statementInfo = (ContextControllerStatementCtxCacheFilters)statement.Caches[_factoryContext.NestingLevel - 1];
+            var statementInfo = (ContextControllerStatementCtxCacheFilters)statement.Caches[FactoryContext.NestingLevel - 1];
             var category = _categorySpec.Items[categoryIndex.AsInt()];
             GetAddendumFilters(filterAddendum, category, _categorySpec, statementInfo.FilterSpecs, statement);
         }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.core.context.mgr
             var filters = streamAnalysis.Filters;
 
             var isCreateWindow = statement.StatementSpec.CreateWindowDesc != null;
-            var message = "Category context '" + _factoryContext.ContextName + "' requires that any of the events types that are listed in the category context also appear in any of the filter expressions of the statement";
+            var message = "Category context '" + FactoryContext.ContextName + "' requires that any of the events types that are listed in the category context also appear in any of the filter expressions of the statement";
 
             // if no create-window: at least one of the filters must match one of the filters specified by the context
             if (!isCreateWindow)

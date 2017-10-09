@@ -13,7 +13,6 @@ using System.Reflection;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.access
@@ -21,52 +20,59 @@ namespace com.espertech.esper.epl.agg.access
     /// <summary>
     /// Represents the aggregation accessor that provides the result for the "window" aggregation function.
     /// </summary>
-    public class AggregationAccessorWindowNoEval : AggregationAccessor {
-        private readonly Type componentType;
-    
-        public AggregationAccessorWindowNoEval(Type componentType) {
-            this.componentType = componentType;
+    public class AggregationAccessorWindowNoEval : AggregationAccessor
+    {
+        private readonly Type _componentType;
+
+        public AggregationAccessorWindowNoEval(Type componentType)
+        {
+            this._componentType = componentType;
         }
-    
-        public Object GetValue(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            AggregationStateLinear linear = (AggregationStateLinear) state;
-            if (linear.Count == 0) {
+
+        public object GetValue(AggregationState state, EvaluateParams evalParams)
+        {
+            var linear = ((AggregationStateLinear)state);
+            if (linear.Count == 0)
+            {
                 return null;
             }
-            Object array = Array.NewInstance(componentType, linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
-            int count = 0;
-            for (; it.HasNext(); ) {
-                EventBean bean = it.Next();
-                Array.Set(array, count++, bean.Underlying);
+            var count = 0;
+            var array = Array.CreateInstance(_componentType, linear.Count);
+            foreach (var bean in linear)
+            {
+                array.SetValue(bean.Underlying, count++);
             }
             return array;
         }
-    
-        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            AggregationStateLinear linear = (AggregationStateLinear) state;
-            if (linear.Count == 0) {
+
+        public ICollection<EventBean> GetEnumerableEvents(AggregationState state, EvaluateParams evalParams)
+        {
+            var linear = ((AggregationStateLinear)state);
+            if (linear.Count == 0)
+            {
                 return null;
             }
-            return Linear.CollectionReadOnly();
+            return linear.CollectionReadOnly;
         }
-    
-        public ICollection<Object> GetEnumerableScalar(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            AggregationStateLinear linear = (AggregationStateLinear) state;
-            if (linear.Count == 0) {
+
+        public ICollection<object> GetEnumerableScalar(AggregationState state, EvaluateParams evalParams)
+        {
+            var linear = ((AggregationStateLinear)state);
+            if (linear.Count == 0)
+            {
                 return null;
             }
-            var values = new List<Object>(linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
-            for (; it.HasNext(); ) {
-                EventBean bean = it.Next();
+            var values = new List<object>(linear.Count);
+            foreach (var bean in linear)
+            {
                 values.Add(bean.Underlying);
             }
             return values;
         }
-    
-        public EventBean GetEnumerableEvent(AggregationState state, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
+
+        public EventBean GetEnumerableEvent(AggregationState state, EvaluateParams evalParams)
+        {
             return null;
         }
     }
-} // end of namespace
+}

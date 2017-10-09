@@ -12,6 +12,6 @@ namespace com.espertech.esper.events
 {
     public interface AvroBackedBean : EventBean
     {
-        object GetGenericRecordDotData();
+        object GenericRecordDotData { get; }
     }
 } // end of namespace

@@ -23,7 +23,7 @@ namespace com.espertech.esper.util
         public static ClassForNameProvider ResolveClassForNameProvider(
             IDictionary<string, object> transientConfiguration)
         {
-            return Resolve(
+            return Resolve<ClassForNameProvider>(
                 transientConfiguration,
                 ClassForNameProviderDefault.INSTANCE,
                 ClassForNameProviderDefault.NAME,
@@ -33,7 +33,7 @@ namespace com.espertech.esper.util
         public static FastClassClassLoaderProvider ResolveFastClassClassLoaderProvider(
             IDictionary<string, object> transientConfiguration)
         {
-            return Resolve(
+            return Resolve<FastClassClassLoaderProvider>(
                 transientConfiguration,
                 FastClassClassLoaderProviderDefault.INSTANCE,
                 FastClassClassLoaderProviderDefault.NAME,
@@ -42,7 +42,7 @@ namespace com.espertech.esper.util
 
         public static ClassLoaderProvider ResolveClassLoader(IDictionary<string, object> transientConfiguration)
         {
-            return Resolve(
+            return Resolve<ClassLoaderProvider>(
                 transientConfiguration, ClassLoaderProviderDefault.INSTANCE, ClassLoaderProviderDefault.NAME,
                 typeof (ClassLoaderProvider));
         }

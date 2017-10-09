@@ -51,20 +51,20 @@ namespace com.espertech.esper.core.context.stmt
             _service.ClearResults(exprEvaluatorContext);
         }
     
-        public Object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return _service.GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams) {
+            return _service.GetValue(column, agentInstanceId, evaluateParams);
         }
     
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _service.GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams) {
+            return _service.GetCollectionOfEvents(column, evaluateParams);
         }
     
-        public ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _service.GetCollectionScalar(column, eventsPerStream, isNewData, context);
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams) {
+            return _service.GetCollectionScalar(column, evaluateParams);
         }
     
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _service.GetEventBean(column, eventsPerStream, isNewData, context);
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams) {
+            return _service.GetEventBean(column, evaluateParams);
         }
     
         public void SetRemovedCallback(AggregationRowRemovedCallback callback) {

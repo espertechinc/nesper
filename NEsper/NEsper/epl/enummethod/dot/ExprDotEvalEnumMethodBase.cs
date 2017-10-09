@@ -16,7 +16,6 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.enummethod.eval;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.methodbase;
@@ -191,17 +190,14 @@ namespace com.espertech.esper.epl.enummethod.dot
             set { _typeInfo = value; }
         }
 
-        public Object Evaluate(
-            Object target,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target is EventBean)
             {
                 target = Collections.SingletonList((EventBean) target);
             }
 
+            var exprEvaluatorContext = evalParams.ExprEvaluatorContext;
             var enumerationMethodCache = exprEvaluatorContext.ExpressionResultCacheService.AllocateEnumerationMethod;
             if (_cache)
             {
@@ -215,8 +211,8 @@ namespace com.espertech.esper.epl.enummethod.dot
                 {
                     return null;
                 }
-                var eventsLambda = AllocateCopyEventLambda(eventsPerStream);
-                var result = _enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
+                var eventsLambda = AllocateCopyEventLambda(evalParams.EventsPerStream);
+                var result = _enumEval.EvaluateEnumMethod(eventsLambda, coll, evalParams.IsNewData, exprEvaluatorContext);
                 enumerationMethodCache.SaveEnumerationMethodLastValue(this, result);
                 return result;
             }
@@ -230,8 +226,8 @@ namespace com.espertech.esper.epl.enummethod.dot
                 {
                     return null;
                 }
-                var eventsLambda = AllocateCopyEventLambda(eventsPerStream);
-                return _enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
+                var eventsLambda = AllocateCopyEventLambda(evalParams.EventsPerStream);
+                return _enumEval.EvaluateEnumMethod(eventsLambda, coll, evalParams.IsNewData, exprEvaluatorContext);
             }
             finally
             {

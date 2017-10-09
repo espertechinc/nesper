@@ -55,7 +55,7 @@ namespace com.espertech.esper.client.soda
         /// <value>true for property, false for method</value>
         public bool IsProperty { get; set; }
 
-        /// <summary>Render to EPL. </summary>
+        /// <summary>RenderAny to EPL. </summary>
         /// <param name="chain">chain to render</param>
         /// <param name="writer">writer to output to</param>
         /// <param name="prefixDot">indicator whether to prefix with "."</param>

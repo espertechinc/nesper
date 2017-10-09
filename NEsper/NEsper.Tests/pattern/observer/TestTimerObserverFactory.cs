@@ -8,7 +8,7 @@
 
 using System;
 
-using com.espertech.esper.support.pattern;
+using com.espertech.esper.supportunit.pattern;
 using com.espertech.esper.view;
 
 using NUnit.Framework;

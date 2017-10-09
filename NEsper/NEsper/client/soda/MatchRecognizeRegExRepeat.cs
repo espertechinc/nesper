@@ -62,7 +62,7 @@ namespace com.espertech.esper.client.soda
 	    public Expression Single { get; set; }
 
         /// <summary>
-        /// Render as epl.
+        /// RenderAny as epl.
         /// </summary>
         /// <param name="writer">The writer.</param>
 	    public void WriteEPL(TextWriter writer)

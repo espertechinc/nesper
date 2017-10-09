@@ -27,7 +27,7 @@ namespace com.espertech.esper.example.feedexample
 	                "group by feed";
 
             Configuration configuration = new Configuration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
 	        EPServiceProvider engine = EPServiceProviderManager.GetDefaultProvider(configuration);

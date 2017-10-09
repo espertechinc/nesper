@@ -158,7 +158,7 @@ namespace com.espertech.esper.core.service
 
             // Walk
             var walker = new EPLTreeWalkerListener(
-                parseResult.TokenStream, services.GetEngineImportService(), services.VariableService,
+                parseResult.TokenStream, services.EngineImportService, services.VariableService,
                 services.SchedulingService, defaultStreamSelector, services.EngineURI, services.ConfigSnapshot,
                 services.PatternNodeFactory, services.ContextManagementService, parseResult.Scripts,
                 services.ExprDeclaredService, services.TableService);

@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.view
         public OutputProcessViewConditionDefault(
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
             ResultSetProcessor resultSetProcessor,
-            long afterConditionTime,
+            long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,

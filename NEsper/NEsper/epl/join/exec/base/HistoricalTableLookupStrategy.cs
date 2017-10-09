@@ -57,7 +57,10 @@ namespace com.espertech.esper.epl.join.exec.@base
             _streamNum = streamNum;
             _rootStreamNum = rootStreamNum;
             _outerJoinExprNode = outerJoinExprNode;
-            _lookupEventsPerStream = new EventBean[1][numStreams];
+            _lookupEventsPerStream = new EventBean[][]
+            {
+                new EventBean[numStreams]
+            };
         }
 
         public ICollection<EventBean> Lookup(EventBean theEvent, Cursor cursor, ExprEvaluatorContext exprEvaluatorContext)
@@ -84,13 +87,13 @@ namespace com.espertech.esper.epl.join.exec.@base
                     if (_outerJoinExprNode != null)
                     {
                         // Add each row to the join result or, for outer joins, run through the outer join filter
-                        for (; subsetIter.HasNext();)
+                        for (; subsetIter.MoveNext();)
                         {
-                            EventBean candidate = subsetIter.Next();
+                            EventBean candidate = subsetIter.Current;
 
                             _lookupEventsPerStream[0][_streamNum] = candidate;
-                            bool? pass = (bool?) _outerJoinExprNode.Evaluate(_lookupEventsPerStream[0], true, exprEvaluatorContext);
-                            if ((pass != null) && pass)
+                            var pass = _outerJoinExprNode.Evaluate(new EvaluateParams(_lookupEventsPerStream[0], true, exprEvaluatorContext));
+                            if ((pass != null) && true.Equals(pass))
                             {
                                 if (result == null)
                                 {
@@ -103,9 +106,9 @@ namespace com.espertech.esper.epl.join.exec.@base
                     else
                     {
                         // Add each row to the join result or, for outer joins, run through the outer join filter
-                        for (; subsetIter.HasNext();)
+                        for (; subsetIter.MoveNext();)
                         {
-                            EventBean candidate = subsetIter.Next();
+                            var candidate = subsetIter.Current;
                             if (result == null)
                             {
                                 result = new HashSet<EventBean>();

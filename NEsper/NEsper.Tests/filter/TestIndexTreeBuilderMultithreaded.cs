@@ -16,9 +16,9 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
-using com.espertech.esper.support.filter;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.filter;
 
 using NUnit.Framework;
 

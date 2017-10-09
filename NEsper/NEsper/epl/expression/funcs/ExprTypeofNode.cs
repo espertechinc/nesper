@@ -41,7 +41,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 1)
+            if (ChildNodes.Count != 1)
             {
                 throw new ExprValidationException("Typeof node must have 1 child expression node supplying the expression to test");
             }
@@ -227,14 +227,14 @@ namespace com.espertech.esper.epl.expression.funcs
 
             public object Evaluate(EvaluateParams evaluateParams)
             {
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprtypeof(); }
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QExprTypeof(); }
                 var result = _evaluator.Evaluate(evaluateParams);
                 if (result == null)
                 {
-                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprtypeof(null); }
+                    if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTypeof(null); }
                     return null;
                 }
-                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprtypeof(result.GetType().Name); }
+                if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AExprTypeof(result.GetType().Name); }
                 return result.GetType().Name;
             }
         }

@@ -26,7 +26,7 @@ namespace com.espertech.esper.client
             IsThreading = true;
             EngineInterval = 10 * 1000; // 10 seconds
             StatementInterval = 10 * 1000;
-            StatementGroups = new LinkedHashMap<String, StmtGroupMetrics>();
+            StatementGroups = new Dictionary<String, StmtGroupMetrics>();
         }
 
         /// <summary>

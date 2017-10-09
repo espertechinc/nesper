@@ -30,6 +30,8 @@ namespace com.espertech.esper.epl.subquery
             ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
+            var aggregationService = AggregationService;
+
             aggregationService.ClearResults(exprEvaluatorContext);
             if (matchingEvents == null)
             {

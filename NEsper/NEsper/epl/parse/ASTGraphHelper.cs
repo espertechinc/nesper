@@ -12,7 +12,6 @@ using System.Linq;
 
 using Antlr4.Runtime.Tree;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.generated;
@@ -107,7 +106,7 @@ namespace com.espertech.esper.epl.parse
                 }
             }
             else {
-                paramNames.Add(ASTUtil.UnescapeClassIdent(typeof(item)Identifier()));
+                paramNames.Add(ASTUtil.UnescapeClassIdent(item.classIdentifier()));
             }
             return paramNames.ToArray();
         }

@@ -129,7 +129,7 @@ namespace com.espertech.esper.events.bean
             {
                 var magicType = MagicType.GetCachedType(type);
 
-                foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null))
+                foreach (SimpleMagicPropertyInfo propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null))
                 {
                     result.Add(new InternalEventPropDescriptor(
                                    propertyInfo.Name,

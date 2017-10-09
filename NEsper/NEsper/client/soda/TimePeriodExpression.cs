@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.client.soda
 {
     /// <summary>Represent an expression</summary>
+    [Serializable]
     public class TimePeriodExpression : ExpressionBase
     {
         /// <summary>Ctor.</summary>

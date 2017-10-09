@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.epl.agg.util
 {
-	interface AggregationLocalLevelHook
+	public interface AggregationLocalLevelHook
     {
 	    void Planned(AggregationGroupByLocalGroupDesc localGroupDesc, AggregationLocalGroupByPlan localGroupByPlan);
 	}

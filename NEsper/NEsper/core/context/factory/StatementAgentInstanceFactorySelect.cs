@@ -286,7 +286,7 @@ namespace com.espertech.esper.core.context.factory
                                     {
                                         var streamName = streamSpec.OptionalStreamName != null ? streamSpec.OptionalStreamName : consumerView.EventType.Name;
                                         var types = new StreamTypeServiceImpl(consumerView.EventType, streamName, false, _services.EngineURI);
-                                        var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
+                                        var tagged = new Dictionary<string, Pair<EventType, string>>();
                                         namedWindowPostloadFilters[i] = FilterSpecCompiler.MakeFilterSpec(types.EventTypes[0], types.StreamNames[0],
                                                 namedSpec.FilterExpressions, null, tagged, tagged, types, null, _statementContext, Collections.SingletonSet(0));
                                     }
@@ -315,7 +315,7 @@ namespace com.espertech.esper.core.context.factory
                                         {
                                             var snapshot = consumerView.Snapshot(preloadFilterSpec, _statementContext.Annotations);
                                             var eventsInWindow = new List<EventBean>(snapshot.Count);
-                                            ExprNodeUtility.ApplyFilterExpressions(snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
+                                            ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, namedSpec.FilterExpressions, agentInstanceContext, eventsInWindow);
                                             EventBean[] newEvents = eventsInWindow.ToArray();
                                             view.Update(newEvents, null);
                                             if (!yesRecoveringResilient && joinPreloadMethod != null && !joinPreloadMethod.IsPreloading && agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null)

@@ -24,6 +24,7 @@ namespace com.espertech.esper.epl.expression.prev
     /// <summary>
     /// Represents the 'prev' previous event function in an expression node tree.
     /// </summary>
+    [Serializable]
     public class ExprPreviousNode
         : ExprNodeBase
         , ExprEvaluator
@@ -65,13 +66,13 @@ namespace com.espertech.esper.epl.expression.prev
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if ((ChildNodes.Length > 2) || (ChildNodes.Length == 0))
+            if ((ChildNodes.Count > 2) || (ChildNodes.Count == 0))
             {
                 throw new ExprValidationException("Previous node must have 1 or 2 parameters");
             }
 
             // add constant of 1 for previous index
-            if (ChildNodes.Length == 1)
+            if (ChildNodes.Count == 1)
             {
                 if (_previousType == ExprPreviousNodePreviousType.PREV)
                 {
@@ -95,7 +96,7 @@ namespace com.espertech.esper.epl.expression.prev
             if (ChildNodes[0].IsConstantResult)
             {
                 var constantNode = ChildNodes[0];
-                var value = constantNode.ExprEvaluator.Evaluate(null, false, validationContext.ExprEvaluatorContext);
+                var value = constantNode.ExprEvaluator.Evaluate(new EvaluateParams(null, false, validationContext.ExprEvaluatorContext));
                 if (!(value.IsNumber()))
                 {
                     throw new ExprValidationException(
@@ -163,37 +164,31 @@ namespace com.espertech.esper.epl.expression.prev
             get { return false; }
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
-            if (!isNewData)
+            if (!evaluateParams.IsNewData)
             {
                 return null;
             }
-            return Evaluator.EvaluateGetCollEvents(eventsPerStream, context);
+            return Evaluator.EvaluateGetCollEvents(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
         }
 
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
-            if (!isNewData)
+            if (!evaluateParams.IsNewData)
             {
                 return null;
             }
-            return Evaluator.EvaluateGetEventBean(eventsPerStream, context);
+            return Evaluator.EvaluateGetEventBean(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
-            if (!isNewData)
+            if (!evaluateParams.IsNewData)
             {
                 return null;
             }
-            return Evaluator.EvaluateGetCollScalar(eventsPerStream, context);
+            return Evaluator.EvaluateGetCollScalar(evaluateParams.EventsPerStream, evaluateParams.ExprEvaluatorContext);
         }
 
         public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)

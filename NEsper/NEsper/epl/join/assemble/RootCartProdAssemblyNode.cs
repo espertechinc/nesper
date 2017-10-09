@@ -29,10 +29,13 @@ namespace com.espertech.esper.epl.join.assemble
         private int[][] _combinedSubStreams; // for any cartesian product past 2 streams
         private bool _haveChildResults;
 
-        /// <summary>Ctor. </summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         /// <param name="streamNum">is the stream number</param>
         /// <param name="numStreams">is the number of streams</param>
         /// <param name="allSubStreamsOptional">true if all substreams are optional and none are required</param>
+        /// <param name="childStreamIndex">Index of the child stream.</param>
         public RootCartProdAssemblyNode(int streamNum, int numStreams, bool allSubStreamsOptional, int[] childStreamIndex)
             : base(streamNum, numStreams)
         {

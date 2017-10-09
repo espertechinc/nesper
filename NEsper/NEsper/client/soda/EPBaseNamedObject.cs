@@ -77,6 +77,7 @@ namespace com.espertech.esper.client.soda
 
             writer.Write('(');
             ExpressionBase.ToPrecedenceFreeEPL(Parameters, writer);
+            writer.Write(')');
         }
     }
 } // End of namespace

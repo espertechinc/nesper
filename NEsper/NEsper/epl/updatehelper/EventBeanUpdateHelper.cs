@@ -21,20 +21,22 @@ namespace com.espertech.esper.epl.updatehelper
     public class EventBeanUpdateHelper {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        private readonly EventBeanCopyMethod copyMethod;
-        private readonly EventBeanUpdateItem[] updateItems;
+        private readonly EventBeanCopyMethod _copyMethod;
+        private readonly EventBeanUpdateItem[] _updateItems;
     
-        public EventBeanUpdateHelper(EventBeanCopyMethod copyMethod, EventBeanUpdateItem[] updateItems) {
-            this.copyMethod = copyMethod;
-            this.updateItems = updateItems;
+        public EventBeanUpdateHelper(EventBeanCopyMethod copyMethod, EventBeanUpdateItem[] updateItems)
+        {
+            _copyMethod = copyMethod;
+            _updateItems = updateItems;
         }
     
-        public EventBean UpdateWCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
+        public EventBean UpdateWCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
+        {
             if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, updateItems.Length, true);
+                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, true);
             }
     
-            EventBean copy = copyMethod.Copy(matchingEvent);
+            EventBean copy = _copyMethod.Copy(matchingEvent);
             eventsPerStream[0] = copy;
             eventsPerStream[2] = matchingEvent; // initial value
     
@@ -48,7 +50,7 @@ namespace com.espertech.esper.epl.updatehelper
     
         public void UpdateNoCopy(EventBean matchingEvent, EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext) {
             if (InstrumentationHelper.ENABLED) {
-                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, updateItems.Length, false);
+                InstrumentationHelper.Get().QInfraUpdate(matchingEvent, eventsPerStream, _updateItems.Length, false);
             }
     
             UpdateInternal(eventsPerStream, exprEvaluatorContext, matchingEvent);
@@ -57,23 +59,28 @@ namespace com.espertech.esper.epl.updatehelper
                 InstrumentationHelper.Get().AInfraUpdate(matchingEvent);
             }
         }
-    
-        public EventBeanUpdateItem[] GetUpdateItems() {
-            return updateItems;
+
+        public EventBeanUpdateItem[] UpdateItems
+        {
+            get { return _updateItems; }
         }
-    
-        public bool IsRequiresStream2InitialValueEvent() {
-            return copyMethod != null;
+
+        public bool IsRequiresStream2InitialValueEvent
+        {
+            get { return _copyMethod != null; }
         }
-    
-        private void UpdateInternal(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, EventBean target) {
-            for (int i = 0; i < updateItems.Length; i++) {
-                EventBeanUpdateItem updateItem = updateItems[i];
+
+        private void UpdateInternal(EventBean[] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext, EventBean target) 
+        {
+            var evaluateParams = new EvaluateParams(eventsPerStream, true, exprEvaluatorContext);
+            for (int i = 0; i < _updateItems.Length; i++)
+            {
+                EventBeanUpdateItem updateItem = _updateItems[i];
     
                 if (InstrumentationHelper.ENABLED) {
                     InstrumentationHelper.Get().QInfraUpdateRHSExpr(i, updateItem);
                 }
-                Object result = updateItem.Expression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                Object result = updateItem.Expression.Evaluate(evaluateParams);
                 if (InstrumentationHelper.ENABLED) {
                     InstrumentationHelper.Get().AInfraUpdateRHSExpr(result);
                 }
@@ -85,7 +92,7 @@ namespace com.espertech.esper.epl.updatehelper
                     }
     
                     if (updateItem.OptionalWidener != null) {
-                        result = updateItem.OptionalWidener.Widen(result);
+                        result = updateItem.OptionalWidener.Invoke(result);
                     }
                     updateItem.OptionalWriter.Write(result, target);
                 }

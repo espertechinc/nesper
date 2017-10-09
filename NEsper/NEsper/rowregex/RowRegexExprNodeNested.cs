@@ -6,40 +6,33 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.rowregex
 {
     /// <summary>Nested () regular expression in a regex expression tree.</summary>
+    [Serializable]
     public class RowRegexExprNodeNested : RowRegexExprNode
     {
-        private readonly RegexNFATypeEnum _type;
-        private readonly RowRegexExprRepeatDesc _optionalRepeat;
-    
         public RowRegexExprNodeNested(RegexNFATypeEnum type, RowRegexExprRepeatDesc optionalRepeat)
         {
-            _type = type;
-            _optionalRepeat = optionalRepeat;
+            NFAType = type;
+            OptionalRepeat = optionalRepeat;
         }
 
         /// <summary>
         /// Returns multiplicity and greedy.
         /// </summary>
         /// <value>type</value>
-        public RegexNFATypeEnum ReturnType
-        {
-            get { return _type; }
-        }
+        public RegexNFATypeEnum NFAType { get; private set; }
 
-        public RowRegexExprRepeatDesc OptionalRepeat
-        {
-            get { return _optionalRepeat; }
-        }
+        public RowRegexExprRepeatDesc OptionalRepeat { get; private set; }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(_type.OptionalPostfix);
+            writer.Write(NFAType.OptionalPostfix());
         }
 
         public override RowRegexExprNodePrecedenceEnum Precedence

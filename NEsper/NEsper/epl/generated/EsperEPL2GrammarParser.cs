@@ -19,6 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
+namespace com.espertech.esper.epl.generated {
 
   using System;
   using System.Collections.Generic;
@@ -36,8 +37,8 @@ using DFA = Antlr4.Runtime.Dfa.DFA;
 [System.CodeDom.Compiler.GeneratedCode("ANTLR", "4.6")]
 [System.CLSCompliant(false)]
 public partial class EsperEPL2GrammarParser : Parser {
-	internal static DFA[] decisionToDFA;
-	internal static PredictionContextCache sharedContextCache = new PredictionContextCache();
+	protected static DFA[] decisionToDFA;
+	protected static PredictionContextCache sharedContextCache = new PredictionContextCache();
 	public const int
 		CREATE=1, WINDOW=2, IN_SET=3, BETWEEN=4, LIKE=5, REGEXP=6, ESCAPE=7, OR_EXPR=8, 
 		AND_EXPR=9, NOT_EXPR=10, EVERY_EXPR=11, EVERY_DISTINCT_EXPR=12, WHERE=13, 
@@ -24586,3 +24587,4 @@ public partial class EsperEPL2GrammarParser : Parser {
 
 
 }
+} // namespace com.espertech.esper.epl.generated

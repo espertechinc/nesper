@@ -44,7 +44,7 @@ namespace com.espertech.esper.client.soda
         /// <value>parameter value</value>
         public object ParameterValue { get; set; }
 
-        /// <summary>Render parameter. </summary>
+        /// <summary>RenderAny parameter. </summary>
         /// <param name="writer">to write to</param>
         public void ToEPL(TextWriter writer)
         {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.client.soda
             RenderValue(writer, ParameterValue);
         }
 
-        /// <summary>Render prameter. </summary>
+        /// <summary>RenderAny prameter. </summary>
         /// <param name="writer">to render to</param>
         /// <param name="parameterValue">value</param>
         public static void RenderValue(TextWriter writer, Object parameterValue)

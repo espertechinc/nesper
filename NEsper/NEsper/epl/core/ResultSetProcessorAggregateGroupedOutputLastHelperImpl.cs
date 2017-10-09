@@ -23,8 +23,8 @@ namespace com.espertech.esper.epl.core
 
 	    public ResultSetProcessorAggregateGroupedOutputLastHelperImpl(ResultSetProcessorAggregateGrouped processor) {
 	        _processor = processor;
-	        _outputLastUnordGroupNew = new LinkedHashMap<object, EventBean>();
-	        _outputLastUnordGroupOld = new LinkedHashMap<object, EventBean>();
+	        _outputLastUnordGroupNew = new Dictionary<object, EventBean>();
+	        _outputLastUnordGroupOld = new Dictionary<object, EventBean>();
 	    }
 
 	    public void ProcessView(EventBean[] newData, EventBean[] oldData, bool isGenerateSynthetic) {

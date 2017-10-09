@@ -26,7 +26,7 @@ namespace com.espertech.esper.epl.parse
         {
         }
 
-        public override int La(int i)
+        public override int LA(int i)
         {
             if (i == 0)
             {
@@ -37,13 +37,13 @@ namespace com.espertech.esper.epl.parse
                 i++; // e.g., translate LA(-1) to use offset i=0; then data[p+0-1]
                 if ((p + i - 1) < 0)
                 {
-                    return IntStreamConstants.Eof;
+                    return IntStreamConstants.EOF;
                 }
             }
             // invalid; no char before first char
             if ((p + i - 1) >= n)
             {
-                return (int)IntStreamConstants.Eof;
+                return (int)IntStreamConstants.EOF;
             }
             return Char.ToLower(data[p + i - 1]);
         }

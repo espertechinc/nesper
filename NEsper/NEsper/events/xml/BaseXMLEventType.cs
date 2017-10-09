@@ -156,7 +156,7 @@ namespace com.espertech.esper.events.xml
                         fragmentFactory);
                     var returnType = SchemaUtil.ToReturnType(
                         property.ResultType,
-                        property.OptionalCastToType);
+                        property.OptionalCastToType.GetBoxedType());
                     var indexType = returnType.GetIndexType();
                     var isIndexed = indexType != null;
 

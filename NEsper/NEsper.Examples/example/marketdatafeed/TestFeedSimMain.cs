@@ -6,16 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
 using NUnit.Framework;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
-using com.espertech.esper.support;
-using com.espertech.esper.support.util;
-
 
 namespace com.espertech.esper.example.marketdatafeed
 {

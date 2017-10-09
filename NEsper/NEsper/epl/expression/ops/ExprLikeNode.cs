@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if ((ChildNodes.Length != 2) && (ChildNodes.Length != 3))
+            if ((ChildNodes.Count != 2) && (ChildNodes.Count != 3))
             {
                 throw new ExprValidationException("The 'like' operator requires 2 (no escape) or 3 (with escape) child expressions");
             }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
 
             // check escape character node
-            if (ChildNodes.Length == 3)
+            if (ChildNodes.Count == 3)
             {
                 ExprEvaluator escapeChildNode = _evaluators[2];
                 if (escapeChildNode.ReturnType != typeof(String))
@@ -107,7 +107,7 @@ namespace com.espertech.esper.epl.expression.ops
                 }
                 string escape = "\\";
                 char? escapeCharacter = null;
-                if (ChildNodes.Length == 3)
+                if (ChildNodes.Count == 3)
                 {
                     escape = (String)_evaluators[2].Evaluate(evaluateParams);
                 }
@@ -179,7 +179,7 @@ namespace com.espertech.esper.epl.expression.ops
             writer.Write(" like ");
             childNodes[1].ToEPL(writer, Precedence);
 
-            if (childNodes.Length == 3)
+            if (childNodes.Count == 3)
             {
                 writer.Write(" escape ");
                 childNodes[2].ToEPL(writer, Precedence);

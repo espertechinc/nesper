@@ -20,6 +20,7 @@ using com.espertech.esper.type;
 namespace com.espertech.esper.epl.expression.subquery
 {
     /// <summary>Represents a subselect in an expression tree.</summary>
+    [Serializable]
     public class ExprSubselectAllSomeAnyNode : ExprSubselectNode
     {
         private static readonly ILog Log =
@@ -27,7 +28,7 @@ namespace com.espertech.esper.epl.expression.subquery
 
         private readonly bool _isNot;
         private readonly bool _isAll;
-        private readonly RelationalOpEnum _relationalOp;
+        private readonly RelationalOpEnum? _relationalOp;
         [NonSerialized] private SubselectEvalStrategyNR _evalStrategy;
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace com.espertech.esper.epl.expression.subquery
             StatementSpecRaw statementSpec,
             bool not,
             bool all,
-            RelationalOpEnum relationalOpEnum)
+            RelationalOpEnum? relationalOpEnum)
             : base(statementSpec)
         {
             _isNot = not;
@@ -71,7 +72,7 @@ namespace com.espertech.esper.epl.expression.subquery
         /// Returns relational op.
         /// </summary>
         /// <value>op</value>
-        public RelationalOpEnum RelationalOp
+        public RelationalOpEnum? RelationalOp
         {
             get { return _relationalOp; }
         }
@@ -162,10 +163,7 @@ namespace com.espertech.esper.epl.expression.subquery
             return null;
         }
 
-        public override EventBean EvaluateGetEventBean(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public override EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

@@ -37,7 +37,7 @@ namespace com.espertech.esper.epl.expression.subquery
             Object result;
             if (parent.SelectClauseEvaluator.Length == 1)
             {
-                result = parent.SelectClauseEvaluator[0].Evaluate(eventsZeroBased, true, exprEvaluatorContext);
+                result = parent.SelectClauseEvaluator[0].Evaluate(new EvaluateParams(eventsZeroBased, true, exprEvaluatorContext));
             }
             else
             {
@@ -71,13 +71,15 @@ namespace com.espertech.esper.epl.expression.subquery
             var selectClauseEvaluator = parent.SelectClauseEvaluator;
             var filterExpr = parent.FilterExpr;
             var events = EventBeanUtility.AllocatePerStreamShift(eventsPerStream);
+            var evaluateParamsA = new EvaluateParams(events, true, context);
+            var evaluateParamsB = new EvaluateParams(events, isNewData, context);
             foreach (var subselectEvent in matchingEvents)
             {
                 events[0] = subselectEvent;
-                var pass = filterExpr.Evaluate(events, true, context);
+                var pass = filterExpr.Evaluate(evaluateParamsA);
                 if ((pass != null) && true.Equals(pass))
                 {
-                    result.Add(selectClauseEvaluator[0].Evaluate(events, isNewData, context));
+                    result.Add(selectClauseEvaluator[0].Evaluate(evaluateParamsB));
                 }
             }
             return result;
@@ -102,9 +104,10 @@ namespace com.espertech.esper.epl.expression.subquery
             events[0] = subSelectResult;
             var selectClauseEvaluator = parent.SelectClauseEvaluator;
             var results = new Object[selectClauseEvaluator.Length];
+            var evaluateParams = new EvaluateParams(events, isNewData, exprEvaluatorContext);
             for (var i = 0; i < results.Length; i++)
             {
-                results[i] = selectClauseEvaluator[i].Evaluate(events, isNewData, exprEvaluatorContext);
+                results[i] = selectClauseEvaluator[i].Evaluate(evaluateParams);
             }
             return results;
         }
@@ -119,19 +122,21 @@ namespace com.espertech.esper.epl.expression.subquery
             var rows = new Object[matchingEvents.Count][];
             var index = -1;
             var events = EventBeanUtility.AllocatePerStreamShift(eventsPerStream);
+            var evaluateParams = new EvaluateParams(events, newData, exprEvaluatorContext);
+
             foreach (var matchingEvent in matchingEvents)
             {
                 events[0] = matchingEvent;
 
-                var pass = (bool?) parent.FilterExpr.Evaluate(events, newData, exprEvaluatorContext);
-                if ((pass != null) && pass)
+                var pass = parent.FilterExpr.Evaluate(evaluateParams);
+                if ((pass != null) && true.Equals(pass))
                 {
                     index++;
                     var selectClauseEvaluator = parent.SelectClauseEvaluator;
                     var results = new Object[selectClauseEvaluator.Length];
                     for (var i = 0; i < results.Length; i++)
                     {
-                        results[i] = selectClauseEvaluator[i].Evaluate(events, newData, exprEvaluatorContext);
+                        results[i] = selectClauseEvaluator[i].Evaluate(evaluateParams);
                     }
                     rows[index] = results;
                 }
@@ -167,7 +172,7 @@ namespace com.espertech.esper.epl.expression.subquery
             }
             var row = parent.EvaluateRow(events, true, context);
             return parent.SubselectMultirowType.EventAdapterService.AdapterForTypedMap(
-                row, parent.subselectMultirowType.EventType);
+                row, parent.SubselectMultirowType.EventType);
         }
     }
 } // end of namespace

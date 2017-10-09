@@ -61,7 +61,7 @@ namespace com.espertech.esper.client
         /// an event by the underlying event representation.
         /// <para/>
         /// The <seealso cref="EventType"/> of the event bean Instance(s) returned by this method can be
-        /// determined by <seealso cref="EventType.FragmentType" />
+        /// determined by <seealso cref="FragmentEventType" />
         /// 	. Use 
         /// <seealso cref="EventPropertyDescriptor"/> to obtain a list of properties that return fragments from an event type.
         /// <para/> 

@@ -116,7 +116,7 @@ namespace com.espertech.esper.epl.expression.baseagg
 
         public void ValidatePositionals()
         {
-            ExprAggregateNodeParamDesc paramDesc = ExprAggregateNodeUtil.GetValidatePositionalParams(ChildNodes, !(this is ExprAggregationPlugInNodeMarker));
+            var paramDesc = ExprAggregateNodeUtil.GetValidatePositionalParams(ChildNodes, !(this is ExprAggregationPlugInNodeMarker));
             _optionalAggregateLocalGroupByDesc = paramDesc.OptLocalGroupBy;
             if (_optionalAggregateLocalGroupByDesc != null) {
                 ExprNodeUtility.ValidateNoSpecialsGroupByExpressions(_optionalAggregateLocalGroupByDesc.PartitionExpressions);
@@ -166,16 +166,14 @@ namespace com.espertech.esper.epl.expression.baseagg
 
         public virtual object Evaluate(EvaluateParams evaluateParams)
         {
-            var events = evaluateParams.EventsPerStream;
-            var isNewData = evaluateParams.IsNewData;
             var exprEvaluatorContext = evaluateParams.ExprEvaluatorContext;
 
 	        if (InstrumentationHelper.ENABLED) {
-	            object value = AggregationResultFuture.GetValue(Column, exprEvaluatorContext.AgentInstanceId, events, isNewData, exprEvaluatorContext);
+                var value = AggregationResultFuture.GetValue(Column, exprEvaluatorContext.AgentInstanceId, evaluateParams);
 	            InstrumentationHelper.Get().QaExprAggValue(this, value);
 	            return value;
 	        }
-	        return AggregationResultFuture.GetValue(Column, exprEvaluatorContext.AgentInstanceId, events, isNewData, exprEvaluatorContext);
+            return AggregationResultFuture.GetValue(Column, exprEvaluatorContext.AgentInstanceId, evaluateParams);
 		}
 
 	    /// <summary>
@@ -196,7 +194,7 @@ namespace com.espertech.esper.epl.expression.baseagg
 	            return false;
 	        }
 
-	        return other.IsDistinct == this._isDistinct && this.EqualsNodeAggregateMethodOnly(other);
+	        return other.IsDistinct == _isDistinct && EqualsNodeAggregateMethodOnly(other);
 	    }
 
         /// <summary>
@@ -260,14 +258,14 @@ namespace com.espertech.esper.epl.expression.baseagg
 	            writer.Write("distinct ");
 	        }
 
-	        if (this.ChildNodes.Length > 0) {
-	            this.ChildNodes[0].ToEPL(writer, Precedence);
+	        if (ChildNodes.Count> 0) {
+	            ChildNodes[0].ToEPL(writer, Precedence);
 
-	            string delimiter = ",";
-	            for (int i = 1 ; i < this.ChildNodes.Length; i++) {
+	            var delimiter = ",";
+	            for (var i = 1 ; i < ChildNodes.Count; i++) {
 	                writer.Write(delimiter);
 	                delimiter = ",";
-	                this.ChildNodes[i].ToEPL(writer, Precedence);
+	                ChildNodes[i].ToEPL(writer, Precedence);
 	            }
 	        }
 	        else {

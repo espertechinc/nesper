@@ -41,7 +41,6 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="serviceProvider">The service provider.</param>
         /// <param name="expressionNoAnnotations">expression text witout annotations</param>
         /// <param name="isPattern">is true to indicate this is a pure pattern expression</param>
         /// <param name="dispatchService">for dispatching events to listeners to the statement</param>
@@ -348,7 +347,7 @@ namespace com.espertech.esper.core.service
             StatementContext.VariableService.SetLocalVersion();
             if (_parentView == null)
             {
-                return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+                return EnumerationHelper<EventBean>.Empty();
             }
 
             IEnumerator<EventBean> theEnumerator;

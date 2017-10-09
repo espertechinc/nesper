@@ -37,7 +37,7 @@ using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.epl.script;
+using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.table.mgmt;
 using com.espertech.esper.epl.variable;
@@ -93,7 +93,7 @@ namespace com.espertech.esper.epl.parse
         private readonly IDictionary<ITree, RowRegexExprNode> _astRowRegexNodeMap = new HashMap<ITree, RowRegexExprNode>();
         private readonly IDictionary<ITree, Object> _astGopNodeMap = new HashMap<ITree, Object>();
         private readonly IDictionary<ITree, StatementSpecRaw> _astStatementSpecMap = new HashMap<ITree, StatementSpecRaw>();
-        private readonly ICollection<ViewSpec> _viewSpecs = new LinkedList<ViewSpec>();
+        private readonly IList<ViewSpec> _viewSpecs = new List<ViewSpec>();
         private readonly Stack<StatementSpecRaw> _statementSpecStack;
         private readonly CommonTokenStream _tokenStream;
         private readonly EngineImportService _engineImportService;
@@ -114,7 +114,7 @@ namespace com.espertech.esper.epl.parse
         // private holding areas for accumulated INFO
         private IDictionary<ITree, ExprNode> _astExprNodeMap = new LinkedHashMap<ITree, ExprNode>();
         private IDictionary<StatementSpecRaw, OnTriggerSplitStreamFromClause> _onTriggerSplitPropertyEvals;
-        private readonly LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> plugInAggregations = new LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>();
+        private readonly LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory> _plugInAggregations = new LazyAllocatedMap<ConfigurationPlugInAggregationMultiFunction, PlugInAggregationMultiFunctionFactory>();
         private FilterSpecRaw _filterSpec;
         // AST Walk result
         private readonly IList<ExprSubstitutionNode> _substitutionParamNodes = new List<ExprSubstitutionNode>();
@@ -130,7 +130,7 @@ namespace com.espertech.esper.epl.parse
             EngineImportService engineImportService,
             VariableService variableService,
             SchedulingService schedulingService,
-            SelectClauseStreamSelectorEnum defaultStreamSelector,
+            SelectClauseStreamSelectorEnum? defaultStreamSelector,
             string engineURI,
             ConfigurationInformation configurationInformation,
             PatternNodeFactory patternNodeFactory,
@@ -142,7 +142,6 @@ namespace com.espertech.esper.epl.parse
             _tokenStream = tokenStream;
             _engineImportService = engineImportService;
             _variableService = variableService;
-            _defaultStreamSelector = defaultStreamSelector;
             _timeProvider = schedulingService;
             _patternNodeFactory = patternNodeFactory;
             _exprEvaluatorContext = new ExprEvaluatorContextTimeOnly(_timeProvider);
@@ -157,8 +156,9 @@ namespace com.espertech.esper.epl.parse
             if (defaultStreamSelector == null) {
                 throw ASTWalkException.From("Default stream selector is null");
             }
-    
-            _statementSpec = new StatementSpecRaw(defaultStreamSelector);
+
+            _defaultStreamSelector = defaultStreamSelector.Value;
+            _statementSpec = new StatementSpecRaw(defaultStreamSelector.Value);
             _statementSpecStack = new Stack<StatementSpecRaw>();
             _astExprNodeMapStack = new Stack<IDictionary<ITree, ExprNode>>();
     
@@ -254,7 +254,7 @@ namespace com.espertech.esper.epl.parse
     
                 if (isAll || isAny) {
                     if (ctx.subSelectGroupExpression() != null && !ctx.subSelectGroupExpression().IsEmpty()) {
-                        StatementSpecRaw currentSpec = _astStatementSpecMap.Remove(ctx.subSelectGroupExpression()[0].subQueryExpr());
+                        StatementSpecRaw currentSpec = _astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
                         exprNode = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
                     } else {
                         exprNode = new ExprRelationalOpAllAnyNode(relationalOpEnum, isAll);
@@ -272,7 +272,7 @@ namespace com.espertech.esper.epl.parse
         }
     
         public void ExitLibFunction(EsperEPL2GrammarParser.LibFunctionContext ctx) {
-            ASTLibFunctionHelper.HandleLibFunc(_tokenStream, ctx, _configurationInformation, _engineImportService, _astExprNodeMap, plugInAggregations, _engineURI, _expressionDeclarations, _exprDeclaredService, _scriptExpressions, _contextDescriptor, _tableService, _statementSpec, _variableService);
+            ASTLibFunctionHelper.HandleLibFunc(_tokenStream, ctx, _configurationInformation, _engineImportService, _astExprNodeMap, _plugInAggregations, _engineURI, _expressionDeclarations, _exprDeclaredService, _scriptExpressions, _contextDescriptor, _tableService, _statementSpec, _variableService);
         }
     
         public void ExitMatchRecog(EsperEPL2GrammarParser.MatchRecogContext ctx) {
@@ -339,7 +339,7 @@ namespace com.espertech.esper.epl.parse
     
         public void ExitMergeUnmatchedItem(EsperEPL2GrammarParser.MergeUnmatchedItemContext ctx) {
             if (_mergeActions == null) {
-                _mergeActions = new List<OnTriggerMergeAction>(
+                _mergeActions = new List<OnTriggerMergeAction>();
             }
             HandleMergeInsert(ctx.mergeInsert());
         }
@@ -348,7 +348,7 @@ namespace com.espertech.esper.epl.parse
             if (_astExprNodeMap.Count != 1) {
                 throw new IllegalStateException("Having clause generated zero or more then one expression nodes");
             }
-            _statementSpec.HavingExprRootNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap[0]);
+            _statementSpec.HavingExprRootNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
             _astExprNodeMap.Clear();
         }
     
@@ -379,7 +379,7 @@ namespace com.espertech.esper.epl.parse
             if (ctx.s != null) {
                 type = RegexNFATypeEnumExtensions.FromString(ctx.s.Text, null);
             }
-            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
+            var repeat = ASTMatchRecognizeHelper.walkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
             var nestedNode = new RowRegexExprNodeNested(type, repeat);
             ASTExprHelper.RegExCollectAddSubNodesAddParentNode(nestedNode, ctx, _astRowRegexNodeMap);
         }
@@ -410,7 +410,7 @@ namespace com.espertech.esper.epl.parse
                 if ((_astExprNodeMap.Count > 1) || ((_astExprNodeMap.IsEmpty()))) {
                     throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child element for root", _tokenStream, ctx);
                 }
-                exprNode = _astExprNodeMap.Values.GetEnumerator().Next();
+                exprNode = _astExprNodeMap.Values.First();
                 _astExprNodeMap.Clear();
             }
     
@@ -458,7 +458,7 @@ namespace com.espertech.esper.epl.parse
     
         public void ExitNumberconstant(EsperEPL2GrammarParser.NumberconstantContext ctx) {
             // if the parent is constant, don't need an expression
-            if (ctx.Parent.RuleContext.RuleIndex == EsperEPL2GrammarParser.RULE_constant) {
+            if (ctx.Parent.RuleIndex == EsperEPL2GrammarParser.RULE_constant) {
                 return;
             }
             var constantNode = new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx));
@@ -496,7 +496,7 @@ namespace com.espertech.esper.epl.parse
                 type = RegexNFATypeEnumExtensions.FromString(ctx.s.Text, null);
             }
     
-            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
+            var repeat = ASTMatchRecognizeHelper.walkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
             var item = new RowRegexExprNodeAtom(first, type, repeat);
             ASTExprHelper.RegExCollectAddSubNodesAddParentNode(item, ctx, _astRowRegexNodeMap);
         }
@@ -590,7 +590,7 @@ namespace com.espertech.esper.epl.parse
                 // Get expression node sub-tree from the AST nodes placed so far
                 var evalNode = _astPatternNodeMap.Values.First();
                 var flags = GetPatternFlags(ctx.patternInclusionExpression().annotationEnum());
-                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(_viewSpecs), streamAsName, StreamSpecOptions.DEFAULT, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
+                streamSpec = new PatternStreamSpecRaw(evalNode, _viewSpecs.ToArray(), streamAsName, StreamSpecOptions.DEFAULT, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
                 _astPatternNodeMap.Clear();
             } else {
                 throw new IllegalStateException("Invalid AST type node, cannot map to stream specification");
@@ -760,7 +760,8 @@ namespace com.espertech.esper.epl.parse
                 return;
             }
             if (ctx.s != null) {
-                ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(ctx.expression(), _astExprNodeMap, _configurationInformation, _engineImportService.TimeAbacus);
+                ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(
+                    ctx.expression(), _astExprNodeMap, _configurationInformation, _engineImportService.TimeAbacus);
                 _astExprNodeMap.Put(ctx, node);
             } else if (ctx.a != null || ctx.d != null) {
                 var isDescending = ctx.d != null;
@@ -866,7 +867,7 @@ namespace com.espertech.esper.epl.parse
     
             // If the first subnode is a filter node, we have a filter stream specification
             if (ASTUtil.GetRuleIndexIfProvided(ctx.GetChild(0)) == EsperEPL2GrammarParser.RULE_eventFilterExpression) {
-                streamSpec = new FilterStreamSpecRaw(_filterSpec, ViewSpec.ToArray(_viewSpecs), streamName, options);
+                streamSpec = new FilterStreamSpecRaw(_filterSpec, _viewSpecs.ToArray(), streamName, options);
             } else if (ASTUtil.GetRuleIndexIfProvided(ctx.GetChild(0)) == EsperEPL2GrammarParser.RULE_patternInclusionExpression) {
                 if ((_astPatternNodeMap.Count > 1) || ((_astPatternNodeMap.IsEmpty()))) {
                     throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child elements for root");
@@ -876,7 +877,7 @@ namespace com.espertech.esper.epl.parse
                 // Get expression node sub-tree from the AST nodes placed so far
                 EvalFactoryNode evalNode = _astPatternNodeMap.Values.First();
                 var flags = GetPatternFlags(pctx.annotationEnum());
-                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(_viewSpecs), streamName, options, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
+                streamSpec = new PatternStreamSpecRaw(evalNode, _viewSpecs.ToArray(), streamName, options, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
                 _astPatternNodeMap.Clear();
             } else if (ctx.databaseJoinExpression() != null) {
                 var dbctx = ctx.databaseJoinExpression();
@@ -901,7 +902,7 @@ namespace com.espertech.esper.epl.parse
                         if (expression.Trim().Length == 0) {
                             throw ASTWalkException.From("Missing expression within ${...} in SQL statement");
                         }
-                        var toCompile = "select * from java.lang.Object where " + expression;
+                        var toCompile = "select * from System.Object where " + expression;
                         var raw = EPAdministratorHelper.CompileEPL(toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
                                 _engineImportService, _variableService, _schedulingService, _engineURI, _configurationInformation, _patternNodeFactory, _contextManagementService, _exprDeclaredService, _tableService);
     
@@ -934,8 +935,8 @@ namespace com.espertech.esper.epl.parse
                     sampleSQL = dbctx.s2.Text;
                     sampleSQL = StringValue.ParseString(sampleSQL.Trim());
                 }
-    
-                streamSpec = new DBStatementStreamSpec(streamName, ViewSpec.ToArray(_viewSpecs), dbName, sqlWithParams, sampleSQL);
+
+                streamSpec = new DBStatementStreamSpec(streamName, _viewSpecs.ToArray(), dbName, sqlWithParams, sampleSQL);
             } else if (ctx.methodJoinExpression() != null) {
                 var mthctx = ctx.methodJoinExpression();
                 var prefixIdent = mthctx.i.Text;
@@ -958,8 +959,8 @@ namespace com.espertech.esper.epl.parse
                 }
     
                 string eventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.methodJoinExpression().typeExpressionAnnotation(), _tokenStream);
-    
-                streamSpec = new MethodStreamSpec(streamName, ViewSpec.ToArray(_viewSpecs), prefixIdent, classNamePart, methodNamePart, exprNodes, eventTypeName);
+
+                streamSpec = new MethodStreamSpec(streamName, _viewSpecs.ToArray(), prefixIdent, classNamePart, methodNamePart, exprNodes, eventTypeName);
             } else {
                 throw ASTWalkException.From("Unexpected AST child node to stream expression", _tokenStream, ctx);
             }
@@ -1036,9 +1037,9 @@ namespace com.espertech.esper.epl.parse
         public void ExitOutputLimit(EsperEPL2GrammarParser.OutputLimitContext ctx) {
             var spec = ASTOutputLimitHelper.BuildOutputLimitSpec(_tokenStream, ctx, _astExprNodeMap, _variableService, _engineURI, _timeProvider, _exprEvaluatorContext);
             _statementSpec.OutputLimitSpec = spec;
-            if (spec.GetVariableName() != null) {
+            if (spec.VariableName != null) {
                 _statementSpec.HasVariables = true;
-                ASTExprHelper.AddVariableReference(_statementSpec, spec.GetVariableName());
+                ASTExprHelper.AddVariableReference(_statementSpec, spec.VariableName);
             }
         }
     
@@ -1050,7 +1051,7 @@ namespace com.espertech.esper.epl.parse
         public void ExitCreateSchemaExpr(EsperEPL2GrammarParser.CreateSchemaExprContext ctx) {
             var createSchema = ASTCreateSchemaHelper.WalkCreateSchema(ctx);
             if (ctx.Parent.RuleIndex == EsperEPL2GrammarParser.RULE_eplExpression) {
-                _statementSpec.StreamSpecs.Add(new FilterStreamSpecRaw(new FilterSpecRaw(typeof(Object).Name, Collections.GetEmptyList<ExprNode>(), null), ViewSpec.EMPTY_VIEWSPEC_ARRAY, null, StreamSpecOptions.DEFAULT));
+                _statementSpec.StreamSpecs.Add(new FilterStreamSpecRaw(new FilterSpecRaw(typeof(Object).FullName, Collections.GetEmptyList<ExprNode>(), null), ViewSpec.EMPTY_VIEWSPEC_ARRAY, null, StreamSpecOptions.DEFAULT));
             }
             _statementSpec.CreateSchemaDesc = createSchema;
         }
@@ -1068,7 +1069,7 @@ namespace com.espertech.esper.epl.parse
     
             var columns = new List<CreateIndexItem>();
             var unique = false;
-            IList<EsperEPL2GrammarParser.CreateIndexColumnContext> cols = ctx.createIndexColumnList().CreateIndexColumn();
+            IList<EsperEPL2GrammarParser.CreateIndexColumnContext> cols = ctx.createIndexColumnList().createIndexColumn();
             foreach (var col in cols) {
                 var type = CreateIndexType.HASH;
                 var columnName = col.c.Text;
@@ -1076,8 +1077,10 @@ namespace com.espertech.esper.epl.parse
                     var typeName = col.t.Text;
                     try {
                         type = EnumHelper.Parse<CreateIndexType>(typeName, true);
-                    } catch (Exception ex) {
-                        throw ASTWalkException.From("Invalid column index type '" + typeName + "' encountered, please use any of the following index type names " + Arrays.AsList(CreateIndexType.Values()));
+                    } catch (Exception ex)
+                    {
+                        throw ASTWalkException.From(string.Format("Invalid column index type '{0}' encountered, please use any of the following index type names {1}",
+                            typeName, EnumHelper.GetNames<CreateIndexType>().Render()));
                     }
                 }
                 columns.Add(new CreateIndexItem(columnName, type));
@@ -1120,7 +1123,7 @@ namespace com.espertech.esper.epl.parse
         public void ExitCreateWindowExpr(EsperEPL2GrammarParser.CreateWindowExprContext ctx) {
             var windowName = ctx.i.Text;
     
-            var eventName = "java.lang.Object";
+            var eventName = "System.Object";
             if (ctx.createWindowExprModelAfter() != null) {
                 eventName = ASTUtil.UnescapeClassIdent(ctx.createWindowExprModelAfter().classIdentifier());
             }
@@ -1142,7 +1145,7 @@ namespace com.espertech.esper.epl.parse
             _statementSpec.CreateWindowDesc = desc;
     
             // this is good for indicating what is being selected from
-            var rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null);
+            var rawFilterSpec = new FilterSpecRaw(eventName, new List<ExprNode>(), null);
             var streamSpec = new FilterStreamSpecRaw(rawFilterSpec, ViewSpec.EMPTY_VIEWSPEC_ARRAY, null, streamSpecOptions);
             _statementSpec.StreamSpecs.Add(streamSpec);
         }
@@ -1226,7 +1229,7 @@ namespace com.espertech.esper.epl.parse
                     exprNode = tableNode;
                 } else {
                     IList<ExprChainedSpec> chainSpec = ASTLibFunctionHelper.GetLibFuncChain(ctx.chainedFunction().libFunctionNoClass(), _astExprNodeMap);
-                    var pair = ASTTableExprHelper.GetTableExprChainable(_engineImportService, plugInAggregations, _engineURI, tableName, chainSpec);
+                    var pair = ASTTableExprHelper.GetTableExprChainable(_engineImportService, _plugInAggregations, _engineURI, tableName, chainSpec);
                     tableNode = pair.First;
                     if (pair.Second.IsEmpty()) {
                         exprNode = tableNode;
@@ -1275,7 +1278,7 @@ namespace com.espertech.esper.epl.parse
             var isRetainUnion = ctx.ru != null;
             var isRetainIntersection = ctx.ri != null;
             var options = new StreamSpecOptions(false, isRetainUnion, isRetainIntersection);
-            var streamSpec = new FilterStreamSpecRaw(_filterSpec, ViewSpec.ToArray(_viewSpecs), streamName, options);
+            var streamSpec = new FilterStreamSpecRaw(_filterSpec, _viewSpecs.ToArray(), streamName, options);
             _viewSpecs.Clear();
             _statementSpec.StreamSpecs.Add(streamSpec);
         }
@@ -1310,7 +1313,7 @@ namespace com.espertech.esper.epl.parse
             }
     
             if (ctx.ChildCount == 0) {
-                throw new IllegalStateException("Empty event property expression encountered");
+                throw new IllegalStateException("EmptyFalse event property expression encountered");
             }
     
             ExprNode exprNode;
@@ -1397,15 +1400,15 @@ namespace com.espertech.esper.epl.parse
             }
     
             // handle variable
-            var variableMetaData = _variableService.GetVariableMetaData(propertyName);
-            if (variableMetaData != null) {
-                exprNode = new ExprVariableNodeImpl(variableMetaData, null);
+            var variableMetaDataX = _variableService.GetVariableMetaData(propertyName);
+            if (variableMetaDataX != null) {
+                exprNode = new ExprVariableNodeImpl(variableMetaDataX, null);
                 _statementSpec.HasVariables = true;
-                var message = VariableServiceUtil.CheckVariableContextName(_statementSpec.OptionalContextName, variableMetaData);
+                var message = VariableServiceUtil.CheckVariableContextName(_statementSpec.OptionalContextName, variableMetaDataX);
                 if (message != null) {
                     throw ASTWalkException.From(message);
                 }
-                ASTExprHelper.AddVariableReference(_statementSpec, variableMetaData.VariableName);
+                ASTExprHelper.AddVariableReference(_statementSpec, variableMetaDataX.VariableName);
             }
     
             // handle table
@@ -1468,7 +1471,7 @@ namespace com.espertech.esper.epl.parse
             if (ctx.onMergeExpr() != null) {
                 var windowName = ctx.onMergeExpr().n.Text;
                 var asName = ctx.onMergeExpr().i != null ? ctx.onMergeExpr().i.Text : null;
-                var desc = new OnTriggerMergeDesc(windowName, asName, _mergeMatcheds == null ? Collections.GetEmptyList<OnTriggerMergeMatched>() : _mergeMatcheds);
+                var desc = new OnTriggerMergeDesc(windowName, asName, _mergeMatcheds ?? Collections.GetEmptyList<OnTriggerMergeMatched>());
                 _statementSpec.OnTriggerDesc = desc;
             } else if (ctx.onSetExpr() == null) {
                 var windowName = GetOnExprWindowName(ctx);
@@ -1476,15 +1479,17 @@ namespace com.espertech.esper.epl.parse
                 if (windowName == null) {
                     // on the statement spec, the deepest spec is the outermost
                     var splitStreams = new List<OnTriggerSplitStream>();
-                    for (var i = 1; i <= _statementSpecStack.Count - 1; i++) {
-                        StatementSpecRaw raw = _statementSpecStack[i];
+                    var statementSpecList = _statementSpecStack.Reverse().ToArray();
+
+                    for (var ii = 1; ii < statementSpecList.Length; ii++) {
+                        StatementSpecRaw raw = statementSpecList[ii];
                         OnTriggerSplitStreamFromClause fromClause = _onTriggerSplitPropertyEvals == null ? null : _onTriggerSplitPropertyEvals.Get(raw);
                         splitStreams.Add(new OnTriggerSplitStream(raw.InsertIntoDesc, raw.SelectClauseSpec, fromClause, raw.FilterExprRootNode));
                     }
-                    OnTriggerSplitStreamFromClause fromClause = _onTriggerSplitPropertyEvals == null ? null : _onTriggerSplitPropertyEvals.Get(_statementSpec);
-                    splitStreams.Add(new OnTriggerSplitStream(_statementSpec.InsertIntoDesc, _statementSpec.SelectClauseSpec, fromClause, _statementSpec.FilterExprRootNode));
-                    if (!_statementSpecStack.IsEmpty()) {
-                        _statementSpec = _statementSpecStack[0];
+                    OnTriggerSplitStreamFromClause fromClauseX = _onTriggerSplitPropertyEvals == null ? null : _onTriggerSplitPropertyEvals.Get(_statementSpec);
+                    splitStreams.Add(new OnTriggerSplitStream(_statementSpec.InsertIntoDesc, _statementSpec.SelectClauseSpec, fromClauseX, _statementSpec.FilterExprRootNode));
+                    if (!statementSpecList.IsEmpty()) {
+                        _statementSpec = statementSpecList[0];
                     }
                     var isFirst = ctx.outputClauseInsert() == null || ctx.outputClauseInsert().ALL() == null;
                     _statementSpec.OnTriggerDesc = new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams);
@@ -1493,10 +1498,10 @@ namespace com.espertech.esper.epl.parse
                     var assignments = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onUpdateExpr().onSetAssignmentList(), _astExprNodeMap);
                     _statementSpec.OnTriggerDesc = new OnTriggerWindowUpdateDesc(windowName.First, windowName.Second, assignments);
                     if (ctx.onUpdateExpr().whereClause() != null) {
-                        _statementSpec.FilterExprRootNode = ASTExprHelper.ExprCollectSubNodes(ctx.onUpdateExpr(.whereClause(), 0, _astExprNodeMap)[0]);
+                        _statementSpec.FilterExprRootNode = ASTExprHelper.ExprCollectSubNodes(ctx.onUpdateExpr().whereClause(), 0, _astExprNodeMap)[0];
                     }
                 } else {
-                    _statementSpec.OnTriggerDesc = new OnTriggerWindowDesc(windowName.First, windowName.Second, ctx.onDeleteExpr( != null ? OnTriggerType.ON_DELETE : OnTriggerType.ON_SELECT, deleteAndSelect));
+                    _statementSpec.OnTriggerDesc = new OnTriggerWindowDesc(windowName.First, windowName.Second, ctx.onDeleteExpr() != null ? OnTriggerType.ON_DELETE : OnTriggerType.ON_SELECT, deleteAndSelect);
                 }
             } else {
                 var assignments = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onSetExpr().onSetAssignmentList(), _astExprNodeMap);
@@ -1601,7 +1606,7 @@ namespace com.espertech.esper.epl.parse
     
             IList<ExprNode> expressions = Collections.GetEmptyList<ExprNode>();
             if (!CollectionUtil.IsAllNullArray(maxExpressions)) {
-                expressions = Arrays.AsList(maxExpressions); // can contain null elements as max/no-max can be mixed
+                expressions = maxExpressions; // can contain null elements as max/no-max can be mixed
             }
     
             var fbNode = _patternNodeFactory.MakeFollowedByNode(expressions, _configurationInformation.EngineDefaults.Patterns.MaxSubexpressions != null);
@@ -1715,7 +1720,7 @@ namespace com.espertech.esper.epl.parse
         }
     
         public void ExitBuiltin_typeof(EsperEPL2GrammarParser.Builtin_typeofContext ctx) {
-            var typeofNode = new ExprtypeofNode();
+            var typeofNode = new ExprTypeofNode();
             ASTExprHelper.ExprCollectAddSubNodesAddParentNode(typeofNode, ctx, _astExprNodeMap);
         }
     
@@ -1776,8 +1781,8 @@ namespace com.espertech.esper.epl.parse
         }
     
         public void ExitBuiltin_firstlastwindow(EsperEPL2GrammarParser.Builtin_firstlastwindowContext ctx) {
-            AggregationStateType stateType = AggregationStateTypeExtensions.FromString(ctx.firstLastWindowAggregation().q.Text);
-            var expr = new ExprAggMultiFunctionLinearAccessNode(stateType);
+            AggregationStateType? stateType = AggregationStateTypeExtensions.FromString(ctx.firstLastWindowAggregation().q.Text, true);
+            var expr = new ExprAggMultiFunctionLinearAccessNode(stateType.Value);
             ASTExprHelper.ExprCollectAddSubNodes(expr, ctx.firstLastWindowAggregation().expressionListWithNamed(), _astExprNodeMap);
             if (ctx.firstLastWindowAggregation().chainedFunction() != null) {
                 HandleChainedFunction(ctx, ctx.firstLastWindowAggregation().chainedFunction(), expr);
@@ -1843,7 +1848,7 @@ namespace com.espertech.esper.epl.parse
             }
         }
     
-        private PatternLevelAnnotationFlags GetPatternFlags(List<EsperEPL2GrammarParser.AnnotationEnumContext> ctxList) {
+        private PatternLevelAnnotationFlags GetPatternFlags(IEnumerable<EsperEPL2GrammarParser.AnnotationEnumContext> ctxList) {
             var flags = new PatternLevelAnnotationFlags();
             if (ctxList != null) {
                 foreach (var ctx in ctxList) {
@@ -1916,7 +1921,7 @@ namespace com.espertech.esper.epl.parse
         private void HandleFAFNamedWindowStream(EsperEPL2GrammarParser.ClassIdentifierContext node, IToken i) {
             var windowName = ASTUtil.UnescapeClassIdent(node);
             var alias = i != null ? i.Text : null;
-            _statementSpec.StreamSpecs.Add(new FilterStreamSpecRaw(new FilterSpecRaw(windowName, Collections.GetEmptyList<ExprNode>(), null), ViewSpec.ToArray(_viewSpecs), alias, StreamSpecOptions.DEFAULT));
+            _statementSpec.StreamSpecs.Add(new FilterStreamSpecRaw(new FilterSpecRaw(windowName, Collections.GetEmptyList<ExprNode>(), null), _viewSpecs.ToArray(), alias, StreamSpecOptions.DEFAULT));
         }
     
         public void ExitFafInsert(EsperEPL2GrammarParser.FafInsertContext ctx) {
@@ -1928,7 +1933,7 @@ namespace com.espertech.esper.epl.parse
             _statementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(true);
         }
     
-        protected void End() {
+        internal void End() {
             if (_astExprNodeMap.Count > 1) {
                 throw ASTWalkException.From("Unexpected AST tree contains left over child elements," +
                         " not all expression nodes have been removed from AST-to-expression nodes map");

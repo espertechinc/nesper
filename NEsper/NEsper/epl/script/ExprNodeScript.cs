@@ -12,8 +12,6 @@ using System.IO;
 using System.Linq;
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.hook;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
@@ -23,6 +21,7 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.script
 {
+    [Serializable]
     public class ExprNodeScript 
         : ExprNodeBase
         , ExprNodeInnerNodeProvider 
@@ -35,9 +34,9 @@ namespace com.espertech.esper.epl.script
     
         public ExprNodeScript(string defaultDialect, ExpressionScriptProvided script, IList<ExprNode> parameters)
         {
-            this._defaultDialect = defaultDialect;
-            this.Script = script;
-            this.Parameters = parameters;
+            _defaultDialect = defaultDialect;
+            Script = script;
+            Parameters = parameters;
         }
 
         public IList<ExprNode> AdditionalNodes
@@ -199,8 +198,7 @@ namespace com.espertech.esper.epl.script
         private void PrepareEvaluator(string statementName, string[] inputParamNames, ExprEvaluator[] evaluators, Type returnType, EventType eventTypeCollection)
         {
             var scriptExpression = (ExpressionScriptCompiledImpl)Script.Compiled;
-            _evaluator = new ExprNodeScriptEvalImpl(
-                Script.Name, statementName, inputParamNames, evaluators, returnType, scriptExpression.ScriptAction);
+            _evaluator = new ExprNodeScriptEvalImpl(Script.Name, statementName, inputParamNames, evaluators, returnType, eventTypeCollection, scriptExpression.ScriptAction);
         }
 
         private Type GetDeclaredReturnType(string returnTypeName, ExprValidationContext validationContext)
@@ -215,7 +213,7 @@ namespace com.espertech.esper.epl.script
                 return null;
             }
 
-            var returnType = TypeHelper.GetTypeForSimpleName(returnTypeName, validationContext.EngineImportService.GetClassForNameProvider());
+            var returnType = TypeHelper.GetTypeForSimpleName(returnTypeName);
             if (returnType != null)
             {
                 return returnType;
@@ -228,7 +226,7 @@ namespace com.espertech.esper.epl.script
 
             try
             {
-                return validationContext.EngineImportService.ResolveClass(returnTypeName, false);
+                return validationContext.EngineImportService.ResolveType(returnTypeName, false);
             }
             catch (EngineImportException e1)
             {

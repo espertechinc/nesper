@@ -99,7 +99,28 @@ namespace com.espertech.esper.events.property
             }
 
             Type returnType = propertyDesc.ReturnType;
-            if (returnType.IsArray)
+            if (returnType == typeof(string))
+            {
+                if (propertyDesc.ReadMethod != null)
+                {
+                    MethodInfo method = propertyDesc.ReadMethod;
+                    if (fastClass != null)
+                    {
+                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        return new StringFastPropertyGetter(fastMethod, _index, eventAdapterService);
+                    }
+                    else
+                    {
+                        return new StringMethodPropertyGetter(method, _index, eventAdapterService);
+                    }
+                }
+                else
+                {
+                    FieldInfo field = propertyDesc.AccessorField;
+                    return new StringFieldPropertyGetter(field, _index, eventAdapterService);
+                }
+            }
+            else if (returnType.IsArray)
             {
                 if (propertyDesc.ReadMethod != null)
                 {
@@ -120,7 +141,11 @@ namespace com.espertech.esper.events.property
                     return new ArrayFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
-            else if (returnType.IsImplementsInterface(typeof(IList<object>)))
+            else if (returnType.IsGenericDictionary())
+            {
+
+            }
+            else if (returnType.IsGenericList())
             {
                 if (propertyDesc.ReadMethod != null)
                 {
@@ -222,27 +247,7 @@ namespace com.espertech.esper.events.property
                 return null;
             }
 
-            var returnType = descriptor.ReturnType;
-            if (returnType.IsArray)
-            {
-                return returnType.GetElementType();
-            }
-            else if (returnType.IsImplementsInterface(typeof(IEnumerable)))
-            {
-                if (descriptor.ReadMethod != null)
-                {
-                    return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
-                }
-                else if (descriptor.AccessorField != null)
-                {
-                    return TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            return null;
+            return descriptor.ReturnType.GetIndexType();
         }
 
         public override Type GetPropertyTypeMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)

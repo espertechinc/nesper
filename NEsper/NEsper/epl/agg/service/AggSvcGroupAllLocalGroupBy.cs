@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.agg.service
 	    {
 	    }
 
-	    public override object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+	    public override object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
 	    {
 	        AggregationLocalGroupByColumn col = LocalGroupByPlan.Columns[column];
 
@@ -41,15 +41,15 @@ namespace com.espertech.esper.epl.agg.service
 	            if (col.IsMethodAgg) {
 	                return AggregatorsTopLevel[col.MethodOffset].Value;
 	            }
-	            return col.Pair.Accessor.GetValue(StatesTopLevel[col.Pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+	            return col.Pair.Accessor.GetValue(StatesTopLevel[col.Pair.Slot], evaluateParams);
 	        }
 
-	        var groupByKey = ComputeGroupKey(col.PartitionEvaluators, eventsPerStream, true, exprEvaluatorContext);
+            var groupByKey = ComputeGroupKey(col.PartitionEvaluators, evaluateParams.EventsPerStream, true, evaluateParams.ExprEvaluatorContext);
 	        AggregationMethodPairRow row = AggregatorsPerLevelAndGroup[col.LevelNum].Get(groupByKey);
 	        if (col.IsMethodAgg) {
 	            return row.Methods[col.MethodOffset].Value;
 	        }
-	        return col.Pair.Accessor.GetValue(row.States[col.Pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+            return col.Pair.Accessor.GetValue(row.States[col.Pair.Slot], evaluateParams);
 	    }
 	}
 } // end of namespace

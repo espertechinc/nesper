@@ -19,6 +19,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.expression.ops
 {
     /// <summary>Represents the "new {...}" operator in an expression tree.</summary>
+    [Serializable]
     public class ExprNewStructNode : ExprNodeBase, ExprEvaluatorTypableReturn
     {
         private readonly string[] _columnNames;
@@ -36,24 +37,31 @@ namespace com.espertech.esper.epl.expression.ops
             get { return this; }
         }
 
-        public override ExprNode Validate(ExprValidationContext validationContext) {
+        public override ExprNode Validate(ExprValidationContext validationContext)
+        {
             _eventType = new LinkedHashMap<string, Object>();
             _evaluators = ExprNodeUtility.GetEvaluators(this.ChildNodes);
     
-            for (int i = 0; i < _columnNames.Length; i++) {
+            for (var i = 0; i < _columnNames.Length; i++)
+            {
                 _isAllConstants = _isAllConstants && this.ChildNodes[i].IsConstantResult;
-                if (_eventType.ContainsKey(_columnNames[i])) {
+                if (_eventType.ContainsKey(_columnNames[i]))
+                {
                     throw new ExprValidationException("Failed to validate new-keyword property names, property '" + _columnNames[i] + "' has already been declared");
                 }
     
                 IDictionary<string, Object> eventTypeResult = null;
-                if (_evaluators[i] is ExprEvaluatorTypableReturn) {
+                if (_evaluators[i] is ExprEvaluatorTypableReturn)
+                {
                     eventTypeResult = ((ExprEvaluatorTypableReturn) _evaluators[i]).RowProperties;
                 }
-                if (eventTypeResult != null) {
+                if (eventTypeResult != null)
+                {
                     _eventType.Put(_columnNames[i], eventTypeResult);
-                } else {
-                    Type classResult = TypeHelper.GetBoxedType(_evaluators[i].ReturnType);
+                }
+                else
+                {
+                    var classResult = _evaluators[i].ReturnType.GetBoxedType();
                     _eventType.Put(_columnNames[i], classResult);
                 }
             }
@@ -80,12 +88,13 @@ namespace com.espertech.esper.epl.expression.ops
             get { return _eventType; }
         }
 
-        public Object Evaluate(EvaluateParams evaluateParams) {
+        public Object Evaluate(EvaluateParams evaluateParams)
+        {
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QExprNew(this);
             }
             var props = new Dictionary<string, Object>();
-            for (int i = 0; i < _evaluators.Length; i++) {
+            for (var i = 0; i < _evaluators.Length; i++) {
                 props.Put(_columnNames[i], _evaluators[i].Evaluate(evaluateParams));
             }
             if (InstrumentationHelper.ENABLED) {
@@ -96,51 +105,61 @@ namespace com.espertech.esper.epl.expression.ops
 
         public bool? IsMultirow
         {
-            get { return false; // New itself can only return a single row
-            }
+            get { return false; } // New itself can only return a single row
         }
 
         public Object[] EvaluateTypableSingle(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
         {
             var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, context);
             var rows = new Object[_columnNames.Length];
-            for (int i = 0; i < _columnNames.Length; i++)
+            for (var i = 0; i < _columnNames.Length; i++)
             {
                 rows[i] = _evaluators[i].Evaluate(evaluateParams);
             }
             return rows;
         }
-    
-        public Object[][] EvaluateTypableMulti(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
+
+        public Object[][] EvaluateTypableMulti(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
             return null;
         }
-    
-        public override bool EqualsNode(ExprNode node) {
-            if (!(node is ExprNewStructNode)) {
+
+        public override bool EqualsNode(ExprNode node)
+        {
+            if (!(node is ExprNewStructNode))
+            {
                 return false;
             }
-    
-            ExprNewStructNode other = (ExprNewStructNode) node;
-            return Arrays.DeepEquals(other._columnNames, _columnNames);
+
+            var other = (ExprNewStructNode) node;
+            return CompatExtensions.DeepEquals(other._columnNames, _columnNames);
         }
-    
-        public override void ToPrecedenceFreeEPL(TextWriter writer) {
+
+        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        {
             writer.Write("new{");
-            string delimiter = "";
-            for (int i = 0; i < this.ChildNodes.Length; i++) {
+            var delimiter = "";
+            for (var i = 0; i < this.ChildNodes.Count; i++)
+            {
                 writer.Write(delimiter);
                 writer.Write(_columnNames[i]);
-                ExprNode expr = this.ChildNodes[i];
-    
-                bool outputexpr = true;
-                if (expr is ExprIdentNode) {
-                    ExprIdentNode prop = (ExprIdentNode) expr;
-                    if (prop.ResolvedPropertyName.Equals(_columnNames[i])) {
+                var expr = this.ChildNodes[i];
+
+                var outputexpr = true;
+                if (expr is ExprIdentNode)
+                {
+                    var prop = (ExprIdentNode) expr;
+                    if (prop.ResolvedPropertyName.Equals(_columnNames[i]))
+                    {
                         outputexpr = false;
                     }
                 }
-    
-                if (outputexpr) {
+
+                if (outputexpr)
+                {
                     writer.Write("=");
                     expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                 }

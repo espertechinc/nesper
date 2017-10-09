@@ -24,8 +24,8 @@ namespace com.espertech.esper.epl.view
 
         public OutputProcessViewConditionDefaultPostProcess(
             ResultSetProcessor resultSetProcessor,
-            long afterConditionTime,
-            int afterConditionNumberOfEvents,
+            long? afterConditionTime,
+            int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext,

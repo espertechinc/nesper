@@ -94,7 +94,10 @@ namespace com.espertech.esper.epl.db
         /// Poll events using the keys provided.
         /// </summary>
         /// <param name="lookupValues">is keys for exeuting a query or such</param>
-        /// <returns>a list of events for the keys</returns>
+        /// <param name="exprEvaluatorContext">The expression evaluator context.</param>
+        /// <returns>
+        /// a list of events for the keys
+        /// </returns>
         public IList<EventBean> Poll(Object[] lookupValues, ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<EventBean> result;

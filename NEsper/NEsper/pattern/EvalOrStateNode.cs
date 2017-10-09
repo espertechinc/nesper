@@ -33,7 +33,7 @@ namespace com.espertech.esper.pattern
         public EvalOrStateNode(Evaluator parentNode, EvalOrNode evalOrNode)
             :  base(parentNode)
         {
-            _childNodes = new EvalStateNode[evalOrNode.ChildNodes.Length];
+            _childNodes = new EvalStateNode[evalOrNode.ChildNodes.Count];
             _evalOrNode = evalOrNode;
         }
     

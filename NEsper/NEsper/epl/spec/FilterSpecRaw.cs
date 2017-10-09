@@ -23,9 +23,9 @@ namespace com.espertech.esper.epl.spec
     [Serializable]
     public class FilterSpecRaw : MetaDefItem
     {
-        private readonly String eventTypeName;
-        private readonly IList<ExprNode> filterExpressions;
-        private readonly PropertyEvalSpec optionalPropertyEvalSpec;
+        private readonly String _eventTypeName;
+        private readonly IList<ExprNode> _filterExpressions;
+        private readonly PropertyEvalSpec _optionalPropertyEvalSpec;
     
         /// <summary>
         /// Ctor.
@@ -35,9 +35,9 @@ namespace com.espertech.esper.epl.spec
         /// <param name="optionalPropertyEvalSpec">specification for a property select</param>
         public FilterSpecRaw(String eventTypeName, IList<ExprNode> filterExpressions, PropertyEvalSpec optionalPropertyEvalSpec)
         {
-            this.eventTypeName = eventTypeName;
-            this.filterExpressions = filterExpressions;
-            this.optionalPropertyEvalSpec = optionalPropertyEvalSpec;
+            this._eventTypeName = eventTypeName;
+            this._filterExpressions = filterExpressions;
+            this._optionalPropertyEvalSpec = optionalPropertyEvalSpec;
         }
     
         /// <summary>
@@ -55,7 +55,7 @@ namespace com.espertech.esper.epl.spec
         /// </returns>
         public string EventTypeName
         {
-            get { return eventTypeName; }
+            get { return _eventTypeName; }
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace com.espertech.esper.epl.spec
         /// </returns>
         public IList<ExprNode> FilterExpressions
         {
-            get { return filterExpressions; }
+            get { return _filterExpressions; }
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace com.espertech.esper.epl.spec
         /// </returns>
         public PropertyEvalSpec OptionalPropertyEvalSpec
         {
-            get { return optionalPropertyEvalSpec; }
+            get { return _optionalPropertyEvalSpec; }
         }
     }
 }

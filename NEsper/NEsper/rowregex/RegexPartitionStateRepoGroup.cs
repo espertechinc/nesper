@@ -23,7 +23,7 @@ namespace com.espertech.esper.rowregex
     /// </summary>
     public class RegexPartitionStateRepoGroup : RegexPartitionStateRepo
     {
-        /// <summary>Empty state collection initial threshold. </summary>
+        /// <summary>EmptyFalse state collection initial threshold. </summary>
         public readonly static int INITIAL_COLLECTION_MIN = 100;
 
         private readonly RegexPartitionStateRepoGroupMeta _meta;

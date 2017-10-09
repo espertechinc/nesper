@@ -35,41 +35,44 @@ using com.espertech.esper.script;
 using com.espertech.esper.timer;
 using com.espertech.esper.util;
 
-using TimerCallback = com.espertech.esper.timer.TimerCallback;
-using Version = com.espertech.esper.util.Version;
-
 namespace com.espertech.esper.core.service
 {
+    using Directory = com.espertech.esper.client.Directory;
+    using TimerCallback = com.espertech.esper.timer.TimerCallback;
+    using Version = com.espertech.esper.util.Version;
+
     /// <summary>
     /// Service provider encapsulates the engine's services for runtime and administration interfaces.
     /// </summary>
     public class EPServiceProviderImpl : EPServiceProviderSPI
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Occurs before an <seealso cref="EPServiceProvider"/> is destroyed.
         /// </summary>
         public event EventHandler<ServiceProviderEventArgs> ServiceDestroyRequested;
+
         /// <summary>
         /// Occurs after an <seealso cref="EPServiceProvider"/> is initialized.
         /// </summary>
         public event EventHandler<ServiceProviderEventArgs> ServiceInitialized;
+
         /// <summary>
         /// Occurs when a statement created.
         /// </summary>
         public event EventHandler<StatementStateEventArgs> StatementCreate;
+
         /// <summary>
         /// Occurs when a statement state changes.
         /// </summary>
         public event EventHandler<StatementStateEventArgs> StatementStateChange;
 
-        private volatile EPServiceEngine engine;
-        private ConfigurationInformation configSnapshot;
-        private string engineURI;
-        private StatementEventDispatcherUnthreaded stmtEventDispatcher;
-        private IDictionary<string, EPServiceProviderSPI> runtimes;
-    
+        private volatile EPServiceEngine _engine;
+        private ConfigurationInformation _configSnapshot;
+        private readonly string _engineURI;
+        private readonly IDictionary<string, EPServiceProviderSPI> _runtimes;
+
         /// <summary>
         /// Constructor - initializes services.
         /// </summary>
@@ -77,19 +80,21 @@ namespace com.espertech.esper.core.service
         /// <param name="engineURI">is the engine URI or "default" (or null which it assumes as "default") if this is the default provider</param>
         /// <param name="runtimes">map of URI and runtime</param>
         /// <exception cref="ConfigurationException">is thrown to indicate a configuraton error</exception>
-        public EPServiceProviderImpl(Configuration configuration, string engineURI, IDictionary<string, EPServiceProviderSPI> runtimes)
+        public EPServiceProviderImpl(
+            Configuration configuration,
+            string engineURI,
+            IDictionary<string, EPServiceProviderSPI> runtimes)
         {
-            if (configuration == null) {
-                throw new ArgumentNullException("configuration", "Unexpected null value received for configuration");
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration), "Unexpected null value received for configuration");
             }
-            if (engineURI == null) {
-                throw new ArgumentNullException("engineURI", "Engine URI should not be null at this stage");
-            }
-            this.runtimes = runtimes;
-            this.engineURI = engineURI;
+
+            _runtimes = runtimes;
+            _engineURI = engineURI ?? throw new ArgumentNullException(nameof(engineURI), "Engine URI should not be null at this stage");
             VerifyConfiguration(configuration);
-    
-            configSnapshot = TakeSnapshot(configuration);
+
+            _configSnapshot = TakeSnapshot(configuration);
             DoInitialize(null);
         }
 
@@ -97,17 +102,17 @@ namespace com.espertech.esper.core.service
         {
             lock (this)
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
 
-                if (!engine.Services.ConfigSnapshot.EngineDefaults.Execution.IsAllowIsolatedService)
+                if (!_engine.Services.ConfigSnapshot.EngineDefaults.Execution.IsAllowIsolatedService)
                 {
                     throw new EPServiceNotAllowedException(
                         "Isolated runtime requires execution setting to allow isolated services, please change execution settings under engine defaults");
                 }
-                if (engine.Services.ConfigSnapshot.EngineDefaults.ViewResources.IsShareViews)
+                if (_engine.Services.ConfigSnapshot.EngineDefaults.ViewResources.IsShareViews)
                 {
                     throw new EPServiceNotAllowedException(
                         "Isolated runtime requires view sharing disabled, set engine defaults under view resources and share views to false");
@@ -117,7 +122,7 @@ namespace com.espertech.esper.core.service
                     throw new ArgumentException("Name parameter does not have a value provided");
                 }
 
-                return engine.Services.StatementIsolationService.GetIsolationUnit(name, null);
+                return _engine.Services.StatementIsolationService.GetIsolationUnit(name, null);
             }
         }
 
@@ -125,18 +130,19 @@ namespace com.espertech.esper.core.service
         public void PostInitialize()
         {
             // plugin-loaders
-            var pluginLoaders = engine.Services.ConfigSnapshot.PluginLoaders;
+            var pluginLoaders = _engine.Services.ConfigSnapshot.PluginLoaders;
             // in the order configured
-            foreach (ConfigurationPluginLoader config in pluginLoaders)
+            foreach (var config in pluginLoaders)
             {
                 try
                 {
-                    var plugin = (PluginLoader) engine.Services.EngineEnvContext.Lookup("plugin-loader/" + config.LoaderName);
+                    var plugin =
+                        (PluginLoader) _engine.Services.EngineEnvContext.Lookup("plugin-loader/" + config.LoaderName);
                     plugin.PostInitialize();
                 }
                 catch (Exception ex)
                 {
-                    string message = "Error post-initializing plugin class " + config.TypeName + ": " + ex.Message;
+                    var message = "Error post-initializing plugin class " + config.TypeName + ": " + ex.Message;
                     Log.Error(message, ex);
                     throw new EPException(message, ex);
                 }
@@ -150,7 +156,7 @@ namespace com.espertech.esper.core.service
         public void SetConfiguration(Configuration configuration)
         {
             VerifyConfiguration(configuration);
-            configSnapshot = TakeSnapshot(configuration);
+            _configSnapshot = TakeSnapshot(configuration);
         }
 
         private void VerifyConfiguration(Configuration configuration)
@@ -167,18 +173,18 @@ namespace com.espertech.esper.core.service
 
         public string URI
         {
-            get { return engineURI; }
+            get { return _engineURI; }
         }
 
         public EPRuntime EPRuntime
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Runtime;
+                return _engine.Runtime;
             }
         }
 
@@ -186,11 +192,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Admin;
+                return _engine.Admin;
             }
         }
 
@@ -198,11 +204,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services;
+                return _engine.Services;
             }
         }
 
@@ -210,11 +216,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.ThreadingService;
+                return _engine.Services.ThreadingService;
             }
         }
 
@@ -222,11 +228,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.EventAdapterService;
+                return _engine.Services.EventAdapterService;
             }
         }
 
@@ -234,11 +240,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.SchedulingService;
+                return _engine.Services.SchedulingService;
             }
         }
 
@@ -246,11 +252,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.FilterService;
+                return _engine.Services.FilterService;
             }
         }
 
@@ -258,28 +264,28 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.TimerService;
+                return _engine.Services.TimerService;
             }
         }
 
         public ConfigurationInformation ConfigurationInformation
         {
-            get { return configSnapshot; }
+            get { return _configSnapshot; }
         }
 
         public NamedWindowMgmtService NamedWindowMgmtService
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.NamedWindowMgmtService;
+                return _engine.Services.NamedWindowMgmtService;
             }
         }
 
@@ -287,11 +293,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.TableService;
+                return _engine.Services.TableService;
             }
         }
 
@@ -299,11 +305,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.EngineLevelExtensionServicesContext;
+                return _engine.Services.EngineLevelExtensionServicesContext;
             }
         }
 
@@ -311,11 +317,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.StatementLifecycleSvc;
+                return _engine.Services.StatementLifecycleSvc;
             }
         }
 
@@ -323,11 +329,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.MetricsReportingService;
+                return _engine.Services.MetricsReportingService;
             }
         }
 
@@ -335,11 +341,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.ValueAddEventService;
+                return _engine.Services.ValueAddEventService;
             }
         }
 
@@ -347,35 +353,35 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.StatementEventTypeRefService;
+                return _engine.Services.StatementEventTypeRefService;
             }
         }
 
-        public client.Directory EngineEnvContext
+        public Directory EngineEnvContext
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
-                return engine.Services.EngineEnvContext;
+                return _engine.Services.EngineEnvContext;
             }
         }
 
-        public client.Directory Directory
+        public Directory Directory
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
-                return engine.Services.EngineEnvContext;
+                return _engine.Services.EngineEnvContext;
             }
         }
 
@@ -383,11 +389,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.StatementContextFactory;
+                return _engine.Services.StatementContextFactory;
             }
         }
 
@@ -395,11 +401,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.StatementIsolationService;
+                return _engine.Services.StatementIsolationService;
             }
         }
 
@@ -407,11 +413,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.DeploymentStateService;
+                return _engine.Services.DeploymentStateService;
             }
         }
 
@@ -423,12 +429,12 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
                     throw new EPServiceDestroyedException(URI);
                 }
 
-                return engine.Services.ScriptingService;
+                return _engine.Services.ScriptingService;
             }
         }
 
@@ -436,9 +442,9 @@ namespace com.espertech.esper.core.service
         {
             lock (this)
             {
-                if (engine != null)
+                if (_engine != null)
                 {
-                    Log.Info("Destroying engine URI '" + engineURI + "'");
+                    Log.Info("Destroying engine URI '" + _engineURI + "'");
 
                     try
                     {
@@ -452,13 +458,13 @@ namespace com.espertech.esper.core.service
                         Log.Error("Exception caught during an ServiceDestroyRequested event:" + ex.Message, ex);
                     }
 
-                    if (configSnapshot.EngineDefaults.MetricsReporting.IsJmxEngineMetrics)
+                    if (_configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting)
                     {
-                        DestroyEngineMetrics(engine.Services.EngineURI);
+                        DestroyEngineMetrics(_engine.Services.EngineURI);
                     }
 
                     // assign null value
-                    EPServiceEngine engineToDestroy = engine;
+                    var engineToDestroy = _engine;
 
                     engineToDestroy.Services.TimerService.StopInternalClock(false);
                     // Give the timer thread a little moment to catch up
@@ -470,14 +476,13 @@ namespace com.espertech.esper.core.service
                     {
                         var reversed = new List<ConfigurationPluginLoader>(pluginLoaders);
                         reversed.Reverse();
-                        foreach (ConfigurationPluginLoader config in reversed)
+                        foreach (var config in reversed)
                         {
-                            PluginLoader plugin;
                             try
                             {
-                                plugin = (PluginLoader) engineToDestroy.Services.EngineEnvContext.Lookup(
-                                    "plugin-loader/" + config.LoaderName);
-                                plugin.Dispose();
+                                using ((PluginLoader) engineToDestroy.Services.EngineEnvContext.Lookup("plugin-loader/" + config.LoaderName))
+                                {
+                                }
                             }
                             catch (Exception e)
                             {
@@ -489,12 +494,12 @@ namespace com.espertech.esper.core.service
                     engineToDestroy.Services.ThreadingService.Dispose();
 
                     // assign null - making EPRuntime and EPAdministrator unobtainable
-                    engine = null;
+                    _engine = null;
 
                     engineToDestroy.Runtime.Dispose();
                     engineToDestroy.Admin.Dispose();
                     engineToDestroy.Services.Dispose();
-                    runtimes.Remove(engineURI);
+                    _runtimes.Remove(_engineURI);
 
                     engineToDestroy.Services.Initialize();
                 }
@@ -503,7 +508,7 @@ namespace com.espertech.esper.core.service
 
         public bool IsDestroyed
         {
-            get { return engine == null; }
+            get { return _engine == null; }
         }
 
         public void Initialize()
@@ -521,66 +526,77 @@ namespace com.espertech.esper.core.service
             DoInitialize(currentTime);
             PostInitialize();
         }
-    
+
         /// <summary>
         /// Performs the initialization.
         /// </summary>
         /// <param name="startTime">optional start time</param>
         protected void DoInitialize(long? startTime)
         {
-            Log.Info("Initializing engine URI '" + engineURI + "' version " + Version.VERSION);
-    
+            Log.Info("Initializing engine URI '" + _engineURI + "' version " + Version.VERSION);
+
             // This setting applies to all engines in a given VM
-            ExecutionPathDebugLog.IsEnabled = configSnapshot.EngineDefaults.Logging.IsEnableExecutionDebug;
-            ExecutionPathDebugLog.IsTimerDebugEnabled = configSnapshot.EngineDefaults.Logging.IsEnableTimerDebug;
-    
+            ExecutionPathDebugLog.IsEnabled = _configSnapshot.EngineDefaults.Logging.IsEnableExecutionDebug;
+            ExecutionPathDebugLog.IsTimerDebugEnabled = _configSnapshot.EngineDefaults.Logging.IsEnableTimerDebug;
+
             // This setting applies to all engines in a given VM
-            MetricReportingPath.IsMetricsEnabled = configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting;
-    
+            MetricReportingPath.IsMetricsEnabled =
+                _configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting;
+
             // This setting applies to all engines in a given VM
-            AuditPath.AuditPattern = configSnapshot.EngineDefaults.Logging.AuditPattern;
-    
+            AuditPath.AuditPattern = _configSnapshot.EngineDefaults.Logging.AuditPattern;
+
             // This setting applies to all engines in a given VM
             ThreadingOption.IsThreadingEnabled = (
                 ThreadingOption.IsThreadingEnabled ||
-                configSnapshot.EngineDefaults.Threading.IsThreadPoolTimerExec ||
-                configSnapshot.EngineDefaults.Threading.IsThreadPoolInbound ||
-                configSnapshot.EngineDefaults.Threading.IsThreadPoolRouteExec ||
-                configSnapshot.EngineDefaults.Threading.IsThreadPoolOutbound
+                _configSnapshot.EngineDefaults.Threading.IsThreadPoolTimerExec ||
+                _configSnapshot.EngineDefaults.Threading.IsThreadPoolInbound ||
+                _configSnapshot.EngineDefaults.Threading.IsThreadPoolRouteExec ||
+                _configSnapshot.EngineDefaults.Threading.IsThreadPoolOutbound
                 );
-    
-            if (engine != null) {
-                engine.Services.TimerService.StopInternalClock(false);
+
+            if (_engine != null)
+            {
+                _engine.Services.TimerService.StopInternalClock(false);
                 // Give the timer thread a little moment to catch up
                 Thread.Sleep(100);
 
-                if (configSnapshot.EngineDefaults.MetricsReporting.IsJmxEngineMetrics)
+                if (_configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting)
                 {
-                    DestroyEngineMetrics(engine.Services.EngineURI);
+                    DestroyEngineMetrics(_engine.Services.EngineURI);
                 }
 
-                engine.Runtime.Initialize();
-    
-                engine.Services.Dispose();
+                _engine.Runtime.Initialize();
+
+                _engine.Services.Dispose();
             }
-    
+
             // Make EP services context factory
-            string epServicesContextFactoryClassName = configSnapshot.EPServicesContextFactoryClassName;
+            var epServicesContextFactoryClassName = _configSnapshot.EPServicesContextFactoryClassName;
             EPServicesContextFactory epServicesContextFactory;
-            if (epServicesContextFactoryClassName == null) {
+            if (epServicesContextFactoryClassName == null)
+            {
                 // Check system properties
-                epServicesContextFactoryClassName = Environment.GetEnvironmentVariable("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
+                epServicesContextFactoryClassName =
+                    Environment.GetEnvironmentVariable("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
             }
-            if (epServicesContextFactoryClassName == null) {
+            if (epServicesContextFactoryClassName == null)
+            {
                 epServicesContextFactory = new EPServicesContextFactoryDefault();
-            } else {
+            }
+            else
+            {
                 Type clazz;
-                try {
-                    clazz = TransientConfigurationResolver.ResolveClassForNameProvider(configSnapshot.TransientConfiguration).ClassForName(epServicesContextFactoryClassName);
-                }
-                catch (TypeLoadException e)
+                try
                 {
-                    throw new ConfigurationException("Type '" + epServicesContextFactoryClassName + "' cannot be loaded");
+                    clazz =
+                        TransientConfigurationResolver.ResolveClassForNameProvider(
+                            _configSnapshot.TransientConfiguration).ClassForName(epServicesContextFactoryClassName);
+                }
+                catch (TypeLoadException)
+                {
+                    throw new ConfigurationException(
+                        "Type '" + epServicesContextFactoryClassName + "' cannot be loaded");
                 }
 
                 Object obj;
@@ -606,28 +622,32 @@ namespace com.espertech.esper.core.service
                 {
                     throw new ConfigurationException("Error instantiating class - Type is not a RuntimeType", e);
                 }
-    
+
                 epServicesContextFactory = (EPServicesContextFactory) obj;
             }
-    
-            EPServicesContext services = epServicesContextFactory.CreateServicesContext(this, configSnapshot);
-    
+
+            var services = epServicesContextFactory.CreateServicesContext(this, _configSnapshot);
+
             // New runtime
             EPRuntimeSPI runtimeSPI;
             InternalEventRouteDest routeDest;
             TimerCallback timerCallback;
-            string runtimeClassName = configSnapshot.EngineDefaults.AlternativeContext.Runtime;
-            if (runtimeClassName == null) {
+            var runtimeClassName = _configSnapshot.EngineDefaults.AlternativeContext.Runtime;
+            if (runtimeClassName == null)
+            {
                 // Check system properties
                 runtimeClassName = Environment.GetEnvironmentVariable("ESPER_EPRUNTIME_CLASS");
             }
 
-            if (runtimeClassName == null) {
+            if (runtimeClassName == null)
+            {
                 var runtimeImpl = new EPRuntimeImpl(services);
                 runtimeSPI = runtimeImpl;
                 routeDest = runtimeImpl;
-                timerCallback = runtimeImpl;
-            } else {
+                timerCallback = runtimeImpl.TimerCallback;
+            }
+            else
+            {
                 Type clazz;
                 try
                 {
@@ -641,8 +661,8 @@ namespace com.espertech.esper.core.service
                 Object obj;
                 try
                 {
-                    ConstructorInfo c = clazz.GetConstructor(new[] { typeof(EPServicesContext) });
-                    obj = c.Invoke(new object[] { services });
+                    var c = clazz.GetConstructor(new[] { typeof (EPServicesContext) });
+                    obj = c.Invoke(new object[]{ services });
                 }
                 catch (TypeLoadException)
                 {
@@ -650,51 +670,65 @@ namespace com.espertech.esper.core.service
                 }
                 catch (MissingMethodException)
                 {
-                    throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated, constructor accepting services was not found");
+                    throw new ConfigurationException(
+                        "Class '" + clazz + "' cannot be instantiated, constructor accepting services was not found");
                 }
                 catch (MethodAccessException)
                 {
                     throw new ConfigurationException("Illegal access instantiating class '" + clazz + "'");
                 }
-   
+
                 runtimeSPI = (EPRuntimeSPI) obj;
                 routeDest = (InternalEventRouteDest) obj;
                 timerCallback = (TimerCallback) obj;
             }
-    
+
             routeDest.InternalEventRouter = services.InternalEventRouter;
             services.InternalEventEngineRouteDest = routeDest;
-    
+
             // set current time, if applicable
-            if (startTime != null) {
-                services.SchedulingService.Time = startTime;
+            if (startTime != null)
+            {
+                services.SchedulingService.Time = startTime.Value;
             }
-    
+
             // Configure services to use the new runtime
             services.TimerService.Callback = timerCallback;
-    
+
             // Statement lifecycle init
             services.StatementLifecycleSvc.Init();
-    
+
             // Filter service init
             services.FilterService.Init();
-    
+
             // Schedule service init
             services.SchedulingService.Init();
-    
+
             // New admin
-            var configOps = new ConfigurationOperationsImpl(services.EventAdapterService, services.EventTypeIdGenerator, services.EngineImportService, services.VariableService, services.EngineSettingsService, services.ValueAddEventService, services.MetricsReportingService, services.StatementEventTypeRefService, services.StatementVariableRefService, services.PlugInViews, services.FilterService, services.PatternSubexpressionPoolSvc, services.MatchRecognizeStatePoolEngineSvc, services.TableService, configSnapshot.TransientConfiguration);
-            SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.MapFromSODA(configSnapshot.EngineDefaults.StreamSelection.DefaultStreamSelector);
+            var configOps = new ConfigurationOperationsImpl(
+                services.EventAdapterService, services.EventTypeIdGenerator, services.EngineImportService,
+                services.VariableService, services.EngineSettingsService, services.ValueAddEventService,
+                services.MetricsReportingService, services.StatementEventTypeRefService,
+                services.StatementVariableRefService, services.PlugInViews, services.FilterService,
+                services.PatternSubexpressionPoolSvc, services.MatchRecognizeStatePoolEngineSvc, services.TableService,
+                _configSnapshot.TransientConfiguration);
+            var defaultStreamSelector =
+                SelectClauseStreamSelectorEnumExtensions.MapFromSODA(
+                    _configSnapshot.EngineDefaults.StreamSelection.DefaultStreamSelector);
             EPAdministratorSPI adminSPI;
-            string adminClassName = configSnapshot.EngineDefaults.AlternativeContext.Admin;
+            var adminClassName = _configSnapshot.EngineDefaults.AlternativeContext.Admin;
             var adminContext = new EPAdministratorContext(runtimeSPI, services, configOps, defaultStreamSelector);
-            if (adminClassName == null) {
+            if (adminClassName == null)
+            {
                 // Check system properties
                 adminClassName = Environment.GetEnvironmentVariable("ESPER_EPADMIN_CLASS");
             }
-            if (adminClassName == null) {
+            if (adminClassName == null)
+            {
                 adminSPI = new EPAdministratorImpl(adminContext);
-            } else {
+            }
+            else
+            {
                 Type clazz;
                 try
                 {
@@ -702,13 +736,14 @@ namespace com.espertech.esper.core.service
                 }
                 catch (TypeLoadException)
                 {
-                    throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
+                    throw new ConfigurationException(
+                        "Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
                 }
 
                 Object obj;
                 try
                 {
-                    ConstructorInfo c = clazz.GetConstructor(new[] { typeof(EPAdministratorContext) });
+                    var c = clazz.GetConstructor(new[] { typeof (EPAdministratorContext) });
                     obj = c.Invoke(new[] { adminContext });
                 }
                 catch (TypeLoadException)
@@ -717,7 +752,8 @@ namespace com.espertech.esper.core.service
                 }
                 catch (MissingMethodException)
                 {
-                    throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated, constructor accepting context was not found");
+                    throw new ConfigurationException(
+                        "Class '" + clazz + "' cannot be instantiated, constructor accepting context was not found");
                 }
                 catch (MethodAccessException)
                 {
@@ -726,36 +762,40 @@ namespace com.espertech.esper.core.service
 
                 adminSPI = (EPAdministratorSPI) obj;
             }
-    
+
             // Start clocking
-            if (configSnapshot.EngineDefaults.Threading.IsInternalTimerEnabled) {
-                if (configSnapshot.EngineDefaults.TimeSource.TimeUnit != TimeUnit.MILLISECONDS) {
+            if (_configSnapshot.EngineDefaults.Threading.IsInternalTimerEnabled)
+            {
+                if (_configSnapshot.EngineDefaults.TimeSource.TimeUnit != TimeUnit.MILLISECONDS)
+                {
                     throw new ConfigurationException("Internal timer requires millisecond time resolution");
                 }
                 services.TimerService.StartInternalClock();
             }
-    
+
             // Give the timer thread a little moment to start up
             Thread.Sleep(100);
-    
+
             // Save engine instance
-            engine = new EPServiceEngine(services, runtimeSPI, adminSPI);
-    
+            _engine = new EPServiceEngine(services, runtimeSPI, adminSPI);
+
             // Load and initialize adapter loader classes
             LoadAdapters(services);
-    
+
             // Initialize extension services
-            if (services.EngineLevelExtensionServicesContext != null) {
+            if (services.EngineLevelExtensionServicesContext != null)
+            {
                 services.EngineLevelExtensionServicesContext.Init(services, runtimeSPI, adminSPI);
             }
-    
+
             // Start metrics reporting, if any
-            if (configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting) {
+            if (_configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting)
+            {
                 services.MetricsReportingService.SetContext(runtimeSPI, services);
             }
-    
+
             // Start engine metrics report
-            if (configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting)
+            if (_configSnapshot.EngineDefaults.MetricsReporting.IsEnableMetricsReporting)
             {
                 StartEngineMetrics(services, runtimeSPI);
             }
@@ -788,7 +828,7 @@ namespace com.espertech.esper.core.service
         }
 
         /// <summary>
-        /// Raises the <see cref="StatementStateChanged"/> event.
+        /// Raises the <see cref="StatementStateChange"/> event.
         /// </summary>
         /// <param name="e">The <see cref="StatementLifecycleEvent"/> instance containing the event data.</param>
         protected virtual void OnStatementStateChanged(StatementLifecycleEvent e)
@@ -814,7 +854,7 @@ namespace com.espertech.esper.core.service
                     break;
             }
         }
-    
+
         private void StartEngineMetrics(EPServicesContext services, EPRuntime runtime)
         {
             lock (this)
@@ -829,7 +869,7 @@ namespace com.espertech.esper.core.service
 #endif
             }
         }
-    
+
         private void DestroyEngineMetrics(string engineURI)
         {
             lock (this)
@@ -841,31 +881,34 @@ namespace com.espertech.esper.core.service
 #endif
             }
         }
-    
+
         /// <summary>
         /// Loads and initializes adapter loaders.
         /// </summary>
         /// <param name="services">is the engine instance services</param>
         private void LoadAdapters(EPServicesContext services)
         {
-            IList<ConfigurationPluginLoader> pluginLoaders = configSnapshot.PluginLoaders;
-            if ((pluginLoaders == null) || (pluginLoaders.Count == 0)) {
+            var pluginLoaders = _configSnapshot.PluginLoaders;
+            if ((pluginLoaders == null) || (pluginLoaders.Count == 0))
+            {
                 return;
             }
-            foreach (ConfigurationPluginLoader config in pluginLoaders)
+            foreach (var config in pluginLoaders)
             {
-                string className = config.TypeName;
+                var className = config.TypeName;
                 Type pluginLoaderClass;
-                try {
-                    pluginLoaderClass = services.EngineImportService.ClassForNameProvider.ClassForName(className);
+                try
+                {
+                    pluginLoaderClass = services.EngineImportService.GetClassForNameProvider().ClassForName(className);
                 }
                 catch (TypeLoadException ex)
                 {
                     throw new ConfigurationException("Failed to load adapter loader class '" + className + "'", ex);
                 }
-    
+
                 Object pluginLoaderObj;
-                try {
+                try
+                {
                     pluginLoaderObj = Activator.CreateInstance(pluginLoaderClass);
                 }
                 catch (TypeLoadException)
@@ -885,66 +928,82 @@ namespace com.espertech.esper.core.service
                 catch (ArgumentException e)
                 {
                     throw new ConfigurationException("Error instantiating class - Type is not a RuntimeType", e);
-                }    
-                
-                if (!(pluginLoaderObj is PluginLoader)) {
-                    throw new ConfigurationException("Failed to cast adapter loader class '" + className + "' to " + typeof(PluginLoader).FullName);
                 }
-    
-                PluginLoader pluginLoader = (PluginLoader) pluginLoaderObj;
-                var context = new PluginLoaderInitContext(config.LoaderName, config.ConfigProperties, config.ConfigurationXML, this);
+
+                if (!(pluginLoaderObj is PluginLoader))
+                {
+                    throw new ConfigurationException(
+                        "Failed to cast adapter loader class '" + className + "' to " + typeof (PluginLoader).FullName);
+                }
+
+                var pluginLoader = (PluginLoader) pluginLoaderObj;
+                var context = new PluginLoaderInitContext(
+                    config.LoaderName, config.ConfigProperties, config.ConfigurationXML, this);
                 pluginLoader.Init(context);
-    
+
                 // register adapter loader in JNDI context tree
                 services.EngineEnvContext.Bind("plugin-loader/" + config.LoaderName, pluginLoader);
             }
         }
-    
+
         private ConfigurationInformation TakeSnapshot(Configuration configuration)
         {
             try
             {
                 // Allow variables to have non-serializable values by copying their initial value
                 IDictionary<string, Object> variableInitialValues = null;
-                if (!configuration.Variables.IsEmpty()) {
-                    variableInitialValues = new HashMap<>();
-                    foreach (var variable in configuration.Variables) {
-                        Object initializationValue = variable.Value.InitializationValue;
-                        if (initializationValue != null) {
+                if (!configuration.Variables.IsEmpty())
+                {
+                    variableInitialValues = new Dictionary<string, object>();
+                    foreach (var variable in configuration.Variables)
+                    {
+                        var initializationValue = variable.Value.InitializationValue;
+                        if (initializationValue != null)
+                        {
                             variableInitialValues.Put(variable.Key, initializationValue);
                             variable.Value.InitializationValue = null;
                         }
                     }
                 }
-    
+
                 // Avro schemas are not serializable
                 IDictionary<string, ConfigurationEventTypeAvro> avroSchemas = null;
-                if (!configuration.EventTypesAvro.IsEmpty()) {
-                    avroSchemas = new HashMap<>(configuration.EventTypesAvro);
+                if (!configuration.EventTypesAvro.IsEmpty())
+                {
+                    avroSchemas = new Dictionary<string, ConfigurationEventTypeAvro>(configuration.EventTypesAvro);
                     configuration.EventTypesAvro.Clear();
                 }
-    
-                Configuration copy = (Configuration) SerializableObjectCopier.Copy(configuration);
+
+                var copy = (Configuration) SerializableObjectCopier.Copy(configuration);
                 copy.TransientConfiguration = configuration.TransientConfiguration;
-    
+
                 // Restore variable with initial values
-                if (variableInitialValues != null && !variableInitialValues.IsEmpty()) {
-                    foreach (var entry in variableInitialValues) {
-                        ConfigurationVariable config = copy.Variables.Get(entry.Key);
+                if (variableInitialValues != null && !variableInitialValues.IsEmpty())
+                {
+                    foreach (var entry in variableInitialValues)
+                    {
+                        var config = copy.Variables.Get(entry.Key);
                         config.InitializationValue = entry.Value;
                     }
                 }
-    
+
                 // Restore Avro schemas
-                if (avroSchemas != null) {
+                if (avroSchemas != null)
+                {
                     copy.EventTypesAvro.PutAll(avroSchemas);
                 }
-    
+
                 return copy;
-            } catch (IOException e) {
-                throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.Message, e);
-            } catch (TypeLoadException e) {
-                throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.Message, e);
+            }
+            catch (IOException e)
+            {
+                throw new ConfigurationException(
+                    "Failed to snapshot configuration instance through serialization : " + e.Message, e);
+            }
+            catch (TypeLoadException e)
+            {
+                throw new ConfigurationException(
+                    "Failed to snapshot configuration instance through serialization : " + e.Message, e);
             }
         }
 
@@ -961,11 +1020,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.StatementIsolationService.IsolationUnitNames;
+                return _engine.Services.StatementIsolationService.IsolationUnitNames;
             }
         }
 
@@ -973,11 +1032,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.SchedulingMgmtService;
+                return _engine.Services.SchedulingMgmtService;
             }
         }
 
@@ -985,11 +1044,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.EngineImportService;
+                return _engine.Services.EngineImportService;
             }
         }
 
@@ -997,11 +1056,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.SchedulingService;
+                return _engine.Services.SchedulingService;
             }
         }
 
@@ -1009,11 +1068,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.VariableService;
+                return _engine.Services.VariableService;
             }
         }
 
@@ -1021,11 +1080,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.ContextManagementService;
+                return _engine.Services.ContextManagementService;
             }
         }
 
@@ -1033,11 +1092,11 @@ namespace com.espertech.esper.core.service
         {
             get
             {
-                if (engine == null)
+                if (_engine == null)
                 {
-                    throw new EPServiceDestroyedException(engineURI);
+                    throw new EPServiceDestroyedException(_engineURI);
                 }
-                return engine.Services.EventProcessingRWLock;
+                return _engine.Services.EventProcessingRWLock;
             }
         }
 
@@ -1045,9 +1104,9 @@ namespace com.espertech.esper.core.service
         {
             public EPServiceEngine(EPServicesContext services, EPRuntimeSPI runtimeSPI, EPAdministratorSPI admin)
             {
-                this.Services = services;
-                this.Runtime = runtimeSPI;
-                this.Admin = admin;
+                Services = services;
+                Runtime = runtimeSPI;
+                Admin = admin;
             }
 
             public EPServicesContext Services { get; private set; }

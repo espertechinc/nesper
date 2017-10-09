@@ -33,7 +33,7 @@ namespace com.espertech.esper.example.rsi
 	    public void SetUp()
 	    {
 	        Configuration configuration = new Configuration();
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        configuration.AddEventType("StockTick", typeof(StockTick).FullName);
 	        _epService = EPServiceProviderManager.GetProvider("TestStockTickerRSI", configuration);
 	        _epService.Initialize();

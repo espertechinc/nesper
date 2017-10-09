@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.expression.core
             String delimiter = "";
 
             writer.Write('[');
-            for (int ii = 0; ii < ChildNodes.Length; ii++)
+            for (int ii = 0; ii < ChildNodes.Count; ii++)
             {
                 ExprNode expr = ChildNodes[ii];
                 writer.Write(delimiter);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.epl.expression.core
             }
             if (parameters.IsEmpty())
             {
-                Log.Warn("Empty list of values in list parameter, using upper bounds");
+                Log.Warn("EmptyFalse list of values in list parameter, using upper bounds");
                 parameters.Add(new IntParameter(int.MaxValue));
             }
             return new ListParameter(parameters);

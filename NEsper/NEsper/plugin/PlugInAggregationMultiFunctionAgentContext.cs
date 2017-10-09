@@ -6,17 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.plugin
 {
     public class PlugInAggregationMultiFunctionAgentContext
     {
-        public PlugInAggregationMultiFunctionAgentContext(ExprNode[] childNodes)
+        public PlugInAggregationMultiFunctionAgentContext(IList<ExprNode> childNodes)
         {
             ChildNodes = childNodes;
         }
 
-        public ExprNode[] ChildNodes { get; private set; }
+        public IList<ExprNode> ChildNodes { get; private set; }
     }
 }

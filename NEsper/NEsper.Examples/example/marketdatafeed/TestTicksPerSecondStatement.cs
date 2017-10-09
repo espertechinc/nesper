@@ -16,8 +16,6 @@ using NUnit.Framework;
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
-using com.espertech.esper.support;
-using com.espertech.esper.support.util;
 
 
 namespace com.espertech.esper.example.marketdatafeed
@@ -32,7 +30,7 @@ namespace com.espertech.esper.example.marketdatafeed
 	    public void SetUp() {
 	        Configuration configuration = new Configuration();
             configuration.AddEventType("MarketDataEvent", typeof(MarketDataEvent).FullName);
-            configuration.EngineDefaults.EventMetaConfig.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
 	        epService = EPServiceProviderManager.GetProvider("TestTicksPerSecondStatement", configuration);
 	        epService.Initialize();

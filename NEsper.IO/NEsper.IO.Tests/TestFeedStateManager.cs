@@ -13,7 +13,7 @@ namespace com.espertech.esperio
     [TestFixture]
     public class TestFeedStateManager 
     {
-    	private AdapterStateManager stateManager;
+    	private AdapterStateManager _stateManager;
     
         [Test]
     	public void TestValidTransitionsFromOpened()
@@ -108,7 +108,7 @@ namespace com.espertech.esperio
     	{
     		try
     		{
-    			stateManager.Destroy();
+    			_stateManager.Destroy();
     			Assert.Fail();
     		}
     		catch(IllegalStateTransitionException)
@@ -121,7 +121,7 @@ namespace com.espertech.esperio
     	{
     		try
     		{
-    			stateManager.Start();
+    			_stateManager.Start();
     			Assert.Fail();
     		}
     		catch(IllegalStateTransitionException)
@@ -134,7 +134,7 @@ namespace com.espertech.esperio
     	{
     		try
     		{
-    			stateManager.Resume();
+    			_stateManager.Resume();
     			Assert.Fail();
     		}
     		catch(IllegalStateTransitionException)
@@ -147,7 +147,7 @@ namespace com.espertech.esperio
     	{
     		try
     		{
-    			stateManager.Pause();
+    			_stateManager.Pause();
     			Assert.Fail();
     		}
     		catch(IllegalStateTransitionException)
@@ -160,7 +160,7 @@ namespace com.espertech.esperio
     	{
     		try
     		{
-    			stateManager.Stop();
+    			_stateManager.Stop();
     			Assert.Fail();
     		}
     		catch(IllegalStateTransitionException)
@@ -171,38 +171,38 @@ namespace com.espertech.esperio
     
     	private void Start()
     	{
-    		stateManager.Start();
-    		Assert.AreEqual(AdapterState.STARTED, stateManager.State);
+    		_stateManager.Start();
+    		Assert.AreEqual(AdapterState.STARTED, _stateManager.State);
     	}
     
     	private void Open()
     	{
-    		stateManager = new AdapterStateManager();
-    		Assert.AreEqual(AdapterState.OPENED, stateManager.State);
+    		_stateManager = new AdapterStateManager();
+    		Assert.AreEqual(AdapterState.OPENED, _stateManager.State);
     	}
     
     	private void Destroy()
     	{
-    		stateManager.Destroy();
-    		Assert.AreEqual(AdapterState.DESTROYED, stateManager.State);
+    		_stateManager.Destroy();
+    		Assert.AreEqual(AdapterState.DESTROYED, _stateManager.State);
     	}
     
     	private void Stop()
     	{
-    		stateManager.Stop();
-    		Assert.AreEqual(AdapterState.OPENED, stateManager.State);
+    		_stateManager.Stop();
+    		Assert.AreEqual(AdapterState.OPENED, _stateManager.State);
     	}
     
     	private void Pause()
     	{
-    		stateManager.Pause();
-    		Assert.AreEqual(AdapterState.PAUSED, stateManager.State);
+    		_stateManager.Pause();
+    		Assert.AreEqual(AdapterState.PAUSED, _stateManager.State);
     	}
     
     	private void Resume()
     	{
-    		stateManager.Resume();
-    		Assert.AreEqual(AdapterState.STARTED, stateManager.State);
+    		_stateManager.Resume();
+    		Assert.AreEqual(AdapterState.STARTED, _stateManager.State);
     	}
     }
 }

@@ -62,7 +62,7 @@ namespace com.espertech.esper.core.context.mgr
             var contextDetail = factory.ContextDetail as ContextDetailInitiatedTerminated;
             if (contextDetail != null && contextDetail.DistinctExpressions != null && contextDetail.DistinctExpressions.Length > 0)
             {
-                _distinctContexts = new Dictionary<Object, EventBean>();
+                _distinctContexts = new Dictionary<Object, EventBean>().WithNullSupport();
                 _distinctEvaluators = ExprNodeUtility.GetEvaluators(contextDetail.DistinctExpressions);
             }
         }

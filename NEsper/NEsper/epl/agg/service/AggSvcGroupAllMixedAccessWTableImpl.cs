@@ -109,10 +109,10 @@ namespace com.espertech.esper.epl.agg.service
             // no action needed - this implementation does not group and the current row is the single group
         }
 
-        public object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             // acquire table-level write lock
-            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
+            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, evaluateParams.ExprEvaluatorContext);
 
             var @event = _tableStateInstance.EventUngrouped;
             if (@event == null)
@@ -128,14 +128,14 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = _accessors[column - aggregators.Length];
-                return pair.Accessor.GetValue(row.States[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+                return pair.Accessor.GetValue(row.States[pair.Slot], evaluateParams);
             }
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             // acquire table-level write lock
-            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
+            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, evaluateParams.ExprEvaluatorContext);
 
             var @event = _tableStateInstance.EventUngrouped;
             if (@event == null)
@@ -151,14 +151,14 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = _accessors[column - aggregators.Length];
-                return pair.Accessor.GetEnumerableEvents(row.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableEvents(row.States[pair.Slot], evaluateParams);
             }
         }
 
-        public ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             // acquire table-level write lock
-            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
+            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, evaluateParams.ExprEvaluatorContext);
 
             var @event = _tableStateInstance.EventUngrouped;
             if (@event == null)
@@ -174,14 +174,14 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = _accessors[column - aggregators.Length];
-                return pair.Accessor.GetEnumerableScalar(row.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableScalar(row.States[pair.Slot], evaluateParams);
             }
         }
 
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             // acquire table-level write lock
-            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, context);
+            ExprTableEvalLockUtil.ObtainLockUnless(_tableStateInstance.TableLevelRWLock.WriteLock, evaluateParams.ExprEvaluatorContext);
 
             var @event = _tableStateInstance.EventUngrouped;
             if (@event == null)
@@ -198,7 +198,7 @@ namespace com.espertech.esper.epl.agg.service
             else
             {
                 var pair = _accessors[column - aggregators.Length];
-                return pair.Accessor.GetEnumerableEvent(row.States[pair.Slot], eventsPerStream, isNewData, context);
+                return pair.Accessor.GetEnumerableEvent(row.States[pair.Slot], evaluateParams);
             }
         }
 

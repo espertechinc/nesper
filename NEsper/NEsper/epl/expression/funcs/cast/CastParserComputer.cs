@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.client;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.expression.funcs.cast
@@ -20,11 +19,11 @@ namespace com.espertech.esper.epl.expression.funcs.cast
         /// Compute an result performing casting and parsing.
         /// </summary>
         /// <param name="input">to process</param>
-        /// <param name="eventsPerStream">events per stream</param>
-        /// <param name="newData">new data indicator</param>
-        /// <param name="exprEvaluatorContext">evaluation context</param>
-        /// <returns>cast or parse result</returns>
-        Object Compute(Object input, EventBean[] eventsPerStream, bool newData, ExprEvaluatorContext exprEvaluatorContext);
+        /// <param name="evaluateParams">The evaluate parameters.</param>
+        /// <returns>
+        /// cast or parse result
+        /// </returns>
+        Object Compute(Object input, EvaluateParams evaluateParams);
 
         bool IsConstantForConstInput { get; }
     }

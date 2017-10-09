@@ -57,20 +57,20 @@ namespace com.espertech.esper.core.context.stmt
             _services.Get(exprEvaluatorContext.AgentInstanceId).ClearResults(exprEvaluatorContext);
         }
     
-        public Object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext) {
-            return _services.Get(agentInstanceId).GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams) {
+            return _services.Get(agentInstanceId).GetValue(column, agentInstanceId, evaluateParams);
         }
     
-        public ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _services.Get(context.AgentInstanceId).GetCollectionOfEvents(column, eventsPerStream, isNewData, context);
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams) {
+            return _services.Get(evaluateParams.ExprEvaluatorContext.AgentInstanceId).GetCollectionOfEvents(column, evaluateParams);
         }
     
-        public ICollection<Object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _services.Get(context.AgentInstanceId).GetCollectionScalar(column, eventsPerStream, isNewData, context);
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams) {
+            return _services.Get(evaluateParams.ExprEvaluatorContext.AgentInstanceId).GetCollectionScalar(column, evaluateParams);
         }
     
-        public EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context) {
-            return _services.Get(context.AgentInstanceId).GetEventBean(column, eventsPerStream, isNewData, context);
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams) {
+            return _services.Get(evaluateParams.ExprEvaluatorContext.AgentInstanceId).GetEventBean(column, evaluateParams);
         }
     
         public void SetRemovedCallback(AggregationRowRemovedCallback callback) {

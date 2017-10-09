@@ -6,12 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.variable;
@@ -28,7 +23,7 @@ namespace com.espertech.esper.filter
             VariableService variableService = node.VariableService;
     
             // handle table evaluator context
-            if (node.IsHasTableAccess) {
+            if (node.HasTableAccess) {
                 exprEvaluatorContext = new ExprEvaluatorContextWTableAccess(exprEvaluatorContext, node.TableService);
             }
     
@@ -37,9 +32,9 @@ namespace com.espertech.esper.filter
             if (events == null) {
     
                 // if a subquery is present in a filter stream acquire the agent instance lock
-                if (node.IsHasFilterStreamSubquery) {
+                if (node.HasFilterStreamSubquery) {
                     adapter = GetLockableSingle(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableService, statementContext, agentInstanceId);
-                } else if (!node.IsHasVariable) {
+                } else if (!node.HasVariable) {
                     // no-variable no-prior event evaluation
                     adapter = new ExprNodeAdapterBase(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext);
                 } else {
@@ -48,17 +43,17 @@ namespace com.espertech.esper.filter
                 }
             } else {
                 // pattern cases
-                VariableService variableServiceToUse = node.IsHasVariable ? variableService : null;
+                VariableService variableServiceToUse = node.HasVariable ? variableService : null;
                 if (node.UseLargeThreadingProfile) {
                     // no-threadlocal evaluation
                     // if a subquery is present in a pattern filter acquire the agent instance lock
-                    if (node.IsHasFilterStreamSubquery) {
+                    if (node.HasFilterStreamSubquery) {
                         adapter = GetLockableMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     } else {
                         adapter = new ExprNodeAdapterMultiStreamNoTL(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     }
                 } else {
-                    if (node.IsHasFilterStreamSubquery) {
+                    if (node.HasFilterStreamSubquery) {
                         adapter = GetLockableMultiStream(filterSpecId, filterSpecParamPathNum, exprNode, exprEvaluatorContext, variableServiceToUse, events);
                     } else {
                         // evaluation with threadlocal cache
@@ -67,7 +62,7 @@ namespace com.espertech.esper.filter
                 }
             }
     
-            if (!node.IsHasTableAccess) {
+            if (!node.HasTableAccess) {
                 return adapter;
             }
     

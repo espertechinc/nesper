@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
@@ -50,9 +51,9 @@ namespace com.espertech.esper.view.window
             throw new ArgumentException();
         }
 
-        public static LinkedHashMap<String, Object> AsMapOfTypes(EventType eventType)
+        public static IDictionary<String, Object> AsMapOfTypes(EventType eventType)
         {
-            LinkedHashMap<String, Object> builtinTypeDef = new LinkedHashMap<String, Object>();
+            var builtinTypeDef = new Dictionary<String, Object>();
             builtinTypeDef.Put(ExpressionViewOAFieldEnum.CURRENT_COUNT.GetFieldName(), typeof(int));
             builtinTypeDef.Put(ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP.GetFieldName(), typeof(long));
             builtinTypeDef.Put(ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP.GetFieldName(), typeof(long));

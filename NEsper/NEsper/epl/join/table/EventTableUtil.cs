@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
@@ -34,22 +35,24 @@ namespace com.espertech.esper.epl.join.table
         /// <param name="coerceOnAddOnly">indicator whether to coerce on value-add</param>
         /// <returns>table build</returns>
         public static EventTable BuildIndex(AgentInstanceContext agentInstanceContext, int indexedStreamNum, QueryPlanIndexItem item, EventType eventType, bool coerceOnAddOnly, bool unique, string optionalIndexName, Object optionalSerde, bool isFireAndForget) {
-            string[] indexProps = item.IndexProps;
-            Type[] indexCoercionTypes = Normalize(item.OptIndexCoercionTypes);
-            string[] rangeProps = item.RangeProps;
-            Type[] rangeCoercionTypes = Normalize(item.OptRangeCoercionTypes);
+            var indexProps = item.IndexProps;
+            var indexCoercionTypes = Normalize(item.OptIndexCoercionTypes);
+            var rangeProps = item.RangeProps;
+            var rangeCoercionTypes = Normalize(item.OptRangeCoercionTypes);
             var ident = new EventTableFactoryTableIdentAgentInstance(agentInstanceContext);
             EventTableIndexService eventTableIndexService = agentInstanceContext.StatementContext.EventTableIndexService;
     
             EventTable table;
-            if (rangeProps == null || rangeProps.Length == 0) {
-                if (indexProps == null || indexProps.Length == 0) {
+            if (rangeProps == null || rangeProps.Count == 0) {
+                if (indexProps == null || indexProps.Count == 0)
+                {
                     EventTableFactory factory = eventTableIndexService.CreateUnindexed(indexedStreamNum, optionalSerde, isFireAndForget);
                     table = factory.MakeEventTables(ident)[0];
                 } else {
                     // single index key
-                    if (indexProps.Length == 1) {
-                        if (indexCoercionTypes == null || indexCoercionTypes.Length == 0) {
+                    if (indexProps.Count == 1)
+                    {
+                        if (indexCoercionTypes == null || indexCoercionTypes.Count == 0) {
                             EventTableFactory factory = eventTableIndexService.CreateSingle(indexedStreamNum, eventType, indexProps[0], unique, optionalIndexName, optionalSerde, isFireAndForget);
                             table = factory.MakeEventTables(ident)[0];
                         } else {
@@ -63,7 +66,7 @@ namespace com.espertech.esper.epl.join.table
                         }
                     } else {
                         // Multiple index keys
-                        if (indexCoercionTypes == null || indexCoercionTypes.Length == 0) {
+                        if (indexCoercionTypes == null || indexCoercionTypes.Count == 0) {
                             EventTableFactory factory = eventTableIndexService.CreateMultiKey(indexedStreamNum, eventType, indexProps, unique, optionalIndexName, optionalSerde, isFireAndForget);
                             table = factory.MakeEventTables(ident)[0];
                         } else {
@@ -78,23 +81,24 @@ namespace com.espertech.esper.epl.join.table
                     }
                 }
             } else {
-                if ((rangeProps.Length == 1) && (indexProps == null || indexProps.Length == 0)) {
+                if ((rangeProps.Count == 1) && (indexProps == null || indexProps.Count == 0))
+                {
                     if (rangeCoercionTypes == null) {
                         EventTableFactory factory = eventTableIndexService.CreateSorted(indexedStreamNum, eventType, rangeProps[0], isFireAndForget);
-                        return Factory.MakeEventTables(ident)[0];
+                        return factory.MakeEventTables(ident)[0];
                     } else {
                         EventTableFactory factory = eventTableIndexService.CreateSortedCoerce(indexedStreamNum, eventType, rangeProps[0], rangeCoercionTypes[0], isFireAndForget);
-                        return Factory.MakeEventTables(ident)[0];
+                        return factory.MakeEventTables(ident)[0];
                     }
                 } else {
                     EventTableFactory factory = eventTableIndexService.CreateComposite(indexedStreamNum, eventType, indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes, isFireAndForget);
-                    return Factory.MakeEventTables(ident)[0];
+                    return factory.MakeEventTables(ident)[0];
                 }
             }
             return table;
         }
     
-        private static Type[] Normalize(Type[] types) {
+        private static IList<Type> Normalize(IList<Type> types) {
             if (types == null) {
                 return null;
             }

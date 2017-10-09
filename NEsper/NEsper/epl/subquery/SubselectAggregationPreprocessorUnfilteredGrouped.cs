@@ -30,7 +30,7 @@ namespace com.espertech.esper.epl.subquery
             ICollection<EventBean> matchingEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            aggregationService.ClearResults(exprEvaluatorContext);
+            AggregationService.ClearResults(exprEvaluatorContext);
             if (matchingEvents == null)
             {
                 return;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.subquery
             {
                 events[0] = subselectEvent;
                 Object groupKey = GenerateGroupKey(events, true, exprEvaluatorContext);
-                aggregationService.ApplyEnter(events, groupKey, exprEvaluatorContext);
+                AggregationService.ApplyEnter(events, groupKey, exprEvaluatorContext);
             }
         }
     }

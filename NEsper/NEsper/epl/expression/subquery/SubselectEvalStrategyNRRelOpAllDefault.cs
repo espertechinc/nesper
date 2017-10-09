@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.expression.subquery
 {
@@ -22,54 +21,79 @@ namespace com.espertech.esper.epl.expression.subquery
     {
         private readonly ExprEvaluator _filterOrHavingEval;
 
-        public SubselectEvalStrategyNRRelOpAllDefault(ExprEvaluator valueEval, ExprEvaluator selectEval, bool resultWhenNoMatchingEvents, RelationalComputer computer, ExprEvaluator filterOrHavingEval)
+        public SubselectEvalStrategyNRRelOpAllDefault(
+            ExprEvaluator valueEval,
+            ExprEvaluator selectEval,
+            bool resultWhenNoMatchingEvents,
+            RelationalComputer computer,
+            ExprEvaluator filterOrHavingEval)
             : base(valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             _filterOrHavingEval = filterOrHavingEval;
         }
-    
-        protected override Object EvaluateInternal(Object leftResult, EventBean[] events, bool isNewData, ICollection<EventBean> matchingEvents, ExprEvaluatorContext exprEvaluatorContext, AggregationService aggregationService) {
+
+        protected override Object EvaluateInternal(
+            Object leftResult,
+            EventBean[] events,
+            bool isNewData,
+            ICollection<EventBean> matchingEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            AggregationService aggregationService)
+        {
             bool hasRows = false;
             bool hasNullRow = false;
 
             var evaluateParams = new EvaluateParams(events, true, exprEvaluatorContext);
-            foreach (EventBean subselectEvent in matchingEvents) {
+            foreach (EventBean subselectEvent in matchingEvents)
+            {
                 events[0] = subselectEvent;
-    
+
                 if (_filterOrHavingEval != null)
                 {
                     var pass = _filterOrHavingEval.Evaluate(evaluateParams);
-                    if ((pass == null) || (false.Equals(pass))) {
+                    if ((pass == null) || (false.Equals(pass)))
+                    {
                         continue;
                     }
                 }
                 hasRows = true;
-    
+
                 Object valueRight;
-                if (SelectEval != null) {
+                if (SelectEval != null)
+                {
                     valueRight = SelectEval.Evaluate(evaluateParams);
-                } else {
+                }
+                else
+                {
                     valueRight = events[0].Underlying;
                 }
-    
-                if (valueRight == null) {
+
+                if (valueRight == null)
+                {
                     hasNullRow = true;
-                } else {
-                    if (leftResult != null) {
-                        if (!Computer.Compare(leftResult, valueRight)) {
+                }
+                else
+                {
+                    if (leftResult != null)
+                    {
+                        if (!Computer.Invoke(leftResult, valueRight))
+                        {
                             return false;
                         }
                     }
                 }
             }
-    
-            if (!hasRows) {
+
+            if (!hasRows)
+            {
                 return true;
             }
-            if (leftResult == null) {
+            if (leftResult == null)
+            {
                 return null;
             }
-            if (hasNullRow) {
+            if (hasNullRow)
+            {
                 return null;
             }
             return true;

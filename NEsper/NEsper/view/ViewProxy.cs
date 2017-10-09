@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 using Castle.DynamicProxy;
@@ -20,14 +22,13 @@ namespace com.espertech.esper.view
 {
     public class ViewProxy : IInterceptor
     {
-        private static readonly MethodInfo Target =
-            typeof (View).GetMethod("Update");
+        private static readonly MethodInfo UpdateMethod = typeof(View).GetMethod("Update");
 
         private readonly String _engineURI;
         private readonly String _statementName;
         private readonly String _viewName;
         private readonly View _view;
-    
+
         public static Object NewInstance(String engineURI, String statementName, String viewName, View view)
         {
             var generator = new ProxyGenerator();
@@ -36,7 +37,7 @@ namespace com.espertech.esper.view
                 view.GetType().GetInterfaces(),
                 new ViewProxy(engineURI, statementName, viewName, view));
         }
-    
+
         public ViewProxy(String engineURI, String statementName, String viewName, View view) 
         {
             _engineURI = engineURI;
@@ -44,7 +45,7 @@ namespace com.espertech.esper.view
             _viewName = viewName;
             _view = view;
         }
-    
+
         /// <summary>
         /// Intercepts the specified invocation.
         /// </summary>
@@ -53,18 +54,17 @@ namespace com.espertech.esper.view
         {
             invocation.ReturnValue = invocation.Method.Invoke(_view, invocation.Arguments);
 
-            if (invocation.Method == Target)
+            if (invocation.Method == UpdateMethod)
             {
                 if (AuditPath.IsAuditEnabled)
                 {
-                    var newData = (EventBean[]) invocation.Arguments[0];
-                    var oldData = (EventBean[]) invocation.Arguments[1];
+                    var newData = (EventBean[])invocation.Arguments[0];
+                    var oldData = (EventBean[])invocation.Arguments[1];
                     AuditPath.AuditLog(
-                        _engineURI, _statementName, AuditEnum.VIEW, 
+                        _engineURI, _statementName, AuditEnum.VIEW,
                         _viewName + " insert {" + EventBeanUtility.Summarize(newData) + "} remove {" + EventBeanUtility.Summarize(oldData) + "}");
                 }
             }
         }
     }
-    
 }

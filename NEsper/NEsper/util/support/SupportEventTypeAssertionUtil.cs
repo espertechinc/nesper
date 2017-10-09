@@ -520,7 +520,7 @@ namespace com.espertech.esper.util.support
                 {
                     SupportEventTypeAssertionEnum assertion = assertions[i];
                     object expected = expectedArr[propNum][i];
-                    Object value = assertion.Extractor.Extract(prop, eventType);
+                    object value = assertion.GetExtractor().Invoke(prop, eventType);
                     ScopeTestHelper.AssertEquals(message + " at assertion " + assertion, expected, value);
                 }
             }

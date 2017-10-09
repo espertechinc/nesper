@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.expression.subquery
                 return null;
             }
             var @event = EventBeanUtility.GetNonemptyFirstEvent(matchingEvents);
-            return _tableMetadata.EventToPublic.ConvertToUnd(@event, eventsPerStream, newData, exprEvaluatorContext);
+            return _tableMetadata.EventToPublic.ConvertToUnd(@event, new EvaluateParams(eventsPerStream, newData, exprEvaluatorContext));
         }
     }
 } // end of namespace

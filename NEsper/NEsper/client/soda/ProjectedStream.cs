@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace com.espertech.esper.client.soda
     /// Abstract base class for streams that can be projected via views providing data window, uniqueness or other projections
     /// or deriving further information from streams.
     /// </summary>
+    [Serializable]
     public abstract class ProjectedStream : Stream
     {
         private IList<View> _views;

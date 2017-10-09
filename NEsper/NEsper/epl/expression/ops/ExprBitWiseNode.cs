@@ -53,7 +53,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
                 throw new ExprValidationException("BitWise node must have 2 parameters");
             }

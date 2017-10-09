@@ -8,12 +8,11 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 using XLR8.CGLib;
-
-using com.espertech.esper.client;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.epl.expression.dot
 {
@@ -26,7 +25,7 @@ namespace com.espertech.esper.epl.expression.dot
         {
         }
 
-        public override Object Evaluate(Object target, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext)
+        public override Object Evaluate(Object target, EvaluateParams evaluateParams)
         {
             if (target == null)
             {
@@ -38,7 +37,7 @@ namespace com.espertech.esper.epl.expression.dot
                 return null;
             }
             var bean = (EventBean)target;
-            return base.Evaluate(bean.Underlying, eventsPerStream, isNewData, exprEvaluatorContext);
+            return base.Evaluate(bean.Underlying, evaluateParams);
         }
     }
 }

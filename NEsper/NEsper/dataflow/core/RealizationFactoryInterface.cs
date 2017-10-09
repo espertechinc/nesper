@@ -32,7 +32,7 @@ namespace com.espertech.esper.dataflow.core
             string dataFlowName,
             IDictionary<int, Object> operators,
             IDictionary<int, OperatorMetadataDescriptor> operatorMetadata,
-            ISet<int> operatorBuildOrder,
+            ICollection<int> operatorBuildOrder,
             IList<LogicalChannelBinding> bindings,
             DataFlowSignalManager dataFlowSignalManager,
             EPDataFlowInstantiationOptions options,
@@ -232,7 +232,7 @@ namespace com.espertech.esper.dataflow.core
             int producerOpNum,
             string operatorPrettyPrint,
             DataFlowSignalManager dataFlowSignalManager,
-            List<ObjectBindingPair>[] targetsPerStream,
+            IList<ObjectBindingPair>[] targetsPerStream,
             EPDataFlowInstantiationOptions options,
             EngineImportService engineImportService)
         {
@@ -253,7 +253,7 @@ namespace com.espertech.esper.dataflow.core
                     var target = targets[0];
                     return GetSubmitHandler(
                         engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, target, options.ExceptionHandler, engineImportService);
+                        dataFlowSignalManager, target, options.GetExceptionHandler(), engineImportService);
                 }
 
                 var handlers = new SubmitHandler[targets.Count];
@@ -261,7 +261,7 @@ namespace com.espertech.esper.dataflow.core
                 {
                     handlers[i] = GetSubmitHandler(
                         engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, targets[i], options.ExceptionHandler, engineImportService);
+                        dataFlowSignalManager, targets[i], options.GetExceptionHandler(), engineImportService);
                 }
                 return new EPDataFlowEmitter1StreamNTarget(producerOpNum, dataFlowSignalManager, handlers);
             }
@@ -277,7 +277,7 @@ namespace com.espertech.esper.dataflow.core
                     {
                         handlers[i] = GetSubmitHandler(
                             engineURI, statementName, audit, dataflowName, producerOpNum, operatorPrettyPrint,
-                            dataFlowSignalManager, targetsPerStream[streamNum][i], options.ExceptionHandler,
+                            dataFlowSignalManager, targetsPerStream[streamNum][i], options.GetExceptionHandler(),
                             engineImportService);
                     }
                 }

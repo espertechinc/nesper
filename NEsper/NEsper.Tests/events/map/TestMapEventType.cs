@@ -14,8 +14,9 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -298,7 +299,9 @@ namespace com.espertech.esper.events.map
             levelZero["nodefmap"] = typeof (Map);
             levelZero["map"] = levelOne;
 
-            var mapType = new MapEventType(null, "M1", 1, _eventAdapterService, levelZero, null, null, null);
+            EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.MAP, "testtype", true, true, true, false, false);
+            MapEventType mapType = new MapEventType(metadata, "M1", 1, _eventAdapterService, levelZero, null, null, null);
+
             IDictionary<String, Object> testData = GetTestData();
             var theEvent = new MapEventBean(testData, mapType);
 

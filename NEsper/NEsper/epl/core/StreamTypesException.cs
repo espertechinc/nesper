@@ -29,7 +29,7 @@ namespace com.espertech.esper.epl.core
         /// <value>suggested match</value>
         public Pair<int, string> OptionalSuggestion
         {
-            get { return _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.GetSuggestion() : null; }
+            get { return _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Invoke() : null; }
         }
     }
 } // end of namespace

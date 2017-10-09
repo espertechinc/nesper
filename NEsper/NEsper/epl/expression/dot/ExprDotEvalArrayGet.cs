@@ -30,18 +30,13 @@ namespace com.espertech.esper.epl.expression.dot
             _typeInfo = EPTypeHelper.SingleValue(componentType);
         }
 
-        public Object Evaluate(
-            Object target,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object Evaluate(object target, EvaluateParams evalParams)
         {
             if (target == null)
             {
                 return null;
             }
 
-            var evalParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             var index = _indexExpression.Evaluate(evalParams);
             if (index == null)
             {

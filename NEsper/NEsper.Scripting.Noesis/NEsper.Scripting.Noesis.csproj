@@ -17,7 +17,7 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <BaseIntermediateOutputPath>obj\net40\</BaseIntermediateOutputPath>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -103,10 +103,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Noesis.Javascript" Condition="'$(PlatformTarget)' == 'x64'">
+      <HintPath>..\..\packages\Noesis.Javascript.0.7.1.0\lib\net40\amd64\Noesis.Javascript.dll</HintPath>
+    </Reference>
     <Reference Include="Noesis.Javascript" Condition="'$(PlatformTarget)' == 'x86'">
       <HintPath>..\..\packages\Noesis.Javascript.0.7.1.0\lib\net40\x86\Noesis.Javascript.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Noesis.Javascript" Condition="'$(PlatformTarget)' == 'x64'">
+    <Reference Include="Noesis.Javascript" Condition="'$(PlatformTarget)' != 'x86'">
       <HintPath>..\..\packages\Noesis.Javascript.0.7.1.0\lib\net40\amd64\Noesis.Javascript.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -127,9 +131,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NEsper\NEsper.net45.csproj">
+    <ProjectReference Include="..\NEsper\NEsper.csproj">
       <Project>{3d317245-cde5-4e0e-9590-d7cba2257d9c}</Project>
-      <Name>NEsper.net45</Name>
+      <Name>NEsper</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -140,6 +144,13 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -17,7 +17,7 @@ namespace com.espertech.esper.epl.expression.baseagg
 {
     public class ExprAggregateNodeUtil
     {
-        public static ExprAggregateNodeParamDesc GetValidatePositionalParams(ExprNode[] childNodes, bool allowOnlyGroupBy)
+        public static ExprAggregateNodeParamDesc GetValidatePositionalParams(IList<ExprNode> childNodes, bool allowOnlyGroupBy)
         {
             ExprAggregateLocalGroupByDesc optionalLocalGroupBy = null;
             var count = 0;

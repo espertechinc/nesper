@@ -28,7 +28,7 @@ namespace com.espertech.esper.util
     
         static StatementSelectionUtil()
         {
-            STATEMENT_META_EVENT_TYPE = (BeanEventType) SupportEventAdapterService.GetService().AddBeanType("StatementRow", typeof(StatementRow), true, true, true);
+            STATEMENT_META_EVENT_TYPE = (BeanEventType) SupportEventAdapterService.Service.AddBeanType("StatementRow", typeof(StatementRow), true, true, true);
         }
 
         public static void ApplyExpressionToStatements(
@@ -118,7 +118,7 @@ namespace com.espertech.esper.util
             try
             {
                 var row = GetRow(stmt);
-                var rowBean = SupportEventAdapterService.GetService().AdapterForTypedObject(row, STATEMENT_META_EVENT_TYPE);
+                var rowBean = SupportEventAdapterService.Service.AdapterForTypedObject(row, STATEMENT_META_EVENT_TYPE);
                 var evaluateParams = new EvaluateParams(new EventBean[] { rowBean }, true, null);
                 var pass = (bool?) evaluator.Evaluate(evaluateParams);
                 return !pass.GetValueOrDefault(false);

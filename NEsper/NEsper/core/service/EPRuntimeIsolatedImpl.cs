@@ -171,7 +171,7 @@ namespace com.espertech.esper.core.service
             }
 
             // Get it wrapped up, process event
-            EventBean eventBean = _unisolatedServices.EventAdapterService.AdapterForLINQ(element);
+            EventBean eventBean = _unisolatedServices.EventAdapterService.AdapterForDOM(element);
             ProcessEvent(eventBean);
         }
 

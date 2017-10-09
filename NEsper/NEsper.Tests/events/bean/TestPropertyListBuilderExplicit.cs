@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.bean;
+using com.espertech.esper.supportunit.bean;
 
 using NUnit.Framework;
 

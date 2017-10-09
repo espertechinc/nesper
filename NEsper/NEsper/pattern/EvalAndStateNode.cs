@@ -20,9 +20,9 @@ namespace com.espertech.esper.pattern
     /// </summary>
     public class EvalAndStateNode : EvalStateNode, Evaluator
     {
-        protected readonly EvalAndNode EvalAndNode;
-        protected readonly EvalStateNode[] ActiveChildNodes;
-        protected Object[] EventsPerChild;
+        private readonly EvalAndNode _evalAndNode;
+        private readonly IList<EvalStateNode> _activeChildNodes;
+        private Object[] _eventsPerChild;
 
         /// <summary>Constructor. </summary>
         /// <param name="parentNode">is the parent evaluator to call to indicate truth value</param>
@@ -30,17 +30,17 @@ namespace com.espertech.esper.pattern
         public EvalAndStateNode(Evaluator parentNode, EvalAndNode evalAndNode)
             : base(parentNode)
         {
-            EvalAndNode = evalAndNode;
-            ActiveChildNodes = new EvalStateNode[evalAndNode.ChildNodes.Length];
-            EventsPerChild = new Object[evalAndNode.ChildNodes.Length];
+            _evalAndNode = evalAndNode;
+            _activeChildNodes = new EvalStateNode[evalAndNode.ChildNodes.Count];
+            _eventsPerChild = new Object[evalAndNode.ChildNodes.Count];
         }
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             bool quit = false;
-            if (EventsPerChild != null)
+            if (_eventsPerChild != null)
             {
-                foreach (Object entry in EventsPerChild)
+                foreach (Object entry in _eventsPerChild)
                 {
                     if (entry is MatchedEventMap)
                     {
@@ -64,9 +64,9 @@ namespace com.espertech.esper.pattern
                     }
                 }
             }
-            if (!quit && ActiveChildNodes != null)
+            if (!quit && _activeChildNodes != null)
             {
-                foreach (EvalStateNode child in ActiveChildNodes)
+                foreach (EvalStateNode child in _activeChildNodes)
                 {
                     if (child != null)
                     {
@@ -83,22 +83,22 @@ namespace com.espertech.esper.pattern
 
         public override EvalNode FactoryNode
         {
-            get { return EvalAndNode; }
+            get { return _evalAndNode; }
         }
 
         public override void Start(MatchedEventMap beginState)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndStart(EvalAndNode, beginState); }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndStart(_evalAndNode, beginState); }
             // In an "and" expression we need to create a state for all child listeners
             int count = 0;
-            foreach (EvalNode node in EvalAndNode.ChildNodes)
+            foreach (EvalNode node in _evalAndNode.ChildNodes)
             {
                 EvalStateNode childState = node.NewState(this, null, 0L);
-                ActiveChildNodes[count++] = childState;
+                _activeChildNodes[count++] = childState;
             }
 
             // Start all child nodes
-            foreach (EvalStateNode child in ActiveChildNodes)
+            foreach (EvalStateNode child in _activeChildNodes)
             {
                 if (child != null)
                 {
@@ -130,12 +130,12 @@ namespace com.espertech.esper.pattern
 
         public void EvaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, bool isQuitted)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndEvaluateTrue(EvalAndNode, matchEvent); }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndEvaluateTrue(_evalAndNode, matchEvent); }
 
             int? indexFrom = null;
-            for (int i = 0; i < ActiveChildNodes.Length; i++)
+            for (int i = 0; i < _activeChildNodes.Count; i++)
             {
-                if (ActiveChildNodes[i] == fromNode)
+                if (_activeChildNodes[i] == fromNode)
                 {
                     indexFrom = i;
                 }
@@ -144,10 +144,10 @@ namespace com.espertech.esper.pattern
             // If one of the children quits, remove the child
             if (isQuitted && indexFrom != null)
             {
-                ActiveChildNodes[indexFrom.Value] = null;
+                _activeChildNodes[indexFrom.Value] = null;
             }
 
-            if (EventsPerChild == null || indexFrom == null)
+            if (_eventsPerChild == null || indexFrom == null)
             {
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(true); }
                 return;
@@ -155,9 +155,9 @@ namespace com.espertech.esper.pattern
 
             // If all nodes have events received, the AND expression turns true
             var allHaveEventsExcludingFromChild = true;
-            for (int i = 0; i < EventsPerChild.Length; i++)
+            for (int i = 0; i < _eventsPerChild.Length; i++)
             {
-                if (indexFrom != i && EventsPerChild[i] == null)
+                if (indexFrom != i && _eventsPerChild[i] == null)
                 {
                     allHaveEventsExcludingFromChild = false;
                     break;
@@ -167,7 +167,7 @@ namespace com.espertech.esper.pattern
             // if we don't have events from all child nodes, add event and done
             if (!allHaveEventsExcludingFromChild)
             {
-                AddMatchEvent(EventsPerChild, indexFrom.Value, matchEvent);
+                AddMatchEvent(_eventsPerChild, indexFrom.Value, matchEvent);
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(false); }
                 return;
             }
@@ -175,9 +175,9 @@ namespace com.espertech.esper.pattern
             // if all other nodes have quit other then the from-node, don't retain matching event
             var allOtherNodesQuit = true;
             var hasActive = false;
-            for (int i = 0; i < EventsPerChild.Length; i++)
+            for (int i = 0; i < _eventsPerChild.Length; i++)
             {
-                if (ActiveChildNodes[i] != null)
+                if (_activeChildNodes[i] != null)
                 {
                     hasActive = true;
                     if (i != indexFrom)
@@ -190,17 +190,17 @@ namespace com.espertech.esper.pattern
             // if not all other nodes have quit, add event to received list
             if (!allOtherNodesQuit)
             {
-                AddMatchEvent(EventsPerChild, indexFrom.Value, matchEvent);
+                AddMatchEvent(_eventsPerChild, indexFrom.Value, matchEvent);
             }
 
             // For each combination in eventsPerChild for all other state nodes generate an event to the parent
-            List<MatchedEventMap> result = GenerateMatchEvents(matchEvent, EventsPerChild, indexFrom.Value);
+            List<MatchedEventMap> result = GenerateMatchEvents(matchEvent, _eventsPerChild, indexFrom.Value);
 
             // Check if this is quitting
             bool quitted = true;
             if (hasActive)
             {
-                foreach (EvalStateNode stateNode in ActiveChildNodes)
+                foreach (EvalStateNode stateNode in _activeChildNodes)
                 {
                     if (stateNode != null && !(stateNode.IsNotOperator))
                     {
@@ -221,25 +221,25 @@ namespace com.espertech.esper.pattern
                 ParentEvaluator.EvaluateTrue(theEvent, this, quitted);
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(EventsPerChild == null); }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndEvaluateTrue(_eventsPerChild == null); }
         }
 
         public void EvaluateFalse(EvalStateNode fromNode, bool restartable)
         {
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndEvaluateFalse(EvalAndNode); }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndEvaluateFalse(_evalAndNode); }
             int? indexFrom = null;
-            for (int i = 0; i < ActiveChildNodes.Length; i++)
+            for (int i = 0; i < _activeChildNodes.Count; i++)
             {
-                if (ActiveChildNodes[i] == fromNode)
+                if (_activeChildNodes[i] == fromNode)
                 {
-                    ActiveChildNodes[i] = null;
+                    _activeChildNodes[i] = null;
                     indexFrom = i;
                 }
             }
 
             if (indexFrom != null)
             {
-                EventsPerChild[indexFrom.Value] = null;
+                _eventsPerChild[indexFrom.Value] = null;
             }
 
             // The and node cannot turn true anymore, might as well quit all child nodes
@@ -320,19 +320,19 @@ namespace com.espertech.esper.pattern
 
         public override void Quit()
         {
-            if (EventsPerChild == null)
+            if (_eventsPerChild == null)
             {
                 return;
             }
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndQuit(EvalAndNode); }
+            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QPatternAndQuit(_evalAndNode); }
             QuitInternal();
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().APatternAndQuit(); }
         }
 
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitAnd(EvalAndNode.FactoryNode, this, EventsPerChild);
-            foreach (EvalStateNode node in ActiveChildNodes)
+            visitor.VisitAnd(_evalAndNode.FactoryNode, this, _eventsPerChild);
+            foreach (EvalStateNode node in _activeChildNodes)
             {
                 if (node != null)
                 {
@@ -369,15 +369,16 @@ namespace com.espertech.esper.pattern
 
         private void QuitInternal()
         {
-            foreach (EvalStateNode child in ActiveChildNodes)
+            foreach (EvalStateNode child in _activeChildNodes)
             {
                 if (child != null)
                 {
                     child.Quit();
                 }
             }
-            ActiveChildNodes.Fill((EvalStateNode)null);
-            EventsPerChild = null;
+
+            _activeChildNodes.Fill((EvalStateNode)null);
+            _eventsPerChild = null;
         }
     }
 }

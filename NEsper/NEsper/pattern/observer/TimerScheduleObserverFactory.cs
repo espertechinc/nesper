@@ -247,7 +247,9 @@ namespace com.espertech.esper.pattern.observer
                     else if (param.IsLong() || param.IsInt())
                     {
                         long msec = param.AsLong();
-                        optionalDate = new DateTimeEx(msec.AsDateTimeOffset(timeZone), timeZone);
+                        optionalDate = DateTimeEx.GetInstance(timeZone);
+                        timeAbacus.CalendarSet(msec, optionalDate);
+                        //optionalDate = new DateTimeEx(msec.AsDateTimeOffset(timeZone), timeZone);
                         optionalRemainder = timeAbacus.CalendarSet(msec, optionalDate);
                     }
                     else if (param is DateTimeOffset || param is DateTime)

@@ -303,12 +303,7 @@ namespace com.espertech.esper.epl.agg.service
             _currentGroupKey = groupByKey;
         }
 
-        public override Object GetValue(
-            int column,
-            int agentInstanceId,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public override object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             if (column < base.Aggregators.Length)
             {
@@ -318,15 +313,11 @@ namespace com.espertech.esper.epl.agg.service
             {
                 var pair = _accessors[column - base.Aggregators.Length];
                 return pair.Accessor.GetValue(
-                    _currentAggregatorStates[pair.Slot], eventsPerStream, isNewData, exprEvaluatorContext);
+                    _currentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public override ICollection<EventBean> GetCollectionOfEvents(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public override ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             if (column < base.Aggregators.Length)
             {
@@ -336,15 +327,11 @@ namespace com.espertech.esper.epl.agg.service
             {
                 var pair = _accessors[column - base.Aggregators.Length];
                 return pair.Accessor.GetEnumerableEvents(
-                    _currentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                    _currentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public override ICollection<Object> GetCollectionScalar(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public override ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             if (column < base.Aggregators.Length)
             {
@@ -354,15 +341,11 @@ namespace com.espertech.esper.epl.agg.service
             {
                 var pair = _accessors[column - base.Aggregators.Length];
                 return pair.Accessor.GetEnumerableScalar(
-                    _currentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                    _currentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 
-        public override EventBean GetEventBean(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public override EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             if (column < Aggregators.Length)
             {
@@ -372,7 +355,7 @@ namespace com.espertech.esper.epl.agg.service
             {
                 var pair = _accessors[column - Aggregators.Length];
                 return pair.Accessor.GetEnumerableEvent(
-                    _currentAggregatorStates[pair.Slot], eventsPerStream, isNewData, context);
+                    _currentAggregatorStates[pair.Slot], evaluateParams);
             }
         }
 

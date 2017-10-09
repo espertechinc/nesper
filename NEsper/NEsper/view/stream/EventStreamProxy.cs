@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using Castle.DynamicProxy;
@@ -30,10 +32,10 @@ namespace com.espertech.esper.view.stream
         private readonly String _eventTypeAndFilter;
         private readonly EventStream _eventStream;
 
-        public static Object NewInstance(String engineURI, String statementName, String eventTypeAndFilter, EventStream eventStream)
+        public static EventStream NewInstance(String engineURI, String statementName, String eventTypeAndFilter, EventStream eventStream)
         {
             var generator = new ProxyGenerator();
-            return generator.CreateInterfaceProxyWithoutTarget(
+            return (EventStream) generator.CreateInterfaceProxyWithoutTarget(
                 typeof(EventStream),
                 eventStream.GetType().GetInterfaces(),
                 new EventStreamProxy(engineURI, statementName, eventTypeAndFilter, eventStream));
@@ -62,7 +64,7 @@ namespace com.espertech.esper.view.stream
                 writer.Write(')');
             }
 
-            return (EventStream) EventStreamProxy.NewInstance(engineURI, statementName, writer.ToString(), designated);
+            return EventStreamProxy.NewInstance(engineURI, statementName, writer.ToString(), designated);
         }
 
         private static void WriteFilter(TextWriter writer, FilterSpecParam[] paramLine)

@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
@@ -33,14 +34,14 @@ namespace com.espertech.esper.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("Coalesce node must have at least 2 parameters");
             }
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
     
             // get child expression types
-            var childTypes = new Type[ChildNodes.Length];
+            var childTypes = new Type[ChildNodes.Count];
             for (var i = 0; i < _evaluators.Length; i++)
             {
                 childTypes[i] = _evaluators[i].ReturnType;
@@ -56,7 +57,7 @@ namespace com.espertech.esper.epl.expression.funcs
             }
     
             // determine which child nodes need numeric coercion
-            _isNumericCoercion = new bool[ChildNodes.Length];
+            _isNumericCoercion = new bool[ChildNodes.Count];
             for (var i = 0; i < _evaluators.Length; i++)
             {
                 if ((_evaluators[i].ReturnType.GetBoxedType() != _resultType) &&
@@ -64,7 +65,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 {
                     if (!_resultType.IsNumeric())
                     {
-                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to {1} is not allowed", _resultType.FullName, _evaluators[i].ReturnType));
+                        throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to {1} is not allowed", Name.Of(_resultType), Name.Of(_evaluators[i].ReturnType)));
                     }
                     _isNumericCoercion[i] = true;
                 }

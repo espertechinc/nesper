@@ -38,7 +38,7 @@ namespace com.espertech.esper.client.soda
         /// <value>context descriptor</value>
         public ContextDescriptor Descriptor { get; set; }
 
-        /// <summary>Render as EPL. </summary>
+        /// <summary>RenderAny as EPL. </summary>
         /// <param name="writer">to output to</param>
         /// <param name="formatter">formatter</param>
         public void ToEPL(TextWriter writer, EPStatementFormatter formatter)

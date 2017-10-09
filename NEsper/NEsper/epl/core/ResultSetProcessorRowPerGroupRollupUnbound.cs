@@ -108,7 +108,7 @@ namespace com.espertech.esper.epl.core
         {
             var output = GenerateOutputEventsView(_unboundHelper.Buffer, true, true);
             if (output == null)
-                return EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+                return EnumerationHelper<EventBean>.Empty();
             return ((IEnumerable<EventBean>) output).GetEnumerator();
         }
     }

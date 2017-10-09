@@ -13,7 +13,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.epl.join.exec.@base;
 using com.espertech.esper.epl.join.table;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

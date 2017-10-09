@@ -16,6 +16,7 @@ using Antlr4.Runtime;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
+using com.espertech.esper.epl.generated;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.type;
 

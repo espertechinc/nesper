@@ -525,7 +525,7 @@ namespace com.espertech.esper.core.deploy
                     usesSet.AddAll(proposedModule.Uses);
                 }
 
-                var proposedModuleNames = new Dictionary<string, ISet<int>>();
+                var proposedModuleNames = new Dictionary<string, ISet<int>>().WithNullSupport();
                 int count = 0;
                 foreach (Module proposedModule in proposedModules)
                 {
@@ -767,14 +767,14 @@ namespace com.espertech.esper.core.deploy
 
         private UndeploymentResult UndeployInternal(string deploymentId, UndeploymentOptions undeploymentOptions)
         {
-            undeploymentOptions.GetDeploymentLockStrategy().Acquire(_eventProcessingRwLock);
+            undeploymentOptions.DeploymentLockStrategy.Acquire(_eventProcessingRwLock);
             try
             {
                 return UndeployInternalLockTaken(deploymentId, undeploymentOptions);
             }
             finally
             {
-                undeploymentOptions.GetDeploymentLockStrategy().Release(_eventProcessingRwLock);
+                undeploymentOptions.DeploymentLockStrategy.Release(_eventProcessingRwLock);
             }
         }
 
@@ -812,7 +812,7 @@ namespace com.espertech.esper.core.deploy
             }
 
             var revertedStatements = new List<DeploymentInformationItem>();
-            if (undeploymentOptions.IsDestroyStatements())
+            if (undeploymentOptions.IsDestroyStatements)
             {
                 var referencedTypes = new HashSet<string>();
 

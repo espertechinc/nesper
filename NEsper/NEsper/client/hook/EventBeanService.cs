@@ -23,25 +23,26 @@ namespace com.espertech.esper.client.hook
         /// </summary>
         /// <param name="eventTypeName">to look up</param>
         /// <returns>event type or null if not found</returns>
-        EventType GetExistsTypeByName(string eventTypeName);
+        EventType GetEventTypeByName(string eventTypeName);
     
         /// <summary>
-        /// Construct an event bean for a given bean (Object, POJO) using the class of the object to determine the Bean-only event type (not for Map/Object-Array/Avro/XML events)
+        /// Construct an event bean for a given object using the class of the object to
+        /// determine the event type (not for Map/Object-Array/Avro/XML events)
         /// </summary>
         /// <param name="theEvent">event underlying</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForBean(Object theEvent);
+        EventBean AdapterForObject(Object theEvent);
     
         /// <summary>
-        /// Construct an event bean for a given bean (Object, POJO) and given the Bean-event-type
+        /// Construct an event bean for a given object and given the event-type
         /// </summary>
         /// <param name="bean">event underlying</param>
         /// <param name="eventType">event type (Bean only)</param>
         /// <returns>event bean</returns>
-        EventBean AdapterForTypedBean(Object bean, EventType eventType);
+        EventBean AdapterForTypedObject(Object bean, EventType eventType);
     
         /// <summary>
-        /// Construct an event bean for a given Avro GenericData.Record using the event type name to look up the Avro event type
+        /// Construct an event bean for a given Avro GenericRecord using the event type name to look up the Avro event type
         /// </summary>
         /// <param name="avroGenericDataDotRecord">event underlying</param>
         /// <param name="eventTypeName">name of the Avro event type</param>
@@ -49,7 +50,7 @@ namespace com.espertech.esper.client.hook
         EventBean AdapterForAvro(Object avroGenericDataDotRecord, string eventTypeName);
     
         /// <summary>
-        /// Construct an event bean for a given Avro GenericData.Record and given the Avro-event-type
+        /// Construct an event bean for a given Avro GenericRecord and given the Avro-event-type
         /// </summary>
         /// <param name="avroGenericDataDotRecord">event underlying</param>
         /// <param name="eventType">event type (Avro only)</param>
@@ -87,14 +88,32 @@ namespace com.espertech.esper.client.hook
         /// <param name="eventType">event type (Object-array only)</param>
         /// <returns>event bean</returns>
         EventBean AdapterForTypedObjectArray(Object[] props, EventType eventType);
-    
+
+        /// <summary>
+        /// Returns an adapter for the LINQ element that exposes it's data as event
+        /// properties for use in statements.
+        /// </summary>
+        /// <param name="element">is the element to wrap</param>
+        /// <returns>
+        /// event wrapper for document
+        /// </returns>
+        EventBean AdapterForDOM(XElement element);
+
         /// <summary>
         /// Construct an event bean for a given XML-DOM using the node root node name to look up the XML-DOM event type
         /// </summary>
         /// <param name="node">event underlying</param>
         /// <returns>event bean</returns>
         EventBean AdapterForDOM(XmlNode node);
-    
+
+        /// <summary>
+        /// Construct an event bean for a given Node and given the XML-event-type
+        /// </summary>
+        /// <param name="node">event underlying</param>
+        /// <param name="eventType">event type (XML only)</param>
+        /// <returns>event bean</returns>
+        EventBean AdapterForTypedDOM(XObject node, EventType eventType);
+        
         /// <summary>
         /// Construct an event bean for a given Node and given the XML-event-type
         /// </summary>
@@ -102,21 +121,6 @@ namespace com.espertech.esper.client.hook
         /// <param name="eventType">event type (XML only)</param>
         /// <returns>event bean</returns>
         EventBean AdapterForTypedDOM(XmlNode node, EventType eventType);
-
-        /// <summary>
-        /// Construct an event bean for a given XML-DOM using the node root node name to look up the XML-DOM event type
-        /// </summary>
-        /// <param name="node">event underlying</param>
-        /// <returns>event bean</returns>
-        EventBean AdapterForDOM(XNode node);
-
-        /// <summary>
-        /// Construct an event bean for a given Node and given the XML-event-type
-        /// </summary>
-        /// <param name="node">event underlying</param>
-        /// <param name="eventType">event type (XML only)</param>
-        /// <returns>event bean</returns>
-        EventBean AdapterForTypedDOM(XNode node, EventType eventType);
 
         /// <summary>
         /// Construct an event bean for a given object and event type, wherein it is assumed that the object matches the event type

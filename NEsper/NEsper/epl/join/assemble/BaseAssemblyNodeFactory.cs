@@ -142,7 +142,7 @@ namespace com.espertech.esper.epl.join.assemble
             // Done if none found
             if (nodesPerLevel.IsEmpty())
             {
-                throw new IllegalStateException("Empty collection for nodes per level");
+                throw new IllegalStateException("EmptyFalse collection for nodes per level");
             }
 
             // From the deepest (highest) level to the lowest, add aggregates to list

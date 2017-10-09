@@ -145,8 +145,9 @@ namespace com.espertech.esper.events.xml
                         "the underlying data object is not of type Node");
                 }
 
+                var value = node;
                 for (int i = 0; i < _domGetterChain.Length; i++) {
-                    XmlNode value = _domGetterChain[i].GetValueAsNode(node);
+                    value = _domGetterChain[i].GetValueAsNode(value);
                     if (value == null) {
                         return false;
                     }
@@ -155,9 +156,10 @@ namespace com.espertech.esper.events.xml
                 return true;
             }
 
+            XObject valueX = xnode;
             for (int i = 0; i < _domGetterChain.Length; i++) {
-                XObject value = _domGetterChain[i].GetValueAsNode(xnode);
-                if (value == null) {
+                valueX = _domGetterChain[i].GetValueAsNode(valueX);
+                if (valueX == null) {
                     return false;
                 }
             }
@@ -178,7 +180,7 @@ namespace com.espertech.esper.events.xml
 
                 var value = node;
                 for (int i = 0; i < _domGetterChain.Length - 1; i++) {
-                    value = _domGetterChain[i].GetValueAsNode(node);
+                    value = _domGetterChain[i].GetValueAsNode(value);
 
                     if (value == null) {
                         return false;
@@ -192,7 +194,7 @@ namespace com.espertech.esper.events.xml
                 XObject value = xnode;
                 for (int i = 0; i < _domGetterChain.Length - 1; i++)
                 {
-                    value = _domGetterChain[i].GetValueAsNode(xnode);
+                    value = _domGetterChain[i].GetValueAsNode(value);
                     if (value == null)
                     {
                         return false;

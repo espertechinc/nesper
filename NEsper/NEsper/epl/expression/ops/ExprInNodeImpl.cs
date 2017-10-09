@@ -73,7 +73,7 @@ namespace com.espertech.esper.epl.expression.ops
 
         public void ValidateWithoutContext()
         {
-            if (ChildNodes.Length < 2)
+            if (ChildNodes.Count < 2)
             {
                 throw new ExprValidationException("The IN operator requires at least 2 child expressions");
             }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.epl.expression.ops
             var comparedTypes = new List<Type> { typeOne };
             _hasCollectionOrArray = false;
 
-            var length = ChildNodes.Length - 1;
+            var length = ChildNodes.Count - 1;
             for (int i = 1; i <= length; i++)
             {
                 var propType = _evaluators[i].ReturnType;
@@ -191,7 +191,7 @@ namespace com.espertech.esper.epl.expression.ops
                     inPropResult = _coercer.Invoke(inPropResult);
                 }
 
-                int len = this.ChildNodes.Length - 1;
+                int len = this.ChildNodes.Count - 1;
                 if ((len > 0) && (inPropResult == null))
                 {
                     return null;
@@ -234,11 +234,12 @@ namespace com.espertech.esper.epl.expression.ops
             }
             else
             {
-                var len = ChildNodes.Length - 1;
+                var len = ChildNodes.Count - 1;
                 var hasNullRow = false;
+                var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
                 for (int i = 1; i <= len; i++)
                 {
-                    var rightResult = _evaluators[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                    var rightResult = _evaluators[i].Evaluate(evaluateParams);
                     if (_transformList[i] != null)
                         rightResult = _transformList[i](rightResult);
 

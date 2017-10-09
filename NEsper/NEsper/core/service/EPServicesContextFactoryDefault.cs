@@ -50,8 +50,6 @@ using com.espertech.esper.util;
 using com.espertech.esper.view;
 using com.espertech.esper.view.stream;
 
-using Sharpen;
-
 namespace com.espertech.esper.core.service
 {
     /// <summary>
@@ -59,7 +57,8 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class EPServicesContextFactoryDefault : EPServicesContextFactory
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         internal static ExceptionHandlingService InitExceptionHandling(
             string engineURI,
@@ -80,9 +79,8 @@ namespace com.espertech.esper.core.service
                 {
                     try
                     {
-                        var factory = (ExceptionHandlerFactory) TypeHelper.Instantiate(
-                            typeof (ExceptionHandlerFactory), className,
-                            engineImportService.ClassForNameProvider);
+                        var factory = TypeHelper.Instantiate<ExceptionHandlerFactory>(
+                            className, engineImportService.GetClassForNameProvider());
                         var handler = factory.GetHandler(context);
                         if (handler == null)
                         {
@@ -103,28 +101,41 @@ namespace com.espertech.esper.core.service
             }
 
             IList<ConditionHandler> conditionHandlers;
-            if (conditionHandling.HandlerFactories == null || conditionHandling.HandlerFactories.IsEmpty()) {
+            if (conditionHandling.HandlerFactories == null || conditionHandling.HandlerFactories.IsEmpty())
+            {
                 conditionHandlers = Collections.GetEmptyList<ConditionHandler>();
-            } else {
+            }
+            else
+            {
                 conditionHandlers = new List<ConditionHandler>();
                 var context = new ConditionHandlerFactoryContext(engineURI);
-                foreach (var className in conditionHandling.HandlerFactories) {
-                    try {
-                        var factory = (ConditionHandlerFactory) TypeHelper.Instantiate(typeof(ConditionHandlerFactory), className, engineImportService.ClassForNameProvider);
+                foreach (var className in conditionHandling.HandlerFactories)
+                {
+                    try
+                    {
+                        var factory = TypeHelper.Instantiate<ConditionHandlerFactory>(
+                            className, engineImportService.GetClassForNameProvider());
                         var handler = factory.GetHandler(context);
-                        if (handler == null) {
-                            Log.Warn("Condition handler factory '" + className + "' returned a null handler, skipping factory");
+                        if (handler == null)
+                        {
+                            Log.Warn(
+                                "Condition handler factory '" + className +
+                                "' returned a null handler, skipping factory");
                             continue;
                         }
                         conditionHandlers.Add(handler);
-                    } catch (Exception ex) {
-                        throw new ConfigurationException("Exception initializing exception handler from exception handler factory '" + className + "': " + ex.Message, ex);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ConfigurationException(
+                            "Exception initializing exception handler from exception handler factory '" + className +
+                            "': " + ex.Message, ex);
                     }
                 }
             }
             return new ExceptionHandlingService(engineURI, exceptionHandlers, conditionHandlers);
         }
-    
+
         /// <summary>
         /// Makes the time source provider.
         /// </summary>
@@ -132,9 +143,11 @@ namespace com.espertech.esper.core.service
         /// <returns>time source provider</returns>
         internal static TimeSourceService MakeTimeSource(ConfigurationInformation configSnapshot)
         {
-            if (configSnapshot.EngineDefaults.TimeSource.TimeSourceType == ConfigurationEngineDefaults.TimeSourceType.NANO) {
+            if (configSnapshot.EngineDefaults.TimeSource.TimeSourceType ==
+                ConfigurationEngineDefaults.TimeSourceType.NANO)
+            {
                 // this is a static variable to keep overhead down for getting a current time
-                TimeSourceServiceImpl.isSystemCurrentTime = false;
+                TimeSourceServiceImpl.IsSystemCurrentTime = false;
             }
             return new TimeSourceServiceImpl();
         }
@@ -269,7 +282,7 @@ namespace com.espertech.esper.core.service
             }
 
             // Add maps in dependency order such that supertypes are added before subtypes
-            ISet<string> dependentMapOrder;
+            ICollection<string> dependentMapOrder;
             try
             {
                 var typesReferences = ToTypesReferences(configSnapshot.MapTypeConfigurations);
@@ -316,7 +329,7 @@ namespace com.espertech.esper.core.service
             }
 
             // Add object-array in dependency order such that supertypes are added before subtypes
-            ISet<string> dependentObjectArrayOrder;
+            ICollection<string> dependentObjectArrayOrder;
             try
             {
                 var typesReferences = ToTypesReferences(configSnapshot.ObjectArrayTypeConfigurations);
@@ -431,10 +444,11 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        private static IDictionary<string, ICollection<string>> ToTypesReferences<T>(IDictionary<string, T> mapTypeConfigurations)
+        private static IDictionary<string, ICollection<string>> ToTypesReferences<T>(
+            IDictionary<string, T> mapTypeConfigurations)
             where T : ConfigurationEventTypeWithSupertype
         {
-            var result = new LinkedHashMap<string, ICollection<string>>();
+            var result = new Dictionary<string, ICollection<string>>();
             foreach (var entry in mapTypeConfigurations)
             {
                 result[entry.Key] = entry.Value.SuperTypes;
@@ -533,15 +547,19 @@ namespace com.espertech.esper.core.service
             EngineImportService engineImportService)
         {
             DatabaseConfigService databaseConfigService;
-    
+
             // Add auto-imports
-            try {
+            try
+            {
                 var allStatementsBucket = schedulingMgmtService.AllocateBucket();
-                databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.DatabaseReferences, schedulingService, allStatementsBucket, engineImportService);
-            } catch (ArgumentException ex) {
+                databaseConfigService = new DatabaseConfigServiceImpl(
+                    configSnapshot.DatabaseReferences, schedulingService, allStatementsBucket, engineImportService);
+            }
+            catch (ArgumentException ex)
+            {
                 throw new ConfigurationException("Error configuring engine: " + ex.Message, ex);
             }
-    
+
             return databaseConfigService;
         }
 
@@ -549,7 +567,7 @@ namespace com.espertech.esper.core.service
             Properties properties,
             EngineImportService engineImportService)
         {
-            var propertyTypes = new LinkedHashMap<string, Object>();
+            var propertyTypes = new Dictionary<string, Object>();
             foreach (var entry in properties)
             {
                 var property = entry.Key;
@@ -567,7 +585,7 @@ namespace com.espertech.esper.core.service
             IDictionary<string, Object> properties,
             EngineImportService engineImportService)
         {
-            var propertyTypes = new LinkedHashMap<string, Object>();
+            var propertyTypes = new Dictionary<string, Object>();
             foreach (var entry in properties)
             {
                 var property = entry.Key;
@@ -589,84 +607,121 @@ namespace com.espertech.esper.core.service
         private static Type ResolveClassForTypeName(string type, EngineImportService engineImportService)
         {
             var isArray = false;
-            if (type != null && EventTypeUtility.IsPropertyArray(type)) {
+            if (type != null && EventTypeUtility.IsPropertyArray(type))
+            {
                 isArray = true;
                 type = EventTypeUtility.GetPropertyRemoveArray(type);
             }
-    
-            if (type == null) {
+
+            if (type == null)
+            {
                 throw new ConfigurationException("A null value has been provided for the type");
             }
-            Type clazz = TypeHelper.GetTypeForSimpleName(type, engineImportService.ClassForNameProvider);
-            if (clazz == null) {
+            Type clazz = TypeHelper.GetTypeForSimpleName(type);
+            if (clazz == null)
+            {
                 throw new ConfigurationException("The type '" + type + "' is not a recognized type");
             }
-    
-            if (isArray) {
+
+            if (isArray)
+            {
                 clazz = Array.CreateInstance(clazz, 0).GetType();
             }
             return clazz;
         }
-    
-        public EPServicesContext CreateServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configSnapshot)
+
+        public EPServicesContext CreateServicesContext(
+            EPServiceProvider epServiceProvider,
+            ConfigurationInformation configSnapshot)
         {
             // Directory for binding resources
             var resourceDirectory = new SimpleServiceDirectory();
-    
+
             // Engine import service
             var engineImportService = MakeEngineImportService(configSnapshot, AggregationFactoryFactoryDefault.INSTANCE);
-    
+
             // Event Type Id Generation
             EventTypeIdGenerator eventTypeIdGenerator;
-            if (configSnapshot.EngineDefaults.AlternativeContext == null || configSnapshot.EngineDefaults.AlternativeContext.EventTypeIdGeneratorFactory == null) {
+            if (configSnapshot.EngineDefaults.AlternativeContext == null ||
+                configSnapshot.EngineDefaults.AlternativeContext.EventTypeIdGeneratorFactory == null)
+            {
                 eventTypeIdGenerator = new EventTypeIdGeneratorImpl();
-            } else {
-                var eventTypeIdGeneratorFactory = (EventTypeIdGeneratorFactory) TypeHelper.Instantiate(typeof(EventTypeIdGeneratorFactory), configSnapshot.EngineDefaults.AlternativeContext.EventTypeIdGeneratorFactory, engineImportService.ClassForNameProvider);
-                eventTypeIdGenerator = eventTypeIdGeneratorFactory.Create(new EventTypeIdGeneratorContext(epServiceProvider.URI));
             }
-    
+            else
+            {
+                var eventTypeIdGeneratorFactory = TypeHelper.Instantiate<EventTypeIdGeneratorFactory>(
+                    configSnapshot.EngineDefaults.AlternativeContext.EventTypeIdGeneratorFactory,
+                    engineImportService.GetClassForNameProvider());
+                eventTypeIdGenerator = eventTypeIdGeneratorFactory.Create(
+                    new EventTypeIdGeneratorContext(epServiceProvider.URI));
+            }
+
             // Make services that depend on snapshot config entries
             EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
-            if (configSnapshot.EngineDefaults.EventMeta.AvroSettings.IsEnableAvro) {
-                try {
-                    avroHandler = (EventAdapterAvroHandler) TypeHelper.Instantiate(typeof(EventAdapterAvroHandler), EventAdapterAvroHandler.HANDLER_IMPL, engineImportService.ClassForNameProvider);
-                } catch (Exception e) {
-                    Log.Debug("Avro provider {} not instantiated, not enabling Avro support: {}", EventAdapterAvroHandler.HANDLER_IMPL, e.Message);
+            if (configSnapshot.EngineDefaults.EventMeta.AvroSettings.IsEnableAvro)
+            {
+                try
+                {
+                    avroHandler = TypeHelper.Instantiate<EventAdapterAvroHandler>(
+                        EventAdapterAvroHandlerConstants.HANDLER_IMPL, engineImportService.GetClassForNameProvider());
                 }
-                try {
+                catch (Exception e)
+                {
+                    Log.Debug(
+                        "Avro provider {0} not instantiated, not enabling Avro support: {1}",
+                        EventAdapterAvroHandlerConstants.HANDLER_IMPL, e.Message);
+                }
+                try
+                {
                     avroHandler.Init(configSnapshot.EngineDefaults.EventMeta.AvroSettings, engineImportService);
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     throw new ConfigurationException("Failed to initialize Esper-Avro: " + e.Message, e);
                 }
             }
-            var eventAdapterService = new EventAdapterServiceImpl(eventTypeIdGenerator, configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize, avroHandler, engineImportService);
+            var eventAdapterService = new EventAdapterServiceImpl(
+                eventTypeIdGenerator, configSnapshot.EngineDefaults.EventMeta.AnonymousCacheSize, avroHandler,
+                engineImportService);
             Init(eventAdapterService, configSnapshot, engineImportService);
-    
+
             // New read-write lock for concurrent event processing
             var eventProcessingRwLock = ReaderWriterLockManager.CreateLock(
                 MethodBase.GetCurrentMethod().DeclaringType);
-    
+
             var timeSourceService = MakeTimeSource(configSnapshot);
             var schedulingService = SchedulingServiceProvider.NewService(timeSourceService);
             var schedulingMgmtService = new SchedulingMgmtServiceImpl();
-            var engineSettingsService = new EngineSettingsService(configSnapshot.EngineDefaults, configSnapshot.PlugInEventTypeResolutionURIs);
-            var databaseConfigService = MakeDatabaseRefService(configSnapshot, schedulingService, schedulingMgmtService, engineImportService);
-    
+            var engineSettingsService = new EngineSettingsService(
+                configSnapshot.EngineDefaults, configSnapshot.PlugInEventTypeResolutionURIs);
+            var databaseConfigService = MakeDatabaseRefService(
+                configSnapshot, schedulingService, schedulingMgmtService, engineImportService);
+
             var plugInViews = new PluggableObjectCollection();
-            plugInViews.AddViews(configSnapshot.PlugInViews, configSnapshot.PlugInVirtualDataWindows, engineImportService);
+            plugInViews.AddViews(
+                configSnapshot.PlugInViews, configSnapshot.PlugInVirtualDataWindows, engineImportService);
             var plugInPatternObj = new PluggableObjectCollection();
             plugInPatternObj.AddPatternObjects(configSnapshot.PlugInPatternObjects, engineImportService);
-    
+
             // exception handling
-            var exceptionHandlingService = InitExceptionHandling(epServiceProvider.URI, configSnapshot.EngineDefaults.ExceptionHandling, configSnapshot.EngineDefaults.ConditionHandling, engineImportService);
-    
+            var exceptionHandlingService = InitExceptionHandling(
+                epServiceProvider.URI, configSnapshot.EngineDefaults.ExceptionHandling,
+                configSnapshot.EngineDefaults.ConditionHandling, engineImportService);
+
             // Statement context factory
             Type systemVirtualDWViewFactory = null;
-            if (configSnapshot.EngineDefaults.AlternativeContext.VirtualDataWindowViewFactory != null) {
-                try {
-                    systemVirtualDWViewFactory = engineImportService.ClassForNameProvider.ClassForName(configSnapshot.EngineDefaults.AlternativeContext.VirtualDataWindowViewFactory);
-                    if (!TypeHelper.IsImplementsInterface(systemVirtualDWViewFactory, typeof(VirtualDataWindowFactory))) {
-                        throw new ConfigurationException("Type " + systemVirtualDWViewFactory.Name + " does not implement the interface " + typeof(VirtualDataWindowFactory).Name);
+            if (configSnapshot.EngineDefaults.AlternativeContext.VirtualDataWindowViewFactory != null)
+            {
+                try
+                {
+                    systemVirtualDWViewFactory =
+                        engineImportService.GetClassForNameProvider()
+                            .ClassForName(configSnapshot.EngineDefaults.AlternativeContext.VirtualDataWindowViewFactory);
+                    if (!TypeHelper.IsImplementsInterface(systemVirtualDWViewFactory, typeof (VirtualDataWindowFactory)))
+                    {
+                        throw new ConfigurationException(
+                            "Type " + systemVirtualDWViewFactory.Name + " does not implement the interface " +
+                            typeof (VirtualDataWindowFactory).Name);
                     }
                 }
                 catch (TypeLoadException e)
@@ -674,58 +729,88 @@ namespace com.espertech.esper.core.service
                     throw new ConfigurationException("Failed to look up class " + systemVirtualDWViewFactory);
                 }
             }
-            var statementContextFactory = new StatementContextFactoryDefault(plugInViews, plugInPatternObj, systemVirtualDWViewFactory);
-    
+            var statementContextFactory = new StatementContextFactoryDefault(
+                plugInViews, plugInPatternObj, systemVirtualDWViewFactory);
+
             var msecTimerResolution = configSnapshot.EngineDefaults.Threading.InternalTimerMsecResolution;
-            if (msecTimerResolution <= 0) {
-                throw new ConfigurationException("Timer resolution configuration not set to a valid value, expecting a non-zero value");
+            if (msecTimerResolution <= 0)
+            {
+                throw new ConfigurationException(
+                    "Timer resolution configuration not set to a valid value, expecting a non-zero value");
             }
             var timerService = new TimerServiceImpl(epServiceProvider.URI, msecTimerResolution);
-    
-            var variableService = new VariableServiceImpl(configSnapshot.EngineDefaults.Variables.MsecVersionRelease, schedulingService, eventAdapterService, null);
+
+            var variableService = new VariableServiceImpl(
+                configSnapshot.EngineDefaults.Variables.MsecVersionRelease, schedulingService, eventAdapterService, null);
             InitVariables(variableService, configSnapshot.Variables, engineImportService);
-    
+
             var tableService = new TableServiceImpl();
-    
-            var statementLockFactory = new StatementLockFactoryImpl(configSnapshot.EngineDefaults.Execution.IsFairlock, configSnapshot.EngineDefaults.Execution.IsDisableLocking);
-            var streamFactoryService = StreamFactoryServiceProvider.NewService(epServiceProvider.URI, configSnapshot.EngineDefaults.ViewResources.IsShareViews);
-            var filterService = FilterServiceProvider.NewService(configSnapshot.EngineDefaults.Execution.FilterServiceProfile, configSnapshot.EngineDefaults.Execution.IsAllowIsolatedService);
-            var metricsReporting = new MetricReportingServiceImpl(configSnapshot.EngineDefaults.MetricsReporting, epServiceProvider.URI);
-            var namedWindowMgmtService = new NamedWindowMgmtServiceImpl(configSnapshot.EngineDefaults.Logging.IsEnableQueryPlan, metricsReporting);
-            var namedWindowDispatchService = new NamedWindowDispatchServiceImpl(schedulingService, variableService, tableService, engineSettingsService.EngineSettings.Execution.IsPrioritized, eventProcessingRwLock, exceptionHandlingService, metricsReporting);
-    
+
+            var statementLockFactory = new StatementLockFactoryImpl(
+                configSnapshot.EngineDefaults.Execution.IsFairlock,
+                configSnapshot.EngineDefaults.Execution.IsDisableLocking);
+            var streamFactoryService = StreamFactoryServiceProvider.NewService(
+                epServiceProvider.URI, configSnapshot.EngineDefaults.ViewResources.IsShareViews);
+            var filterService =
+                FilterServiceProvider.NewService(
+                    configSnapshot.EngineDefaults.Execution.FilterServiceProfile,
+                    configSnapshot.EngineDefaults.Execution.IsAllowIsolatedService);
+            var metricsReporting = new MetricReportingServiceImpl(
+                configSnapshot.EngineDefaults.MetricsReporting, epServiceProvider.URI);
+            var namedWindowMgmtService =
+                new NamedWindowMgmtServiceImpl(
+                    configSnapshot.EngineDefaults.Logging.IsEnableQueryPlan, metricsReporting);
+            var namedWindowDispatchService = new NamedWindowDispatchServiceImpl(
+                schedulingService, variableService, tableService,
+                engineSettingsService.EngineSettings.Execution.IsPrioritized, eventProcessingRwLock,
+                exceptionHandlingService, metricsReporting);
+
             var valueAddEventService = new ValueAddEventServiceImpl();
-            valueAddEventService.Init(configSnapshot.RevisionEventTypes, configSnapshot.VariantStreams, eventAdapterService, eventTypeIdGenerator);
-    
+            valueAddEventService.Init(
+                configSnapshot.RevisionEventTypes, configSnapshot.VariantStreams, eventAdapterService,
+                eventTypeIdGenerator);
+
             var statementEventTypeRef = new StatementEventTypeRefImpl();
-            var statementVariableRef = new StatementVariableRefImpl(variableService, tableService, namedWindowMgmtService);
-    
+            var statementVariableRef = new StatementVariableRefImpl(
+                variableService, tableService, namedWindowMgmtService);
+
             var threadingService = new ThreadingServiceImpl(configSnapshot.EngineDefaults.Threading);
-    
+
             var internalEventRouterImpl = new InternalEventRouterImpl(epServiceProvider.URI);
-    
+
             var statementIsolationService = new StatementIsolationServiceImpl();
-    
+
             var deploymentStateService = new DeploymentStateServiceImpl();
-    
+
             StatementMetadataFactory stmtMetadataFactory;
-            if (configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory == null) {
+            if (configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory == null)
+            {
                 stmtMetadataFactory = new StatementMetadataFactoryDefault();
-            } else {
-                stmtMetadataFactory = (StatementMetadataFactory) TypeHelper.Instantiate(typeof(StatementMetadataFactory), configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory, engineImportService.ClassForNameProvider);
             }
-    
+            else
+            {
+                stmtMetadataFactory = (StatementMetadataFactory) TypeHelper.Instantiate<StatementMetadataFactory>(
+                    configSnapshot.EngineDefaults.AlternativeContext.StatementMetadataFactory,
+                    engineImportService.GetClassForNameProvider());
+            }
+
             var contextManagementService = new ContextManagementServiceImpl();
-    
+
             PatternSubexpressionPoolEngineSvc patternSubexpressionPoolSvc = null;
-            if (configSnapshot.EngineDefaults.Patterns.MaxSubexpressions != null) {
-                patternSubexpressionPoolSvc = new PatternSubexpressionPoolEngineSvc(configSnapshot.EngineDefaults.Patterns.MaxSubexpressions,
+            if (configSnapshot.EngineDefaults.Patterns.MaxSubexpressions != null)
+            {
+                patternSubexpressionPoolSvc =
+                    new PatternSubexpressionPoolEngineSvc(
+                        configSnapshot.EngineDefaults.Patterns.MaxSubexpressions.Value,
                         configSnapshot.EngineDefaults.Patterns.IsMaxSubexpressionPreventStart);
             }
-    
+
             MatchRecognizeStatePoolEngineSvc matchRecognizeStatePoolEngineSvc = null;
-            if (configSnapshot.EngineDefaults.MatchRecognize.MaxStates != null) {
-                matchRecognizeStatePoolEngineSvc = new MatchRecognizeStatePoolEngineSvc(configSnapshot.EngineDefaults.MatchRecognize.MaxStates,
+            if (configSnapshot.EngineDefaults.MatchRecognize.MaxStates != null)
+            {
+                matchRecognizeStatePoolEngineSvc =
+                    new MatchRecognizeStatePoolEngineSvc(
+                        configSnapshot.EngineDefaults.MatchRecognize.MaxStates.Value,
                         configSnapshot.EngineDefaults.MatchRecognize.IsMaxStatesPreventStart);
             }
 
@@ -746,40 +831,41 @@ namespace com.espertech.esper.core.service
                 new PatternNodeFactoryImpl(), eventTypeIdGenerator,
                 stmtMetadataFactory,
                 contextManagementService, patternSubexpressionPoolSvc, matchRecognizeStatePoolEngineSvc,
-                new DataFlowServiceImpl(epServiceProvider, 
-                new DataFlowConfigurationStateServiceImpl()),
+                new DataFlowServiceImpl(
+                    epServiceProvider,
+                    new DataFlowConfigurationStateServiceImpl()),
                 new ExprDeclaredServiceImpl(),
                 new ContextControllerFactoryFactorySvcImpl(),
                 new ContextManagerFactoryServiceImpl(),
-                new EPStatementFactoryDefault(), 
+                new EPStatementFactoryDefault(),
                 new RegexHandlerFactoryDefault(),
                 new ViewableActivatorFactoryDefault(),
-                new FilterNonPropertyRegisteryServiceImpl(), 
+                new FilterNonPropertyRegisteryServiceImpl(),
                 new ResultSetProcessorHelperFactoryImpl(),
                 new ViewServicePreviousFactoryImpl(),
                 new EventTableIndexServiceImpl(),
                 new EPRuntimeIsolatedFactoryImpl(),
                 new FilterBooleanExpressionFactoryImpl(),
-                new DataCacheFactory(), 
+                new DataCacheFactory(),
                 new MultiMatchHandlerFactoryImpl(),
                 NamedWindowConsumerMgmtServiceImpl.INSTANCE,
                 AggregationFactoryFactoryDefault.INSTANCE,
                 scriptingService
-            );
-    
+                );
+
             // Engine services subset available to statements
             statementContextFactory.StmtEngineServices = services;
-    
+
             // Circular dependency
             var statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
             services.StatementLifecycleSvc = statementLifecycleSvc;
 
             // Observers to statement events
             statementLifecycleSvc.LifecycleEvent += (s, theEvent) => metricsReporting.Observe(theEvent);
-    
+
             // Circular dependency
             statementIsolationService.SetEpServicesContext(services);
-    
+
             return services;
         }
     }

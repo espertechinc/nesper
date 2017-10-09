@@ -40,7 +40,7 @@ namespace com.espertech.esper.view.window
         // View parameters
         private readonly TimeAccumViewFactory _factory;
         // Current running parameters
-        private readonly LinkedHashMap<EventBean, long> _currentBatch = new LinkedHashMap<EventBean, long>();
+        private readonly Dictionary<EventBean, long> _currentBatch = new Dictionary<EventBean, long>();
         private EventBean _lastEvent;
         private long _callbackScheduledTime;
         private readonly EPStatementHandleCallback _handle;

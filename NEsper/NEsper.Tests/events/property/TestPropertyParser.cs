@@ -11,7 +11,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 

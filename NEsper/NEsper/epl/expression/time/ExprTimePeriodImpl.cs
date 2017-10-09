@@ -108,7 +108,7 @@ namespace com.espertech.esper.epl.expression.time
                 {
                     values[i] = _evaluators[i].Evaluate(evaluateParams).AsInt();
                 }
-                return new ExprTimePeriodEvalDeltaConstGivenCalAdd(_adders, values, _timeZone, _timeAbacus);
+                return new ExprTimePeriodEvalDeltaConstGivenDtxAdd(_adders, values, _timeZone, _timeAbacus);
             }
         }
 
@@ -120,7 +120,7 @@ namespace com.espertech.esper.epl.expression.time
             }
             else
             {
-                return new ExprTimePeriodEvalDeltaNonConstDateTimeAdd(_timeZone, this);
+                return new ExprTimePeriodEvalDeltaNonConstDtxAdd(_timeZone, this);
             }
         }
 

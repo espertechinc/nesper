@@ -12,9 +12,8 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.events;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;

@@ -146,7 +146,7 @@ namespace com.espertech.esper.compat.threading
 
         public IDisposable Acquire(long msec)
         {
-            InternalAcquire(msec);
+            InternalAcquire((int) msec);
             return new TrackedDisposable(InternalRelease);
         }
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.compat.threading
         /// <returns></returns>
         public IDisposable Acquire(bool releaseLock, long? msec = null)
         {
-            InternalAcquire(msec ?? _uLockTimeout);
+            InternalAcquire((int) (msec ?? _uLockTimeout));
             if (releaseLock)
                 return new TrackedDisposable(InternalRelease);
             return new VoidDisposable();

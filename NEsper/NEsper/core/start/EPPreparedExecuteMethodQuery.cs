@@ -65,7 +65,7 @@ namespace com.espertech.esper.core.start
             EPServicesContext services,
             StatementContext statementContext)
         {
-            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.LoggingConfig.IsEnableQueryPlan;
+            var queryPlanLogging = services.ConfigSnapshot.EngineDefaults.Logging.IsEnableQueryPlan;
             if (queryPlanLogging)
             {
                 QueryPlanLog.Info("Query plans for Fire-and-forget query '" + statementContext.Expression + "'");
@@ -138,7 +138,7 @@ namespace com.espertech.esper.core.start
             {
                 if (_resultSetProcessor.ResultEventType is EventTypeSPI)
                 {
-                    _eventBeanReader = ((EventTypeSPI)_resultSetProcessor.ResultEventType).GetReader();
+                    _eventBeanReader = ((EventTypeSPI)_resultSetProcessor.ResultEventType).Reader;
                 }
                 if (_eventBeanReader == null)
                 {
@@ -400,7 +400,7 @@ namespace com.espertech.esper.core.start
         {
             var deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count + 1, 16));
             var visitable = snapshot as IVisitable<EventBean>;
-            ExprNodeUtility.ApplyFilterExpressions(snapshot, filterExpressions, _agentInstanceContext, deque);
+            ExprNodeUtility.ApplyFilterExpressionsIterable(snapshot, filterExpressions, _agentInstanceContext, deque);
             return deque;
         }
 

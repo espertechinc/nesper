@@ -35,13 +35,13 @@ namespace com.espertech.esper.epl.join.@base
             ExprEvaluatorContext exprEvaluatorContext)
         {
             _eventsPerStream[_lookupStream] = lookupEvent;
-            ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
+            var result = InKeywordTableLookupUtil.MultiIndexLookup(
                 _evaluator, _eventsPerStream, exprEvaluatorContext, indexTable);
             if (result == null)
             {
                 return null;
             }
-            return Result.GetEnumerator();
+            return result.GetEnumerator();
         }
 
         public string ToQueryPlan()

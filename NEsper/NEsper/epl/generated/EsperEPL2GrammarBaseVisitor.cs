@@ -19,6 +19,7 @@
 // Ambiguous reference in cref attribute
 #pragma warning disable 419
 
+namespace com.espertech.esper.epl.generated {
 
   using System;
   using System.Collections.Generic;
@@ -2769,3 +2770,4 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitJsonpair([NotNull] EsperEPL2GrammarParser.JsonpairContext context) { return VisitChildren(context); }
 }
+} // namespace com.espertech.esper.epl.generated

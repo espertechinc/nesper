@@ -22,7 +22,6 @@ namespace com.espertech.esper.epl.datetime.interval
 {
     public class IntervalOpImpl : IntervalOp
     {
-
         private readonly ExprEvaluator _evaluatorTimestamp;
 
         private readonly int _parameterStreamNum;
@@ -36,7 +35,7 @@ namespace com.espertech.esper.epl.datetime.interval
             String methodNameUse,
             StreamTypeService streamTypeService,
             IList<ExprNode> expressions,
-            TimeZone timeZone,
+            TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
             ExprEvaluator evaluatorEndTimestamp = null;
@@ -222,15 +221,15 @@ namespace com.espertech.esper.epl.datetime.interval
                     _parameterStreamNum, _parameterPropertyStart, _parameterPropertyEnd);
         }
 
-        public Object Evaluate(long startTs, long endTs, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public object Evaluate(long startTs, long endTs, EvaluateParams evaluateParams)
         {
-            Object parameter = _evaluatorTimestamp.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+            var parameter = _evaluatorTimestamp.Evaluate(evaluateParams);
             if (parameter == null)
             {
                 return parameter;
             }
 
-            return _intervalOpEval.Evaluate(startTs, endTs, parameter, eventsPerStream, isNewData, context);
+            return _intervalOpEval.Evaluate(startTs, endTs, parameter, evaluateParams.EventsPerStream, evaluateParams.IsNewData, evaluateParams.ExprEvaluatorContext);
         }
 
         public interface IntervalOpEval

@@ -12,8 +12,9 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -42,8 +43,9 @@ namespace com.espertech.esper.events.arr
             }
     
             _testValues = new Object[] {"test", 10, _supportBean};
-    
-            _eventType = new ObjectArrayEventType(null, "", 1, SupportEventAdapterService.Service, typeRep, null, null, null);
+
+            EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.OBJECTARR, "testtype", true, true, true, false, false);
+            _eventType = new ObjectArrayEventType(metadata, "", 1, SupportEventAdapterService.Service, typeRep, null, null, null); 
             _eventBean = new ObjectArrayEventBean(_testValues, _eventType);
         }
     

@@ -10,45 +10,49 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client.hook;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.script
 {
     /// <summary>Context-partition local script context.</summary>
-    public class AgentInstanceScriptContext : EPLScriptContext {
-    
-        private readonly EventBeanService eventBeanService;
-        private IDictionary<string, Object> scriptProperties;
-    
-        private AgentInstanceScriptContext(EventBeanService eventBeanService) {
-            this.eventBeanService = eventBeanService;
+    public class AgentInstanceScriptContext : EPLScriptContext
+    {
+        private readonly EventBeanService _eventBeanService;
+        private IDictionary<string, Object> _scriptProperties;
+
+        private AgentInstanceScriptContext(EventBeanService eventBeanService)
+        {
+            _eventBeanService = eventBeanService;
         }
-    
-        public static AgentInstanceScriptContext From(EventAdapterService eventAdapterService) {
+
+        public static AgentInstanceScriptContext From(EventAdapterService eventAdapterService)
+        {
             return new AgentInstanceScriptContext(eventAdapterService);
         }
 
         public EventBeanService EventBeanService
         {
-            get { return eventBeanService; }
+            get { return _eventBeanService; }
         }
 
-        public void SetScriptAttribute(string attribute, Object value) {
+        public void SetScriptAttribute(string attribute, Object value)
+        {
             AllocateScriptProperties();
-            scriptProperties.Put(attribute, value);
+            _scriptProperties.Put(attribute, value);
         }
-    
-        public Object GetScriptAttribute(string attribute) {
+
+        public Object GetScriptAttribute(string attribute)
+        {
             AllocateScriptProperties();
-            return ScriptProperties.Get(attribute);
+            return _scriptProperties.Get(attribute);
         }
-    
-        private void AllocateScriptProperties() {
-            if (scriptProperties == null) {
-                scriptProperties = new HashMap<>();
+
+        private void AllocateScriptProperties()
+        {
+            if (_scriptProperties == null)
+            {
+                _scriptProperties = new Dictionary<string, object>();
             }
         }
     }

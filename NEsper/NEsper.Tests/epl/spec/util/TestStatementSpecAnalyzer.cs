@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.spec.util
         public void SetUp()
         {
             var config = new Configuration();
-            config.EngineDefaults.ThreadingConfig.IsInternalTimerEnabled = false;
+            config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
             _engine = EPServiceProviderManager.GetDefaultProvider(config);
         }
     
@@ -34,8 +34,8 @@ namespace com.espertech.esper.epl.spec.util
             _engine.EPAdministrator.CreateEPL("create schema A1 as (col1 string)");
     
             Assert.AreEqual(1, GetFilters("select * from A1").Count);
-            Assert.AreEqual(2, GetFilters("select * from A1.std:lastevent(), A1.std:lastevent()").Count);
-            Assert.AreEqual(2, GetFilters("select (select col1 from A1.std:lastevent()), col1 from A1.std:lastevent()").Count);
+            Assert.AreEqual(2, GetFilters("select * from A1#std:lastevent(), A1#std:lastevent()").Count);
+            Assert.AreEqual(2, GetFilters("select (select col1 from A1#std:lastevent()), col1 from A1#std:lastevent()").Count);
             Assert.AreEqual(2, GetFilters("select * from pattern [A1 -> A1(col1='a')]").Count);
         }
     

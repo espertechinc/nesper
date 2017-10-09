@@ -108,7 +108,7 @@ namespace com.espertech.esper.view.ext
 
         public string ViewName
         {
-            get { return "TimeInMillis-Order"; }
+            get { return "Time-Order"; }
         }
 
         public ExprEvaluator TimestampExpressionEvaluator

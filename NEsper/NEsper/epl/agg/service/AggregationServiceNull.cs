@@ -43,39 +43,22 @@ namespace com.espertech.esper.epl.agg.service
         {
         }
 
-        public Object GetValue(
-            int column,
-            int agentInstanceId,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+        public object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public ICollection<EventBean> GetCollectionOfEvents(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public ICollection<Object> GetCollectionScalar(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams)
         {
             return null;
         }
 
-        public EventBean GetEventBean(
-            int column,
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
+        public EventBean GetEventBean(int column, EvaluateParams evaluateParams)
         {
             return null;
         }

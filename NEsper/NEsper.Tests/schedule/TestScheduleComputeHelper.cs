@@ -12,6 +12,7 @@ using System.Threading;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.type;
 
 using NUnit.Framework;
@@ -281,7 +282,7 @@ namespace com.espertech.esper.schedule
             spec.AddValue(ScheduleUnit.HOURS, 7);
             spec.AddValue(ScheduleUnit.MINUTES, 0);
             spec.AddValue(ScheduleUnit.SECONDS, 0);
-            spec.OptionalTimeZone = "Central Standard TimeInMillis";
+            spec.OptionalTimeZone = "Central Standard Time";
     
             CheckCorrectWZone(spec, "2008-02-01 06:00:00.000GMT-10:00", "2008-02-02 03:00:00.000GMT-10:00");
             CheckCorrectWZone(spec, "2008-02-01 06:00:00.000GMT-9:00", "2008-02-02 04:00:00.000GMT-9:00");
@@ -295,7 +296,7 @@ namespace com.espertech.esper.schedule
             spec = new ScheduleSpec();
             spec.AddValue(ScheduleUnit.HOURS, 7);
             spec.AddValue(ScheduleUnit.SECONDS, 0);
-            spec.OptionalTimeZone = "Eastern Standard TimeInMillis";
+            spec.OptionalTimeZone = "Eastern Standard Time";
     
             CheckCorrectWZone(spec, "2008-02-01 06:00:00.000GMT-7:00", "2008-02-02 05:00:00.000GMT-7:00");
             CheckCorrectWZone(spec, "2008-02-01 06:00:00.000GMT-6:00", "2008-02-01 06:01:00.000GMT-6:00");
@@ -309,7 +310,7 @@ namespace com.espertech.esper.schedule
             var nowDate = DateTimeOffset.ParseExact(now, "yyyy-MM-d H:mm:ss", provider);
             var expectedDate = DateTimeOffset.ParseExact(expected, "yyyy-MM-d H:mm:ss", provider);
 
-            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate.TimeInMillis(), TimeZoneInfo.Local);
+            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate.TimeInMillis(), TimeZoneInfo.Local, TimeAbacusMilliseconds.INSTANCE);
             var resultDate = result.TimeFromMillis(expectedDate.Offset);
             if (resultDate != expectedDate)
             {
@@ -323,11 +324,15 @@ namespace com.espertech.esper.schedule
     
         public void CheckCorrectWZone(ScheduleSpec spec, String nowWZone, String expectedWZone)
         {
-            var nowDate = DateTimeParser.ParseDefaultMSecWZone(nowWZone);
-            var nowDateJava = DateTimeOffsetHelper.MillisToJavaMillis(nowDate);
-            var expectedDate = DateTimeParser.ParseDefaultMSecWZone(expectedWZone);
+            var nowDateEx = DateTimeParser.ParseDefaultExWZone(nowWZone);
+            var nowDate = nowDateEx.TimeInMillis;
+            //var nowDateJava = DateTimeOffsetHelper.MillisToJavaMillis(nowDate);
 
-            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate, TimeZoneInfo.Local);
+            var expectedDateEx = DateTimeParser.ParseDefaultExWZone(expectedWZone);
+            var expectedDate = expectedDateEx.TimeInMillis;
+
+            var result = ScheduleComputeHelper.ComputeNextOccurance(spec, nowDate, nowDateEx.TimeZone, TimeAbacusMilliseconds.INSTANCE);
+            var resultEx = DateTimeEx.GetInstance(expectedDateEx.TimeZone, result);
 
             var resultDate = result.TimeFromMillis(null);
 

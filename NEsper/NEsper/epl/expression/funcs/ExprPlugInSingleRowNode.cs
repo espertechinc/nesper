@@ -90,7 +90,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 }
                 if (eligible)
                 {
-                    eligible = _config.FilterOptimizable == FilterOptimizable.ENABLED;
+                    eligible = _config.FilterOptimizable == FilterOptimizableEnum.ENABLED;
                 }
                 if (eligible)
                 {
@@ -160,7 +160,7 @@ namespace com.espertech.esper.epl.expression.funcs
 
             // get first chain item
             var chainList = new List<ExprChainedSpec>(_chainSpec);
-            var firstItem = chainList.Delete(0);
+            var firstItem = chainList.DeleteAt(0);
 
             // Get the types of the parameters for the first invocation
             var allowWildcard = validationContext.StreamTypeService.EventTypes.Length == 1;
@@ -179,15 +179,15 @@ namespace com.espertech.esper.epl.expression.funcs
             var allowValueCache = true;
             switch (_config.ValueCache)
             {
-                case ConfigurationPlugInSingleRowFunction.ValueCache.DISABLED:
+                case ValueCacheEnum.DISABLED:
                     _isReturnsConstantResult = false;
                     allowValueCache = false;
                     break;
-                case ConfigurationPlugInSingleRowFunction.ValueCache.CONFIGURED:
+                case ValueCacheEnum.CONFIGURED:
                     _isReturnsConstantResult = validationContext.EngineImportService.IsUdfCache && staticMethodDesc.IsAllConstants && chainList.IsEmpty();
                     allowValueCache = validationContext.EngineImportService.IsUdfCache;
                     break;
-                case ConfigurationPlugInSingleRowFunction.ValueCache.ENABLED:
+                case ValueCacheEnum.ENABLED:
                     _isReturnsConstantResult = staticMethodDesc.IsAllConstants && chainList.IsEmpty();
                     break;
                 default:
@@ -204,7 +204,7 @@ namespace com.espertech.esper.epl.expression.funcs
             _evaluator = new ExprDotEvalStaticMethod(
                 validationContext.StatementName, _clazz.FullName, staticMethodDesc.FastMethod,
                 staticMethodDesc.ChildEvals, allowValueCache && staticMethodDesc.IsAllConstants, optionalLambdaWrap,
-                eval, _config.RethrowExceptions, null);
+                eval, _config.IsRethrowExceptions, null);
 
             // If caching the result, evaluate now and return the result.
             if (_isReturnsConstantResult)

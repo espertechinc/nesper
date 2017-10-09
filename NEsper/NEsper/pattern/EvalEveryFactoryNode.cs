@@ -20,10 +20,6 @@ namespace com.espertech.esper.pattern
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-        /// <summary>Ctor.</summary>
-        protected EvalEveryFactoryNode() {
-        }
-    
         public override EvalNode MakeEvalNode(PatternAgentInstanceContext agentInstanceContext, EvalNode parentNode) {
             EvalNode child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNodes, agentInstanceContext, parentNode);
             return new EvalEveryNode(agentInstanceContext, this, child);

@@ -43,9 +43,11 @@ namespace com.espertech.esper.epl.core.eval
 
             // Evaluate all expressions and build a map of name-value pairs
             var props = new Object[expressionNodes.Length];
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
+
             for (int i = 0; i < expressionNodes.Length; i++)
             {
-                Object evalResult = expressionNodes[i].Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                Object evalResult = expressionNodes[i].Evaluate(evaluateParams);
                 props[i] = evalResult;
             }
 

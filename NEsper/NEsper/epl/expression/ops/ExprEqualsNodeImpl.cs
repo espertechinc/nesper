@@ -62,9 +62,9 @@ namespace com.espertech.esper.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have 2 child nodes
-            if (ChildNodes.Length != 2)
+            if (ChildNodes.Count != 2)
             {
-                throw new ExprValidationException("Invalid use of equals, expecting left-hand side and right-hand side but received " + ChildNodes.Length + " expressions");
+                throw new ExprValidationException("Invalid use of equals, expecting left-hand side and right-hand side but received " + ChildNodes.Count + " expressions");
             }
             var evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
 

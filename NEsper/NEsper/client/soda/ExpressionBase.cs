@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace com.espertech.esper.client.soda
 {
     /// <summary>Base expression.</summary>
+    [Serializable]
     public abstract class ExpressionBase : Expression
     {
         private IList<Expression> _children;
@@ -38,7 +40,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        ///     Render expression list
+        ///     RenderAny expression list
         /// </summary>
         /// <param name="children">expressions to render</param>
         /// <param name="writer">writer to render to</param>
@@ -54,7 +56,7 @@ namespace com.espertech.esper.client.soda
         }
 
         /// <summary>
-        ///     Render an aggregation function with distinct and parameter expressions
+        ///     RenderAny an aggregation function with distinct and parameter expressions
         /// </summary>
         /// <param name="writer">to render to</param>
         /// <param name="name">function name</param>
@@ -109,7 +111,7 @@ namespace com.espertech.esper.client.soda
 
         public void ToEPL(TextWriter writer, ExpressionPrecedenceEnum parentPrecedence)
         {
-            if (this.Precedence.Level < parentPrecedence.Level)
+            if (Precedence < parentPrecedence)
             {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);

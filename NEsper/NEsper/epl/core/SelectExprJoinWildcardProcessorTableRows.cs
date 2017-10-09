@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
 
@@ -21,35 +17,44 @@ namespace com.espertech.esper.epl.core
     /// </summary>
     public class SelectExprJoinWildcardProcessorTableRows : SelectExprProcessor
     {
-        private readonly SelectExprProcessor inner;
-        private readonly EventBean[] eventsPerStreamWTableRows;
-        private readonly TableMetadata[] tables;
+        private readonly SelectExprProcessor _inner;
+        private readonly EventBean[] _eventsPerStreamWTableRows;
+        private readonly TableMetadata[] _tables;
     
-        public SelectExprJoinWildcardProcessorTableRows(EventType[] types, SelectExprProcessor inner, TableService tableService) {
-            this.inner = inner;
-            eventsPerStreamWTableRows = new EventBean[types.Length];
-            tables = new TableMetadata[types.Length];
+        public SelectExprJoinWildcardProcessorTableRows(EventType[] types, SelectExprProcessor inner, TableService tableService)
+        {
+            _inner = inner;
+            _eventsPerStreamWTableRows = new EventBean[types.Length];
+            _tables = new TableMetadata[types.Length];
             for (int i = 0; i < types.Length; i++) {
-                tables[i] = tableService.GetTableMetadataFromEventType(types[i]);
+                _tables[i] = tableService.GetTableMetadataFromEventType(types[i]);
             }
         }
-    
-        public EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
+
+        public EventBean Process(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            for (int i = 0; i < eventsPerStreamWTableRows.Length; i++) {
-                if (tables[i] != null && eventsPerStream[i] != null) {
-                    eventsPerStreamWTableRows[i] = tables[i].EventToPublic.Convert(eventsPerStream[i], eventsPerStream, isNewData, exprEvaluatorContext);
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
+            for (int i = 0; i < _eventsPerStreamWTableRows.Length; i++)
+            {
+                if (_tables[i] != null && eventsPerStream[i] != null)
+                {
+                    _eventsPerStreamWTableRows[i] = _tables[i].EventToPublic.Convert(eventsPerStream[i], evaluateParams);
                 }
-                else {
-                    eventsPerStreamWTableRows[i] = eventsPerStream[i];
+                else
+                {
+                    _eventsPerStreamWTableRows[i] = eventsPerStream[i];
                 }
             }
-            return inner.Process(eventsPerStreamWTableRows, isNewData, isSynthesize, exprEvaluatorContext);
+            return _inner.Process(_eventsPerStreamWTableRows, isNewData, isSynthesize, exprEvaluatorContext);
         }
 
         public EventType ResultEventType
         {
-            get { return inner.ResultEventType; }
+            get { return _inner.ResultEventType; }
         }
     }
 }

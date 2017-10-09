@@ -10,12 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.events;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.events.avro
@@ -64,5 +59,10 @@ namespace com.espertech.esper.events.avro
         Object ConvertEvent(EventBean theEvent, AvroSchemaEventType targetType);
 
         TypeWidenerCustomizer GetTypeWidenerCustomizer(EventType eventType);
+    }
+
+    public class EventAdapterAvroHandlerConstants
+    {
+        public const string HANDLER_IMPL = "NEsper.Avro.Core.EventAdapterAvroHandlerImpl";
     }
 } // end of namespace

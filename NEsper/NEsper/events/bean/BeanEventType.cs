@@ -79,6 +79,7 @@ namespace com.espertech.esper.events.bean
             _eventAdapterService = eventAdapterService;
             _optionalLegacyDef = optionalLegacyDef;
             _eventTypeId = eventTypeId;
+
             if (optionalLegacyDef != null)
             {
                 _factoryMethodName = optionalLegacyDef.FactoryMethod;
@@ -619,25 +620,17 @@ namespace com.espertech.esper.events.bean
                 _fastClass = null;
                 try
                 {
-                    _fastClass = FastClass.Create(engineImportService.GetFastClassClassLoader(_clazz), _clazz);
+                    _fastClass = FastClass.Create(_clazz);
                 }
-                catch (Exception exWithThreadClassLoader)
+                catch (Exception ex)
                 {
-                    // get CGLib fast class based on given class (for OSGI support)
-                    try
-                    {
-                        _fastClass = FastClass.Create(_clazz);
-                    }
-                    catch (Exception exWithoutThreadClassLoader)
-                    {
-                        Log.Warn(
-                            ".initialize Unable to obtain CGLib fast class and/or method implementation for class " +
-                            _clazz.Name + ", error msg is " + exWithThreadClassLoader.Message, exWithThreadClassLoader);
-                        Log.Warn(
-                            ".initialize Not using the provided class loader, the error msg is: " +
-                            exWithoutThreadClassLoader.Message, exWithoutThreadClassLoader);
-                        _fastClass = null;
-                    }
+                    Log.Warn(
+                        ".initialize Unable to obtain CGLib fast class and/or method implementation for class " +
+                        _clazz.Name + ", error msg is " + ex.Message, ex);
+                    Log.Warn(
+                        ".initialize Not using the provided class loader, the error msg is: " +
+                        ex.Message, ex);
+                    _fastClass = null;
                 }
             }
 
@@ -659,7 +652,7 @@ namespace com.espertech.esper.events.bean
                     Type type;
                     if (desc.ReadMethod != null)
                     {
-                        getter = PropertyHelper.GetGetter(desc.ReadMethod, _fastClass, _eventAdapterService);
+                        getter = PropertyHelper.GetGetter(desc.PropertyName, desc.ReadMethod, _fastClass, _eventAdapterService);
                         type = desc.ReadMethod.ReturnType;
                     }
                     else
@@ -808,8 +801,7 @@ namespace com.espertech.esper.events.bean
 
                 _propertyNames[count] = desc.PropertyName;
                 var descriptor = new EventPropertyDescriptor(
-                    desc.PropertyName,
-                    underlyingType, componentType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
+                    desc.PropertyName, underlyingType, componentType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
                 _propertyDescriptors[count++] = descriptor;
                 _propertyDescriptorMap.Put(descriptor.PropertyName, descriptor);
             }
@@ -826,7 +818,7 @@ namespace com.espertech.esper.events.bean
             }
 
             // Determine deep supertypes
-            // Get Java super types (superclasses and interfaces), deep get of all in the tree
+            // Get super types (superclasses and interfaces), deep get of all in the tree
             var supers = new HashSet<Type>();
             GetBase(_clazz, supers);
             RemoveLibInterfaces(supers); // Remove "java." super types

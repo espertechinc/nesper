@@ -341,7 +341,8 @@ namespace com.espertech.esper.epl.variable
                     throw new VariableTypeException("Cannot create variable '" + variableName + "', type '" +
                         variableType + "' cannot be declared as an array, only scalar types can be array");
                 }
-                eventType = _eventAdapterService.AddBeanType(type.Name, type, false, false, false);
+
+                eventType = _eventAdapterService.AddBeanType(type.GetDefaultTypeName(), type, false, false, false);
             }
 
             if (arrayType != null)

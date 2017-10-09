@@ -23,7 +23,7 @@ namespace com.espertech.esper.client
         string EPServicesContextFactoryClassName { get; }
 
         /// <summary>
-        /// Returns the mapping of event type name to Java class name.
+        /// Returns the mapping of event type name to class name.
         /// </summary>
         /// <value>event type names for Java class names</value>
         IDictionary<string, string> EventTypeNames { get; }
@@ -65,13 +65,13 @@ namespace com.espertech.esper.client
         /// Returns the class and package imports.
         /// </summary>
         /// <value>imported names</value>
-        IList<string> Imports { get; }
+        IList<AutoImportDesc> Imports { get; }
 
         /// <summary>
         /// Returns the class and package imports for annotation-only use.
         /// </summary>
         /// <value>imported names</value>
-        IList<string> AnnotationImports { get; }
+        IList<AutoImportDesc> AnnotationImports { get; }
 
         /// <summary>
         /// Returns a map of string database names to database configuration options.
@@ -143,11 +143,11 @@ namespace com.espertech.esper.client
         IDictionary<string, ConfigurationMethodRef> MethodInvocationReferences { get; }
 
         /// <summary>
-        /// Returns a set of Java package names that Java event classes reside in.
+        /// Returns a set of namespace names that event classes reside in.
         /// <para>
-        /// This setting allows an application to place all it's events into one or more Java packages
+        /// This setting allows an application to place all it's events into one or more namespaces
         /// and then declare these packages via this method. The engine
-        /// attempts to resolve an event type name to a Java class residing in each declared package.
+        /// attempts to resolve an event type name to a class residing in each declared package.
         /// </para>
         /// <para>
         /// For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
@@ -155,7 +155,7 @@ namespace com.espertech.esper.client
         /// </para>
         /// </summary>
         /// <value>
-        ///   set of Java package names to look for events types when encountering a new event type name
+        ///   set of namespaces to look for events types when encountering a new event type name
         /// </value>
         ISet<string> EventTypeAutoNamePackages { get; }
 

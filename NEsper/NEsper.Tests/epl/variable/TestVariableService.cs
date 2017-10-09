@@ -11,8 +11,9 @@ using System;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.start;
+using com.espertech.esper.core.support;
+using com.espertech.esper.epl.core;
 using com.espertech.esper.schedule;
-using com.espertech.esper.support.events;
 using com.espertech.esper.timer;
 using NUnit.Framework;
 
@@ -21,17 +22,15 @@ namespace com.espertech.esper.epl.variable
     [TestFixture]
     public class TestVariableService
     {
-        #region Setup/Teardown
-
+        private VariableService _service;
+        private EngineImportService _engineImportService;
+        
         [SetUp]
         public void SetUp()
         {
             _service = new VariableServiceImpl(10000, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
+            _engineImportService = SupportEngineImportServiceFactory.Make();
         }
-
-        #endregion
-
-        private VariableService _service;
 
         // Start Count threads
         // each thread performs X loops
@@ -49,7 +48,7 @@ namespace com.espertech.esper.epl.variable
             var variables = new String[numVariables];
             for (int i = 0; i < numVariables; i++) {
                 variables[i] = String.Format("{0}", ((char) (ord + i)));
-                _service.CreateNewVariable(null, variables[i], typeof(int).FullName, false, false, false, 0, null);
+                _service.CreateNewVariable(null, variables[i], typeof(int).FullName, false, false, false, 0, _engineImportService);
                 _service.AllocateVariableState(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
             }
 
@@ -87,12 +86,12 @@ namespace com.espertech.esper.epl.variable
         [Test]
         public void TestInvalid()
         {
-            _service.CreateNewVariable<long?>(null, "a", false, null, null);
+            _service.CreateNewVariable<long?>(null, "a", false, null, _engineImportService);
             _service.AllocateVariableState("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
             Assert.IsNull(_service.GetReader("dummy", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID));
 
             try {
-                _service.CreateNewVariable<long?>(null, "a", false, null, null);
+                _service.CreateNewVariable<long?>(null, "a", false, null, _engineImportService);
                 Assert.Fail();
             }
             catch (VariableExistsException e) {
@@ -129,7 +128,7 @@ namespace com.espertech.esper.epl.variable
         {
             Assert.IsNull(_service.GetReader("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID));
 
-            _service.CreateNewVariable<long>(null, "a", false, 100L, null);
+            _service.CreateNewVariable<long>(null, "a", false, 100L, _engineImportService);
             _service.AllocateVariableState("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
             VariableReader reader = _service.GetReader("a", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             Assert.AreEqual(typeof(long?), reader.VariableMetaData.VariableType);
@@ -162,7 +161,7 @@ namespace com.espertech.esper.epl.variable
 
             var readers = new VariableReader[variables.Length];
             for (int i = 0; i < variables.Length; i++) {
-                _service.CreateNewVariable<long>(null, variables[i], false, 100L, null);
+                _service.CreateNewVariable<long>(null, variables[i], false, 100L, _engineImportService);
                 _service.AllocateVariableState(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
                 readers[i] = _service.GetReader(variables[i], EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID);
             }

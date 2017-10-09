@@ -8,10 +8,9 @@
 
 using System;
 
+using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.time;
-using com.espertech.esper.support.view;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -35,7 +34,7 @@ namespace com.espertech.esper.view.window
             TryParameter(new Object[] {2d}, 2000, null);
             TryParameter(new Object[] {4}, 4000, null);
             TryParameter(new Object[] {3.3d}, 3300, null);
-            TryParameter(new Object[] {new float?(1.1f)}, 1100, null);
+            TryParameter(new Object[] {1.1f}, 1100, null);
             TryParameter(new Object[] {99.9d, 364466464L}, 99900, 364466464L);
     
             TryInvalidParameter("TheString");
@@ -46,25 +45,26 @@ namespace com.espertech.esper.view.window
         [Test]
         public void TestCanReuse()
         {
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {1000}));
-            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null)));
-            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstMsec(1), null, false, false, null)));
-            Assert.IsTrue(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstMsec(1000000), null, false, false, null)));
-    
-            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {1000, 2000L}));
-            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstMsec(1), null, false, false, null)));
-            Assert.IsTrue(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstMsec(1000000), 2000L, false, false, null)));
+            var agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { 1000 }));
+            Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
+            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstGivenDelta(1), null, false, false, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstGivenDelta(1000000), null, false, false, null), agentInstanceContext));
+
+            _factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] { 1000, 2000L }));
+            Assert.IsFalse(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstGivenDelta(1), null, false, false, null), agentInstanceContext));
+            Assert.IsTrue(_factory.CanReuse(new TimeBatchView(_factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(), new ExprTimePeriodEvalDeltaConstGivenDelta(1000000), 2000L, false, false, null), agentInstanceContext));
         }
     
         private void TryInvalidParameter(Object param)
         {
             try
             {
-                TimeBatchViewFactory factory = new TimeBatchViewFactory();
+                var factory = new TimeBatchViewFactory();
                 factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {param}));
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -72,10 +72,10 @@ namespace com.espertech.esper.view.window
     
         private void TryParameter(Object[] param, long msec, long? referencePoint)
         {
-            TimeBatchViewFactory factory = new TimeBatchViewFactory();
+            var factory = new TimeBatchViewFactory();
             factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(param));
-            TimeBatchView view = (TimeBatchView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
-            Assert.IsTrue(new ExprTimePeriodEvalDeltaConstMsec(msec).EqualsTimePeriod(view.TimeDeltaComputation));
+            var view = (TimeBatchView) factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            Assert.IsTrue(new ExprTimePeriodEvalDeltaConstGivenDelta(msec).EqualsTimePeriod(view.TimeDeltaComputation));
             Assert.AreEqual(referencePoint, view.InitialReferencePoint);
         }
     }

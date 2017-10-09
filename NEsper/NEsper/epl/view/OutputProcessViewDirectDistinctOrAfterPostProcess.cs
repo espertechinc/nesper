@@ -25,7 +25,7 @@ namespace com.espertech.esper.epl.view
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor,
-            long afterConditionTime,
+            long? afterConditionTime,
             int? afterConditionNumberOfEvents,
             bool afterConditionSatisfied,
             OutputProcessViewDirectDistinctOrAfterFactory parent,

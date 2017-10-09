@@ -51,9 +51,7 @@ namespace com.espertech.esper.epl.parse
                 PlugInAggregationMultiFunctionFactory factory = plugInAggregations.Map.Get(config);
                 if (factory == null)
                 {
-                    factory = (PlugInAggregationMultiFunctionFactory) TypeHelper.Instantiate(
-                        typeof (PlugInAggregationMultiFunctionFactory), config.MultiFunctionFactoryClassName,
-                        engineImportService.GetClassForNameProvider());
+                    factory = TypeHelper.Instantiate<PlugInAggregationMultiFunctionFactory>(config.MultiFunctionFactoryClassName, engineImportService.GetClassForNameProvider());
                     plugInAggregations.Map.Put(config, factory);
                 }
                 factory.AddAggregationFunction(

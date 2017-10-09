@@ -32,7 +32,7 @@ namespace com.espertech.esper.linq
             if (properties == null)
                 throw new ArgumentException("at least one property must be provided");
 
-            return esperQuery.FilterView(() => View.Create("std", "unique", 
+            return esperQuery.FilterView(() => View.Create("unique", 
                 properties.Select(p => new PropertyValueExpression(p)).Cast<Expression>().ToArray()));
         }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.linq
             if (expressions == null)
                 throw new ArgumentException("at least one property must be provided");
 
-            return esperQuery.FilterView(() => View.Create("std", "unique",
+            return esperQuery.FilterView(() => View.Create("unique",
                 expressions.Select(e => LinqToSoda.LinqToSodaExpression(e)).ToArray()));
         }
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.linq
             if (properties == null)
                 throw new ArgumentException("at least one property must be provided");
 
-            return esperQuery.FilterView(() => View.Create("std", "group",
+            return esperQuery.FilterView(() => View.Create("group",
                 properties.Select(p => new PropertyValueExpression(p)).Cast<Expression>().ToArray()));
         }
 
@@ -87,7 +87,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> Counting<T>(this EsperQuery<T> esperQuery)
         {
-            return esperQuery.FilterView(() => View.Create("std", "size"));
+            return esperQuery.FilterView(() => View.Create("size"));
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> Last<T>(this EsperQuery<T> esperQuery)
         {
-            return esperQuery.FilterView(() => View.Create("std", "lastevent"));
+            return esperQuery.FilterView(() => View.Create("lastevent"));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace com.espertech.esper.linq
         /// <returns></returns>
         public static EsperQuery<T> First<T>(this EsperQuery<T> esperQuery)
         {
-            return esperQuery.FilterView(() => View.Create("std", "firstevent"));
+            return esperQuery.FilterView(() => View.Create("firstevent"));
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace com.espertech.esper.linq
             if (properties == null)
                 throw new ArgumentException("at least one property must be provided");
 
-            return esperQuery.FilterView(() => View.Create("std", "firstunique",
+            return esperQuery.FilterView(() => View.Create("firstunique",
                 properties.Select(p => new PropertyValueExpression(p)).Cast<Expression>().ToArray()));
         }
 

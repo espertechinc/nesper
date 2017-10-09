@@ -238,7 +238,8 @@ namespace com.espertech.esper.core.service
 
             if ((ThreadingOption.IsThreadingEnabled) && (_services.ThreadingService.IsInboundThreading))
             {
-                _services.ThreadingService.SubmitInbound(new InboundUnitSendAvro(avroGenericDataDotRecord, avroEventTypeName, _services, this));
+                _services.ThreadingService.SubmitInbound(
+                    new InboundUnitSendAvro(avroGenericDataDotRecord, avroEventTypeName, _services, this).Run);
             }
             else
             {
@@ -381,7 +382,7 @@ namespace com.espertech.esper.core.service
 
         public EventBean WrapEvent(XElement node)
         {
-            return _services.EventAdapterService.AdapterForLINQ(node);
+            return _services.EventAdapterService.AdapterForDOM(node);
         }
 
         public EventBean WrapEventAvro(Object avroGenericDataDotRecord, String eventTypeName)
@@ -403,7 +404,7 @@ namespace com.espertech.esper.core.service
             }
 
             // Get it wrapped up, process event
-            var eventBean = _services.EventAdapterService.AdapterForLINQ(element);
+            var eventBean = _services.EventAdapterService.AdapterForDOM(element);
             _threadWorkQueue.AddBack(eventBean);
         }
 
@@ -728,7 +729,7 @@ namespace com.espertech.esper.core.service
                     }
                     _services.SchedulingService.Time = timeInMillis;
 
-                    if (MetricReportingPath.IsMetricsEnabledValue)
+                    if (MetricReportingPath.IsMetricsEnabled)
                     {
                         _services.MetricsReportingService.ProcessTimeEvent(timeInMillis);
                     }
@@ -752,7 +753,7 @@ namespace com.espertech.esper.core.service
 
             // handle time span
             var span = (CurrentTimeSpanEvent)theEvent;
-            var targetTime = span.TargetTimeInMillis;
+            var targetTime = span.TargetTime;
             var currentTime = _services.SchedulingService.Time;
             var optionalResolution = span.OptionalResolution;
 
@@ -800,7 +801,7 @@ namespace com.espertech.esper.core.service
 
                     _services.SchedulingService.Time = currentTime;
 
-                    if (MetricReportingPath.IsMetricsEnabledValue)
+                    if (MetricReportingPath.IsMetricsEnabled)
                     {
                         _services.MetricsReportingService.ProcessTimeEvent(currentTime);
                     }
@@ -876,7 +877,7 @@ namespace com.espertech.esper.core.service
                 var handleArray = handles.Array;
                 var handle = (EPStatementHandleCallback)handleArray[0];
 
-                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.AgentInstanceHandle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabled) && (handle.AgentInstanceHandle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     handle.AgentInstanceHandle.StatementHandle.MetricsHandle.Call(
                         _services.MetricsReportingService.PerformanceCollector,
@@ -942,7 +943,7 @@ namespace com.espertech.esper.core.service
                 var handle = entry.Key;
                 var callbackObject = entry.Value;
 
-                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     var numInput = callbackObject is ICollection ? ((ICollection)callbackObject).Count : 0;
 
@@ -978,7 +979,7 @@ namespace com.espertech.esper.core.service
         {
             var queues = _threadWorkQueue.ThreadQueue;
 
-            if (queues.FrontQueue.First == null)
+            if (queues.FrontQueue.Peek() == null)
             {
                 var haveDispatched = _services.NamedWindowDispatchService.Dispatch();
                 if (haveDispatched)
@@ -986,7 +987,7 @@ namespace com.espertech.esper.core.service
                     // Dispatch results to listeners
                     Dispatch();
 
-                    if (queues.FrontQueue.First != null)
+                    if (queues.FrontQueue.Peek() != null)
                     {
                         ProcessThreadWorkQueueFront(queues);
                     }
@@ -1019,7 +1020,7 @@ namespace com.espertech.esper.core.service
                     Dispatch();
                 }
 
-                if (queues.FrontQueue.First != null)
+                if (queues.FrontQueue.Peek() != null)
                 {
                     ProcessThreadWorkQueueFront(queues);
                 }
@@ -1228,7 +1229,7 @@ namespace com.espertech.esper.core.service
                     continue;
                 }
 
-                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     handle.StatementHandle.MetricsHandle.Call(
                         _services.MetricsReportingService.PerformanceCollector,
@@ -1260,7 +1261,7 @@ namespace com.espertech.esper.core.service
                 var handle = entry.Key;
                 var callbackList = entry.Value;
 
-                if ((MetricReportingPath.IsMetricsEnabledValue) && (handle.StatementHandle.MetricsHandle.IsEnabled))
+                if ((MetricReportingPath.IsMetricsEnabled) && (handle.StatementHandle.MetricsHandle.IsEnabled))
                 {
                     var count = 1;
                     if (callbackList is ICollection)
@@ -1731,7 +1732,7 @@ namespace com.espertech.esper.core.service
             IDictionary<String, IList<ContextPartitionVariableState>> statesMap = new Dictionary<String, IList<ContextPartitionVariableState>>();
             foreach (String variableName in variableNames)
             {
-                List<ContextPartitionVariableState> states = new List<ContextPartitionVariableState>();
+                var states = new List<ContextPartitionVariableState>();
                 statesMap.Put(variableName, states);
                 foreach (var entry in contextPartitions)
                 {

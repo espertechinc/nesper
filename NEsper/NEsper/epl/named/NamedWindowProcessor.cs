@@ -66,7 +66,25 @@ namespace com.espertech.esper.epl.named
         /// <param name="optionalUniqueKeyProps">The optional unique key props.</param>
         /// <param name="eventTypeAsName">Name of the event type as.</param>
         /// <param name="statementContextCreateWindow">The statement context create window.</param>
-        public NamedWindowProcessor(string namedWindowName, NamedWindowMgmtService namedWindowMgmtService, NamedWindowDispatchService namedWindowDispatchService, string contextName, EventType eventType, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized, bool isEnableSubqueryIndexShare, bool enableQueryPlanLog, MetricReportingService metricReportingService, bool isBatchingDataWindow, bool isVirtualDataWindow, ICollection<string> optionalUniqueKeyProps, string eventTypeAsName, StatementContext statementContextCreateWindow)
+        public NamedWindowProcessor(
+            string namedWindowName,
+            NamedWindowMgmtService namedWindowMgmtService,
+            NamedWindowDispatchService namedWindowDispatchService,
+            string contextName,
+            EventType eventType,
+            StatementResultService statementResultService,
+            ValueAddEventProcessor revisionProcessor,
+            string eplExpression,
+            string statementName,
+            bool isPrioritized,
+            bool isEnableSubqueryIndexShare,
+            bool enableQueryPlanLog,
+            MetricReportingService metricReportingService,
+            bool isBatchingDataWindow,
+            bool isVirtualDataWindow,
+            ICollection<string> optionalUniqueKeyProps,
+            string eventTypeAsName,
+            StatementContext statementContextCreateWindow)
         {
             _namedWindowName = namedWindowName;
             _contextName = contextName;
@@ -80,7 +98,10 @@ namespace com.espertech.esper.epl.named
             _statementContextCreateWindow = statementContextCreateWindow;
 
             _rootView = new NamedWindowRootView(revisionProcessor, enableQueryPlanLog, metricReportingService, eventType, isBatchingDataWindow, isEnableSubqueryIndexShare, optionalUniqueKeyProps);
-            _tailView = namedWindowDispatchService.CreateTailView(eventType, namedWindowMgmtService, namedWindowDispatchService, statementResultService, revisionProcessor, isPrioritized, isBatchingDataWindow, contextName, statementContextCreateWindow.TimeSourceService, statementContextCreateWindow.ConfigSnapshot.EngineDefaults.ThreadingConfig);
+            _tailView = namedWindowDispatchService.CreateTailView(
+                eventType, namedWindowMgmtService, namedWindowDispatchService, statementResultService, revisionProcessor,
+                isPrioritized, isBatchingDataWindow, contextName, statementContextCreateWindow.TimeSourceService,
+                statementContextCreateWindow.ConfigSnapshot.EngineDefaults.Threading);
         }
 
         public string EventTypeAsName

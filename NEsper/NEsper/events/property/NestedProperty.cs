@@ -88,7 +88,7 @@ namespace com.espertech.esper.events.property
             }
 
             GenericPropertyDesc finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, eventAdapterService);
-            return new NestedPropertyGetter(getters, eventAdapterService, finalPropertyType.GenericType, finalPropertyType.GenericType);
+            return new NestedPropertyGetter(getters, eventAdapterService, finalPropertyType.GenericType, finalPropertyType.Generic);
         }
 
         public Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)

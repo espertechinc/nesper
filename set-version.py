@@ -9,8 +9,9 @@ files=(
 	'./NEsper/NEsper/Properties/AssemblyInfo.cs',
 	'./NEsper/NEsper/util/Version.cs',
 	'./NEsper/NEsper.Scripting.Jurassic/Properties/AssemblyInfo.cs',
-	'./NEsper/NEsper.Scripting.Noesis/Properties/AssemblyInfo.cs',
+	'./NEsper/NEsper.Scripting.ClearScript/Properties/AssemblyInfo.cs',
 	'./NEsper/NEsper.Tests/Properties/AssemblyInfo.cs',
+	'./NEsper/NEsper.Regression/Properties/AssemblyInfo.cs',
 	'./NEsper.IO/NEsper.IO/Properties/AssemblyInfo.cs',
 	'./NEsper.IO/NEsper.IO.Tests/Properties/AssemblyInfo.cs',
 	'./NEsper.nuspec',
@@ -40,7 +41,7 @@ for file in files:
 				line = line.replace(version, new_version)
 				changed = True
 			output.append(line + '\n')
-	
+
 	# rewrite the file if output has changed
 	if changed:
 		print('rewrite ' + file)

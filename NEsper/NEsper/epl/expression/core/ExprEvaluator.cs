@@ -27,17 +27,6 @@ namespace com.espertech.esper.epl.expression.core
         Object Evaluate(EvaluateParams evaluateParams);
 
         /// <summary>
-        /// Evaluate event tuple and return result.
-        /// </summary>
-        /// <param name="eventsPerStream">The events per stream.</param>
-        /// <param name="isNewData">if set to <c>true</c> [is new data].</param>
-        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
-        /// <returns>
-        /// evaluation result, a bool value for OR/AND-type evalution nodes.
-        /// </returns>
-        //Object Evaluate(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-
-        /// <summary>
         ///     Returns the type that the node's evaluate method returns an instance of.
         /// </summary>
         /// <value>The type of the return.</value>

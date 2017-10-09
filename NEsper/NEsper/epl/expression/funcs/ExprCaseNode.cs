@@ -324,14 +324,14 @@ namespace com.espertech.esper.epl.expression.funcs
             // Case 1 expression example:
             //      case when a=b then x [when c=d then y...] [else y]
             //
-            ExprNode[] children = ChildNodes;
-            if (children.Length < 2)
+            var children = ChildNodes;
+            if (children.Count < 2)
             {
                 throw new ExprValidationException("Case node must have at least 2 parameters");
             }
 
             IList<UniformPair<ExprNode>> whenThenNodeList = new List<UniformPair<ExprNode>>();
-            int numWhenThen = children.Length >> 1;
+            int numWhenThen = children.Count >> 1;
             for (int i = 0; i < numWhenThen; i++)
             {
                 ExprNode whenExpr = children[(i << 1)];
@@ -339,9 +339,9 @@ namespace com.espertech.esper.epl.expression.funcs
                 whenThenNodeList.Add(new UniformPair<ExprNode>(whenExpr, thenExpr));
             }
             ExprNode optionalElseExprNode = null;
-            if (children.Length % 2 != 0)
+            if (children.Count % 2 != 0)
             {
-                optionalElseExprNode = children[children.Length - 1];
+                optionalElseExprNode = children[children.Count - 1];
             }
             return new CaseAnalysis(whenThenNodeList, null, optionalElseExprNode);
         }
@@ -351,8 +351,8 @@ namespace com.espertech.esper.epl.expression.funcs
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
             //
-            ExprNode[] children = ChildNodes;
-            if (children.Length < 3)
+            var children = ChildNodes;
+            if (children.Count < 3)
             {
                 throw new ExprValidationException("Case node must have at least 3 parameters");
             }
@@ -360,15 +360,15 @@ namespace com.espertech.esper.epl.expression.funcs
             ExprNode optionalCompareExprNode = children[0];
 
             IList<UniformPair<ExprNode>> whenThenNodeList = new List<UniformPair<ExprNode>>();
-            int numWhenThen = (children.Length - 1) / 2;
+            int numWhenThen = (children.Count - 1) / 2;
             for (int i = 0; i < numWhenThen; i++)
             {
                 whenThenNodeList.Add(new UniformPair<ExprNode>(children[i * 2 + 1], children[i * 2 + 2]));
             }
             ExprNode optionalElseExprNode = null;
-            if (numWhenThen * 2 + 1 < children.Length)
+            if (numWhenThen * 2 + 1 < children.Count)
             {
-                optionalElseExprNode = children[children.Length - 1];
+                optionalElseExprNode = children[children.Count - 1];
             }
             return new CaseAnalysis(whenThenNodeList, optionalCompareExprNode, optionalElseExprNode);
         }

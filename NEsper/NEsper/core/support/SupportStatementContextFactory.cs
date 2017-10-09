@@ -7,12 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Net;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.multimatch;
@@ -77,14 +73,14 @@ namespace com.espertech.esper.core.support
     
         public static StatementContext MakeContext(int statementId, SchedulingService stub) {
             var config = new Configuration();
-            config.EngineDefaults.ViewResourcesConfig.AllowMultipleExpiryPolicies = true;
+            config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies = true;
     
             var timeSourceService = new TimeSourceServiceImpl();
             var stmtEngineServices = new StatementContextEngineServices("engURI",
                     SupportEventAdapterService.Service,
                     new NamedWindowMgmtServiceImpl(false, null),
                     null, new TableServiceImpl(),
-                    new EngineSettingsService(new Configuration().EngineDefaults, new URI[0]),
+                    new EngineSettingsService(new Configuration().EngineDefaults, new Uri[0]),
                     new ValueAddEventServiceImpl(),
                     config,
                     null,
@@ -93,30 +89,32 @@ namespace com.espertech.esper.core.support
                     null,
                     new StatementEventTypeRefImpl(), null, null, null, null, null, new ViewServicePreviousFactoryImpl(), null, new PatternNodeFactoryImpl(), new FilterBooleanExpressionFactoryImpl(), timeSourceService, SupportEngineImportServiceFactory.Make(), AggregationFactoryFactoryDefault.INSTANCE, new SchedulingServiceImpl(timeSourceService), null);
     
-            return new StatementContext(stmtEngineServices,
-                    stub,
-                    new ScheduleBucket(1),
-                    new EPStatementHandle(statementId, "name1", "epl1", StatementType.SELECT, "epl1", false, null, 0, false, false, new MultiMatchHandlerFactoryImpl().DefaultHandler),
-                    new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{ViewEnumHelper.BuiltinViews}), null, null),
-                    new PatternObjectResolutionServiceImpl(null),
-                    null,
-                    null,
-                    null,
-                    null,
-                    new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig())), // statement result svc
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    null,
-                    null,
-                    AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
-                    false,
-                    null, new StatementSemiAnonymousTypeRegistryImpl(), 0);
+            return new StatementContext(
+                stmtEngineServices,
+                stub,
+                new ScheduleBucket(1),
+                new EPStatementHandle(statementId, "name1", "epl1", StatementType.SELECT, "epl1", false, null, 0, false, false, new MultiMatchHandlerFactoryImpl().GetDefaultHandler()),
+                new ViewResolutionServiceImpl(new PluggableObjectRegistryImpl(new PluggableObjectCollection[]{ViewEnumHelper.BuiltinViews}), null, null),
+                new PatternObjectResolutionServiceImpl(null),
+                null,
+                null,
+                null,
+                null,
+                new StatementResultServiceImpl("name", null, null, new ThreadingServiceImpl(new ConfigurationEngineDefaults.ThreadingConfig())), // statement result svc
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                AggregationServiceFactoryServiceImpl.DEFAULT_FACTORY,
+                null,
+                false,
+                null, new StatementSemiAnonymousTypeRegistryImpl(), 0);
         }
     }
 } // end of namespace

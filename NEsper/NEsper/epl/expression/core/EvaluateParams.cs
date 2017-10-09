@@ -12,6 +12,9 @@ namespace com.espertech.esper.epl.expression.core
 {
     public class EvaluateParams
     {
+        public static readonly EvaluateParams EmptyTrue = new EvaluateParams(null, true, null);
+        public static readonly EvaluateParams EmptyFalse = new EvaluateParams(null, false, null);
+
         private readonly EventBean[] _eventsPerStream;
 
         private readonly ExprEvaluatorContext _exprEvaluatorContext;
@@ -40,7 +43,5 @@ namespace com.espertech.esper.epl.expression.core
         {
             get { return _exprEvaluatorContext; }
         }
-
-        public static readonly EvaluateParams Empty = new EvaluateParams(null, false, null);
     }
 }

@@ -46,7 +46,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="insertInto">specifies the insert-into-clause, or null to indicate that the clause is absent</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel _InsertInto(InsertIntoClause insertInto)
+        public EPStatementObjectModel SetInsertInto(InsertIntoClause insertInto)
         {
             InsertInto = insertInto;
             return this;
@@ -86,7 +86,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="fromClause">specifies the from-clause, the from-clause cannot be null and must be set</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel From(FromClause fromClause)
+        public EPStatementObjectModel SetFrom(FromClause fromClause)
         {
             FromClause = fromClause;
             return this;
@@ -103,7 +103,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="whereClause">specifies the where-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel Where(Expression whereClause)
+        public EPStatementObjectModel SetWhere(Expression whereClause)
         {
             WhereClause = whereClause;
             return this;
@@ -120,7 +120,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="groupByClause">specifies the group-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel GroupBy(GroupByClause groupByClause)
+        public EPStatementObjectModel SetGroupBy(GroupByClause groupByClause)
         {
             GroupByClause = groupByClause;
             return this;
@@ -137,7 +137,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="havingClause">specifies the having-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel Having(Expression havingClause)
+        public EPStatementObjectModel SetHaving(Expression havingClause)
         {
             HavingClause = havingClause;
             return this;
@@ -154,7 +154,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="orderByClause">specifies the order-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel OrderBy(OrderByClause orderByClause)
+        public EPStatementObjectModel SetOrderBy(OrderByClause orderByClause)
         {
             OrderByClause = orderByClause;
             return this;
@@ -171,7 +171,7 @@ namespace com.espertech.esper.client.soda
         /// </summary>
         /// <param name="outputLimitClause">specifies the output-rate-limiting-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel OutputLimit(OutputLimitClause outputLimitClause)
+        public EPStatementObjectModel SetOutputLimit(OutputLimitClause outputLimitClause)
         {
             OutputLimitClause = outputLimitClause;
             return this;

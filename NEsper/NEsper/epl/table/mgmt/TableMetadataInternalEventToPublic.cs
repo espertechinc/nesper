@@ -12,6 +12,8 @@ using com.espertech.esper.epl.table.strategy;
 using com.espertech.esper.events;
 using com.espertech.esper.events.arr;
 
+using Microsoft.JScript;
+
 namespace com.espertech.esper.epl.table.mgmt
 {
     public class TableMetadataInternalEventToPublic
@@ -32,14 +34,14 @@ namespace com.espertech.esper.epl.table.mgmt
             _eventAdapterService = eventAdapterService;
             _numColumns = publicEventType.PropertyDescriptors.Count;
         }
-    
-        public EventBean Convert(EventBean @event, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public EventBean Convert(EventBean @event, EvaluateParams evalParams)
         {
-            var data = ConvertToUnd(@event, eventsPerStream, isNewData, context);
+            var data = ConvertToUnd(@event, evalParams);
             return _eventAdapterService.AdapterForType(data, _publicEventType);
         }
-    
-        public object[] ConvertToUnd(EventBean @event, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+
+        public object[] ConvertToUnd(EventBean @event, EvaluateParams evalParams)
         {
             var bean = (ObjectArrayBackedEventBean) @event;
             var row = ExprTableEvalStrategyUtil.GetRow(bean);
@@ -48,8 +50,9 @@ namespace com.espertech.esper.epl.table.mgmt
                 data[plain.Dest] = bean.Properties[plain.Source];
             }
             var count = 0;
-            foreach (var access in _accessors) {
-                data[access.Dest] = access.Accessor.GetValue(row.States[count++], eventsPerStream, isNewData, context);
+            foreach (var access in _accessors)
+            {
+                data[access.Dest] = access.Accessor.GetValue(row.States[count++], evalParams);
             }
             count = 0;
             foreach (var method in _methods) {

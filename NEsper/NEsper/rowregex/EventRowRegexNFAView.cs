@@ -41,7 +41,7 @@ namespace com.espertech.esper.rowregex
         private const bool IS_DEBUG = false;
 
         private static readonly IEnumerator<EventBean> NULL_ITERATOR =
-            EnumerationHelper<EventBean>.CreateEmptyEnumerator();
+            EnumerationHelper<EventBean>.Empty();
 
         private readonly EventRowRegexNFAViewFactory _factory;
         private readonly MatchRecognizeSpec _matchRecognizeSpec;
@@ -110,6 +110,9 @@ namespace com.espertech.esper.rowregex
         /// <param name="isUnbound">true if unbound stream</param>
         /// <param name="isIterateOnly">true for iterate-only</param>
         /// <param name="isCollectMultimatches">if asking for multimatches</param>
+        /// <param name="expandedPatternNode">the expanded pattern node</param>
+        /// <param name="matchRecognizeConfig">the match recognition configuration</param>
+        /// <param name="scheduler">the scheduler</param>
         public EventRowRegexNFAView(
             EventRowRegexNFAViewFactory factory,
             ObjectArrayEventType compositeEventType,

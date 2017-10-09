@@ -17,7 +17,8 @@ namespace com.espertech.esper.client.util
     /// <summary>
     /// Type loader provider for use with FastClass-instance creation.
     /// </summary>
-    public interface FastClassClassLoaderProvider {
+    public interface FastClassClassLoaderProvider
+    {
         /// <summary>
         /// Returns the classloader to use.
         /// </summary>
@@ -25,4 +26,10 @@ namespace com.espertech.esper.client.util
         /// <returns>class loader</returns>
         ClassLoader Classloader(Type clazz);
     }
+
+    public class FastClassClassLoaderProviderConstants
+    {
+        public const string NAME = "FastClassClassLoaderProvider";
+    }
+
 } // end of namespace

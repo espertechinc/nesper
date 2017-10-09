@@ -13,7 +13,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.view;
 using com.espertech.esper.view.window;
@@ -92,7 +91,7 @@ namespace com.espertech.esper.core.start
             foreach (ExprPreviousNode previousNode in previousRequests)
             {
                 int streamNumber = previousNode.StreamNumber;
-                ExprPreviousNodePreviousType previousType = previousNode.PreviousType;
+                var previousType = previousNode.PreviousType;
                 ExprPreviousEvalStrategy evaluator;
 
                 if (previousType == ExprPreviousNodePreviousType.PREVWINDOW)

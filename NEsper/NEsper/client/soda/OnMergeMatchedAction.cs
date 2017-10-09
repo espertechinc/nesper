@@ -16,7 +16,7 @@ namespace com.espertech.esper.client.soda
     public interface OnMergeMatchedAction 
     {
         /// <summary>
-        /// Render to EPL.
+        /// RenderAny to EPL.
         /// </summary>
         /// <param name="writer">to render to</param>
         void ToEPL(TextWriter writer);

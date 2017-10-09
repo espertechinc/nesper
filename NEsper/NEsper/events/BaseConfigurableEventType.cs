@@ -248,8 +248,8 @@ namespace com.espertech.esper.events
         /// <summary>
         /// Returns an enumeration of event types that are super to this event type, from which this event type inherited event properties.
         /// <para/>
-        /// For POCO instances underlying the event this method returns the event types for all superclasses extended by
-        /// the POCO and all interfaces implemented by the POCO.
+        /// For PONO instances underlying the event this method returns the event types for all superclasses extended by
+        /// the PONO and all interfaces implemented by the PONO.
         /// </summary>
         /// <value>The super types.</value>
         /// <returns>an array of event types</returns>

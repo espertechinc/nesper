@@ -220,13 +220,6 @@ namespace com.espertech.esper.type
             return computer;
         }
 
-        /// <summary>
-        /// Delegate for computing a relational operation on two objects.
-        /// </summary>
-        /// <param name="objOne"></param>
-        /// <param name="objTwo"></param>
-        /// <returns></returns>
-
         #region String
         /// <summary>
         /// Greater than string computer.

@@ -8,14 +8,12 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.script
 {
-    public interface ExprNodeScriptEvaluator : ExprEvaluator{
+    public interface ExprNodeScriptEvaluator : ExprEvaluator
+    {
         Object Evaluate(Object[] lookupValues, ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

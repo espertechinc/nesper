@@ -33,9 +33,10 @@ namespace com.espertech.esper.epl.core.eval
             // Evaluate all expressions and build a map of name-value pairs
             IDictionary<String, Object> props = new Dictionary<String, Object>();
             int count = 0;
+            var evaluateParams = new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext);
             foreach (ExprEvaluator expressionNode in SelectExprContext.ExpressionNodes)
             {
-                Object evalResult = expressionNode.Evaluate(new EvaluateParams(eventsPerStream, isNewData, exprEvaluatorContext));
+                Object evalResult = expressionNode.Evaluate(evaluateParams);
                 props.Put(SelectExprContext.ColumnNames[count], evalResult);
                 count++;
             }
@@ -46,7 +47,7 @@ namespace com.espertech.esper.epl.core.eval
                 {
                     if (theEvent != null)
                     {
-                        theEvent = element.TableMetadata.EventToPublic.Convert(theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+                        theEvent = element.TableMetadata.EventToPublic.Convert(theEvent, evaluateParams);
                     }
                 } 
                 props.Put(SelectExprContext.ColumnNames[count], theEvent);

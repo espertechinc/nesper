@@ -137,7 +137,7 @@ namespace com.espertech.esper.core.service
                 return;
             }
             var callback = (EPStatementHandleCallback) handle;
-            var sc = (ScheduleHandleCallback) ScheduleHandleCallbackProxy.NewInstance(_engineUri, _statementName, callback.ScheduleCallback);
+            var sc = ScheduleHandleCallbackProxy.NewInstance(_engineUri, _statementName, callback.ScheduleCallback);
             callback.ScheduleCallback = sc;
         }
     }

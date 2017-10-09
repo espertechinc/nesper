@@ -20,14 +20,14 @@ namespace com.espertech.esper.epl.datetime.reformatop
 {
     using DateTimeExEval = Func<DateTimeEx, object>;
 
-    public class ReformatOpEval : ReformatOp
+    public class ReformatOpEval<TValue> : ReformatOp
     {
-        private readonly DateTimeExEval _dtxEval;
+        private readonly Func<DateTimeEx, TValue> _dtxEval;
         private readonly TimeZoneInfo _timeZone;
         private readonly TimeAbacus _timeAbacus;
 
         public ReformatOpEval(
-            DateTimeExEval dtxEval,
+            Func<DateTimeEx, TValue> dtxEval,
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
@@ -76,10 +76,7 @@ namespace com.espertech.esper.epl.datetime.reformatop
             return _dtxEval.Invoke(dtx);
         }
 
-        public Type ReturnType
-        {
-            get { return typeof (int?); }
-        }
+        public Type ReturnType => typeof(TValue);
 
         public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
             EventType[] typesPerStream,

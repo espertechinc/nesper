@@ -15,9 +15,9 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.epl.parse;
-using com.espertech.esper.support.view;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.epl.parse;
+using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 

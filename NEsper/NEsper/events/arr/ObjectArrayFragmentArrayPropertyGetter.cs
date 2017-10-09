@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 
 using com.espertech.esper.client;
 
@@ -59,6 +60,15 @@ namespace com.espertech.esper.events.arr
             if (value is EventBean[])
             {
                 return value;
+            }
+
+            if (value is Object[])
+            {
+                var objectArray = (Object[]) value;
+                if (Enumerable.All(objectArray, av => av == null || av is EventBean))
+                {
+                    return Enumerable.Cast<object>(objectArray).ToArray();
+                }
             }
 
             return BaseNestableEventUtil.GetFragmentArray(_eventAdapterService, value, _fragmentEventType);

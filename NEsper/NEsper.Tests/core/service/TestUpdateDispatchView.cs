@@ -16,8 +16,9 @@ using com.espertech.esper.dispatch;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.metric;
-using com.espertech.esper.support.core;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.core;
+using com.espertech.esper.supportunit.events;
+using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 

@@ -32,12 +32,10 @@ namespace com.espertech.esper.filter
                 }
             }
 
-            _hashCode = 7;
-            if (min != null)
-            {
-                _hashCode *= 31;
-                _hashCode ^= min.GetHashCode();
-            }
+            _hashCode = (min != null)
+                ? min.GetHashCode()
+                : 0;
+
             if (max != null)
             {
                 _hashCode *= 31;

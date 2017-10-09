@@ -48,11 +48,11 @@ namespace com.espertech.esper.epl.expression.ops
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            _length = ChildNodes.Length;
+            _length = ChildNodes.Count;
             _evaluators = ExprNodeUtility.GetEvaluators(ChildNodes);
     
             // Can be an empty array with no content
-            if (ChildNodes.Length == 0)
+            if (ChildNodes.Count == 0)
             {
                 _arrayReturnType = typeof(Object);
                 _constantResult = new Object[0];
@@ -210,7 +210,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return _arrayReturnType; }
         }
 
-        public ICollection<object> EvaluateGetROCollectionScalar(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
         {
             if (_constantResult != null)
             {
@@ -237,7 +237,7 @@ namespace com.espertech.esper.epl.expression.ops
             int index = 0;
             foreach (ExprEvaluator child in _evaluators)
             {
-                var result = child.Evaluate(new EvaluateParams(eventsPerStream, isNewData, context));
+                var result = child.Evaluate(evaluateParams);
                 if (result != null)
                 {
                     if (_mustCoerce)
@@ -261,7 +261,7 @@ namespace com.espertech.esper.epl.expression.ops
             return null;
         }
     
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
         {
             return null;
         }
@@ -271,7 +271,7 @@ namespace com.espertech.esper.epl.expression.ops
             return null;
         }
     
-        public EventBean EvaluateGetEventBean(EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context)
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
         {
             return null;
         }

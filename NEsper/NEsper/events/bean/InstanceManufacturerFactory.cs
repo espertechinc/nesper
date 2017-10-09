@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.core;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.events.bean
         public static InstanceManufacturer GetManufacturer(
             Type targetClass,
             EngineImportService engineImportService,
-            ExprNode[] childNodes)
+            IList<ExprNode> childNodes)
         {
             var evalsUnmodified = ExprNodeUtility.GetEvaluators(childNodes);
             var returnTypes = new object[evalsUnmodified.Length];

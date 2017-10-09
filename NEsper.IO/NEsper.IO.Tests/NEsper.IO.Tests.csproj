@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -103,13 +103,22 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net208, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Common.Logging.Log4Net208.3.4.1\lib\net40\Common.Logging.Log4Net208.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.6.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NUnit.3.6.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="nunit.framework, Version=3.8.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -122,6 +131,7 @@
   <ItemGroup>
     <Compile Include="csv\TestCSVReader.cs" />
     <Compile Include="csv\TestPropertyOrderHelper.cs" />
+    <Compile Include="NEsperSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="regression\adapter\TestAdapterCoordinator.cs" />
     <Compile Include="regression\adapter\TestCSVAdapter.cs" />
@@ -133,9 +143,9 @@
     <Compile Include="TestFeedStateManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\NEsper\NEsper\NEsper.net45.csproj">
+    <ProjectReference Include="..\..\NEsper\NEsper\NEsper.csproj">
       <Project>{3d317245-cde5-4e0e-9590-d7cba2257d9c}</Project>
-      <Name>NEsper.net45</Name>
+      <Name>NEsper</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEsper.IO\NEsper.IO.csproj">
       <Project>{6B178E01-D598-4D42-BA2A-B215CC87D85E}</Project>

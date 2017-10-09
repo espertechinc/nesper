@@ -12,10 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
-using com.espertech.esper.support.bean;
-using com.espertech.esper.support.events;
+using com.espertech.esper.supportunit.bean;
+using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
 
@@ -48,7 +49,7 @@ namespace com.espertech.esper.events
         {
             IDictionary<String, Object> typeOne = new Dictionary<String, Object>();
             typeOne["field1"] = typeof(string);
-            MapEventType underlying = new MapEventType(EventTypeMetadata.CreateAnonymous("noname"), "noname", 1, _eventAdapterService, typeOne, null, null, null);
+            MapEventType underlying = new MapEventType(EventTypeMetadata.CreateAnonymous("noname", ApplicationType.MAP), "noname", 1, _eventAdapterService, typeOne, null, null, null);
             EventTypeMetadata meta = EventTypeMetadata.CreateWrapper("test", true, false, false);
             _eventType = new WrapperEventType(meta, "mytype", 1, underlying, _properties, _eventAdapterService);
 

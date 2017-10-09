@@ -21,6 +21,7 @@ namespace com.espertech.esper.epl.enummethod.dot
     /// <summary>
     /// Represents the case-when-then-else control flow function is an expression tree.
     /// </summary>
+    [Serializable]
     public class ExprLambdaGoesNode 
         : ExprNodeBase
         , ExprEvaluator

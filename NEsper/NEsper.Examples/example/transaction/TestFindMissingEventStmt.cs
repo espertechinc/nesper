@@ -9,7 +9,7 @@
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
-using com.espertech.esper.support.util;
+
 using NUnit.Framework;
 
 namespace NEsper.Example.Transaction

@@ -52,10 +52,10 @@ namespace com.espertech.esper.epl.agg.service
             return this;
         }
 
-        public abstract object GetValue(int column, int agentInstanceId, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext exprEvaluatorContext);
-        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract ICollection<object> GetCollectionScalar(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
-        public abstract EventBean GetEventBean(int column, EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
+        public abstract object GetValue(int column, int agentInstanceId, EvaluateParams evaluateParams);
+        public abstract ICollection<EventBean> GetCollectionOfEvents(int column, EvaluateParams evaluateParams);
+        public abstract ICollection<object> GetCollectionScalar(int column, EvaluateParams evaluateParams);
+        public abstract EventBean GetEventBean(int column, EvaluateParams evaluateParams);
         public abstract object GetGroupKey(int agentInstanceId);
         public abstract ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext);
         public abstract void ApplyEnter(EventBean[] eventsPerStream, object optionalGroupKeyPerRow, ExprEvaluatorContext exprEvaluatorContext);

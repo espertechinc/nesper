@@ -20,6 +20,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.expression.subquery
 {
     /// <summary>Represents a subselect in an expression tree.</summary>
+    [Serializable]
     public class ExprSubselectRowNode : ExprSubselectNode
     {
         public static readonly SubselectEvalStrategyRow UNFILTERED_SELECTED =
@@ -36,7 +37,7 @@ namespace com.espertech.esper.epl.expression.subquery
         public static readonly SubselectEvalStrategyRow UNFILTERED_SELECTED_GROUPED =
             new SubselectEvalStrategyRowUnfilteredSelectedGroupedNoHaving();
 
-        [NonSerialized] private SubselectMultirowType subselectMultirowType;
+        [NonSerialized] private SubselectMultirowType _subselectMultirowType;
         [NonSerialized] private SubselectEvalStrategyRow _evalStrategy;
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace com.espertech.esper.epl.expression.subquery
 
         internal SubselectMultirowType SubselectMultirowType
         {
-            get { return subselectMultirowType; }
+            get { return _subselectMultirowType; }
         }
 
         public override Type ReturnType
@@ -300,7 +301,7 @@ namespace com.espertech.esper.epl.expression.subquery
             var resultEventType =
                 eventAdapterService.CreateAnonymousMapType(
                     statementId + "_subquery_" + this.SubselectNumber, rowType, true);
-            subselectMultirowType = new SubselectMultirowType(resultEventType, eventAdapterService);
+            _subselectMultirowType = new SubselectMultirowType(resultEventType, eventAdapterService);
             return resultEventType;
         }
 

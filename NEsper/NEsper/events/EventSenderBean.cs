@@ -24,7 +24,7 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.events
 {
     /// <summary>
-    /// Event sender for POJO Java object events.
+    /// Event sender for object events.
     /// <para>
     /// Allows sending only event objects of the underlying type matching the event type, or
     /// implementing the interface or extending the type. Any other event object generates an error.
@@ -82,7 +82,7 @@ namespace com.espertech.esper.events
             // Process event
             if ((ThreadingOption.IsThreadingEnabled) && (_threadingService.IsInboundThreading))
             {
-                _threadingService.SubmitInbound(new InboundUnitSendWrapped(eventBean, _runtime));
+                _threadingService.SubmitInbound(new InboundUnitSendWrapped(eventBean, _runtime).Run);
             }
             else
             {
@@ -113,8 +113,8 @@ namespace com.espertech.esper.events
                         else
                         {
                             throw new EPException(
-                                "Event object of type " + theEvent.GetType().Name +
-                                " does not equal, extend or implement the type " + _beanEventType.UnderlyingType.Name +
+                                "Event object of type " + theEvent.GetType().FullName +
+                                " does not equal, extend or implement the type " + _beanEventType.UnderlyingType.FullName +
                                 " of event type '" + _beanEventType.Name + "'");
                         }
                     }

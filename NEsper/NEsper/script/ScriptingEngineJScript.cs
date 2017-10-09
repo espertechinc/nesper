@@ -8,6 +8,7 @@
 
 namespace com.espertech.esper.script
 {
+    /*
     public class ScriptingEngineJScript : ScriptingEngineCodeDOM
     {
         public ScriptingEngineJScript()
@@ -15,4 +16,5 @@ namespace com.espertech.esper.script
         {
         }
     }
+    */
 }

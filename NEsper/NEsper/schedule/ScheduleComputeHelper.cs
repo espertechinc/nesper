@@ -114,23 +114,19 @@ namespace com.espertech.esper.schedule
                     try
                     {
                         timeZone = TimeZoneHelper.GetTimeZoneInfo(spec.OptionalTimeZone);
+                        after = DateTimeEx.GetInstance(timeZone);
                     }
                     catch (TimeZoneNotFoundException)
                     {
                         // this behavior ensures we are consistent with Java, but IMO, it's bad behavior...
                         // basically, if the timezone is not found, we default to UTC.
                         timeZone = TimeZoneInfo.Utc;
+                        after = DateTimeEx.GetInstance(timeZone);
                     }
-
-                    after = new DateTimeEx(
-                        afterTimeInMillis.TimeFromMillis(timeZone),
-                        timeZone);
                 }
                 else
                 {
-                    after = new DateTimeEx(
-                        afterTimeInMillis.TimeFromMillis(timeZone),
-                        timeZone);
+                    after = DateTimeEx.GetInstance(timeZone);
                 }
 
                 var remainder = timeAbacus.CalendarSet(afterTimeInMillis, after);
@@ -223,7 +219,7 @@ namespace com.espertech.esper.schedule
                 int year = after.Year;
                 if (!CheckDayValidInMonth(timeZone, result.DayOfMonth, result.Month, year))
                 {
-                    afterTimeInMillis = timeAbacus.CalendarGet(after.TimeInMillis, remainder);
+                    afterTimeInMillis = timeAbacus.CalendarGet(after, remainder);
                     continue;
                 }
 
@@ -432,7 +428,9 @@ namespace com.espertech.esper.schedule
                 new GregorianCalendar(),
                 baseDateTimeOffset);
 
-            return timeAbacus.CalendarGet(dateTime, remainder);
+            var dateTimeEx = new DateTimeEx(dateTime, timeZone);
+
+            return timeAbacus.CalendarGet(dateTimeEx, remainder);
         }
 
         /// <summary>

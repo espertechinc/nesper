@@ -22,8 +22,10 @@ namespace com.espertech.esper.example.qos_sla.monitor
 
             EPStatement statView = admin.CreateEPL(
                     "select * from " + typeof(OperationMeasurement).FullName +
-                    ".std:groupby('CustomerId').std:groupby('OperationName')" +
-                    ".win:length(100).stat:uni('Latency')");
+                    "#groupwin(CustomerId)" +
+                    "#groupwin(OperationName)" +
+                    "#length(100)" +
+                    "#uni(Latency)");
 
             statView.Events += (sender, e) => MonitorLatency(e, 10000);
         }

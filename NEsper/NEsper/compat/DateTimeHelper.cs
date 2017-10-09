@@ -24,6 +24,12 @@ namespace com.espertech.esper.compat
         public const int TICKS_PER_MILLI = 10000;
 
         /// <summary>
+        /// Number of ticks per microsecond
+        /// </summary>
+
+        public const int TICKS_PER_MICRO = 10;
+
+        /// <summary>
         /// Number of nanoseconds per tick
         /// </summary>
 
@@ -49,6 +55,17 @@ namespace com.espertech.esper.compat
         public static long TicksToNanos(long ticks)
         {
             return ticks * NANOS_PER_TICK;
+        }
+
+        /// <summary>
+        /// Converts microseconds to ticks
+        /// </summary>
+        /// <param name="micros"></param>
+        /// <returns></returns>
+
+        public static long MicrosToTicks(long micros)
+        {
+            return micros * TICKS_PER_MICRO;
         }
 
         /// <summary>
@@ -110,9 +127,19 @@ namespace com.espertech.esper.compat
             return new DateTime(MillisToTicks(millis + DateTimeConstants.Boundary), DateTimeKind.Utc);
         }
 
+        public static DateTime UtcFromMicros(this long micros)
+        {
+            return new DateTime(MicrosToTicks(micros + DateTimeConstants.Boundary * 1000), DateTimeKind.Utc);
+        }
+
         public static DateTime FromMillis(this long millis)
         {
             return UtcFromMillis(millis).ToLocalTime();
+        }
+
+        public static DateTime FromMicros(this long micros)
+        {
+            return UtcFromMicros(micros).ToLocalTime();
         }
 
         public static DateTime GetCurrentTimeUniversal()

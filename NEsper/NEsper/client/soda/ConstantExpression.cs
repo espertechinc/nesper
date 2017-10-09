@@ -25,7 +25,7 @@ namespace com.espertech.esper.client.soda
 
         /// <summary>Returns the type of the constant. </summary>
         /// <value>type</value>
-        public string ConstantType { get; set; }
+        public string ConstantType { get; private set; }
 
         /// <summary>Ctor. </summary>
         /// <param name="constant">is the constant value, or null to represent the null value</param>

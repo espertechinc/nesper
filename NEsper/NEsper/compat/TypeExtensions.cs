@@ -12,6 +12,7 @@ using System.Numerics;
 using System.Reflection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.util;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.compat
 {
@@ -323,7 +324,8 @@ namespace com.espertech.esper.compat
                 return false;
 
             asType = asType.GetBoxedType();
-            return (asType == typeof(DateTimeOffset?)) ||
+            return (asType == typeof(DateTimeEx)) ||
+                   (asType == typeof(DateTimeOffset?)) ||
                    (asType == typeof(DateTime?)) ||
                    (asType == typeof(long?));
         }
@@ -373,6 +375,18 @@ namespace com.espertech.esper.compat
         public static IDictionary<string,object> AsDataMap(this object o)
         {
             return o as IDictionary<string, object>;
+        }
+
+        public static IDictionary<string, object> AsStringDictionary(this object value)
+        {
+            if (value == null)
+                return null;
+            if (value is IDictionary<string, object>)
+                return (IDictionary<string, object>)value;
+            if (value.GetType().IsGenericDictionary())
+                return MagicMarker.GetStringDictionary(value);
+
+            throw new ArgumentException("invalid value for string dictionary", "value");
         }
 
         public static Attribute[] UnwrapAttributes(this MemberInfo memberInfo, bool inherit = true)

@@ -29,10 +29,10 @@ namespace com.espertech.esper.dataflow.ops
         [DataFlowOpParameter]
         private ExprNode filter;
     
-        private ExprEvaluator evaluator;
-        private EventBeanSPI theEvent;
-        private EventBean[] eventsPerStream = new EventBean[1];
-        private bool singleOutputPort;
+        private ExprEvaluator _evaluator;
+        private EventBeanSPI _theEvent;
+        private readonly EventBean[] _eventsPerStream = new EventBean[1];
+        private bool _singleOutputPort;
     
         [DataFlowContext]
         private EPDataFlowEmitter graphContext;
@@ -50,12 +50,12 @@ namespace com.espertech.esper.dataflow.ops
             }
     
             EventType eventType = prepareContext.InputPorts[0].TypeDesc.EventType;
-            singleOutputPort = prepareContext.OutputPorts.Count == 1;
+            _singleOutputPort = prepareContext.OutputPorts.Count == 1;
     
             ExprNode validated = ExprNodeUtility.ValidateSimpleGetSubtree(ExprNodeOrigin.DATAFLOWFILTER, filter, prepareContext.StatementContext, eventType, false);
-            evaluator = validated.ExprEvaluator;
-            theEvent = prepareContext.ServicesContext.EventAdapterService.GetShellForType(eventType);
-            eventsPerStream[0] = theEvent;
+            _evaluator = validated.ExprEvaluator;
+            _theEvent = prepareContext.ServicesContext.EventAdapterService.GetShellForType(eventType);
+            _eventsPerStream[0] = _theEvent;
     
             var typesPerPort = new GraphTypeDesc[prepareContext.OutputPorts.Count];
             for (int i = 0; i < typesPerPort.Length; i++) {
@@ -66,28 +66,28 @@ namespace com.espertech.esper.dataflow.ops
     
         public void OnInput(Object row) {
             if (Log.IsDebugEnabled) {
-                Log.Debug("Received row for filtering: " + Arrays.ToString((Object[]) row));
+                Log.Debug("Received row for filtering: " + CompatExtensions.Render((Object[]) row));
             }
     
             if (!(row is EventBeanSPI)) {
-                theEvent.Underlying = row;
+                _theEvent.Underlying = row;
             } else {
-                theEvent = (EventBeanSPI) row;
+                _theEvent = (EventBeanSPI) row;
             }
     
-            bool? pass = (bool?) evaluator.Evaluate(eventsPerStream, true, null);
-            if (pass != null && pass) {
+            var pass = _evaluator.Evaluate(new EvaluateParams(_eventsPerStream, true, null));
+            if (pass != null && true.Equals(pass)) {
                 if (Log.IsDebugEnabled) {
-                    Log.Debug("Submitting row " + Arrays.ToString((Object[]) row));
+                    Log.Debug("Submitting row " + CompatExtensions.Render((Object[])row));
                 }
     
-                if (singleOutputPort) {
+                if (_singleOutputPort) {
                     graphContext.Submit(row);
                 } else {
                     graphContext.SubmitPort(0, row);
                 }
             } else {
-                if (!singleOutputPort) {
+                if (!_singleOutputPort) {
                     graphContext.SubmitPort(1, row);
                 }
             }

@@ -86,7 +86,7 @@ namespace com.espertech.esper.events.xml
                         continue;
                     }
 
-                    XmlNode attribute = childNode.Attributes.GetNamedItem("_id");
+                    XmlNode attribute = childNode.Attributes.GetNamedItem("id");
                     if (attribute == null)
                     {
                         continue;

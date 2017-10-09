@@ -50,7 +50,7 @@ namespace NEsper.Scripting.Noesis
 
                 context.SetParameter("clr", new ClrBinding());
                 context.SetParameter("print", new Action<object>(value => Console.Out.WriteLine(value)));
-                context.SetParameter("render", new Action<object>(value => value.Render()));
+                context.SetParameter("render", new Action<object>(value => value.RenderAny()));
                 return context.Run(expressionScript.Expression);
             }
 #else
@@ -101,6 +101,11 @@ namespace NEsper.Scripting.Noesis
             public AppDomain CurrentAppDomain
             {
                 get { return AppDomain.CurrentDomain; }
+            }
+
+            public object New(string typeName)
+            {
+                return New(typeName, new object[0]);
             }
 
             public object New(string typeName, object[] args)

@@ -30,7 +30,7 @@ namespace com.espertech.esper.view.window
         /// <summary>The timestamp property name.</summary>
         private ExprNode _timestampExpression;
         private ExprEvaluator _timestampExpressionEval;
-        private long _optionalReferencePoint;
+        private long? _optionalReferencePoint;
         /// <summary>The number of msec to expire.</summary>
         private ExprTimePeriodEvalDeltaConstFactory _timeDeltaComputationFactory;
         private IList<ExprNode> _viewParameters;
@@ -114,7 +114,7 @@ namespace com.espertech.esper.view.window
             get { return _timestampExpressionEval; }
         }
 
-        public long OptionalReferencePoint
+        public long? OptionalReferencePoint
         {
             get { return _optionalReferencePoint; }
         }
