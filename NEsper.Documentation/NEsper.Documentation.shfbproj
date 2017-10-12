@@ -13,7 +13,7 @@
     <RootNamespace>NEsper.Documentation</RootNamespace>
     <Name>NEsper.Documentation</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>.NET Framework 4.6.1</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4.7</FrameworkVersion>
     <OutputPath>..\build\NEsper-6.0.1docs\</OutputPath>
     <HtmlHelpName>NEsper</HtmlHelpName>
     <Language>en-US</Language>
@@ -61,45 +61,46 @@
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.adapter" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.activator" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.factory" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.mgr" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.stmt" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.subselect" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.context.util" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.deploy" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.service" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.service.multimatch" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.service.resource" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.start" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.support" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.core.thread" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.annotations" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.core" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.interfaces" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.ops" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.ops.epl" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.runnables" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dataflow.util" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.dispatch" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.generated" isDocumented="False" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.assemble" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.base" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.base" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.composite" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.sorted" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.hint" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.plan" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.pollindex" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.rep" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.table" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.join.util" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.lookup" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.methodbase" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.metric" isDocumented="True" xmlns="" />
-<NamespaceSummaryItem name="com.espertech.esper.epl.named" isDocumented="True" xmlns="" /></NamespaceSummaries>
+      <NamespaceSummaryItem name="com.espertech.esper.adapter" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.activator" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.factory" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.mgr" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.stmt" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.subselect" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.context.util" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.deploy" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.service" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.service.multimatch" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.service.resource" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.start" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.support" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.core.thread" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.annotations" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.core" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.interfaces" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.ops" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.ops.epl" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.runnables" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dataflow.util" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.dispatch" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.generated" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.assemble" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.base" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.base" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.composite" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.exec.sorted" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.hint" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.plan" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.pollindex" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.rep" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.table" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.join.util" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.lookup" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.methodbase" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.metric" isDocumented="True" xmlns="" />
+      <NamespaceSummaryItem name="com.espertech.esper.epl.named" isDocumented="True" xmlns="" />
+    </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
