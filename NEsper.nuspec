@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>NEsper</id>
-    <version>6.0.1.1002</version>
+    <version>6.0.1.1003</version>
     <authors>Espertech</authors>
     <owners>Espertech</owners>
     <language>en-us</language>
@@ -21,7 +21,7 @@
       <dependency id="Common.Logging.Core" version="3.4.1" />
       <dependency id="Nito.KitchenSink.CRC" version="1.1.0" />
       <dependency id="Castle.Core" version="4.1.1" />
-      <dependency id="Antlr4.Runtime" version="4.6.0" />
+      <dependency id="Antlr4.Runtime.Standard" version="4.6.0" />
       <dependency id="Sharpen" version="1.0.0.3" />
     </dependencies>
   </metadata>
