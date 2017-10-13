@@ -155,40 +155,40 @@
 
   <Target Name="Copy-Binaries-Main">
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net47" />
+    <MakeDir Directories="$(BuildRoot)\lib\net45" />
 
     <!-- NEsper // bin -->
     <ItemGroup>
-      <Binaries46 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.xml"/>
-      <Binaries46 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll"/>
-      <Binaries46 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll.config"/>
-      <Binaries46 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll"/>
-      <Binaries46 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll.config"/>
+      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.xml"/>
+      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll"/>
+      <Binaries45 Include="NEsper\NEsper\bin\$(Configuration)\NEsper.dll.config"/>
+      <Binaries45 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll"/>
+      <Binaries45 Include="NEsper\NEsper.Tests\bin\$(Configuration)\NEsper.Tests.dll.config"/>
     </ItemGroup>
-    <Copy SourceFiles="@(Binaries46)" DestinationFolder="$(BuildRoot)\lib\net47" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
   </Target>
 
   <Target Name="Copy-Binaries-IO">
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net47" />
+    <MakeDir Directories="$(BuildRoot)\lib\net45" />
 
     <!-- NEsper.IO // bin -->
     <ItemGroup>
-      <Binaries46 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.xml"/>
-      <Binaries46 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll"/>
+      <Binaries45 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.xml"/>
+      <Binaries45 Include="NEsper.IO\NEsper.IO\bin\$(Configuration)\NEsper.IO.dll"/>
     </ItemGroup>
-    <Copy SourceFiles="@(Binaries46)" DestinationFolder="$(BuildRoot)\lib\net47" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
   </Target>
 
   <Target Name="Copy-Binaries-Avro">
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net47" />
+    <MakeDir Directories="$(BuildRoot)\lib\net45" />
 
     <!-- NEsper.Avro // bin -->
     <ItemGroup>
-      <Binaries46 Include="NEsper.Avro\bin\$(Configuration)\NEsper.Avro.dll"/>
+      <Binaries45 Include="NEsper.Avro\bin\$(Configuration)\NEsper.Avro.dll"/>
     </ItemGroup>
-    <Copy SourceFiles="@(Binaries46)" DestinationFolder="$(BuildRoot)\lib\net47" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="@(Binaries45)" DestinationFolder="$(BuildRoot)\lib\net45" SkipUnchangedFiles="True" />
   </Target>
 
   <Target Name="Copy-Binaries-All" DependsOnTargets="Copy-Binaries-Main;Copy-Binaries-IO;Copy-Binaries-Avro" />
@@ -226,7 +226,7 @@
   <Target Name="Release-Target" DependsOnTargets="Build">
     <Message Text="Building NEsper Release for $(Platform)" />
     <MakeDir Directories="$(BuildRoot)" />
-    <MakeDir Directories="$(BuildRoot)\lib\net47" />
+    <MakeDir Directories="$(BuildRoot)\lib\net45" />
 
     <CallTarget Targets="Copy-Artifacts" />
     <CallTarget Targets="RedirectProjectFiles" />

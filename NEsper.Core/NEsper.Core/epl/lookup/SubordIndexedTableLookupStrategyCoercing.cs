@@ -1,0 +1,51 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+
+using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.table;
+using com.espertech.esper.util;
+
+namespace com.espertech.esper.epl.lookup
+{
+    /// <summary>
+    /// MapIndex lookup strategy that coerces the key values before performing a lookup.
+    /// </summary>
+    public class SubordIndexedTableLookupStrategyCoercing : SubordIndexedTableLookupStrategyExpr
+    {
+        private readonly Type[] _coercionTypes;
+    
+        public SubordIndexedTableLookupStrategyCoercing(int numStreamsOuter, ExprEvaluator[] evaluators, PropertyIndexedEventTable index, Type[] coercionTypes, LookupStrategyDesc strategyDesc)
+            : base(numStreamsOuter, evaluators, index, strategyDesc)
+        {
+            _coercionTypes = coercionTypes;
+        }
+    
+        protected override Object[] GetKeys(EventBean[] eventsPerStream, ExprEvaluatorContext context)
+        {
+            var keys = base.GetKeys(eventsPerStream, context);
+            for (int i = 0; i < keys.Length; i++)
+            {
+                var value = keys[i];
+    
+                var coercionType = _coercionTypes[i];
+                if ((value != null) && (!(value.GetType() == coercionType)))
+                {
+                    if (value.IsNumber())
+                    {
+                        value = CoercerFactory.CoerceBoxed(value, _coercionTypes[i]);
+                    }
+                    keys[i] = value;
+                }
+            }
+            return keys;
+        }
+    }
+}

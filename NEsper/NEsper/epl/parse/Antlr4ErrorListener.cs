@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.IO;
 using System.Reflection;
 
 using Antlr4.Runtime;
@@ -28,6 +29,18 @@ namespace com.espertech.esper.epl.parse
         }
 
         public void SyntaxError(
+            IRecognizer recognizer,
+            T offendingSymbol,
+            int line,
+            int charPositionInLine,
+            string msg,
+            RecognitionException e)
+        {
+            throw e;
+        }
+
+        public void SyntaxError(
+            TextWriter output,
             IRecognizer recognizer,
             T offendingSymbol,
             int line,

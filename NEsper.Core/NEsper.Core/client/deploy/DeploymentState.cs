@@ -1,0 +1,20 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2017 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+namespace com.espertech.esper.client.deploy
+{
+    /// <summary>Deployment state. </summary>
+    public enum DeploymentState
+    {
+        /// <summary>In undeployed state a deployment is added but not currently deployed. </summary>
+        UNDEPLOYED,
+    
+        /// <summary>In deployed state a deployment is added and it is deployed, i.e. has zero to many active EPL statements associated. </summary>
+        DEPLOYED
+    }
+}
