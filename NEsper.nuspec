@@ -3,16 +3,16 @@
   <metadata>
     <id>NEsper</id>
     <version>6.0.1.1003</version>
-    <authors>Espertech</authors>
-    <owners>Espertech</owners>
+    <authors>EsperTech</authors>
+    <owners>EsperTech</owners>
     <language>en-us</language>
-    <projectUrl>http://esper.codehaus.org/</projectUrl>
-    <licenseUrl>http://esper.codehaus.org/about/license/license.html</licenseUrl>
-    <iconUrl>http://esper.codehaus.org/images/espertech_logo_transparent.png</iconUrl>
+    <projectUrl>http://www.espertech.com/esper</projectUrl>
+    <licenseUrl>http://www.espertech.com/esper/esper-license-and-trademark/</licenseUrl>
+    <iconUrl>http://static.espertech.com/espertech_logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</description>
     <summary>A component for complex event processing (CEP).</summary>
-    <copyright>Copyright (C) 2006-2017 Esper Team. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2006-2017 EsperTech. All rights reserved.</copyright>
     <tags>esper esp cep</tags>
     <title>NEsper</title>
     <dependencies>
