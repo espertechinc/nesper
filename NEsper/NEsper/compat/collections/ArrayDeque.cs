@@ -174,16 +174,25 @@ namespace com.espertech.esper.compat.collections
             return result;
         }
 
-        public TM RemoveInternal<TM>(int index, TM returnValue)
+        public TM RemoveInternal<TM>(ref int index, TM returnValue)
         {
             if (_tail > _head)
             {
-                int tindex = _head + index;
+                int tindex = index;
                 if (tindex >= _tail)
                     throw new ArgumentOutOfRangeException();
-                for (int ii = tindex + 1 ; ii < _tail ; ii++)
-                    _array[ii - 1] = _array[ii];
-                _array[--_tail] = default(T);
+                if (tindex == _head)
+                {
+                    _array[_head++] = default(T);
+                    _head %= _array.Length;
+                    index = _head;
+                }
+                else
+                {
+                    for (int ii = tindex + 1; ii < _tail; ii++)
+                        _array[ii - 1] = _array[ii];
+                    _array[--_tail] = default(T);
+                }
             }
             else if (index > (_tail + _array.Length - _head))
             {
@@ -191,8 +200,14 @@ namespace com.espertech.esper.compat.collections
             }
             else
             {
-                int tindex = (_head + index)%_array.Length;
-                if (tindex > _head)
+                int tindex = index;
+                if (tindex == _head)
+                {
+                    _array[_head++] = default(T);
+                    _head %= _array.Length;
+                    index = _head;
+                }
+                else if (tindex > _head)
                 {
                     for (int ii = tindex + 1 ; ii < _array.Length ; ii++)
                         _array[ii - 1] = _array[ii];
@@ -217,50 +232,110 @@ namespace com.espertech.esper.compat.collections
 
         public void RemoveAt(int index)
         {
-            RemoveInternal(index, 0);
+            index = (_head + index) % _array.Length;
+            RemoveInternal(ref index, 0);
         }
 
-        public void RemoveWhere(Func<T, bool> predicate, Action<T> onRemoveItem = null)
+        public void RemoveWhere(
+            Func<T, Continuation, bool> handler,
+            Action<T> onRemoveItem = null)
+        {
+            T value;
+
+            var continuation = new Continuation(true);
+
+            if (_tail > _head)
+            {
+                for (int ii = _head; continuation.Value && ii < _tail; ii++)
+                {
+                    if (handler.Invoke(value = _array[ii], continuation))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
+                            onRemoveItem(value);
+                        --ii;
+                    }
+                }
+            }
+            else if (_tail != _head)
+            {
+                for (int ii = _head; continuation.Value && ii < _array.Length; ii++)
+                {
+                    if (handler.Invoke(value = _array[ii], continuation))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
+                            onRemoveItem(value);
+                        --ii;
+                    }
+                }
+                for (int ii = 0; continuation.Value && ii < _tail; ii++)
+                {
+                    if (handler.Invoke(value = _array[ii], continuation))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
+                            onRemoveItem(value);
+                        --ii;
+                    }
+                }
+            }
+        }
+
+        public void RemoveWhere(
+            Func<T, bool> predicate,
+            Action<T> onRemoveItem = null)
         {
             T value;
 
             if (_tail > _head)
             {
                 for (int ii = _head; ii < _tail; ii++)
+                {
                     if (predicate.Invoke(value = _array[ii]))
-                        if (RemoveInternal(ii--, true) && (onRemoveItem != null))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
                             onRemoveItem(value);
+                        --ii;
+                    }
+                }
             }
-            else
+            else if (_tail != _head)
             {
                 for (int ii = _head; ii < _array.Length; ii++)
+                {
                     if (predicate.Invoke(value = _array[ii]))
-                        if (RemoveInternal(ii--, true) && (onRemoveItem != null))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
                             onRemoveItem(value);
+                        --ii;
+                    }
+                }
                 for (int ii = 0; ii < _tail; ii++)
+                {
                     if (predicate.Invoke(value = _array[ii]))
-                        if (RemoveInternal(ii--, true) && (onRemoveItem != null))
+                    {
+                        if (RemoveInternal(ref ii, true) && (onRemoveItem != null))
                             onRemoveItem(value);
+                        --ii;
+                    }
+                }
             }
         }
-
-
+        
         public bool Remove(T item)
         {
             if (_tail > _head)
             {
                 for (int ii = _head; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
-                        return RemoveInternal(ii, true);
+                        return RemoveInternal(ref ii, true);
             }
             else
             {
                 for (int ii = _head; ii < _array.Length; ii++)
                     if (Equals(_array[ii], item))
-                        return RemoveInternal(ii, true);
+                        return RemoveInternal(ref ii, true);
                 for (int ii = 0; ii < _tail; ii++)
                     if (Equals(_array[ii], item))
-                        return RemoveInternal(ii, true);
+                        return RemoveInternal(ref ii, true);
             }
 
             return false;

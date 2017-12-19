@@ -24,9 +24,9 @@ namespace com.espertech.esper.epl.named
         {
         }
 
-        public override Thread CurrentThread
+        public override NamedWindowConsumerLatch Earlier
         {
-            get { return Thread.CurrentThread; }
+            get => null;
         }
 
         public override void Await()
