@@ -9,10 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
@@ -34,6 +36,8 @@ namespace com.espertech.esper.epl.named
     /// </summary>
     public class NamedWindowDispatchServiceImpl : NamedWindowDispatchService
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly SchedulingService _schedulingService;
         private readonly VariableService _variableService;
         private readonly TableService _tableService;
@@ -42,11 +46,8 @@ namespace com.espertech.esper.epl.named
         private readonly IReaderWriterLock _eventProcessingRwLock;
         private readonly MetricReportingService _metricReportingService;
 
-        private readonly IThreadLocal<IList<NamedWindowConsumerLatch>> _threadLocal = ThreadLocalManager.Create<IList<NamedWindowConsumerLatch>>(
-            () => new List<NamedWindowConsumerLatch>());
-
-        private readonly IThreadLocal<IDictionary<EPStatementAgentInstanceHandle, object>> _dispatchesPerStmtTl = ThreadLocalManager.Create<IDictionary<EPStatementAgentInstanceHandle, object>>(
-            () => new Dictionary<EPStatementAgentInstanceHandle, object>());
+        private readonly IThreadLocal<DispatchesTL> _threadLocal = ThreadLocalManager.Create<DispatchesTL>(
+            () => new DispatchesTL());
 
         /// <summary>
         /// Ctor.
@@ -121,7 +122,6 @@ namespace com.espertech.esper.epl.named
         public void Dispose()
         {
             _threadLocal.Dispose();
-            _dispatchesPerStmtTl.Dispose();
         }
 
         public void AddDispatch(
@@ -129,19 +129,19 @@ namespace com.espertech.esper.epl.named
             NamedWindowDeltaData delta,
             IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumers)
         {
-            _threadLocal.GetOrCreate().Add(
+            _threadLocal.GetOrCreate().Dispatches.Add(
                 latchFactory.NewLatch(delta, consumers));
         }
 
         public bool Dispatch()
         {
-            var dispatches = _threadLocal.GetOrCreate();
-            if (dispatches.IsEmpty())
+            var dispatchesTL = _threadLocal.GetOrCreate();
+            if (dispatchesTL.Dispatches.IsEmpty())
             {
                 return false;
             }
 
-            while (!dispatches.IsEmpty())
+            while (!dispatchesTL.Dispatches.IsEmpty())
             {
                 // Acquire main processing lock which locks out statement management
                 if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QNamedWindowDispatch(_exceptionHandlingService.EngineURI); }
@@ -152,13 +152,21 @@ namespace com.espertech.esper.epl.named
                     {
                         try
                         {
-                            var units = dispatches.ToArray();
-                            dispatches.Clear();
-                            ProcessDispatches(units);
+                            // since dispatches can cause dispatches, copy the contents
+                            dispatchesTL.Current.AddAll(dispatchesTL.Dispatches);
+                            dispatchesTL.Dispatches.Clear();
+                            ProcessDispatches(
+                                dispatchesTL.Current,
+                                dispatchesTL.Work,
+                                dispatchesTL.DispatchesPerStmt);
                         }
                         catch (Exception ex)
                         {
                             throw new EPException(ex);
+                        }
+                        finally
+                        {
+                            dispatchesTL.Current.Clear();
                         }
                     }
                 }
@@ -171,11 +179,14 @@ namespace com.espertech.esper.epl.named
             return true;
         }
 
-        private void ProcessDispatches(NamedWindowConsumerLatch[] dispatches)
+        private void ProcessDispatches(
+            ArrayDeque<NamedWindowConsumerLatch> dispatches,
+            ArrayDeque<NamedWindowConsumerLatch> work,
+            IDictionary<EPStatementAgentInstanceHandle, Object> dispatchesPerStmt)
         {
-            if (dispatches.Length == 1)
+            if (dispatches.Count == 1)
             {
-                var latch = dispatches[0];
+                var latch = dispatches.First();
                 try
                 {
                     latch.Await();
@@ -211,37 +222,71 @@ namespace com.espertech.esper.epl.named
 
             // Most likely all dispatches go to different statements since most statements are not joins of
             // named windows that produce results at the same time. Therefore sort by statement handle.
-            var dispatchesPerStmt = _dispatchesPerStmtTl.GetOrCreate();
-            for (int ii = 0; ii < dispatches.Length; ii++)
-            {
-                var latch = dispatches[ii];
-                latch.Await();
-                foreach (var entry in latch.DispatchTo)
-                {
-                    var handle = entry.Key;
-                    var perStmtObj = dispatchesPerStmt.Get(handle);
-                    if (perStmtObj == null)
-                    {
-                        dispatchesPerStmt.Put(handle, latch);
-                    }
-                    else if (perStmtObj is IList<NamedWindowConsumerLatch>)
-                    {
-                        var list = (IList<NamedWindowConsumerLatch>)perStmtObj;
-                        list.Add(latch);
-                    }
-                    else // convert from object to list
-                    {
-                        var unitObj = (NamedWindowConsumerLatch)perStmtObj;
-                        IList<NamedWindowConsumerLatch> list = new List<NamedWindowConsumerLatch>();
-                        list.Add(unitObj);
-                        list.Add(latch);
-                        dispatchesPerStmt.Put(handle, list);
-                    }
-                }
-            }
+            // We need to process in N-element chains to preserve dispatches that are next to each other for the same thread.
 
+            while (!dispatches.IsEmpty())
+            {
+                // the first latch always gets awaited
+                var first = dispatches.RemoveFirst();
+                first.Await();
+                work.Add(first);
+
+                // determine which further latches are in this chain and 
+                // add these, skipping await for any latches in the chain
+
+                dispatches.RemoveWhere(
+                    (next, continuation) =>
+                    {
+                        NamedWindowConsumerLatch earlier = next.Earlier;
+                        if (earlier == null || work.Contains(earlier))
+                        {
+                            work.Add(next);
+                            return true;
+                        }
+                        else
+                        {
+                            continuation.Value = false;
+                            return false;
+                        }
+                    });
+
+                ProcessDispatches(work, dispatchesPerStmt);
+            }
+        }
+
+        private void ProcessDispatches(
+            Deque<NamedWindowConsumerLatch> dispatches, 
+            IDictionary<EPStatementAgentInstanceHandle, Object> dispatchesPerStmt)
+        {
             try
             {
+                foreach (var latch in dispatches)
+                {
+                    foreach (var entry in latch.DispatchTo)
+                    {
+                        var handle = entry.Key;
+                        var perStmtObj = dispatchesPerStmt.Get(handle);
+                        if (perStmtObj == null)
+                        {
+                            dispatchesPerStmt.Put(handle, latch);
+                        }
+                        else if (perStmtObj is IList<NamedWindowConsumerLatch>)
+                        {
+                            var list = (IList<NamedWindowConsumerLatch>)perStmtObj;
+                            list.Add(latch);
+                        }
+                        else
+                        {
+                            // convert from object to list
+                            var unitObj = (NamedWindowConsumerLatch)perStmtObj;
+                            var list = new List<NamedWindowConsumerLatch>();
+                            list.Add(unitObj);
+                            list.Add(latch);
+                            dispatchesPerStmt.Put(handle, list);
+                        }
+                    }
+                }
+
                 // Dispatch - with or without metrics reporting
                 foreach (var entry in dispatchesPerStmt)
                 {
@@ -281,13 +326,11 @@ namespace com.espertech.esper.epl.named
             }
             finally
             {
-                for (int ii = 0; ii < dispatches.Length; ii++)
-                {
-                    dispatches[ii].Done();
-                }
-            }
+                dispatches.For(latch => latch.Done());
 
-            dispatchesPerStmt.Clear();
+                dispatchesPerStmt.Clear();
+                dispatches.Clear();
+            }
         }
 
         private void ProcessHandleMultiple(EPStatementAgentInstanceHandle handle, IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer)
@@ -396,6 +439,22 @@ namespace com.espertech.esper.epl.named
                 }
             }
             return deltaPerConsumer;
+        }
+
+        internal class DispatchesTL
+        {
+            internal DispatchesTL()
+            {
+                Dispatches = new ArrayDeque<NamedWindowConsumerLatch>();
+                Current = new ArrayDeque<NamedWindowConsumerLatch>();
+                Work = new ArrayDeque<NamedWindowConsumerLatch>();
+                DispatchesPerStmt = new Dictionary<EPStatementAgentInstanceHandle, Object>();
+            }
+
+            public ArrayDeque<NamedWindowConsumerLatch> Dispatches { get; private set; }
+            public ArrayDeque<NamedWindowConsumerLatch> Current { get; private set; }
+            public ArrayDeque<NamedWindowConsumerLatch> Work { get; private set; }
+            public IDictionary<EPStatementAgentInstanceHandle, Object> DispatchesPerStmt { get; private set; }
         }
     }
 } // end of namespace

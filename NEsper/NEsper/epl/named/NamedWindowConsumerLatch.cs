@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -17,11 +18,20 @@ namespace com.espertech.esper.epl.named
     {
         protected NamedWindowConsumerLatch(NamedWindowDeltaData deltaData, IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> dispatchTo)
         {
+#if DEBUG && DEVELOPMENT
+            Id = Guid.NewGuid();
+            AllocThread = Thread.CurrentThread;
+#endif
             DeltaData = deltaData;
             DispatchTo = dispatchTo;
         }
 
-        public abstract Thread CurrentThread { get; }
+#if DEBUG && DEVELOPMENT
+        public Guid Id { get; }
+        public Thread AllocThread { get;  }
+#endif
+
+        public abstract NamedWindowConsumerLatch Earlier { get; }
         public abstract void Await();
         public abstract void Done();
 
