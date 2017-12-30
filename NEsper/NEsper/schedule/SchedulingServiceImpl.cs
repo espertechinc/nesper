@@ -142,12 +142,15 @@ namespace com.espertech.esper.schedule
                         }
                     }
 
-                    // Next remove all handles
-                    foreach (var entry in headMap)
+                    if (headMap.HasFirst())
                     {
-                        foreach (var handle in entry.Value.Values)
+                        // Next remove all handles
+                        foreach (var entry in headMap)
                         {
-                            _handleSetMap.Remove(handle);
+                            foreach (var handle in entry.Value.Values)
+                            {
+                                _handleSetMap.Remove(handle);
+                            }
                         }
                     }
 

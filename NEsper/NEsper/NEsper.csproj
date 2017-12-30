@@ -672,6 +672,7 @@
     <Compile Include="compat\ChronoUnit.cs" />
     <Compile Include="compat\ClassLoader.cs" />
     <Compile Include="compat\ClassLoaderDefault.cs" />
+    <Compile Include="compat\collections\Continuation.cs" />
     <Compile Include="compat\collections\StringMap.cs" />
     <Compile Include="compat\collections\ArrayDictionary.cs" />
     <Compile Include="compat\collections\ObjectMap.cs" />

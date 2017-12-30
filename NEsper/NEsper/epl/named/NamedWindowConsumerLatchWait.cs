@@ -30,7 +30,6 @@ namespace com.espertech.esper.epl.named
         // The later latch is the latch generated after this latch
         private NamedWindowConsumerLatchWait _later;
         private volatile bool _isCompleted;
-        private Thread _currentThread;
 
         /// <summary>
         /// Ctor.
@@ -63,6 +62,11 @@ namespace com.espertech.esper.epl.named
             get { return _isCompleted; }
         }
 
+        public override NamedWindowConsumerLatch Earlier
+        {
+            get => _earlier;
+        }
+
         /// <summary>
         /// Hand a later latch to use for indicating completion via notify.
         /// </summary>
@@ -78,53 +82,34 @@ namespace com.espertech.esper.epl.named
         /// <returns>payload of the latch</returns>
         public override void Await()
         {
-            var thread = Thread.CurrentThread;
-
-            try
+            if (_earlier._isCompleted)
             {
-                if (_earlier._isCompleted)
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (((NamedWindowConsumerLatch)_earlier).CurrentThread == thread)
-                {
-                    return;
-                }
-
-                lock (this)
-                {
-                    if (!_earlier._isCompleted)
-                    {
-                        try
-                        {
-                            Monitor.Wait(this, (int)_factory.MsecWait);
-                        }
-                        catch (ThreadAbortException e)
-                        {
-                            Log.Error("thread aborted", e);
-                        }
-                        catch (ThreadInterruptedException e)
-                        {
-                            Log.Error("thread interrupted", e);
-                        }
-                    }
-                }
-
+            lock (this)
+            {
                 if (!_earlier._isCompleted)
                 {
-                    Log.Info("Wait timeout exceeded for named window '" + "' consumer dispatch with notify");
+                    try
+                    {
+                        Monitor.Wait(this, (int)_factory.MsecWait);
+                    }
+                    catch (ThreadAbortException e)
+                    {
+                        Log.Error("thread aborted", e);
+                    }
+                    catch (ThreadInterruptedException e)
+                    {
+                        Log.Error("thread interrupted", e);
+                    }
                 }
             }
-            finally
-            {
-                _currentThread = thread;
-            }
-        }
 
-        public override Thread CurrentThread
-        {
-            get { return _currentThread; }
+            if (!_earlier._isCompleted)
+            {
+                Log.Info("Wait timeout exceeded for named window '" + "' consumer dispatch with notify");
+            }
         }
 
         /// <summary>
