@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
@@ -19,77 +18,63 @@ using com.espertech.esper.epl.expression.methodagg;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryNth : AggregationMethodFactory
-	{
-        protected internal readonly ExprNthAggNode Parent;
-        protected internal readonly Type ChildType;
-        protected internal readonly int Size;
+    public class AggregationMethodFactoryNth : AggregationMethodFactory
+    {
+        private readonly ExprNthAggNode _parent;
+        private readonly int _size;
 
-	    public AggregationMethodFactoryNth(ExprNthAggNode parent, Type childType, int size)
-	    {
-	        Parent = parent;
-	        ChildType = childType;
-	        Size = size;
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public Type ResultType
-	    {
-	        get { return ChildType; }
-	    }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationMethodFactoryNth(ExprNthAggNode parent, Type childType, int size)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            _parent = parent;
+            ResultType = childType;
+            _size = size;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public bool IsAccessAggregation => false;
+
+        public Type ResultType { get; }
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public AggregationMethod Make()
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        AggregationMethod method =  new AggregatorNth(Size + 1);
-	        if (!Parent.IsDistinct)
-            {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, false);
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public AggregationMethod Make()
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryNth that = (AggregationMethodFactoryNth) intoTableAgg;
-	        service.AggregationMethodFactoryUtil.ValidateAggregationInputType(ChildType, that.ChildType);
-	        if (Size != that.Size) {
-	            throw new ExprValidationException(string.Format("The size is {0} and provided is {1}", Size, that.Size));
-	        }
-	    }
+            AggregationMethod method;
+            if (_parent.OptionalFilter != null)
+                method = new AggregatorNthFilter(_size + 1);
+            else
+                method = new AggregatorNth(_size + 1);
+            if (!_parent.IsDistinct)
+                return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, false);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
-	}
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryNth) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationInputType(ResultType, that.ResultType);
+            if (_size != that._size)
+                throw new ExprValidationException(
+                    "The size is " + _size + " and provided is " + that._size);
+        }
+
+        public AggregationAgent AggregationStateAgent => null;
+
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+    }
 } // end of namespace

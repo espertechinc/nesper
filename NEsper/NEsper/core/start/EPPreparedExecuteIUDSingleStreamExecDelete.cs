@@ -14,21 +14,22 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.filter;
 
 namespace com.espertech.esper.core.start
 {
     public class EPPreparedExecuteIUDSingleStreamExecDelete : EPPreparedExecuteIUDSingleStreamExec
     {
-        private readonly FilterSpecCompiled _filter;
+        private readonly QueryGraph _queryGraph;
         private readonly ExprNode _optionalWhereClause;
         private readonly Attribute[] _annotations;
         private readonly ExprTableAccessNode[] _optionalTableNodes;
         private readonly EPServicesContext _services;
     
-        public EPPreparedExecuteIUDSingleStreamExecDelete(FilterSpecCompiled filter, ExprNode optionalWhereClause, Attribute[] annotations, ExprTableAccessNode[] optionalTableNodes, EPServicesContext services)
+        public EPPreparedExecuteIUDSingleStreamExecDelete(QueryGraph queryGraph, ExprNode optionalWhereClause, Attribute[] annotations, ExprTableAccessNode[] optionalTableNodes, EPServicesContext services)
         {
-            _filter = filter;
+            _queryGraph = queryGraph;
             _optionalWhereClause = optionalWhereClause;
             _annotations = annotations;
             _optionalTableNodes = optionalTableNodes;
@@ -40,29 +41,29 @@ namespace com.espertech.esper.core.start
             return fireAndForgetProcessorInstance.ProcessDelete(this);
         }
 
-        public FilterSpecCompiled Filter
+        public QueryGraph QueryGraph
         {
-            get { return _filter; }
+            get => _queryGraph;
         }
 
         public ExprNode OptionalWhereClause
         {
-            get { return _optionalWhereClause; }
+            get => _optionalWhereClause;
         }
 
         public Attribute[] Annotations
         {
-            get { return _annotations; }
+            get => _annotations;
         }
 
         public ExprTableAccessNode[] OptionalTableNodes
         {
-            get { return _optionalTableNodes; }
+            get => _optionalTableNodes;
         }
 
         public EPServicesContext Services
         {
-            get { return _services; }
+            get => _services;
         }
     }
 }

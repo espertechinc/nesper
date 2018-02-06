@@ -459,7 +459,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (!(node is ExprRelationalOpAllAnyNode))
             {

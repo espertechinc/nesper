@@ -15,7 +15,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprBitWiseNode
@@ -95,8 +95,8 @@ namespace com.espertech.esper.epl.expression
         {
         	Log.Debug(".testEqualsNode");
         	_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
-            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode));
-            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR)));
+            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
+            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
         }
     
         [Test]

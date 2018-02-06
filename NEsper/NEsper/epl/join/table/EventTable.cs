@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -30,31 +31,31 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="newData">to add</param>
 	    /// <param name="oldData">to remove</param>
-	    void AddRemove(EventBean[] newData, EventBean[] oldData);
+	    void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Add events to table.
         /// </summary>
         /// <param name="events">to add</param>
-	    void Add(EventBean[] events);
+	    void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
 
 	    /// <summary>
 	    /// Add event to table.
 	    /// </summary>
 	    /// <param name="event">to add</param>
-	    void Add(EventBean @event);
+	    void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 
 	    /// <summary>
 	    /// Remove events from table.
 	    /// </summary>
 	    /// <param name="events">to remove</param>
-	    void Remove(EventBean[] events);
+	    void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
 
 	    /// <summary>
 	    /// Remove event from table.
 	    /// </summary>
 	    /// <param name="event">to remove</param>
-	    void Remove(EventBean @event);
+	    void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 
 	    /// <summary>
 	    /// Returns true if the index is empty, or false if not
@@ -85,11 +86,11 @@ namespace com.espertech.esper.epl.join.table
 
 	    /// <summary>
 	    /// If the index retains events using some key-based _organization this returns the number of keys,
-	    /// and may return null to indicate that either the number of keys is not available or
+	    /// and may return -1 to indicate that either the number of keys is not available or
 	    /// costly to obtain.
 	    /// <para />The number returned can be an estimate and may not be accurate.
 	    /// </summary>
-	    /// <value>number of events</value>
+	    /// <value>number of keys</value>
 	    int NumKeys { get; }
 
 	    /// <summary>

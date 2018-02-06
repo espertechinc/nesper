@@ -159,10 +159,10 @@ namespace com.espertech.esper.epl.parse
             Assert.AreEqual("A_INDEX", createIndex.IndexName);
             Assert.AreEqual("B_NAMEDWIN", createIndex.WindowName);
             Assert.AreEqual(2, createIndex.Columns.Count);
-            Assert.AreEqual("c", createIndex.Columns[0].Name);
-            Assert.AreEqual(CreateIndexType.HASH, createIndex.Columns[0].Type);
-            Assert.AreEqual("d", createIndex.Columns[1].Name);
-            Assert.AreEqual(CreateIndexType.BTREE, createIndex.Columns[1].Type);
+            Assert.AreEqual("c", createIndex.Columns[0].Expressions[0].ToExpressionStringMinPrecedenceSafe());
+            Assert.AreEqual(CreateIndexType.HASH, createIndex.Columns[0].IndexType);
+            Assert.AreEqual("d", createIndex.Columns[1].Expressions[0].ToExpressionStringMinPrecedenceSafe());
+            Assert.AreEqual(CreateIndexType.BTREE, createIndex.Columns[1].IndexType);
         }
     
         [Test]

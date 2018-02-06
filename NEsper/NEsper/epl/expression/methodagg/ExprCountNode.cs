@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (PositionalParams.Length > 2 || PositionalParams.Length == 0)
             {
@@ -65,15 +65,9 @@ namespace com.espertech.esper.epl.expression.methodagg
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeCount(validationContext.StatementExtensionSvcContext, this, ignoreNulls, childType);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "count"; }
-        }
+        public override string AggregationFunctionName => "count";
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
@@ -87,5 +81,7 @@ namespace com.espertech.esper.epl.expression.methodagg
                 throw new ExprValidationException("Invalid use of the 'distinct' keyword with count and wildcard");
             }
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

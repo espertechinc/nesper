@@ -123,7 +123,7 @@ namespace com.espertech.esper.epl.expression.table
             return column;
         }
     
-        public override bool EqualsNode(ExprNode o)
+        public override bool EqualsNode(ExprNode o, bool ignoreStreamPrefix)
         {
             if (this == o) return true;
             if (o == null || GetType() != o.GetType()) return false;

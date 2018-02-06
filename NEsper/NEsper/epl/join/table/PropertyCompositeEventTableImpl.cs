@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.exec.composite;
 
 namespace com.espertech.esper.epl.join.table
@@ -50,12 +51,12 @@ namespace com.espertech.esper.epl.join.table
 	        get { return _index; }
 	    }
 
-	    public override void Add(EventBean theEvent)
+	    public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        _chain.Enter(theEvent, _index);
 	    }
 
-	    public override void Remove(EventBean theEvent)
+	    public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        _chain.Remove(theEvent, _index);
 	    }

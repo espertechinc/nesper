@@ -27,9 +27,6 @@ namespace com.espertech.esper.epl.lookup
             return this.GetType().Name;
         }
 
-        public SubordTableLookupStrategyFactory OptionalInnerStrategy
-        {
-            get { return null; }
-        }
+        public SubordTableLookupStrategyFactory OptionalInnerStrategy => null;
     }
 }

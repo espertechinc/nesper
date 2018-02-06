@@ -43,7 +43,10 @@ namespace com.espertech.esper.events.vaevent
         /// <param name="revisionSpec">specification</param>
         /// <param name="revisionEventTypeName">name of event type</param>
         /// <param name="eventAdapterService">for nested property handling</param>
-        protected VAERevisionProcessorBase(RevisionSpec revisionSpec, String revisionEventTypeName, EventAdapterService eventAdapterService)
+        protected VAERevisionProcessorBase(
+            RevisionSpec revisionSpec, 
+            String revisionEventTypeName, 
+            EventAdapterService eventAdapterService)
         {
             RevisionSpec = revisionSpec;
             RevisionEventTypeName = revisionEventTypeName;
@@ -97,24 +100,38 @@ namespace com.espertech.esper.events.vaevent
         /// <summary>For use in executing an insert-into, wraps the given event applying the revision event type, but not yet computing a new revision. </summary>
         /// <param name="theEvent">to wrap</param>
         /// <returns>revision event bean</returns>
-        public abstract EventBean GetValueAddEventBean(EventBean theEvent);
+        public abstract EventBean GetValueAddEventBean(
+            EventBean theEvent);
 
         /// <summary>Upon new events arriving into a named window (new data), and upon events being deleted via on-delete (old data), Update child views of the root view and apply to index repository as required (fast deletion). </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">remove stream</param>
         /// <param name="namedWindowRootView">the root view</param>
         /// <param name="indexRepository">delete and select indexes</param>
-        public abstract void OnUpdate(EventBean[] newData, EventBean[] oldData, NamedWindowRootViewInstance namedWindowRootView, EventTableIndexRepository indexRepository);
+        public abstract void OnUpdate(
+            EventBean[] newData, 
+            EventBean[] oldData, 
+            NamedWindowRootViewInstance namedWindowRootView,
+            EventTableIndexRepository indexRepository);
 
         /// <summary>Handle iteration over revision event contents. </summary>
         /// <param name="createWindowStmtHandle">statement handle for safe iteration</param>
         /// <param name="parent">the provider of data</param>
         /// <returns>collection to iterate</returns>
-        public abstract ICollection<EventBean> GetSnapshot(EPStatementAgentInstanceHandle createWindowStmtHandle, Viewable parent);
+        public abstract ICollection<EventBean> GetSnapshot(
+            EPStatementAgentInstanceHandle createWindowStmtHandle,
+            Viewable parent);
 
-        /// <summary>Called each time a data window posts a remove stream event, to indicate that a data window remove an event as it expired according to a specified expiration policy. </summary>
+        /// <summary>
+        /// Called each time a data window posts a remove stream event, to indicate that a data window remove
+        /// an event as it expired according to a specified expiration policy.
+        /// </summary>
         /// <param name="oldData">to remove</param>
         /// <param name="indexRepository">the indexes to Update</param>
-        public abstract void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository);
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        public abstract void RemoveOldData(
+            EventBean[] oldData, 
+            EventTableIndexRepository indexRepository,
+            AgentInstanceContext agentInstanceContext);
     }
 }

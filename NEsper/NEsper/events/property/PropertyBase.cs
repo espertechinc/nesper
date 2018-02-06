@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.client;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
@@ -67,7 +66,7 @@ namespace com.espertech.esper.events.property
 	    /// <returns>
 	    /// fast property value getter for property
 	    /// </returns>
-        public abstract EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService);
+        public abstract EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService);
 
 	    /// <summary>
 	    /// Returns the property type for use with Map event representations.
@@ -109,7 +108,7 @@ namespace com.espertech.esper.events.property
 	    /// <returns>
 	    /// getter
 	    /// </returns>
-	    public abstract EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, string propertyExpression);
+	    public abstract EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, string propertyExpression);
 
 	    /// <summary>
 	    /// Returns the getter-method for use with XML DOM event representations.
@@ -117,7 +116,7 @@ namespace com.espertech.esper.events.property
 	    /// <returns>
 	    /// getter
 	    /// </returns>
-	    public abstract EventPropertyGetter GetGetterDOM();
+	    public abstract EventPropertyGetterSPI GetGetterDOM();
 
         /// <summary>
         /// Gets the getter object array.

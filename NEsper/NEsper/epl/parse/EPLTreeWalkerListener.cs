@@ -1064,38 +1064,8 @@ namespace com.espertech.esper.epl.parse
         }
     
         public void ExitCreateIndexExpr(EsperEPL2GrammarParser.CreateIndexExprContext ctx) {
-            var indexName = ctx.n.Text;
-            var windowName = ctx.w.Text;
-    
-            var columns = new List<CreateIndexItem>();
-            var unique = false;
-            IList<EsperEPL2GrammarParser.CreateIndexColumnContext> cols = ctx.createIndexColumnList().createIndexColumn();
-            foreach (var col in cols) {
-                var type = CreateIndexType.HASH;
-                var columnName = col.c.Text;
-                if (col.t != null) {
-                    var typeName = col.t.Text;
-                    try {
-                        type = EnumHelper.Parse<CreateIndexType>(typeName, true);
-                    } catch (Exception ex)
-                    {
-                        throw ASTWalkException.From(string.Format("Invalid column index type '{0}' encountered, please use any of the following index type names {1}",
-                            typeName, EnumHelper.GetNames<CreateIndexType>().Render()));
-                    }
-                }
-                columns.Add(new CreateIndexItem(columnName, type));
-            }
-    
-            if (ctx.u != null) {
-                var ident = ctx.u.Text;
-                if (ident.ToLowerInvariant().Trim().Equals("unique")) {
-                    unique = true;
-                } else {
-                    throw ASTWalkException.From("Invalid keyword '" + ident + "' in create-index encountered, expected 'unique'");
-                }
-            }
-    
-            _statementSpec.CreateIndexDesc = new CreateIndexDesc(unique, indexName, windowName, columns);
+            var desc = ASTIndexHelper.Walk(ctx, _astExprNodeMap);
+            _statementSpec.CreateIndexDesc = desc;
         }
     
         public void ExitAnnotationEnum(EsperEPL2GrammarParser.AnnotationEnumContext ctx) {

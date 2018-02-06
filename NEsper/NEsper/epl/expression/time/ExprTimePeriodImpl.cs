@@ -651,7 +651,7 @@ namespace com.espertech.esper.epl.expression.time
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (!(node is ExprTimePeriodImpl))
             {

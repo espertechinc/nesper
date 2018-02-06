@@ -19,8 +19,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprLikeNode 
@@ -90,9 +89,9 @@ namespace com.espertech.esper.epl.expression
             ExprLikeNode otherLikeNodeNot = SupportExprNodeFactory.MakeLikeNode(true, "@");
             ExprLikeNode otherLikeNodeNot2 = SupportExprNodeFactory.MakeLikeNode(true, "!");
     
-            Assert.IsTrue(_likeNodeNot.EqualsNode(otherLikeNodeNot2));
-            Assert.IsTrue(otherLikeNodeNot2.EqualsNode(otherLikeNodeNot)); // Escape char itself is an expression
-            Assert.IsFalse(_likeNodeNormal.EqualsNode(otherLikeNodeNot));
+            Assert.IsTrue(_likeNodeNot.EqualsNode(otherLikeNodeNot2, false));
+            Assert.IsTrue(otherLikeNodeNot2.EqualsNode(otherLikeNodeNot, false)); // Escape char itself is an expression
+            Assert.IsFalse(_likeNodeNormal.EqualsNode(otherLikeNodeNot, false));
         }
     
         [Test]

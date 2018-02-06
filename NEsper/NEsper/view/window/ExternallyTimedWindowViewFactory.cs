@@ -97,7 +97,7 @@ namespace com.espertech.esper.view.window
             var myView = (ExternallyTimedWindowView) view;
             var delta = _timeDeltaComputationFactory.Make(ViewName, "view", agentInstanceContext);
             if ((!delta.EqualsTimePeriod(myView.TimeDeltaComputation)) ||
-                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression)))
+                (!ExprNodeUtility.DeepEquals(myView.TimestampExpression, _timestampExpression, false)))
             {
                 return false;
             }

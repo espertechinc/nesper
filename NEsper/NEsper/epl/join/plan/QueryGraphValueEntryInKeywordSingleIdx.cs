@@ -7,25 +7,24 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.epl.join.plan
 {
     [Serializable]
     public class QueryGraphValueEntryInKeywordSingleIdx : QueryGraphValueEntry
     {
-        public QueryGraphValueEntryInKeywordSingleIdx(ExprNode[] keyExprs)
+        public QueryGraphValueEntryInKeywordSingleIdx(IList<ExprNode> keyExprs)
         {
             KeyExprs = keyExprs;
         }
 
-        public ExprNode[] KeyExprs { get; private set; }
+        public IList<ExprNode> KeyExprs { get; private set; }
 
         public String ToQueryPlan()
         {
-            return "in-keyword single-indexed multiple key lookup " + ExprNodeUtility.ToExpressionStringMinPrecedence(KeyExprs);
+            return "in-keyword single-indexed multiple key lookup " + ExprNodeUtility.ToExpressionStringMinPrecedenceAsList(KeyExprs);
         }
     }
     

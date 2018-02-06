@@ -147,66 +147,15 @@ namespace com.espertech.esper.events.vaevent
             currentPropertyNumber++;
             propertyGetterCache.AddGetters(assignedPropertyNumber, propertyName);
 
-            EventPropertyGetter getter;
+            EventPropertyGetterSPI getter;
             if (mustCoerce)
             {
                 SimpleTypeCaster caster = SimpleTypeCasterFactory.GetCaster(null, commonType);
-                getter = new ProxyEventPropertyGetter
-                {
-                    ProcGet = eventBean =>
-                    {
-                        var variant = (VariantEvent)eventBean;
-                        var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                        if (propertyGetter == null)
-                        {
-                            return null;
-                        }
-                        var value = propertyGetter.Get(variant.UnderlyingEventBean);
-                        if (value == null)
-                        {
-                            return value;
-                        }
-                        return caster.Invoke(value);
-                    },
-                    ProcGetFragment = eventBean => null,
-                    ProcIsExistsProperty = eventBean =>
-                    {
-                        var variant = (VariantEvent)eventBean;
-                        var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                        if (propertyGetter == null)
-                        {
-                            return false;
-                        }
-                        return propertyGetter.IsExistsProperty(variant.UnderlyingEventBean);
-                    }
-                };
+                getter = new VariantEventPropertyGetterAnyWCast(propertyGetterCache, assignedPropertyNumber, caster);
             }
             else
             {
-                getter = new ProxyEventPropertyGetter
-                {
-                    ProcGet = eventBean =>
-                    {
-                        var variant = (VariantEvent)eventBean;
-                        var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                        if (propertyGetter == null)
-                        {
-                            return null;
-                        }
-                        return propertyGetter.Get(variant.UnderlyingEventBean);
-                    },
-                    ProcGetFragment = eventBean => null,
-                    ProcIsExistsProperty = eventBean =>
-                    {
-                        var variant = (VariantEvent)eventBean;
-                        var propertyGetter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                        if (propertyGetter == null)
-                        {
-                            return false;
-                        }
-                        return propertyGetter.IsExistsProperty(variant.UnderlyingEventBean);
-                    }
-                };
+                getter = new VariantEventPropertyGetterAny(propertyGetterCache, assignedPropertyNumber);
             }
 
             return new VariantPropertyDesc(commonType, getter, true);

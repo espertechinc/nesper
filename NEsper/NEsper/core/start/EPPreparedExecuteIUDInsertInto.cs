@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.core.start
             return statementSpec;
         }
     
-        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
+        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(QueryGraph queryGraph, string aliasName)
         {
             var statementSpec = base.StatementSpec;
             var statementContext = base.StatementContext;

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
@@ -73,7 +74,7 @@ namespace com.espertech.esper.epl.table.mgmt
 	        get { return _eventReference.Get(); }
 	    }
 
-	    public override void AddExplicitIndex(CreateIndexDesc spec, bool isRecoveringResilient, bool allowIndexExists)
+        public override void AddExplicitIndex(string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, bool isRecoveringResilient, bool allowIndexExists)
         {
 	        throw new ExprValidationException("Tables without primary key column(s) do not allow creating an index");
 	    }

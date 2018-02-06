@@ -59,8 +59,8 @@ namespace com.espertech.esper.filter
     
             Assert.AreEqual(_testEvaluator, index.Get(inList));
             Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove(inList));
-            Assert.IsFalse(index.Remove(inList));
+            index.Remove(inList);
+            index.Remove(inList);
             Assert.AreEqual(null, index.Get(inList));
     
             try

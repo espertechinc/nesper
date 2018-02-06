@@ -17,7 +17,7 @@ using com.espertech.esper.view.internals;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprPriorNode 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.epl.expression
         public void TestEquals()
         {
             ExprPriorNode node1 = new ExprPriorNode();
-            Assert.IsTrue(node1.EqualsNode(_priorNode));
+            Assert.IsTrue(node1.EqualsNode(_priorNode, false));
         }
     
         [Test]

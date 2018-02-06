@@ -24,6 +24,7 @@ namespace com.espertech.esper.events.vaevent
     /// </summary>
     public class VariantEventType : EventTypeSPI
     {
+        private readonly EventAdapterService _eventAdapterService;
         private readonly EventTypeMetadata _metadata;
         private readonly EventType[] _variants;
         private readonly VariantPropResolutionStrategy _propertyResStrategy;
@@ -33,17 +34,26 @@ namespace com.espertech.esper.events.vaevent
         private readonly IDictionary<String, EventPropertyDescriptor> _propertyDescriptorMap;
         private readonly int _eventTypeId;
         private readonly ConfigurationVariantStream _config;
+        private IDictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="eventAdapterService">The event adapter service.</param>
         /// <param name="metadata">event type metadata</param>
         /// <param name="eventTypeId">The event type id.</param>
         /// <param name="variantSpec">the variant specification</param>
         /// <param name="propertyResStrategy">stragegy for resolving properties</param>
         /// <param name="config">The config.</param>
-        public VariantEventType(EventTypeMetadata metadata, int eventTypeId, VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy, ConfigurationVariantStream config)
+        public VariantEventType(
+            EventAdapterService eventAdapterService,
+            EventTypeMetadata metadata, 
+            int eventTypeId, 
+            VariantSpec variantSpec,
+            VariantPropResolutionStrategy propertyResStrategy, 
+            ConfigurationVariantStream config)
         {
+            _eventAdapterService = eventAdapterService;
             _metadata = metadata;
             _eventTypeId = eventTypeId;
             _variants = variantSpec.EventTypes;
@@ -128,7 +138,7 @@ namespace com.espertech.esper.events.vaevent
             get { return _config; }
         }
 
-        public EventPropertyGetter GetGetter(String property)
+        public EventPropertyGetterSPI GetGetterSPI(String property)
         {
             VariantPropertyDesc entry = _propertyDesc.Get(property);
             if (entry != null)
@@ -141,6 +151,34 @@ namespace com.espertech.esper.events.vaevent
                 return entry.Getter;
             }
             return null;
+        }
+
+        public EventPropertyGetter GetGetter(String propertyName)
+        {
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            }
+
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            var getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache[propertyName] = getterCode;
+            return getterCode;
         }
 
         public string[] PropertyNames

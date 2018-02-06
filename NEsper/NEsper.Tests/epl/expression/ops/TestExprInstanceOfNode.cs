@@ -17,7 +17,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprInstanceOfNode 
@@ -103,9 +103,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_isNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsFalse(_isNodes[0].EqualsNode(_isNodes[1]));
-            Assert.IsTrue(_isNodes[0].EqualsNode(_isNodes[0]));
+            Assert.IsFalse(_isNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsFalse(_isNodes[0].EqualsNode(_isNodes[1], false));
+            Assert.IsTrue(_isNodes[0].EqualsNode(_isNodes[0], false));
         }
     
         [Test]

@@ -48,13 +48,7 @@ namespace com.espertech.esper.epl.named
             _processors.Clear();
         }
 
-        public string[] NamedWindows
-        {
-            get
-            {
-                return _processors.Keys.ToArrayOrNull();
-            }
-        }
+        public string[] NamedWindows => _processors.Keys.ToArrayOrNull();
 
         public IReaderWriterLock GetNamedWindowLock(string windowName)
         {

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -31,8 +32,8 @@ namespace com.espertech.esper.epl.join.table
 
 	    public abstract ISet<EventBean> Lookup(object[] keys);
 
-	    public abstract void Add(EventBean @event);
-	    public abstract void Remove(EventBean @event);
+	    public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 	    public abstract bool IsEmpty();
 	    public abstract void Clear();
 	    public abstract void Destroy();
@@ -59,17 +60,17 @@ namespace com.espertech.esper.epl.join.table
 	        return EventBeanUtility.GetMultiKey(theEvent, propertyGetters);
 	    }
 
-	    public virtual void AddRemove(EventBean[] newData, EventBean[] oldData)
+	    public virtual void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
 	        if (newData != null) {
 	            foreach (EventBean theEvent in newData) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (oldData != null) {
 	            foreach (EventBean theEvent in oldData) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
@@ -81,21 +82,21 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="events">to add</param>
 	    /// <throws>ArgumentException if the event was already existed in the index</throws>
-	    public virtual void Add(EventBean[] events)
+	    public virtual void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {
 
 	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
 	                InstrumentationHelper.Get().QIndexAdd(this, events);
 	                foreach (EventBean theEvent in events) {
-	                    Add(theEvent);
+	                    Add(theEvent, exprEvaluatorContext);
 	                }
 	                InstrumentationHelper.Get().AIndexAdd();
 	                return;
 	            }
 
 	            foreach (EventBean theEvent in events) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	    }
@@ -105,21 +106,21 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
 	    /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
-        public virtual void Remove(EventBean[] events)
+        public virtual void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {
 
 	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
 	                InstrumentationHelper.Get().QIndexRemove(this, events);
 	                foreach (EventBean theEvent in events) {
-	                    Remove(theEvent);
+	                    Remove(theEvent, exprEvaluatorContext);
 	                }
 	                InstrumentationHelper.Get().AIndexRemove();
 	                return;
 	            }
 
 	            foreach (EventBean theEvent in events) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	    }

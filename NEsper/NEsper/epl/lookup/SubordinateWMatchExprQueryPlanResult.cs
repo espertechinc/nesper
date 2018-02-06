@@ -18,14 +18,8 @@ namespace com.espertech.esper.epl.lookup
             this.indexDescs = indexDescs;
         }
 
-        public SubordWMatchExprLookupStrategyFactory Factory
-        {
-            get { return factory; }
-        }
+        public SubordWMatchExprLookupStrategyFactory Factory => factory;
 
-        public SubordinateQueryIndexDesc[] IndexDescs
-        {
-            get { return indexDescs; }
-        }
+        public SubordinateQueryIndexDesc[] IndexDescs => indexDescs;
     }
 }

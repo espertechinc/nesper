@@ -146,7 +146,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprRelationalOpNodeImpl;
             if (other == null)

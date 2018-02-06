@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             var positionalParams = base.PositionalParams;
             if (positionalParams.Length == 0)
@@ -46,9 +46,9 @@ namespace com.espertech.esper.epl.expression.methodagg
                 const string message =
                     "The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation";
                 long intervalTime;
-                if (first is ExprTimePeriod)
+                if (first is ExprTimePeriod period)
                 {
-                    double secInterval = ((ExprTimePeriod) first).EvaluateAsSeconds(
+                    double secInterval = period.EvaluateAsSeconds(
                         null, true, validationContext.ExprEvaluatorContext);
                     intervalTime = validationContext.EngineImportService.TimeAbacus.DeltaForSecondsDouble(secInterval);
                 }
@@ -111,14 +111,13 @@ namespace com.espertech.esper.epl.expression.methodagg
                     validationContext.EngineImportService.TimeAbacus);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "rate"; }
-        }
+        public override string AggregationFunctionName => "rate";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprRateAggNode;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => false;
     }
 } // end of namespace

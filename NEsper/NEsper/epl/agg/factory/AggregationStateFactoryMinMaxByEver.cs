@@ -29,9 +29,6 @@ namespace com.espertech.esper.epl.agg.factory
 	        return new AggregationStateMinMaxByEver(Spec);
 	    }
 
-	    public ExprNode AggregationExpression
-	    {
-	        get { return Expr; }
-	    }
+	    public ExprNode AggregationExpression => Expr;
     }
 } // end of namespace

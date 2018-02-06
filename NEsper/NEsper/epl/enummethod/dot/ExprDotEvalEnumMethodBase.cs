@@ -20,6 +20,7 @@ using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.visitor;
 using com.espertech.esper.epl.methodbase;
 using com.espertech.esper.epl.rettype;
+using com.espertech.esper.epl.util;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
 
@@ -299,9 +300,7 @@ namespace com.espertech.esper.epl.enummethod.dot
             var filterEvaluator = filter.ExprEvaluator;
             var expectedType = footprint.Parameters[parameterNum].ParamType;
             // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
-            DotMethodUtil.ValidateSpecificType(
-                enumMethodUsedName, DotMethodTypeEnum.ENUM, expectedType, null, filterEvaluator.ReturnType, parameterNum,
-                filter);
+            EPLValidationUtil.ValidateParameterType(enumMethodUsedName, DotMethodTypeEnum.ENUM.GetTypeName(), false, expectedType, null, filterEvaluator.ReturnType, parameterNum, filter);
 
             var numStreamsIncoming = validationContext.StreamTypeService.EventTypes.Length;
             return new ExprDotEvalParamLambda(

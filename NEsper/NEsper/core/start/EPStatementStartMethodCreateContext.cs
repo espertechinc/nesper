@@ -173,7 +173,7 @@ namespace com.espertech.esper.core.start
                         null, false);
                     for (var i = 0; i < distinctExpressions.Length; i++)
                     {
-                        ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.CONTEXTDISTINCT, ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(distinctExpressions[i]), distinctExpressions[i]);
+                        ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.CONTEXTDISTINCT, distinctExpressions[i]);
                         distinctExpressions[i] = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.CONTEXTDISTINCT, distinctExpressions[i], validationContext);
                     }
                 }

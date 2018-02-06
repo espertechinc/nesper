@@ -18,7 +18,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprConcatNode 
@@ -87,8 +87,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_concatNode.EqualsNode(_concatNode));
-            Assert.IsFalse(_concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
+            Assert.IsTrue(_concatNode.EqualsNode(_concatNode, false));
+            Assert.IsFalse(_concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
 
         [Test]

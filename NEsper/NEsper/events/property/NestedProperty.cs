@@ -49,16 +49,16 @@ namespace com.espertech.esper.events.property
             get { return Properties.Any(property => property.IsDynamic); }
         }
 
-        public EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var getters = new List<EventPropertyGetter>();
 
             Property lastProperty = null;
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
-                Property property = it.Next();
+                var property = it.Next();
                 lastProperty = property;
-                EventPropertyGetter getter = property.GetGetter(eventType, eventAdapterService);
+                var getter = property.GetGetter(eventType, eventAdapterService);
                 if (getter == null)
                 {
                     return null;
@@ -87,7 +87,7 @@ namespace com.espertech.esper.events.property
                 getters.Add(getter);
             }
 
-            GenericPropertyDesc finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, eventAdapterService);
+            var finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, eventAdapterService);
             return new NestedPropertyGetter(getters, eventAdapterService, finalPropertyType.GenericType, finalPropertyType.Generic);
         }
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.events.property
 
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
-                Property property = it.Next();
+                var property = it.Next();
                 result = property.GetPropertyType(eventType, eventAdapterService);
 
                 if (result == null)
@@ -132,7 +132,7 @@ namespace com.espertech.esper.events.property
 
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
-                Property property = it.Next();
+                var property = it.Next();
                 result = property.GetPropertyTypeGeneric(eventType, eventAdapterService);
 
                 if (result == null)
@@ -166,9 +166,9 @@ namespace com.espertech.esper.events.property
 
         public Type GetPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
-            Map currentDictionary = optionalMapPropTypes;
+            var currentDictionary = optionalMapPropTypes;
 
-            int count = 0;
+            var count = 0;
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
                 count++;
@@ -213,38 +213,38 @@ namespace com.espertech.esper.events.property
 
                 if (nestedType is Type)
                 {
-                    Type pocoType = (Type)nestedType;
+                    var pocoType = (Type)nestedType;
                     if (!pocoType.IsArray)
                     {
-                        BeanEventType beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(pocoType.Name, pocoType, false, false, false);
-                        String remainingProps = ToPropertyEPL(Properties, count);
+                        var beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(pocoType.Name, pocoType, false, false, false);
+                        var remainingProps = ToPropertyEPL(Properties, count);
                         return beanType.GetPropertyType(remainingProps).GetBoxedType();
                     }
                     else if (property is IndexedProperty)
                     {
-                        Type componentType = pocoType.GetElementType();
-                        BeanEventType beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(componentType.Name, componentType, false, false, false);
-                        String remainingProps = ToPropertyEPL(Properties, count);
+                        var componentType = pocoType.GetElementType();
+                        var beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(componentType.Name, componentType, false, false, false);
+                        var remainingProps = ToPropertyEPL(Properties, count);
                         return beanType.GetPropertyType(remainingProps).GetBoxedType();
                     }
                 }
 
                 if (nestedType is String)       // property type is the name of a map event type
                 {
-                    String nestedName = nestedType.ToString();
-                    bool isArray = EventTypeUtility.IsPropertyArray(nestedName);
+                    var nestedName = nestedType.ToString();
+                    var isArray = EventTypeUtility.IsPropertyArray(nestedName);
                     if (isArray)
                     {
                         nestedName = EventTypeUtility.GetPropertyRemoveArray(nestedName);
                     }
 
-                    EventType innerType = eventAdapterService.GetEventTypeByName(nestedName);
+                    var innerType = eventAdapterService.GetEventTypeByName(nestedName);
                     if (innerType == null)
                     {
                         return null;
                     }
 
-                    String remainingProps = ToPropertyEPL(Properties, count);
+                    var remainingProps = ToPropertyEPL(Properties, count);
                     return innerType.GetPropertyType(remainingProps).GetBoxedType();
                 }
                 else if (nestedType is EventType)       // property type is the name of a map event type
@@ -257,7 +257,7 @@ namespace com.espertech.esper.events.property
                 {
                     if (!(nestedType is Map))
                     {
-                        String message = "Nestable map type configuration encountered an unexpected value type of '"
+                        var message = "Nestable map type configuration encountered an unexpected value type of '"
                             + nestedType.GetType() + " for property '" + propertyName + "', expected Class, typeof(Map) or IDictionary<String, Object> as value type";
                         throw new PropertyAccessException(message);
                     }
@@ -270,17 +270,17 @@ namespace com.espertech.esper.events.property
 
         public MapEventPropertyGetter GetGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
-            var getters = new List<EventPropertyGetter>();
+            var getters = new List<EventPropertyGetterSPI>();
             var currentDictionary = optionalMapPropTypes;
 
-            int count = 0;
+            var count = 0;
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
                 count++;
-                Property property = it.Next();
+                var property = it.Next();
 
                 // manufacture a getter for getting the item out of the map
-                EventPropertyGetter getter = property.GetGetterMap(currentDictionary, eventAdapterService);
+                var getter = property.GetGetterMap(currentDictionary, eventAdapterService);
                 if (getter == null)
                 {
                     return null;
@@ -299,7 +299,7 @@ namespace com.espertech.esper.events.property
                 if (currentDictionary != null)
                 {
                     // check the type that this property will return
-                    Object propertyReturnType = currentDictionary.Get(propertyName);
+                    var propertyReturnType = currentDictionary.Get(propertyName);
 
                     if (propertyReturnType == null)
                     {
@@ -317,21 +317,21 @@ namespace com.espertech.esper.events.property
                         }
                         else if (propertyReturnType is String)
                         {
-                            String nestedName = propertyReturnType.ToString();
-                            bool isArray = EventTypeUtility.IsPropertyArray(nestedName);
+                            var nestedName = propertyReturnType.ToString();
+                            var isArray = EventTypeUtility.IsPropertyArray(nestedName);
                             if (isArray)
                             {
                                 nestedName = EventTypeUtility.GetPropertyRemoveArray(nestedName);
                             }
 
-                            EventType innerType = eventAdapterService.GetEventTypeByName(nestedName);
+                            var innerType = eventAdapterService.GetEventTypeByName(nestedName);
                             if (innerType == null)
                             {
                                 return null;
                             }
 
-                            String remainingProps = ToPropertyEPL(Properties, count);
-                            EventPropertyGetter getterInner = innerType.GetGetter(remainingProps);
+                            var remainingProps = ToPropertyEPL(Properties, count);
+                            var getterInner = ((EventTypeSPI) innerType).GetGetterSPI(remainingProps);
                             if (getterInner == null)
                             {
                                 return null;
@@ -344,7 +344,7 @@ namespace com.espertech.esper.events.property
                         {
                             var innerType = (EventType)propertyReturnType;
                             var remainingProps = ToPropertyEPL(Properties, count);
-                            var getterInner = innerType.GetGetter(remainingProps);
+                            var getterInner = ((EventTypeSPI) innerType).GetGetterSPI(remainingProps);
                             if (getterInner == null)
                             {
                                 return null;
@@ -359,11 +359,10 @@ namespace com.espertech.esper.events.property
                             var returnType = (Type)propertyReturnType;
                             if (!returnType.IsArray)
                             {
-                                BeanEventType beanType =
-                                    eventAdapterService.BeanEventTypeFactory.CreateBeanType(returnType.Name, returnType,
-                                                                                            false, false, false);
-                                String remainingProps = ToPropertyEPL(Properties, count);
-                                EventPropertyGetter getterInner = beanType.GetGetter(remainingProps);
+                                var beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(
+                                    returnType.Name, returnType, false, false, false);
+                                var remainingProps = ToPropertyEPL(Properties, count);
+                                var getterInner = beanType.GetGetterSPI(remainingProps);
                                 if (getterInner == null)
                                 {
                                     return null;
@@ -373,11 +372,11 @@ namespace com.espertech.esper.events.property
                             }
                             else
                             {
-                                Type componentType = returnType.GetElementType();
-                                BeanEventType beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(
+                                var componentType = returnType.GetElementType();
+                                var beanType = eventAdapterService.BeanEventTypeFactory.CreateBeanType(
                                     componentType.Name, componentType, false, false, false);
-                                String remainingProps = ToPropertyEPL(Properties, count);
-                                EventPropertyGetter getterInner = beanType.GetGetter(remainingProps);
+                                var remainingProps = ToPropertyEPL(Properties, count);
+                                var getterInner = beanType.GetGetterSPI(remainingProps);
                                 if (getterInner == null)
                                 {
                                     return null;
@@ -391,7 +390,7 @@ namespace com.espertech.esper.events.property
             }
 
             var hasNonmapGetters = false;
-            for (int i = 0; i < getters.Count; i++)
+            for (var i = 0; i < getters.Count; i++)
             {
                 if (!(getters[i] is MapEventPropertyGetter))
                 {
@@ -415,8 +414,8 @@ namespace com.espertech.esper.events.property
 
         public void ToPropertyEPL(TextWriter writer)
         {
-            String delimiter = "";
-            foreach (Property property in Properties)
+            var delimiter = "";
+            foreach (var property in Properties)
             {
                 writer.Write(delimiter);
                 property.ToPropertyEPL(writer);
@@ -427,22 +426,22 @@ namespace com.espertech.esper.events.property
         public String[] ToPropertyArray()
         {
             var propertyNames = new List<String>();
-            foreach (Property property in Properties)
+            foreach (var property in Properties)
             {
-                String[] nested = property.ToPropertyArray();
+                var nested = property.ToPropertyArray();
                 propertyNames.AddAll(nested);
             }
             return propertyNames.ToArray();
         }
 
-        public EventPropertyGetter GetGetterDOM()
+        public EventPropertyGetterSPI GetGetterDOM()
         {
             var getters = new List<EventPropertyGetter>();
 
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
-                Property property = it.Next();
-                EventPropertyGetter getter = property.GetGetterDOM();
+                var property = it.Next();
+                var getter = property.GetGetterDOM();
                 if (getter == null)
                 {
                     return null;
@@ -454,16 +453,16 @@ namespace com.espertech.esper.events.property
             return new DOMNestedPropertyGetter(getters, null);
         }
 
-        public EventPropertyGetter GetGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
+        public EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
         {
-            List<EventPropertyGetter> getters = new List<EventPropertyGetter>();
+            var getters = new List<EventPropertyGetter>();
 
-            SchemaElementComplex complexElement = parentComplexProperty;
+            var complexElement = parentComplexProperty;
 
             for (var it = Properties.EnumerateWithLookahead(); it.HasNext(); )
             {
-                Property property = it.Next();
-                EventPropertyGetter getter = property.GetGetterDOM(complexElement, eventAdapterService, eventType, propertyExpression);
+                var property = it.Next();
+                var getter = property.GetGetterDOM(complexElement, eventAdapterService, eventType, propertyExpression);
                 if (getter == null)
                 {
                     return null;
@@ -471,7 +470,7 @@ namespace com.espertech.esper.events.property
 
                 if (it.HasNext())
                 {
-                    SchemaItem childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
+                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
                     if (childSchemaItem == null)
                     {
                         // if the property is not valid, return null
@@ -503,16 +502,16 @@ namespace com.espertech.esper.events.property
         public SchemaItem GetPropertyTypeSchema(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)
         {
             Property lastProperty = null;
-            SchemaElementComplex complexElement = parentComplexProperty;
+            var complexElement = parentComplexProperty;
 
             for (var en = Properties.EnumerateWithLookahead(); en.HasNext(); )
             {
-                Property property = en.Next();
+                var property = en.Next();
                 lastProperty = property;
 
                 if (en.HasNext())
                 {
-                    SchemaItem childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
+                    var childSchemaItem = property.GetPropertyTypeSchema(complexElement, eventAdapterService);
                     if (childSchemaItem == null)
                     {
                         // if the property is not valid, return null
@@ -540,7 +539,7 @@ namespace com.espertech.esper.events.property
         {
             var delimiter = "";
             var writer = new StringWriter();
-            for (int i = startFromIndex; i < property.Count; i++)
+            for (var i = startFromIndex; i < property.Count; i++)
             {
                 writer.Write(delimiter);
                 property[i].ToPropertyEPL(writer);

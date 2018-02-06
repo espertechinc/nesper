@@ -41,9 +41,9 @@ namespace com.espertech.esper.epl.join.@base
             _newEventTwo = SupportEventBeanFactory.MakeEvents(new String[] { "s2_3"});
     
             _indexLeft = new UnindexedEventTableImpl(1);
-            _indexLeft.Add(_indexedEventOne);
+            _indexLeft.Add(_indexedEventOne, null);
             _indexRight = new UnindexedEventTableImpl(1);
-            _indexRight.Add(_indexedEventTwo);
+            _indexRight.Add(_indexedEventTwo, null);
     
             var queryStrategies = new QueryStrategy[2];
             var lookupLeft = new TableLookupExecNode(1, new FullTableScanLookupStrategy(_indexRight));

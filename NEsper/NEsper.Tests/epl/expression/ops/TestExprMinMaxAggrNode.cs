@@ -17,7 +17,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprMinMaxAggrNode : TestExprAggregateNodeAdapter
     {
@@ -96,9 +96,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_minNode.EqualsNode(_minNode));
-            Assert.IsFalse(_maxNode.EqualsNode(_minNode));
-            Assert.IsFalse(_minNode.EqualsNode(new ExprSumNode(false)));
+            Assert.IsTrue(_minNode.EqualsNode(_minNode, false));
+            Assert.IsFalse(_maxNode.EqualsNode(_minNode, false));
+            Assert.IsFalse(_minNode.EqualsNode(new ExprSumNode(false), false));
         }
 
         private ExprMinMaxAggrNode MakeNode(MinMaxTypeEnum minMaxType, Object value, Type type)

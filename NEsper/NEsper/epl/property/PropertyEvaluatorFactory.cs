@@ -136,10 +136,7 @@ namespace com.espertech.esper.epl.property
                 // evaluate splitter expression
                 if (containedEventEval == null)
                 {
-                    ExprNodeUtility.ValidatePlainExpression(
-                        ExprNodeOrigin.CONTAINEDEVENT,
-                        ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression),
-                        atom.SplitterExpression);
+                    ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.CONTAINEDEVENT, atom.SplitterExpression);
 
                     var availableTypes = streamEventTypes.ToArray();
                     var availableStreamNames = streamNames.ToArray();

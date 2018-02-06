@@ -91,11 +91,13 @@ namespace com.espertech.esper.regression.db
             Assert.That(
                 MyExceptionHandlerFactory.ContextList[0].Exception,
                 Is.Not.Null);
+#if MSSQL
             Assert.That(
                 MyExceptionHandlerFactory.ContextList[0].Exception.Message,
-#if MSSQL
                 Is.EqualTo("Error executing statement 'exec [dbo].[spDelayTest] @timeout = \"00:00:05\", @testValue = @arg0'"));
 #elif MYSQL
+            Assert.That(
+                MyExceptionHandlerFactory.ContextList[0].Exception.Message,
                 Is.EqualTo("Error executing statement 'call spDelayTest(5, ?arg0)'"));
 #endif
             Assert.That(

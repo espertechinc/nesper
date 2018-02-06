@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.view.internals;
 
 namespace com.espertech.esper.epl.join.@base
@@ -42,12 +43,12 @@ namespace com.espertech.esper.epl.join.@base
             _bufferViews[stream] = view;
         }
     
-        public void PreloadFromBuffer(int stream)
+        public void PreloadFromBuffer(int stream, ExprEvaluatorContext exprEvaluatorContext)
         {
             var preloadEvents = _bufferViews[stream].NewDataBuffer.GetAndFlush();
             var eventsPerStream = new EventBean[_numStreams][];
             eventsPerStream[stream] = preloadEvents;
-            _joinSetComposer.Init(eventsPerStream);
+            _joinSetComposer.Init(eventsPerStream, exprEvaluatorContext);
         }
     
         public void PreloadAggregation(ResultSetProcessor resultSetProcessor)

@@ -17,7 +17,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprSumNode : TestExprAggregateNodeAdapter
     {
@@ -94,8 +94,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_sumNode.EqualsNode(_sumNode));
-            Assert.IsFalse(_sumNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_sumNode.EqualsNode(_sumNode, false));
+            Assert.IsFalse(_sumNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]

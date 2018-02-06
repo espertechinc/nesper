@@ -24,7 +24,8 @@ namespace com.espertech.esper.core.support
                 TimeZoneInfo.Local, 
                 TimeAbacusMilliseconds.INSTANCE,
                 ConfigurationEngineDefaults.ThreadingProfile.NORMAL, null,
-                AggregationFactoryFactoryDefault.INSTANCE);
+                AggregationFactoryFactoryDefault.INSTANCE,
+                false, "default", null);
         }
     }
 } // end of namespace

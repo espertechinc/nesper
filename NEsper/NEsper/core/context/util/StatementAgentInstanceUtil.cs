@@ -273,7 +273,7 @@ namespace com.espertech.esper.core.context.util
                         // execute preloads, if any
                         foreach (var preload in startResult.PreloadList)
                         {
-                            preload.ExecutePreload();
+                            preload.ExecutePreload(agentInstanceContext);
                         }
 
                         if (statementContext.StatementExtensionServicesContext != null &&

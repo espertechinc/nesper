@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.table;
 
 namespace com.espertech.esper.epl.virtualdw
@@ -36,25 +37,25 @@ namespace com.espertech.esper.epl.virtualdw
             _organization = organization;
         }
 
-        public void AddRemove(EventBean[] newData, EventBean[] oldData)
+        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
-            Add(newData);
-            Remove(oldData);
+            Add(newData, exprEvaluatorContext);
+            Remove(oldData, exprEvaluatorContext);
         }
 
-        public void Add(EventBean[] events)
-        {
-        }
-
-        public void Remove(EventBean[] events)
+        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Add(EventBean theEvent)
+        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 
-        public void Remove(EventBean theEvent)
+        public void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
+        {
+        }
+
+        public void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 

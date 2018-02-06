@@ -105,10 +105,10 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_notNode.EqualsNode(_notNode));
-            Assert.IsFalse(_notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-            Assert.IsFalse(_notNode.EqualsNode(new ExprOrNode()));
-            Assert.IsTrue(_notNode.EqualsNode(new ExprNotNode()));
+            Assert.IsTrue(_notNode.EqualsNode(_notNode, false));
+            Assert.IsFalse(_notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            Assert.IsFalse(_notNode.EqualsNode(new ExprOrNode(), false));
+            Assert.IsTrue(_notNode.EqualsNode(new ExprNotNode(), false));
         }
     }
 }

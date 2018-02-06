@@ -17,7 +17,6 @@ using com.espertech.esper.filter;
 using com.espertech.esper.pattern;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl.parse;
-using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
@@ -125,14 +124,14 @@ namespace com.espertech.esper.epl.spec
             var inlist = (FilterSpecParamIn)filterNode.FilterSpec.Parameters[0][0];
             Assert.AreEqual(FilterOperator.IN_LIST_OF_VALUES, inlist.FilterOperator);
             Assert.AreEqual(2, inlist.ListOfValues.Count);
-    
+
             // in-value 1
-            var prop = (InSetOfValuesEventProp) inlist.ListOfValues[0];
+            var prop = (FilterForEvalEventPropMayCoerce) inlist.ListOfValues[0];
             Assert.AreEqual("s", prop.ResultEventAsName);
             Assert.AreEqual("IntBoxed", prop.ResultEventProperty);
-    
+
             // in-value 1
-            var constant = (InSetOfValuesConstant) inlist.ListOfValues[1];
+            var constant = (FilterForEvalConstantAnyType) inlist.ListOfValues[1];
             Assert.AreEqual(0, constant.Constant);
         }
     
@@ -165,14 +164,14 @@ namespace com.espertech.esper.epl.spec
 
             var range = (FilterSpecParamRange)filterNode.FilterSpec.Parameters[0][0];
             Assert.AreEqual(FilterOperator.RANGE_CLOSED, range.FilterOperator);
-    
+
             // min-value
-            var prop = (RangeValueEventProp) range.Min;
+            var prop = (FilterForEvalEventPropDouble) range.Min;
             Assert.AreEqual("s", prop.ResultEventAsName);
             Assert.AreEqual("IntBoxed", prop.ResultEventProperty);
-    
+
             // max-value
-            var constant = (RangeValueDouble) range.Max;
+            var constant = (FilterForEvalConstantDouble) range.Max;
             Assert.AreEqual(100d, constant.DoubleValue);
         }
     

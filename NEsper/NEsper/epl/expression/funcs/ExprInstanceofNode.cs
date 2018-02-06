@@ -163,7 +163,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprInstanceofNode;
             return other != null && Collections.AreEqual(other._classIdentifiers, _classIdentifiers);

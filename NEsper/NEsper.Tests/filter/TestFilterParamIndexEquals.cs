@@ -53,8 +53,8 @@ namespace com.espertech.esper.filter
     
             Assert.AreEqual(_testEvaluator, index.Get((short) 1));
             Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove((short) 1));
-            Assert.IsFalse(index.Remove((short) 1));
+            index.Remove((short) 1);
+            index.Remove((short) 1);
             Assert.AreEqual(null, index.Get((short) 1));
         }
     

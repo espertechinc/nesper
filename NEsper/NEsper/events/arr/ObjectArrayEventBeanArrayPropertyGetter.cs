@@ -9,6 +9,10 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
@@ -28,13 +32,23 @@ namespace com.espertech.esper.events.arr
             _propertyIndex = propertyIndex;
             _underlyingType = underlyingType;
         }
-    
-        public Object GetObjectArray(Object[] arrayEvent)
+
+        public Object GetObjectArray(Object[] oa)
         {
-            Object innerValue = arrayEvent[_propertyIndex];
-            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(_underlyingType, (EventBean[]) innerValue);
+            Object inner = oa[_propertyIndex];
+            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(_underlyingType, (EventBean[]) inner);
         }
-    
+
+        private String GetObjectArrayCodegen(ICodegenContext context)
+        {
+            return context.AddMethod(typeof(Object), typeof(Object[]), "oa", GetType())
+                .DeclareVar(typeof(Object), "inner", ArrayAtIndex(Ref("oa"), Constant(_propertyIndex)))
+                .MethodReturn(LocalMethod(
+                    BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArrayCodegen(_underlyingType, context),
+                    Cast(typeof(EventBean[]),
+                    Ref("inner"))));
+        }
+
         public bool IsObjectArrayExistsProperty(Object[] array)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
@@ -55,6 +69,36 @@ namespace com.espertech.esper.events.arr
         {
             Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj);
             return array[_propertyIndex];
+        }
+
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(typeof(Object[]), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingFragment(CastUnderlying(typeof(Object[]), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetObjectArrayCodegen(context), underlyingExpression);
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
         }
     }
 }

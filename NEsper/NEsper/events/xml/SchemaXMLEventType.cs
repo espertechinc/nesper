@@ -33,7 +33,7 @@ namespace com.espertech.esper.events.xml
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly bool _isPropertyExpressionXPath;
-        private readonly IDictionary<String, EventPropertyGetter> _propertyGetterCache;
+        private readonly IDictionary<String, EventPropertyGetterSPI> _propertyGetterCache;
         private readonly String _rootElementNamespace;
 
         private readonly SchemaModel _schemaModel;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.events.xml
         public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, int eventTypeId, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
             : base(eventTypeMetadata, eventTypeId, config, eventAdapterService)
         {
-            _propertyGetterCache = new Dictionary<String, EventPropertyGetter>();
+            _propertyGetterCache = new Dictionary<String, EventPropertyGetterSPI>();
             _schemaModel = schemaModel;
             _rootElementNamespace = config.RootElementNamespace;
             _schemaModelRoot = SchemaUtil.FindRootElement(schemaModel, _rootElementNamespace, RootElementName);
@@ -258,14 +258,14 @@ namespace com.espertech.esper.events.xml
             return SchemaUtil.ToReturnType(item);
         }
 
-        protected override EventPropertyGetter DoResolvePropertyGetter(String property)
+        protected override EventPropertyGetterSPI DoResolvePropertyGetter(String property)
         {
             return DoResolvePropertyGetter(property, false);
         }
 
-        private EventPropertyGetter DoResolvePropertyGetter(String propertyExpression, bool allowSimpleProperties)
+        private EventPropertyGetterSPI DoResolvePropertyGetter(String propertyExpression, bool allowSimpleProperties)
         {
-            EventPropertyGetter getter = _propertyGetterCache.Get(propertyExpression);
+            EventPropertyGetterSPI getter = _propertyGetterCache.Get(propertyExpression);
             if (getter != null)
             {
                 return getter;
@@ -340,7 +340,7 @@ namespace com.espertech.esper.events.xml
                     {
                         if (!returnType.IsArray)
                         {
-                            getter = new DOMConvertingGetter(propertyExpression, (DOMPropertyGetter)getter, returnType);
+                            getter = new DOMConvertingGetter((DOMPropertyGetter)getter, returnType);
                         }
                         else
                         {

@@ -47,17 +47,17 @@ namespace com.espertech.esper.epl.datetime.calop
         public const int SEMI_MONTH = 1001;
 
         /// <summary>
-        /// Constant marker for truncating 
+        /// IsConstant marker for truncating 
         /// </summary>
         public const int MODIFY_TRUNCATE = 0;
 
         /// <summary>
-        /// Constant marker for rounding
+        /// IsConstant marker for rounding
         /// </summary>
         public const int MODIFY_ROUND = 1;
 
         /// <summary>
-        /// Constant marker for ceiling
+        /// IsConstant marker for ceiling
         /// </summary>
         public const int MODIFY_CEILING = 2;
 

@@ -15,7 +15,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprNode 
@@ -59,11 +59,11 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestDeepEquals()
         {
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make2SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd()));
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeEqualsNode(), SupportExprNodeFactory.MakeMathNode()));
-            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.MakeMathNode()));
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.Make2SubNodeAnd()));
-            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make3SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd()));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make2SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd(), false));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeEqualsNode(), SupportExprNodeFactory.MakeMathNode(), false));
+            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.MakeMathNode(), false));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.Make2SubNodeAnd(), false));
+            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make3SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd(), false));
         }
     
         [Test]

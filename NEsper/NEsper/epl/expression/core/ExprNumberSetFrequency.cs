@@ -47,7 +47,7 @@ namespace com.espertech.esper.epl.expression.core
             get { return this.ChildNodes[0].IsConstantResult; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprNumberSetFrequency;
         }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -35,7 +36,7 @@ namespace com.espertech.esper.epl.join.table
         {
         }
 
-        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventTableOrganization organization = Organization;
             return new EventTable[] { new PropertyIndexedEventTableCoerceAll(propertyGetters, organization, Coercers, CoercionType) };

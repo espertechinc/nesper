@@ -31,7 +31,7 @@ namespace NEsper.Avro.Getter
         {
             var record = (GenericRecord) eventBean.Underlying;
             var values = (ICollection<object>) record.Get(_pos);
-            return AvroEventBeanGetterIndexed.GetIndexedValue(values, index);
+            return AvroEventBeanGetterIndexed.GetAvroIndexedValue(values, index);
         }
     }
 } // end of namespace

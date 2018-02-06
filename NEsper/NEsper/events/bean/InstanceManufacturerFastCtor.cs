@@ -48,7 +48,7 @@ namespace com.espertech.esper.events.bean
             catch (TargetException e)
             {
                 throw new EPException(
-                    "InvocationTargetException received invoking constructor for type '" + target.Name + "': " +
+                    "TargetInvocationException received invoking constructor for type '" + target.Name + "': " +
                     e.InnerException.Message, e.InnerException);
             }
         }

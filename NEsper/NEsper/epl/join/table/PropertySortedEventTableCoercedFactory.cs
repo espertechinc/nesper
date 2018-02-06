@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -27,7 +28,7 @@ namespace com.espertech.esper.epl.join.table
             this.coercionType = coercionType;
         }
     
-        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             var organization = Organization;
             return new EventTable[]

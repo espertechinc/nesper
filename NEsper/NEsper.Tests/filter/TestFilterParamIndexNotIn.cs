@@ -66,8 +66,8 @@ namespace com.espertech.esper.filter
             MultiKeyUntyped inList = new MultiKeyUntyped(new Object[] {3L, 4L, 5L});
             Assert.AreEqual(_testEvaluators[1], index.Get(inList));
             Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove(inList));
-            Assert.IsFalse(index.Remove(inList));
+            index.Remove(inList);
+            index.Remove(inList);
             Assert.AreEqual(null, index.Get(inList));
     
             // now that {3,4,5} is removed, verify results again

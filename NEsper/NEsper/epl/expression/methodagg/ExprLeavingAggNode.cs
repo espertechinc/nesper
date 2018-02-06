@@ -27,7 +27,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             if (PositionalParams.Length > 0)
             {
@@ -37,14 +37,13 @@ namespace com.espertech.esper.epl.expression.methodagg
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeLeaving(validationContext.StatementExtensionSvcContext, this);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "leaving"; }
-        }
+        public override string AggregationFunctionName => "leaving";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprLeavingAggNode;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

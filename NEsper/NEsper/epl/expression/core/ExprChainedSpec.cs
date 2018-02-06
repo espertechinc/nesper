@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.core
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.Name, Name) && ExprNodeUtility.DeepEquals(other.Parameters, Parameters);
+            return Equals(other.Name, Name) && ExprNodeUtility.DeepEquals(other.Parameters, Parameters, false);
         }
 
         /// <summary>

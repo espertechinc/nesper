@@ -124,7 +124,7 @@ namespace com.espertech.esper.view.ext
             var sortWindowSize = ViewFactorySupport.EvaluateSizeParam(ViewName, _sizeEvaluator, agentInstanceContext);
             if ((other.SortWindowSize != sortWindowSize) ||
                 (!Compare(other.IsDescendingValues, _isDescendingValues)) ||
-                (!ExprNodeUtility.DeepEquals(other.SortCriteriaExpressions, _sortCriteriaExpressions)))
+                (!ExprNodeUtility.DeepEquals(other.SortCriteriaExpressions, _sortCriteriaExpressions, false)))
             {
                 return false;
             }

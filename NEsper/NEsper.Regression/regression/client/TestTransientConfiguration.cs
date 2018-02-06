@@ -144,7 +144,7 @@ namespace com.espertech.esper.regression.client
 	    }
 
 	    public class MyClassLoaderProvider : ClassLoaderProvider {
-	        public ClassLoader Classloader() {
+	        public ClassLoader GetClassLoader() {
 	            IsInvoked = true;
 	            return null;
                 //return Thread.CurrentThread().ContextClassLoader;

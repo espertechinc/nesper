@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.epl.join.table
             }
         }
 
-        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventTableOrganization organization = Organization;
             if (unique)

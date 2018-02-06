@@ -276,7 +276,7 @@ namespace com.espertech.esper.epl.expression.ops
             return null;
         }
     
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprArrayNode;
         }

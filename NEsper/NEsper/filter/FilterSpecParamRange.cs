@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.core.context.util;
-using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.pattern;
 
 namespace com.espertech.esper.filter
@@ -21,8 +19,8 @@ namespace com.espertech.esper.filter
     /// </summary>
     public sealed class FilterSpecParamRange : FilterSpecParam
     {
-        private readonly FilterSpecParamRangeValue _min;
-        private readonly FilterSpecParamRangeValue _max;
+        private readonly FilterSpecParamFilterForEval _min;
+        private readonly FilterSpecParamFilterForEval _max;
 
         /// <summary>Constructor. </summary>
         /// <param name="lookupable">is the lookupable</param>
@@ -30,7 +28,7 @@ namespace com.espertech.esper.filter
         /// <param name="min">is the begin point of the range</param>
         /// <param name="max">is the end point of the range</param>
         /// <throws>ArgumentException if an operator was supplied that does not take a double range value</throws>
-        public FilterSpecParamRange(FilterSpecLookupable lookupable, FilterOperator filterOperator, FilterSpecParamRangeValue min, FilterSpecParamRangeValue max)
+        public FilterSpecParamRange(FilterSpecLookupable lookupable, FilterOperator filterOperator, FilterSpecParamFilterForEval min, FilterSpecParamFilterForEval max)
             : base(lookupable, filterOperator)
         {
             _min = min;
@@ -56,17 +54,11 @@ namespace com.espertech.esper.filter
 
         /// <summary>Returns the lower endpoint. </summary>
         /// <value>lower endpoint</value>
-        public FilterSpecParamRangeValue Min
-        {
-            get { return _min; }
-        }
+        public FilterSpecParamFilterForEval Min => _min;
 
         /// <summary>Returns the upper endpoint. </summary>
         /// <value>upper endpoint</value>
-        public FilterSpecParamRangeValue Max
-        {
-            get { return _max; }
-        }
+        public FilterSpecParamFilterForEval Max => _max;
 
         public override String ToString()
         {

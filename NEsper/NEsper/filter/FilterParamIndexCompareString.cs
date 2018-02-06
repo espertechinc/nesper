@@ -54,14 +54,19 @@ namespace com.espertech.esper.filter
             _constantsMap.Put(filterConstant, matcher);
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
-            return _constantsMap.Delete(filterConstant) != null;
+            _constantsMap.Delete(filterConstant);
         }
 
         public override int Count
         {
             get { return _constantsMap.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return _constantsMap.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

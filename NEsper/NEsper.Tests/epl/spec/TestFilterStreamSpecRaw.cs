@@ -248,14 +248,15 @@ namespace com.espertech.esper.epl.spec
             Assert.AreEqual(1.0, GetConstant(rangeParam.Max));
         }
     
-        private double GetConstant(FilterSpecParamRangeValue param)
+        private double GetConstant(FilterSpecParamFilterForEval param)
         {
-            return ((RangeValueDouble) param).DoubleValue;
+            var constant = (FilterForEvalConstantDouble) param;
+            return constant.DoubleValue;
         }
     
         private Object GetConstant(FilterSpecParamInValue param)
         {
-            var constant = (InSetOfValuesConstant) param;
+            var constant = (FilterForEvalConstantAnyType)param;
             return constant.Constant;
         }
     

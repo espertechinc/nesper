@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.spec
@@ -18,14 +20,21 @@ namespace com.espertech.esper.epl.spec
     [Serializable]
     public class CreateIndexItem : MetaDefItem
     {
-        public CreateIndexItem(String name, CreateIndexType type)
+        private readonly IList<ExprNode> _expressions;
+        private readonly string _type;
+        private readonly IList<ExprNode> _parameters;
+    
+        public CreateIndexItem(IList<ExprNode> expressions, string type, IList<ExprNode> parameters)
         {
-            Name = name;
-            Type = type;
+            _expressions = expressions;
+            _type = type;
+            _parameters = parameters;
         }
 
-        public string Name { get; private set; }
+        public IList<ExprNode> Expressions => _expressions;
 
-        public CreateIndexType Type { get; private set; }
+        public string IndexType => _type;
+
+        public IList<ExprNode> Parameters => _parameters;
     }
-}
+} // end of namespace

@@ -55,9 +55,6 @@ namespace com.espertech.esper.epl.lookup
             return GetType().Name;
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _strategyDesc;
     }
 }

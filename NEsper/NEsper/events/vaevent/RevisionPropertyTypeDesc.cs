@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using com.espertech.esper.client;
 
 namespace com.espertech.esper.events.vaevent
 {
@@ -17,42 +16,30 @@ namespace com.espertech.esper.events.vaevent
     /// </summary>
     public class RevisionPropertyTypeDesc
     {
-        private readonly EventPropertyGetter revisionGetter;
-        private readonly RevisionGetterParameters revisionGetterParams;
-        private readonly Object propertyType;  // Can be the {Type|Map|EventType}
-
         /// <summary>Ctor. </summary>
         /// <param name="revisionGetter">getter to use</param>
         /// <param name="revisionGetterParams">getter parameters</param>
         /// <param name="propertyType">type of the property</param>
-        public RevisionPropertyTypeDesc(EventPropertyGetter revisionGetter,
-                                        RevisionGetterParameters revisionGetterParams,
-                                        Type propertyType)
+        public RevisionPropertyTypeDesc(
+            EventPropertyGetterSPI revisionGetter,
+            RevisionGetterParameters revisionGetterParams,
+            Type propertyType)
         {
-            this.revisionGetter = revisionGetter;
-            this.revisionGetterParams = revisionGetterParams;
-            this.propertyType = propertyType;
+            RevisionGetter = revisionGetter;
+            RevisionGetterParams = revisionGetterParams;
+            PropertyType = propertyType;
         }
 
         /// <summary>Returns the getter for the property on the revision event type. </summary>
         /// <returns>getter</returns>
-        public EventPropertyGetter RevisionGetter
-        {
-            get { return revisionGetter; }
-        }
+        public EventPropertyGetterSPI RevisionGetter { get; }
 
         /// <summary>Returns parameters for the getter for the property on the revision event type. </summary>
         /// <returns>getter parameters</returns>
-        public RevisionGetterParameters RevisionGetterParams
-        {
-            get { return revisionGetterParams; }
-        }
+        public RevisionGetterParameters RevisionGetterParams { get; }
 
         /// <summary>Returns property type. </summary>
         /// <returns>type</returns>
-        public object PropertyType
-        {
-            get { return propertyType; }
-        }
+        public object PropertyType { get; }
     }
 }

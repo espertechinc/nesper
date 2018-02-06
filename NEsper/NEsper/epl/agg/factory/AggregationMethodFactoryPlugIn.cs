@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.compat;
@@ -20,72 +19,55 @@ using com.espertech.esper.epl.expression.methodagg;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryPlugIn : AggregationMethodFactory
-	{
-        protected internal readonly ExprPlugInAggNode Parent;
-        protected internal readonly AggregationFunctionFactory AggregationFunctionFactory;
-        protected internal readonly Type AggregatedValueType;
+    public class AggregationMethodFactoryPlugIn : AggregationMethodFactory
+    {
+        private readonly Type _aggregatedValueType;
+        private readonly AggregationFunctionFactory _aggregationFunctionFactory;
+        private readonly ExprPlugInAggNode _parent;
 
-	    public AggregationMethodFactoryPlugIn(ExprPlugInAggNode parent, AggregationFunctionFactory aggregationFunctionFactory, Type aggregatedValueType)
+        public AggregationMethodFactoryPlugIn(ExprPlugInAggNode parent,
+            AggregationFunctionFactory aggregationFunctionFactory, Type aggregatedValueType)
         {
-	        Parent = parent;
-	        AggregationFunctionFactory = aggregationFunctionFactory;
-	        AggregatedValueType = aggregatedValueType;
-	    }
+            _parent = parent;
+            _aggregationFunctionFactory = aggregationFunctionFactory;
+            _aggregatedValueType = aggregatedValueType;
+        }
 
-	    public Type ResultType
-	    {
-	        get { return AggregationFunctionFactory.ValueType; }
-	    }
+        public Type ResultType => _aggregationFunctionFactory.ValueType;
 
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
+        public bool IsAccessAggregation => false;
 
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public AggregationMethod Make()
+        public AggregationMethod Make()
         {
-	        AggregationMethod method = AggregationFunctionFactory.NewAggregator();
-	        if (!Parent.IsDistinct)
-            {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, false);
-	    }
+            var method = _aggregationFunctionFactory.NewAggregator();
+            if (!_parent.IsDistinct) return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, false);
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public AggregationAgent AggregationStateAgent => null;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
-	}
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+    }
 } // end of namespace

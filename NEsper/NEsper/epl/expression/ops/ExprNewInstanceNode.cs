@@ -72,7 +72,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return _classIdent; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprNewInstanceNode;
             return other != null && other._classIdent.Equals(this._classIdent);

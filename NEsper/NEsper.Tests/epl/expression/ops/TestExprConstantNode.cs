@@ -12,7 +12,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprConstantNode 
@@ -59,13 +59,13 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl("5")));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprOrNode()));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(3)));
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl("5"), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprOrNode(), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(null), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(3), false));
     
             _constantNode = new ExprConstantNodeImpl(null);
-            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl(null), false));
         }
     }
 }

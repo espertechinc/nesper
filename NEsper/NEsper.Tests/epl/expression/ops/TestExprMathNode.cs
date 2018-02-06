@@ -16,7 +16,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprMathNode 
@@ -102,8 +102,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_arithNode.EqualsNode(_arithNode));
-            Assert.IsFalse(_arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
+            Assert.IsTrue(_arithNode.EqualsNode(_arithNode, false));
+            Assert.IsFalse(_arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
     
         private ExprMathNode MakeNode(Object valueLeft, Type typeLeft, Object valueRight, Type typeRight)

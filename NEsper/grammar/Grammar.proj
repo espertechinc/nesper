@@ -13,10 +13,10 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<AntlrVersion>4.6.1</AntlrVersion>
-		<Antlr4ToolLocation>D:\opt\antlr\antlr-4.6\antlr-4.6-complete.jar</Antlr4ToolLocation>
+		<AntlrVersion>4.7.1</AntlrVersion>
+		<Antlr4ToolLocation>C:\src\antlr\antlr-4.7.1-complete.jar</Antlr4ToolLocation>
 		<Antlr4JavaInstallation>$(JAVA_HOME)</Antlr4JavaInstallation>
-		<Antlr4JavaExecutable>&quot;$(JAVA_HOME)\bin\java.exe&quot;</Antlr4JavaExecutable>
+		<Antlr4JavaExecutable>&quot;java.exe&quot;</Antlr4JavaExecutable>
 		<IntermediateOutputPath>$(MSBuildProjectDirectory)</IntermediateOutputPath>
 		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 		<TargetDir>$(MSBuildProjectDirectory)\..\NEsper\epl\generated</TargetDir>

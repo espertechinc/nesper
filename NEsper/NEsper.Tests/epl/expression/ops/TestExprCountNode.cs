@@ -11,10 +11,10 @@ using System;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.supportunit.epl;
+
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprCountNode : TestExprAggregateNodeAdapter
     {
@@ -47,9 +47,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest));
-            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false)));
-            Assert.IsTrue(_wildcardCount.EqualsNode(_wildcardCount));
+            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest, false));
+            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false), false));
+            Assert.IsTrue(_wildcardCount.EqualsNode(_wildcardCount, false));
         }
 
         [Test]

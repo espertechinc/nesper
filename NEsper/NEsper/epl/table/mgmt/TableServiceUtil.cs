@@ -60,7 +60,7 @@ namespace com.espertech.esper.epl.table.mgmt
                 count++;
             }
             var keyColIndexes = CollectionUtil.IntArray(keyIndexes);
-            return new Pair<int[], IndexMultiKey>(keyColIndexes, new IndexMultiKey(true, indexFields, Collections.GetEmptyList<IndexedPropDesc>()));
+            return new Pair<int[], IndexMultiKey>(keyColIndexes, new IndexMultiKey(true, indexFields, Collections.GetEmptyList<IndexedPropDesc>(), null));
         }
     }
 }

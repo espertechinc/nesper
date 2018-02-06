@@ -23,7 +23,7 @@ namespace com.espertech.esper.compat
 
         public static IWindsorContainer CurrentContainer
         {
-            get { return ScopedInstance<IWindsorContainer>.Get(); }
+            get { return ScopedInstance<IWindsorContainer>.Current; }
         }
 
         public static T Get<T>(this IWindsorContainer container)

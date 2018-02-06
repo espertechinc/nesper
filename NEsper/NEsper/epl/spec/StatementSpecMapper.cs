@@ -684,11 +684,21 @@ namespace com.espertech.esper.epl.spec
             {
                 return;
             }
+
             var cols = createIndexDesc.Columns
-                .Select(item => new CreateIndexColumn(item.Name, item.Type.Xlate<CreateIndexColumnType>()))
+                .Select(item => UnmapCreateIndexColumn(item, unmapContext))
                 .ToList();
             model.CreateIndex = new CreateIndexClause(
                 createIndexDesc.IndexName, createIndexDesc.WindowName, cols, createIndexDesc.IsUnique);
+        }
+
+        private static CreateIndexColumn UnmapCreateIndexColumn(
+            CreateIndexItem item, 
+            StatementSpecUnMapContext unmapContext)
+        {
+            var columns = UnmapExpressionDeep(item.Expressions, unmapContext);
+            var parameters = UnmapExpressionDeep(item.Parameters, unmapContext);
+            return new CreateIndexColumn(columns, item.IndexType, parameters);
         }
 
         private static void UnmapCreateVariable(
@@ -1865,11 +1875,20 @@ namespace com.espertech.esper.epl.spec
             }
 
             var cols = clause.Columns
-                .Select(col => new CreateIndexItem(col.ColumnName, col.IndexColumnType.Xlate<CreateIndexType>()))
+                .Select(col => MapCreateIndexCol(col, mapContext))
                 .ToList();
 
             var desc = new CreateIndexDesc(clause.IsUnique, clause.IndexName, clause.WindowName, cols);
             raw.CreateIndexDesc = desc;
+        }
+
+        private static CreateIndexItem MapCreateIndexCol(
+            CreateIndexColumn col, 
+            StatementSpecMapContext mapContext)
+        {
+            var columns = MapExpressionDeep(col.Columns, mapContext);
+            var parameters = MapExpressionDeep(col.Parameters, mapContext);
+            return new CreateIndexItem(columns, col.IndexType == null ? CreateIndexType.HASH.GetNameInvariant() : col.IndexType, parameters);
         }
 
         private static void MapUpdateClause(

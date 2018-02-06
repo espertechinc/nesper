@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.epl.expression.core;
 using System;
 using System.Collections.Generic;
 
@@ -55,23 +56,33 @@ namespace com.espertech.esper.client.hook
         /// <summary>Captures virtual data window indexed field informaion. </summary>
         public class VDWCreateIndexField
         {
-            /// <summary>Ctor. </summary>
-            /// <param name="name">named window name</param>
-            /// <param name="hash">true for hash-based index, false for btree index</param>
-            public VDWCreateIndexField(String name,
-                                       bool hash)
+            /// <summary>
+            /// Initializes a new instance of the <see cref="VDWCreateIndexField"/> class.
+            /// </summary>
+            /// <param name="expressions">The expressions.</param>
+            /// <param name="type">The type.</param>
+            /// <param name="parameters">The parameters.</param>
+            public VDWCreateIndexField(IList<ExprNode> expressions, String type, IList<ExprNode> parameters)
             {
-                Name = name;
-                IsHash = hash;
+                Expressions = expressions;
+                Type = type;
+                Parameters = parameters;
             }
 
-            /// <summary>Name of the indexed field. </summary>
-            /// <value>field name</value>
-            public string Name { get; private set; }
+            /// <summary>
+            /// Gets the index expressions.
+            /// </summary>
+            public IList<ExprNode> Expressions { get; private set; }
+            
+            /// <summary>
+            /// Gets the index type.
+            /// </summary>
+            public String Type { get; private set; }
 
-            /// <summary>Indicate whether the index is hash or btree, true for hash. </summary>
-            /// <value>index type indicator</value>
-            public bool IsHash { get; private set; }
+            /// <summary>
+            /// Gets the index field parameters if any.
+            /// </summary>
+            public IList<ExprNode> Parameters { get; private set; }
         }
 
         #endregion

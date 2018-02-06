@@ -164,7 +164,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return ExprPrecedenceEnum.EQUALS; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprEqualsNodeImpl;
             return other != null && other.vIsNotEquals == vIsNotEquals;

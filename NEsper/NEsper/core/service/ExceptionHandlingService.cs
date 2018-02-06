@@ -25,6 +25,7 @@ namespace com.espertech.esper.core.service
 
         public event ExceptionHandler UnhandledException;
         public event ConditionHandler UnhandledCondition;
+        public event ExceptionHandlerInboundPool InboundPoolHandler;
 
         public ExceptionHandlingService(
             string engineURI,
@@ -101,9 +102,12 @@ namespace com.espertech.esper.core.service
                 new ExceptionHandlerContext(_engineURI, ex, statementName, epl, type, optionalCurrentEvent));
         }
 
-        public string EngineURI
+        public void HandleInboundPoolException(String engineURI, Exception exception, Object @event)
         {
-            get { return _engineURI; }
+            InboundPoolHandler?.Invoke(
+                new ExceptionHandlerContextUnassociated(engineURI, exception, @event));
         }
+
+        public string EngineURI => _engineURI;
     }
 }

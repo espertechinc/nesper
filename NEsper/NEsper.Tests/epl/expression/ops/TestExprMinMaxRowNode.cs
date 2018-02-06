@@ -17,7 +17,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprMinMaxRowNode 
@@ -119,9 +119,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_minMaxNode.EqualsNode(_minMaxNode));
-            Assert.IsFalse(_minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-            Assert.IsFalse(_minMaxNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_minMaxNode.EqualsNode(_minMaxNode, false));
+            Assert.IsFalse(_minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            Assert.IsFalse(_minMaxNode.EqualsNode(new ExprOrNode(), false));
         }
     
         private static void SetupNode(ExprMinMaxRowNode nodeMin, int intValue, double doubleValue, float? floatValue)

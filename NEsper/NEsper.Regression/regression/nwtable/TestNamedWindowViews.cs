@@ -34,8 +34,6 @@ using Avro.Generic;
 
 using NEsper.Avro.Extensions;
 
-using Newtonsoft.Json.Linq;
-
 namespace com.espertech.esper.regression.nwtable
 {
     [TestFixture]

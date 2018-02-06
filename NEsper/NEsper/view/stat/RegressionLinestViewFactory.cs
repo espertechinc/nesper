@@ -80,8 +80,8 @@ namespace com.espertech.esper.view.stat
             }
 
             RegressionLinestView myView = (RegressionLinestView)view;
-            if ((!ExprNodeUtility.DeepEquals(myView.ExpressionX, _expressionX)) ||
-                (!ExprNodeUtility.DeepEquals(myView.ExpressionY, _expressionY)))
+            if ((!ExprNodeUtility.DeepEquals(myView.ExpressionX, _expressionX, false)) ||
+                (!ExprNodeUtility.DeepEquals(myView.ExpressionY, _expressionY, false)))
             {
                 return false;
             }

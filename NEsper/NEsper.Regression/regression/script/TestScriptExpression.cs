@@ -20,7 +20,6 @@ using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
 using com.espertech.esper.supportregression.util;
 
-using NEsper.Scripting.Jurassic;
 using NEsper.Scripting.ClearScript;
 
 using NUnit.Framework;

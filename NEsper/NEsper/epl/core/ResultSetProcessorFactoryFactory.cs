@@ -950,7 +950,7 @@ namespace com.espertech.esper.epl.core
 
                 for (var i = 0; i < groupByNodes.Count; i++)
                 {
-                    if (ExprNodeUtility.DeepEquals(child, groupByNodes[i]))
+                    if (ExprNodeUtility.DeepEquals(child, groupByNodes[i], false))
                     {
                         if (indexes.Contains(i))
                         {

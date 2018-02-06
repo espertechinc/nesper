@@ -35,10 +35,11 @@ namespace com.espertech.esper.events.vaevent
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="eventAdapterService">The event adapter service.</param>
         /// <param name="variantSpec">specifies how to handle the disparate events</param>
         /// <param name="eventTypeIdGenerator">The event type id generator.</param>
         /// <param name="config">The config.</param>
-        public VAEVariantProcessor(VariantSpec variantSpec, EventTypeIdGenerator eventTypeIdGenerator, ConfigurationVariantStream config)
+        public VAEVariantProcessor(EventAdapterService eventAdapterService, VariantSpec variantSpec, EventTypeIdGenerator eventTypeIdGenerator, ConfigurationVariantStream config)
         {
             VariantSpec = variantSpec;
 
@@ -53,7 +54,7 @@ namespace com.espertech.esper.events.vaevent
             }
 
             EventTypeMetadata metadata = EventTypeMetadata.CreateValueAdd(variantSpec.VariantStreamName, TypeClass.VARIANT);
-            VariantEventType = new VariantEventType(metadata, eventTypeIdGenerator.GetTypeId(variantSpec.VariantStreamName), variantSpec, strategy, config);
+            VariantEventType = new VariantEventType(eventAdapterService, metadata, eventTypeIdGenerator.GetTypeId(variantSpec.VariantStreamName), variantSpec, strategy, config);
         }
 
         public EventType ValueAddEventType
@@ -116,7 +117,7 @@ namespace com.espertech.esper.events.vaevent
             throw new UnsupportedOperationException();
         }
 
-        public void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository)
+        public virtual void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository, AgentInstanceContext agentInstanceContext)
         {
             throw new UnsupportedOperationException();
         }

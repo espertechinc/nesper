@@ -18,9 +18,6 @@ namespace com.espertech.esper.events.bean
     /// </summary>
     public class DynamicPropertyDescriptor
     {
-        private readonly Type _clazz;
-        private readonly FastMethod _method;
-
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -29,32 +26,26 @@ namespace com.espertech.esper.events.bean
         /// <param name="hasParameters">true if the method takes parameters</param>
         public DynamicPropertyDescriptor(Type clazz, FastMethod method, bool hasParameters)
         {
-            _clazz = clazz;
-            _method = method;
+            Clazz = clazz;
+            Method = method;
             HasParameters = hasParameters;
         }
-    
+
         /// <summary>
         /// Returns the class for the method.
         /// </summary>
         /// <returns>
         /// class to match on
         /// </returns>
-        public Type GetClazz()
-        {
-            return _clazz;
-        }
-    
+        public Type Clazz { get; private set; }
+
         /// <summary>
         /// Returns the method to invoke.
         /// </summary>
         /// <returns>
         /// method to invoke
         /// </returns>
-        public FastMethod GetMethod()
-        {
-            return _method;
-        }
+        public FastMethod Method { get; private set; }
 
         /// <summary>
         /// Returns true if the method takes parameters.

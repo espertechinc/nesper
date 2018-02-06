@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.service;
+using com.espertech.esper.core.support;
 using com.espertech.esper.epl.declexpr;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
@@ -41,7 +42,7 @@ namespace com.espertech.esper.epl.join.hint
             OAEXPRESSIONTYPE =
                 new ObjectArrayEventType(
                     EventTypeMetadata.CreateAnonymous(typeof (ExcludePlanHintExprUtil).Name, ApplicationType.OBJECTARR),
-                    typeof (ExcludePlanHintExprUtil).Name, 0, null, properties, null, null, null);
+                    typeof (ExcludePlanHintExprUtil).Name, 0, SupportEventAdapterService.Service, properties, null, null, null);
         }
     
         public static EventBean ToEvent(int fromStreamnum,

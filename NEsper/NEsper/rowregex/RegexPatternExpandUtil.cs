@@ -287,15 +287,13 @@ namespace com.espertech.esper.rowregex
 
         private static void ValidateExpression(ExprNode repeat)
         {
-            var expression = "pattern quantifier '" + repeat.ToExpressionStringMinPrecedenceSafe() + "'";
-            ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.MATCHRECOGPATTERN, expression, repeat);
+            ExprNodeUtility.ValidatePlainExpression(ExprNodeOrigin.MATCHRECOGPATTERN, repeat);
             if (!repeat.IsConstantResult)
             {
-                throw new ExprValidationException(expression + " must return a constant value");
+                throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
-            if (repeat.ExprEvaluator.ReturnType.GetBoxedType() != typeof(int?))
-            {
-                throw new ExprValidationException(expression + " must return an integer-type value");
+            if (TypeHelper.GetBoxedType(repeat.ExprEvaluator.ReturnType) != typeof(int?)) {
+                throw new ExprValidationException(GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }
         }
 
@@ -326,6 +324,11 @@ namespace com.espertech.esper.rowregex
                 }
                 return nestedCopy;
             }
+        }
+
+        private static String GetPatternQuantifierExpressionText(ExprNode exprNode)
+        {
+            return "pattern quantifier '" + ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode) + "'";
         }
     }
 } // end of namespace

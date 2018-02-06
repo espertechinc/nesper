@@ -17,6 +17,7 @@ using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.service.resource;
 using com.espertech.esper.core.start;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.metric;
 using com.espertech.esper.events.vaevent;
@@ -104,10 +105,7 @@ namespace com.espertech.esper.epl.named
                 statementContextCreateWindow.ConfigSnapshot.EngineDefaults.Threading);
         }
 
-        public string EventTypeAsName
-        {
-            get { return _eventTypeAsName; }
-        }
+        public string EventTypeAsName => _eventTypeAsName;
 
         public NamedWindowProcessorInstance AddInstance(AgentInstanceContext agentInstanceContext)
         {
@@ -182,10 +180,7 @@ namespace com.espertech.esper.epl.named
             return null;
         }
 
-        public string ContextName
-        {
-            get { return _contextName; }
-        }
+        public string ContextName => _contextName;
 
         public NamedWindowConsumerView AddConsumer(NamedWindowConsumerDesc consumerDesc, bool isSubselect)
         {
@@ -211,57 +206,39 @@ namespace com.espertech.esper.epl.named
             return statementResourceService.ResourcesUnpartitioned.NamedWindowProcessorInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
         }
 
-        public bool IsVirtualDataWindow
-        {
-            get { return _isVirtualDataWindow; }
-        }
+        public bool IsVirtualDataWindow => _isVirtualDataWindow;
 
         /// <summary>
         /// Returns the tail view of the named window, hooked into the view chain after the named window's data window views,
         /// as the last view.
         /// </summary>
         /// <value>tail view</value>
-        public NamedWindowTailView TailView
-        {
-            get { return _tailView; } // hooked as the tail sview before any data windows
-        }
+        public NamedWindowTailView TailView => _tailView;
 
         /// <summary>
         /// Returns the root view of the named window, hooked into the view chain before the named window's data window views,
         /// right after the filter stream that filters for insert-into events.
         /// </summary>
         /// <value>tail view</value>
-        public NamedWindowRootView RootView
-        {
-            get { return _rootView; } // hooked as the top view before any data windows
-        }
+        public NamedWindowRootView RootView => _rootView;
 
         /// <summary>
         /// Returns the event type of the named window.
         /// </summary>
         /// <value>event type</value>
-        public EventType NamedWindowType
-        {
-            get { return _eventType; }
-        }
+        public EventType NamedWindowType => _eventType;
 
         /// <summary>
         /// Returns the EPL expression.
         /// </summary>
         /// <value>epl</value>
-        public string EplExpression
-        {
-            get { return _eplExpression; }
-        }
+        public string EplExpression => _eplExpression;
 
         /// <summary>
         /// Returns the statement name.
         /// </summary>
         /// <value>name</value>
-        public string StatementName
-        {
-            get { return _statementName; }
-        }
+        public string StatementName => _statementName;
 
         /// <summary>
         /// Deletes a named window and removes any associated resources.
@@ -270,20 +247,11 @@ namespace com.espertech.esper.epl.named
         {
         }
 
-        public bool IsEnableSubqueryIndexShare
-        {
-            get { return _isEnableSubqueryIndexShare; }
-        }
+        public bool IsEnableSubqueryIndexShare => _isEnableSubqueryIndexShare;
 
-        public StatementMetricHandle CreateNamedWindowMetricsHandle
-        {
-            get { return _statementContextCreateWindow.EpStatementHandle.MetricsHandle; }
-        }
+        public StatementMetricHandle CreateNamedWindowMetricsHandle => _statementContextCreateWindow.EpStatementHandle.MetricsHandle;
 
-        public string NamedWindowName
-        {
-            get { return _namedWindowName; }
-        }
+        public string NamedWindowName => _namedWindowName;
 
         public string[][] UniqueIndexes
         {
@@ -321,20 +289,11 @@ namespace com.espertech.esper.epl.named
             }
         }
 
-        public ICollection<string> OptionalUniqueKeyProps
-        {
-            get { return _optionalUniqueKeyProps; }
-        }
+        public ICollection<string> OptionalUniqueKeyProps => _optionalUniqueKeyProps;
 
-        public EventTableIndexMetadata EventTableIndexMetadataRepo
-        {
-            get { return _eventTableIndexMetadataRepo; }
-        }
+        public EventTableIndexMetadata EventTableIndexMetadataRepo => _eventTableIndexMetadataRepo;
 
-        public StatementContext StatementContextCreateWindow
-        {
-            get { return _statementContextCreateWindow; }
-        }
+        public StatementContext StatementContextCreateWindow => _statementContextCreateWindow;
 
         public void RemoveAllInstanceIndexes(IndexMultiKey index)
         {
@@ -360,9 +319,9 @@ namespace com.espertech.esper.epl.named
             }
         }
 
-        public void ValidateAddIndex(string statementName, string indexName, IndexMultiKey imk)
+        public void ValidateAddIndex(string statementName, string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, IndexMultiKey imk)
         {
-            _eventTableIndexMetadataRepo.AddIndex(false, imk, indexName, statementName, true, null);
+            _eventTableIndexMetadataRepo.AddIndexExplicit(false, imk, explicitIndexName, explicitIndexDesc, statementName);
         }
 
         public void RemoveIndexReferencesStmtMayRemoveIndex(IndexMultiKey imk, string finalStatementName)

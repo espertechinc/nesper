@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
@@ -23,50 +23,46 @@ namespace com.espertech.esper.epl.join.plan
     /// </summary>
     public class InKeywordTableLookupPlanSingleIdx : TableLookupPlan
     {
-        private readonly ExprNode[] _expressions;
+        private readonly IList<ExprNode> _expressions;
 
         /// <summary>Ctor. </summary>
         /// <param name="lookupStream">stream that generates event to look up for</param>
         /// <param name="indexedStream">stream to index table lookup</param>
         /// <param name="indexNum">index number for the table containing the full unindexed contents</param>
         /// <param name="expressions"></param>
-        public InKeywordTableLookupPlanSingleIdx(int lookupStream, int indexedStream, TableLookupIndexReqKey indexNum, ExprNode[] expressions)
+        public InKeywordTableLookupPlanSingleIdx(
+            int lookupStream,
+            int indexedStream, 
+            TableLookupIndexReqKey indexNum,
+            IList<ExprNode> expressions)
             : base(lookupStream, indexedStream, new TableLookupIndexReqKey[] { indexNum })
         {
             _expressions = expressions;
         }
 
-        public ExprNode[] Expressions
-        {
-            get { return _expressions; }
-        }
+        public IList<ExprNode> Expressions => _expressions;
 
-        public override TableLookupKeyDesc KeyDescriptor
-        {
-            get
-            {
-                return new TableLookupKeyDesc(
-                    Collections.GetEmptyList<QueryGraphValueEntryHashKeyed>(),
-                    Collections.GetEmptyList<QueryGraphValueEntryRange>());
-            }
-        }
+        public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
+            Collections.GetEmptyList<QueryGraphValueEntryHashKeyed>(),
+            Collections.GetEmptyList<QueryGraphValueEntryRange>());
 
         public override JoinExecTableLookupStrategy MakeStrategyInternal(EventTable[] eventTable, EventType[] eventTypes)
         {
             var single = (PropertyIndexedEventTableSingle) eventTable[0];
-            var evaluators = new ExprEvaluator[_expressions.Length];
-            for (var i = 0; i < _expressions.Length; i++) {
+            var evaluators = new ExprEvaluator[_expressions.Count];
+            for (var i = 0; i < _expressions.Count; i++) {
                 evaluators[i] = _expressions[i].ExprEvaluator;
             }
-            return new InKeywordSingleTableLookupStrategyExpr(evaluators,
-                    LookupStream, single, new LookupStrategyDesc(LookupStrategyType.INKEYWORDSINGLEIDX, ExprNodeUtility.ToExpressionStringsMinPrecedence(_expressions)));
+            return new InKeywordSingleTableLookupStrategyExpr(
+                evaluators, LookupStream, single, new LookupStrategyDesc(
+                    LookupStrategyType.INKEYWORDSINGLEIDX, ExprNodeUtility.ToExpressionStringsMinPrecedence(_expressions)));
         }
     
         public override String ToString()
         {
             return GetType().Name + " " +
                     base.ToString() +
-                   " keyProperties=" + ExprNodeUtility.ToExpressionStringMinPrecedence(_expressions);
+                   " keyProperties=" + ExprNodeUtility.ToExpressionStringMinPrecedenceAsList(_expressions);
         }
     }
 }

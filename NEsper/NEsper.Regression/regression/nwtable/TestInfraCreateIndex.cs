@@ -310,7 +310,7 @@ namespace com.espertech.esper.regression.nwtable
         private int GetIndexCount(bool namedWindow)
         {
             var repo = GetIndexInstanceRepo(namedWindow);
-            return repo.GetIndexDescriptors().Length;
+            return repo.IndexDescriptors.Length;
         }
     
         private void RunAssertionMultipleColumnMultipleIndex(bool namedWindow)
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regression.nwtable
     
         private void AssertIndexCountInstance(bool namedWindow, int count) {
             var repo = GetIndexInstanceRepo(namedWindow);
-            Assert.AreEqual(count, repo.GetTables().Count);
+            Assert.AreEqual(count, repo.Tables.Count);
         }
     
         private EventTableIndexRepository GetIndexInstanceRepo(bool namedWindow) {

@@ -23,7 +23,7 @@ namespace com.espertech.esper.client.util
         {
         }
 
-        public ClassLoader Classloader()
+        public ClassLoader GetClassLoader()
         {
             return ClassLoaderDefault.GetInstance();
         }

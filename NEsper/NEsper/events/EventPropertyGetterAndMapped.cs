@@ -11,7 +11,7 @@ using com.espertech.esper.client;
 namespace com.espertech.esper.events
 {
     public interface EventPropertyGetterAndMapped 
-        : EventPropertyGetter
+        : EventPropertyGetterSPI
         , EventPropertyGetterMapped 
     {
     }

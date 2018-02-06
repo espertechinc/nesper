@@ -1353,7 +1353,7 @@ namespace com.espertech.esper.epl.core
                 foreach (int rollupKeyIndex in level.RollupKeys)
                 {
                     ExprNode groupExpression = groupByRollupInfo.ExprNodes[rollupKeyIndex];
-                    if (ExprNodeUtility.DeepEquals(groupExpression, expr))
+                    if (ExprNodeUtility.DeepEquals(groupExpression, expr, false))
                     {
                         found = true;
                         break;

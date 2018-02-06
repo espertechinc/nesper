@@ -19,8 +19,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprRegexpNode 
@@ -79,8 +78,8 @@ namespace com.espertech.esper.epl.expression
         {
             ExprRegexpNode otherRegexpNodeNot = SupportExprNodeFactory.MakeRegexpNode(true);
     
-            Assert.IsTrue(_regexpNodeNot.EqualsNode(otherRegexpNodeNot));
-            Assert.IsFalse(_regexpNodeNormal.EqualsNode(otherRegexpNodeNot));
+            Assert.IsTrue(_regexpNodeNot.EqualsNode(otherRegexpNodeNot, false));
+            Assert.IsFalse(_regexpNodeNormal.EqualsNode(otherRegexpNodeNot, false));
         }
     
         [Test]

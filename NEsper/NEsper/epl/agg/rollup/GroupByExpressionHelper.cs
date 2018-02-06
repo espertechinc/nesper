@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.agg.rollup
                 for (var i = 0; i < distinctGroupByExpressions.Count; i++) {
                     ExprNode other = distinctGroupByExpressions[i];
                     // find same expression
-                    if (ExprNodeUtility.DeepEquals(exprNode, other)) {
+                    if (ExprNodeUtility.DeepEquals(exprNode, other, false)) {
                         expressionToIndex.Put(exprNode, i);
                         found = true;
                         break;

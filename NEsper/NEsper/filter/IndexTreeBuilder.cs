@@ -223,7 +223,7 @@ namespace com.espertech.esper.filter
                 }
 
                 // Remove the index if the index is now empty
-                if (nextIndex.Count == 0)
+                if (nextIndex.IsEmpty)
                 {
                     var isRemoved = currentNode.Remove(nextIndex);
 
@@ -269,7 +269,7 @@ namespace com.espertech.esper.filter
                         index.Remove(filterForValue);
                     }
 
-                    return (index.Count == 0);
+                    return index.IsEmpty;
                 }
 
                 var nextIndex = (FilterParamIndexBase)eventEvaluator;
@@ -299,9 +299,8 @@ namespace com.espertech.esper.filter
                     // another thread had been adding anything to this FilterHandleSetNode
                     index.Remove(filterForValue);
                 }
-                var size = index.Count;
 
-                return (size == 0);
+                return index.IsEmpty;
             }
         }
 

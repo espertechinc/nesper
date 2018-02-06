@@ -15,6 +15,7 @@ namespace com.espertech.esper.epl.join.table
 	    BTREE,
 	    COMPOSITE,
 	    MULTIINDEX,
+        APPLICATION,
 	    VDW
 	}
 } // end of namespace

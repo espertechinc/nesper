@@ -60,6 +60,8 @@ namespace com.espertech.esper.filter
         IN_LIST_OF_VALUES,
         /// <summary> Not-in list of values using the 'not in' operator</summary>
         NOT_IN_LIST_OF_VALUES,
+        /// <summary> Advanced-index</summary>
+        ADVANCED_INDEX,
         /// <summary> Boolean expression filter operator</summary>
         BOOLEAN_EXPRESSION
     };
@@ -182,6 +184,8 @@ namespace com.espertech.esper.filter
                     return ("in");
                 case FilterOperator.NOT_IN_LIST_OF_VALUES:
                     return ("!in");
+                case FilterOperator.ADVANCED_INDEX:
+                    return ("ai");
                 case FilterOperator.BOOLEAN_EXPRESSION:
                     return ("boolean_expr");
             }

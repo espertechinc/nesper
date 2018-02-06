@@ -3017,6 +3017,27 @@ namespace com.espertech.esper.util
             return name;
         }
 
+        public static Type GetComponentTypeOutermost(this Type clazz)
+        {
+            if (!clazz.IsArray)
+            {
+                return clazz;
+            }
+            return GetComponentTypeOutermost(clazz.GetElementType());
+        }
+
+        public static int GetNumberOfDimensions(this Type clazz)
+        {
+            if (clazz.GetElementType()  == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return GetNumberOfDimensions(clazz.GetElementType()) + 1;
+            }
+        }
+
         /// <summary>
         /// Determines whether the specified type is delegate.
         /// </summary>

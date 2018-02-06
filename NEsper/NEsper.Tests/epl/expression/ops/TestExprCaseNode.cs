@@ -18,7 +18,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprCaseNode 
@@ -93,11 +93,11 @@ namespace com.espertech.esper.epl.expression
             ExprCaseNode caseNodeSyntax2 = SupportExprNodeFactory.MakeCaseSyntax2Node();
             ExprCaseNode otherCaseNodeSyntax2 = SupportExprNodeFactory.MakeCaseSyntax2Node();
     
-            Assert.IsTrue(caseNode.EqualsNode(otherCaseNode));
-            Assert.IsTrue(otherCaseNode.EqualsNode(caseNode));
-            Assert.IsFalse(caseNode.EqualsNode(caseNodeSyntax2));
-            Assert.IsFalse(caseNodeSyntax2.EqualsNode(caseNode));
-            Assert.IsTrue(caseNodeSyntax2.EqualsNode(otherCaseNodeSyntax2));
+            Assert.IsTrue(caseNode.EqualsNode(otherCaseNode, false));
+            Assert.IsTrue(otherCaseNode.EqualsNode(caseNode, false));
+            Assert.IsFalse(caseNode.EqualsNode(caseNodeSyntax2, false));
+            Assert.IsFalse(caseNodeSyntax2.EqualsNode(caseNode, false));
+            Assert.IsTrue(caseNodeSyntax2.EqualsNode(otherCaseNodeSyntax2, false));
         }
     
         [Test]

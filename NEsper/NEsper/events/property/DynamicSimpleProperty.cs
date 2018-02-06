@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.client;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
@@ -24,7 +23,8 @@ namespace com.espertech.esper.events.property
     /// Dynamic properties always exist, have an Object type and are resolved to a method during runtime.
     /// </para>
     /// </summary>
-    public class DynamicSimpleProperty : PropertyBase, DynamicProperty, PropertySimple {
+    public class DynamicSimpleProperty : PropertyBase, DynamicProperty, PropertySimple
+    {
         /// <summary>L
         /// Ctor.
         /// </summary>
@@ -34,7 +34,9 @@ namespace com.espertech.esper.events.property
         {
         }
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService) {
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType,
+            EventAdapterService eventAdapterService)
+        {
             return new DynamicSimplePropertyGetter(PropertyNameAtomic, eventAdapterService);
         }
 
@@ -45,46 +47,60 @@ namespace com.espertech.esper.events.property
 
         public override string[] ToPropertyArray()
         {
-            return new string[]{this.PropertyNameAtomic};
+            return new string[] {this.PropertyNameAtomic};
         }
-    
-        public override Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService) {
+
+        public override Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
+        {
             return typeof(Object);
         }
-    
-        public override GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType beanEventType, EventAdapterService eventAdapterService) {
+
+        public override GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType beanEventType,
+            EventAdapterService eventAdapterService)
+        {
             return GenericPropertyDesc.ObjectGeneric;
         }
 
-        public override Type GetPropertyTypeMap(IDictionary<string, object> optionalMapPropTypes, EventAdapterService eventAdapterService)
+        public override Type GetPropertyTypeMap(IDictionary<string, object> optionalMapPropTypes,
+            EventAdapterService eventAdapterService)
         {
             return typeof(Object);
         }
 
-        public override MapEventPropertyGetter GetGetterMap(IDictionary<string, object> optionalMapPropTypes, EventAdapterService eventAdapterService)
+        public override MapEventPropertyGetter GetGetterMap(IDictionary<string, object> optionalMapPropTypes,
+            EventAdapterService eventAdapterService)
         {
             return new MapDynamicPropertyGetter(PropertyNameAtomic);
         }
-    
-        public override void ToPropertyEPL(TextWriter writer) {
+
+        public override void ToPropertyEPL(TextWriter writer)
+        {
             writer.Write(PropertyNameAtomic);
         }
-    
-        public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, string propertyExpression) {
+
+        public override EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex complexProperty,
+            EventAdapterService eventAdapterService, BaseXMLEventType eventType, string propertyExpression)
+        {
             return new DOMAttributeAndElementGetter(PropertyNameAtomic);
         }
-    
-        public override EventPropertyGetter GetGetterDOM() {
+
+        public override EventPropertyGetterSPI GetGetterDOM()
+        {
             return new DOMAttributeAndElementGetter(PropertyNameAtomic);
         }
-    
-        public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService) {
-            return null;    // always returns Node
+
+        public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty,
+            EventAdapterService eventAdapterService)
+        {
+            return null; // always returns Node
         }
-    
-        public override ObjectArrayEventPropertyGetter GetGetterObjectArray(IDictionary<string, int> indexPerProperty, IDictionary<string, Object> nestableTypes, EventAdapterService eventAdapterService) {
+
+        public override ObjectArrayEventPropertyGetter GetGetterObjectArray(IDictionary<string, int> indexPerProperty,
+            IDictionary<string, Object> nestableTypes, EventAdapterService eventAdapterService)
+        {
             // The simple, none-dynamic property needs a definition of the map contents else no property
-            if (nestableTypes == null) {
+            if (nestableTypes == null)
+            {
                 return new ObjectArrayDynamicPropertyGetter(PropertyNameAtomic);
             }
 
@@ -93,7 +109,7 @@ namespace com.espertech.esper.events.property
             {
                 return new ObjectArrayPropertyGetterDefaultObjectArray(propertyIndex, null, eventAdapterService);
             }
-         
+
             return new ObjectArrayDynamicPropertyGetter(PropertyNameAtomic);
         }
     }

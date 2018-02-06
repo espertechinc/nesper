@@ -22,6 +22,7 @@ namespace com.espertech.esper.epl.lookup
         SINGLEEXPR,
         MULTIEXPR,
         INKEYWORDMULTIIDX,
-        INKEYWORDSINGLEIDX
+        INKEYWORDSINGLEIDX,
+        ADVANCED
     }
 }

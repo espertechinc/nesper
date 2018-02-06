@@ -17,7 +17,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprRelationalOpNode 
@@ -136,9 +136,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_opNode.EqualsNode(_opNode));
-            Assert.IsFalse(_opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE)));
-            Assert.IsFalse(_opNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_opNode.EqualsNode(_opNode, false));
+            Assert.IsFalse(_opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE), false));
+            Assert.IsFalse(_opNode.EqualsNode(new ExprOrNode(), false));
         }
     }
 }

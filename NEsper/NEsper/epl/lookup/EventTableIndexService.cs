@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.index.service;
 using com.espertech.esper.epl.join.table;
 
 namespace com.espertech.esper.epl.lookup
@@ -28,5 +29,6 @@ namespace com.espertech.esper.epl.lookup
 	    EventTableFactory CreateSorted(int indexedStreamNum, EventType eventType, string indexedProp, bool isFireAndForget);
 	    EventTableFactory CreateSortedCoerce(int indexedStreamNum, EventType eventType, string indexedProp, Type indexCoercionType, bool isFireAndForget);
 	    EventTableFactory CreateInArray(int indexedStreamNum, EventType eventType, string[] indexedProp, bool unique);
-	}
+        EventTableFactory CreateCustom(string indexName, int indexedStreamNum, EventType eventType, bool unique, EventAdvancedIndexProvisionDesc advancedIndexProvisionDesc);
+    }
 } // end of namespace

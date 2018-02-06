@@ -53,10 +53,7 @@ namespace com.espertech.esper.epl.named
             if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AInfraOnAction(); }
         }
 
-        public override EventType EventType
-        {
-            get { return RootView.EventType; }
-        }
+        public override EventType EventType => RootView.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

@@ -366,7 +366,7 @@ namespace com.espertech.esper.core.start
             var hashKeyList = new List<SubordPropHashKey>(hashKeys.Values);
             var rangeKeyList = new List<SubordPropRangeKey>(rangeKeys.Values);
             var unique = false;
-            ExprNode[] inKeywordSingleIdxKeys = null;
+            IList<ExprNode> inKeywordSingleIdxKeys = null;
             ExprNode inKeywordMultiIdxKey = null;
 
             // If this is a unique-view and there are unique criteria, use these

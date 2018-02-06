@@ -19,6 +19,7 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.table.strategy;
@@ -43,9 +44,9 @@ namespace com.espertech.esper.epl.table.mgmt
         {
         }
 
-        public void ValidateAddIndex(string createIndexStatementName, TableMetadata tableMetadata, string indexName, IndexMultiKey imk)
+        public void ValidateAddIndex(String createIndexStatementName, TableMetadata tableMetadata, String explicitIndexName, QueryPlanIndexItem explicitIndexDesc, IndexMultiKey imk)
         {
-            tableMetadata.ValidateAddIndexAssignUpdateStrategies(createIndexStatementName, imk, indexName);
+            tableMetadata.ValidateAddIndexAssignUpdateStrategies(createIndexStatementName, imk, explicitIndexName, explicitIndexDesc);
         }
 
         public TableUpdateStrategy GetTableUpdateStrategy(TableMetadata tableMetadata, EventBeanUpdateHelper updateHelper, bool isOnMerge)

@@ -72,7 +72,7 @@ namespace com.espertech.esper.events.vaevent
         public void AddVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
         {
             var variantSpec = ValidateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
-            var processor = new VAEVariantProcessor(variantSpec, eventTypeIdGenerator, variantStreamConfig);
+            var processor = new VAEVariantProcessor(eventAdapterService, variantSpec, eventTypeIdGenerator, variantStreamConfig);
             eventAdapterService.AddTypeByName(variantStreamname, processor.ValueAddEventType);
             VariantProcessors.Put(variantStreamname, processor);
         }

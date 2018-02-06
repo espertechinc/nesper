@@ -32,8 +32,8 @@ namespace NEsper.Avro.Getter
         public Object Get(EventBean eventBean, string mapKey)
         {
             var record = (GenericRecord) eventBean.Underlying;
-            var values = record.Get(_pos);
-            return AvroEventBeanGetterMapped.GetMappedValue(values, mapKey);
+            var values = (Map) record.Get(_pos);
+            return AvroEventBeanGetterMapped.GetAvroMappedValueWNullCheck(values, mapKey);
         }
     }
 } // end of namespace

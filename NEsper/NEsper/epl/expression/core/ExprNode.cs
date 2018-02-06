@@ -44,10 +44,11 @@ namespace com.espertech.esper.epl.expression.core
         /// the type and any additional information that impact the evaluation of a node.
         /// </summary>
         /// <param name="node">to compare to</param>
+        /// <param name="ignoreStreamPrefix">when the equals-comparison can ignore prefix of event properties</param>
         /// <returns>
         /// true if semantically equal, or false if not equals
         /// </returns>
-        bool EqualsNode(ExprNode node);
+        bool EqualsNode(ExprNode node, bool ignoreStreamPrefix);
 
         /// <summary>
         /// Accept the visitor. The visitor will first visit the parent then visit all child nodes, then their child nodes. <para/>The visitor can 

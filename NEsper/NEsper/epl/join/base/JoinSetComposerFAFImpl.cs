@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.join.@base
             _isOuterJoins = outerJoins;
         }
 
-        public override void Init(EventBean[][] eventsPerStream)
+        public override void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             // no action
         }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.epl.join.@base
                 var repositories = Repositories;
                 for (int j = 0; j < repositories[stream].Length; j++)
                 {
-                    repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream]);
+                    repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream], exprEvaluatorContext);
                 }
             }
 

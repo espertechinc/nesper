@@ -16,6 +16,10 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.util;
+using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.codegen.core;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
@@ -55,7 +59,7 @@ namespace com.espertech.esper.events.bean
             try
             {
                 Object value = _fastMethod.Invoke(o);
-                return GetEnumerable(value, _index);
+                return EnumerableMethodPropertyGetter.GetBeanEventEnumerableValue(value, _index);
             }
             catch (InvalidCastException e)
             {
@@ -73,24 +77,7 @@ namespace com.espertech.esper.events.bean
     
         public Object Get(EventBean eventBean, int index) 
         {
-            return GetEnumerable(eventBean.Underlying, index);
-        }
-
-        /// <summary>
-        /// Returns the enumerable at a certain index, or null.
-        /// </summary>
-        /// <param name="value">the enumerable</param>
-        /// <param name="index">index</param>
-        /// <returns>
-        /// value at index
-        /// </returns>
-        internal static Object GetEnumerable(Object value, int index)
-        {
-            var enumerable = value as IEnumerable;
-            if (enumerable == null)
-                return null;
-
-            return enumerable.AtIndex(index);
+            return EnumerableMethodPropertyGetter.GetBeanEventEnumerableValue(eventBean.Underlying, index);
         }
     
         public bool IsBeanExistsProperty(Object o)
@@ -114,6 +101,30 @@ namespace com.espertech.esper.events.bean
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
+        }
+
+        public override Type BeanPropType => TypeHelper.GetGenericReturnType(_fastMethod.Target, false);
+        public override Type TargetType => _fastMethod.DeclaringType.TargetType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(EnumerableMethodPropertyGetter.GetBeanPropCodegen(
+                context, BeanPropType, TargetType, _fastMethod.Target, _index), underlyingExpression);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
         }
     }
 }

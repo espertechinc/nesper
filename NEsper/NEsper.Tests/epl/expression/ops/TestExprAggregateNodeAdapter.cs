@@ -17,7 +17,7 @@ using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public abstract class TestExprAggregateNodeAdapter

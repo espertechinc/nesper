@@ -19,8 +19,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprStreamUnderlyingNode 
@@ -84,8 +83,8 @@ namespace com.espertech.esper.epl.expression
         public void TestEqualsNode()
         {
             _node.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            Assert.IsTrue(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("s0", false)));
-            Assert.IsFalse(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("xxx", false)));
+            Assert.IsTrue(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("s0", false), false));
+            Assert.IsFalse(_node.EqualsNode(new ExprStreamUnderlyingNodeImpl("xxx", false), false));
         }
     
         protected static EventBean MakeEvent(int intPrimitive)

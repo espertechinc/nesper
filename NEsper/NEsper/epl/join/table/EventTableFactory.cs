@@ -8,18 +8,20 @@
 
 using System;
 
+using com.espertech.esper.epl.expression.core;
+
 namespace com.espertech.esper.epl.join.table
 {
     /// <summary>
-    /// Table of events allowing add and remove. Lookup in table is coordinated through 
-    /// the underlying implementation.
+    /// Table of events allowing add and remove. Lookup in table is coordinated
+    /// through the underlying implementation.
     /// </summary>
     public interface EventTableFactory
     {
         Type EventTableType { get; }
 
-        EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent);
+        EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext);
     
-        String ToQueryPlan();
+        string ToQueryPlan();
     }
-}
+} // end of namespace

@@ -425,14 +425,14 @@ namespace com.espertech.esper.client
             /// <summary>Ctor - sets up defaults.</summary>
             public ViewResourcesConfig()
             {
-                IsShareViews = true;
+                IsShareViews = false;
                 IsAllowMultipleExpiryPolicies = false;
                 IsIterableUnbound = false;
             }
 
             /// <summary>
-            /// Gets or set to true to indicate the engine shares view resources between statements, or false
-            /// to indicate the engine does not share view resources between statements.
+            /// Returns false to indicate the engine does not implicitly share similar view resources between statements (false is the default),
+            /// or true to indicate that the engine may implicitly share view resources between statements.
             /// </summary>
             /// <value>
             ///   indicator whether view resources are shared between statements if
@@ -873,6 +873,7 @@ namespace com.espertech.esper.client
                 FilterServiceMaxFilterWidth = 16;
                 DeclaredExprValueCacheSize = 1;
                 IsPrioritized = false;
+                CodeGeneration = new CodeGeneration();
             }
 
             /// <summary>
@@ -928,6 +929,14 @@ namespace com.espertech.esper.client
             /// </summary>
             /// <value>value</value>
             public int DeclaredExprValueCacheSize { get; set; }
+
+            /// <summary>
+            /// Gets or sets the code generation.
+            /// </summary>
+            /// <value>
+            /// The code generation.
+            /// </value>
+            public CodeGeneration CodeGeneration { get; set; }
         }
 
         /// <summary>
@@ -1144,6 +1153,24 @@ namespace com.espertech.esper.client
             public void AddClass<T>() where T : ConditionHandlerFactory
             {
                 AddClass(typeof(T).AssemblyQualifiedName);
+            }
+        }
+
+        /// <summary>
+        /// Code generation settings
+        /// </summary>
+        [Serializable]
+        public class CodeGeneration
+        {
+            private bool enablePropertyGetter = false;
+
+            /// <summary>
+            /// Returns indicator whether to enable code generation for event property getters (false by default).
+            /// </summary>
+            public bool IsEnablePropertyGetter
+            {
+                get => enablePropertyGetter;
+                set => enablePropertyGetter = value;
             }
         }
     }

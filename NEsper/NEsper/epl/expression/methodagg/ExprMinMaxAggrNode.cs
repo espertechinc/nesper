@@ -34,7 +34,7 @@ namespace com.espertech.esper.epl.expression.methodagg
             _isEver = isEver;
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             var positionalParams = PositionalParams;
             if (positionalParams.Length == 0 || positionalParams.Length > 2) {
@@ -75,24 +75,14 @@ namespace com.espertech.esper.epl.expression.methodagg
         /// Returns the indicator for minimum or maximum.
         /// </summary>
         /// <value>min/max indicator</value>
-        public MinMaxTypeEnum MinMaxTypeEnum
-        {
-            get { return _minMaxTypeEnum; }
-        }
+        public MinMaxTypeEnum MinMaxTypeEnum => _minMaxTypeEnum;
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
 
-        public override string AggregationFunctionName
-        {
-            get { return _minMaxTypeEnum.GetExpressionText(); }
-        }
+        public override string AggregationFunctionName => _minMaxTypeEnum.GetExpressionText();
 
-        public bool IsEver
-        {
-            get { return _isEver; }
-        }
+        public bool IsEver => _isEver;
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 } // end of namespace

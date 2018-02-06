@@ -322,7 +322,7 @@ namespace com.espertech.esper.epl.expression.core
 	        get { return ExprPrecedenceEnum.UNARY; }
 	    }
 
-	    public override bool EqualsNode(ExprNode node)
+	    public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
 	    {
 	        if (!(node is ExprIdentNode))
 	        {
@@ -331,7 +331,9 @@ namespace com.espertech.esper.epl.expression.core
 
 	        ExprIdentNode other = (ExprIdentNode) node;
 
-	        if (_streamOrPropertyName != null ? !_streamOrPropertyName.Equals(other.StreamOrPropertyName) : other.StreamOrPropertyName != null)
+            if (ignoreStreamPrefix && _resolvedPropertyName != null && other.ResolvedPropertyName != null && _resolvedPropertyName.Equals(other.ResolvedPropertyName))
+                return true;
+            if (_streamOrPropertyName != null ? !_streamOrPropertyName.Equals(other.StreamOrPropertyName) : other.StreamOrPropertyName != null)
 	            return false;
 	        if (_unresolvedPropertyName != null ? !_unresolvedPropertyName.Equals(other.UnresolvedPropertyName) : other.UnresolvedPropertyName != null)
 	            return false;

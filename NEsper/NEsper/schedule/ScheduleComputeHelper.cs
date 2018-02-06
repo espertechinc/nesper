@@ -67,11 +67,11 @@ namespace com.espertech.esper.schedule
             // Add the minimum resolution to the Start time to ensure we don't get the same exact time
             if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS))
             {
-                afterTimeInMillis += timeAbacus.GetOneSecond();
+                afterTimeInMillis += timeAbacus.OneSecond;
             }
             else
             {
-                afterTimeInMillis += 60 * timeAbacus.GetOneSecond();
+                afterTimeInMillis += 60 * timeAbacus.OneSecond;
             }
 
             return Compute(spec, afterTimeInMillis, timeZone, timeAbacus);
@@ -465,7 +465,7 @@ namespace com.espertech.esper.schedule
 
         private static int NextValue(ICollection<int> valueSet, int startValue)
         {
-            if (valueSet == null)
+            if ((valueSet == null) || (valueSet.IsEmpty()))
             {
                 return startValue;
             }

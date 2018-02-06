@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
 
@@ -13,13 +14,13 @@ namespace com.espertech.esper.epl.join.plan
 {
     public class QueryGraphValuePairInKWMultiIdx
     {
-        public QueryGraphValuePairInKWMultiIdx(ExprNode[] indexed, QueryGraphValueEntryInKeywordMultiIdx key)
+        public QueryGraphValuePairInKWMultiIdx(IList<ExprNode> indexed, QueryGraphValueEntryInKeywordMultiIdx key)
         {
             Indexed = indexed;
             Key = key;
         }
 
-        public ExprNode[] Indexed { get; private set; }
+        public IList<ExprNode> Indexed { get; private set; }
 
         public QueryGraphValueEntryInKeywordMultiIdx Key { get; private set; }
     }

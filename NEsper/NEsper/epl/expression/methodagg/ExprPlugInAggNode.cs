@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.expression.methodagg
 	        aggregationFunctionFactory.FunctionName = functionName;
 	    }
 
-	    public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+	    protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
 	    {
 	        var positionalParams = PositionalParams;
 	        var parameterTypes = new Type[positionalParams.Length];
@@ -102,10 +102,7 @@ namespace com.espertech.esper.epl.expression.methodagg
 	        return validationContext.EngineImportService.AggregationFactoryFactory.MakePlugInMethod(validationContext.StatementExtensionSvcContext, this, _aggregationFunctionFactory, childType);
 	    }
 
-	    public override string AggregationFunctionName
-	    {
-	        get { return _functionName; }
-	    }
+	    public override string AggregationFunctionName => _functionName;
 
 	    protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
 	    {
@@ -117,5 +114,7 @@ namespace com.espertech.esper.epl.expression.methodagg
 
 	        return ((ExprAggregateNodeBase) other).AggregationFunctionName.Equals(AggregationFunctionName);
 	    }
+
+	    protected override bool IsFilterExpressionAsLastParameter => false;
 	}
 } // end of namespace

@@ -88,7 +88,7 @@ namespace com.espertech.esper.epl.spec
                 var otherParam = other.ObjectParameters[index];
                 index++;
 
-                if (!ExprNodeUtility.DeepEquals(thisParam, otherParam))
+                if (!ExprNodeUtility.DeepEquals(thisParam, otherParam, false))
                 {
                     return false;
                 }

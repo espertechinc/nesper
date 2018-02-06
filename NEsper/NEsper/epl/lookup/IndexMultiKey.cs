@@ -17,18 +17,22 @@ namespace com.espertech.esper.epl.lookup
 {
     public class IndexMultiKey
     {
-        public IndexMultiKey(Boolean unique,
-                             IList<IndexedPropDesc> hashIndexedProps,
-                             IList<IndexedPropDesc> rangeIndexedProps)
+        public IndexMultiKey(
+            bool unique,
+            IList<IndexedPropDesc> hashIndexedProps,
+            IList<IndexedPropDesc> rangeIndexedProps,
+            AdvancedIndexDesc advancedIndexDesc)
         {
             IsUnique = unique;
             HashIndexedProps = hashIndexedProps.ToArray();
             RangeIndexedProps = rangeIndexedProps.ToArray();
+            AdvancedIndexDesc = advancedIndexDesc;
         }
 
-        public Boolean IsUnique { get; private set; }
+        public bool IsUnique { get; private set; }
         public IndexedPropDesc[] HashIndexedProps { get; private set; }
         public IndexedPropDesc[] RangeIndexedProps { get; private set; }
+        public AdvancedIndexDesc AdvancedIndexDesc { get; private set; }
 
         public String ToQueryPlan()
         {
@@ -38,6 +42,8 @@ namespace com.espertech.esper.epl.lookup
             IndexedPropDesc.ToQueryPlan(writer, HashIndexedProps);
             writer.Write("} btree={");
             IndexedPropDesc.ToQueryPlan(writer, RangeIndexedProps);
+            writer.Write("} advanced={");
+            writer.Write(AdvancedIndexDesc == null ? "" : AdvancedIndexDesc.ToQueryPlan());
             writer.Write("}");
             return writer.ToString();
         }
@@ -48,9 +54,21 @@ namespace com.espertech.esper.epl.lookup
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return other.IsUnique.Equals(IsUnique)
+            if (other.IsUnique.Equals(IsUnique)
                 && Collections.AreEqual(other.HashIndexedProps, HashIndexedProps)
-                && Collections.AreEqual(other.RangeIndexedProps, RangeIndexedProps);
+                && Collections.AreEqual(other.RangeIndexedProps, RangeIndexedProps))
+            {
+                if (AdvancedIndexDesc == null)
+                {
+                    return other.AdvancedIndexDesc == null;
+                }
+                else
+                {
+                    return other.AdvancedIndexDesc != null && AdvancedIndexDesc.EqualsAdvancedIndex(other.AdvancedIndexDesc);
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

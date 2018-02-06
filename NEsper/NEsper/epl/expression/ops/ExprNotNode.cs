@@ -80,7 +80,7 @@ namespace com.espertech.esper.epl.expression.ops
             get { return ExprPrecedenceEnum.NEGATED; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return node is ExprNotNode;
         }

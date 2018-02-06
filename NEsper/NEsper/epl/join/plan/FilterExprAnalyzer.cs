@@ -11,7 +11,6 @@ using System.Linq;
 
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.join.util;
@@ -61,10 +60,10 @@ namespace com.espertech.esper.epl.join.plan
                 var relNode = (ExprRelationalOpNode)topNode;
                 AnalyzeRelationalOpNode(relNode, queryGraph);
             }
-            else if (topNode is ExprDotNode && !isOuterJoin)
+            else if (topNode is FilterExprAnalyzerAffectorProvider)
             {
-                var dotNode = (ExprDotNode)topNode;
-                AnalyzeDotNode(dotNode, queryGraph);
+                var provider = (FilterExprAnalyzerAffectorProvider)topNode;
+                AnalyzeAffectorProvider(provider, queryGraph, isOuterJoin);
             }
             else if (topNode is ExprInNode)
             {
@@ -247,14 +246,14 @@ namespace com.espertech.esper.epl.join.plan
             return setExpressions;
         }
 
-        private static void AnalyzeDotNode(ExprDotNode dotNode, QueryGraph queryGraph)
+        private static void AnalyzeAffectorProvider(FilterExprAnalyzerAffectorProvider provider, QueryGraph queryGraph, bool isOuterJoin)
         {
-            var interval = dotNode.ExprDotNodeFilterAnalyzerDesc;
-            if (interval == null)
+            var affector = provider.GetAffector(isOuterJoin);
+            if (affector == null)
             {
                 return;
             }
-            interval.Apply(queryGraph);
+            affector.Apply(queryGraph);
         }
 
         private static void AnalyzeRelationalOpNode(ExprRelationalOpNode relNode, QueryGraph queryGraph)

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
@@ -17,8 +18,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprOrNode 
@@ -103,9 +103,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_orNode.EqualsNode(_orNode));
-            Assert.IsFalse(_orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-            Assert.IsTrue(_orNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_orNode.EqualsNode(_orNode, false));
+            Assert.IsFalse(_orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            Assert.IsTrue(_orNode.EqualsNode(new ExprOrNode(), false));
         }
     }
 }

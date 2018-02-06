@@ -16,7 +16,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprTimestampNode 
@@ -69,8 +69,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_node.EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsTrue(_node.EqualsNode(new ExprTimestampNode()));
+            Assert.IsFalse(_node.EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsTrue(_node.EqualsNode(new ExprTimestampNode(), false));
         }
     
         [Test]

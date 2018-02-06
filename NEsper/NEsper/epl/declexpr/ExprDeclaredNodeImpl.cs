@@ -267,13 +267,13 @@ namespace com.espertech.esper.epl.declexpr
             get { return false; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var otherExprCaseNode = node as ExprDeclaredNodeImpl;
             if (otherExprCaseNode == null)
                 return false;
 
-            return ExprNodeUtility.DeepEquals(_expressionBodyCopy, otherExprCaseNode._expressionBodyCopy);
+            return ExprNodeUtility.DeepEquals(_expressionBodyCopy, otherExprCaseNode._expressionBodyCopy, false);
         }
     
         public override void Accept(ExprNodeVisitor visitor)

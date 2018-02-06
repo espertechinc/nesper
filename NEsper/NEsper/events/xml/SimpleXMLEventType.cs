@@ -34,7 +34,7 @@ namespace com.espertech.esper.events.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<String, EventPropertyGetter> _propertyGetterCache;
+        private readonly IDictionary<String, EventPropertyGetterSPI> _propertyGetterCache;
         private readonly string _defaultNamespacePrefix;
         private readonly bool _isResolvePropertiesAbsolute;
 
@@ -52,7 +52,7 @@ namespace com.espertech.esper.events.xml
             : base(eventTypeMetadata, eventTypeId, configurationEventTypeXMLDOM, eventAdapterService)
         {
             _isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.IsXPathResolvePropertiesAbsolute;
-            _propertyGetterCache = new Dictionary<String, EventPropertyGetter>();
+            _propertyGetterCache = new Dictionary<String, EventPropertyGetterSPI>();
 
             // Set of namespace context for XPath expressions
             var namespaceContext = new XPathNamespaceContext();
@@ -92,7 +92,7 @@ namespace com.espertech.esper.events.xml
                 : typeof(string);
         }
 
-        protected override EventPropertyGetter DoResolvePropertyGetter(String propertyExpression)
+        protected override EventPropertyGetterSPI DoResolvePropertyGetter(String propertyExpression)
         {
             var getter = _propertyGetterCache.Get(propertyExpression);
             if (getter != null)
@@ -106,7 +106,7 @@ namespace com.espertech.esper.events.xml
                 getter = prop.GetGetterDOM();
                 if (!prop.IsDynamic)
                 {
-                    getter = new DOMConvertingGetter(propertyExpression, (DOMPropertyGetter)getter, typeof(string));
+                    getter = new DOMConvertingGetter((DOMPropertyGetter)getter, typeof(string));
                 }
             }
             else

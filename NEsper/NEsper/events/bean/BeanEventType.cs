@@ -33,31 +33,35 @@ namespace com.espertech.esper.events.bean
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly Type _clazz;
-        private readonly string _copyMethodName;
-        private readonly string _endTimestampPropertyName;
-        private readonly EventAdapterService _eventAdapterService;
-        private readonly int _eventTypeId;
-        private readonly string _factoryMethodName;
         private readonly EventTypeMetadata _metadata;
+        private readonly Type _clazz;
+        private readonly EventAdapterService _eventAdapterService;
         private readonly ConfigurationEventTypeLegacy _optionalLegacyDef;
-        private readonly IDictionary<string, EventPropertyGetter> _propertyGetterCache;
-        private readonly PropertyResolutionStyle _propertyResolutionStyle;
-        private readonly string _startTimestampPropertyName;
-        private ISet<EventType> _deepSuperTypes;
-        private FastClass _fastClass;
-        private IDictionary<string, InternalEventPropDescriptor> _indexedPropertyDescriptors;
-        private IDictionary<string, IList<SimplePropertyInfo>> _indexedSmartPropertyTable;
-        private IDictionary<string, InternalEventPropDescriptor> _mappedPropertyDescriptors;
-        private IDictionary<string, IList<SimplePropertyInfo>> _mappedSmartPropertyTable;
-        private IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
-        private EventPropertyDescriptor[] _propertyDescriptors;
+        private readonly int _eventTypeId;
+
         private string[] _propertyNames;
         private IDictionary<string, SimplePropertyInfo> _simpleProperties;
-        private IDictionary<string, IList<SimplePropertyInfo>> _simpleSmartPropertyTable;
+        private IDictionary<string, InternalEventPropDescriptor> _mappedPropertyDescriptors;
+        private IDictionary<string, InternalEventPropDescriptor> _indexedPropertyDescriptors;
         private EventType[] _superTypes;
+        private FastClass _fastClass;
+        private ISet<EventType> _deepSuperTypes;
+        private readonly PropertyResolutionStyle _propertyResolutionStyle;
+
+        private IDictionary<string, IList<SimplePropertyInfo>> _simpleSmartPropertyTable;
+        private IDictionary<string, IList<SimplePropertyInfo>> _mappedSmartPropertyTable;
+        private IDictionary<string, IList<SimplePropertyInfo>> _indexedSmartPropertyTable;
+        private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
+        private EventPropertyDescriptor[] _propertyDescriptors;
         private EventPropertyDescriptor[] _writeablePropertyDescriptors;
         private IDictionary<string, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>> _writerMap;
+
+        private IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
+        private readonly string _factoryMethodName;
+        private readonly string _copyMethodName;
+        private readonly string _startTimestampPropertyName;
+        private readonly string _endTimestampPropertyName;
+        private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
         ///     Constructor takes a class as an argument.
@@ -90,98 +94,65 @@ namespace com.espertech.esper.events.bean
             {
                 _propertyResolutionStyle = eventAdapterService.BeanEventTypeFactory.DefaultPropertyResolutionStyle;
             }
-            _propertyGetterCache = new Dictionary<string, EventPropertyGetter>();
+            _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
 
             Initialize(false, eventAdapterService.EngineImportService);
 
-            EventTypeUtility.TimestampPropertyDesc desc = EventTypeUtility.ValidatedDetermineTimestampProps(
-                this, 
+            var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
+                this,
                 optionalLegacyDef == null ? null : optionalLegacyDef.StartTimestampPropertyName,
                 optionalLegacyDef == null ? null : optionalLegacyDef.EndTimestampPropertyName, _superTypes);
             _startTimestampPropertyName = desc.Start;
             _endTimestampPropertyName = desc.End;
         }
 
-        private bool UsesSmartResolutionStyle
-        {
-            get
-            {
-                return (PropertyResolutionStyle == PropertyResolutionStyle.CASE_INSENSITIVE) ||
-                       (PropertyResolutionStyle == PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
-            }
-        }
+        private bool UsesSmartResolutionStyle => (PropertyResolutionStyle == PropertyResolutionStyle.CASE_INSENSITIVE) ||
+                                                 (PropertyResolutionStyle == PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
 
-        public ConfigurationEventTypeLegacy OptionalLegacyDef
-        {
-            get { return _optionalLegacyDef; }
-        }
+        public ConfigurationEventTypeLegacy OptionalLegacyDef => _optionalLegacyDef;
 
         /// <summary>
         ///     Returns the factory methods name, or null if none defined.
         /// </summary>
         /// <value>factory methods name</value>
-        public string FactoryMethodName
-        {
-            get { return _factoryMethodName; }
-        }
+        public string FactoryMethodName => _factoryMethodName;
 
         /// <summary>
         ///     Returns the property resolution style.
         /// </summary>
         /// <value>property resolution style</value>
-        public PropertyResolutionStyle PropertyResolutionStyle
-        {
-            get { return _propertyResolutionStyle; }
-        }
+        public PropertyResolutionStyle PropertyResolutionStyle => _propertyResolutionStyle;
 
-        public EventType[] DeepSuperTypes
-        {
-            get { return _deepSuperTypes.ToArray(); }
-        }
+        public EventType[] DeepSuperTypes => _deepSuperTypes.ToArray();
 
         /// <summary>
         ///     Returns the fast class reference, if code generation is used for this type, else null.
         /// </summary>
         /// <value>fast class, or null if no code generation</value>
-        public FastClass FastClass
-        {
-            get { return _fastClass; }
-        }
+        public FastClass FastClass => _fastClass;
 
-        public string StartTimestampPropertyName
-        {
-            get { return _startTimestampPropertyName; }
-        }
+        public string StartTimestampPropertyName => _startTimestampPropertyName;
 
-        public string EndTimestampPropertyName
-        {
-            get { return _endTimestampPropertyName; }
-        }
+        public string EndTimestampPropertyName => _endTimestampPropertyName;
 
-        public string Name
-        {
-            get { return _metadata.PublicName; }
-        }
+        public string Name => _metadata.PublicName;
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
         {
             return _propertyDescriptorMap.Get(propertyName);
         }
 
-        public int EventTypeId
-        {
-            get { return _eventTypeId; }
-        }
+        public int EventTypeId => _eventTypeId;
 
         public Type GetPropertyType(string propertyName)
         {
-            SimplePropertyInfo simpleProp = GetSimplePropertyInfo(propertyName);
+            var simpleProp = GetSimplePropertyInfo(propertyName);
             if ((simpleProp != null) && (simpleProp.Clazz != null))
             {
                 return simpleProp.Clazz;
             }
 
-            Property prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty)
             {
                 // there is no such property since it wasn't in simplePropertyTypes
@@ -199,99 +170,112 @@ namespace com.espertech.esper.events.bean
             return true;
         }
 
-        public Type UnderlyingType
-        {
-            get { return _clazz; }
-        }
+        public Type UnderlyingType => _clazz;
 
-        public EventPropertyGetter GetGetter(string propertyName)
+        public EventPropertyGetterSPI GetGetterSPI(string propertyName)
         {
-            EventPropertyGetter cachedGetter = _propertyGetterCache.Get(propertyName);
+            var cachedGetter = _propertyGetterCache.Get(propertyName);
             if (cachedGetter != null)
             {
                 return cachedGetter;
             }
 
-            SimplePropertyInfo simpleProp = GetSimplePropertyInfo(propertyName);
+            var simpleProp = GetSimplePropertyInfo(propertyName);
             if ((simpleProp != null) && (simpleProp.Getter != null))
             {
-                EventPropertyGetter getterX = simpleProp.Getter;
+                var getterX = simpleProp.Getter;
                 _propertyGetterCache.Put(propertyName, getterX);
                 return getterX;
             }
 
-            Property prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (prop is SimpleProperty)
             {
                 // there is no such property since it wasn't in simplePropertyGetters
                 return null;
             }
 
-            EventPropertyGetter getter = prop.GetGetter(this, _eventAdapterService);
+            var getter = prop.GetGetter(this, _eventAdapterService);
             _propertyGetterCache.Put(propertyName, getter);
             return getter;
         }
 
+        public EventPropertyGetter GetGetter(String propertyName)
+        {
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            }
+
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            var getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
+            return getterCode;
+        }
+
         public EventPropertyGetterMapped GetGetterMapped(string mappedPropertyName)
         {
-            EventPropertyDescriptor desc = _propertyDescriptorMap.Get(mappedPropertyName);
+            var desc = _propertyDescriptorMap.Get(mappedPropertyName);
             if (desc == null || !desc.IsMapped)
             {
                 return null;
             }
             var mappedProperty = new MappedProperty(mappedPropertyName);
-            return (EventPropertyGetterMapped) mappedProperty.GetGetter(this, _eventAdapterService);
+            return (EventPropertyGetterMapped)mappedProperty.GetGetter(this, _eventAdapterService);
         }
 
         public EventPropertyGetterIndexed GetGetterIndexed(string indexedPropertyName)
         {
-            EventPropertyDescriptor desc = _propertyDescriptorMap.Get(indexedPropertyName);
+            var desc = _propertyDescriptorMap.Get(indexedPropertyName);
             if (desc == null || !desc.IsIndexed)
             {
                 return null;
             }
             var indexedProperty = new IndexedProperty(indexedPropertyName);
-            return (EventPropertyGetterIndexed) indexedProperty.GetGetter(this, _eventAdapterService);
+            return (EventPropertyGetterIndexed)indexedProperty.GetGetter(this, _eventAdapterService);
         }
 
-        public string[] PropertyNames
-        {
-            get { return _propertyNames; }
-        }
+        public string[] PropertyNames => _propertyNames;
 
-        public EventType[] SuperTypes
-        {
-            get { return _superTypes; }
-        }
+        public EventType[] SuperTypes => _superTypes;
 
-        public EventTypeMetadata Metadata
-        {
-            get { return _metadata; }
-        }
+        public EventTypeMetadata Metadata => _metadata;
 
-        public IList<EventPropertyDescriptor> PropertyDescriptors
-        {
-            get { return _propertyDescriptors; }
-        }
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _propertyDescriptors;
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
-            SimplePropertyInfo simpleProp = GetSimplePropertyInfo(propertyExpression);
+            var simpleProp = GetSimplePropertyInfo(propertyExpression);
             if ((simpleProp != null) && (simpleProp.Clazz != null))
             {
-                GenericPropertyDesc genericProp = simpleProp.Descriptor.GetReturnTypeGeneric();
+                var genericProp = simpleProp.Descriptor.GetReturnTypeGeneric();
                 return EventBeanUtility.CreateNativeFragmentType(
                     genericProp.GenericType, genericProp.Generic, _eventAdapterService);
             }
 
-            Property prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
+            var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
             if (prop is SimpleProperty)
             {
                 // there is no such property since it wasn't in simplePropertyTypes
                 return null;
             }
 
-            GenericPropertyDesc genericPropertyDesc = prop.GetPropertyTypeGeneric(this, _eventAdapterService);
+            var genericPropertyDesc = prop.GetPropertyTypeGeneric(this, _eventAdapterService);
             if (genericPropertyDesc == null)
             {
                 return null;
@@ -306,34 +290,34 @@ namespace com.espertech.esper.events.bean
             {
                 InitializeWriters();
             }
-            Pair<EventPropertyDescriptor, BeanEventPropertyWriter> pair = _writerMap.Get(propertyName);
+            var pair = _writerMap.Get(propertyName);
             if (pair != null)
             {
                 return pair.First;
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
-                EventPropertyWriter writer = GetWriter(propertyName);
+                var writer = GetWriter(propertyName);
                 if (writer == null)
                 {
                     return null;
                 }
-                var mapProp = (MappedProperty) property;
+                var mapProp = (MappedProperty)property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof (Object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic, typeof(Object), null, false, true, false, true, false);
             }
             if (property is IndexedProperty)
             {
-                EventPropertyWriter writer = GetWriter(propertyName);
+                var writer = GetWriter(propertyName);
                 if (writer == null)
                 {
                     return null;
                 }
-                var indexedProp = (IndexedProperty) property;
+                var indexedProp = (IndexedProperty)property;
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof (Object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic, typeof(Object), null, true, false, true, false, false);
             }
             return null;
         }
@@ -351,10 +335,7 @@ namespace com.espertech.esper.events.bean
             }
         }
 
-        public EventBeanReader Reader
-        {
-            get { return new BeanEventBeanReader(this); }
-        }
+        public EventBeanReader Reader => new BeanEventBeanReader(this);
 
         public EventBeanCopyMethod GetCopyMethod(String[] properties)
         {
@@ -403,7 +384,7 @@ namespace com.espertech.esper.events.bean
             }
 
             var writers = new BeanEventPropertyWriter[properties.Length];
-            for (int i = 0; i < properties.Length; i++)
+            for (var i = 0; i < properties.Length; i++)
             {
                 var pair = _writerMap.Get(properties[i]);
                 if (pair != null)
@@ -412,7 +393,7 @@ namespace com.espertech.esper.events.bean
                 }
                 else
                 {
-                    writers[i] = (BeanEventPropertyWriter) GetWriter(properties[i]);
+                    writers[i] = (BeanEventPropertyWriter)GetWriter(properties[i]);
                 }
             }
             return new BeanEventBeanWriter(writers);
@@ -428,19 +409,19 @@ namespace com.espertech.esper.events.bean
             var superclasses = new List<Type>();
 
             // add superclass
-            Type superClass = clazz.BaseType;
+            var superClass = clazz.BaseType;
             if (superClass != null)
             {
                 superclasses.Add(superClass);
             }
 
             // add interfaces
-            Type[] interfaces = clazz.GetInterfaces();
+            var interfaces = clazz.GetInterfaces();
             superclasses.AddAll(interfaces);
 
             // Build event types, ignoring java language types
             var superTypes = new List<EventType>();
-            foreach (Type superclass in superclasses)
+            foreach (var superclass in superclasses)
             {
                 if (!superclass.Name.StartsWith("java"))
                 {
@@ -466,9 +447,9 @@ namespace com.espertech.esper.events.bean
 
         private static void GetSuperInterfaces(Type clazz, ISet<Type> result)
         {
-            Type[] interfaces = clazz.GetInterfaces();
+            var interfaces = clazz.GetInterfaces();
 
-            for (int i = 0; i < interfaces.Length; i++)
+            for (var i = 0; i < interfaces.Length; i++)
             {
                 result.Add(interfaces[i]);
                 GetSuperInterfaces(interfaces[i], result);
@@ -477,7 +458,7 @@ namespace com.espertech.esper.events.bean
 
         private static void GetSuperClasses(Type clazz, ISet<Type> result)
         {
-            Type superClass = clazz.BaseType;
+            var superClass = clazz.BaseType;
             if (superClass == null)
             {
                 return;
@@ -489,12 +470,12 @@ namespace com.espertech.esper.events.bean
 
         private static void RemoveLibInterfaces(ICollection<Type> types)
         {
-            Assembly coreAssembly = typeof (Object).Assembly;
-            Type[] coreTypes = types
+            var coreAssembly = typeof(Object).Assembly;
+            var coreTypes = types
                 .Where(type => type.Assembly == coreAssembly)
                 .ToArray();
 
-            foreach (Type type in coreTypes)
+            foreach (var type in coreTypes)
             {
                 types.Remove(type);
             }
@@ -507,7 +488,7 @@ namespace com.espertech.esper.events.bean
         /// <returns>property descriptor</returns>
         public InternalEventPropDescriptor GetSimpleProperty(string propertyName)
         {
-            SimplePropertyInfo simpleProp = GetSimplePropertyInfo(propertyName);
+            var simpleProp = GetSimplePropertyInfo(propertyName);
             if (simpleProp != null)
             {
                 return simpleProp.Descriptor;
@@ -528,14 +509,14 @@ namespace com.espertech.esper.events.bean
             }
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE))
             {
-                IList<SimplePropertyInfo> propertyInfos = _mappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                var propertyInfos = _mappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
                 return propertyInfos != null
                     ? propertyInfos[0].Descriptor
                     : null;
             }
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
             {
-                IList<SimplePropertyInfo> propertyInfos = _mappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                var propertyInfos = _mappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
                 if (propertyInfos != null)
                 {
                     if (propertyInfos.Count != 1)
@@ -564,14 +545,14 @@ namespace com.espertech.esper.events.bean
             }
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE))
             {
-                IList<SimplePropertyInfo> propertyInfos = _indexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                var propertyInfos = _indexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
                 return propertyInfos != null
                     ? propertyInfos[0].Descriptor
                     : null;
             }
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
             {
-                IList<SimplePropertyInfo> propertyInfos = _indexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
+                var propertyInfos = _indexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
                 if (propertyInfos != null)
                 {
                     if (propertyInfos.Count != 1)
@@ -596,8 +577,8 @@ namespace com.espertech.esper.events.bean
 
         private void Initialize(bool isConfigured, EngineImportService engineImportService)
         {
-            PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(_optionalLegacyDef);
-            IList<InternalEventPropDescriptor> properties = propertyListBuilder.AssessProperties(_clazz);
+            var propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(_optionalLegacyDef);
+            var properties = propertyListBuilder.AssessProperties(_clazz);
 
             _propertyDescriptors = new EventPropertyDescriptor[properties.Count];
             _propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
@@ -634,10 +615,10 @@ namespace com.espertech.esper.events.bean
                 }
             }
 
-            int count = 0;
-            foreach (InternalEventPropDescriptor desc in properties)
+            var count = 0;
+            foreach (var desc in properties)
             {
-                string propertyName = desc.PropertyName;
+                var propertyName = desc.PropertyName;
                 Type underlyingType;
                 Type componentType;
                 bool isRequiresIndex;
@@ -648,7 +629,7 @@ namespace com.espertech.esper.events.bean
 
                 if (desc.PropertyType.Equals(EventPropertyType.SIMPLE))
                 {
-                    EventPropertyGetter getter;
+                    EventPropertyGetterSPI getter;
                     Type type;
                     if (desc.ReadMethod != null)
                     {
@@ -690,7 +671,7 @@ namespace com.espertech.esper.events.bean
                         }
                         else
                         {
-                            componentType = typeof (object);
+                            componentType = typeof(object);
                         }
                     }
                     else if (type.IsArray)
@@ -699,10 +680,10 @@ namespace com.espertech.esper.events.bean
                         isFragment = TypeHelper.IsFragmentableType(type.GetElementType());
                         componentType = type.GetElementType();
                     }
-                    else if (type.IsImplementsInterface(typeof (IEnumerable)))
+                    else if (type.IsImplementsInterface(typeof(IEnumerable)))
                     {
                         isIndexed = true;
-                        Type genericType = TypeHelper.GetGenericReturnType(desc.ReadMethod, desc.AccessorField, true);
+                        var genericType = TypeHelper.GetGenericReturnType(desc.ReadMethod, desc.AccessorField, true);
                         isFragment = genericType.IsFragmentableType();
                         if (genericType != null)
                         {
@@ -710,7 +691,7 @@ namespace com.espertech.esper.events.bean
                         }
                         else
                         {
-                            componentType = typeof (Object);
+                            componentType = typeof(Object);
                         }
                     }
                     else
@@ -724,8 +705,8 @@ namespace com.espertech.esper.events.bean
                     if (UsesSmartResolutionStyle)
                     {
                         // Find the property in the smart property table
-                        string smartPropertyName = propertyName.ToLowerInvariant();
-                        IList<SimplePropertyInfo> propertyInfoList = _simpleSmartPropertyTable.Get(smartPropertyName);
+                        var smartPropertyName = propertyName.ToLowerInvariant();
+                        var propertyInfoList = _simpleSmartPropertyTable.Get(smartPropertyName);
                         if (propertyInfoList == null)
                         {
                             propertyInfoList = new List<SimplePropertyInfo>();
@@ -742,7 +723,7 @@ namespace com.espertech.esper.events.bean
                     _mappedPropertyDescriptors.Put(propertyName, desc);
 
                     underlyingType = desc.ReturnType;
-                    componentType = typeof (Object);
+                    componentType = typeof(Object);
                     isRequiresIndex = false;
                     isRequiresMapkey = desc.ReadMethod.GetParameterTypes().Length > 0;
                     isIndexed = false;
@@ -753,8 +734,8 @@ namespace com.espertech.esper.events.bean
                     if (UsesSmartResolutionStyle)
                     {
                         // Find the property in the smart property table
-                        string smartPropertyName = propertyName.ToLowerInvariant();
-                        IList<SimplePropertyInfo> propertyInfoList = _mappedSmartPropertyTable.Get(smartPropertyName);
+                        var smartPropertyName = propertyName.ToLowerInvariant();
+                        var propertyInfoList = _mappedSmartPropertyTable.Get(smartPropertyName);
                         if (propertyInfoList == null)
                         {
                             propertyInfoList = new List<SimplePropertyInfo>();
@@ -781,8 +762,8 @@ namespace com.espertech.esper.events.bean
                     if (UsesSmartResolutionStyle)
                     {
                         // Find the property in the smart property table
-                        string smartPropertyName = propertyName.ToLowerInvariant();
-                        IList<SimplePropertyInfo> propertyInfoList = _indexedSmartPropertyTable.Get(smartPropertyName);
+                        var smartPropertyName = propertyName.ToLowerInvariant();
+                        var propertyInfoList = _indexedSmartPropertyTable.Get(smartPropertyName);
                         if (propertyInfoList == null)
                         {
                             propertyInfoList = new List<SimplePropertyInfo>();
@@ -825,7 +806,7 @@ namespace com.espertech.esper.events.bean
 
             // Cache the supertypes of this event type for later use
             _deepSuperTypes = new HashSet<EventType>();
-            foreach (Type superClass in supers)
+            foreach (var superClass in supers)
             {
                 EventType superType = _eventAdapterService.BeanEventTypeFactory.CreateBeanType(
                     superClass.Name, superClass, false, false, isConfigured);
@@ -887,22 +868,22 @@ namespace com.espertech.esper.events.bean
             {
                 InitializeWriters();
             }
-            Pair<EventPropertyDescriptor, BeanEventPropertyWriter> pair = _writerMap.Get(propertyName);
+            var pair = _writerMap.Get(propertyName);
             if (pair != null)
             {
                 return pair.Second;
             }
 
-            Property property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty)
             {
-                var mapProp = (MappedProperty) property;
+                var mapProp = (MappedProperty)property;
                 var methodName = PropertyHelper.GetSetterMethodName(mapProp.PropertyNameAtomic);
                 MethodInfo setterMethod;
                 try
                 {
                     setterMethod = MethodResolver.ResolveMethod(
-                        _clazz, methodName, new Type[] { typeof (string), typeof (object) }, true, new bool[2], new bool[2]);
+                        _clazz, methodName, new Type[] { typeof(string), typeof(object) }, true, new bool[2], new bool[2]);
                 }
                 catch (EngineNoSuchMethodException e)
                 {
@@ -915,13 +896,13 @@ namespace com.espertech.esper.events.bean
                 {
                     return null;
                 }
-                FastMethod fastMethod = _fastClass.GetMethod(setterMethod);
+                var fastMethod = _fastClass.GetMethod(setterMethod);
                 return new BeanEventPropertyWriterMapProp(_clazz, fastMethod, mapProp.Key);
             }
 
             if (property is IndexedProperty)
             {
-                var indexedProp = (IndexedProperty) property;
+                var indexedProp = (IndexedProperty)property;
                 var methodName = PropertyHelper.GetSetterMethodName(indexedProp.PropertyNameAtomic);
                 MethodInfo setterMethod;
                 try
@@ -931,7 +912,7 @@ namespace com.espertech.esper.events.bean
                     //    new Type[] { typeof(int), typeof(object) }, null);
 
                     setterMethod = MethodResolver.ResolveMethod(
-                        _clazz, methodName, new Type[] { typeof (int), typeof (object) }, true, new bool[2], new bool[2]);
+                        _clazz, methodName, new Type[] { typeof(int), typeof(object) }, true, new bool[2], new bool[2]);
                 }
                 catch (EngineNoSuchMethodException)
                 {
@@ -944,7 +925,7 @@ namespace com.espertech.esper.events.bean
                 {
                     return null;
                 }
-                FastMethod fastMethod = _fastClass.GetMethod(setterMethod);
+                var fastMethod = _fastClass.GetMethod(setterMethod);
                 return new BeanEventPropertyWriterIndexedProp(_clazz, fastMethod, indexedProp.Index);
             }
 
@@ -957,14 +938,14 @@ namespace com.espertech.esper.events.bean
             var desc = new EventPropertyDescriptor[writables.Count];
             var writers = new Dictionary<String, Pair<EventPropertyDescriptor, BeanEventPropertyWriter>>();
 
-            int count = 0;
-            foreach (WriteablePropertyDescriptor writable in writables)
+            var count = 0;
+            foreach (var writable in writables)
             {
                 var propertyDesc = new EventPropertyDescriptor(
                     writable.PropertyName, writable.PropertyType, null, false, false, false, false, false);
                 desc[count++] = propertyDesc;
 
-                FastMethod fastMethod = FastClass.GetMethod(writable.WriteMethod);
+                var fastMethod = FastClass.GetMethod(writable.WriteMethod);
                 writers.Put(
                     writable.PropertyName,
                     new Pair<EventPropertyDescriptor, BeanEventPropertyWriter>(
@@ -986,7 +967,7 @@ namespace com.espertech.esper.events.bean
             /// <param name="clazz">is the class</param>
             /// <param name="getter">is the getter</param>
             /// <param name="descriptor">is the property INFO</param>
-            public SimplePropertyInfo(Type clazz, EventPropertyGetter getter, InternalEventPropDescriptor descriptor)
+            public SimplePropertyInfo(Type clazz, EventPropertyGetterSPI getter, InternalEventPropDescriptor descriptor)
             {
                 Clazz = clazz;
                 Getter = getter;
@@ -1003,7 +984,7 @@ namespace com.espertech.esper.events.bean
             ///     Returns the getter.
             /// </summary>
             /// <value>getter</value>
-            public EventPropertyGetter Getter { get; private set; }
+            public EventPropertyGetterSPI Getter { get; private set; }
 
             /// <summary>
             ///     Returns the property INFO.

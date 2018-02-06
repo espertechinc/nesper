@@ -114,8 +114,8 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsTrue(_coalesceNodes[0].EqualsNode(_coalesceNodes[1]));
+            Assert.IsFalse(_coalesceNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsTrue(_coalesceNodes[0].EqualsNode(_coalesceNodes[1], false));
         }
     
         [Test]

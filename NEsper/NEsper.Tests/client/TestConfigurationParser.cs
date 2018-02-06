@@ -347,7 +347,7 @@ namespace com.espertech.esper.client
     
             Assert.IsFalse(config.EngineDefaults.Threading.IsInternalTimerEnabled);
             Assert.AreEqual(1234567, config.EngineDefaults.Threading.InternalTimerMsecResolution);
-            Assert.IsFalse(config.EngineDefaults.ViewResources.IsShareViews);
+            Assert.IsTrue(config.EngineDefaults.ViewResources.IsShareViews);
             Assert.IsTrue(config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies);
             Assert.IsTrue(config.EngineDefaults.ViewResources.IsIterableUnbound);
             Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.EngineDefaults.EventMeta.ClassPropertyResolutionStyle);
@@ -550,7 +550,7 @@ namespace com.espertech.esper.client
             Assert.IsNull(config.EngineDefaults.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
             Assert.IsNull(config.EngineDefaults.EventMeta.AvroSettings.TypeRepresentationMapperClass);
 
-            Assert.IsTrue(config.EngineDefaults.ViewResources.IsShareViews);
+            Assert.IsFalse(config.EngineDefaults.ViewResources.IsShareViews);
             Assert.IsFalse(config.EngineDefaults.ViewResources.IsAllowMultipleExpiryPolicies);
             Assert.IsFalse(config.EngineDefaults.ViewResources.IsIterableUnbound);
             Assert.IsFalse(config.EngineDefaults.Logging.IsEnableExecutionDebug);

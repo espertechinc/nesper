@@ -125,7 +125,7 @@ namespace com.espertech.esper.epl.expression.core
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprConstantNodeImpl;
 

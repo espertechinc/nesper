@@ -12,13 +12,14 @@ namespace com.espertech.esper.util
 {
     public class UuidGenerator
     {
-        /// <summary>
-        /// Returns a unique uuid.
-        /// </summary>
-        /// <returns>a unique uuid</returns>
         public static String Generate()
         {
         	return Guid.NewGuid().ToString() ;
+        }
+
+        public static String GenerateNoDash()
+        {
+            return Guid.NewGuid().ToString().Replace("-", "");
         }
     }
 } // End of namespace

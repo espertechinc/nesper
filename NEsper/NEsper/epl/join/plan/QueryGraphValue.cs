@@ -178,7 +178,7 @@ namespace com.espertech.esper.epl.join.plan
             var delimiter = "";
             foreach (var desc in _items) {
                 writer.Write(delimiter);
-                writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedence(desc.IndexExprs));
+                writer.Write(ExprNodeUtility.ToExpressionStringMinPrecedenceAsList(desc.IndexExprs));
                 writer.Write(": ");
                 writer.Write(desc.Entry.ToString());
                 delimiter = ", ";
@@ -186,11 +186,11 @@ namespace com.espertech.esper.epl.join.plan
             return writer.ToString();
         }
     
-        public void AddInKeywordMultiIdx(ExprNode testPropExpr, ExprNode[] setProps) {
+        public void AddInKeywordMultiIdx(ExprNode testPropExpr, IList<ExprNode> setProps) {
             _items.Add(new QueryGraphValueDesc(setProps, new QueryGraphValueEntryInKeywordMultiIdx(testPropExpr)));
         }
     
-        public void AddInKeywordSingleIdx(ExprNode testPropIdent, ExprNode[] setPropExpr) {
+        public void AddInKeywordSingleIdx(ExprNode testPropIdent, IList<ExprNode> setPropExpr) {
             var indexExpressions = new ExprNode[]{testPropIdent};
             var found = FindEntry(indexExpressions);
     
@@ -200,7 +200,9 @@ namespace com.espertech.esper.epl.join.plan
                 setExpressions = (ExprNode[]) CollectionUtil.AddArrays(existing.KeyExprs, setPropExpr);
                 _items.Remove(found);
             }
-            _items.Add(new QueryGraphValueDesc(new ExprNode[]{testPropIdent}, new QueryGraphValueEntryInKeywordSingleIdx(setExpressions)));
+            _items.Add(new QueryGraphValueDesc(
+                new ExprNode[]{ testPropIdent },
+                new QueryGraphValueEntryInKeywordSingleIdx(setExpressions)));
         }
 
         public QueryGraphValuePairInKWSingleIdx InKeywordSingles
@@ -239,9 +241,42 @@ namespace com.espertech.esper.epl.join.plan
             }
         }
 
+        public void AddCustom(IList<ExprNode> indexExpressions, String operationName, int expressionPosition, ExprNode expression)
+        {
+            // find existing custom-entry for same index expressions
+            QueryGraphValueEntryCustom found = null;
+            foreach (QueryGraphValueDesc desc in _items)
+            {
+                if (desc.Entry is QueryGraphValueEntryCustom)
+                {
+                    if (ExprNodeUtility.DeepEquals(desc.IndexExprs, indexExpressions, true))
+                    {
+                        found = (QueryGraphValueEntryCustom) desc.Entry;
+                        break;
+                    }
+                }
+            }
+
+            if (found == null)
+            {
+                found = new QueryGraphValueEntryCustom();
+                _items.Add(new QueryGraphValueDesc(indexExpressions, found));
+            }
+
+            // find/create operation against the indexed fields
+            QueryGraphValueEntryCustomKey key = new QueryGraphValueEntryCustomKey(operationName, indexExpressions);
+            QueryGraphValueEntryCustomOperation op = found.Operations.Get(key);
+            if (op == null) {
+                op = new QueryGraphValueEntryCustomOperation();
+                found.Operations.Put(key, op);
+            }
+
+            op.PositionalExpressions.Put(expressionPosition, expression);
+        }
+
         private QueryGraphValueDesc FindIdentEntry(ExprIdentNode search) {
             foreach (var desc in _items) {
-                if (desc.IndexExprs.Length > 1 || !(desc.IndexExprs[0] is ExprIdentNode)) {
+                if (desc.IndexExprs.Count > 1 || !(desc.IndexExprs[0] is ExprIdentNode)) {
                     continue;
                 }
                 var other = (ExprIdentNode) desc.IndexExprs[0];
@@ -252,17 +287,17 @@ namespace com.espertech.esper.epl.join.plan
             return null;
         }
     
-        private QueryGraphValueDesc FindEntry(ExprNode[] search) {
+        private QueryGraphValueDesc FindEntry(IList<ExprNode> search) {
             foreach (var desc in _items) {
-                if (ExprNodeUtility.DeepEquals(search, desc.IndexExprs)) {
+                if (ExprNodeUtility.DeepEquals(search, desc.IndexExprs, true)) {
                     return desc;
                 }
             }
             return null;
         }
     
-        private string GetSingleIdentNodeProp(ExprNode[] indexExprs) {
-            if (indexExprs.Length != 1) {
+        private string GetSingleIdentNodeProp(IList<ExprNode> indexExprs) {
+            if (indexExprs.Count != 1) {
                 throw new IllegalStateException("Incorrect number of index expressions");
             }
             var identNode = (ExprIdentNode) indexExprs[0];

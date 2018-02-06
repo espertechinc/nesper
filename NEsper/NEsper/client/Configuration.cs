@@ -37,7 +37,7 @@ namespace com.espertech.esper.client
     /// <tt>Configuration</tt>.
     /// <para>
     /// The format of an Esper XML configuration file is defined in
-    /// <tt>esper-configuration-x.y.xsd</tt>.
+    /// <tt>esper-configuration-(version).xsd</tt>.
     /// </para>
     /// </summary>
     [Serializable]
@@ -1233,7 +1233,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Use the configuration specified in the given application
         /// resource. The format of the resource is defined in
-        /// <tt>esper-configuration-2.0.xsd</tt>.
+        /// <tt>esper-configuration-(version).xsd</tt>.
         /// <para>
         /// The resource is found via <tt>GetConfigurationInputStream(resource)</tt>.
         /// That method can be overridden to implement an arbitrary lookup strategy.
@@ -1259,7 +1259,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Use the configuration specified by the given URL.
         /// The format of the document obtained from the URL is defined in
-        /// <tt>esper-configuration-2.0.xsd</tt>.
+        /// <tt>esper-configuration-(version).xsd</tt>.
         /// </summary>
         /// <param name="url">URL from which you wish to load the configuration</param>
         /// <exception cref="EPException">is thrown when the URL could not be access</exception>
@@ -1284,7 +1284,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Use the configuration specified in the given application
         /// file. The format of the file is defined in
-        /// <tt>esper-configuration-2.0.xsd</tt>.
+        /// <tt>esper-configuration-(version).xsd</tt>.
         /// </summary>
         /// <param name="configFile"><tt>File</tt> from which you wish to load the configuration</param>
         /// <exception cref="EPException">when the file could not be found</exception>
@@ -1343,7 +1343,7 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Use the mappings and properties specified in the given XML document.
         /// The format of the file is defined in
-        /// <tt>esper-configuration-2.0.xsd</tt>.
+        /// <tt>esper-configuration-(version).xsd</tt>.
         /// </summary>
         /// <param name="document">an XML document from which you wish to load the configuration</param>
         /// <exception cref="EPException">if there is problem in accessing the document.</exception>

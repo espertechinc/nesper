@@ -19,13 +19,15 @@ namespace com.espertech.esper.epl.lookup
         private readonly bool _primary;
         private readonly ISet<string> _referencedByStmt;
         private readonly QueryPlanIndexItem _queryPlanIndexItem;
+        private readonly string _explicitIndexNameIfExplicit;
 
-        public EventTableIndexMetadataEntry(string optionalIndexName, bool primary, QueryPlanIndexItem queryPlanIndexItem)
+        public EventTableIndexMetadataEntry(string optionalIndexName, bool primary, QueryPlanIndexItem queryPlanIndexItem, string explicitIndexNameIfExplicit)
             : base(optionalIndexName)
         {
             _primary = primary;
             _queryPlanIndexItem = queryPlanIndexItem;
             _referencedByStmt = primary ? null : new HashSet<string>();
+            _explicitIndexNameIfExplicit = explicitIndexNameIfExplicit;
         }
     
         public void AddReferringStatement(string statementName)
@@ -46,19 +48,12 @@ namespace com.espertech.esper.epl.lookup
             return false;
         }
 
-        public bool IsPrimary
-        {
-            get { return _primary; }
-        }
+        public bool IsPrimary => _primary;
 
-        public string[] ReferringStatements
-        {
-            get { return _referencedByStmt.ToArray(); }
-        }
+        public string[] ReferringStatements => _referencedByStmt.ToArray();
 
-        public QueryPlanIndexItem QueryPlanIndexItem
-        {
-            get { return _queryPlanIndexItem; }
-        }
+        public QueryPlanIndexItem QueryPlanIndexItem => _queryPlanIndexItem;
+
+        public string ExplicitIndexNameIfExplicit => _explicitIndexNameIfExplicit;
     }
 }

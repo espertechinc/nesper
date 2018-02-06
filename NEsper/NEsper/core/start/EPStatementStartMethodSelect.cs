@@ -181,7 +181,7 @@ namespace com.espertech.esper.core.start
     
             // execute preload if any
             foreach (var preload in preloadList) {
-                preload.ExecutePreload();
+                preload.ExecutePreload(defaultAgentInstanceContext);
             }
     
             // handle association to table

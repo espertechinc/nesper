@@ -11,7 +11,7 @@ using System.Data;
 using System.Data.Common;
 
 using com.espertech.esper.client;
-using com.espertech.esper.support.epl;
+using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 

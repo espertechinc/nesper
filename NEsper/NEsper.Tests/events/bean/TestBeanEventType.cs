@@ -58,7 +58,7 @@ namespace com.espertech.esper.events.bean
             Assert.AreEqual(test.IsProperty, eventType.IsProperty(propertyName), "isProperty mismatch on '" + propertyName + "',");
             Assert.AreEqual(test.Clazz, eventType.GetPropertyType(propertyName), "getPropertyType mismatch on '" + propertyName + "',");
 
-            EventPropertyGetter getter = eventType.GetGetter(propertyName);
+            EventPropertyGetter getter = eventType.GetGetterSPI(propertyName);
             if (getter == null) {
                 Assert.IsFalse(test.HasGetter, "getGetter null on '" + propertyName + "',");
             } else {
@@ -202,11 +202,11 @@ namespace com.espertech.esper.events.bean
         [Test]
         public void TestGetGetter()
         {
-            Assert.AreEqual(null, _eventTypeSimple.GetGetter("Dummy"));
+            Assert.AreEqual(null, _eventTypeSimple.GetGetterSPI("Dummy"));
 
-            var getter = _eventTypeSimple.GetGetter("MyInt");
+            var getter = _eventTypeSimple.GetGetterSPI("MyInt");
             Assert.AreEqual(20, getter.Get(_eventSimple));
-            getter = _eventTypeSimple.GetGetter("MyString");
+            getter = _eventTypeSimple.GetGetterSPI("MyString");
             Assert.AreEqual("a", getter.Get(_eventSimple));
 
             try

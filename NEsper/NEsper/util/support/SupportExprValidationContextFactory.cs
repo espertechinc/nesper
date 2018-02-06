@@ -31,7 +31,9 @@ namespace com.espertech.esper.util.support
                     false, false, false, false, null,
                     TimeZoneInfo.Local,
                     TimeAbacusMilliseconds.INSTANCE,
-                    threadingProfile, null, AggregationFactoryFactoryDefault.INSTANCE),
+                    threadingProfile, null,
+                    AggregationFactoryFactoryDefault.INSTANCE,
+                    false, "default", null),
                 null, null, null, null, null,
                 new SupportExprEvaluatorContext(null), null, null, 1, null, null, null,
                 false, false, false, false, null, false);

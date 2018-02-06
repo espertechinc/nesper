@@ -56,10 +56,7 @@ namespace com.espertech.esper.epl.lookup
             }
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return new LookupStrategyDesc(LookupStrategyType.FULLTABLESCAN, null); }
-        }
+        public LookupStrategyDesc StrategyDesc => new LookupStrategyDesc(LookupStrategyType.FULLTABLESCAN, null);
 
         public String ToQueryPlan()
         {

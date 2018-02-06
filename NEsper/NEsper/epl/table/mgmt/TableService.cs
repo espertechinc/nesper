@@ -15,6 +15,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.table.strategy;
 using com.espertech.esper.epl.table.upd;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.epl.table.mgmt
         TableUpdateStrategy GetTableUpdateStrategy(TableMetadata tableMetadata, EventBeanUpdateHelper updateHelper, bool isOnMerge) ;
         void AddTableUpdateStrategyReceiver(TableMetadata tableMetadata, string statementName, TableUpdateStrategyReceiver receiver, EventBeanUpdateHelper updateHelper, bool isOnMerge);
         void RemoveTableUpdateStrategyReceivers(TableMetadata tableMetadata, string statementName);
-        void ValidateAddIndex(string createIndexStatementName, TableMetadata tableMetadata, string indexName, IndexMultiKey imk) ;
+        void ValidateAddIndex(string createIndexStatementName, TableMetadata tableMetadata, string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, IndexMultiKey imk);
         void RemoveIndexReferencesStmtMayRemoveIndex(string statementName, TableMetadata tableMetadata);
         TableMetadata AddTable(string tableName, string eplExpression, string statementName, Type[] keyTypes, IDictionary<String, TableMetadataColumn> tableColumns, TableStateRowFactory tableStateRowFactory, int numberMethodAggregations, StatementContext statementContext, ObjectArrayEventType internalEventType, ObjectArrayEventType publicEventType, TableMetadataInternalEventToPublic eventToPublic, bool queryPlanLogging) ;
         TableAndLockProvider GetStateProvider(String tableName, int agentInstanceId, bool writesToTables);

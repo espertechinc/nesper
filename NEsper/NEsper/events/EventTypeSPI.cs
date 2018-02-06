@@ -52,5 +52,7 @@ namespace com.espertech.esper.events
         EventBeanReader Reader { get; }
 
         bool EqualsCompareType(EventType eventType);
+
+        EventPropertyGetterSPI GetGetterSPI(string propertyExpression);
     }
 }

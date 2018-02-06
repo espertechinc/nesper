@@ -85,8 +85,8 @@ namespace com.espertech.esper.view.stat
             }
 
             CorrelationView other = (CorrelationView)view;
-            if ((!ExprNodeUtility.DeepEquals(other.ExpressionX, _expressionX) ||
-                (!ExprNodeUtility.DeepEquals(other.ExpressionY, _expressionY))))
+            if ((!ExprNodeUtility.DeepEquals(other.ExpressionX, _expressionX, false) ||
+                (!ExprNodeUtility.DeepEquals(other.ExpressionY, _expressionY, false))))
             {
                 return false;
             }

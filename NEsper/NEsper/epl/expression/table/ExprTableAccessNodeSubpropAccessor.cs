@@ -157,7 +157,7 @@ namespace com.espertech.esper.epl.expression.table
             {
                 return false;
             }
-            return ExprNodeUtility.DeepEquals(_aggregateAccessMultiValueNode, that._aggregateAccessMultiValueNode);
+            return ExprNodeUtility.DeepEquals(_aggregateAccessMultiValueNode, that._aggregateAccessMultiValueNode, false);
         }
     }
 } // end of namespace

@@ -20,6 +20,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.epl.@join.plan;
 using com.espertech.esper.epl.methodbase;
 using com.espertech.esper.epl.rettype;
 using com.espertech.esper.util;
@@ -74,7 +75,7 @@ namespace com.espertech.esper.epl.datetime.eval
             String currentMethodName = dtMethodName;
 
             // drain all calendar ops
-            ExprDotNodeFilterAnalyzerDesc filterAnalyzerDesc = null;
+            FilterExprAnalyzerAffector filterAnalyzerDesc = null;
             while (true)
             {
 

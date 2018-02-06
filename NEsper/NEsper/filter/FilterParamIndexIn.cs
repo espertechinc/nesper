@@ -73,14 +73,12 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
             var keys = (MultiKeyUntyped)filterConstant;
 
             // remove the mapping of value set to evaluator
             var eval = _evaluatorsMap.Delete(keys);
-            var isRemoved = eval != null;
-
             var keyValues = keys.Keys;
             for (var i = 0; i < keyValues.Length; i++)
             {
@@ -94,13 +92,16 @@ namespace com.espertech.esper.filter
                     }
                 }
             }
-
-            return isRemoved;
         }
 
         public override int Count
         {
             get { return _constantsMap.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return _constantsMap.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

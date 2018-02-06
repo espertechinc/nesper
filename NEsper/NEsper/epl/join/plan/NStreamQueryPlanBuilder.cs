@@ -307,7 +307,7 @@ namespace com.espertech.esper.epl.join.plan
                         {
                             Pair<IndexMultiKey, EventTableIndexEntryBase> indexPairFound =
                                 EventTableIndexUtil.FindIndexBestAvailable(
-                                    indexedStreamTableMeta.EventTableIndexMetadataRepo.Indexes,
+                                    indexedStreamTableMeta.EventTableIndexMetadataRepo.IndexesAsBase,
                                     Collections.SingletonSet(index),
                                     Collections.GetEmptySet<string>(), null);
                             if (indexPairFound != null)
@@ -340,9 +340,9 @@ namespace com.espertech.esper.epl.join.plan
                         return GetFullTableScanTable(currentLookupStream, indexedStream, indexedStreamTableMeta);
                     }
                     QueryGraphValuePairInKWMultiIdx multi = multis[0];
-                    var indexNameArray = new TableLookupIndexReqKey[multi.Indexed.Length];
+                    var indexNameArray = new TableLookupIndexReqKey[multi.Indexed.Count];
                     var foundAll = true;
-                    for (var i = 0; i < multi.Indexed.Length; i++)
+                    for (var i = 0; i < multi.Indexed.Count; i++)
                     {
                         var identNode = (ExprIdentNode)multi.Indexed[i];
                         var pairIndex = indexSpecs.GetIndexNum(new string[] { identNode.ResolvedPropertyName }, null);
@@ -382,7 +382,11 @@ namespace com.espertech.esper.epl.join.plan
 
             if (indexedStreamTableMeta != null)
             {
-                var indexPairFound = EventTableIndexUtil.FindIndexBestAvailable(indexedStreamTableMeta.EventTableIndexMetadataRepo.Indexes, ToSet(hashIndexProps), ToSet(rangeIndexProps), null);
+                var indexPairFound = EventTableIndexUtil.FindIndexBestAvailable(
+                    indexedStreamTableMeta.EventTableIndexMetadataRepo.IndexesAsBase, 
+                    ToSet(hashIndexProps), 
+                    ToSet(rangeIndexProps), 
+                    null);
                 if (indexPairFound != null)
                 {
                     var indexKeyInfo = SubordinateQueryPlannerUtil.CompileIndexKeyInfo(indexPairFound.First, hashIndexProps, GetHashKeyFuncsAsSubProp(hashPropsKeys), rangeIndexProps, GetRangeFuncsAsSubProp(rangePropsKeys));

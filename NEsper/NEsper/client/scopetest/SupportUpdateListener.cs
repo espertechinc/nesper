@@ -77,11 +77,11 @@ namespace com.espertech.esper.client.scopetest
                 {
                     Thread.Sleep(50);
                 }
-                catch (ThreadInterruptedException e)
+                catch (ThreadInterruptedException)
                 {
                     return;
                 }
-                catch (ThreadAbortException e)
+                catch (ThreadAbortException)
                 {
                     return;
                 }
@@ -114,7 +114,7 @@ namespace com.espertech.esper.client.scopetest
                 {
                     Thread.Sleep(50);
                 }
-                catch (ThreadInterruptedException e)
+                catch (ThreadInterruptedException)
                 {
                     return;
                 }
@@ -421,6 +421,21 @@ namespace com.espertech.esper.client.scopetest
                 Reset();
                 return pair;
             }
+        }
+
+        /// <summary>
+        /// Produce an array of listeners
+        /// </summary>
+        /// <param name="size">The size.</param>
+        /// <returns></returns>
+        public static SupportUpdateListener[] MakeListeners(int size)
+        {
+            SupportUpdateListener[] listeners = new SupportUpdateListener[size];
+            for (int i = 0; i < listeners.Length; i++)
+            {
+                listeners[i] = new SupportUpdateListener();
+            }
+            return listeners;
         }
     }
 

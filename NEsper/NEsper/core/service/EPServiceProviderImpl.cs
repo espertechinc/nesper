@@ -970,7 +970,7 @@ namespace com.espertech.esper.core.service
                 IDictionary<string, ConfigurationEventTypeAvro> avroSchemas = null;
                 if (!configuration.EventTypesAvro.IsEmpty())
                 {
-                    avroSchemas = new Dictionary<string, ConfigurationEventTypeAvro>(configuration.EventTypesAvro);
+                    avroSchemas = new LinkedHashMap<string, ConfigurationEventTypeAvro>(configuration.EventTypesAvro);
                     configuration.EventTypesAvro.Clear();
                 }
 

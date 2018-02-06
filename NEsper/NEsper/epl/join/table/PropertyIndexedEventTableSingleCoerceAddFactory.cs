@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.join.table
@@ -34,7 +35,7 @@ namespace com.espertech.esper.epl.join.table
             Coercer = coercionType.IsNumeric() ? CoercerFactory.GetCoercer(null, coercionType) : null;
         }
 
-        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public override EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventTableOrganization organization = GetOrganization();
             return new EventTable[] { new PropertyIndexedEventTableSingleCoerceAdd(PropertyGetter, organization, Coercer, CoercionType) };

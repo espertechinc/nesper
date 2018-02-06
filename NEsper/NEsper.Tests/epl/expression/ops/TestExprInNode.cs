@@ -16,7 +16,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprInNode 
@@ -79,13 +79,13 @@ namespace com.espertech.esper.epl.expression
             ExprInNode otherInNodeNormal = SupportExprNodeFactory.MakeInSetNode(false);
             ExprInNode otherInNodeNotIn = SupportExprNodeFactory.MakeInSetNode(true);
     
-            Assert.IsTrue(_inNodeNormal.EqualsNode(otherInNodeNormal));
-            Assert.IsTrue(_inNodeNotIn.EqualsNode(otherInNodeNotIn));
+            Assert.IsTrue(_inNodeNormal.EqualsNode(otherInNodeNormal, false));
+            Assert.IsTrue(_inNodeNotIn.EqualsNode(otherInNodeNotIn, false));
     
-            Assert.IsFalse(_inNodeNormal.EqualsNode(otherInNodeNotIn));
-            Assert.IsFalse(_inNodeNotIn.EqualsNode(otherInNodeNormal));
-            Assert.IsFalse(_inNodeNotIn.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node()));
-            Assert.IsFalse(_inNodeNormal.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node()));
+            Assert.IsFalse(_inNodeNormal.EqualsNode(otherInNodeNotIn, false));
+            Assert.IsFalse(_inNodeNotIn.EqualsNode(otherInNodeNormal, false));
+            Assert.IsFalse(_inNodeNotIn.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node(), false));
+            Assert.IsFalse(_inNodeNormal.EqualsNode(SupportExprNodeFactory.MakeCaseSyntax1Node(), false));
         }
     
         [Test]

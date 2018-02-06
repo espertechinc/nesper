@@ -290,7 +290,7 @@ namespace com.espertech.esper.epl.join.@base
                 }
 
                 // init
-                joinSetComposerDesc.JoinSetComposer.Init(eventsPerStream);
+                joinSetComposerDesc.JoinSetComposer.Init(eventsPerStream, _exprEvaluatorContext);
             }
 
             return joinSetComposerDesc;

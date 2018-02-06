@@ -91,7 +91,13 @@ namespace com.espertech.esper.core.context.factory
             EventTable[] indexes = null;
             if (_queryPlan.IndexDescs != null)
             {
-                indexes = SubordinateQueryPlannerUtil.RealizeTables(_queryPlan.IndexDescs, _processor.NamedWindowType, processorInstance.RootViewInstance.IndexRepository, processorInstance.RootViewInstance.DataWindowContents, processorInstance.TailViewInstance.AgentInstanceContext, isRecoveringResilient);
+                indexes = SubordinateQueryPlannerUtil.RealizeTables(
+                    _queryPlan.IndexDescs, 
+                    _processor.NamedWindowType, 
+                    processorInstance.RootViewInstance.IndexRepository, 
+                    processorInstance.RootViewInstance.DataWindowContents, 
+                    processorInstance.TailViewInstance.AgentInstanceContext,
+                    isRecoveringResilient);
             }
             SubordWMatchExprLookupStrategy strategy = _queryPlan.Factory.Realize(indexes, agentInstanceContext, processorInstance.RootViewInstance.DataWindowContents, processorInstance.RootViewInstance.VirtualDataWindow);
             NamedWindowOnExprBaseView onExprBaseView = _onExprFactory.Make(strategy, processorInstance.RootViewInstance, agentInstanceContext, pair.First);

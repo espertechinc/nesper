@@ -114,7 +114,8 @@ namespace com.espertech.esper.epl.expression.core
             get { return _getter; }
         }
 
-        public override bool EqualsNode(ExprNode node) {
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
+        {
             if (this == node) return true;
             if (node == null || GetType() != node.GetType()) return false;
     

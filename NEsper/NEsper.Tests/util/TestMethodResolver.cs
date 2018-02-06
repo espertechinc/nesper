@@ -140,7 +140,10 @@ namespace com.espertech.esper.util
                 MathContext.DECIMAL32,
                 TimeZoneInfo.Local,
                 TimeAbacusMilliseconds.INSTANCE,
-                new ConfigurationEngineDefaults.ThreadingProfile(), 
+                new ConfigurationEngineDefaults.ThreadingProfile(),
+                null,
+                null,
+                false,
                 null,
                 null);
 

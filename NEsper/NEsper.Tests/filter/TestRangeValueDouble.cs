@@ -8,20 +8,19 @@
 
 using NUnit.Framework;
 
-
 namespace com.espertech.esper.filter
 {
     [TestFixture]
     public class TestRangeValueDouble 
     {
-        private readonly FilterSpecParamRangeValue[] _params = new FilterSpecParamRangeValue[5];
+        private readonly FilterSpecParamFilterForEval[] _params = new FilterSpecParamFilterForEval[5];
     
         [SetUp]
         public void SetUp()
         {
-            _params[0] = new RangeValueDouble(5.5);
-            _params[1] = new RangeValueDouble(0);
-            _params[2] = new RangeValueDouble(5.5);
+            _params[0] = new FilterForEvalConstantDouble(5.5);
+            _params[1] = new FilterForEvalConstantDouble(0);
+            _params[2] = new FilterForEvalConstantDouble(5.5);
         }
     
         [Test]

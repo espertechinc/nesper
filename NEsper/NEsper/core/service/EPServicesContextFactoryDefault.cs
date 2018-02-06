@@ -461,10 +461,19 @@ namespace com.espertech.esper.core.service
         /// </summary>
         /// <param name="configSnapshot">config INFO</param>
         /// <param name="aggregationFactoryFactory">factory of aggregation service provider</param>
-        /// <returns>service</returns>
+        /// <param name="engineURI">The engine URI.</param>
+        /// <returns>
+        /// service
+        /// </returns>
+        /// <exception cref="ConfigurationException">
+        /// Invalid time-source time unit of " + timeUnit + ", expected millis or micros
+        /// or
+        /// Error configuring engine: " + ex.Message
+        /// </exception>
         internal static EngineImportService MakeEngineImportService(
             ConfigurationInformation configSnapshot,
-            AggregationFactoryFactory aggregationFactoryFactory)
+            AggregationFactoryFactory aggregationFactoryFactory,
+            String engineURI)
         {
             TimeUnit timeUnit = configSnapshot.EngineDefaults.TimeSource.TimeUnit;
             TimeAbacus timeAbacus;
@@ -482,6 +491,15 @@ namespace com.espertech.esper.core.service
                     "Invalid time-source time unit of " + timeUnit + ", expected millis or micros");
             }
 
+            var codegenGetters = configSnapshot.EngineDefaults.Execution.CodeGeneration.IsEnablePropertyGetter;
+            if (codegenGetters)
+            {
+                if (CheckPackageName("uri_" + engineURI) == PackageName.INVALID)
+                {
+                    throw new ConfigurationException("Invalid engine URI '" + engineURI + "', code generation requires an engine URI that is a valid Java-language identifier and may not contain Java language keywords");
+                }
+            }
+
             var expression = configSnapshot.EngineDefaults.Expression;
             var engineImportService = new EngineImportServiceImpl(
                 expression.IsExtendedAggregation,
@@ -491,7 +509,10 @@ namespace com.espertech.esper.core.service
                 configSnapshot.EngineDefaults.Expression.TimeZone, timeAbacus,
                 configSnapshot.EngineDefaults.Execution.ThreadingProfile,
                 configSnapshot.TransientConfiguration,
-                aggregationFactoryFactory);
+                aggregationFactoryFactory,
+                codegenGetters,
+                engineURI,
+                null);
             engineImportService.AddMethodRefs(configSnapshot.MethodInvocationReferences);
 
             // Add auto-imports
@@ -638,7 +659,7 @@ namespace com.espertech.esper.core.service
             var resourceDirectory = new SimpleServiceDirectory();
 
             // Engine import service
-            var engineImportService = MakeEngineImportService(configSnapshot, AggregationFactoryFactoryDefault.INSTANCE);
+            var engineImportService = MakeEngineImportService(configSnapshot, AggregationFactoryFactoryDefault.INSTANCE, epServiceProvider.URI);
 
             // Event Type Id Generation
             EventTypeIdGenerator eventTypeIdGenerator;
@@ -867,6 +888,94 @@ namespace com.espertech.esper.core.service
             statementIsolationService.SetEpServicesContext(services);
 
             return services;
+        }
+
+        private static PackageName CheckPackageName(String name)
+        {
+            var ret = PackageName.INVALID;
+            int index = 0, dotex = -1;
+            var needStart = true;
+
+            if (String.IsNullOrWhiteSpace(name))
+                return ret;
+            if (name[0] == '.')
+                return ret;
+
+            var codePoint = name.ToCharArray();
+            while (index <= codePoint.Length)
+            {
+                if (index == codePoint.Length)
+                {
+                    if (codePoint[index - 1] == '.')
+                    {
+                        return PackageName.INVALID;
+                    }
+
+                    int start = dotex + 1;
+                    int end = index;
+                    var test = name.Between(start, end);
+                    if (!(Array.BinarySearch(RESERVED, test) < 0))
+                    {
+                        return PackageName.INVALID;
+                    }
+
+                    if (!(ret == PackageName.QUALIFIED))
+                        ret = PackageName.SIMPLE;
+
+                    return ret;
+                }
+                if (codePoint[index] == '.')
+                {
+                    if (codePoint[index - 1] == '.')
+                    {
+                        return PackageName.INVALID;
+                    }
+                    else
+                    {
+                        needStart = true;
+                        int start = dotex + 1;
+                        int end = index;
+                        var test = name.Between(start, end);
+                        if (!(Array.BinarySearch(RESERVED, test) < 0))
+                            return ret;
+                        dotex = index;
+                        ret = PackageName.QUALIFIED;
+                    }
+                }
+                /*
+                else if (Character.isJavaIdentifierStart(codePoint[index]))
+                {
+                    if (needStart) needStart = false;
+                }
+                else if (!Character.isJavaIdentifierPart(codePoint[index]))
+                {
+                    ret = Namespace.INVALID;
+                    break escape;
+                }
+                */
+                index++;
+            }
+
+            return ret;
+        }
+
+        private static string[] RESERVED = new String[]
+        {
+            "abstract", "assert", "boolean", "break", "byte",
+            "case", "catch", "char", "class", "const", "continue", "default", "do",
+            "double", "else", "enum", "extends", "false", "final", "finally",
+            "float", "for", "if", "goto", "implements", "import", "instanceof",
+            "int", "interface", "long", "native", "new", "null", "package",
+            "private", "protected", "public", "return", "short", "static",
+            "strictfp", "super", "switch", "synchronized", "this", "throw",
+            "throws", "transient", "true", "try", "void", "volatile", "while"
+        };
+
+        public enum PackageName
+        {
+            SIMPLE,
+            QUALIFIED,
+            INVALID
         }
     }
 } // end of namespace

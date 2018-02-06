@@ -13,7 +13,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprPreviousNode
@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.expression
         public void TestEquals() 
         {
             ExprPreviousNode node1 = new ExprPreviousNode(ExprPreviousNodePreviousType.PREV);
-            Assert.IsTrue(node1.EqualsNode(_prevNode));
+            Assert.IsTrue(node1.EqualsNode(_prevNode, false));
         }
     
         [Test]

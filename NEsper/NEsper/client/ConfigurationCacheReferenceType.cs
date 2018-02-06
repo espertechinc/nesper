@@ -14,7 +14,7 @@ namespace com.espertech.esper.client
     public enum ConfigurationCacheReferenceType
     {
         /// <summary>
-        /// Constant indicating that hard references should be used.
+        /// IsConstant indicating that hard references should be used.
         /// <para>
         /// Does not allow garbage collection to remove cache entries.
         /// </para>
@@ -22,7 +22,7 @@ namespace com.espertech.esper.client
         HARD,
 
         /// <summary>
-        /// Constant indicating that soft references should be used.
+        /// IsConstant indicating that soft references should be used.
         /// <para>
         /// Allows garbage collection to remove cache entries only after all weak references have been collected. 
         /// </para>
@@ -30,7 +30,7 @@ namespace com.espertech.esper.client
         SOFT,
 
         /// <summary>
-        /// Constant indicating that weak references should be used.
+        /// IsConstant indicating that weak references should be used.
         /// <para>
         /// Allows garbage collection to remove cache entries. 
         /// </para>

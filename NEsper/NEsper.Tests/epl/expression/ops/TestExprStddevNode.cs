@@ -14,14 +14,14 @@ using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprStddevNode : TestExprAggregateNodeAdapter
     {
         [SetUp]
         public void SetUp()
         {
-            ValidatedNodeToTest= MakeNode(5, typeof(int));
+            ValidatedNodeToTest = MakeNode(5, typeof(int));
         }
     
         [Test]
@@ -39,8 +39,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest));
-            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false)));
+            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest, false));
+            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false), false));
         }
 
         [Test]

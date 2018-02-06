@@ -15,6 +15,7 @@ using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.dot;
 using com.espertech.esper.epl.expression.time;
+using com.espertech.esper.epl.@join.plan;
 
 namespace com.espertech.esper.epl.datetime.reformatop
 {
@@ -78,7 +79,7 @@ namespace com.espertech.esper.epl.datetime.reformatop
 
         public Type ReturnType => typeof(TValue);
 
-        public ExprDotNodeFilterAnalyzerDesc GetFilterDesc(
+        public FilterExprAnalyzerAffector GetFilterDesc(
             EventType[] typesPerStream,
             DatetimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,

@@ -76,9 +76,9 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsFalse(_castNodes[0].EqualsNode(_castNodes[1]));
-            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprCastNode("" + typeof(int?).FullName + "")));
+            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsFalse(_castNodes[0].EqualsNode(_castNodes[1], false));
+            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprCastNode("" + typeof(int?).FullName + ""), false));
         }
     
         [Test]

@@ -38,25 +38,13 @@ namespace com.espertech.esper.epl.named
             _metricReportingService = metricReportingService;
         }
 
-        public NamedWindowOnMergeHelper NamedWindowOnMergeHelper
-        {
-            get { return _namedWindowOnMergeHelper; }
-        }
+        public NamedWindowOnMergeHelper NamedWindowOnMergeHelper => _namedWindowOnMergeHelper;
 
-        public StatementResultService StatementResultService
-        {
-            get { return _statementResultService; }
-        }
+        public StatementResultService StatementResultService => _statementResultService;
 
-        public StatementMetricHandle CreateNamedWindowMetricHandle
-        {
-            get { return _createNamedWindowMetricHandle; }
-        }
+        public StatementMetricHandle CreateNamedWindowMetricHandle => _createNamedWindowMetricHandle;
 
-        public MetricReportingService MetricReportingService
-        {
-            get { return _metricReportingService; }
-        }
+        public MetricReportingService MetricReportingService => _metricReportingService;
 
         public override NamedWindowOnExprBaseView Make(SubordWMatchExprLookupStrategy lookupStrategy, NamedWindowRootViewInstance namedWindowRootViewInstance, AgentInstanceContext agentInstanceContext, ResultSetProcessor resultSetProcessor)
         {

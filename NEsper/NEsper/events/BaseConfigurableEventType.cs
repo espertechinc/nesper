@@ -33,11 +33,12 @@ namespace com.espertech.esper.events
         private String[] _propertyNames;
         private IDictionary<String, Pair<ExplicitPropertyDescriptor, FragmentEventType>> _propertyFragmentTypes;
         private readonly ILockable _iLock;
+        private IDictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
         /// Getters for each known property.
         /// </summary>
-        protected IDictionary<String, EventPropertyGetter> PropertyGetters;
+        protected IDictionary<String, EventPropertyGetterSPI> PropertyGetters;
 
         /// <summary>
         /// Descriptors for each known property.
@@ -67,7 +68,7 @@ namespace com.espertech.esper.events
         /// <returns>
         /// getter for property
         /// </returns>
-        protected abstract EventPropertyGetter DoResolvePropertyGetter(String property);
+        protected abstract EventPropertyGetterSPI DoResolvePropertyGetter(String property);
 
         /// <summary>
         /// Subclasses must implement this and return a type for a property.
@@ -87,15 +88,9 @@ namespace com.espertech.esper.events
         /// </returns>
         protected abstract FragmentEventType DoResolveFragmentType(String property);
 
-        public int EventTypeId
-        {
-            get { return _eventTypeId; }
-        }
+        public int EventTypeId => _eventTypeId;
 
-        public string Name
-        {
-            get { return _metadata.PrimaryName; }
-        }
+        public string Name => _metadata.PrimaryName;
 
         /// <summary>
         /// Returns the event adapter service.
@@ -103,10 +98,7 @@ namespace com.espertech.esper.events
         /// <returns>
         /// event adapter service
         /// </returns>
-        public EventAdapterService EventAdapterService
-        {
-            get { return _eventAdapterService; }
-        }
+        public EventAdapterService EventAdapterService => _eventAdapterService;
 
         /// <summary>
         /// Sets explicit properties using a map of event property name and getter instance
@@ -115,7 +107,7 @@ namespace com.espertech.esper.events
         /// <param name="explicitProperties">property descriptors for explicit properties</param>
         protected void Initialize(ICollection<ExplicitPropertyDescriptor> explicitProperties)
         {
-            PropertyGetters = new Dictionary<String, EventPropertyGetter>();
+            PropertyGetters = new Dictionary<String, EventPropertyGetterSPI>();
             _propertyDescriptors = new EventPropertyDescriptor[explicitProperties.Count];
             _propertyNames = new String[explicitProperties.Count];
             PropertyDescriptorMap = new Dictionary<String, EventPropertyDescriptor>();
@@ -157,20 +149,45 @@ namespace com.espertech.esper.events
             return DoResolvePropertyType(propertyExpression);
         }
 
-        public Type UnderlyingType
-        {
-            get { return _underlyngType; }
-        }
+        public Type UnderlyingType => _underlyngType;
 
-        public EventPropertyGetter GetGetter(String propertyExpression)
+        public EventPropertyGetterSPI GetGetterSPI(String propertyExpression)
         {
-            EventPropertyGetter getter = PropertyGetters.Get(propertyExpression);
+            var getter = PropertyGetters.Get(propertyExpression);
             if (getter != null)
             {
                 return getter;
             }
 
             return DoResolvePropertyGetter(propertyExpression);
+        }
+
+        public EventPropertyGetter GetGetter(String propertyName)
+        {
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
+            }
+
+            var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            var getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            var getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
+            return getterCode;
         }
 
         public EventPropertyGetterMapped GetGetterMapped(String mappedProperty)

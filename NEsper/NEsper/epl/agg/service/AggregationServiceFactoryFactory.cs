@@ -639,7 +639,7 @@ namespace com.espertech.esper.epl.agg.service
 
         private static void AddEquivalent(
             ExprAggregateNode aggNodeToAdd,
-            List<AggregationServiceAggExpressionDesc> equivalencyList)
+            IList<AggregationServiceAggExpressionDesc> equivalencyList)
         {
             // Check any same aggregation nodes among all aggregation clauses
             bool foundEquivalent = false;
@@ -651,11 +651,11 @@ namespace com.espertech.esper.epl.agg.service
                 // (a) equals on node returns true
                 // (b) positional parameters are the same
                 // (c) non-positional (group-by over, if present, are the same ignoring duplicates)
-                if (!aggNode.EqualsNode(aggNodeToAdd))
+                if (!aggNode.EqualsNode(aggNodeToAdd, false))
                 {
                     continue;
                 }
-                if (!ExprNodeUtility.DeepEquals(aggNode.PositionalParams, aggNodeToAdd.PositionalParams))
+                if (!ExprNodeUtility.DeepEquals(aggNode.PositionalParams, aggNodeToAdd.PositionalParams, false))
                 {
                     continue;
                 }

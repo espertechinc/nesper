@@ -68,7 +68,7 @@ namespace com.espertech.esper.view.std
             }
 
             FirstUniqueByPropertyView myView = (FirstUniqueByPropertyView)view;
-            if (!ExprNodeUtility.DeepEquals(CriteriaExpressions, myView.UniqueCriteria))
+            if (!ExprNodeUtility.DeepEquals(CriteriaExpressions, myView.UniqueCriteria, false))
             {
                 return false;
             }

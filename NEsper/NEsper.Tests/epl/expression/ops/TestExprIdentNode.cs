@@ -19,7 +19,7 @@ using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprIdentNode 
@@ -163,8 +163,8 @@ namespace com.espertech.esper.epl.expression
             _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
             _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
             _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            Assert.IsTrue(_identNodes[3].EqualsNode(_identNodes[3]));
-            Assert.IsFalse(_identNodes[0].EqualsNode(_identNodes[2]));
+            Assert.IsTrue(_identNodes[3].EqualsNode(_identNodes[3], false));
+            Assert.IsFalse(_identNodes[0].EqualsNode(_identNodes[2], false));
         }
     
         protected internal static EventBean MakeEvent(int intPrimitive)

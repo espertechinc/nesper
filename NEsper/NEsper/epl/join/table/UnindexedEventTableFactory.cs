@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.epl.expression.core;
+
 namespace com.espertech.esper.epl.join.table
 {
     /// <summary>
@@ -22,7 +24,7 @@ namespace com.espertech.esper.epl.join.table
             _streamNum = streamNum;
         }
 
-        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             return new EventTable[] { new UnindexedEventTableImpl(_streamNum) };
         }

@@ -174,14 +174,8 @@ namespace com.espertech.esper.epl.named
             return new NamedWindowOnMergeActionIns(filterEval, insertHelper, routerToUser, insertIntoTableName, statementContext.TableService, statementContext.EpStatementHandle, statementContext.InternalEventEngineRouteDest, audit);
         }
 
-        public IList<NamedWindowOnMergeMatch> Matched
-        {
-            get { return _matched; }
-        }
+        public IList<NamedWindowOnMergeMatch> Matched => _matched;
 
-        public IList<NamedWindowOnMergeMatch> Unmatched
-        {
-            get { return _unmatched; }
-        }
+        public IList<NamedWindowOnMergeMatch> Unmatched => _unmatched;
     }
 } // end of namespace

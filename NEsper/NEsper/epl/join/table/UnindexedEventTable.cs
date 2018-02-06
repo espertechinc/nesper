@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.join.table
 {
@@ -24,11 +25,11 @@ namespace com.espertech.esper.epl.join.table
 	    public abstract ISet<EventBean> EventSet { get; }
 
 	    public abstract IEnumerator<EventBean> GetEnumerator();
-	    public abstract void AddRemove(EventBean[] newData, EventBean[] oldData);
-	    public abstract void Add(EventBean[] events);
-	    public abstract void Add(EventBean @event);
-	    public abstract void Remove(EventBean[] events);
-	    public abstract void Remove(EventBean @event);
+	    public abstract void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 	    public abstract bool IsEmpty();
 	    public abstract void Clear();
 	    public abstract void Destroy();
