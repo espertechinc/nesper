@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -17,34 +18,34 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionNewArray : ICodegenExpression
     {
-        private readonly Type component;
-        private readonly ICodegenExpression expression;
+        private readonly Type _component;
+        private readonly ICodegenExpression _expression;
 
         public CodegenExpressionNewArray(Type component, ICodegenExpression expression)
         {
-            this.component = component;
-            this.expression = expression;
+            this._component = component;
+            this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            int numDimensions = TypeHelper.GetNumberOfDimensions(component);
-            Type outermostType = TypeHelper.GetComponentTypeOutermost(component);
-            builder.Append("new ");
-            CodeGenerationHelper.AppendClassName(builder, outermostType, null, imports);
-            builder.Append("[");
-            expression.Render(builder, imports);
-            builder.Append("]");
+            int numDimensions = TypeHelper.GetNumberOfDimensions(_component);
+            Type outermostType = TypeHelper.GetComponentTypeOutermost(_component);
+            textWriter.Write("new ");
+            CodeGenerationHelper.AppendClassName(textWriter, outermostType, null);
+            textWriter.Write("[");
+            _expression.Render(textWriter);
+            textWriter.Write("]");
             for (int i = 0; i < numDimensions; i++)
             {
-                builder.Append("[]");
+                textWriter.Write("[]");
             }
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(component);
-            expression.MergeClasses(classes);
+            classes.Add(_component);
+            _expression.MergeClasses(classes);
         }
     }
 } // end of namespace

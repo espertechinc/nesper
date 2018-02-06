@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.core
@@ -54,23 +55,27 @@ namespace com.espertech.esper.codegen.core
             }
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports, bool isPublic)
+        public void Render(TextWriter textWriter, bool isPublic)
         {
             AllocateBlock();
             if (_optionalComment != null)
             {
-                builder.Append("// ").Append(_optionalComment).Append("\n");
+                textWriter.Write("// ");
+                textWriter.Write(_optionalComment);
+                textWriter.Write("\n");
             }
             if (isPublic)
             {
-                builder.Append("public ");
+                textWriter.Write("public ");
             }
-            CodeGenerationHelper.AppendClassName(builder, _returnType, null, imports);
-            builder.Append(" ").Append(_methodName).Append("(");
-            CodegenNamedParam.Render(builder, _parameters, imports);
-            builder.Append("){\n");
-            _block.Render(builder, imports);
-            builder.Append("}\n");
+            CodeGenerationHelper.AppendClassName(textWriter, _returnType, null);
+            textWriter.Write(" ");
+            textWriter.Write(_methodName);
+            textWriter.Write("(");
+            CodegenNamedParam.Render(textWriter, _parameters);
+            textWriter.Write("){{\n");
+            _block.Render(textWriter);
+            textWriter.Write("}}\n");
         }
 
         private void AllocateBlock()

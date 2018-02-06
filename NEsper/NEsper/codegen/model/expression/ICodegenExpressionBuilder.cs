@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -25,7 +26,7 @@ namespace com.espertech.esper.codegen.model.expression
         ICodegenExpression ConstantTrue();
         ICodegenExpression ConstantFalse();
         ICodegenExpression ConstantNull();
-        ICodegenExpression Constant(Object constant);
+        ICodegenExpression Constant(object constant);
         ICodegenExpression CastUnderlying(Type clazz, ICodegenExpression expression);
         ICodegenExpression InstanceOf(ICodegenExpression lhs, Type clazz);
         ICodegenExpression NotInstanceOf(ICodegenExpression lhs, Type clazz);
@@ -43,7 +44,8 @@ namespace com.espertech.esper.codegen.model.expression
         ICodegenExpression NewInstance(Type clazz, params ICodegenExpression[] parameters);
         ICodegenExpression Relational(ICodegenExpression lhs, CodegenRelational op, ICodegenExpression rhs);
         ICodegenExpression NewArray(Type component, ICodegenExpression expression);
-        void RenderExpressions(StringBuilder builder, ICodegenExpression[] expressions, IDictionary<Type, string> imports);
+        void RenderExpressions(TextWriter textWriter, ICodegenExpression[] expressions);
         void MergeClassesExpressions(ICollection<Type> classes, ICodegenExpression[] expressions);
+
     }
 }

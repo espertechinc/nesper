@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -21,9 +22,9 @@ namespace com.espertech.esper.codegen.model.expression
             _ref = @ref;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append(_ref);
+            textWriter.Write(_ref);
         }
 
         public void MergeClasses(ICollection<Type> classes)

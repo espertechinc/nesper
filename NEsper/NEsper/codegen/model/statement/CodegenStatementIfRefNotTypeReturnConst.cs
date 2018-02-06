@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -19,27 +20,30 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementIfRefNotTypeReturnConst : CodegenStatementBase
     {
-        private readonly string var;
-        private readonly Type type;
-        private readonly Object constant;
+        private readonly string _var;
+        private readonly Type _type;
+        private readonly Object _constant;
 
         public CodegenStatementIfRefNotTypeReturnConst(string var, Type type, Object constant)
         {
-            this.var = var;
-            this.type = type;
-            this.constant = constant;
+            this._var = var;
+            this._type = type;
+            this._constant = constant;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            builder.Append("if (!(").Append(var).Append(" is ");
-            CodeGenerationHelper.AppendClassName(builder, type, null, imports).Append(")) return ");
-            CodegenExpressionUtil.RenderConstant(builder, constant);
+            textWriter.Write("if (!(");
+            textWriter.Write(_var);
+            textWriter.Write(" is ");
+            CodeGenerationHelper.AppendClassName(textWriter, _type, null);
+            textWriter.Write(")) return ");
+            CodegenExpressionUtil.RenderConstant(textWriter, _constant);
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(type);
+            classes.Add(_type);
         }
     }
 } // end of namespace

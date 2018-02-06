@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -18,36 +19,37 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionInstanceOf : ICodegenExpression
     {
-        private readonly ICodegenExpression lhs;
-        private readonly Type clazz;
-        private readonly bool not;
+        private readonly ICodegenExpression _lhs;
+        private readonly Type _clazz;
+        private readonly bool _not;
 
         public CodegenExpressionInstanceOf(ICodegenExpression lhs, Type clazz, bool not)
         {
-            this.lhs = lhs;
-            this.clazz = clazz;
-            this.not = not;
+            this._lhs = lhs;
+            this._clazz = clazz;
+            this._not = not;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            if (not)
+            if (_not)
             {
-                builder.Append("!(");
+                textWriter.Write("!(");
             }
-            lhs.Render(builder, imports);
-            builder.Append(" ").Append("instanceof ");
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            if (not)
+            _lhs.Render(textWriter);
+            textWriter.Write(" ");
+            textWriter.Write("is ");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            if (_not)
             {
-                builder.Append(")");
+                textWriter.Write(")");
             }
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            lhs.MergeClasses(classes);
-            classes.Add(clazz);
+            _lhs.MergeClasses(classes);
+            classes.Add(_clazz);
         }
     }
 } // end of namespace

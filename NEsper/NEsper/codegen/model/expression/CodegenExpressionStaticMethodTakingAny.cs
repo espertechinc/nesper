@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -19,31 +20,31 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionStaticMethodTakingAny : ICodegenExpression
     {
-        private readonly Type target;
-        private readonly string methodName;
-        private readonly ICodegenExpression[] parameters;
+        private readonly Type _target;
+        private readonly string _methodName;
+        private readonly ICodegenExpression[] _parameters;
 
         public CodegenExpressionStaticMethodTakingAny(Type target, string methodName, ICodegenExpression[] parameters)
         {
-            this.target = target;
-            this.methodName = methodName;
-            this.parameters = parameters;
+            this._target = target;
+            this._methodName = methodName;
+            this._parameters = parameters;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, target, null, imports);
-            builder.Append(".");
-            builder.Append(methodName);
-            builder.Append("(");
-            CodegenExpressionBuilder.RenderExpressions(builder, parameters, imports);
-            builder.Append(")");
+            CodeGenerationHelper.AppendClassName(textWriter, _target, null);
+            textWriter.Write(".");
+            textWriter.Write(_methodName);
+            textWriter.Write("(");
+            CodegenExpressionBuilder.RenderExpressions(textWriter, _parameters);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(target);
-            CodegenExpressionBuilder.MergeClassesExpressions(classes, parameters);
+            classes.Add(_target);
+            CodegenExpressionBuilder.MergeClassesExpressions(classes, _parameters);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -35,13 +36,15 @@ namespace com.espertech.esper.codegen.model.statement
             set => _block = value;
         }
 
-        public override void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void Render(TextWriter textWriter)
         {
-            builder.Append("for (int ").Append(_ref).Append("=0; i<");
-            _upperLimit.Render(builder, imports);
-            builder.Append("; i++) {\n");
-            _block.Render(builder, imports);
-            builder.Append("}\n");
+            textWriter.Write("for (int ");
+            textWriter.Write(_ref);
+            textWriter.Write("=0; i<");
+            _upperLimit.Render(textWriter);
+            textWriter.WriteLine("; i++) {{");
+            _block.Render(textWriter);
+            textWriter.WriteLine("}}");
         }
 
         public override void MergeClasses(ICollection<Type> classes)

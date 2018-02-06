@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -16,40 +17,40 @@ namespace com.espertech.esper.codegen.model.expression
         : ICodegenExpression
         , ICodegenExpressionExprDotMethodChain
     {
-        private readonly ICodegenExpression expression;
-        private readonly List<CodegenChainElement> chain = new List<CodegenChainElement>();
+        private readonly ICodegenExpression _expression;
+        private readonly List<CodegenChainElement> _chain = new List<CodegenChainElement>();
 
         public CodegenExpressionExprDotMethodChain(ICodegenExpression expression)
         {
-            this.expression = expression;
+            this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            expression.Render(builder, imports);
-            foreach (CodegenChainElement element in chain)
+            _expression.Render(textWriter);
+            foreach (CodegenChainElement element in _chain)
             {
-                builder.Append(".");
-                element.Render(builder);
+                textWriter.Write(".");
+                element.Render(textWriter);
             }
         }
 
         public ICodegenExpressionExprDotMethodChain AddNoParam(string method)
         {
-            chain.Add(new CodegenChainElement(method, null));
+            _chain.Add(new CodegenChainElement(method, null));
             return this;
         }
 
         public ICodegenExpression AddWConst(string method, params object[] constants)
         {
-            chain.Add(new CodegenChainElement(method, constants));
+            _chain.Add(new CodegenChainElement(method, constants));
             return this;
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            expression.MergeClasses(classes);
-            foreach (CodegenChainElement element in chain)
+            _expression.MergeClasses(classes);
+            foreach (CodegenChainElement element in _chain)
             {
                 element.MergeClasses(classes);
             }

@@ -8,39 +8,40 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionConditional : ICodegenExpression
     {
-        private readonly ICodegenExpression condition;
-        private readonly ICodegenExpression expressionTrue;
-        private readonly ICodegenExpression expressionFalse;
+        private readonly ICodegenExpression _condition;
+        private readonly ICodegenExpression _expressionTrue;
+        private readonly ICodegenExpression _expressionFalse;
 
         public CodegenExpressionConditional(ICodegenExpression condition, ICodegenExpression expressionTrue, ICodegenExpression expressionFalse)
         {
-            this.condition = condition;
-            this.expressionTrue = expressionTrue;
-            this.expressionFalse = expressionFalse;
+            this._condition = condition;
+            this._expressionTrue = expressionTrue;
+            this._expressionFalse = expressionFalse;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append("(");
-            condition.Render(builder, imports);
-            builder.Append(" ? ");
-            expressionTrue.Render(builder, imports);
-            builder.Append(" : ");
-            expressionFalse.Render(builder, imports);
-            builder.Append(")");
+            textWriter.Write("(");
+            _condition.Render(textWriter);
+            textWriter.Write(" ? ");
+            _expressionTrue.Render(textWriter);
+            textWriter.Write(" : ");
+            _expressionFalse.Render(textWriter);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            condition.MergeClasses(classes);
-            expressionTrue.MergeClasses(classes);
-            expressionFalse.MergeClasses(classes);
+            _condition.MergeClasses(classes);
+            _expressionTrue.MergeClasses(classes);
+            _expressionFalse.MergeClasses(classes);
         }
     }
 } // end of namespace

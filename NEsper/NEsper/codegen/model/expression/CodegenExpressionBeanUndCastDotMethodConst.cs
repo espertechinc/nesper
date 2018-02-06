@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -19,35 +20,36 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionBeanUndCastDotMethodConst : ICodegenExpression
     {
-        private readonly Type clazz;
-        private readonly ICodegenExpression expression;
-        private readonly string method;
-        private readonly Object constant;
+        private readonly Type _clazz;
+        private readonly ICodegenExpression _expression;
+        private readonly string _method;
+        private readonly object _constant;
 
-        public CodegenExpressionBeanUndCastDotMethodConst(Type clazz, ICodegenExpression expression, string method, Object constant)
+        public CodegenExpressionBeanUndCastDotMethodConst(Type clazz, ICodegenExpression expression, string method, object constant)
         {
-            this.clazz = clazz;
-            this.expression = expression;
-            this.method = method;
-            this.constant = constant;
+            this._clazz = clazz;
+            this._expression = expression;
+            this._method = method;
+            this._constant = constant;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append("((");
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(")");
-            expression.Render(builder, imports);
-            builder.Append(".Underlying).");
-            builder.Append(method).Append("(");
-            CodegenExpressionUtil.RenderConstant(builder, constant);
-            builder.Append(")");
+            textWriter.Write("((");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(")");
+            _expression.Render(textWriter);
+            textWriter.Write(".Underlying).");
+            textWriter.Write(_method);
+            textWriter.Write("(");
+            CodegenExpressionUtil.RenderConstant(textWriter, _constant);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            expression.MergeClasses(classes);
-            classes.Add(clazz);
+            _expression.MergeClasses(classes);
+            classes.Add(_clazz);
         }
     }
 } // end of namespace

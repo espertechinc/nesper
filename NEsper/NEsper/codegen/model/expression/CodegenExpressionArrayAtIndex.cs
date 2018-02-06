@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -23,12 +24,12 @@ namespace com.espertech.esper.codegen.model.expression
             this._index = index;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            _expression.Render(builder, imports);
-            builder.Append("[");
-            _index.Render(builder, imports);
-            builder.Append("]");
+            _expression.Render(textWriter);
+            textWriter.Write("[");
+            _index.Render(textWriter);
+            textWriter.Write("]");
         }
 
         public void MergeClasses(ICollection<Type> classes)

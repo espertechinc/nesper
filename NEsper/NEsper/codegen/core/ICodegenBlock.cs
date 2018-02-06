@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
+using System.IO;
 using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.codegen.model.statement;
 
 namespace com.espertech.esper.codegen.core
 {
@@ -34,5 +36,8 @@ namespace com.espertech.esper.codegen.core
         ICodegenBlock BlockReturn(ICodegenExpression expression);
         ICodegenBlock BlockEnd();
         string MethodReturn(ICodegenExpression expression);
+        void Render(TextWriter textWriter);
+
+        IList<ICodegenStatement> Statements { get; }
     }
 } // end of namespace

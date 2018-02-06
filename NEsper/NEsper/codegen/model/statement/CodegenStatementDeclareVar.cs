@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -19,28 +20,30 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementDeclareVar : CodegenStatementBase
     {
-        private readonly Type clazz;
-        private readonly string var;
-        private readonly ICodegenExpression initializer;
+        private readonly Type _clazz;
+        private readonly string _var;
+        private readonly ICodegenExpression _initializer;
 
         public CodegenStatementDeclareVar(Type clazz, string var, ICodegenExpression initializer)
         {
-            this.clazz = clazz;
-            this.var = var;
-            this.initializer = initializer;
+            this._clazz = clazz;
+            this._var = var;
+            this._initializer = initializer;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(" ").Append(var).Append("=");
-            initializer.Render(builder, imports);
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(" ");
+            textWriter.Write(_var);
+            textWriter.Write("=");
+            _initializer.Render(textWriter);
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(clazz);
-            initializer.MergeClasses(classes);
+            classes.Add(_clazz);
+            _initializer.MergeClasses(classes);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -15,37 +16,38 @@ namespace com.espertech.esper.codegen.model.expression
     public class CodegenChainElement
     {
         private readonly string _method;
-        private readonly Object[] _consts;
+        private readonly object[] _consts;
 
-        public CodegenChainElement(string method, Object[] consts)
+        public CodegenChainElement(string method, object[] consts)
         {
             this._method = method;
             this._consts = consts;
         }
 
-        public void Render(StringBuilder builder)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append(_method).Append("(");
+            textWriter.Write(_method);
+            textWriter.Write("(");
             if (_consts != null)
             {
                 string delimiter = "";
-                foreach (Object constant in _consts)
+                foreach (object constant in _consts)
                 {
-                    builder.Append(delimiter);
+                    textWriter.Write(delimiter);
                     if ((constant is char[]) || (constant is string))
                     {
-                        builder.Append("\"");
-                        builder.Append(constant);
-                        builder.Append("\"");
+                        textWriter.Write("\"");
+                        textWriter.Write(constant);
+                        textWriter.Write("\"");
                     }
                     else
                     {
-                        builder.Append(constant);
+                        textWriter.Write(constant);
                     }
                     delimiter = ",";
                 }
             }
-            builder.Append(")");
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using com.espertech.esper.compat.collections;
 
@@ -24,10 +25,15 @@ namespace com.espertech.esper.codegen.core
             _name = name;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public string Name => _name;
+
+        public Type ParamType => _type;
+
+        public void Render(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, _type, null, imports);
-            builder.Append(" ").Append(_name);
+            CodeGenerationHelper.AppendClassName(textWriter, _type, null);
+            textWriter.Write(" ");
+            textWriter.Write(_name);
         }
 
         public static IList<CodegenNamedParam> From(
@@ -49,14 +55,13 @@ namespace com.espertech.esper.codegen.core
             return Collections.SingletonList(new CodegenNamedParam(typeOne, nameOne));
         }
 
-        public static void Render(
-            StringBuilder builder, IList<CodegenNamedParam> @params, IDictionary<Type, string> imports)
+        public static void Render(TextWriter textWriter, IList<CodegenNamedParam> @params)
         {
             var delimiter = "";
             foreach (var param in @params)
             {
-                builder.Append(delimiter);
-                param.Render(builder, imports);
+                textWriter.Write(delimiter);
+                param.Render(textWriter);
                 delimiter = ",";
             }
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -18,36 +19,36 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionStaticMethodTakingRefs : ICodegenExpression
     {
-        private readonly Type target;
-        private readonly string methodName;
-        private readonly string[] refs;
+        private readonly Type _target;
+        private readonly string _methodName;
+        private readonly string[] _refs;
 
         public CodegenExpressionStaticMethodTakingRefs(Type target, string methodName, string[] refs)
         {
-            this.target = target;
-            this.methodName = methodName;
-            this.refs = refs;
+            this._target = target;
+            this._methodName = methodName;
+            this._refs = refs;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, target, null, imports);
-            builder.Append(".");
-            builder.Append(methodName);
-            builder.Append("(");
+            CodeGenerationHelper.AppendClassName(textWriter, _target, null);
+            textWriter.Write(".");
+            textWriter.Write(_methodName);
+            textWriter.Write("(");
             string delimiter = "";
-            foreach (string parameter in refs)
+            foreach (string parameter in _refs)
             {
-                builder.Append(delimiter);
-                builder.Append(parameter);
+                textWriter.Write(delimiter);
+                textWriter.Write(parameter);
                 delimiter = ",";
             }
-            builder.Append(")");
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(target);
+            classes.Add(_target);
         }
     }
 } // end of namespace

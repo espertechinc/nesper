@@ -8,13 +8,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace com.espertech.esper.codegen.model.statement
 {
-    public interface CodegenStatement
+    public interface ICodegenStatement
     {
-        void Render(StringBuilder builder, IDictionary<Type, string> imports);
+        void Render(TextWriter textWriter);
 
         void MergeClasses(ICollection<Type> classes);
     }

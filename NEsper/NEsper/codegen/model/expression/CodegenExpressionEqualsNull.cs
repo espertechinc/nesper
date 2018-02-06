@@ -8,32 +8,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionEqualsNull : ICodegenExpression
     {
-        private readonly ICodegenExpression lhs;
-        private readonly bool not;
+        private readonly ICodegenExpression _lhs;
+        private readonly bool _not;
 
         public CodegenExpressionEqualsNull(ICodegenExpression lhs, bool not)
         {
-            this.lhs = lhs;
-            this.not = not;
+            this._lhs = lhs;
+            this._not = not;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            lhs.Render(builder, imports);
-            builder.Append(" ");
-            builder.Append(not ? "!=" : "==");
-            builder.Append(" null");
+            _lhs.Render(textWriter);
+            textWriter.Write(" ");
+            textWriter.Write(_not ? "!=" : "==");
+            textWriter.Write(" null");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            lhs.MergeClasses(classes);
+            _lhs.MergeClasses(classes);
         }
     }
 } // end of namespace

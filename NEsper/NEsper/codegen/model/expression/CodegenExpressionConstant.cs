@@ -8,22 +8,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionConstant : ICodegenExpression
     {
-        private readonly Object constant;
+        private readonly object _constant;
 
-        public CodegenExpressionConstant(Object constant)
+        public CodegenExpressionConstant(object constant)
         {
-            this.constant = constant;
+            this._constant = constant;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            CodegenExpressionUtil.RenderConstant(builder, constant);
+            CodegenExpressionUtil.RenderConstant(textWriter, _constant);
         }
 
         public void MergeClasses(ICollection<Type> classes)

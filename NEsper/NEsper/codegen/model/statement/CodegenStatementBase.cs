@@ -8,19 +8,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace com.espertech.esper.codegen.model.statement
 {
-    public abstract class CodegenStatementBase : CodegenStatement
+    public abstract class CodegenStatementBase : ICodegenStatement
     {
-        public abstract void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports);
+        public abstract void RenderStatement(TextWriter textWriter);
         public abstract void MergeClasses(ICollection<Type> classes);
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            RenderStatement(builder, imports);
-            builder.Append(";\n");
+            RenderStatement(textWriter);
+            textWriter.Write(";\n");
         }
     }
 } // end of namespace

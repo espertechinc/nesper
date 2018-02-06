@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -25,11 +26,13 @@ namespace com.espertech.esper.codegen.model.expression
             this._ref = @ref;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append("((");
-            CodeGenerationHelper.AppendClassName(builder, _clazz, null, imports);
-            builder.Append(")").Append(_ref).Append(")");
+            textWriter.Write("((");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(")");
+            textWriter.Write(_ref);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)

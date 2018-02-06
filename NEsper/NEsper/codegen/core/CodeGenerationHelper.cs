@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.compat.collections;
@@ -16,26 +18,29 @@ namespace com.espertech.esper.codegen.core
 {
     public class CodeGenerationHelper
     {
-        public static StringBuilder AppendClassName(
-            StringBuilder builder, Type clazz, Type optionalTypeParam, IDictionary<Type, string> imports)
+        public static string CompliantName(Type type)
         {
-            if (!clazz.IsArray)
+            if (type.IsGenericType)
             {
-                var assignedName = GetAssignedName(clazz, imports);
-                builder.Append(assignedName);
-                if (optionalTypeParam != null)
-                {
-                    builder.Append("<");
-                    AppendClassName(builder, optionalTypeParam, null, imports);
-                    builder.Append(">");
-                }
-
-                return builder;
+                var genericArguments = type.GetGenericArguments();
+                var genericArgumentAtoms = string.Join(
+                    ",", genericArguments.Select(CompliantName));
+                return type.FullName + "<" + genericArgumentAtoms + ">";
             }
+            else if (type.IsArray)
+            {
+                return CompliantName(type.GetElementType()) + "[]";
+            }
+            else
+            {
+                return type.FullName;
+            }
+        }
 
-            AppendClassName(builder, clazz.GetElementType(), null, imports);
-            builder.Append("[]");
-            return builder;
+        public static TextWriter AppendClassName(TextWriter textWriter, Type clazz, Type optionalTypeParam)
+        {
+            textWriter.Write(CompliantName(clazz));
+            return textWriter;
         }
 
         private static string GetAssignedName(Type clazz, IDictionary<Type, string> imports)

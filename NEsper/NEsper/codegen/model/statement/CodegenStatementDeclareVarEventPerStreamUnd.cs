@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -18,26 +19,30 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementDeclareVarEventPerStreamUnd : CodegenStatementBase
     {
-        private readonly Type clazz;
-        private readonly int streamNum;
+        private readonly Type _clazz;
+        private readonly int _streamNum;
 
         public CodegenStatementDeclareVarEventPerStreamUnd(Type clazz, int streamNum)
         {
-            this.clazz = clazz;
-            this.streamNum = streamNum;
+            this._clazz = clazz;
+            this._streamNum = streamNum;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(" s").Append(streamNum).Append("=(");
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(")eventsPerStream[").Append(streamNum).Append("].Underlying");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(" s");
+            textWriter.Write(_streamNum);
+            textWriter.Write("=(");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(")eventsPerStream[");
+            textWriter.Write(_streamNum);
+            textWriter.Write("].Underlying");
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(clazz);
+            classes.Add(_clazz);
         }
     }
 } // end of namespace

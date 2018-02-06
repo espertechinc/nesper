@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.model.expression;
@@ -25,10 +26,11 @@ namespace com.espertech.esper.codegen.model.statement
             _assignment = assignment;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            builder.Append(_ref).Append("=");
-            _assignment.Render(builder, imports);
+            textWriter.Write(_ref);
+            textWriter.Write("=");
+            _assignment.Render(textWriter);
         }
 
         public override void MergeClasses(ICollection<Type> classes)

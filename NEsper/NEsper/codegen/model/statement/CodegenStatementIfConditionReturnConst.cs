@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.model.expression;
@@ -16,26 +17,26 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementIfConditionReturnConst : CodegenStatementBase
     {
-        private readonly ICodegenExpression condition;
-        private readonly Object constant;
+        private readonly ICodegenExpression _condition;
+        private readonly Object _constant;
 
         public CodegenStatementIfConditionReturnConst(ICodegenExpression condition, Object constant)
         {
-            this.condition = condition;
-            this.constant = constant;
+            this._condition = condition;
+            this._constant = constant;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            builder.Append("if (");
-            condition.Render(builder, imports);
-            builder.Append(") return ");
-            CodegenExpressionUtil.RenderConstant(builder, constant);
+            textWriter.Write("if (");
+            _condition.Render(textWriter);
+            textWriter.Write(") return ");
+            CodegenExpressionUtil.RenderConstant(textWriter, _constant);
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            condition.MergeClasses(classes);
+            _condition.MergeClasses(classes);
         }
     }
 } // end of namespace

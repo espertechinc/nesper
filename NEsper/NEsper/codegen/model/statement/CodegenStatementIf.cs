@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -18,8 +19,8 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementIf : CodegenStatementWBlockBase
     {
-        private List<CodegenStatementIfConditionBlock> blocks = new List<CodegenStatementIfConditionBlock>();
-        private CodegenBlock optionalElse;
+        private readonly List<CodegenStatementIfConditionBlock> _blocks = new List<CodegenStatementIfConditionBlock>();
+        private CodegenBlock _optionalElse;
 
         public CodegenStatementIf(CodegenBlock parent) : base(parent)
         {
@@ -27,46 +28,46 @@ namespace com.espertech.esper.codegen.model.statement
 
         public CodegenBlock OptionalElse
         {
-            get => optionalElse;
-            set => this.optionalElse = value;
+            get => _optionalElse;
+            set => this._optionalElse = value;
         }
 
-        public override void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void Render(TextWriter textWriter)
         {
             string delimiter = "";
-            foreach (CodegenStatementIfConditionBlock pair in blocks)
+            foreach (CodegenStatementIfConditionBlock pair in _blocks)
             {
-                builder.Append(delimiter);
-                builder.Append("if (");
-                pair.Condition.Render(builder, imports);
-                builder.Append(") {\n");
-                pair.Block.Render(builder, imports);
-                builder.Append("}");
+                textWriter.Write(delimiter);
+                textWriter.Write("if (");
+                pair.Condition.Render(textWriter);
+                textWriter.WriteLine(") {{");
+                pair.Block.Render(textWriter);
+                textWriter.WriteLine("}}");
                 delimiter = "\n";
             }
-            if (optionalElse != null)
+            if (_optionalElse != null)
             {
-                builder.Append("else {\n");
-                optionalElse.Render(builder, imports);
-                builder.Append("}");
+                textWriter.Write("else {\n");
+                _optionalElse.Render(textWriter);
+                textWriter.WriteLine("}}");
             }
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            foreach (CodegenStatementIfConditionBlock pair in blocks)
+            foreach (CodegenStatementIfConditionBlock pair in _blocks)
             {
                 pair.MergeClasses(classes);
             }
-            if (optionalElse != null)
+            if (_optionalElse != null)
             {
-                optionalElse.MergeClasses(classes);
+                _optionalElse.MergeClasses(classes);
             }
         }
 
         public void Add(ICodegenExpression condition, CodegenBlock block)
         {
-            blocks.Add(new CodegenStatementIfConditionBlock(condition, block));
+            _blocks.Add(new CodegenStatementIfConditionBlock(condition, block));
         }
     }
 } // end of namespace

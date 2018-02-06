@@ -8,17 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
 
 namespace com.espertech.esper.codegen.model.statement
 {
-    public abstract class CodegenStatementWBlockBase : CodegenStatement
+    public abstract class CodegenStatementWBlockBase : ICodegenStatement
     {
         private readonly CodegenBlock _parent;
 
-        public CodegenStatementWBlockBase(CodegenBlock parent)
+        protected CodegenStatementWBlockBase(CodegenBlock parent)
         {
             _parent = parent;
         }
@@ -26,6 +27,6 @@ namespace com.espertech.esper.codegen.model.statement
         public CodegenBlock Parent => _parent;
 
         public abstract void MergeClasses(ICollection<Type> classes);
-        public abstract void Render(StringBuilder builder, IDictionary<Type, string> imports);
+        public abstract void Render(TextWriter textWriter);
     }
 } // end of namespace

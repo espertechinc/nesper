@@ -8,37 +8,38 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionExprDotUnderlying : ICodegenExpression
     {
-        private readonly ICodegenExpression expression;
+        private readonly ICodegenExpression _expression;
 
         public CodegenExpressionExprDotUnderlying(ICodegenExpression expression)
         {
-            this.expression = expression;
+            this._expression = expression;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            if (expression is CodegenExpressionRef)
+            if (_expression is CodegenExpressionRef)
             {
-                expression.Render(builder, imports);
+                _expression.Render(textWriter);
             }
             else
             {
-                builder.Append("(");
-                expression.Render(builder, imports);
-                builder.Append(")");
+                textWriter.Write("(");
+                _expression.Render(textWriter);
+                textWriter.Write(")");
             }
-            builder.Append(".Underlying");
+            textWriter.Write(".Underlying");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            expression.MergeClasses(classes);
+            _expression.MergeClasses(classes);
         }
     }
 } // end of namespace

@@ -8,24 +8,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
 
 namespace com.espertech.esper.codegen.model.statement
 {
-    public class CodegenStatementIfRefNullReturnNull : CodegenStatement
+    public class CodegenStatementIfRefNullReturnNull : ICodegenStatement
     {
-        private readonly string var;
+        private readonly string _var;
 
         public CodegenStatementIfRefNullReturnNull(string var)
         {
-            this.var = var;
+            this._var = var;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append("if (").Append(var).Append("== null) { return null;}\n");
+            textWriter.Write("if (");
+            textWriter.Write(_var);
+            textWriter.WriteLine("== null) {{ return null; }}");
         }
 
         public void MergeClasses(ICollection<Type> classes)

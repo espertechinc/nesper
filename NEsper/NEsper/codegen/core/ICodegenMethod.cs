@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace com.espertech.esper.codegen.core
 {
@@ -18,5 +19,6 @@ namespace com.espertech.esper.codegen.core
         IList<CodegenNamedParam> Parameters { get; }
         void MergeClasses(ICollection<Type> classes);
         ICodegenBlock Statements { get; }
+        void Render(TextWriter textWriter, bool isPublic);
     }
 } // end of namespace

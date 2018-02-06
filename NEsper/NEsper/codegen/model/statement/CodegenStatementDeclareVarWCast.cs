@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -16,28 +17,32 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementDeclareVarWCast : CodegenStatementBase
     {
-        private readonly string var;
-        private readonly Type clazz;
-        private readonly string rhsName;
+        private readonly string _var;
+        private readonly Type _clazz;
+        private readonly string _rhsName;
 
         public CodegenStatementDeclareVarWCast(Type clazz, string var, string rhsName)
         {
-            this.var = var;
-            this.clazz = clazz;
-            this.rhsName = rhsName;
+            this._var = var;
+            this._clazz = clazz;
+            this._rhsName = rhsName;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(" ").Append(var).Append("=").Append("(");
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append(")").Append(rhsName);
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(" ");
+            textWriter.Write(_var);
+            textWriter.Write("=");
+            textWriter.Write("(");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write(")");
+            textWriter.Write(_rhsName);
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(clazz);
+            classes.Add(_clazz);
         }
     }
 } // end of namespace

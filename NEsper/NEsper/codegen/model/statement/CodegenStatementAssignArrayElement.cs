@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using com.espertech.esper.codegen.model.expression;
 
@@ -18,12 +19,13 @@ namespace com.espertech.esper.codegen.model.statement
             _expression = expression;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            builder.Append(_name).Append("[");
-            _index.Render(builder, imports);
-            builder.Append("]=");
-            _expression.Render(builder, imports);
+            textWriter.Write(_name);
+            textWriter.Write("[");
+            _index.Render(textWriter);
+            textWriter.Write("]=");
+            _expression.Render(textWriter);
         }
 
         public override void MergeClasses(ICollection<Type> classes)

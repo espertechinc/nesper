@@ -191,7 +191,7 @@ namespace com.espertech.esper.codegen.compile
                 foreach (var member in clazz.Members)
                 {
                     string modifiers = "private";
-                    string typeName = LanguageCompliantType(member.MemberType);
+                    string typeName = CodeGenerationHelper.CompliantName(member.MemberType);
                     textWriter.WriteLine("{0} {1} {2};",modifiers, typeName, member.MemberName);
                 }
 
@@ -199,21 +199,14 @@ namespace com.espertech.esper.codegen.compile
             }
         }
 
-        private void WriteMethod(
-            TextWriter textWriter,
-            ICodegenMethod method)
-        {
-
-        }
-
         private void WriteMethods(
             TextWriter textWriter,
             ICodegenClass clazz)
         {
             foreach (var method in clazz.PublicMethods)
-                WriteMethod(textWriter, method);
+                method.Render(textWriter, true);
             foreach (var method in clazz.PrivateMethods)
-                WriteMethod(textWriter, method);
+                method.Render(textWriter, false);
         }
 
         private void WriteConstructor(
@@ -223,12 +216,12 @@ namespace com.espertech.esper.codegen.compile
             textWriter.Write("public {0}", clazz.ClassName);
             // start constructor arguments
             textWriter.Write("(");
-            textWriter.Write(string.Join(",", clazz.Members.Select(LanguageCompliantTypeAndName)));
+            textWriter.Write(string.Join(",", clazz.Members.Select(CompliantTypeAndName)));
             textWriter.Write(")");
             textWriter.WriteLine();
             // start constructor body
             textWriter.WriteLine("{{");
-            // start member assignments
+            // start parameter assignments
             foreach (var member in clazz.Members)
                 textWriter.WriteLine("this.{0} = {0};", member.MemberName);
             // end constructor body
@@ -255,29 +248,10 @@ namespace com.espertech.esper.codegen.compile
 
             return writer.ToString();
         }
-
-        private static string LanguageCompliantTypeAndName(ICodegenMember member)
+        
+        private static string CompliantTypeAndName(ICodegenMember member)
         {
-            return LanguageCompliantType(member.MemberType) + " " + member.MemberName;
-        }
-
-        private static string LanguageCompliantType(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                var genericArguments = type.GetGenericArguments();
-                var genericArgumentAtoms = string.Join(
-                    ",", genericArguments.Select(LanguageCompliantType));
-                return type.FullName + "<" + genericArgumentAtoms + ">";
-            }
-            else if (type.IsArray)
-            {
-                return LanguageCompliantType(type.GetElementType()) + "[]";
-            }
-            else
-            {
-                return type.FullName;
-            }
+            return CodeGenerationHelper.CompliantName(member.MemberType) + " " + member.MemberName;
         }
     }
 } // end of namespace

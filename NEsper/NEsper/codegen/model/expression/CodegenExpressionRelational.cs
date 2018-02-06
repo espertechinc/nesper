@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -25,11 +26,11 @@ namespace com.espertech.esper.codegen.model.expression
             _rhs = rhs;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            _lhs.Render(builder, imports);
-            builder.Append(_op.GetOp());
-            _rhs.Render(builder, imports);
+            _lhs.Render(textWriter);
+            textWriter.Write(_op.GetOp());
+            _rhs.Render(textWriter);
         }
 
         public void MergeClasses(ICollection<Type> classes)

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -16,28 +17,28 @@ namespace com.espertech.esper.codegen.model.expression
 {
     public class CodegenExpressionNewInstance : ICodegenExpression
     {
-        private readonly Type clazz;
-        private readonly ICodegenExpression[] parameters;
+        private readonly Type _clazz;
+        private readonly ICodegenExpression[] _parameters;
 
         public CodegenExpressionNewInstance(Type clazz, ICodegenExpression[] parameters)
         {
-            this.clazz = clazz;
-            this.parameters = parameters;
+            this._clazz = clazz;
+            this._parameters = parameters;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            builder.Append("new ");
-            CodeGenerationHelper.AppendClassName(builder, clazz, null, imports);
-            builder.Append("(");
-            CodegenExpressionBuilder.RenderExpressions(builder, parameters, imports);
-            builder.Append(")");
+            textWriter.Write("new ");
+            CodeGenerationHelper.AppendClassName(textWriter, _clazz, null);
+            textWriter.Write("(");
+            CodegenExpressionBuilder.RenderExpressions(textWriter, _parameters);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)
         {
-            classes.Add(clazz);
-            CodegenExpressionBuilder.MergeClassesExpressions(classes, parameters);
+            classes.Add(_clazz);
+            CodegenExpressionBuilder.MergeClassesExpressions(classes, _parameters);
         }
     }
 } // end of namespace

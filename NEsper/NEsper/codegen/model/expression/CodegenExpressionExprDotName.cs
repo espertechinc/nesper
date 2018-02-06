@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -23,19 +24,20 @@ namespace com.espertech.esper.codegen.model.expression
             this._name = name;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
             if (_lhs is CodegenExpressionRef)
             {
-                _lhs.Render(builder, imports);
+                _lhs.Render(textWriter);
             }
             else
             {
-                builder.Append("(");
-                _lhs.Render(builder, imports);
-                builder.Append(")");
+                textWriter.Write("(");
+                _lhs.Render(textWriter);
+                textWriter.Write(")");
             }
-            builder.Append('.').Append(_name);
+            textWriter.Write('.');
+            textWriter.Write(_name);
         }
 
         public void MergeClasses(ICollection<Type> classes)

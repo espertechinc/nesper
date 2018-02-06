@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.model.expression;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.codegen.core
         private readonly ICodegenMethod _parentMethod;
         private readonly CodegenStatementWBlockBase _parentWBlock;
         private bool _closed;
-        protected List<CodegenStatement> _statements = new List<CodegenStatement>();
+        protected List<ICodegenStatement> _statements = new List<ICodegenStatement>();
 
         public CodegenBlock(ICodegenMethod parentMethod)
         {
@@ -34,6 +35,8 @@ namespace com.espertech.esper.codegen.core
             this._parentWBlock = parentWBlock;
             this._parentMethod = null;
         }
+
+        public IList<ICodegenStatement> Statements => _statements;
 
         public ICodegenBlock Expression(ICodegenExpression expression)
         {
@@ -227,17 +230,17 @@ namespace com.espertech.esper.codegen.core
             return _parentMethod.MethodName;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            foreach (CodegenStatement statement in _statements)
+            foreach (ICodegenStatement statement in _statements)
             {
-                statement.Render(builder, imports);
+                statement.Render(textWriter);
             }
         }
 
         internal void MergeClasses(ICollection<Type> classes)
         {
-            foreach (CodegenStatement statement in _statements)
+            foreach (ICodegenStatement statement in _statements)
             {
                 statement.MergeClasses(classes);
             }

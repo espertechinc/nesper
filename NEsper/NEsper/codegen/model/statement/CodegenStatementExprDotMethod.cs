@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -20,38 +21,41 @@ namespace com.espertech.esper.codegen.model.statement
 {
     public class CodegenStatementExprDotMethod : CodegenStatementBase
     {
-        private readonly ICodegenExpression expression;
-        private readonly string method;
-        private readonly ICodegenExpression[] parameters;
+        private readonly ICodegenExpression _expression;
+        private readonly string _method;
+        private readonly ICodegenExpression[] _parameters;
 
         public CodegenStatementExprDotMethod(ICodegenExpression expression, string method, ICodegenExpression[] parameters)
         {
-            this.expression = expression;
-            this.method = method;
-            this.parameters = parameters;
+            this._expression = expression;
+            this._method = method;
+            this._parameters = parameters;
         }
 
-        public override void RenderStatement(StringBuilder builder, IDictionary<Type, string> imports)
+        public override void RenderStatement(TextWriter textWriter)
         {
-            if (expression is CodegenExpressionRef)
+            if (_expression is CodegenExpressionRef)
             {
-                expression.Render(builder, imports);
+                _expression.Render(textWriter);
             }
             else
             {
-                builder.Append("(");
-                expression.Render(builder, imports);
-                builder.Append(")");
+                textWriter.Write("(");
+                _expression.Render(textWriter);
+                textWriter.Write(")");
             }
-            builder.Append('.').Append(method).Append("(");
-            CodegenExpressionBuilder.RenderExpressions(builder, parameters, imports);
-            builder.Append(")");
+
+            textWriter.Write('.');
+            textWriter.Write(_method);
+            textWriter.Write("(");
+            CodegenExpressionBuilder.RenderExpressions(textWriter, _parameters);
+            textWriter.Write(")");
         }
 
         public override void MergeClasses(ICollection<Type> classes)
         {
-            expression.MergeClasses(classes);
-            CodegenExpressionBuilder.MergeClassesExpressions(classes, parameters);
+            _expression.MergeClasses(classes);
+            CodegenExpressionBuilder.MergeClassesExpressions(classes, _parameters);
         }
     }
 } // end of namespace

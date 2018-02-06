@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.codegen.core;
@@ -22,9 +23,9 @@ namespace com.espertech.esper.codegen.model.expression
         private readonly Type _target;
         private readonly string _methodName;
         private readonly ICodegenExpression _expression;
-        private readonly Object[] _consts;
+        private readonly object[] _consts;
 
-        public CodegenExpressionStaticMethodTakingExprAndConst(Type target, string methodName, ICodegenExpression expression, Object[] consts)
+        public CodegenExpressionStaticMethodTakingExprAndConst(Type target, string methodName, ICodegenExpression expression, object[] consts)
         {
             this._target = target;
             this._methodName = methodName;
@@ -32,19 +33,19 @@ namespace com.espertech.esper.codegen.model.expression
             this._consts = consts;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
-            CodeGenerationHelper.AppendClassName(builder, _target, null, imports);
-            builder.Append(".");
-            builder.Append(_methodName);
-            builder.Append("(");
-            _expression.Render(builder, imports);
-            foreach (Object constant in _consts)
+            CodeGenerationHelper.AppendClassName(textWriter, _target, null);
+            textWriter.Write(".");
+            textWriter.Write(_methodName);
+            textWriter.Write("(");
+            _expression.Render(textWriter);
+            foreach (object constant in _consts)
             {
-                builder.Append(",");
-                CodegenExpressionUtil.RenderConstant(builder, constant);
+                textWriter.Write(",");
+                CodegenExpressionUtil.RenderConstant(textWriter, constant);
             }
-            builder.Append(")");
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)

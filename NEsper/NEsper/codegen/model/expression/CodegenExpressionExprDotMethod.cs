@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 //import static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder.mergeClassesExpressions;
@@ -28,21 +29,23 @@ namespace com.espertech.esper.codegen.model.expression
             this._parameters = @params;
         }
 
-        public void Render(StringBuilder builder, IDictionary<Type, string> imports)
+        public void Render(TextWriter textWriter)
         {
             if (_expression is CodegenExpressionRef)
             {
-                _expression.Render(builder, imports);
+                _expression.Render(textWriter);
             }
             else
             {
-                builder.Append("(");
-                _expression.Render(builder, imports);
-                builder.Append(")");
+                textWriter.Write("(");
+                _expression.Render(textWriter);
+                textWriter.Write(")");
             }
-            builder.Append('.').Append(_method).Append("(");
-            CodegenExpressionBuilder.RenderExpressions(builder, _parameters, imports);
-            builder.Append(")");
+            textWriter.Write('.');
+            textWriter.Write(_method);
+            textWriter.Write("(");
+            CodegenExpressionBuilder.RenderExpressions(textWriter, _parameters);
+            textWriter.Write(")");
         }
 
         public void MergeClasses(ICollection<Type> classes)

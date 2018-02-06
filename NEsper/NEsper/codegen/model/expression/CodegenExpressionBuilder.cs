@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace com.espertech.esper.codegen.model.expression
@@ -125,7 +126,7 @@ namespace com.espertech.esper.codegen.model.expression
             return ConstantNull();
         }
 
-        public static ICodegenExpression Constant(Object constant)
+        public static ICodegenExpression Constant(object constant)
         {
             return new CodegenExpressionConstant(constant);
         }
@@ -307,20 +308,20 @@ namespace com.espertech.esper.codegen.model.expression
             return NewArray(component, expression);
         }
 
-        public static void RenderExpressions(StringBuilder builder, ICodegenExpression[] expressions, IDictionary<Type, string> imports)
+        public static void RenderExpressions(TextWriter textWriter, ICodegenExpression[] expressions)
         {
             string delimiter = "";
             foreach (ICodegenExpression expression in expressions)
             {
-                builder.Append(delimiter);
-                expression.Render(builder, imports);
+                textWriter.Write(delimiter);
+                expression.Render(textWriter);
                 delimiter = ",";
             }
         }
 
-        void ICodegenExpressionBuilder.RenderExpressions(StringBuilder builder, ICodegenExpression[] expressions, IDictionary<Type, string> imports)
+        void ICodegenExpressionBuilder.RenderExpressions(TextWriter textWriter, ICodegenExpression[] expressions)
         {
-            RenderExpressions(builder, expressions, imports);
+            RenderExpressions(textWriter, expressions);
         }
 
         public static void MergeClassesExpressions(ICollection<Type> classes, ICodegenExpression[] expressions)
