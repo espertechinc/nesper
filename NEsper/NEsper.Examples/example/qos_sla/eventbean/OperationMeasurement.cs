@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-namespace com.espertech.esper.example.qos_sla.eventbean
+namespace NEsper.Examples.QoS_SLA.eventbean
 {
     public class OperationMeasurement
     {

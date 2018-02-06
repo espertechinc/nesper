@@ -135,7 +135,7 @@ namespace com.espertech.esper.epl.expression.core
         public abstract ExprNode Validate(ExprValidationContext validationContext);
         public abstract ExprEvaluator ExprEvaluator { get; }
         public abstract bool IsConstantResult { get; }
-        public abstract bool EqualsNode(ExprNode node);
         public abstract ExprPrecedenceEnum Precedence { get; }
+        public abstract bool EqualsNode(ExprNode node, bool ignoreStreamPrefix);
     }
 }

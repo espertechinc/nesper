@@ -9,18 +9,28 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.util
 {
     [TestFixture]
     public class TestMethodResolver 
-    {		
+    {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
     	public void TestResolveMethodStaticOnly()
     	{
@@ -86,7 +96,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
     			Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -99,7 +109,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
     			Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -111,7 +121,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -123,7 +133,7 @@ namespace com.espertech.esper.util
     			MethodResolver.ResolveMethod(declClass, methodName, args, false, null, null);
                 Assert.Fail();
     		}
-    		catch(EngineNoSuchMethodException e)
+    		catch(EngineNoSuchMethodException)
     		{
     			// Expected
     		}
@@ -140,9 +150,13 @@ namespace com.espertech.esper.util
                 MathContext.DECIMAL32,
                 TimeZoneInfo.Local,
                 TimeAbacusMilliseconds.INSTANCE,
-                new ConfigurationEngineDefaults.ThreadingProfile(), 
+                new ConfigurationEngineDefaults.ThreadingProfile(),
                 null,
-                null);
+                null,
+                false,
+                null,
+                null,
+                _container.Resolve<ClassLoaderProvider>());
 
             var targetType = typeof(SupportBean);
             var targetMethod = "GetNameExtended";

@@ -300,8 +300,8 @@ namespace com.espertech.esper.events
                                 string.Format(
                                     "Type by name '{0}' contributes property '{1}' defined as '{2}' which overides the same property of type '{3}'",
                                     typeToMerge.Name, prop.PropertyName,
-                                    assigned.GetTypeNameFullyQualPretty(),
-                                    existingType.GetTypeNameFullyQualPretty()));
+                                    assigned.GetCleanName(),
+                                    existingType.GetCleanName()));
                         }
                     }
                     typing.Put(prop.PropertyName, prop.PropertyType);
@@ -353,7 +353,7 @@ namespace com.espertech.esper.events
                 {
                     throw new ConfigurationException(
                         "Declared start timestamp property '" + startTimestampProperty +
-                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Of(type) + "'");
+                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Clean(type) + "'");
                 }
             }
 
@@ -374,7 +374,7 @@ namespace com.espertech.esper.events
                 {
                     throw new ConfigurationException(
                         "Declared end timestamp property '" + endTimestampProperty +
-                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Of(type) + "'");
+                        "' is expected to return a DateTime, DateTimeEx or long-typed value but returns '" + Name.Clean(type) + "'");
                 }
                 Type startType = eventType.GetPropertyType(startTimestampProperty);
                 if (startType.GetBoxedType() != type.GetBoxedType())
@@ -601,7 +601,7 @@ namespace com.espertech.esper.events
                 if (entryValue is EventType)
                 {
                     // Add EventType itself as a property
-                    EventPropertyGetter getter = factory.GetGetterEventBean(name);
+                    var getter = factory.GetGetterEventBean(name);
                     var eventType = (EventType) entryValue;
                     var descriptor = new EventPropertyDescriptor(
                         name, eventType.UnderlyingType, null, false, false, false, false, true);
@@ -662,7 +662,7 @@ namespace com.espertech.esper.events
                         }
                     }
 
-                    EventPropertyGetter getter;
+                    EventPropertyGetterSPI getter;
                     if (!isArray)
                     {
                         getter = factory.GetGetterBeanNested(name, eventType, eventAdapterService);
@@ -937,16 +937,16 @@ namespace com.espertech.esper.events
             }
         }
 
-        public static EventPropertyGetter GetNestableGetter(
+        public static EventPropertyGetterSPI GetNestableGetter(
             string propertyName,
             IDictionary<string, PropertySetDescriptorItem> propertyGetters,
-            IDictionary<string, EventPropertyGetter> propertyGetterCache,
+            IDictionary<string, EventPropertyGetterSPI> propertyGetterCache,
             IDictionary<string, Object> nestableTypes,
             EventAdapterService eventAdapterService,
             EventTypeNestableGetterFactory factory,
             bool isObjectArray)
         {
-            EventPropertyGetter cachedGetter = propertyGetterCache.Get(propertyName);
+            var cachedGetter = propertyGetterCache.Get(propertyName);
             if (cachedGetter != null)
             {
                 return cachedGetter;
@@ -956,7 +956,7 @@ namespace com.espertech.esper.events
             PropertySetDescriptorItem item = propertyGetters.Get(unescapePropName);
             if (item != null)
             {
-                EventPropertyGetter getter = item.PropertyGetter;
+                EventPropertyGetterSPI getter = item.PropertyGetter;
                 propertyGetterCache.Put(propertyName, getter);
                 return getter;
             }
@@ -968,7 +968,7 @@ namespace com.espertech.esper.events
                 Property prop = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
                 if (prop is DynamicProperty)
                 {
-                    EventPropertyGetter getterDyn = factory.GetPropertyProvidedGetter(
+                    EventPropertyGetterSPI getterDyn = factory.GetPropertyProvidedGetter(
                         nestableTypes, propertyName, prop, eventAdapterService);
                     propertyGetterCache.Put(propertyName, getterDyn);
                     return getterDyn;
@@ -983,7 +983,7 @@ namespace com.espertech.esper.events
                     }
                     else if (type is EventType[])
                     {
-                        EventPropertyGetter getterArr = factory.GetGetterIndexedEventBean(
+                        EventPropertyGetterSPI getterArr = factory.GetGetterIndexedEventBean(
                             indexedProp.PropertyNameAtomic, indexedProp.Index);
                         propertyGetterCache.Put(propertyName, getterArr);
                         return getterArr;
@@ -1008,7 +1008,7 @@ namespace com.espertech.esper.events
                                 if (propType != null)
                                 {
                                     var indexType = propType.GetIndexType();
-                                    var indexGetter = factory.GetGetterIndexedPONO(indexedProp.PropertyNameAtomic, indexedProp.Index, eventAdapterService, indexType);
+                                    var indexGetter = factory.GetGetterIndexedPono(indexedProp.PropertyNameAtomic, indexedProp.Index, eventAdapterService, indexType);
                                     propertyGetterCache.Put(propertyName, indexGetter);
                                     return indexGetter;
                                 }
@@ -1017,7 +1017,7 @@ namespace com.espertech.esper.events
 
                         if (innerType is BaseNestableEventType)
                         {
-                            EventPropertyGetter typeGetter;
+                            EventPropertyGetterSPI typeGetter;
                             if (!propTypeNameIsArray)
                             {
                                 typeGetter = factory.GetGetterBeanNested(
@@ -1050,7 +1050,7 @@ namespace com.espertech.esper.events
                         return null;
                     }
 
-                    var indexedGetter = factory.GetGetterIndexedPONO(
+                    var indexedGetter = factory.GetGetterIndexedPono(
                         indexedProp.PropertyNameAtomic, indexedProp.Index, eventAdapterService, componentType);
                     propertyGetterCache.Put(propertyName, indexedGetter);
                     return indexedGetter;
@@ -1111,12 +1111,12 @@ namespace com.espertech.esper.events
                         {
                             nestedTypeName = GetPropertyRemoveArray(nestedTypeName);
                         }
-                        EventType innerType = eventAdapterService.GetEventTypeByName(nestedTypeName);
+                        EventTypeSPI innerType = (EventTypeSPI) eventAdapterService.GetEventTypeByName(nestedTypeName);
                         if (!(innerType is BaseNestableEventType))
                         {
                             return null;
                         }
-                        EventPropertyGetter typeGetter;
+                        EventPropertyGetterSPI typeGetter;
                         if (!isArray)
                         {
                             typeGetter = factory.GetGetterNestedEntryBean(
@@ -1124,7 +1124,7 @@ namespace com.espertech.esper.events
                         }
                         else
                         {
-                            EventPropertyGetter innerGetter = innerType.GetGetter(propertyNested);
+                            EventPropertyGetterSPI innerGetter = innerType.GetGetterSPI(propertyNested);
                             if (innerGetter == null)
                             {
                                 return null;
@@ -1138,13 +1138,13 @@ namespace com.espertech.esper.events
                     }
                     else if (type is EventType[])
                     {
-                        EventType componentType = ((EventType[]) type)[0];
-                        EventPropertyGetter nestedGetter = componentType.GetGetter(propertyNested);
+                        EventTypeSPI componentType = (EventTypeSPI) ((EventType[]) type)[0];
+                        EventPropertyGetterSPI nestedGetter = componentType.GetGetterSPI(propertyNested);
                         if (nestedGetter == null)
                         {
                             return null;
                         }
-                        EventPropertyGetter typeGetter =
+                        EventPropertyGetterSPI typeGetter =
                             factory.GetGetterIndexedEntryEventBeanArrayElement(
                                 indexedProp.PropertyNameAtomic, indexedProp.Index, nestedGetter);
                         propertyGetterCache.Put(propertyName, typeGetter);
@@ -1161,18 +1161,18 @@ namespace com.espertech.esper.events
                             return null;
                         }
                         Type componentType = ((Type) type).GetElementType();
-                        EventType nestedEventType = eventAdapterService.AddBeanType(
+                        EventTypeSPI nestedEventType = (EventTypeSPI) eventAdapterService.AddBeanType(
                             componentType.FullName, componentType, false, false, false);
 
-                        var nestedGetter = (BeanEventPropertyGetter) nestedEventType.GetGetter(propertyNested);
+                        var nestedGetter = (BeanEventPropertyGetter) nestedEventType.GetGetterSPI(propertyNested);
                         if (nestedGetter == null)
                         {
                             return null;
                         }
                         Type propertyTypeGetter = nestedEventType.GetPropertyType(propertyNested);
                         // construct getter for nested property
-                        EventPropertyGetter indexGetter =
-                            factory.GetGetterIndexedEntryPONO(
+                        EventPropertyGetterSPI indexGetter =
+                            factory.GetGetterIndexedEntryPono(
                                 indexedProp.PropertyNameAtomic, indexedProp.Index, nestedGetter, eventAdapterService,
                                 propertyTypeGetter);
                         propertyGetterCache.Put(propertyName, indexGetter);
@@ -1190,8 +1190,8 @@ namespace com.espertech.esper.events
                         Property prop = PropertyParser.ParseAndWalk(propertyNested, true);
                         if (!isObjectArray)
                         {
-                            EventPropertyGetter getterNested = prop.GetGetterMap(null, eventAdapterService);
-                            EventPropertyGetter dynamicGetter =
+                            EventPropertyGetterSPI getterNested = prop.GetGetterMap(null, eventAdapterService);
+                            EventPropertyGetterSPI dynamicGetter =
                                 factory.GetGetterNestedPropertyProvidedGetterDynamic(
                                     nestableTypes, propertyMap, getterNested, eventAdapterService);
                             propertyGetterCache.Put(propertyName, dynamicGetter);
@@ -1212,7 +1212,7 @@ namespace com.espertech.esper.events
                 {
                     return null;
                 }
-                EventPropertyGetter mapGetter = factory.GetGetterNestedMapProp(propertyMap, getterNestedMap);
+                EventPropertyGetterSPI mapGetter = factory.GetGetterNestedMapProp(propertyMap, getterNestedMap);
                 propertyGetterCache.Put(propertyName, mapGetter);
                 return mapGetter;
             }
@@ -1225,7 +1225,7 @@ namespace com.espertech.esper.events
                 {
                     return null;
                 }
-                EventPropertyGetter mapGetter = factory.GetGetterNestedMapProp(propertyMap, getterNestedMap);
+                EventPropertyGetterSPI mapGetter = factory.GetGetterNestedMapProp(propertyMap, getterNestedMap);
                 propertyGetterCache.Put(propertyName, mapGetter);
                 return mapGetter;
             }
@@ -1237,7 +1237,7 @@ namespace com.espertech.esper.events
                 {
                     return null;
                 }
-                EventType nestedEventType = eventAdapterService.AddBeanType(
+                EventTypeSPI nestedEventType = (EventTypeSPI) eventAdapterService.AddBeanType(
                     simpleClass.FullName, simpleClass, false, false, false);
                 var nestedGetter = (BeanEventPropertyGetter) nestedEventType.GetGetter(propertyNested);
                 if (nestedGetter == null)
@@ -1262,7 +1262,7 @@ namespace com.espertech.esper.events
                 }
 
                 // construct getter for nested property
-                EventPropertyGetter getter = factory.GetGetterNestedPONOProp(
+                EventPropertyGetterSPI getter = factory.GetGetterNestedPonoProp(
                     propertyMap, nestedGetter, eventAdapterService, propertyType, propertyComponentType);
                 propertyGetterCache.Put(propertyName, getter);
                 return getter;
@@ -1270,22 +1270,22 @@ namespace com.espertech.esper.events
             else if (nestedType is EventType)
             {
                 // ask the nested class to resolve the property
-                var innerType = (EventType) nestedType;
-                EventPropertyGetter nestedGetter = innerType.GetGetter(propertyNested);
+                var innerType = (EventTypeSPI) nestedType;
+                EventPropertyGetterSPI nestedGetter = innerType.GetGetterSPI(propertyNested);
                 if (nestedGetter == null)
                 {
                     return null;
                 }
 
                 // construct getter for nested property
-                EventPropertyGetter getter = factory.GetGetterNestedEventBean(propertyMap, nestedGetter);
+                EventPropertyGetterSPI getter = factory.GetGetterNestedEventBean(propertyMap, nestedGetter);
                 propertyGetterCache.Put(propertyName, getter);
                 return getter;
             }
             else if (nestedType is EventType[])
             {
                 var typeArray = (EventType[]) nestedType;
-                EventPropertyGetter beanArrGetter = factory.GetGetterEventBeanArray(propertyMap, typeArray[0]);
+                EventPropertyGetterSPI beanArrGetter = factory.GetGetterEventBeanArray(propertyMap, typeArray[0]);
                 propertyGetterCache.Put(propertyName, beanArrGetter);
                 return beanArrGetter;
             }
@@ -1302,12 +1302,13 @@ namespace com.espertech.esper.events
                 {
                     return null;
                 }
-                EventPropertyGetter innerGetter = innerType.GetGetter(propertyNested);
+
+                EventPropertyGetterSPI innerGetter = ((EventTypeSPI)innerType).GetGetterSPI(propertyNested);
                 if (innerGetter == null)
                 {
                     return null;
                 }
-                EventPropertyGetter outerGetter;
+                EventPropertyGetterSPI outerGetter;
                 if (!isArray)
                 {
                     outerGetter = factory.GetGetterNestedEntryBean(

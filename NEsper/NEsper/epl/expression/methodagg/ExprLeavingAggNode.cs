@@ -27,24 +27,25 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
-            if (PositionalParams.Length > 0)
+            ExprNode[] positionalParams = PositionalParams;
+            if (OptionalFilter == null && positionalParams.Length > 0)
             {
                 throw MakeExceptionExpectedParamNum(0, 0);
             }
 
-            return validationContext.EngineImportService.AggregationFactoryFactory.MakeLeaving(validationContext.StatementExtensionSvcContext, this);
+            return validationContext.EngineImportService.AggregationFactoryFactory
+                .MakeLeaving(validationContext.StatementExtensionSvcContext, this);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "leaving"; }
-        }
+        public override string AggregationFunctionName => "leaving";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprLeavingAggNode;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

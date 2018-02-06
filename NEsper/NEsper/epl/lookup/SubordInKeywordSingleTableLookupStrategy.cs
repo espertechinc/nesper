@@ -44,7 +44,7 @@ namespace com.espertech.esper.epl.lookup
         /// <value>index to use</value>
         public PropertyIndexedEventTableSingle Index
         {
-            get { return _index; }
+            get => _index;
             internal set { _index = value; }
         }
 
@@ -59,10 +59,7 @@ namespace com.espertech.esper.epl.lookup
             return result;
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _strategyDesc;
 
         public String ToQueryPlan()
         {

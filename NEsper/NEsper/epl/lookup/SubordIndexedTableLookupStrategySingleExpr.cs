@@ -72,10 +72,7 @@ namespace com.espertech.esper.epl.lookup
             return Evaluator.Evaluate(new EvaluateParams(_events, true, context));
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _strategyDesc;
 
         public String ToQueryPlan()
         {

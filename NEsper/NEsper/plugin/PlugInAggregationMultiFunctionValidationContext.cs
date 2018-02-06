@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.table.mgmt;
 
@@ -60,78 +61,68 @@ namespace com.espertech.esper.plugin
         /// Returns the aggregation function name
         /// </summary>
         /// <value>aggregation function name</value>
-        public string FunctionName
-        {
-            get { return _functionName; }
-        }
+        public string FunctionName => _functionName;
 
         /// <summary>
         /// Returns the event types of all events in the select clause
         /// </summary>
         /// <value>types</value>
-        public EventType[] EventTypes
-        {
-            get { return _eventTypes; }
-        }
+        public EventType[] EventTypes => _eventTypes;
 
         /// <summary>
         /// Returns positional parameters expressions to this aggregation function.
         /// Use {@link #GetAllParameterExpressions()} for a list of all parameters including non-positional parameters.
         /// </summary>
         /// <value>positional parameter expressions</value>
-        public ExprNode[] ParameterExpressions
-        {
-            get { return _parameterExpressions; }
-        }
+        public ExprNode[] ParameterExpressions => _parameterExpressions;
 
         /// <summary>
         /// Returns the engine URI.
         /// </summary>
         /// <value>engine URI.</value>
-        public string EngineURI
-        {
-            get { return _engineURI; }
-        }
+        public string EngineURI => _engineURI;
 
         /// <summary>
         /// Returns the statement name.
         /// </summary>
         /// <value>statement name</value>
-        public string StatementName
-        {
-            get { return _statementName; }
-        }
+        public string StatementName => _statementName;
 
         /// <summary>
         /// Returns additional validation contextual services.
         /// </summary>
         /// <value>validation context</value>
-        public ExprValidationContext ValidationContext
-        {
-            get { return _validationContext; }
-        }
+        public ExprValidationContext ValidationContext => _validationContext;
 
         /// <summary>
         /// Returns the original configuration object for the aggregation multi-function
         /// </summary>
         /// <value>config</value>
-        public ConfigurationPlugInAggregationMultiFunction Config
-        {
-            get { return _config; }
-        }
+        public ConfigurationPlugInAggregationMultiFunction Config => _config;
 
-        public TableMetadataColumnAggregation OptionalTableColumnAccessed
-        {
-            get { return _optionalTableColumnAccessed; }
-        }
+        public TableMetadataColumnAggregation OptionalTableColumnAccessed => _optionalTableColumnAccessed;
 
         /// <summary>
         /// Returns positional and non-positional parameters.
         /// </summary>
         /// <value>all parameters</value>
-        public IList<ExprNode> AllParameterExpressions
+        public IList<ExprNode> AllParameterExpressions => _allParameterExpressions;
+
+        public IDictionary<string, IList<ExprNode>> NamedParameters
         {
-            get { return _allParameterExpressions; }
+            get
+            {
+                var named = new Dictionary<string, IList<ExprNode>>();
+                foreach (ExprNode node in _allParameterExpressions)
+                {
+                    if (node is ExprNamedParameterNode namedNode)
+                    {
+                        named.Put(namedNode.ParameterName, namedNode.ChildNodes);
+                    }
+                }
+
+                return named;
+            }
         }
     }
 } // end of namespace

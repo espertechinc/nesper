@@ -43,7 +43,7 @@ namespace com.espertech.esper.epl.virtualdw
         public VirtualDWViewFactoryImpl(Type first, string namedWindowName, object customConfiguration)
         {
             if (!first.IsImplementsInterface(typeof(VirtualDataWindowFactory))) {
-                throw new ViewProcessingException("Virtual data window factory class " + Name.Of(first) + " does not implement the interface " + Name.Of<VirtualDataWindowFactory>());
+                throw new ViewProcessingException("Virtual data window factory class " + Name.Clean(first) + " does not implement the interface " + Name.Clean<VirtualDataWindowFactory>());
             }
             _customConfiguration = customConfiguration;
             _namedWindowName = namedWindowName;
@@ -80,7 +80,7 @@ namespace com.espertech.esper.epl.virtualdw
                     _viewParameterArr[i] = ViewFactorySupport.EvaluateAssertNoProperties(
                         _viewFactoryContext.ViewName, validatedNodes[i], i, evaluatorContextStmt);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // expected
                 }

@@ -20,9 +20,8 @@ using com.espertech.esper.util;
 
 namespace com.espertech.esper.dataflow.runnables
 {
-    public class GraphSourceRunnable
-        : BaseRunnable,
-            DataFlowSignalListener
+    public class GraphSourceRunnable : BaseRunnable
+        , DataFlowSignalListener
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

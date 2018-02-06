@@ -11,6 +11,8 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
+using com.espertech.esper.supportregression.util;
 
 namespace com.espertech.esper.supportregression.events
 {
@@ -18,17 +20,17 @@ namespace com.espertech.esper.supportregression.events
     {
         public static EventType CreateBeanType(Type clazz, String name)
         {
-            return SupportEventAdapterService.Service.AddBeanType(name, clazz, false, false, false);
+            return SupportContainer.Resolve<EventAdapterService>().AddBeanType(name, clazz, false, false, false);
         }
     
         public static EventType CreateBeanType(Type clazz)
         {
-            return SupportEventAdapterService.Service.AddBeanType(clazz.FullName, clazz, false, false, false);
+            return SupportContainer.Resolve<EventAdapterService>().AddBeanType(clazz.FullName, clazz, false, false, false);
         }
     
         public static EventType CreateMapType(IDictionary<String,Object> map)
         {
-            return SupportEventAdapterService.Service.CreateAnonymousMapType("test", map, true);
+            return SupportContainer.Resolve<EventAdapterService>().CreateAnonymousMapType("test", map, true);
         }
     }
 }

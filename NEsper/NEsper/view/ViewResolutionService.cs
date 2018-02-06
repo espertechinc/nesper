@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.view
 {
@@ -15,15 +16,16 @@ namespace com.espertech.esper.view
 	/// </summary>
 	public interface ViewResolutionService
 	{
-        /// <summary>
-        /// Instantiates a <see cref="ViewFactory"/> based on the view namespace and name stored in the view spec.
-        /// <para>
-        /// Does not actually use the view factory object created.
-        /// </para>
-        /// </summary>
-        /// <param name="_namespace">is the view namespace</param>
-        /// <param name="name">is the view name</param>
-        /// <throws>ViewProcessingException if the view namespace or name cannot resolve</throws>
-	    ViewFactory Create(String _namespace, String name);
+	    /// <summary>
+	    /// Instantiates a <see cref="ViewFactory"/> based on the view namespace and name stored in the view spec.
+	    /// <para>
+	    /// Does not actually use the view factory object created.
+	    /// </para>
+	    /// </summary>
+	    /// <param name="container"></param>
+	    /// <param name="namespace"></param>
+	    /// <param name="name">is the view name</param>
+	    /// <throws>ViewProcessingException if the view namespace or name cannot resolve</throws>
+	    ViewFactory Create(IContainer container, string @namespace, string name);
 	}
 }

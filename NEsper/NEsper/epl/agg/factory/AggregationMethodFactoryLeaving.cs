@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
@@ -19,63 +18,50 @@ using com.espertech.esper.epl.expression.methodagg;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryLeaving : AggregationMethodFactory
-	{
-        protected internal readonly ExprLeavingAggNode Parent;
+    public class AggregationMethodFactoryLeaving : AggregationMethodFactory
+    {
+        private readonly ExprLeavingAggNode _parent;
 
-	    public AggregationMethodFactoryLeaving(ExprLeavingAggNode parent)
+        public AggregationMethodFactoryLeaving(ExprLeavingAggNode parent)
         {
-	        Parent = parent;
-	    }
+            _parent = parent;
+        }
 
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
+        public bool IsAccessAggregation => false;
 
-	    public Type ResultType
-	    {
-	        get { return typeof (bool?); }
-	    }
+        public Type ResultType => typeof(bool);
 
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public AggregationMethod Make()
+        public AggregationMethod Make()
         {
-	        return new AggregatorLeaving();
-	    }
+            if (_parent.PositionalParams.Length != 0)
+                return new AggregatorLeavingFilter();
+            return new AggregatorLeaving();
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public AggregationAgent AggregationStateAgent => null;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
-	}
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+    }
 } // end of namespace

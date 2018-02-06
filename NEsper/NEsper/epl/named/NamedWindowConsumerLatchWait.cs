@@ -57,15 +57,9 @@ namespace com.espertech.esper.epl.named
         /// Returns true if the dispatch completed for this future.
         /// </summary>
         /// <value>true for completed, false if not</value>
-        public bool IsCompleted
-        {
-            get { return _isCompleted; }
-        }
+        public bool IsCompleted => _isCompleted;
 
-        public override NamedWindowConsumerLatch Earlier
-        {
-            get => _earlier;
-        }
+        public override NamedWindowConsumerLatch Earlier => _earlier;
 
         /// <summary>
         /// Hand a later latch to use for indicating completion via notify.
@@ -73,7 +67,7 @@ namespace com.espertech.esper.epl.named
         /// <value>is the later latch</value>
         public NamedWindowConsumerLatchWait Later
         {
-            set { _later = value; }
+            set => _later = value;
         }
 
         /// <summary>

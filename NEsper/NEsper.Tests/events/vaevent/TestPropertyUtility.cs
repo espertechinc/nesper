@@ -12,10 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.vaevent
@@ -23,11 +24,17 @@ namespace com.espertech.esper.events.vaevent
     [TestFixture]
     public class TestPropertyUtility
     {
-        #region Setup/Teardown
+        private static readonly IDictionary<String, int[]> ExpectedPropertyGroups = new Dictionary<String, int[]>();
 
+        private EventAdapterService _eventSource; 
+        private IContainer _container;
+        
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+            _eventSource = _container.Resolve<EventAdapterService>();
+
             _types = new EventType[5];
             _types[0] = _eventSource.AddBeanType("D1", typeof(SupportDeltaOne), false, false, false);
             _types[1] = _eventSource.AddBeanType("D2", typeof(SupportDeltaTwo), false, false, false);
@@ -35,12 +42,6 @@ namespace com.espertech.esper.events.vaevent
             _types[3] = _eventSource.AddBeanType("D4", typeof(SupportDeltaFour), false, false, false);
             _types[4] = _eventSource.AddBeanType("D5", typeof(SupportDeltaFive), false, false, false);
         }
-
-        #endregion
-
-        private readonly EventAdapterService _eventSource = SupportEventAdapterService.Service;
-
-        private static readonly IDictionary<String, int[]> ExpectedPropertyGroups = new Dictionary<String, int[]>();
 
         static TestPropertyUtility()
         {

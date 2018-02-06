@@ -11,10 +11,12 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -26,15 +28,20 @@ namespace com.espertech.esper.events.bean
     [TestFixture]
     public class TestBeanEventBean 
     {
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
         }
 
         [TearDown]
         public void TearDown()
         {
-            SupportEventAdapterService.Reset();
+            //SupportEventAdapterService.Reset(
+            //    _container.LockManager(),
+            //    _container.ClassLoaderProvider());
         }
     
         [Test]
@@ -255,7 +262,7 @@ namespace com.espertech.esper.events.bean
                 eventBean.Get(propName);
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }
@@ -271,7 +278,7 @@ namespace com.espertech.esper.events.bean
                 eventBean.GetFragment(propName);
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
@@ -28,18 +29,21 @@ namespace com.espertech.esper.view.stat
     {
         private WeightedAverageView _myView;
         private SupportBeanClassView _childView;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set up sum view and a test child view
-            EventType type = WeightedAverageView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+            EventType type = WeightedAverageView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
 
             WeightedAverageViewFactory factory = new WeightedAverageViewFactory();
             factory.FieldNameX = SupportExprNodeFactory.MakeIdentNodeMD("Price");
             factory.EventType = type;
             factory.FieldNameWeight = SupportExprNodeFactory.MakeIdentNodeMD("Volume");
-            _myView = new WeightedAverageView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            _myView = new WeightedAverageView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
             
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);

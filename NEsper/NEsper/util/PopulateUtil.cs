@@ -129,9 +129,9 @@ namespace com.espertech.esper.util
     
                 // invoke catch-all setters
                 foreach (var method in catchAllMethods) {
-                    try
-                    {
-                        method.Invoke(top, new Object[] { propertyName, property.Value });
+                    try {
+                        object value = CoerceProperty(property.Value, method.GetParameters()[0].ParameterType);
+                        method.Invoke(top, new Object[] { propertyName, value });
                     }
                     catch (MemberAccessException e)
                     {
@@ -323,7 +323,7 @@ namespace com.espertech.esper.util
             Type topClass,
             EngineImportService engineImportService)
         {
-            var message = "Failed to find implementation for interface " + Name.Of(topClass);
+            var message = "Failed to find implementation for interface " + Name.Clean(topClass);
 
             // Allow to populate the special "class" field
             if (!properties.ContainsKey(CLASS_PROPERTY_NAME))
@@ -339,7 +339,7 @@ namespace com.espertech.esper.util
             {
                 clazz = TypeHelper.GetClassForName(className, engineImportService.GetClassForNameProvider());
             }
-            catch (TypeLoadException e)
+            catch (TypeLoadException)
             {
 
                 if (!className.Contains("."))
@@ -363,7 +363,7 @@ namespace com.espertech.esper.util
             if (!TypeHelper.IsSubclassOrImplementsInterface(clazz, topClass))
             {
                 throw new ExprValidationException(
-                    message + ", class " + clazz.GetTypeNameFullyQualPretty() +
+                    message + ", class " + clazz.GetCleanName() +
                     " does not implement the interface");
             }
             return clazz;
@@ -402,6 +402,26 @@ namespace com.espertech.esper.util
             }
         }
 
+        private static object CoerceProperty(object value, Type parameterType)
+        {
+            if (value == null)
+                return null;
+
+            var valueType = value.GetType();
+            if (valueType.IsAssignmentCompatible(parameterType))
+            {
+                if ((valueType.GetBoxedType() != parameterType.GetBoxedType())
+                    && parameterType.IsNumeric()
+                    && valueType.IsNumeric())
+                {
+                    value = CoercerFactory.CoerceBoxed(value, parameterType.GetBoxedType());
+                }
+                return value;
+            }
+
+            return value;
+        }
+
         public static Object CoerceProperty(
             string propertyName,
             Type containingType,
@@ -412,100 +432,118 @@ namespace com.espertech.esper.util
             bool forceNumeric,
             bool includeClassNameInEx)
         {
-            if (value is ExprNode && type != typeof (ExprNode))
-            {
-                if (value is ExprIdentNode)
-                {
+            if (value is ExprNode && type != typeof(ExprNode)) {
+                if (value is ExprIdentNode) {
                     var identNode = (ExprIdentNode) value;
                     Property prop;
-                    try
-                    {
+                    try {
                         prop = PropertyParser.ParseAndWalkLaxToSimple(identNode.FullUnresolvedName);
                     }
-                    catch (Exception)
-                    {
+                    catch (Exception) {
                         throw new ExprValidationException(
                             "Failed to parse property '" + identNode.FullUnresolvedName + "'");
                     }
-                    if (!(prop is MappedProperty))
-                    {
+
+                    if (!(prop is MappedProperty)) {
                         throw new ExprValidationException(
                             "Unrecognized property '" + identNode.FullUnresolvedName + "'");
                     }
+
                     var mappedProperty = (MappedProperty) prop;
                     if (string.Equals(
                         mappedProperty.PropertyNameAtomic, SYSTEM_PROPETIES_NAME,
-                        StringComparison.InvariantCultureIgnoreCase))
-                    {
+                        StringComparison.InvariantCultureIgnoreCase)) {
                         return Environment.GetEnvironmentVariable(mappedProperty.Key);
                     }
                 }
-                else
-                {
+                else {
                     var exprNode = (ExprNode) value;
-                    var validated = ExprNodeUtility.GetValidatedSubtree(exprNodeOrigin, exprNode, exprValidationContext);
+                    var validated = ExprNodeUtility.GetValidatedSubtree(
+                        exprNodeOrigin, exprNode, exprValidationContext);
                     exprValidationContext.VariableService.SetLocalVersion();
                     var evaluator = validated.ExprEvaluator;
-                    if (evaluator == null)
-                    {
+                    if (evaluator == null) {
                         throw new ExprValidationException(
                             "Failed to evaluate expression '" +
                             ExprNodeUtility.ToExpressionStringMinPrecedenceSafe(exprNode) + "'");
                     }
+
                     value = evaluator.Evaluate(EvaluateParams.EmptyTrue);
                 }
             }
 
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
             var valueType = value.GetType();
-            if (valueType == type)
-            {
+            if (valueType == type) {
                 return value;
             }
-            if (valueType.IsAssignmentCompatible(type))
-            {
+
+            if (valueType.IsAssignmentCompatible(type)) {
                 if (forceNumeric
                     && (valueType.GetBoxedType() != type.GetBoxedType())
                     && type.IsNumeric()
-                    && valueType.IsNumeric())
-                {
+                    && valueType.IsNumeric()) {
                     value = CoercerFactory.CoerceBoxed(value, type.GetBoxedType());
                 }
+
                 return value;
             }
-            if (TypeHelper.IsSubclassOrImplementsInterface(valueType, type))
-            {
+
+#if false
+            // numerical coercion between non-boxed types and incompatible boxed types
+            if ((valueType.IsNumeric()) &&
+                (valueType.IsNullable() == false) &&
+                (type.IsNumeric()) &&
+                (type.IsNullable())) {
+                var typeNonGeneric = Nullable.GetUnderlyingType(type);
+                if (valueType.IsAssignmentCompatible(typeNonGeneric)) {
+                    value = CoercerFactory.CoerceBoxed(value, type);
+                }
+
                 return value;
             }
-            if (type.IsArray)
-            {
-                if (!(valueType.IsGenericCollection()))
-                {
-                    var detail = "expects an array but receives a value of type " + valueType.GetTypeNameFullyQualPretty();
+#endif
+
+            if (TypeHelper.IsSubclassOrImplementsInterface(valueType, type)) {
+                return value;
+            }
+
+            if (type.IsArray) {
+                if (!(valueType.IsGenericCollection())) {
+                    var detail = "expects an array but receives a value of type " + valueType.GetCleanName();
                     throw new ExprValidationException(
                         GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
                 }
+
                 var items = value.UnwrapIntoArray<object>();
                 var coercedArray = Array.CreateInstance(type.GetElementType(), items.Length);
-                for (var i = 0; i < items.Length; i++)
-                {
+                for (var i = 0; i < items.Length; i++) {
                     var coercedValue = CoerceProperty(
                         propertyName + " (array element)", type, items[i], type.GetElementType(), exprNodeOrigin,
                         exprValidationContext, false, includeClassNameInEx);
                     coercedArray.SetValue(coercedValue, i);
                 }
+
                 return coercedArray;
             }
-            if (!(value is IDictionary<String, Object>))
-            {
-                var detail = "expects an " + type.GetTypeNameFullyQualPretty() + " but receives a value of type " + valueType.GetTypeNameFullyQualPretty();
+
+            if (type.IsNullable() && !valueType.IsNullable()) {
+                var typeNonGeneric = Nullable.GetUnderlyingType(type);
+                if (valueType.IsAssignmentCompatible(typeNonGeneric)) {
+                    return CoercerFactory.CoerceBoxed(value, type);
+                }
+            }
+
+            if (!(value is IDictionary<String, Object>)) {
+                var detail = "expects an " + type.GetCleanName() + " but receives a value of type " +
+                             valueType.GetCleanName();
                 throw new ExprValidationException(
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }
+
             var props = (IDictionary<string, Object>) value;
             return InstantiatePopulateObject(props, type, exprNodeOrigin, exprValidationContext);
         }
@@ -519,7 +557,7 @@ namespace com.espertech.esper.util
             var msg = "Property '" + propertyName + "'";
             if (includeClassNameInEx)
             {
-                msg += " of class " + containingType.GetTypeNameFullyQualPretty();
+                msg += " of class " + containingType.GetCleanName();
             }
             msg += " " + detailText;
             return msg;

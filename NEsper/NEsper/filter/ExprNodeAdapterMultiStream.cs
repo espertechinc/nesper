@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
@@ -25,11 +27,18 @@ namespace com.espertech.esper.filter
 
         private readonly IThreadLocal<EventBean[]> _arrayPerThread;
 
-        public ExprNodeAdapterMultiStream(int filterSpecId, int filterSpecParamPathNum, ExprNode exprNode, ExprEvaluatorContext evaluatorContext, VariableService variableService, EventBean[] prototype)
+        public ExprNodeAdapterMultiStream(
+            int filterSpecId, 
+            int filterSpecParamPathNum, 
+            ExprNode exprNode, 
+            ExprEvaluatorContext evaluatorContext, 
+            VariableService variableService, 
+            EventBean[] prototype,
+            IThreadLocalManager threadLocalManager)
             : base(filterSpecId, filterSpecParamPathNum, exprNode, evaluatorContext, variableService)
          {
             _prototypeArray = prototype;
-            _arrayPerThread = ThreadLocalManager.Create(
+            _arrayPerThread = threadLocalManager.Create(
                 () =>
                 {
                     var eventsPerStream = new EventBean[_prototypeArray.Length];

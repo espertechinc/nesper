@@ -106,8 +106,5 @@ namespace com.espertech.esper.filter
                 returnValue.Value = null;
             }
         }
-
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

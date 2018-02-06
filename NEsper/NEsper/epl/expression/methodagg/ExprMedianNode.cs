@@ -31,17 +31,14 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             _hasFilter = PositionalParams.Length > 1;
             var childType = base.ValidateNumericChildAllowFilter(_hasFilter);
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeMedian(validationContext.StatementExtensionSvcContext, this, childType);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "median"; }
-        }
+        public override string AggregationFunctionName => "median";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
@@ -53,9 +50,8 @@ namespace com.espertech.esper.epl.expression.methodagg
             return true;
         }
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

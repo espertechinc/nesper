@@ -44,7 +44,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public String P33 { get; set; }
 
-        public static Object[] MakeS3(String propOne, String[] propTwo)
+        public static object[] MakeS3(String propOne, String[] propTwo)
         {
             idCounter++;
 

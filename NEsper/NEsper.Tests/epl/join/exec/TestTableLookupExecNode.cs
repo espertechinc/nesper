@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.join.exec
         {
             var eventTypeIndex = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             var factory = new PropertyIndexedEventTableFactory(0, eventTypeIndex, new String[] {"TheString"}, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null, null)[0];
     
             var eventTypeKeyGen = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
     
@@ -42,7 +42,7 @@ namespace com.espertech.esper.epl.join.exec
         public void TestFlow()
         {
             var indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
-            _index.Add(indexEvents);
+            _index.Add(indexEvents, null);
     
             var lookupEvents = SupportEventBeanFactory.MakeMarketDataEvents(new String[] {"a2", "a3"});
     

@@ -9,7 +9,7 @@
 
 using System;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
     public class MarketDataEvent
     {

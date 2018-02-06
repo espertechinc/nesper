@@ -12,7 +12,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
-namespace com.espertech.esper.support
+namespace NEsper.Examples.Support
 {
 	/// <summary>
 	/// Utility methods for monitoring a EPRuntime instance.
@@ -20,8 +20,10 @@ namespace com.espertech.esper.support
 
 	public class EPRuntimeUtil
 	{
+	    private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 	    public static bool AwaitCompletion(
-		EPRuntime epRuntime,
+		    EPRuntime epRuntime,
 	        int numEventsExpected,
 	        int numSecAwait,
 	        int numSecThreadSleep,
@@ -104,7 +106,5 @@ namespace com.espertech.esper.support
 	
 	        return true;
 	    }
-	    
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 	}
 }

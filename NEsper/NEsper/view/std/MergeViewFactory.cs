@@ -51,7 +51,7 @@ namespace com.espertech.esper.view.std
                     continue;
                 }
                 var candidateGroupByView = (GroupByViewFactoryMarker)parentView;
-                if (ExprNodeUtility.DeepEquals(candidateGroupByView.CriteriaExpressions, unvalidated))
+                if (ExprNodeUtility.DeepEquals(candidateGroupByView.CriteriaExpressions, unvalidated, false))
                 {
                     groupByViewFactory = candidateGroupByView;
                 }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.view.std
                         parentContainsMergeKeys = false;
                     }
                 }
-                catch (PropertyAccessException ex)
+                catch (PropertyAccessException)
                 {
                     // expected
                     parentContainsMergeKeys = false;
@@ -135,7 +135,7 @@ namespace com.espertech.esper.view.std
             }
 
             var myView = (MergeView)view;
-            if (!ExprNodeUtility.DeepEquals(myView.GroupFieldNames, _criteriaExpressions))
+            if (!ExprNodeUtility.DeepEquals(myView.GroupFieldNames, _criteriaExpressions, false))
             {
                 return false;
             }

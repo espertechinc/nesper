@@ -117,7 +117,10 @@ namespace com.espertech.esper.epl.datetime.interval
                     }
                     else
                     {
-                        throw new ExprValidationException("For date-time method '" + methodNameUse + "' the first parameter expression returns '" + _evaluatorTimestamp.ReturnType.FullName + "', however requires a DateTime or Long-type return value or event (with timestamp)");
+                        throw new ExprValidationException(
+                            "For date-time method '" + methodNameUse +
+                            "' the first parameter expression returns '" + _evaluatorTimestamp.ReturnType.GetCleanName() + 
+                            "', however requires a DateTime or Long-type return value or event (with timestamp)");
                     }
                 }
             }
@@ -174,7 +177,7 @@ namespace com.espertech.esper.epl.datetime.interval
         /// <param name="currentParameters">The current parameters.</param>
         /// <param name="inputDesc">The input desc.</param>
         /// <returns></returns>
-        public ExprDotNodeFilterAnalyzerDTIntervalDesc GetFilterDesc(
+        public FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
             EventType[] typesPerStream,
             DatetimeMethodEnum currentMethod,
             IList<ExprNode> currentParameters,
@@ -216,7 +219,7 @@ namespace com.espertech.esper.epl.datetime.interval
                 return null;
             }
 
-            return new ExprDotNodeFilterAnalyzerDTIntervalDesc(currentMethod, typesPerStream,
+            return new FilterExprAnalyzerDTIntervalAffector(currentMethod, typesPerStream,
                     targetStreamNum, targetPropertyStart, targetPropertyEnd,
                     _parameterStreamNum, _parameterPropertyStart, _parameterPropertyEnd);
         }

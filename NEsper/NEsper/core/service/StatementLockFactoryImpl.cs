@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client.annotation;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.annotation;
 
@@ -19,29 +21,32 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public class StatementLockFactoryImpl : StatementLockFactory
     {
+        private readonly IReaderWriterLockManager _lockManager;
         private readonly bool _fairlocks;
         private readonly bool _disableLocking;
     
-        public StatementLockFactoryImpl(bool fairlocks, bool disableLocking)
+        public StatementLockFactoryImpl(IReaderWriterLockManager lockManager, bool fairlocks, bool disableLocking)
         {
+            _lockManager = lockManager;
             _fairlocks = fairlocks;
             _disableLocking = disableLocking;
         }
-    
-        public IReaderWriterLock GetStatementLock(String statementName, Attribute[] annotations, bool stateless)
+
+        public IReaderWriterLock GetStatementLock(
+            String statementName,
+            Attribute[] annotations,
+            bool stateless)
         {
             bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLockAttribute)) != null;
-            if (_disableLocking || foundNoLock || stateless)
-            {
-                return ReaderWriterLockManager.VoidLock();
+            if (_disableLocking || foundNoLock || stateless) {
+                return _lockManager.CreateLock(timeout => new VoidReaderWriterLock());
             }
 
-            if (_fairlocks)
-            {
-                return ReaderWriterLockManager.FairLock();
+            if (_fairlocks) {
+                return _lockManager.CreateLock(timeout => new FairReaderWriterLock(timeout));
             }
 
-            return ReaderWriterLockManager.CreateDefaultLock();
+            return _lockManager.CreateDefaultLock();
         }
     }
 }

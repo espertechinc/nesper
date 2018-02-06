@@ -8,16 +8,22 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.epl.table.mgmt
 {
     public class TableExprEvaluatorContext
     {
-        private readonly IThreadLocal<IDictionary<ILockable, IDisposable>> _threadLocal = ThreadLocalManager.Create<IDictionary<ILockable, IDisposable>>(
-            () => new Dictionary<ILockable, IDisposable>());
+        private readonly IThreadLocal<IDictionary<ILockable, IDisposable>> _threadLocal;
+
+        public TableExprEvaluatorContext(IThreadLocalManager threadLocalManager)
+        {
+            _threadLocal = threadLocalManager.Create<IDictionary<ILockable, IDisposable>>(
+                () => new Dictionary<ILockable, IDisposable>());
+        }
 
         /// <summary>
         /// Adds the acquired lock.  If the lock does not already belong to the context, then it will be locked and

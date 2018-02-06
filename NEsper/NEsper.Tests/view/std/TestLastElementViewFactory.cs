@@ -7,9 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -21,10 +22,12 @@ namespace com.espertech.esper.view.std
     public class TestLastElementViewFactory 
     {
         private LastElementViewFactory _factory;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _factory = new LastElementViewFactory();
         }
     
@@ -38,7 +41,7 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
             Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
             Assert.IsTrue(_factory.CanReuse(new LastElementView(null), agentInstanceContext));
         }
@@ -48,10 +51,10 @@ namespace com.espertech.esper.view.std
             try
             {
                 LastElementViewFactory factory = new LastElementViewFactory();
-                factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(new Object[] {param}));
+                factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(new Object[] {param}));
                 Assert.Fail();
             }
-            catch (ViewParameterException ex)
+            catch (ViewParameterException)
             {
                 // expected
             }
@@ -60,8 +63,8 @@ namespace com.espertech.esper.view.std
         private void TryParameter(Object[] param)
         {
             LastElementViewFactory factory = new LastElementViewFactory();
-            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(param));
-            Assert.IsTrue(factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()) is LastElementView);
+            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(param));
+            Assert.IsTrue(factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container)) is LastElementView);
         }
     }
 }

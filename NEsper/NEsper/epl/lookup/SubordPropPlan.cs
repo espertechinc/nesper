@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.join.plan;
 
 namespace com.espertech.esper.epl.lookup
 {
@@ -21,18 +22,21 @@ namespace com.espertech.esper.epl.lookup
             RangeProps = new LinkedHashMap<String, SubordPropRangeKey>();
             InKeywordSingleIndex = null;
             InKeywordMultiIndex = null;
+            CustomIndexOps = null;
         }
 
         public SubordPropPlan(
             IDictionary<String, SubordPropHashKey> hashProps,
             IDictionary<String, SubordPropRangeKey> rangeProps,
             SubordPropInKeywordSingleIndex inKeywordSingleIndex,
-            SubordPropInKeywordMultiIndex inKeywordMultiIndex)
+            SubordPropInKeywordMultiIndex inKeywordMultiIndex,
+            IDictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation> customIndexOps)
         {
             HashProps = hashProps;
             RangeProps = rangeProps;
             InKeywordSingleIndex = inKeywordSingleIndex;
             InKeywordMultiIndex = inKeywordMultiIndex;
+            CustomIndexOps = customIndexOps;
         }
 
         public IDictionary<string, SubordPropRangeKey> RangeProps { get; private set; }
@@ -42,5 +46,7 @@ namespace com.espertech.esper.epl.lookup
         public SubordPropInKeywordSingleIndex InKeywordSingleIndex { get; private set; }
 
         public SubordPropInKeywordMultiIndex InKeywordMultiIndex { get; private set; }
+
+        public IDictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation> CustomIndexOps { get; private set; }
     }
 }

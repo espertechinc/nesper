@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.client;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
@@ -42,10 +41,7 @@ namespace com.espertech.esper.events.property
             _key = key;
         }
 
-        public override bool IsDynamic
-        {
-            get { return true; }
-        }
+        public override bool IsDynamic => true;
 
         public override string[] ToPropertyArray()
         {
@@ -55,7 +51,7 @@ namespace com.espertech.esper.events.property
             };
         }
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             return new DynamicMappedPropertyGetter(PropertyNameAtomic, _key, eventAdapterService);
         }
@@ -95,7 +91,7 @@ namespace com.espertech.esper.events.property
             writer.Write('?');
         }
 
-        public override EventPropertyGetter GetGetterDOM(
+        public override EventPropertyGetterSPI GetGetterDOM(
             SchemaElementComplex complexProperty,
             EventAdapterService eventAdapterService,
             BaseXMLEventType eventType,
@@ -111,7 +107,7 @@ namespace com.espertech.esper.events.property
             return null; // always returns Node
         }
 
-        public override EventPropertyGetter GetGetterDOM()
+        public override EventPropertyGetterSPI GetGetterDOM()
         {
             return new DOMMapGetter(PropertyNameAtomic, _key, null);
         }
@@ -131,9 +127,6 @@ namespace com.espertech.esper.events.property
             return null;
         }
 
-        public string Key
-        {
-            get { return _key; }
-        }
+        public string Key => _key;
     }
 } // end of namespace

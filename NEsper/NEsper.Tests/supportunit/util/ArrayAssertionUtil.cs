@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.events;
 
 using NUnit.Framework;
@@ -340,7 +341,7 @@ namespace com.espertech.esper.supportunit.util
 
         public static void AssertProps(Object pono, String[] propertyNames, params Object[] propertiesThisRow)
         {
-            EventBean ponoEvent = SupportEventAdapterService.Service.AdapterForObject(pono);
+            EventBean ponoEvent = SupportContainer.Instance.Resolve<EventAdapterService>().AdapterForObject(pono);
             AssertProps(ponoEvent, propertyNames, propertiesThisRow);
         }
 

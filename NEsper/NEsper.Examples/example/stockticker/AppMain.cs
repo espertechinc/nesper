@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
+using com.espertech.esper.compat.logger;
 
 namespace NEsper.Examples.StockTicker
 {
@@ -14,7 +14,8 @@ namespace NEsper.Examples.StockTicker
     {
         public static void Main()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
             new StockTickerMain("StockTicker", false).Run();
 

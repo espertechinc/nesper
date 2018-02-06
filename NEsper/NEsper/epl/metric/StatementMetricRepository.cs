@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.metric;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.metric
@@ -23,39 +25,42 @@ namespace com.espertech.esper.epl.metric
     public class StatementMetricRepository
     {
         private readonly StatementMetricArray[] _groupMetrics;
-        private readonly MetricsReportingConfig _specification;
-        private readonly IDictionary<String, int?> _statementGroups;
+        private readonly ConfigurationMetricsReporting _specification;
+        private readonly IDictionary<String, int> _statementGroups;
 
         /// <summary>Ctor. </summary>
         /// <param name="engineURI">engine URI</param>
         /// <param name="specification">specifies statement groups</param>
-        public StatementMetricRepository(String engineURI,
-                                         MetricsReportingConfig specification)
+        public StatementMetricRepository(
+            String engineURI, 
+            ConfigurationMetricsReporting specification,
+            IReaderWriterLockManager rwLockManager)
         {
             _specification = specification;
             int numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
             _groupMetrics = new StatementMetricArray[numGroups];
 
             // default group
-            _groupMetrics[0] = new StatementMetricArray(engineURI, "group-default", 100, false);
+            _groupMetrics[0] = new StatementMetricArray(engineURI, "group-default", 100, false, rwLockManager);
 
             // initialize all other groups
             int countGroups = 1;
             foreach (var entry in specification.StatementGroups)
             {
-                MetricsReportingConfig.StmtGroupMetrics config = entry.Value;
+                ConfigurationMetricsReporting.StmtGroupMetrics config = entry.Value;
 
                 int initialNumStmts = config.NumStatements;
                 if (initialNumStmts < 10)
                 {
                     initialNumStmts = 10;
                 }
-                _groupMetrics[countGroups] = new StatementMetricArray(engineURI, "group-" + countGroups, initialNumStmts,
-                                                                      config.IsReportInactive);
+
+                _groupMetrics[countGroups] = new StatementMetricArray(
+                    engineURI, "group-" + countGroups, initialNumStmts, config.IsReportInactive, rwLockManager);
                 countGroups++;
             }
 
-            _statementGroups = new Dictionary<String, int?>();
+            _statementGroups = new Dictionary<String, int>();
         }
 
         /// <summary>Add a statement, inspecting the statement name and adding it to a statement group or the default group, if none. </summary>
@@ -96,10 +101,9 @@ namespace com.espertech.esper.epl.metric
         /// <param name="stmtName">to remove</param>
         public void RemoveStatement(String stmtName)
         {
-            int? group = _statementGroups.Delete(stmtName);
-            if (group != null)
-            {
-                _groupMetrics[group.Value].RemoveStatement(stmtName);
+            if (_statementGroups.TryGetValue(stmtName, out var group)) {
+                _statementGroups.Remove(stmtName);
+                _groupMetrics[group].RemoveStatement(stmtName);
             }
         }
 

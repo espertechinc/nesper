@@ -53,7 +53,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public String P53 { get; private set; }
 
-        public static Object[] MakeS5(String propOne, String[] propTwo)
+        public static object[] MakeS5(String propOne, String[] propTwo)
         {
             idCounter++;
 

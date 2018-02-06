@@ -32,7 +32,7 @@ namespace com.espertech.esper.supportunit.epl
 
         public Type ResultType
         {
-            get { return typeof (int); }
+            get { return typeof(int); }
         }
 
         public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize) {

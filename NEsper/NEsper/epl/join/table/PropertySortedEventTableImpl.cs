@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.exec.@base;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.filter;
@@ -69,7 +70,7 @@ namespace com.espertech.esper.epl.join.table
             {
                 submap = _propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 if (allowRangeReversal)
                 {
@@ -96,7 +97,7 @@ namespace com.espertech.esper.epl.join.table
             {
                 submap = _propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 if (allowRangeReversal)
                 {
@@ -231,7 +232,7 @@ namespace com.espertech.esper.epl.join.table
             get { return _propertyIndex; }
         }
 
-        public override void Add(EventBean theEvent)
+        public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetIndexedValue(theEvent);
 
@@ -243,22 +244,13 @@ namespace com.espertech.esper.epl.join.table
                 return;
             }
 
-#if true
             var events = _propertyIndex.TryInsert(
                 key, () => new LinkedHashSet<EventBean>());
-#else
-	        var events = _propertyIndex.Get(key);
-	        if (events == null)
-	        {
-	            events = new LinkedHashSet<EventBean>();
-	            _propertyIndex.Put(key, events);
-	        }
-#endif
 
             events.Add(theEvent);
         }
 
-        public override void Remove(EventBean theEvent)
+        public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetIndexedValue(theEvent);
 

@@ -44,5 +44,13 @@ namespace com.espertech.esper.compat.collections
         /// <param name="item">The item.</param>
         /// <returns></returns>
         bool Pop(int maxTimeoutInMillis, out T item);
+
+        /// <summary>
+        /// Determines whether this instance is empty.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </returns>
+        bool IsEmpty();
     }
 }

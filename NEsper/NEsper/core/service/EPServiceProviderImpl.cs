@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -15,6 +16,7 @@ using System.Threading;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
@@ -69,6 +71,7 @@ namespace com.espertech.esper.core.service
         public event EventHandler<StatementStateEventArgs> StatementStateChange;
 
         private volatile EPServiceEngine _engine;
+        private readonly IContainer _container;
         private ConfigurationInformation _configSnapshot;
         private readonly string _engineURI;
         private readonly IDictionary<string, EPServiceProviderSPI> _runtimes;
@@ -76,11 +79,18 @@ namespace com.espertech.esper.core.service
         /// <summary>
         /// Constructor - initializes services.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="configuration">is the engine configuration</param>
         /// <param name="engineURI">is the engine URI or "default" (or null which it assumes as "default") if this is the default provider</param>
         /// <param name="runtimes">map of URI and runtime</param>
+        /// <exception cref="System.ArgumentNullException">
+        /// configuration - Unexpected null value received for configuration
+        /// or
+        /// engineURI - Engine URI should not be null at this stage
+        /// </exception>
         /// <exception cref="ConfigurationException">is thrown to indicate a configuraton error</exception>
         public EPServiceProviderImpl(
+            IContainer container,
             Configuration configuration,
             string engineURI,
             IDictionary<string, EPServiceProviderSPI> runtimes)
@@ -90,6 +100,7 @@ namespace com.espertech.esper.core.service
                 throw new ArgumentNullException(nameof(configuration), "Unexpected null value received for configuration");
             }
 
+            _container = container;
             _runtimes = runtimes;
             _engineURI = engineURI ?? throw new ArgumentNullException(nameof(engineURI), "Engine URI should not be null at this stage");
             VerifyConfiguration(configuration);
@@ -174,6 +185,18 @@ namespace com.espertech.esper.core.service
         public string URI
         {
             get { return _engineURI; }
+        }
+
+        public IContainer Container
+        {
+            get
+            {
+                if (_engine == null)
+                {
+                    throw new EPServiceDestroyedException(_engineURI);
+                }
+                return _engine.Container;
+            }
         }
 
         public EPRuntime EPRuntime
@@ -602,7 +625,7 @@ namespace com.espertech.esper.core.service
                 Object obj;
                 try
                 {
-                    obj = Activator.CreateInstance(clazz);
+                    obj = _engine.Container.CreateInstance<object>(clazz);
                 }
                 catch (TypeLoadException)
                 {
@@ -626,7 +649,8 @@ namespace com.espertech.esper.core.service
                 epServicesContextFactory = (EPServicesContextFactory) obj;
             }
 
-            var services = epServicesContextFactory.CreateServicesContext(this, _configSnapshot);
+            var services = epServicesContextFactory.CreateServicesContext(
+                _container, this, _configSnapshot);
 
             // New runtime
             EPRuntimeSPI runtimeSPI;
@@ -706,15 +730,24 @@ namespace com.espertech.esper.core.service
 
             // New admin
             var configOps = new ConfigurationOperationsImpl(
-                services.EventAdapterService, services.EventTypeIdGenerator, services.EngineImportService,
-                services.VariableService, services.EngineSettingsService, services.ValueAddEventService,
-                services.MetricsReportingService, services.StatementEventTypeRefService,
-                services.StatementVariableRefService, services.PlugInViews, services.FilterService,
-                services.PatternSubexpressionPoolSvc, services.MatchRecognizeStatePoolEngineSvc, services.TableService,
+                services.EventAdapterService, 
+                services.EventTypeIdGenerator, 
+                services.EngineImportService,
+                services.VariableService, 
+                services.EngineSettingsService, 
+                services.ValueAddEventService,
+                services.MetricsReportingService, 
+                services.StatementEventTypeRefService,
+                services.StatementVariableRefService, 
+                services.PlugInViews, 
+                services.FilterService,
+                services.PatternSubexpressionPoolSvc, 
+                services.MatchRecognizeStatePoolEngineSvc,
+                services.TableService,
+                services.ResourceManager, 
                 _configSnapshot.TransientConfiguration);
-            var defaultStreamSelector =
-                SelectClauseStreamSelectorEnumExtensions.MapFromSODA(
-                    _configSnapshot.EngineDefaults.StreamSelection.DefaultStreamSelector);
+            var defaultStreamSelector = SelectClauseStreamSelectorEnumExtensions.MapFromSODA(
+                _configSnapshot.EngineDefaults.StreamSelection.DefaultStreamSelector);
             EPAdministratorSPI adminSPI;
             var adminClassName = _configSnapshot.EngineDefaults.AlternativeContext.Admin;
             var adminContext = new EPAdministratorContext(runtimeSPI, services, configOps, defaultStreamSelector);
@@ -777,7 +810,7 @@ namespace com.espertech.esper.core.service
             Thread.Sleep(100);
 
             // Save engine instance
-            _engine = new EPServiceEngine(services, runtimeSPI, adminSPI);
+            _engine = new EPServiceEngine(_container, services, runtimeSPI, adminSPI);
 
             // Load and initialize adapter loader classes
             LoadAdapters(services);
@@ -909,7 +942,7 @@ namespace com.espertech.esper.core.service
                 Object pluginLoaderObj;
                 try
                 {
-                    pluginLoaderObj = Activator.CreateInstance(pluginLoaderClass);
+                    pluginLoaderObj = _engine.Container.CreateInstance<object>(pluginLoaderClass);
                 }
                 catch (TypeLoadException)
                 {
@@ -970,12 +1003,13 @@ namespace com.espertech.esper.core.service
                 IDictionary<string, ConfigurationEventTypeAvro> avroSchemas = null;
                 if (!configuration.EventTypesAvro.IsEmpty())
                 {
-                    avroSchemas = new Dictionary<string, ConfigurationEventTypeAvro>(configuration.EventTypesAvro);
+                    avroSchemas = new LinkedHashMap<string, ConfigurationEventTypeAvro>(configuration.EventTypesAvro);
                     configuration.EventTypesAvro.Clear();
                 }
 
-                var copy = (Configuration) SerializableObjectCopier.Copy(configuration);
+                var copy = (Configuration) SerializableObjectCopier.Copy(_container, configuration);
                 copy.TransientConfiguration = configuration.TransientConfiguration;
+                copy.Container = _container; // transition to this container??
 
                 // Restore variable with initial values
                 if (variableInitialValues != null && !variableInitialValues.IsEmpty())
@@ -1102,12 +1136,19 @@ namespace com.espertech.esper.core.service
 
         private class EPServiceEngine
         {
-            public EPServiceEngine(EPServicesContext services, EPRuntimeSPI runtimeSPI, EPAdministratorSPI admin)
+            public EPServiceEngine(
+                IContainer container,
+                EPServicesContext services, 
+                EPRuntimeSPI runtimeSPI, 
+                EPAdministratorSPI admin)
             {
+                Container = container;
                 Services = services;
                 Runtime = runtimeSPI;
                 Admin = admin;
             }
+
+            public IContainer Container { get; private set; }
 
             public EPServicesContext Services { get; private set; }
 

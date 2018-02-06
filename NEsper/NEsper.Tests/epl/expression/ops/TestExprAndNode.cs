@@ -9,23 +9,27 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprAndNode 
     {
         private ExprAndNode _andNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _andNode = new ExprAndNodeImpl();
         }
     
@@ -41,16 +45,16 @@ namespace com.espertech.esper.epl.expression
             // test success
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
-            _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // test failure, type mismatch
             _andNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {
-                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -60,10 +64,10 @@ namespace com.espertech.esper.epl.expression
             _andNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             try
             {
-                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -96,8 +100,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_andNode.EqualsNode(new ExprAndNodeImpl()));
-            Assert.IsFalse(_andNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_andNode.EqualsNode(new ExprAndNodeImpl(), false));
+            Assert.IsFalse(_andNode.EqualsNode(new ExprOrNode(), false));
         }
     }
 }

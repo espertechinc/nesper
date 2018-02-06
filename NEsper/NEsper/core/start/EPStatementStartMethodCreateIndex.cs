@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
@@ -41,21 +43,26 @@ namespace com.espertech.esper.core.start
 	        var infraContextName = namedWindowProcessor != null ? namedWindowProcessor.ContextName : tableMetadata.ContextName;
 	        EPLValidationUtil.ValidateContextName(namedWindowProcessor == null, spec.WindowName, infraContextName, _statementSpec.OptionalContextName, true);
 
-	        // validate index
-	        var validated = EventTableIndexUtil.ValidateCompileExplicitIndex(spec.IsUnique, spec.Columns, indexedEventType);
-	        var imk = new IndexMultiKey(spec.IsUnique, validated.HashProps, validated.BtreeProps);
+            // validate index
+            var explicitIndexDesc = EventTableIndexUtil.ValidateCompileExplicitIndex(spec.IndexName, spec.IsUnique, spec.Columns, indexedEventType, statementContext);
+            var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null ? null : explicitIndexDesc.AdvancedIndexProvisionDesc.IndexDesc;
+            var imk = new IndexMultiKey(spec.IsUnique, explicitIndexDesc.HashPropsAsList, explicitIndexDesc.BtreePropsAsList, advancedIndexDesc);
 
-	        // for tables we add the index to metadata
-	        if (tableMetadata != null) {
-	            services.TableService.ValidateAddIndex(statementContext.StatementName, tableMetadata, spec.IndexName, imk);
+            // for tables we add the index to metadata
+            if (tableMetadata != null) {
+                services.TableService.ValidateAddIndex(statementContext.StatementName, tableMetadata, spec.IndexName, explicitIndexDesc, imk);
 	        }
 	        else {
-	            namedWindowProcessor.ValidateAddIndex(statementContext.StatementName, spec.IndexName, imk);
-	        }
+                namedWindowProcessor.ValidateAddIndex(statementContext.StatementName, spec.IndexName, explicitIndexDesc, imk);
+            }
 
-	        // allocate context factory
-	        Viewable viewable = new ViewableDefaultImpl(indexedEventType);
-	        var contextFactory = new StatementAgentInstanceFactoryCreateIndex(services, spec, viewable, namedWindowProcessor, tableMetadata == null ? null : tableMetadata.TableName, _statementSpec.OptionalContextName);
+            // allocate context factory
+            Viewable viewable = new ViewableDefaultImpl(indexedEventType);
+	        var contextFactory = new StatementAgentInstanceFactoryCreateIndex(
+	            services, spec, viewable, namedWindowProcessor, 
+	            tableMetadata?.TableName,
+	            _statementSpec.OptionalContextName,
+	            explicitIndexDesc);
 	        statementContext.StatementAgentInstanceFactory = contextFactory;
 
 	        // provide destroy method which de-registers interest in this index
@@ -89,8 +96,14 @@ namespace com.espertech.esper.core.start
 	                if (ex.InnerException is ExprValidationException) {
 	                    throw (ExprValidationException) ex.InnerException;
 	                }
+                    destroyMethod.Destroy();
 	                throw;
 	            }
+                catch (Exception)
+                {
+                    destroyMethod.Destroy();
+                    throw;
+                }
 	            var stopCallback = services.EpStatementFactory.MakeStopMethod(result);
 	            stopMethod = new ProxyEPStatementStopMethod(stopCallback.Stop);
 

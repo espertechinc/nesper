@@ -22,8 +22,8 @@ namespace com.espertech.esper.epl.variable
             return string.Format(
                 "Variable '{0}' of declared type {1} cannot be assigned a value of type {2}",
                 variableName,
-                TypeHelper.GetTypeNameFullyQualPretty(variableType),
-                TypeHelper.GetTypeNameFullyQualPretty(initValueClass));
+                variableType.GetCleanName(),
+                initValueClass.GetCleanName());
         }
 
         public static string CheckVariableContextName(

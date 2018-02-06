@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client.annotation;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.supportregression.bean
@@ -102,7 +102,7 @@ namespace com.espertech.esper.supportregression.bean
             }
         }
 
-        public static Object[] GetArrayCoerced(string expectedTime, params string[] desc)
+        public static object[] GetArrayCoerced(string expectedTime, params string[] desc)
         {
             var result = new Object[desc.Length];
             var msec = DateTimeParser.ParseDefaultMSec(expectedTime);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.supportregression.bean
             return result;
         }
 
-        public static Object[] GetArrayCoerced(string[] expectedTimes, string desc)
+        public static object[] GetArrayCoerced(string[] expectedTimes, string desc)
         {
             var result = new Object[expectedTimes.Length];
             for (int i = 0; i < expectedTimes.Length; i++)

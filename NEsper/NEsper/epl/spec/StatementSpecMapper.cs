@@ -15,6 +15,8 @@ using com.espertech.esper.client.soda;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -97,6 +99,7 @@ namespace com.espertech.esper.epl.spec
         }
 
         public static StatementSpecRaw Map(
+            IContainer container,
             EPStatementObjectModel sodaStatement,
             EngineImportService engineImportService,
             VariableService variableService,
@@ -116,8 +119,18 @@ namespace com.espertech.esper.epl.spec
             }
 
             var mapContext = new StatementSpecMapContext(
-                engineImportService, variableService, configuration, schedulingService, engineURI, patternNodeFactory,
-                namedWindowMgmtService, contextManagementService, exprDeclaredService, contextDescriptor, tableService);
+                container,
+                engineImportService,
+                variableService,
+                configuration,
+                schedulingService,
+                engineURI,
+                patternNodeFactory,
+                namedWindowMgmtService,
+                contextManagementService,
+                exprDeclaredService,
+                contextDescriptor,
+                tableService);
 
             var raw = Map(sodaStatement, mapContext);
             if (mapContext.HasVariables)
@@ -129,7 +142,9 @@ namespace com.espertech.esper.epl.spec
             return raw;
         }
 
-        private static StatementSpecRaw Map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
+        private static StatementSpecRaw Map(
+            EPStatementObjectModel sodaStatement, 
+            StatementSpecMapContext mapContext)
         {
             var raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
 
@@ -206,10 +221,10 @@ namespace com.espertech.esper.epl.spec
             else if (fireAndForgetClause is FireAndForgetUpdate)
             {
                 var upd = (FireAndForgetUpdate) fireAndForgetClause;
-                var assignments =
-                    upd.Assignments.Select(pair => MapExpressionDeep(pair.Value, mapContext))
-                        .Select(expr => new OnTriggerSetAssignment(expr))
-                        .ToList();
+                var assignments = upd.Assignments
+                    .Select(pair => MapExpressionDeep(pair.Value, mapContext))
+                    .Select(expr => new OnTriggerSetAssignment(expr))
+                    .ToList();
                 var updspec = new FireAndForgetSpecUpdate(assignments);
                 raw.FireAndForgetSpec = updspec;
             }
@@ -684,11 +699,21 @@ namespace com.espertech.esper.epl.spec
             {
                 return;
             }
+
             var cols = createIndexDesc.Columns
-                .Select(item => new CreateIndexColumn(item.Name, item.Type.Xlate<CreateIndexColumnType>()))
+                .Select(item => UnmapCreateIndexColumn(item, unmapContext))
                 .ToList();
             model.CreateIndex = new CreateIndexClause(
                 createIndexDesc.IndexName, createIndexDesc.WindowName, cols, createIndexDesc.IsUnique);
+        }
+
+        private static CreateIndexColumn UnmapCreateIndexColumn(
+            CreateIndexItem item, 
+            StatementSpecUnMapContext unmapContext)
+        {
+            var columns = UnmapExpressionDeep(item.Expressions, unmapContext);
+            var parameters = UnmapExpressionDeep(item.Parameters, unmapContext);
+            return new CreateIndexColumn(columns, item.IndexType, parameters);
         }
 
         private static void UnmapCreateVariable(
@@ -1043,7 +1068,7 @@ namespace com.espertech.esper.epl.spec
             }
             foreach (var element in orderByClause.OrderByExpressions)
             {
-                ExprNode orderExpr = MapExpressionDeep(element.Expression, mapContext);
+                var orderExpr = MapExpressionDeep(element.Expression, mapContext);
                 var item = new OrderByItem(orderExpr, element.IsDescending);
                 raw.OrderByList.Add(item);
             }
@@ -1104,7 +1129,8 @@ namespace com.espertech.esper.epl.spec
             IList<OnTriggerSetAssignment> assignments = null;
             if (outputLimitClause.WhenExpression != null)
             {
-                whenExpression = MapExpressionDeep(outputLimitClause.WhenExpression, mapContext);
+                whenExpression = MapExpressionDeep(
+                    outputLimitClause.WhenExpression, mapContext);
 
                 assignments = outputLimitClause.ThenAssignments
                     .Select(pair => MapExpressionDeep(pair.Value, mapContext))
@@ -1121,20 +1147,23 @@ namespace com.espertech.esper.epl.spec
             ExprTimePeriod timePeriod = null;
             if (outputLimitClause.TimePeriodExpression != null)
             {
-                timePeriod = (ExprTimePeriod) MapExpressionDeep(outputLimitClause.TimePeriodExpression, mapContext);
+                timePeriod = (ExprTimePeriod) MapExpressionDeep(
+                    outputLimitClause.TimePeriodExpression, mapContext);
             }
 
             ExprTimePeriod afterTimePeriod = null;
             if (outputLimitClause.AfterTimePeriodExpression != null)
             {
                 afterTimePeriod =
-                    (ExprTimePeriod) MapExpressionDeep(outputLimitClause.AfterTimePeriodExpression, mapContext);
+                    (ExprTimePeriod) MapExpressionDeep(
+                        outputLimitClause.AfterTimePeriodExpression, mapContext);
             }
 
             ExprNode andAfterTerminateAndExpr = null;
             if (outputLimitClause.AndAfterTerminateAndExpr != null)
             {
-                andAfterTerminateAndExpr = MapExpressionDeep(outputLimitClause.AndAfterTerminateAndExpr, mapContext);
+                andAfterTerminateAndExpr = MapExpressionDeep(
+                    outputLimitClause.AndAfterTerminateAndExpr, mapContext);
             }
 
             IList<OnTriggerSetAssignment> afterTerminateAssignments = null;
@@ -1143,7 +1172,8 @@ namespace com.espertech.esper.epl.spec
                 afterTerminateAssignments = new List<OnTriggerSetAssignment>();
                 foreach (Assignment pair in outputLimitClause.AndAfterTerminateThenAssignments)
                 {
-                    var expr = MapExpressionDeep(pair.Value, mapContext);
+                    var expr = MapExpressionDeep(
+                        pair.Value, mapContext);
                     afterTerminateAssignments.Add(new OnTriggerSetAssignment(expr));
                 }
             }
@@ -1155,7 +1185,8 @@ namespace com.espertech.esper.epl.spec
             raw.OutputLimitSpec = spec;
         }
 
-        private static void MapOnTrigger(OnClause onExpr, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+        private static void MapOnTrigger(
+            OnClause onExpr, StatementSpecRaw raw, StatementSpecMapContext mapContext)
         {
             if (onExpr == null)
             {
@@ -1179,20 +1210,20 @@ namespace com.espertech.esper.epl.spec
             {
                 var setClause = (OnSetClause) onExpr;
                 mapContext.HasVariables = true;
-                var assignments =
-                    setClause.Assignments.Select(pair => MapExpressionDeep(pair.Value, mapContext))
-                        .Select(expr => new OnTriggerSetAssignment(expr))
-                        .ToList();
+                var assignments = setClause.Assignments
+                    .Select(pair => MapExpressionDeep(pair.Value, mapContext))
+                    .Select(expr => new OnTriggerSetAssignment(expr))
+                    .ToList();
                 var desc = new OnTriggerSetDesc(assignments);
                 raw.OnTriggerDesc = desc;
             }
             else if (onExpr is OnUpdateClause)
             {
                 var updateClause = (OnUpdateClause) onExpr;
-                var assignments =
-                    updateClause.Assignments.Select(pair => MapExpressionDeep(pair.Value, mapContext))
-                        .Select(expr => new OnTriggerSetAssignment(expr))
-                        .ToList();
+                var assignments = updateClause.Assignments
+                    .Select(pair => MapExpressionDeep(pair.Value, mapContext))
+                    .Select(expr => new OnTriggerSetAssignment(expr))
+                    .ToList();
                 var desc = new OnTriggerWindowUpdateDesc(
                     updateClause.WindowName, updateClause.OptionalAsName, assignments);
                 raw.OnTriggerDesc = desc;
@@ -1339,8 +1370,8 @@ namespace com.espertech.esper.epl.spec
             spec.PartitionByExpressions = MapExpressionDeep(clause.PartitionExpressions, mapContext);
 
             var measures = clause.Measures
-                .Select(
-                    item => new MatchRecognizeMeasureItem(MapExpressionDeep(item.Expression, mapContext), item.AsName))
+                .Select(item => new MatchRecognizeMeasureItem(MapExpressionDeep(
+                    item.Expression, mapContext), item.AsName))
                 .ToList();
 
             spec.Measures = measures;
@@ -1348,19 +1379,21 @@ namespace com.espertech.esper.epl.spec
             spec.Skip = new MatchRecognizeSkip(clause.SkipClause.Xlate<MatchRecognizeSkipEnum>());
 
             var defines =
-                clause.Defines.Select(
-                    define =>
-                        new MatchRecognizeDefineItem(define.Name, MapExpressionDeep(define.Expression, mapContext)))
+                clause.Defines
+                    .Select(define => new MatchRecognizeDefineItem(define.Name, MapExpressionDeep(
+                        define.Expression, mapContext)))
                     .ToList();
             spec.Defines = defines;
 
             if (clause.IntervalClause != null)
             {
-                var timePeriod = (ExprTimePeriod) MapExpressionDeep(clause.IntervalClause.Expression, mapContext);
+                var timePeriod = (ExprTimePeriod) MapExpressionDeep(
+                    clause.IntervalClause.Expression, mapContext);
                 try
                 {
                     timePeriod.Validate(
                         new ExprValidationContext(
+                            mapContext.Container,
                             null, null, null, null, null, null, null, null, null, null, -1, null, null, null, false,
                             false, false, false, null, false));
                 }
@@ -1518,7 +1551,10 @@ namespace com.espertech.esper.epl.spec
         }
 
 
-        private static void MapWhere(Expression whereClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+        private static void MapWhere(
+            Expression whereClause, 
+            StatementSpecRaw raw, 
+            StatementSpecMapContext mapContext)
         {
             if (whereClause == null)
             {
@@ -1712,7 +1748,8 @@ namespace com.espertech.esper.epl.spec
                 return;
             }
 
-            var detail = MapCreateContextDetail(createContext.Descriptor, mapContext);
+            var detail = MapCreateContextDetail(
+                createContext.Descriptor, mapContext);
 
             var desc = new CreateContextDesc(createContext.ContextName, detail);
             raw.CreateContextDesc = desc;
@@ -1726,8 +1763,10 @@ namespace com.espertech.esper.epl.spec
             if (descriptor is ContextDescriptorInitiatedTerminated)
             {
                 var desc = (ContextDescriptorInitiatedTerminated) descriptor;
-                var start = MapCreateContextRangeCondition(desc.StartCondition, mapContext);
-                var end = MapCreateContextRangeCondition(desc.EndCondition, mapContext);
+                var start = MapCreateContextRangeCondition(
+                    desc.StartCondition, mapContext);
+                var end = MapCreateContextRangeCondition(
+                    desc.EndCondition, mapContext);
                 ExprNode[] distinctExpressions = null;
                 if (desc.OptionalDistinctExpressions != null && desc.OptionalDistinctExpressions.Count > 0)
                 {
@@ -1754,7 +1793,8 @@ namespace com.espertech.esper.epl.spec
                 var itemsdesc = new List<ContextDetailCategoryItem>();
                 foreach (var item in cat.Items)
                 {
-                    var expr = MapExpressionDeep(item.Expression, mapContext);
+                    var expr = MapExpressionDeep(
+                        item.Expression, mapContext);
                     itemsdesc.Add(new ContextDetailCategoryItem(expr, item.Label));
                 }
                 detail = new ContextDetailCategory(itemsdesc, rawSpec);
@@ -1778,8 +1818,8 @@ namespace com.espertech.esper.epl.spec
                 var itemsdesc = new List<CreateContextDesc>();
                 foreach (var item in nested.Contexts)
                 {
-                    itemsdesc.Add(
-                        new CreateContextDesc(item.ContextName, MapCreateContextDetail(item.Descriptor, mapContext)));
+                    itemsdesc.Add(new CreateContextDesc(item.ContextName, MapCreateContextDetail(
+                        item.Descriptor, mapContext)));
                 }
                 detail = new ContextDetailNested(itemsdesc);
             }
@@ -1865,11 +1905,20 @@ namespace com.espertech.esper.epl.spec
             }
 
             var cols = clause.Columns
-                .Select(col => new CreateIndexItem(col.ColumnName, col.IndexColumnType.Xlate<CreateIndexType>()))
+                .Select(col => MapCreateIndexCol(col, mapContext))
                 .ToList();
 
             var desc = new CreateIndexDesc(clause.IsUnique, clause.IndexName, clause.WindowName, cols);
             raw.CreateIndexDesc = desc;
+        }
+
+        private static CreateIndexItem MapCreateIndexCol(
+            CreateIndexColumn col, 
+            StatementSpecMapContext mapContext)
+        {
+            var columns = MapExpressionDeep(col.Columns, mapContext);
+            var parameters = MapExpressionDeep(col.Parameters, mapContext);
+            return new CreateIndexItem(columns, col.IndexType == null ? CreateIndexType.HASH.GetNameInvariant() : col.IndexType, parameters);
         }
 
         private static void MapUpdateClause(
@@ -2022,7 +2071,8 @@ namespace com.espertech.esper.epl.spec
             raw.CreateDataFlowDesc = desc;
         }
 
-        private static GraphOperatorSpec MapGraphOperator(DataFlowOperator op, StatementSpecMapContext mapContext)
+        private static GraphOperatorSpec MapGraphOperator(
+            DataFlowOperator op, StatementSpecMapContext mapContext)
         {
             var annotations = MapAnnotations(op.Annotations);
 
@@ -2049,7 +2099,8 @@ namespace com.espertech.esper.epl.spec
                 }
                 else if (value is Expression)
                 {
-                    value = MapExpressionDeep((Expression) value, mapContext);
+                    value = MapExpressionDeep(
+                        (Expression) value, mapContext);
                 }
                 else
                 {
@@ -2168,7 +2219,8 @@ namespace com.espertech.esper.epl.spec
             return result;
         }
 
-        private static SelectClauseSpecRaw MapSelectRaw(SelectClause selectClause, StatementSpecMapContext mapContext)
+        private static SelectClauseSpecRaw MapSelectRaw(
+            SelectClause selectClause, StatementSpecMapContext mapContext)
         {
             var spec = new SelectClauseSpecRaw();
             spec.AddAll(MapSelectClauseElements(selectClause.SelectList, mapContext));
@@ -2176,7 +2228,8 @@ namespace com.espertech.esper.epl.spec
             return spec;
         }
 
-        private static Expression UnmapExpressionDeep(ExprNode exprNode, StatementSpecUnMapContext unmapContext)
+        private static Expression UnmapExpressionDeep(
+            ExprNode exprNode, StatementSpecUnMapContext unmapContext)
         {
             if (exprNode == null)
             {
@@ -2217,7 +2270,9 @@ namespace com.espertech.esper.epl.spec
             return parent;
         }
 
-        private static ExprNode MapExpressionDeep(Expression expr, StatementSpecMapContext mapContext)
+        private static ExprNode MapExpressionDeep(
+            Expression expr, 
+            StatementSpecMapContext mapContext)
         {
             if (expr == null)
             {
@@ -2237,7 +2292,9 @@ namespace com.espertech.esper.epl.spec
             return parent;
         }
 
-        private static ExprNode MapExpressionFlat(Expression expr, StatementSpecMapContext mapContext)
+        private static ExprNode MapExpressionFlat(
+            Expression expr, 
+            StatementSpecMapContext mapContext)
         {
             if (expr == null)
             {
@@ -2555,7 +2612,7 @@ namespace com.espertech.esper.epl.spec
             else if (expr is InstanceOfExpression)
             {
                 var node = (InstanceOfExpression) expr;
-                return new ExprInstanceofNode(node.TypeNames);
+                return new ExprInstanceofNode(node.TypeNames, mapContext.LockManager);
             }
             else if (expr is TypeOfExpression)
             {
@@ -2587,9 +2644,17 @@ namespace com.espertech.esper.epl.spec
                 var tpe = (TimePeriodExpression) expr;
                 return new ExprTimePeriodImpl(
                     mapContext.Configuration.EngineDefaults.Expression.TimeZone,
-                    tpe.HasYears, tpe.HasMonths, tpe.HasWeeks, tpe.HasDays, tpe.HasHours, tpe.HasMinutes, tpe.HasSeconds,
-                    tpe.HasMilliseconds, tpe.HasMicroseconds,
-                    mapContext.EngineImportService.TimeAbacus);
+                    tpe.HasYears, 
+                    tpe.HasMonths,
+                    tpe.HasWeeks,
+                    tpe.HasDays,
+                    tpe.HasHours,
+                    tpe.HasMinutes,
+                    tpe.HasSeconds,
+                    tpe.HasMilliseconds,
+                    tpe.HasMicroseconds,
+                    mapContext.EngineImportService.TimeAbacus,
+                    mapContext.LockManager);
             }
             else if (expr is NewOperatorExpression)
             {
@@ -2748,8 +2813,10 @@ namespace com.espertech.esper.epl.spec
                 {
                     var name = chain[0].Name;
                     var declared = ExprDeclaredHelper.GetExistsDeclaredExpr(
-                        name, chain[0].Parameters, mapContext.ExpressionDeclarations.Values,
-                        mapContext.ExprDeclaredService, mapContext.ContextDescriptor);
+                        mapContext.Container, name, chain[0].Parameters, 
+                        mapContext.ExpressionDeclarations.Values,
+                        mapContext.ExprDeclaredService, 
+                        mapContext.ContextDescriptor);
                     if (declared != null)
                     {
                         return declared;
@@ -4182,10 +4249,19 @@ namespace com.espertech.esper.epl.spec
                     }
                     var toCompile = "select * from System.Object where " + expression;
                     var rawSqlExpr = EPAdministratorHelper.CompileEPL(
-                        toCompile, expression, false, null, SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
-                        mapContext.EngineImportService, mapContext.VariableService, mapContext.SchedulingService,
-                        mapContext.EngineURI, mapContext.Configuration, mapContext.PatternNodeFactory,
-                        mapContext.ContextManagementService, mapContext.ExprDeclaredService, mapContext.TableService);
+                        mapContext.Container,
+                        toCompile, expression,
+                        false, null,
+                        SelectClauseStreamSelectorEnum.ISTREAM_ONLY,
+                        mapContext.EngineImportService,
+                        mapContext.VariableService,
+                        mapContext.SchedulingService,
+                        mapContext.EngineURI,
+                        mapContext.Configuration,
+                        mapContext.PatternNodeFactory,
+                        mapContext.ContextManagementService,
+                        mapContext.ExprDeclaredService,
+                        mapContext.TableService);
 
                     if ((rawSqlExpr.SubstitutionParameters != null) && (rawSqlExpr.SubstitutionParameters.Count > 0))
                     {

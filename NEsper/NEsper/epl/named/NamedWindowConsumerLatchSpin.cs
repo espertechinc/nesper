@@ -123,19 +123,13 @@ namespace com.espertech.esper.epl.named
         }
 #endif
 
-        public override NamedWindowConsumerLatch Earlier
-        {
-            get => _earlier;
-        }
+        public override NamedWindowConsumerLatch Earlier => _earlier;
 
         /// <summary>
         /// Returns true if the dispatch completed for this future.
         /// </summary>
         /// <value>true for completed, false if not</value>
-        public bool IsCompleted
-        {
-            get { return _isCompleted; }
-        }
+        public bool IsCompleted => _isCompleted;
 
         /// <summary>
         /// Blocking call that returns only when the earlier latch completed.

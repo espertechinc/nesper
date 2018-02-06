@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.events.avro;
 using com.espertech.esper.events;
 using com.espertech.esper.util;
@@ -20,38 +18,50 @@ namespace com.espertech.esper.core.support
 {
     public class SupportEventAdapterService
     {
+#if false
         private static EventAdapterService _eventAdapterService;
 
         static SupportEventAdapterService()
         {
-            _eventAdapterService = Allocate();
+            _eventAdapterService = Allocate(
+                new DefaultLockManager(timeout => new MonitorLock(timeout)),
+                new ClassLoaderProviderDefault(
+                    new ClassLoaderDefault(
+                        new DefaultResourceManager(true, null)
+                    )));
         }
 
-        public static void Reset()
+        public static void Reset(
+            ILockManager lockManager,
+            ClassLoaderProvider classLoaderProvider)
         {
-            _eventAdapterService = Allocate();
+            _eventAdapterService = Allocate(lockManager, classLoaderProvider);
         }
 
-        public static EventAdapterService Service
+        public static EventAdapterService GetService(IContainer container)
         {
-            get { return _eventAdapterService; }
+            return _eventAdapterService;
         }
+#endif
 
-        private static EventAdapterService Allocate()
+        public static EventAdapterService Allocate(
+            IContainer container,
+            ClassLoaderProvider classLoaderProvider)
         {
             EventAdapterAvroHandler avroHandler = EventAdapterAvroHandlerUnsupported.INSTANCE;
             try
             {
-                avroHandler =
-                    TypeHelper.Instantiate<EventAdapterAvroHandler>(
-                        EventAdapterAvroHandlerConstants.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
+                avroHandler = TypeHelper.Instantiate<EventAdapterAvroHandler>(
+                    EventAdapterAvroHandlerConstants.HANDLER_IMPL, ClassForNameProviderDefault.INSTANCE);
             }
             catch
             {
             }
 
             return new EventAdapterServiceImpl(
-                new EventTypeIdGeneratorImpl(), 5, avroHandler, SupportEngineImportServiceFactory.Make());
+                container,
+                new EventTypeIdGeneratorImpl(), 5, avroHandler, 
+                SupportEngineImportServiceFactory.Make(classLoaderProvider));
         }
     }
 } // end of namespace

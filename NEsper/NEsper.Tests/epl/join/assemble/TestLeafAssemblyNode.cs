@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.join.assemble
                 _leafNode.Result(null, 0, null, null, null, null);
                 Assert.Fail();
             }
-            catch (NotSupportedException ex)
+            catch (NotSupportedException)
             {
                 // expected
             }

@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using com.espertech.esper.compat;
+using com.espertech.esper.epl.index.quadtree;
 
 namespace com.espertech.esper.filter
 {
@@ -27,7 +29,10 @@ namespace com.espertech.esper.filter
         /// the proper index based on the filter operator type
         /// </returns>
         /// <exception cref="System.ArgumentException">Cannot create filter index instance for filter operator  + filterOperator</exception>
-        public static FilterParamIndexBase CreateIndex(FilterSpecLookupable lookupable, FilterServiceGranularLockFactory lockFactory, FilterOperator filterOperator)
+        public static FilterParamIndexBase CreateIndex(
+            FilterSpecLookupable lookupable, 
+            FilterServiceGranularLockFactory lockFactory, 
+            FilterOperator filterOperator)
         {
             FilterParamIndexBase index;
             Type returnValueType = lookupable.ReturnType;
@@ -109,8 +114,26 @@ namespace com.espertech.esper.filter
             {
                 return new FilterParamIndexBooleanExpr(lockFactory.ObtainNew());
             }
+
+            // Handle advanced-index
+            if (filterOperator == FilterOperator.ADVANCED_INDEX)
+            {
+                FilterSpecLookupableAdvancedIndex advLookable = (FilterSpecLookupableAdvancedIndex)lookupable;
+                if (advLookable.IndexType.Equals(EngineImportApplicationDotMethodPointInsideRectangle.INDEX_TYPE_NAME))
+                {
+                    return new FilterParamIndexQuadTreePointRegion(lockFactory.ObtainNew(), lookupable);
+                }
+                else if (advLookable.IndexType.Equals(EngineImportApplicationDotMethodRectangeIntersectsRectangle.INDEX_TYPE_NAME))
+                {
+                    return new FilterParamIndexQuadTreeMXCIF(lockFactory.ObtainNew(), lookupable);
+                }
+                else
+                {
+                    throw new IllegalStateException("Unrecognized index type " + advLookable.IndexType);
+                }
+            }
+
             throw new ArgumentException("Cannot create filter index instance for filter operator " + filterOperator);
         }
     }
-    
 }

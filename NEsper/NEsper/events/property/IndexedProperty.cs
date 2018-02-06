@@ -10,12 +10,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Xml.Schema;
 
-using XLR8.CGLib;
-
-using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
@@ -58,31 +54,25 @@ namespace com.espertech.esper.events.property
         /// <summary> Returns index for indexed access.</summary>
         /// <returns> index value
         /// </returns>
-        public int Index
-        {
-            get { return _index; }
-        }
+        public int Index => _index;
 
-        public override bool IsDynamic
-        {
-            get { return false; }
-        }
+        public override bool IsDynamic => false;
 
         public override String[] ToPropertyArray()
         {
             return new[] { PropertyNameAtomic };
         }
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
-            FastClass fastClass = eventType.FastClass;
-            InternalEventPropDescriptor propertyDesc = eventType.GetIndexedProperty(PropertyNameAtomic);
+            var fastClass = eventType.FastClass;
+            var propertyDesc = eventType.GetIndexedProperty(PropertyNameAtomic);
             if (propertyDesc != null)
             {
                 if (fastClass != null)
                 {
-                    MethodInfo method = propertyDesc.ReadMethod;
-                    FastMethod fastMethod = fastClass.GetMethod(method);
+                    var method = propertyDesc.ReadMethod;
+                    var fastMethod = fastClass.GetMethod(method);
                     return new KeyedFastPropertyGetter(fastMethod, _index, eventAdapterService);
                 }
                 else
@@ -98,15 +88,15 @@ namespace com.espertech.esper.events.property
                 return null;
             }
 
-            Type returnType = propertyDesc.ReturnType;
+            var returnType = propertyDesc.ReturnType;
             if (returnType == typeof(string))
             {
                 if (propertyDesc.ReadMethod != null)
                 {
-                    MethodInfo method = propertyDesc.ReadMethod;
+                    var method = propertyDesc.ReadMethod;
                     if (fastClass != null)
                     {
-                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        var fastMethod = fastClass.GetMethod(method);
                         return new StringFastPropertyGetter(fastMethod, _index, eventAdapterService);
                     }
                     else
@@ -116,7 +106,7 @@ namespace com.espertech.esper.events.property
                 }
                 else
                 {
-                    FieldInfo field = propertyDesc.AccessorField;
+                    var field = propertyDesc.AccessorField;
                     return new StringFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
@@ -124,10 +114,10 @@ namespace com.espertech.esper.events.property
             {
                 if (propertyDesc.ReadMethod != null)
                 {
-                    MethodInfo method = propertyDesc.ReadMethod;
+                    var method = propertyDesc.ReadMethod;
                     if (fastClass != null)
                     {
-                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        var fastMethod = fastClass.GetMethod(method);
                         return new ArrayFastPropertyGetter(fastMethod, _index, eventAdapterService);
                     }
                     else
@@ -137,7 +127,7 @@ namespace com.espertech.esper.events.property
                 }
                 else
                 {
-                    FieldInfo field = propertyDesc.AccessorField;
+                    var field = propertyDesc.AccessorField;
                     return new ArrayFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
@@ -149,10 +139,10 @@ namespace com.espertech.esper.events.property
             {
                 if (propertyDesc.ReadMethod != null)
                 {
-                    MethodInfo method = propertyDesc.ReadMethod;
+                    var method = propertyDesc.ReadMethod;
                     if (fastClass != null)
                     {
-                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        var fastMethod = fastClass.GetMethod(method);
                         return new ListFastPropertyGetter(method, fastMethod, _index, eventAdapterService);
                     }
                     else
@@ -162,7 +152,7 @@ namespace com.espertech.esper.events.property
                 }
                 else
                 {
-                    FieldInfo field = propertyDesc.AccessorField;
+                    var field = propertyDesc.AccessorField;
                     return new ListFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
@@ -170,10 +160,10 @@ namespace com.espertech.esper.events.property
             {
                 if (propertyDesc.ReadMethod != null)
                 {
-                    MethodInfo method = propertyDesc.ReadMethod;
+                    var method = propertyDesc.ReadMethod;
                     if (fastClass != null)
                     {
-                        FastMethod fastMethod = fastClass.GetMethod(method);
+                        var fastMethod = fastClass.GetMethod(method);
                         return new EnumerableFastPropertyGetter(method, fastMethod, _index, eventAdapterService);
                     }
                     else
@@ -183,7 +173,7 @@ namespace com.espertech.esper.events.property
                 }
                 else
                 {
-                    FieldInfo field = propertyDesc.AccessorField;
+                    var field = propertyDesc.AccessorField;
                     return new EnumerableFieldPropertyGetter(field, _index, eventAdapterService);
                 }
             }
@@ -194,7 +184,7 @@ namespace com.espertech.esper.events.property
         public override GenericPropertyDesc GetPropertyTypeGeneric(BeanEventType eventType,
                                                                    EventAdapterService eventAdapterService)
         {
-            InternalEventPropDescriptor descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
+            var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
             if (descriptor != null)
             {
                 return new GenericPropertyDesc(descriptor.ReturnType);
@@ -207,7 +197,7 @@ namespace com.espertech.esper.events.property
                 return null;
             }
 
-            Type returnType = descriptor.ReturnType;
+            var returnType = descriptor.ReturnType;
             if (returnType.IsArray)
             {
                 return new GenericPropertyDesc(returnType.GetElementType());
@@ -216,12 +206,12 @@ namespace com.espertech.esper.events.property
             {
                 if (descriptor.ReadMethod != null)
                 {
-                    Type genericType = TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
+                    var genericType = TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
                     return new GenericPropertyDesc(genericType);
                 }
                 else if (descriptor.AccessorField != null)
                 {
-                    Type genericType = TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
+                    var genericType = TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
                     return new GenericPropertyDesc(genericType);
                 }
                 else
@@ -296,20 +286,20 @@ namespace com.espertech.esper.events.property
 
         public override MapEventPropertyGetter GetGetterMap(DataMap optionalMapPropTypes, EventAdapterService eventAdapterService)
         {
-            Object type = optionalMapPropTypes.Get(PropertyNameAtomic);
+            var type = optionalMapPropTypes.Get(PropertyNameAtomic);
             if (type == null)
             {
                 return null;
             }
             if (type is string) // resolve a property that is a map event type
             {
-                String nestedName = type.ToString();
-                bool isArray = EventTypeUtility.IsPropertyArray(nestedName);
+                var nestedName = type.ToString();
+                var isArray = EventTypeUtility.IsPropertyArray(nestedName);
                 if (isArray)
                 {
                     nestedName = EventTypeUtility.GetPropertyRemoveArray(nestedName);
                 }
-                EventType innerType = eventAdapterService.GetEventTypeByName(nestedName);
+                var innerType = eventAdapterService.GetEventTypeByName(nestedName);
                 if (!(innerType is MapEventType))
                 {
                     return null;
@@ -320,7 +310,8 @@ namespace com.espertech.esper.events.property
                 }
                 else
                 {
-                    return new MapArrayPropertyGetter(PropertyNameAtomic, _index, eventAdapterService, innerType);
+                    return new MapArrayPropertyGetter(
+                        PropertyNameAtomic, _index, eventAdapterService, innerType);
                 }
             }
             else
@@ -333,10 +324,10 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-                Type componentType = ((Type)type).GetElementType();
+                var componentType = ((Type)type).GetElementType();
                 // its an array
-                return new MapArrayEntryIndexedPropertyGetter(PropertyNameAtomic, _index, eventAdapterService,
-                                                                  componentType);
+                return new MapArrayPonoEntryIndexedPropertyGetter(
+                    PropertyNameAtomic, _index, eventAdapterService, componentType);
             }
         }
 
@@ -348,17 +339,18 @@ namespace com.espertech.esper.events.property
             writer.Write("]");
         }
 
-        public override EventPropertyGetter GetGetterDOM()
+        public override EventPropertyGetterSPI GetGetterDOM()
         {
             return new DOMIndexedGetter(PropertyNameAtomic, _index, null);
         }
 
-        public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty,
-                                                         EventAdapterService eventAdapterService,
-                                                         BaseXMLEventType eventType,
-                                                         String propertyExpression)
+        public override EventPropertyGetterSPI GetGetterDOM(
+            SchemaElementComplex complexProperty,
+            EventAdapterService eventAdapterService,
+            BaseXMLEventType eventType,
+            String propertyExpression)
         {
-            foreach (SchemaElementSimple simple in complexProperty.SimpleElements)
+            foreach (var simple in complexProperty.SimpleElements)
             {
                 if (!simple.IsArray)
                 {
@@ -371,7 +363,7 @@ namespace com.espertech.esper.events.property
                 return new DOMIndexedGetter(PropertyNameAtomic, _index, null);
             }
 
-            foreach (SchemaElementComplex complex in complexProperty.ComplexElements)
+            foreach (var complex in complexProperty.ComplexElements)
             {
                 if (!complex.IsArray)
                 {
@@ -392,7 +384,7 @@ namespace com.espertech.esper.events.property
         public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty,
                                                          EventAdapterService eventAdapterService)
         {
-            foreach (SchemaElementSimple simple in complexProperty.SimpleElements)
+            foreach (var simple in complexProperty.SimpleElements)
             {
                 if (simple.Name != PropertyNameAtomic)
                 {
@@ -413,7 +405,7 @@ namespace com.espertech.esper.events.property
                 }
             }
 
-            foreach (SchemaElementComplex complex in complexProperty.ComplexElements)
+            foreach (var complex in complexProperty.ComplexElements)
             {
                 if (complex.Name != PropertyNameAtomic)
                 {
@@ -444,9 +436,9 @@ namespace com.espertech.esper.events.property
 
         public static int GetIndex(String propertyName)
         {
-            int start = propertyName.IndexOf('[');
-            int end = propertyName.IndexOf(']');
-            String indexStr = propertyName.Substring(start, end - start);
+            var start = propertyName.IndexOf('[');
+            var end = propertyName.IndexOf(']');
+            var indexStr = propertyName.Substring(start, end - start);
             return Int32.Parse(indexStr);
         }
 
@@ -475,7 +467,7 @@ namespace com.espertech.esper.events.property
                 {
                     nestedName = EventTypeUtility.GetPropertyRemoveArray(nestedName);
                 }
-                EventType innerType = eventAdapterService.GetEventTypeByName(nestedName);
+                var innerType = eventAdapterService.GetEventTypeByName(nestedName);
                 if (!(innerType is MapEventType))
                 {
                     return null;
@@ -499,9 +491,9 @@ namespace com.espertech.esper.events.property
                 {
                     return null;
                 }
-                Type componentType = ((Type)type).GetElementType();
+                var componentType = ((Type)type).GetElementType();
                 // its an array
-                return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
+                return new ObjectArrayArrayPonoEntryIndexedPropertyGetter(
                     propertyIndex, _index, eventAdapterService, componentType);
             }
         }

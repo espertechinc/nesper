@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -24,6 +26,8 @@ namespace com.espertech.esper.adapter
     /// </summary>
     public abstract class BaseSubscription : Subscription, FilterHandleCallback
     {
+        public IReaderWriterLockManager RWLockManager { get; set; }
+
         /// <summary>The event type of the events we are subscribing for. </summary>
         public String EventTypeName { get; set; }
     
@@ -39,7 +43,7 @@ namespace com.espertech.esper.adapter
         public abstract void MatchFound(EventBean theEvent, ICollection<FilterHandleCallback> allStmtMatches);
 
         /// <summary>Ctor, assigns default name. </summary>
-        protected BaseSubscription()
+        protected BaseSubscription(IReaderWriterLockManager rwLockManager)
         {
             SubscriptionName = "default";
         }
@@ -61,7 +65,7 @@ namespace com.espertech.esper.adapter
             var name = "subscription:" + SubscriptionName;
             var metricsHandle = spi.MetricReportingService.GetStatementHandle(-1, name);
             var statementHandle = new EPStatementHandle(-1, name, name, StatementType.ESPERIO, name, false, metricsHandle, 0, false, false, spi.ServicesContext.MultiMatchHandlerFactory.GetDefaultHandler());
-            var agentHandle = new EPStatementAgentInstanceHandle(statementHandle, ReaderWriterLockManager.CreateDefaultLock(), -1, new StatementAgentInstanceFilterVersion(), null);
+            var agentHandle = new EPStatementAgentInstanceHandle(statementHandle, RWLockManager.CreateDefaultLock(), -1, new StatementAgentInstanceFilterVersion(), null);
             var registerHandle = new EPStatementHandleCallback(agentHandle, this);
             spi.FilterService.Add(fvs, registerHandle);
         }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.access;
@@ -19,80 +18,61 @@ using com.espertech.esper.epl.expression.methodagg;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryMedian : AggregationMethodFactory
-	{
-        protected internal readonly ExprMedianNode Parent;
-        protected internal readonly Type AggregatedValueType;
+    public class AggregationMethodFactoryMedian : AggregationMethodFactory
+    {
+        private readonly Type _aggregatedValueType;
+        private readonly ExprMedianNode _parent;
 
-	    public AggregationMethodFactoryMedian(ExprMedianNode parent, Type aggregatedValueType)
-	    {
-	        Parent = parent;
-	        AggregatedValueType = aggregatedValueType;
-	    }
-
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
-
-	    public Type ResultType
-	    {
-	        get { return typeof (double?); }
-	    }
-
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationMethodFactoryMedian(ExprMedianNode parent, Type aggregatedValueType)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            _parent = parent;
+            _aggregatedValueType = aggregatedValueType;
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public bool IsAccessAggregation => false;
+
+        public Type ResultType => typeof(double);
+
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
-
-	    public AggregationMethod Make()
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        AggregationMethod method = MakeMedianAggregator(Parent.HasFilter);
-	        if (!Parent.IsDistinct) {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public AggregationMethod Make()
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryMedian that = (AggregationMethodFactoryMedian) intoTableAgg;
-	        service.AggregationMethodFactoryUtil.ValidateAggregationInputType(AggregatedValueType, that.AggregatedValueType);
-	        service.AggregationMethodFactoryUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
-	    }
+            var method = MakeMedianAggregator(_parent.HasFilter);
+            if (!_parent.IsDistinct) return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, _parent.HasFilter);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryMedian) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationInputType(_aggregatedValueType, that._aggregatedValueType);
+            AggregationValidationUtil.ValidateAggregationFilter(_parent.HasFilter, that._parent.HasFilter);
+        }
 
-	    private AggregationMethod MakeMedianAggregator(bool hasFilter)
-	    {
-	        if (!hasFilter) {
-	            return new AggregatorMedian();
-	        }
-	        return new AggregatorMedianFilter();
-	    }
-	}
+        public AggregationAgent AggregationStateAgent => null;
+
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
+
+        private AggregationMethod MakeMedianAggregator(bool hasFilter)
+        {
+            if (!hasFilter) return new AggregatorMedian();
+            return new AggregatorMedianFilter();
+        }
+    }
 } // end of namespace

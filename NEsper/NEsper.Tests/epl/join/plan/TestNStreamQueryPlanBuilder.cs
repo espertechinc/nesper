@@ -10,14 +10,17 @@ using System.Reflection;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.join.@base;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
@@ -32,21 +35,23 @@ namespace com.espertech.esper.epl.join.plan
         private EventType[] _typesPerStream;
         private QueryGraph _queryGraph;
         private DependencyGraph _dependencyGraph;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _typesPerStream = new EventType[]
             {
-                SupportEventAdapterService.Service.AddBeanType(typeof (SupportBean_S0).FullName, typeof (SupportBean_S0),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof (SupportBean_S0).FullName, typeof (SupportBean_S0),
                                                                true, true, true),
-                SupportEventAdapterService.Service.AddBeanType(typeof (SupportBean_S1).FullName, typeof (SupportBean_S1),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof (SupportBean_S1).FullName, typeof (SupportBean_S1),
                                                                true, true, true),
-                SupportEventAdapterService.Service.AddBeanType(typeof (SupportBean_S2).FullName, typeof (SupportBean_S2),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof (SupportBean_S2).FullName, typeof (SupportBean_S2),
                                                                true, true, true),
-                SupportEventAdapterService.Service.AddBeanType(typeof (SupportBean_S3).FullName, typeof (SupportBean_S3),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof (SupportBean_S3).FullName, typeof (SupportBean_S3),
                                                                true, true, true),
-                SupportEventAdapterService.Service.AddBeanType(typeof (SupportBean_S4).FullName, typeof (SupportBean_S4),
+                _container.Resolve<EventAdapterService>().AddBeanType(typeof (SupportBean_S4).FullName, typeof (SupportBean_S4),
                                                                true, true, true)
             };
 

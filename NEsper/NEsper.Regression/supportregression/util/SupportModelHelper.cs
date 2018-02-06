@@ -39,9 +39,9 @@ namespace com.espertech.esper.supportregression.util
         public static EPStatement CompileCreate(EPServiceProvider epService, String epl, Object statementUserObject)
         {
             EPStatementObjectModel model = epService.EPAdministrator.CompileEPL(epl);
-            Assert.AreEqual(epl, model.ToEPL());
+            Assert.AreEqual(epl.Replace("\n", ""), model.ToEPL().Replace("\n", ""));
             EPStatement stmt = epService.EPAdministrator.Create(model, null, statementUserObject);
-            Assert.AreEqual(epl, stmt.Text);
+            Assert.AreEqual(epl.Replace("\n", ""), stmt.Text.Replace("\n", ""));
             return stmt;
         }
     }

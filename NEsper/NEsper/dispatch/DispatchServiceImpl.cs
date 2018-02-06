@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.util;
@@ -24,9 +26,9 @@ namespace com.espertech.esper.dispatch
         /// <summary>
         /// Initializes a new instance of the <see cref="DispatchServiceImpl"/> class.
         /// </summary>
-        public DispatchServiceImpl()
+        public DispatchServiceImpl(IThreadLocalManager threadLocalManager)
         {
-            _threadDispatchQueue = ThreadLocalManager.Create(
+            _threadDispatchQueue = threadLocalManager.Create(
                 () => new Queue<Dispatchable>());
         }
 

@@ -28,7 +28,7 @@ namespace com.espertech.esper.supportregression.bean
             this.anyObject = anyObject;
         }
 
-        public SupportBeanArrayCollMap(Object[] objectArr)
+        public SupportBeanArrayCollMap(object[] objectArr)
         {
             ObjectArr = objectArr;
         }
@@ -96,56 +96,30 @@ namespace com.espertech.esper.supportregression.bean
 
         public IDictionary<string, object> OtherMap { get; set; }
 
-        private static IDictionary<long?, String> ConvertMap(long?[] longArr)
+        private static IDictionary<T, String> ConvertMap<T>(T[] anyArr)
         {
-            if (longArr == null) {
+            if (anyArr == null) {
                 return null;
             }
 
-            var longMap = new Dictionary<long?, String>().WithSafeSupport();
-            foreach (long? along in longArr) {
-                longMap.Put(along, "");
+            var anyMap = new Dictionary<T, String>().WithSafeSupport();
+            foreach (var anyValue in anyArr) {
+                anyMap.Put(anyValue, "");
             }
-            return longMap;
+            return anyMap;
         }
 
-        private static IDictionary<int, String> ConvertMap(int[] intArr)
+        private static IList<T> ConvertCol<T>(T[] anyArr)
         {
-            if (intArr == null) {
+            if (anyArr == null) {
                 return null;
             }
 
-            var intMap = new Dictionary<int, String>();
-            foreach (int anIntArr in intArr) {
-                intMap.Put(anIntArr, "");
+            IList<T> anyCol = new List<T>();
+            foreach (var anyValue in anyArr) {
+                anyCol.Add(anyValue);
             }
-            return intMap;
-        }
-
-        private static IList<long?> ConvertCol(long?[] longArr)
-        {
-            if (longArr == null) {
-                return null;
-            }
-
-            IList<long?> longCol = new List<long?>();
-            foreach (long? along in longArr) {
-                longCol.Add(along);
-            }
-            return longCol;
-        }
-
-        private static IList<int> ConvertCol(int[] intArr)
-        {
-            if (intArr == null) {
-                return null;
-            }
-
-            var intCol = new List<int>();
-            foreach (int anIntArr in intArr) {
-                intCol.Add(anIntArr);
-            }
-            return intCol;
+            return anyCol;
         }
     }
 }

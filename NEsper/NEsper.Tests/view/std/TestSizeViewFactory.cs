@@ -9,8 +9,10 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.support;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -21,10 +23,12 @@ namespace com.espertech.esper.view.std
     public class TestSizeViewFactory 
     {
         private SizeViewFactory _factory;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _factory = new SizeViewFactory();
         }
     
@@ -37,17 +41,17 @@ namespace com.espertech.esper.view.std
         [Test]
         public void TestCanReuse()
         {
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
             Assert.False(_factory.CanReuse(new LastElementView(null), agentInstanceContext));
-            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
-            Assert.IsTrue(_factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(), type, null), agentInstanceContext));
+            EventType type = SizeView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
+            Assert.IsTrue(_factory.CanReuse(new SizeView(SupportStatementContextFactory.MakeAgentInstanceContext(_container), type, null), agentInstanceContext));
         }
     
         private void TryParameter(Object[] param)
         {
             SizeViewFactory factory = new SizeViewFactory();
-            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(), TestViewSupport.ToExprListBean(param));
-            Assert.IsTrue(factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext()) is SizeView);
+            factory.SetViewParameters(SupportStatementContextFactory.MakeViewContext(_container), TestViewSupport.ToExprListBean(param));
+            Assert.IsTrue(factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container)) is SizeView);
         }
     }
 }

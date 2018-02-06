@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
@@ -48,22 +46,16 @@ namespace com.espertech.esper.events.property
 
         /// <summary>Returns the key value for mapped access. </summary>
         /// <value>key value</value>
-        public string Key
-        {
-            get { return _key; }
-        }
+        public string Key => _key;
 
         public override String[] ToPropertyArray()
         {
             return new[] { PropertyNameAtomic };
         }
 
-        public override bool IsDynamic
-        {
-            get { return false; }
-        }
+        public override bool IsDynamic => false;
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             InternalEventPropDescriptor propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
             if (propertyDesc != null)
@@ -194,13 +186,9 @@ namespace com.espertech.esper.events.property
             {
                 return null;
             }
-            if (type is Type)
+            if ((type is Type trueType) && (trueType.IsGenericStringDictionary()))
             {
-                var trueType = (Type)type;
-                if (trueType.IsGenericStringDictionary())
-                {
-                    return typeof(Object);
-                }
+                return typeof(Object);
             }
             return null;  // Mapped properties are not allowed in non-dynamic form in a map
         }
@@ -212,9 +200,8 @@ namespace com.espertech.esper.events.property
             {
                 return null;
             }
-            if (type is Type)
+            if (type is Type trueType)
             {
-                var trueType = (Type)type;
                 if (trueType.IsGenericStringDictionary())
                 {
                     return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
@@ -235,7 +222,7 @@ namespace com.espertech.esper.events.property
             writer.Write("')");
         }
 
-        public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
+        public override EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
         {
             foreach (SchemaElementComplex complex in complexProperty.ComplexElements.Where(c => c.Name == PropertyNameAtomic))
             {
@@ -253,7 +240,7 @@ namespace com.espertech.esper.events.property
             return null;
         }
 
-        public override EventPropertyGetter GetGetterDOM()
+        public override EventPropertyGetterSPI GetGetterDOM()
         {
             return new DOMMapGetter(PropertyNameAtomic, _key, null);
         }

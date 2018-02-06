@@ -64,7 +64,7 @@ namespace com.espertech.esper.supportregression.epl
 
         public string[] StreamNames
         {
-            get { return new String[] { "s0", "s1", "s2" }; }
+            get { return new string[] { "s0", "s1", "s2" }; }
         }
 
         public EventType[] EventTypes
@@ -82,7 +82,7 @@ namespace com.espertech.esper.supportregression.epl
 
         public string[] EventTypeNamees
         {
-            get { return new String[] { "SupportBean", "SupportBean", "SupportBeanComplexProps" }; }
+            get { return new string[] { "SupportBean", "SupportBean", "SupportBeanComplexProps" }; }
         }
 
         public bool[] IsIStreamOnly

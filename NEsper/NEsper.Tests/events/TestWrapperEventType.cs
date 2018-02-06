@@ -12,12 +12,13 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events
@@ -30,16 +31,18 @@ namespace com.espertech.esper.events
         private EventTypeSPI _eventType;
         private IDictionary<String, Object> _properties;
         private EventAdapterService _eventAdapterService;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            _underlyingEventTypeOne = new BeanEventType(null, 1, typeof(SupportBeanSimple), SupportEventAdapterService.Service, null);
-            _underlyingEventTypeTwo = new BeanEventType(null, 1, typeof(SupportBean_A), SupportEventAdapterService.Service, null);
+            _container = SupportContainer.Reset();
+            _underlyingEventTypeOne = new BeanEventType(_container, null, 1, typeof(SupportBeanSimple), _container.Resolve<EventAdapterService>(), null);
+            _underlyingEventTypeTwo = new BeanEventType(_container, null, 1, typeof(SupportBean_A), _container.Resolve<EventAdapterService>(), null);
             _properties = new Dictionary<String, Object>();
             _properties["additionalString"] = typeof(string);
             _properties["AdditionalInt"] = typeof(int);
-            _eventAdapterService = SupportEventAdapterService.Service;
+            _eventAdapterService = _container.Resolve<EventAdapterService>();
             EventTypeMetadata meta = EventTypeMetadata.CreateWrapper("test", true, false, false);
             _eventType = new WrapperEventType(meta, "mytype", 1, _underlyingEventTypeOne, _properties, _eventAdapterService);
         }
@@ -72,7 +75,7 @@ namespace com.espertech.esper.events
                 _eventType = new WrapperEventType(null, "mytype", 1, _underlyingEventTypeOne, _properties, _eventAdapterService);
                 Assert.Fail();
             }
-            catch (EPException ex)
+            catch (EPException)
             {
                 // Expected
             }

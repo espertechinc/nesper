@@ -179,7 +179,6 @@ namespace com.espertech.esper.supportregression.bean
             /// <value>The nested nested.</value>
             public SupportBeanSpecialGetterNestedNested NestedNested { get; private set; }
 
-
             /// <summary>
             /// Gets the nested value.
             /// </summary>
@@ -242,7 +241,7 @@ namespace com.espertech.esper.supportregression.bean
             /// <param name="nestedNestedValue">The nested nested value.</param>
             public SupportBeanSpecialGetterNestedNested(String nestedNestedValue)
             {
-                SetNestedNestedValue(nestedNestedValue);
+                _nestedNestedValue = nestedNestedValue;
             }
 
             private string _nestedNestedValue;
@@ -254,23 +253,17 @@ namespace com.espertech.esper.supportregression.bean
             public string NestedNestedValue
             {
                 get { return _nestedNestedValue; }
+                set { _nestedNestedValue = value; }
             }
 
-            /// <summary>
-            /// Gets or sets the nested nested value.
-            /// </summary>
-            /// <param name="value">The nested nested value.</param>
-            public void SetNestedNestedValue(string value)
-            {
-                _nestedNestedValue = value;
-            }
-
-            /// <summary>
-            /// Gets the nested nested value.
-            /// </summary>
             public string GetNestedNestedValue()
             {
                 return _nestedNestedValue;
+            }
+
+            public void SetNestedNestedValue(string value)
+            {
+                _nestedNestedValue = value;
             }
         }
     }

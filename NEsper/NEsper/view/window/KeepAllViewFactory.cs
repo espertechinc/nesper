@@ -48,10 +48,7 @@ namespace com.espertech.esper.view.window
             return new KeepAllView(agentInstanceViewFactoryContext, this, randomAccess);
         }
 
-        public EventType EventType
-        {
-            get { return _eventType; }
-        }
+        public EventType EventType => _eventType;
 
         public bool CanReuse(View view, AgentInstanceContext agentInstanceContext)
         {
@@ -64,10 +61,7 @@ namespace com.espertech.esper.view.window
             return myView.IsEmpty();
         }
 
-        public string ViewName
-        {
-            get { return "Keep-All"; }
-        }
+        public string ViewName => "Keep-All";
 
         public Object MakePreviousGetter()
         {

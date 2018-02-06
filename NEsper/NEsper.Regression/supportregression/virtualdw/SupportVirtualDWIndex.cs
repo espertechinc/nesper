@@ -25,7 +25,7 @@ namespace com.espertech.esper.supportregression.virtualdw
             _context = context;
         }
     
-        public ISet<EventBean> Lookup(Object[] keys, EventBean[] eventsPerStream)
+        public ISet<EventBean> Lookup(object[] keys, EventBean[] eventsPerStream)
         {
             _supportVirtualDw.LastKeys = keys;
             _supportVirtualDw.LastAccessEvents = eventsPerStream;

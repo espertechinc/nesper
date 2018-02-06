@@ -11,10 +11,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.property
@@ -22,14 +24,21 @@ namespace com.espertech.esper.events.property
     [TestFixture]
     public class TestNestedProperty
     {
-        #region Setup/Teardown
+        private NestedProperty[] _nested;
+        private EventBean _event;
+        private BeanEventTypeFactory _beanEventTypeFactory;
+
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            _beanEventTypeFactory = new BeanEventAdapter(new ConcurrentDictionary<Type, BeanEventType>(),
-                                                        SupportEventAdapterService.Service,
-                                                        new EventTypeIdGeneratorImpl());
+            _container = SupportContainer.Reset();
+            _beanEventTypeFactory = new BeanEventAdapter(
+                _container,
+                new ConcurrentDictionary<Type, BeanEventType>(),
+                _container.Resolve<EventAdapterService>(),
+                new EventTypeIdGeneratorImpl());
 
             _nested = new NestedProperty[2];
             _nested[0] = MakeProperty(new[] {"Nested", "NestedValue"});
@@ -37,12 +46,6 @@ namespace com.espertech.esper.events.property
 
             _event = SupportEventBeanFactory.CreateObject(SupportBeanComplexProps.MakeDefaultBean());
         }
-
-        #endregion
-
-        private NestedProperty[] _nested;
-        private EventBean _event;
-        private BeanEventTypeFactory _beanEventTypeFactory;
 
         private static NestedProperty MakeProperty(IEnumerable<string> propertyNames)
         {
@@ -53,10 +56,10 @@ namespace com.espertech.esper.events.property
         [Test]
         public void TestGetGetter()
         {
-            EventPropertyGetter getter = _nested[0].GetGetter((BeanEventType) _event.EventType, SupportEventAdapterService.Service);
+            EventPropertyGetter getter = _nested[0].GetGetter((BeanEventType) _event.EventType, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("NestedValue", getter.Get(_event));
 
-            getter = _nested[1].GetGetter((BeanEventType) _event.EventType, SupportEventAdapterService.Service);
+            getter = _nested[1].GetGetter((BeanEventType) _event.EventType, _container.Resolve<EventAdapterService>());
             Assert.AreEqual("NestedNestedValue", getter.Get(_event));
         }
 
@@ -65,10 +68,10 @@ namespace com.espertech.esper.events.property
         {
             Assert.AreEqual(typeof(string),
                             _nested[0].GetPropertyType((BeanEventType) _event.EventType,
-                                                      SupportEventAdapterService.Service));
+                                                      _container.Resolve<EventAdapterService>()));
             Assert.AreEqual(typeof(string),
                             _nested[1].GetPropertyType((BeanEventType) _event.EventType,
-                                                      SupportEventAdapterService.Service));
+                                                      _container.Resolve<EventAdapterService>()));
         }
     }
 }

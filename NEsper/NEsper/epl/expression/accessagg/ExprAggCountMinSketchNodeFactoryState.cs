@@ -74,7 +74,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                     throw new ExprValidationException(
                         "Mismatching parameter return type, expected any of " +
                         _stateFactory.Specification.Agent.AcceptableValueTypes.Render() + " but received " +
-                        clazz.GetTypeNameFullyQualPretty());
+                        clazz.GetCleanName());
                 }
             }
         }

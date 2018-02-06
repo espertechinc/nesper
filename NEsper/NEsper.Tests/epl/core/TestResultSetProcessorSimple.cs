@@ -11,13 +11,17 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core.eval;
 using com.espertech.esper.epl.table.mgmt;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 
 using NUnit.Framework;
@@ -30,19 +34,22 @@ namespace com.espertech.esper.epl.core
         private ResultSetProcessorSimple _outputProcessorAll;
         private SelectExprProcessor _selectExprProcessor;
         private OrderByProcessor _orderByProcessor;
-    
+
         [SetUp]
         public void SetUp()
         {
-            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl());
-            var statementContext = SupportStatementContextFactory.MakeContext();
+            var container = SupportContainer.Instance;
+            var selectExprEventTypeRegistry = new SelectExprEventTypeRegistry("abc", new StatementEventTypeRefImpl(
+                container.Resolve<IReaderWriterLockManager>()));
+            var statementContext = SupportStatementContextFactory.MakeContext(container);
     
             var factory = new SelectExprProcessorHelper(
                 Collections.GetEmptyList<int>(), SupportSelectExprFactory.MakeNoAggregateSelectList(), 
                 Collections.GetEmptyList<SelectExprStreamDesc>(), null, null, false,
-                new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.Service, null,
+                new SupportStreamTypeSvc1Stream(),
+                container.Resolve<EventAdapterService>(), null,
                 selectExprEventTypeRegistry, statementContext.EngineImportService, 1, "stmtname", null,
-                new Configuration(), null, new TableServiceImpl(), null);
+                new Configuration(container), null, new TableServiceImpl(container), null);
             _selectExprProcessor = factory.Evaluator;
             _orderByProcessor = null;
     

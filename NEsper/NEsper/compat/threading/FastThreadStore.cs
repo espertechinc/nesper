@@ -89,7 +89,7 @@ namespace com.espertech.esper.compat.threading
         static FastThreadStore()
         {
             ThreadDataList = new LinkedList<WeakReference<StaticData>>();
-            ThreadDataListLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            ThreadDataListLock = new SlimReaderWriterLock(60000);
         }
 
         [ThreadStatic]

@@ -7,13 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using System.Threading;
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
 	public class MarketDataSendRunnable
 	{
@@ -37,13 +35,13 @@ namespace com.espertech.esper.example.marketdatafeed
 
 	        try
 	        {
-                Array enumValues = Enum.GetValues(typeof(FeedEnum));
+                var enumValues = Enum.GetValues(typeof(FeedEnum));
 
                 while (!_isShutdown)
 	            {
 
-	                int nextFeed = Math.Abs(_random.Next() % 2);
-	                FeedEnum feed = (FeedEnum) enumValues.GetValue(nextFeed);
+	                var nextFeed = Math.Abs(_random.Next() % 2);
+	                var feed = (FeedEnum) enumValues.GetValue(nextFeed);
 	                if (_rateDropOffFeed != feed)
 	                {
 	                    _engine.EPRuntime.SendEvent(new MarketDataEvent("SYM", feed));

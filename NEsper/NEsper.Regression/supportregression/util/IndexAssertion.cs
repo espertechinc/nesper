@@ -86,7 +86,7 @@ namespace com.espertech.esper.supportregression.util
 
         public IndexAssertionFAF FAFAssertion { get; private set; }
 
-        public bool? IsUnique { get; private set; }
+        public bool IsUnique { get; private set; }
 
         public Type ExpectedStrategy { get; private set; }
     }

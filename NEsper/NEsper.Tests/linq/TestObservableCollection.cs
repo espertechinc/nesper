@@ -9,8 +9,9 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -19,11 +20,14 @@ namespace com.espertech.esper.linq
     public class TestObservableCollection
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = new Configuration();
+            _container = SupportContainer.Reset();
+
+            var configuration = new Configuration(_container);
             configuration.AddEventType<MiniBean>();
 
             _serviceProvider = EPServiceProviderManager.GetDefaultProvider(configuration);
@@ -53,7 +57,7 @@ namespace com.espertech.esper.linq
                 Assert.IsNotNull(observableCollectionA);
                 Assert.IsNotNull(observableCollectionB);
 
-                for (int ii = 0; ii < 100; ii++)
+                for (var ii = 0; ii < 100; ii++)
                 {
                     SendMiniBean("A", ii);
                 }
@@ -123,7 +127,7 @@ namespace com.espertech.esper.linq
                 Assert.IsNotNull(observableCollectionA);
                 Assert.IsNotNull(observableCollectionB);
 
-                for (int ii = 0; ii < 100; ii++)
+                for (var ii = 0; ii < 100; ii++)
                 {
                     SendMapBean("A", ii);
                 }

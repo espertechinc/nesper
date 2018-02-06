@@ -33,7 +33,7 @@ namespace com.espertech.esper.client
             Variables = new VariablesConfig();
             StreamSelection = new StreamSelectionConfig();
             TimeSource = new TimeSourceConfig();
-            MetricsReporting = new MetricsReportingConfig();
+            MetricsReporting = new ConfigurationMetricsReporting();
             Language = new LanguageConfig();
             Expression = new ExpressionConfig();
             Execution = new ExecutionConfig();
@@ -91,7 +91,7 @@ namespace com.espertech.esper.client
         /// Returns the metrics reporting configuration.
         /// </summary>
         /// <value>metrics reporting config</value>
-        public MetricsReportingConfig MetricsReporting { get; private set; }
+        public ConfigurationMetricsReporting MetricsReporting { get; private set; }
 
         /// <summary>
         /// Returns the language-related settings for the engine.
@@ -425,14 +425,14 @@ namespace com.espertech.esper.client
             /// <summary>Ctor - sets up defaults.</summary>
             public ViewResourcesConfig()
             {
-                IsShareViews = true;
+                IsShareViews = false;
                 IsAllowMultipleExpiryPolicies = false;
                 IsIterableUnbound = false;
             }
 
             /// <summary>
-            /// Gets or set to true to indicate the engine shares view resources between statements, or false
-            /// to indicate the engine does not share view resources between statements.
+            /// Returns false to indicate the engine does not implicitly share similar view resources between statements (false is the default),
+            /// or true to indicate that the engine may implicitly share view resources between statements.
             /// </summary>
             /// <value>
             ///   indicator whether view resources are shared between statements if
@@ -445,7 +445,7 @@ namespace com.espertech.esper.client
             /// provided by views can only be combined if any of the retain-keywords is also specified for the stream.
             /// <para>
             /// If set to true then multiple expiry policies are allowed and the following statement compiles without exception:
-            /// "select * from MyEvent#TimeInMillis(10)#TimeInMillis(10)".
+            /// "select * from MyEvent#time(10)#time(10)".
             /// </para>
             /// </summary>
             /// <value>
@@ -873,6 +873,7 @@ namespace com.espertech.esper.client
                 FilterServiceMaxFilterWidth = 16;
                 DeclaredExprValueCacheSize = 1;
                 IsPrioritized = false;
+                CodeGeneration = new CodeGeneration();
             }
 
             /// <summary>
@@ -928,6 +929,14 @@ namespace com.espertech.esper.client
             /// </summary>
             /// <value>value</value>
             public int DeclaredExprValueCacheSize { get; set; }
+
+            /// <summary>
+            /// Gets or sets the code generation.
+            /// </summary>
+            /// <value>
+            /// The code generation.
+            /// </value>
+            public CodeGeneration CodeGeneration { get; set; }
         }
 
         /// <summary>
@@ -1144,6 +1153,24 @@ namespace com.espertech.esper.client
             public void AddClass<T>() where T : ConditionHandlerFactory
             {
                 AddClass(typeof(T).AssemblyQualifiedName);
+            }
+        }
+
+        /// <summary>
+        /// Code generation settings
+        /// </summary>
+        [Serializable]
+        public class CodeGeneration
+        {
+            private bool enablePropertyGetter = false;
+
+            /// <summary>
+            /// Returns indicator whether to enable code generation for event property getters (false by default).
+            /// </summary>
+            public bool IsEnablePropertyGetter
+            {
+                get => enablePropertyGetter;
+                set => enablePropertyGetter = value;
             }
         }
     }

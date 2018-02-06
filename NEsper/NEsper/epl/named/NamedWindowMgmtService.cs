@@ -52,11 +52,18 @@ namespace com.espertech.esper.epl.named
         /// <param name="eventTypeAsName">Name of the event type as.</param>
         /// <param name="statementContextCreateWindow">The statement context create window.</param>
         /// <param name="namedWindowDispatchService">The named window dispatch service.</param>
+        /// <param name="lockManager"></param>
         /// <returns>
         /// processor for the named window
         /// </returns>
         /// <throws>ViewProcessingException if the named window already exists</throws>
-        NamedWindowProcessor AddProcessor(string name, string contextName, EventType eventType, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized, bool isEnableSubqueryIndexShare, bool isBatchingDataWindow, bool isVirtualDataWindow, ICollection<string> optionalUniqueKeyProps, string eventTypeAsName, StatementContext statementContextCreateWindow, NamedWindowDispatchService namedWindowDispatchService);
+        NamedWindowProcessor AddProcessor(
+            string name, string contextName, EventType eventType, StatementResultService statementResultService,
+            ValueAddEventProcessor revisionProcessor, string eplExpression, string statementName, bool isPrioritized,
+            bool isEnableSubqueryIndexShare, bool isBatchingDataWindow, bool isVirtualDataWindow,
+            ICollection<string> optionalUniqueKeyProps, string eventTypeAsName,
+            StatementContext statementContextCreateWindow, NamedWindowDispatchService namedWindowDispatchService,
+            ILockManager lockManager);
 
         /// <summary>
         /// Returns the processing instance for a given named window.

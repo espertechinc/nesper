@@ -45,7 +45,7 @@ namespace com.espertech.esper.epl.expression.table
                             "Incompatible type returned by a {0} expression for use with table '{1}', the {0} expression '{2}' returns '{3}' but the table expects '{4}'",
                             providedName,
                             tableName,
-                            ExprNodeUtility.ToExpressionStringMinPrecedence(providedExpr),
+                            ExprNodeUtility.ToExpressionStringMinPrecedenceAsList(providedExpr),
                             actual.GetCleanName(),
                             expected.GetCleanName()));
                 }

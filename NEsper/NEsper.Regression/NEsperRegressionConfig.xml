@@ -1,0 +1,39 @@
+﻿<esper-configuration>
+  <database-reference name="db1">
+    <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="pooled"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="lowercase"/>
+    <metadata-origin value="sample"/>
+  </database-reference>
+
+  <database-reference name="db2">
+    <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="retain"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="uppercase"/>
+    <metadata-origin value="metadata"/>
+  </database-reference>
+
+  <!--
+  <database-reference name="db1">
+    <driver type="MySQL" connection-string="Server=nesper-mysql-integ.local;Database=test;Uid=esper;Pwd=3sp3rP@ssw0rd;UseCompression=True;SslMode=None;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="pooled"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="lowercase"/>
+    <metadata-origin value="sample"/>
+  </database-reference>
+
+  <database-reference name="db2">
+    <driver type="ODBC" connection-string="Driver={MySQL ODBC 5.3 Unicode Driver};Server=nesper-mysql-integ.local;Database=test;User=esper;Password=3sp3rP@ssw0rd;Option=3;"/>
+    <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted"/>
+    <connection-lifecycle value="retain"/>
+    <lru-cache size="1000"/>
+    <column-change-case value="uppercase"/>
+    <metadata-origin value="metadata"/>
+  </database-reference>
+  -->
+</esper-configuration>

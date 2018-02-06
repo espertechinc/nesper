@@ -8,8 +8,9 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -18,11 +19,14 @@ namespace com.espertech.esper.linq
     public class TestLinqQueries
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = new Configuration();
+            _container = SupportContainer.Reset();
+
+            Configuration configuration = new Configuration(_container);
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportPriceEvent>();
             configuration.AddEventType<SupportTradeEvent>();
@@ -172,8 +176,8 @@ namespace com.espertech.esper.linq
         public void TestOuterJoin()
         {
             var sample =
-                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from " + Name.Of<SupportTradeEvent>() + " as marketData " +
-                "left outer join " + Name.Of<SupportPriceEvent>() + " as priceEvent on marketData.CCYPair = priceEvent.Sym";
+                "@IterableUnbound select irstream marketData.Amount, priceEvent.Sym from " + Name.Clean<SupportTradeEvent>() + " as marketData " +
+                "left outer join " + Name.Clean<SupportPriceEvent>() + " as priceEvent on marketData.CCYPair = priceEvent.Sym";
             var sampleModel = _serviceProvider.EPAdministrator.CompileEPL(sample);
             var sampleModelEPL = sampleModel.ToEPL();
 

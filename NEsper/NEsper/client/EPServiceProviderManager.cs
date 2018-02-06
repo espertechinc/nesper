@@ -6,13 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
+
+[assembly:InternalsVisibleTo("NEsper.Tests")]
 
 namespace com.espertech.esper.client
 {
@@ -26,52 +31,120 @@ namespace com.espertech.esper.client
 
         static EPServiceProviderManager()
         {
-            LockObj = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            LockObj = new MonitorLock(60000);
             Runtimes = new ConcurrentDictionary<string, EPServiceProviderSPI>();
         }
 
         /// <summary>
         /// Returns the default EPServiceProvider. The URI value for the service returned is "default".
         /// </summary>
-        /// <returns>default instance of the service.</returns>
+        /// <returns></returns>
         public static EPServiceProvider GetDefaultProvider()
         {
-            return GetProvider(EPServiceProviderConstants.DEFAULT_ENGINE_URI, new Configuration());
+            return GetDefaultProvider(ContainerExtensions.CreateDefaultContainer());
         }
-    
+
         /// <summary>
         /// Returns the default EPServiceProvider. The URI value for the service returned is "default".
         /// </summary>
-        /// <param name="configuration">is the configuration for the service</param>
-        /// <exception cref="ConfigurationException">to indicate a configuration problem</exception>
         /// <returns>default instance of the service.</returns>
-        public static EPServiceProvider GetDefaultProvider(Configuration configuration)
+        public static EPServiceProvider GetDefaultProvider(IContainer container)
         {
-            return GetProvider(EPServiceProviderConstants.DEFAULT_ENGINE_URI, configuration);
+            return GetProvider(
+                container,
+                EPServiceProviderConstants.DEFAULT_ENGINE_URI,
+                new Configuration(container));
         }
-    
+
+        /// <summary>
+        /// Returns the default EPServiceProvider. The URI value for the service returned is "default".
+        /// </summary>
+        /// <param name="container">The service provider.</param>
+        /// <param name="configuration">is the configuration for the service</param>
+        /// <returns>
+        /// default instance of the service.
+        /// </returns>
+        /// <exception cref="ConfigurationException">to indicate a configuration problem</exception>
+        public static EPServiceProvider GetDefaultProvider(
+            IContainer container,
+            Configuration configuration)
+        {
+            return GetProvider(
+                container,
+                EPServiceProviderConstants.DEFAULT_ENGINE_URI, 
+                configuration);
+        }
+
+        public static EPServiceProvider GetDefaultProvider(
+            Configuration configuration)
+        {
+            var container = configuration.Container;
+            if (container == null) {
+                container = ContainerExtensions.CreateDefaultContainer();
+            }
+
+            return GetProvider(
+                container,
+                EPServiceProviderConstants.DEFAULT_ENGINE_URI,
+                configuration);
+        }
+
         /// <summary>
         /// Returns an EPServiceProvider for a given provider URI.
         /// <para>
         /// Use the URI of "default" or null to return the default service provider.
         /// </para>
         /// </summary>
+        /// <param name="container">The service provider.</param>
         /// <param name="providerURI">- the provider URI</param>
-        /// <returns>EPServiceProvider for the given provider URI.</returns>
-        public static EPServiceProvider GetProvider(string providerURI)
+        /// <returns>
+        /// EPServiceProvider for the given provider URI.
+        /// </returns>
+        public static EPServiceProvider GetProvider(
+            IContainer container, 
+            string providerURI)
         {
-            return GetProvider(providerURI, new Configuration());
+            return GetProvider(container, providerURI, new Configuration(container));
         }
-    
+
+        public static EPServiceProvider GetProvider(
+            string providerURI)
+        {
+            return GetProvider(
+                ContainerExtensions.CreateDefaultContainer(),
+                providerURI);
+        }
+
+        public static EPServiceProvider GetProvider(
+            string providerURI,
+            Configuration configuration)
+        {
+            var container = configuration.Container;
+            if (container == null) {
+                container = ContainerExtensions.CreateDefaultContainer();
+            }
+
+            return GetProvider(
+                container,
+                providerURI,
+                configuration);
+        }
+
         /// <summary>
         /// Returns an EPServiceProvider for a given provider URI.
         /// Use the URI of "default" or null to return the default service provider.
         /// </summary>
+        /// <param name="container">The service provider.</param>
         /// <param name="providerURI">- the provider URI. If null provided it assumes "default".</param>
         /// <param name="configuration">is the configuration for the service</param>
+        /// <returns>
+        /// EPServiceProvider for the given provider URI.
+        /// </returns>
         /// <exception cref="ConfigurationException">to indicate a configuration problem</exception>
-        /// <returns>EPServiceProvider for the given provider URI.</returns>
-        public static EPServiceProvider GetProvider(string providerURI, Configuration configuration)
+        public static EPServiceProvider GetProvider(
+            IContainer container, 
+            string providerURI, 
+            Configuration configuration)
         {
             using (LockObj.Acquire())
             {
@@ -82,7 +155,7 @@ namespace com.espertech.esper.client
                     var provider = Runtimes.Get(providerURINonNull);
                     if (provider.IsDestroyed)
                     {
-                        provider = GetProviderInternal(configuration, providerURINonNull);
+                        provider = GetProviderInternal(container, configuration, providerURINonNull);
                         Runtimes.Put(providerURINonNull, provider);
                     }
                     else
@@ -93,7 +166,7 @@ namespace com.espertech.esper.client
                 }
 
                 // New runtime
-                var runtime = GetProviderInternal(configuration, providerURINonNull);
+                var runtime = GetProviderInternal(container, configuration, providerURINonNull);
                 Runtimes.Put(providerURINonNull, runtime);
                 runtime.PostInitialize();
 
@@ -133,9 +206,13 @@ namespace com.espertech.esper.client
             get { return Runtimes.Keys.ToArray(); }
         }
 
-        private static EPServiceProviderSPI GetProviderInternal(Configuration configuration, string providerURINonNull)
+        private static EPServiceProviderSPI GetProviderInternal(
+            IContainer container,
+            Configuration configuration, 
+            string providerURINonNull)
         {
-            return new EPServiceProviderImpl(configuration, providerURINonNull, Runtimes);
+            return new EPServiceProviderImpl(
+                container, configuration, providerURINonNull, Runtimes);
         }
 
         /// <summary>
@@ -159,7 +236,6 @@ namespace com.espertech.esper.client
         /// <summary>
         /// Clears references to the default provider.
         /// </summary>
-
         public static void PurgeDefaultProvider()
         {
             PurgeProvider(null);
@@ -175,6 +251,5 @@ namespace com.espertech.esper.client
                 Runtimes.Clear();
             }
         }
-
     }
 } // end of namespace

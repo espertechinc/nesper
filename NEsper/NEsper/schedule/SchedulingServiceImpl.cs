@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.metrics.instrumentation;
@@ -43,13 +44,19 @@ namespace com.espertech.esper.schedule
         /// Constructor.
         /// </summary>
         /// <param name="timeSourceService">time source provider</param>
-        public SchedulingServiceImpl(TimeSourceService timeSourceService)
+        /// <param name="lockManager">The lock manager.</param>
+        public SchedulingServiceImpl(TimeSourceService timeSourceService, ILockManager lockManager)
         {
-            _uLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _uLock = lockManager.CreateLock(GetType());
             _timeHandleMap = new SortedList<long, IDictionary<long, ScheduleHandle>>();
             _handleSetMap = new Dictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>>();
             // initialize time to just before now as there is a check for duplicate external time events
             _currentTime = timeSourceService.GetTimeMillis() - 1;
+        }
+
+        public SchedulingServiceImpl(TimeSourceService timeSourceService, IContainer container)
+            : this(timeSourceService, container.Resolve<ILockManager>())
+        {
         }
 
         public void Dispose()

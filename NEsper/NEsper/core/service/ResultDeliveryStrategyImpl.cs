@@ -31,7 +31,7 @@ namespace com.espertech.esper.core.service
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EPStatement _statement;
-        private readonly Object _subscriber;
+        private readonly object _subscriber;
         private readonly FastMethod _updateMethodFast;
         private readonly FastMethod _startMethodFast;
         private readonly bool _startMethodHasEPStatement;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.core.service
         /// <param name="rStreamMethod">The r stream method.</param>
         public ResultDeliveryStrategyImpl(
             EPStatement statement,
-            Object subscriber,
+            object subscriber,
             DeliveryConvertor deliveryConvertor,
             MethodInfo method,
             MethodInfo startMethod,
@@ -96,22 +96,22 @@ namespace com.espertech.esper.core.service
         {
             if (_startMethodFast != null)
             {
-                int countNew = 0;
-                int countOld = 0;
+                var countNew = 0;
+                var countOld = 0;
                 if (result != null)
                 {
                     countNew = Count(result.First);
                     countOld = Count(result.Second);
                 }
 
-                Object[] paramList;
+                object[] paramList;
                 if (!_startMethodHasEPStatement)
                 {
-                    paramList = new Object[] { countNew, countOld };
+                    paramList = new object[] { countNew, countOld };
                 }
                 else
                 {
-                    paramList = new Object[] { _statement, countNew, countOld };
+                    paramList = new object[] { _statement, countNew, countOld };
                 }
 
                 try
@@ -138,13 +138,13 @@ namespace com.espertech.esper.core.service
 
             if ((newData != null) && (newData.Length > 0))
             {
-                for (int i = 0; i < newData.Length; i++)
+                for (var i = 0; i < newData.Length; i++)
                 {
-                    EventBean theEvent = newData[i];
+                    var theEvent = newData[i];
                     if (theEvent is NaturalEventBean)
                     {
                         var natural = (NaturalEventBean)theEvent;
-                        Object[] paramList = _deliveryConvertor.ConvertRow(natural.Natural);
+                        var paramList = _deliveryConvertor.ConvertRow(natural.Natural);
                         try
                         {
                             _updateMethodFast.Invoke(_subscriber, paramList);
@@ -163,9 +163,9 @@ namespace com.espertech.esper.core.service
 
             if ((_updateRStreamMethodFast != null) && (oldData != null) && (oldData.Length > 0))
             {
-                for (int i = 0; i < oldData.Length; i++)
+                for (var i = 0; i < oldData.Length; i++)
                 {
-                    EventBean theEvent = oldData[i];
+                    var theEvent = oldData[i];
                     if (theEvent is NaturalEventBean)
                     {
                         var natural = (NaturalEventBean)theEvent;
@@ -216,14 +216,14 @@ namespace com.espertech.esper.core.service
         /// <param name="subscriber">the object to deliver to</param>
         /// <param name="method">the method to call</param>
         /// <throws>EPException converted from the passed invocation exception</throws>
-        protected internal static void Handle(String statementName,
+        protected internal static void Handle(string statementName,
                                               ILog logger,
                                               TargetInvocationException e,
-                                              Object[] paramList,
-                                              Object subscriber,
+                                              object[] paramList,
+                                              object subscriber,
                                               FastMethod method)
         {
-            String message = TypeHelper.GetMessageInvocationTarget(statementName, method.Target,
+            var message = TypeHelper.GetMessageInvocationTarget(statementName, method.Target,
                                                                    subscriber.GetType().FullName,
                                                                    paramList, e);
             logger.Error(message, e.InnerException);
@@ -238,11 +238,11 @@ namespace com.espertech.esper.core.service
         /// <throws>EPException converted from the passed invocation exception</throws>
         internal static void HandleThrowable(ILog logger,
                                               Exception e,
-                                              Object[] paramList,
-                                              Object subscriber,
+                                              object[] paramList,
+                                              object subscriber,
                                               FastMethod method)
         {
-            String message = "Unexpected exception when invoking method '" + method.Name +
+            var message = "Unexpected exception when invoking method '" + method.Name +
                              "' on subscriber class '" + subscriber.GetType().Name +
                              "' for parameters " + ((paramList == null) ? "null" : paramList.Render()) +
                              " : " + e.GetType().Name + " : " + e.Message;
@@ -255,10 +255,10 @@ namespace com.espertech.esper.core.service
             {
                 return 0;
             }
-            int count = 0;
-            for (int i = 0; i < events.Length; i++)
+            var count = 0;
+            for (var i = 0; i < events.Length; i++)
             {
-                EventBean theEvent = events[i];
+                var theEvent = events[i];
                 if (theEvent is NaturalEventBean)
                 {
                     count++;

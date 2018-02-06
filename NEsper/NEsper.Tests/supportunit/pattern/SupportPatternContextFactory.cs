@@ -12,6 +12,7 @@ using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.pattern;
 using com.espertech.esper.schedule;
+using com.espertech.esper.supportunit.util;
 
 namespace com.espertech.esper.supportunit.pattern
 {
@@ -24,22 +25,25 @@ namespace com.espertech.esper.supportunit.pattern
 
         public static PatternAgentInstanceContext MakePatternAgentInstanceContext(SchedulingService scheduleService)
         {
+            var container = SupportContainer.Instance;
+
             StatementContext stmtContext;
             if (scheduleService == null)
             {
-                stmtContext = SupportStatementContextFactory.MakeContext();
+                stmtContext = SupportStatementContextFactory.MakeContext(container);
             }
             else
             {
-                stmtContext = SupportStatementContextFactory.MakeContext(scheduleService);
+                stmtContext = SupportStatementContextFactory.MakeContext(container, scheduleService);
             }
             PatternContext context = new PatternContext(stmtContext, 1, new MatchedEventMapMeta(new String[0], false), false);
-            return new PatternAgentInstanceContext(context, SupportStatementContextFactory.MakeAgentInstanceContext(), false);
+            return new PatternAgentInstanceContext(context, SupportStatementContextFactory.MakeAgentInstanceContext(container), false);
         }
 
         public static PatternContext MakeContext()
         {
-            StatementContext stmtContext = SupportStatementContextFactory.MakeContext();
+            var container = SupportContainer.Instance;
+            StatementContext stmtContext = SupportStatementContextFactory.MakeContext(container);
             return new PatternContext(stmtContext, 1, new MatchedEventMapMeta(new String[0], false), false);
         }
     }

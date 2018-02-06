@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -33,11 +34,16 @@ namespace com.espertech.esper.filter
         /// <summary>
         /// Constructor - takes the event type index to manipulate as its parameter.
         /// </summary>
+        /// <param name="lockManager">The lock manager.</param>
         /// <param name="eventTypeIndex">index to manipulate</param>
-        public EventTypeIndexBuilder(EventTypeIndex eventTypeIndex, bool allowIsolation)
+        /// <param name="allowIsolation">if set to <c>true</c> [allow isolation].</param>
+        public EventTypeIndexBuilder(
+            ILockManager lockManager,
+            EventTypeIndex eventTypeIndex,
+            bool allowIsolation)
         {
             _eventTypeIndex = eventTypeIndex;
-            _callbacksLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _callbacksLock = lockManager.CreateLock(GetType());
             _isolatableCallbacks = allowIsolation ? new Dictionary<FilterHandle, EventTypeIndexBuilderValueIndexesPair>() : null;
         }
 

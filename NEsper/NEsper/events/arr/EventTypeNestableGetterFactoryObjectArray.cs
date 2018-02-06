@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.events;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
 using com.espertech.esper.events.property;
@@ -18,9 +19,9 @@ namespace com.espertech.esper.events.arr
 {
     public class EventTypeNestableGetterFactoryObjectArray : EventTypeNestableGetterFactory
     {
-        private readonly String _eventTypeName;
+        private readonly string _eventTypeName;
 
-        public EventTypeNestableGetterFactoryObjectArray(String eventTypeName, IDictionary<String, int> propertiesIndex)
+        public EventTypeNestableGetterFactoryObjectArray(string eventTypeName, IDictionary<string, int> propertiesIndex)
         {
             _eventTypeName = eventTypeName;
             PropertiesIndex = propertiesIndex;
@@ -28,90 +29,90 @@ namespace com.espertech.esper.events.arr
 
         public IDictionary<string, int> PropertiesIndex { get; private set; }
 
-        public EventPropertyGetter GetPropertyProvidedGetter(IDictionary<String, Object> nestableTypes, String propertyName, Property prop, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetPropertyProvidedGetter(IDictionary<string, object> nestableTypes, string propertyName, Property prop, EventAdapterService eventAdapterService)
         {
             return prop.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
         }
 
-        public EventPropertyGetter GetGetterProperty(String name, BeanEventType nativeFragmentType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterProperty(string name, BeanEventType nativeFragmentType, EventAdapterService eventAdapterService)
         {
             int index = GetAssertIndex(name);
             return new ObjectArrayEntryPropertyGetter(index, nativeFragmentType, eventAdapterService);
         }
 
-        public EventPropertyGetter GetGetterEventBean(String name)
+        public EventPropertyGetterSPI GetGetterEventBean(string name)
         {
             int index = GetAssertIndex(name);
             return new ObjectArrayEventBeanPropertyGetter(index);
         }
 
-        public EventPropertyGetter GetGetterEventBeanArray(String name, EventType eventType)
+        public EventPropertyGetterSPI GetGetterEventBeanArray(string name, EventType eventType)
         {
             int index = GetAssertIndex(name);
             return new ObjectArrayEventBeanArrayPropertyGetter(index, eventType.UnderlyingType);
         }
 
-        public EventPropertyGetter GetGetterBeanNestedArray(String name, EventType eventType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterBeanNestedArray(string name, EventType eventType, EventAdapterService eventAdapterService)
         {
             int index = GetAssertIndex(name);
             return new ObjectArrayFragmentArrayPropertyGetter(index, eventType, eventAdapterService);
         }
 
-        public EventPropertyGetter GetGetterIndexedEventBean(String propertyNameAtomic, int index)
+        public EventPropertyGetterSPI GetGetterIndexedEventBean(string propertyNameAtomic, int index)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayEventBeanArrayIndexedPropertyGetter(propertyIndex, index);
         }
 
-        public EventPropertyGetter GetGetterIndexedUnderlyingArray(String propertyNameAtomic, int index, EventAdapterService eventAdapterService, EventType innerType)
+        public EventPropertyGetterSPI GetGetterIndexedUnderlyingArray(string propertyNameAtomic, int index, EventAdapterService eventAdapterService, EventType innerType)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayArrayPropertyGetter(propertyIndex, index, eventAdapterService, innerType);
         }
 
-        public EventPropertyGetter GetGetterIndexedPONO(String propertyNameAtomic, int index, EventAdapterService eventAdapterService, Type componentType)
+        public EventPropertyGetterSPI GetGetterIndexedPono(string propertyNameAtomic, int index, EventAdapterService eventAdapterService, Type componentType)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
-            return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(propertyIndex, index, eventAdapterService, componentType);
+            return new ObjectArrayArrayPonoEntryIndexedPropertyGetter(propertyIndex, index, eventAdapterService, componentType);
         }
 
-        public EventPropertyGetter GetGetterMappedProperty(String propertyNameAtomic, String key)
+        public EventPropertyGetterSPI GetGetterMappedProperty(string propertyNameAtomic, string key)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayMappedPropertyGetter(propertyIndex, key);
         }
 
-        public EventPropertyGetter GetGetterIndexedEntryEventBeanArrayElement(String propertyNameAtomic, int index, EventPropertyGetter nestedGetter)
+        public EventPropertyGetterSPI GetGetterIndexedEntryEventBeanArrayElement(string propertyNameAtomic, int index, EventPropertyGetterSPI nestedGetter)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayEventBeanArrayIndexedElementPropertyGetter(propertyIndex, index, nestedGetter);
         }
 
-        public EventPropertyGetter GetGetterIndexedEntryPONO(String propertyNameAtomic, int index, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type propertyTypeGetter)
+        public EventPropertyGetterSPI GetGetterIndexedEntryPono(string propertyNameAtomic, int index, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type propertyTypeGetter)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
-            return new ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter(propertyIndex, index, nestedGetter, eventAdapterService, propertyTypeGetter);
+            return new ObjectArrayArrayPonoBeanEntryIndexedPropertyGetter(propertyIndex, index, nestedGetter, eventAdapterService, propertyTypeGetter);
         }
 
-        public EventPropertyGetter GetGetterNestedMapProp(String propertyName, MapEventPropertyGetter getterNested)
+        public EventPropertyGetterSPI GetGetterNestedMapProp(string propertyName, MapEventPropertyGetter getterNested)
         {
             int index = GetAssertIndex(propertyName);
             return new ObjectArrayMapPropertyGetter(index, getterNested);
         }
 
-        public EventPropertyGetter GetGetterNestedPONOProp(String propertyName, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type nestedReturnType, Type nestedComponentType)
+        public EventPropertyGetterSPI GetGetterNestedPonoProp(string propertyName, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type nestedReturnType, Type nestedComponentType)
         {
             int index = GetAssertIndex(propertyName);
-            return new ObjectArrayPONOEntryPropertyGetter(index, nestedGetter, eventAdapterService, nestedReturnType, nestedComponentType);
+            return new ObjectArrayPonoEntryPropertyGetter(index, nestedGetter, eventAdapterService, nestedReturnType, nestedComponentType);
         }
 
-        public EventPropertyGetter GetGetterNestedEventBean(String propertyName, EventPropertyGetter nestedGetter)
+        public EventPropertyGetterSPI GetGetterNestedEventBean(string propertyName, EventPropertyGetterSPI nestedGetter)
         {
             int index = GetAssertIndex(propertyName);
             return new ObjectArrayEventBeanEntryPropertyGetter(index, nestedGetter);
         }
 
-        public EventPropertyGetter GetGetterNestedEntryBean(String propertyName, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterNestedEntryBean(string propertyName, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService)
         {
             int propertyIndex = GetAssertIndex(propertyName);
             if (getter is ObjectArrayEventPropertyGetter)
@@ -121,7 +122,7 @@ namespace com.espertech.esper.events.arr
             return new ObjectArrayNestedEntryPropertyGetterMap(propertyIndex, innerType, eventAdapterService, (MapEventPropertyGetter)getter);
         }
 
-        public EventPropertyGetter GetGetterNestedEntryBeanArray(String propertyNameAtomic, int index, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterNestedEntryBeanArray(string propertyNameAtomic, int index, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService)
         {
             int propertyIndex = GetAssertIndex(propertyNameAtomic);
             if (getter is ObjectArrayEventPropertyGetter)
@@ -131,7 +132,7 @@ namespace com.espertech.esper.events.arr
             return new ObjectArrayNestedEntryPropertyGetterArrayMap(propertyIndex, innerType, eventAdapterService, index, (MapEventPropertyGetter)getter);
         }
 
-        public EventPropertyGetter GetGetterBeanNested(String name, EventType eventType, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterBeanNested(string name, EventType eventType, EventAdapterService eventAdapterService)
         {
             int index = GetAssertIndex(name);
             if (eventType is ObjectArrayEventType)
@@ -141,7 +142,7 @@ namespace com.espertech.esper.events.arr
             return new ObjectArrayPropertyGetterDefaultMap(index, eventType, eventAdapterService);
         }
 
-        private int GetAssertIndex(String propertyName)
+        private int GetAssertIndex(string propertyName)
         {
             int index;
             if (!PropertiesIndex.TryGetValue(propertyName, out index))
@@ -151,17 +152,17 @@ namespace com.espertech.esper.events.arr
             return index;
         }
 
-        public EventPropertyGetterMapped GetPropertyProvidedGetterMap(IDictionary<String, Object> nestableTypes, String mappedPropertyName, MappedProperty mappedProperty, EventAdapterService eventAdapterService)
+        public EventPropertyGetterMapped GetPropertyProvidedGetterMap(IDictionary<string, object> nestableTypes, string mappedPropertyName, MappedProperty mappedProperty, EventAdapterService eventAdapterService)
         {
             return (EventPropertyGetterMapped)mappedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
         }
 
-        public EventPropertyGetterIndexed GetPropertyProvidedGetterIndexed(IDictionary<String, Object> nestableTypes, String indexedPropertyName, IndexedProperty indexedProperty, EventAdapterService eventAdapterService)
+        public EventPropertyGetterIndexed GetPropertyProvidedGetterIndexed(IDictionary<string, object> nestableTypes, string indexedPropertyName, IndexedProperty indexedProperty, EventAdapterService eventAdapterService)
         {
             return (EventPropertyGetterIndexed)indexedProperty.GetGetterObjectArray(PropertiesIndex, nestableTypes, eventAdapterService);
         }
 
-        public EventPropertyGetter GetGetterNestedPropertyProvidedGetterDynamic(IDictionary<String, Object> nestableTypes, String propertyName, EventPropertyGetter nestedGetter, EventAdapterService eventAdapterService)
+        public EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(IDictionary<string, object> nestableTypes, string propertyName, EventPropertyGetter nestedGetter, EventAdapterService eventAdapterService)
         {
             return null; // this case is not supported
         }

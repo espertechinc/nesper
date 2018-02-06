@@ -34,28 +34,19 @@ namespace com.espertech.esper.compat.collections
         /// Gets the count.
         /// </summary>
         /// <value>The count.</value>
-        public int Count
-        {
-            get { return _keyCount; }
-        }
+        public int Count => _keyCount;
 
         /// <summary>
         /// Gets the keys for the schema.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<K> Keys
-        {
-            get { return _keyToIndex.Keys;  }
-        }
+        public ICollection<K> Keys => _keyToIndex.Keys;
 
         /// <summary>
         /// Gets the index associated with the specified key.
         /// </summary>
         /// <value></value>
-        public int this[K key]
-        {
-            get { return _keyToIndex[key]; }
-        }
+        public int this[K key] => _keyToIndex[key];
 
         /// <summary>
         /// Tries the get the index for the key.  If the index does not

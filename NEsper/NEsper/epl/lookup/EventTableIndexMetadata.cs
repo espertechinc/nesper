@@ -17,41 +17,61 @@ namespace com.espertech.esper.epl.lookup
 {
     public class EventTableIndexMetadata
     {
-        private readonly IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> indexes = new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>();
-    
+        private readonly IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> _indexes =
+            new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>();
+        private readonly IDictionary<IndexMultiKey, EventTableIndexEntryBase> _indexesAsBase;
+
+
         public EventTableIndexMetadata()
         {
+            _indexesAsBase = new TransformDictionary<
+                IndexMultiKey,
+                EventTableIndexEntryBase,
+                IndexMultiKey,
+                EventTableIndexMetadataEntry>(
+                _indexes,
+                k => k,
+                k => k,
+                v => v,
+                v => (EventTableIndexMetadataEntry) v
+            );
         }
 
-        public void AddIndex(bool isPrimary, IndexMultiKey indexMultiKey, string explicitIndexName, string statementName, bool failIfExists, QueryPlanIndexItem optionalQueryPlanIndexItem)
+        public void AddIndexExplicit(bool isPrimary, IndexMultiKey indexMultiKey, string explicitIndexName, QueryPlanIndexItem explicitIndexDesc, string statementName)
         {
             if (GetIndexByName(explicitIndexName) != null) {
                 throw new ExprValidationException("An index by name '" + explicitIndexName + "' already exists");
             }
-            if (indexes.ContainsKey(indexMultiKey)) {
-                if (failIfExists) {
-                    throw new ExprValidationException("An index for the same columns already exists");
-                }
-                return;
+            if (_indexes.ContainsKey(indexMultiKey)) {
+                throw new ExprValidationException("An index for the same columns already exists");
             }
-            EventTableIndexMetadataEntry entry = new EventTableIndexMetadataEntry(explicitIndexName, isPrimary, optionalQueryPlanIndexItem);
+            EventTableIndexMetadataEntry entry = new EventTableIndexMetadataEntry(explicitIndexName, isPrimary, explicitIndexDesc, explicitIndexName);
             entry.AddReferringStatement(statementName);
-            indexes.Put(indexMultiKey, entry);
+            _indexes.Put(indexMultiKey, entry);
         }
 
-        public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes
+        public void AddIndexNonExplicit(IndexMultiKey indexMultiKey, string statementName, QueryPlanIndexItem queryPlanIndexItem)
         {
-            get { return indexes; }
+            if (_indexes.ContainsKey(indexMultiKey)) {
+                return;
+            }
+            var entry = new EventTableIndexMetadataEntry(null, false, queryPlanIndexItem, null);
+            entry.AddReferringStatement(statementName);
+            _indexes.Put(indexMultiKey, entry);
         }
+
+        public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes => _indexes;
+
+        public IDictionary<IndexMultiKey, EventTableIndexEntryBase> IndexesAsBase => _indexesAsBase;
 
         public void RemoveIndex(IndexMultiKey imk)
         {
-            indexes.Remove(imk);
+            _indexes.Remove(imk);
         }
     
         public bool RemoveIndexReference(IndexMultiKey index, string referringStatementName)
         {
-            var entry = indexes.Get(index);
+            var entry = _indexes.Get(index);
             if (entry == null) {
                 return false;
             }
@@ -69,7 +89,7 @@ namespace com.espertech.esper.epl.lookup
     
         public void AddIndexReference(IndexMultiKey indexMultiKey, string statementName)
         {
-            EventTableIndexMetadataEntry entry = indexes.Get(indexMultiKey);
+            EventTableIndexMetadataEntry entry = _indexes.Get(indexMultiKey);
             if (entry == null) {
                 return;
             }
@@ -88,7 +108,7 @@ namespace com.espertech.esper.epl.lookup
         public ICollection<string> GetRemoveRefIndexesDereferenced(string statementName)
         {
             ICollection<string> indexNamesDerrefd = null;
-            foreach (var entry in indexes) {
+            foreach (var entry in _indexes) {
                 bool last = entry.Value.RemoveReferringStatement(statementName);
                 if (last) {
                     if (indexNamesDerrefd == null) {
@@ -108,7 +128,7 @@ namespace com.espertech.esper.epl.lookup
     
         private KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry>? FindIndex(string indexName)
         {
-            foreach (var entry in indexes)
+            foreach (var entry in _indexes)
             {
                 if (entry.Value.OptionalIndexName != null && entry.Value.OptionalIndexName == indexName)
                 {
@@ -123,7 +143,7 @@ namespace com.espertech.esper.epl.lookup
             get
             {
                 var uniques = new ArrayDeque<string[]>(2);
-                foreach (var entry in indexes)
+                foreach (var entry in _indexes)
                 {
                     if (entry.Key.IsUnique)
                     {

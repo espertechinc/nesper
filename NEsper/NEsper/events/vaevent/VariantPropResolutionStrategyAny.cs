@@ -8,6 +8,7 @@
 
 using System;
 using com.espertech.esper.client;
+using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.events.vaevent
 {
@@ -17,44 +18,25 @@ namespace com.espertech.esper.events.vaevent
     /// </summary>
     public class VariantPropResolutionStrategyAny : VariantPropResolutionStrategy
     {
-        private int currentPropertyNumber;
-        private readonly VariantPropertyGetterCache propertyGetterCache;
+        private int _currentPropertyNumber;
+        private readonly VariantPropertyGetterCache _propertyGetterCache;
     
         /// <summary>Ctor. </summary>
         /// <param name="variantSpec">specified the preconfigured types</param>
-        public VariantPropResolutionStrategyAny(VariantSpec variantSpec)
+        public VariantPropResolutionStrategyAny(ILockManager lockManager, VariantSpec variantSpec)
         {
-            propertyGetterCache = new VariantPropertyGetterCache(variantSpec.EventTypes);
+            _propertyGetterCache = new VariantPropertyGetterCache(
+                lockManager, variantSpec.EventTypes);
         }
     
         public VariantPropertyDesc ResolveProperty(String propertyName, EventType[] variants)
         {
             // property numbers should start at zero since the serve as array index
-            int assignedPropertyNumber = currentPropertyNumber;
-            currentPropertyNumber++;
-            propertyGetterCache.AddGetters(assignedPropertyNumber, propertyName);
+            int assignedPropertyNumber = _currentPropertyNumber;
+            _currentPropertyNumber++;
+            _propertyGetterCache.AddGetters(assignedPropertyNumber, propertyName);
 
-            EventPropertyGetter getter = new ProxyEventPropertyGetter(
-                delegate(EventBean eventBean) {
-                    var variant = (VariantEvent) eventBean;
-                    var _getter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                    if (_getter == null) {
-                        return null;
-                    }
-                    return _getter.Get(variant.UnderlyingEventBean);
-                },
-                delegate {
-                    return null; // no fragments provided as the type is not known in advance
-                },
-                delegate(EventBean eventBean) {
-                    var variant = (VariantEvent)eventBean;
-                    var _getter = propertyGetterCache.GetGetter(assignedPropertyNumber, variant.UnderlyingEventBean.EventType);
-                    if (_getter == null) {
-                        return false;
-                    }
-                    return _getter.IsExistsProperty(variant.UnderlyingEventBean);
-                });
-    
+            var getter = new VariantEventPropertyGetterAny(_propertyGetterCache, assignedPropertyNumber);
             return new VariantPropertyDesc(typeof(Object), getter, true);
         }
     }

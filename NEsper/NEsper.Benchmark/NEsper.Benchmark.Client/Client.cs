@@ -8,6 +8,7 @@
 
 using System;
 using System.Threading;
+
 using NEsper.Benchmark.Common;
 
 namespace NEsper.Benchmark.Client

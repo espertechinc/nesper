@@ -35,7 +35,7 @@ namespace com.espertech.esper.epl.join.plan
             _types = new EventType[] { SupportEventTypeFactory.CreateBeanType(typeof(SupportBean)) };
     
             var factory = new PropertyIndexedEventTableFactory(1, _types[0], new String[] {"IntBoxed"}, false, null);
-            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
+            _propertyMapEventIndex = (PropertyIndexedEventTable) factory.MakeEventTables(null, null)[0];
         }
     
         [Test]

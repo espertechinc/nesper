@@ -11,6 +11,8 @@ using System.Linq;
 using System.Text;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -34,6 +36,12 @@ namespace com.espertech.esper.view.internals
         private IThreadLocal<IntersectBatchViewLocalState> _batchViewLocalState;
         private IThreadLocal<IntersectDefaultViewLocalState> _defaultViewLocalState;
         private IThreadLocal<IntersectAsymetricViewLocalState> _asymetricViewLocalState;
+        private readonly IThreadLocalManager _threadLocalManager;
+
+        public IntersectViewFactory(IContainer container)
+        {
+            _threadLocalManager = container.ThreadLocalManager();
+        }
 
         /// <summary>
         /// Sets the view factories.
@@ -63,20 +71,20 @@ namespace com.espertech.esper.view.internals
 
                 if (batchCount == 1)
                 {
-                    _batchViewLocalState = ThreadLocalManager.Create(
+                    _batchViewLocalState = _threadLocalManager.Create(
                         () => new IntersectBatchViewLocalState(
                             new EventBean[value.Count][],
                             new EventBean[value.Count][]));
                 }
                 else if (_isAsymmetric)
                 {
-                    _asymetricViewLocalState = ThreadLocalManager.Create(
+                    _asymetricViewLocalState = _threadLocalManager.Create(
                         () => new IntersectAsymetricViewLocalState(
                             new EventBean[value.Count][]));
                 }
                 else
                 {
-                    _defaultViewLocalState = ThreadLocalManager.Create(
+                    _defaultViewLocalState = _threadLocalManager.Create(
                         () => new IntersectDefaultViewLocalState(
                             new EventBean[value.Count][]));
                 }

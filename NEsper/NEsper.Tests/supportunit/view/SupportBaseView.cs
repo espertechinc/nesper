@@ -57,7 +57,7 @@ namespace com.espertech.esper.supportunit.view
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return EnumerationHelper<EventBean>.Empty();
+            return EnumerationHelper.Empty<EventBean>();
         }
 
         public void ClearLastNewData()

@@ -7,10 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.access;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
@@ -21,106 +19,80 @@ using com.espertech.esper.type;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationMethodFactoryMinMax : AggregationMethodFactory
-	{
-        protected internal readonly ExprMinMaxAggrNode Parent;
-        protected internal readonly Type Type;
-        protected internal readonly bool HasDataWindows;
+    public class AggregationMethodFactoryMinMax : AggregationMethodFactory
+    {
+        private readonly bool _hasDataWindows;
+        private readonly ExprMinMaxAggrNode _parent;
 
-	    public AggregationMethodFactoryMinMax(ExprMinMaxAggrNode parent, Type type, bool hasDataWindows)
+        public AggregationMethodFactoryMinMax(ExprMinMaxAggrNode parent, Type type, bool hasDataWindows)
         {
-	        Parent = parent;
-	        Type = type;
-	        HasDataWindows = hasDataWindows;
-	    }
+            _parent = parent;
+            ResultType = type;
+            _hasDataWindows = hasDataWindows;
+        }
 
-	    public bool IsAccessAggregation
-	    {
-	        get { return false; }
-	    }
+        public bool IsAccessAggregation => false;
 
-	    public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
+        public AggregationStateKey GetAggregationStateKey(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
+        public AggregationStateFactory GetAggregationStateFactory(bool isMatchRecognize)
         {
-	        throw new IllegalStateException("Not an access aggregation function");
-	    }
+            throw new IllegalStateException("Not an access aggregation function");
+        }
 
-	    public AggregationAccessor Accessor
-	    {
-	        get { throw new IllegalStateException("Not an access aggregation function"); }
-	    }
+        public AggregationAccessor Accessor => throw new IllegalStateException("Not an access aggregation function");
 
-	    public Type ResultType
-	    {
-	        get { return Type; }
-	    }
+        public Type ResultType { get; }
 
-	    public AggregationMethod Make()
+        public AggregationMethod Make()
         {
-	        AggregationMethod method = MakeMinMaxAggregator(Parent.MinMaxTypeEnum, Type, HasDataWindows, Parent.HasFilter);
-	        if (!Parent.IsDistinct) {
-	            return method;
-	        }
-	        return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, Parent.HasFilter);
-	    }
+            var method = MakeMinMaxAggregator(_parent.MinMaxTypeEnum, ResultType, _hasDataWindows, _parent.HasFilter);
+            if (!_parent.IsDistinct) return method;
+            return AggregationMethodFactoryUtil.MakeDistinctAggregator(method, _parent.HasFilter);
+        }
 
-	    public ExprAggregateNodeBase AggregationExpression
-	    {
-	        get { return Parent; }
-	    }
+        public ExprAggregateNodeBase AggregationExpression => _parent;
 
-	    public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
+        public void ValidateIntoTableCompatible(AggregationMethodFactory intoTableAgg)
         {
-	        service.AggregationMethodFactoryUtil.ValidateAggregationType(this, intoTableAgg);
-	        AggregationMethodFactoryMinMax that = (AggregationMethodFactoryMinMax) intoTableAgg;
-	        service.AggregationMethodFactoryUtil.ValidateAggregationInputType(Type, that.Type);
-	        service.AggregationMethodFactoryUtil.ValidateAggregationFilter(Parent.HasFilter, that.Parent.HasFilter);
-	        if (Parent.MinMaxTypeEnum != that.Parent.MinMaxTypeEnum)
-            {
-	            throw new ExprValidationException("The aggregation declares " +
-	                    Parent.MinMaxTypeEnum.GetExpressionText() +
-	                    " and provided is " +
-	                    that.Parent.MinMaxTypeEnum.GetExpressionText());
-	        }
-	        service.AggregationMethodFactoryUtil.ValidateAggregationUnbound(HasDataWindows, that.HasDataWindows);
-	    }
+            AggregationValidationUtil.ValidateAggregationType(this, intoTableAgg);
+            var that = (AggregationMethodFactoryMinMax) intoTableAgg;
+            AggregationValidationUtil.ValidateAggregationInputType(ResultType, that.ResultType);
+            AggregationValidationUtil.ValidateAggregationFilter(_parent.HasFilter, that._parent.HasFilter);
+            if (_parent.MinMaxTypeEnum != that._parent.MinMaxTypeEnum)
+                throw new ExprValidationException(
+                    "The aggregation declares " +
+                    _parent.MinMaxTypeEnum.GetExpressionText() +
+                    " and provided is " +
+                    that._parent.MinMaxTypeEnum.GetExpressionText());
+            AggregationValidationUtil.ValidateAggregationUnbound(_hasDataWindows, that._hasDataWindows);
+        }
 
-	    public AggregationAgent AggregationStateAgent
-	    {
-	        get { return null; }
-	    }
+        public AggregationAgent AggregationStateAgent => null;
 
-	    public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
+        public ExprEvaluator GetMethodAggregationEvaluator(bool join, EventType[] typesPerStream)
         {
-	        return ExprMethodAggUtil.GetDefaultEvaluator(Parent.PositionalParams, join, typesPerStream);
-	    }
+            return ExprMethodAggUtil.GetDefaultEvaluator(_parent.PositionalParams, join, typesPerStream);
+        }
 
-	    private AggregationMethod MakeMinMaxAggregator(
-	        MinMaxTypeEnum minMaxTypeEnum,
-	        Type targetType,
-	        bool isHasDataWindows,
-	        bool hasFilter)
-	    {
-	        if (!hasFilter)
-	        {
-	            if (!isHasDataWindows)
-	            {
-	                return new AggregatorMinMaxEver(minMaxTypeEnum);
-	            }
-	            return new AggregatorMinMax(minMaxTypeEnum);
-	        }
-	        else
-	        {
-	            if (!isHasDataWindows)
-	            {
-	                return new AggregatorMinMaxEverFilter(minMaxTypeEnum);
-	            }
-	            return new AggregatorMinMaxFilter(minMaxTypeEnum);
-	        }
-	    }
-	}
+        private AggregationMethod MakeMinMaxAggregator(
+            MinMaxTypeEnum minMaxTypeEnum, Type targetType,
+            bool isHasDataWindows, bool hasFilter)
+        {
+            if (!hasFilter) {
+                if (!isHasDataWindows) {
+                    return new AggregatorMinMaxEver(minMaxTypeEnum);
+                }
+                return new AggregatorMinMax(minMaxTypeEnum);
+            }
+
+            if (!isHasDataWindows) {
+                return new AggregatorMinMaxEverFilter(minMaxTypeEnum);
+            }
+            return new AggregatorMinMaxFilter(minMaxTypeEnum);
+        }
+    }
 } // end of namespace

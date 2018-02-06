@@ -10,8 +10,9 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.linq
@@ -20,11 +21,14 @@ namespace com.espertech.esper.linq
     public class TestLinqWinViews
     {
         private EPServiceProvider _serviceProvider;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
-            Configuration configuration = new Configuration();
+            _container = SupportContainer.Reset();
+
+            Configuration configuration = new Configuration(_container);
             configuration.AddEventType<SupportBean>();
             configuration.AddEventType<SupportPriceEvent>();
             configuration.AddEventType<SupportTradeEvent>();
@@ -38,7 +42,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().KeepAll(),
-                "select * from " + Name.Of<SupportBean>() + "#keepall()");
+                "select * from " + Name.Clean<SupportBean>() + "#keepall()");
         }
 
         [Test]
@@ -46,7 +50,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithLength(100),
-                "select * from " + Name.Of<SupportBean>() + "#length(100)");
+                "select * from " + Name.Clean<SupportBean>() + "#length(100)");
         }
 
         [Test]
@@ -54,7 +58,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithLength(100, true),
-                "select * from " + Name.Of<SupportBean>() + "#length_batch(100)");
+                "select * from " + Name.Clean<SupportBean>() + "#length_batch(100)");
         }
 
         [Test]
@@ -63,12 +67,12 @@ namespace com.espertech.esper.linq
             // attempt with seconds
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithDuration(80),
-                "select * from " + Name.Of<SupportBean>() + "#time(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#time(1 minutes 20 seconds)");
 
             // attempt with a timespan
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithDuration(TimeSpan.FromSeconds(80)),
-                "select * from " + Name.Of<SupportBean>() + "#time(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#time(1 minutes 20 seconds)");
         }
 
         [Test]
@@ -77,12 +81,12 @@ namespace com.espertech.esper.linq
             // attempt with seconds
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithDuration(80, true),
-                "select * from " + Name.Of<SupportBean>() + "#time_batch(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#time_batch(1 minutes 20 seconds)");
 
             // attempt with a timespan
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithDuration(TimeSpan.FromSeconds(80), true),
-                "select * from " + Name.Of<SupportBean>() + "#time_batch(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#time_batch(1 minutes 20 seconds)");
         }
 
         [Test]
@@ -90,7 +94,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().WithAccumlation(TimeSpan.FromSeconds(80)),
-                "select * from " + Name.Of<SupportBean>() + "#time_accum(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#time_accum(1 minutes 20 seconds)");
         }
 
         [Test]
@@ -98,7 +102,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().KeepFirst(1000),
-                "select * from " + Name.Of<SupportBean>() + "#firstlength(1000)");
+                "select * from " + Name.Clean<SupportBean>() + "#firstlength(1000)");
         }
 
         [Test]
@@ -106,7 +110,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().KeepFirst(TimeSpan.FromSeconds(80)),
-                "select * from " + Name.Of<SupportBean>() + "#firsttime(1 minutes 20 seconds)");
+                "select * from " + Name.Clean<SupportBean>() + "#firsttime(1 minutes 20 seconds)");
         }
 
         [Test]
@@ -114,7 +118,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().KeepWhile(e => e.IntPrimitive > 100),
-                "select * from " + Name.Of<SupportBean>() + "#expr(e.IntPrimitive>100)");
+                "select * from " + Name.Clean<SupportBean>() + "#expr(e.IntPrimitive>100)");
         }
 
         [Test]
@@ -122,7 +126,7 @@ namespace com.espertech.esper.linq
         {
             AssertModelEquality(
                 _serviceProvider.From<SupportBean>().KeepUntil(e => e.IntPrimitive > 100),
-                "select * from " + Name.Of<SupportBean>() + "#expr_batch(e.IntPrimitive>100)");
+                "select * from " + Name.Clean<SupportBean>() + "#expr_batch(e.IntPrimitive>100)");
         }
 
         private void AssertModelEquality(EsperQuery<SupportBean> stream, string sample)

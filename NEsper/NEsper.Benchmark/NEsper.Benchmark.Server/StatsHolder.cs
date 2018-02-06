@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
 
 namespace NEsper.Benchmark.Server
@@ -41,7 +40,7 @@ namespace NEsper.Benchmark.Server
         }
 
         private static readonly IThreadLocal<ThreadStats> threadStats =
-            ThreadLocalManager.Create<ThreadStats>(
+            new FastThreadLocal<ThreadStats>(
                 delegate
                     {
                         var threadStats = new ThreadStats();

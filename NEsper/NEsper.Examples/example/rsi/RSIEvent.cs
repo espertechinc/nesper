@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
+
 using NEsper.Examples.StockTicker.eventbean;
 
-namespace com.espertech.esper.example.rsi
+namespace NEsper.Examples.RSI
 {
     public class RSIEvent
     {

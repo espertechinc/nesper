@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -21,11 +23,13 @@ namespace com.espertech.esper.util
     public class TestJsonUtil
     {
         private ExprValidationContext _exprValidationContext;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty();
+            _container = SupportContainer.Reset();
+            _exprValidationContext = SupportExprValidationContextFactory.MakeEmpty(_container);
         }
     
         [TearDown]
@@ -106,10 +110,10 @@ namespace com.espertech.esper.util
                     "Property 'booleanArray' of class com.espertech.esper.util.TestJsonUtil+DEF expects an array but receives a value of type System.Int32");
     
             TryInvalid(typeof(DEF), "{'booleanArray': [1, 2]}",
-                    "Property 'booleanArray (array element)' of class System.Boolean(Array) expects an System.Boolean but receives a value of type System.Int32");
+                    "Property 'booleanArray (array element)' of class System.Boolean[] expects an System.Boolean but receives a value of type System.Int32");
     
             TryInvalid(typeof(DEF), "{'defString': [1, 2]}",
-                    "Property 'defString' of class com.espertech.esper.util.TestJsonUtil+DEF expects an System.String but receives a value of type " + TypeHelper.GetTypeNameFullyQualPretty<List<object>>());
+                    "Property 'defString' of class com.espertech.esper.util.TestJsonUtil+DEF expects an System.String but receives a value of type " + TypeHelper.GetCleanName<List<object>>());
     
             TryInvalid(typeof(Container), "{'abc': 'def'}",
                     "Property 'abc' of class com.espertech.esper.util.TestJsonUtil+Container expects an com.espertech.esper.util.TestJsonUtil+ABC but receives a value of type System.String");

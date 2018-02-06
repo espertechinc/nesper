@@ -17,6 +17,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -107,7 +108,7 @@ namespace com.espertech.esper.epl.variable
         private readonly IReaderWriterLock _readWriteLock;
 
         // Thread-local for the visible version per thread
-        private VariableVersionThreadLocal _versionThreadLocal = new VariableVersionThreadLocal();
+        private VariableVersionThreadLocal _versionThreadLocal;
 
         // Number of milliseconds that old versions of a variable are allowed to live
         private readonly long _millisecondLifetimeOldVersions;
@@ -121,31 +122,45 @@ namespace com.espertech.esper.epl.variable
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="millisecondLifetimeOldVersions">number of milliseconds a version may hang around before expiry</param>
         /// <param name="timeProvider">provides the current time</param>
-        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventAdapterService">event adapters</param>
-        public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
-            : this(0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler)
+        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
+        public VariableServiceImpl(
+            IContainer container,
+            long millisecondLifetimeOldVersions, 
+            TimeProvider timeProvider, 
+            EventAdapterService eventAdapterService,
+            VariableStateHandler optionalStateHandler)
+            : this(container, 0, millisecondLifetimeOldVersions, timeProvider, eventAdapterService, optionalStateHandler)
         {
         }
 
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="startVersion">the first version number to start from</param>
         /// <param name="millisecondLifetimeOldVersions">number of milliseconds a version may hang around before expiry</param>
         /// <param name="timeProvider">provides the current time</param>
-        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
         /// <param name="eventAdapterService">for finding event types</param>
-        public VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, EventAdapterService eventAdapterService, VariableStateHandler optionalStateHandler)
+        /// <param name="optionalStateHandler">a optional plug-in that may store variable state and retrieve state upon creation</param>
+        public VariableServiceImpl(
+            IContainer container,
+            int startVersion, 
+            long millisecondLifetimeOldVersions, 
+            TimeProvider timeProvider,
+            EventAdapterService eventAdapterService,
+            VariableStateHandler optionalStateHandler)
         {
+            _versionThreadLocal = new VariableVersionThreadLocal(container.ThreadLocalManager());
             _millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
             _timeProvider = timeProvider;
             _eventAdapterService = eventAdapterService;
             _optionalStateHandler = optionalStateHandler;
             _variables = new Dictionary<String, VariableMetaData>().WithNullSupport();
-            _readWriteLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _readWriteLock = container.RWLockManager().CreateLock(MethodBase.GetCurrentMethod().DeclaringType);
             _variableVersionsPerCP = new List<ConcurrentDictionary<int, VariableReader>>();
             _changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();
             _currentVersionNumber = startVersion;
@@ -153,7 +168,7 @@ namespace com.espertech.esper.epl.variable
 
         public void Dispose()
         {
-            _versionThreadLocal = new VariableVersionThreadLocal();
+            _versionThreadLocal = new VariableVersionThreadLocal(null);
         }
 
         public void RemoveVariableIfFound(String name)
@@ -402,8 +417,8 @@ namespace com.espertech.esper.epl.variable
                     if ((value != null) && (!TypeHelper.IsSubclassOrImplementsInterface(value.GetType(), eventType.UnderlyingType)))
                     {
                         throw new VariableTypeException("Variable '" + variableName
-                                + "' of declared event type '" + eventType.Name + "' underlying type '" + eventType.UnderlyingType.FullName +
-                                "' cannot be assigned a value of type '" + value.GetType().FullName + "'");
+                                + "' of declared event type '" + eventType.Name + "' underlying type '" + eventType.UnderlyingType.GetCleanName() +
+                                "' cannot be assigned a value of type '" + value.GetType().GetCleanName() + "'");
                     }
                     coercedValue = _eventAdapterService.AdapterForType(value, eventType);
                 }
@@ -426,7 +441,7 @@ namespace com.espertech.esper.epl.variable
                                 string.Format(
                                     "Variable '{0}' of declared type {1} cannot be initialized by value '{2}': {3}: {4}",
                                     variableName,
-                                    variableType.GetTypeNameFullyQualPretty(),
+                                    variableType.GetCleanName(),
                                     coercedValue,
                                     ex.GetType().FullName,
                                     ex.Message));
@@ -670,8 +685,8 @@ namespace com.espertech.esper.epl.variable
                 if ((!TypeHelper.IsSubclassOrImplementsInterface(newValue.GetType(), metaData.EventType.UnderlyingType)))
                 {
                     throw new VariableValueException("Variable '" + variableName
-                        + "' of declared event type '" + metaData.EventType.Name + "' underlying type '" + metaData.EventType.UnderlyingType.FullName +
-                            "' cannot be assigned a value of type '" + valueType.FullName + "'");
+                        + "' of declared event type '" + metaData.EventType.Name + "' underlying type '" + metaData.EventType.UnderlyingType.GetCleanName() +
+                            "' cannot be assigned a value of type '" + valueType.GetCleanName() + "'");
                 }
                 var eventBean = _eventAdapterService.AdapterForType(newValue, metaData.EventType);
                 Write(variableNumber, agentInstanceId, eventBean);
@@ -753,8 +768,8 @@ namespace com.espertech.esper.epl.variable
         private static VariableTypeException GetVariableTypeException(String variableName, Type variableType, Type initValueClass)
         {
             return new VariableTypeException("Variable '" + variableName
-                    + "' of declared type " + variableType.GetTypeNameFullyQualPretty() +
-                    " cannot be initialized by a value of type " + initValueClass.GetTypeNameFullyQualPretty());
+                    + "' of declared type " + variableType.GetCleanName() +
+                    " cannot be initialized by a value of type " + initValueClass.GetCleanName());
         }
     }
 }

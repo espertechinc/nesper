@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 
 namespace com.espertech.esper.epl.join.table
@@ -63,23 +64,23 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="newData">to add</param>
 	    /// <param name="oldData">to remove</param>
-	    public override void AddRemove(EventBean[] newData, EventBean[] oldData)
+	    public override void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
 	        if (oldData != null) {
 	            foreach (EventBean theEvent in oldData) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (newData != null) {
 	            foreach (EventBean theEvent in newData) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
 	    }
 
-	    public override void Add(EventBean theEvent)
+	    public override void Add(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        var key = GetKey(theEvent);
 	        
@@ -89,7 +90,7 @@ namespace com.espertech.esper.epl.join.table
 	        }
 	    }
 
-	    public override void Remove(EventBean theEvent)
+	    public override void Remove(EventBean theEvent, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        object key = GetKey(theEvent);
 	        _propertyIndex.Remove(key);

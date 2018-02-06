@@ -12,8 +12,7 @@ namespace com.espertech.esper.supportregression.bean.lrreport
 {
     public class ZoneFactory
     {
-        public static IEnumerable<Zone> GetZones()
-        {
+        public static IEnumerable<Zone> GetZones() {
             var zones = new List<Zone>();
             zones.Add(new Zone("Z1", new Rectangle(0, 0, 20, 20)));
             return zones;

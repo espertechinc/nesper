@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.events.vaevent
@@ -32,9 +33,12 @@ namespace com.espertech.esper.events.vaevent
         /// <summary>Map of revision event stream and variant stream processor. </summary>
         protected readonly IDictionary<String, ValueAddEventProcessor> VariantProcessors;
 
+        private readonly ILockManager _lockManager;
+
         /// <summary>Ctor. </summary>
-        public ValueAddEventServiceImpl()
+        public ValueAddEventServiceImpl(ILockManager lockManager)
         {
+            _lockManager = lockManager;
             SpecificationsByRevisionName = new Dictionary<String, RevisionSpec>().WithNullSupport();
             ProcessorsByNamedWindow = new Dictionary<String, ValueAddEventProcessor>().WithNullSupport();
             VariantProcessors = new Dictionary<String, ValueAddEventProcessor>().WithNullSupport();
@@ -72,7 +76,7 @@ namespace com.espertech.esper.events.vaevent
         public void AddVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService, EventTypeIdGenerator eventTypeIdGenerator)
         {
             var variantSpec = ValidateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
-            var processor = new VAEVariantProcessor(variantSpec, eventTypeIdGenerator, variantStreamConfig);
+            var processor = new VAEVariantProcessor(eventAdapterService, variantSpec, eventTypeIdGenerator, variantStreamConfig, _lockManager);
             eventAdapterService.AddTypeByName(variantStreamname, processor.ValueAddEventType);
             VariantProcessors.Put(variantStreamname, processor);
         }

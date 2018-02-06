@@ -46,10 +46,7 @@ namespace com.espertech.esper.epl.lookup
             return InKeywordTableLookupUtil.MultiIndexLookup(_evaluator, eventsPerStream, context, _indexes);
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _strategyDesc;
 
         public string ToQueryPlan()
         {

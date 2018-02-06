@@ -268,7 +268,7 @@ namespace com.espertech.esper.epl.join.@base
                         {
                             it = streamViews[i].GetEnumerator();
                         }
-                        catch (UnsupportedOperationException ex)
+                        catch (UnsupportedOperationException)
                         {
                             // Joins do not support the iterator
                         }
@@ -290,7 +290,7 @@ namespace com.espertech.esper.epl.join.@base
                 }
 
                 // init
-                joinSetComposerDesc.JoinSetComposer.Init(eventsPerStream);
+                joinSetComposerDesc.JoinSetComposer.Init(eventsPerStream, _exprEvaluatorContext);
             }
 
             return joinSetComposerDesc;
@@ -325,12 +325,25 @@ namespace com.espertech.esper.epl.join.@base
             {    // all-inner joins
                 return optionalFilterNode;
             }
-            ExprAndNode andNode = new ExprAndNodeImpl();
-            andNode.AddChildNode(optionalFilterNode);
+
+            var hasOnClauses = OuterJoinDesc.HasOnClauses(outerJoinDescList);
+            if (!hasOnClauses)
+            {
+                return optionalFilterNode;
+            }
+
+            var expressions = new List<ExprNode>();
+            expressions.Add(optionalFilterNode);
+
             foreach (var outerJoinDesc in outerJoinDescList)
             {
-                andNode.AddChildNode(outerJoinDesc.MakeExprNode(null));
+                if (outerJoinDesc.OptLeftNode != null)
+                {
+                    expressions.Add(outerJoinDesc.MakeExprNode(null));
+                }
             }
+
+            ExprAndNode andNode = ExprNodeUtility.ConnectExpressionsByLogicalAnd(expressions);
             try
             {
                 andNode.Validate(null);
@@ -339,6 +352,7 @@ namespace com.espertech.esper.epl.join.@base
             {
                 throw new EPRuntimeException("Unexpected exception validating expression: " + ex.Message, ex);
             }
+
             return andNode;
         }
     }

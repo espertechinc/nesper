@@ -255,7 +255,7 @@ namespace com.espertech.esper.linq
                 }
             }
 
-            throw new ArgumentException("Constant property name expression must yield a constant string");
+            throw new ArgumentException("IsConstant property name expression must yield a constant string");
         }
 
         /// <summary>

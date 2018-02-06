@@ -17,6 +17,9 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
+using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.hint;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
 using com.espertech.esper.util;
@@ -38,7 +41,7 @@ namespace com.espertech.esper.core.start
         protected readonly StatementContext StatementContext;
         protected bool HasTableAccess;
 
-        public abstract EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName);
+        public abstract EPPreparedExecuteIUDSingleStreamExec GetExecutor(QueryGraph queryGraph, string aliasName);
 
         /// <summary>
         /// Ctor.
@@ -95,36 +98,20 @@ namespace com.espertech.esper.core.start
 
             // compile filter to optimize access to named window
             var typeService = new StreamTypeServiceImpl(new EventType[] { eventType }, new string[] { aliasName }, new bool[] { true }, services.EngineURI, true);
-            FilterSpecCompiled filter;
+            var excludePlanHint = ExcludePlanHint.GetHint(typeService.StreamNames, statementContext);
+            var queryGraph = new QueryGraph(1, excludePlanHint, false);
             if (statementSpec.FilterRootNode != null)
             {
-                var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
-                FilterSpecCompiled filterCompiled;
-                try
-                {
-                    filterCompiled = FilterSpecCompiler.MakeFilterSpec(eventType, aliasName,
-                            Collections.SingletonList(statementSpec.FilterRootNode), null,
-                            tagged, tagged, typeService,
-                            null, statementContext,
-                            Collections.SingletonList(0));
-                }
-                catch (Exception ex)
-                {
-                    Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
-                    filterCompiled = null;
-                }
-                filter = filterCompiled;
-            }
-            else
-            {
-                filter = null;
+                ExprNodeUtility.ValidateFilterWQueryGraphSafe(
+                    queryGraph, statementSpec.FilterRootNode,
+                    statementContext, typeService);
             }
 
             // validate expressions
             EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec, statementContext, typeService, null);
 
             // get executor
-            Executor = GetExecutor(filter, aliasName);
+            Executor = GetExecutor(queryGraph, aliasName);
         }
 
         /// <summary>

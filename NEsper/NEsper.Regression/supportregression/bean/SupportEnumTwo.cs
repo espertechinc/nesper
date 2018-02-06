@@ -26,11 +26,11 @@ namespace com.espertech.esper.supportregression.bean
             switch (@enum)
             {
                 case SupportEnumTwo.ENUM_VALUE_1:
-                    return new String[] {"1", "0", "0"};
+                    return new string[] {"1", "0", "0"};
                 case SupportEnumTwo.ENUM_VALUE_2:
-                    return new String[] {"2", "0", "0"};
+                    return new string[] {"2", "0", "0"};
                 case SupportEnumTwo.ENUM_VALUE_3:
-                    return new String[] {"3", "0", "0"};
+                    return new string[] {"3", "0", "0"};
             }
 
             throw new ArgumentException();

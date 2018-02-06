@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.expression.core;
@@ -19,11 +20,15 @@ namespace com.espertech.esper.util.support
     public class SupportExprEvaluatorContext : ExprEvaluatorContext
     {
         private readonly TimeProvider _timeProvider;
+        private readonly IContainer _container;
     
-        public SupportExprEvaluatorContext(TimeProvider timeProvider)
+        public SupportExprEvaluatorContext(IContainer container, TimeProvider timeProvider)
         {
             _timeProvider = timeProvider;
+            _container = container;
         }
+
+        public IContainer Container => _container;
 
         public TimeProvider TimeProvider
         {

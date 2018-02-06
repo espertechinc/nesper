@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.client
@@ -18,6 +18,8 @@ namespace com.espertech.esper.client
     /// </summary>
     public interface EPServiceProvider : IDisposable
     {
+        IContainer Container { get; }
+
         /// <summary> Returns a class instance of EPRuntime.</summary>
         /// <returns> an instance of EPRuntime
         /// </returns>

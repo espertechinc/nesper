@@ -9,6 +9,7 @@
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.dispatch;
 
 namespace com.espertech.esper.core.service
@@ -24,9 +25,12 @@ namespace com.espertech.esper.core.service
         /// </summary>
         /// <param name="statementResultServiceImpl">handles result delivery</param>
         /// <param name="dispatchService">for performing the dispatch</param>
-        public UpdateDispatchViewNonBlocking(StatementResultService statementResultServiceImpl,
-                                             DispatchService dispatchService)
-            : base(statementResultServiceImpl, dispatchService)
+        /// <param name="threadLocalManager">The thread local manager.</param>
+        public UpdateDispatchViewNonBlocking(
+            StatementResultService statementResultServiceImpl,
+            DispatchService dispatchService,
+            IThreadLocalManager threadLocalManager)
+            : base(statementResultServiceImpl, dispatchService, threadLocalManager)
         {
         }
 

@@ -148,7 +148,7 @@ namespace NEsper.Avro.Core
 
             if (propertyType == null)
             {
-                assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Null()));
+                assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.NullType()));
                 // assembler.Name(propertyName).Type("null");
             }
             else if (propertyType is string)
@@ -268,8 +268,8 @@ namespace NEsper.Avro.Core
                                 TypeBuilder.Field(
                                     propertyName,
                                     TypeBuilder.Union(
-                                        TypeBuilder.Null(),
-                                        TypeBuilder.String(
+                                        TypeBuilder.NullType(),
+                                        TypeBuilder.StringType(
                                             TypeBuilder.Property(
                                                 AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))));
                         }
@@ -288,7 +288,7 @@ namespace NEsper.Avro.Core
                     else
                     {
                         assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                            TypeBuilder.Null(), TypeBuilder.Bytes())));
+                            TypeBuilder.NullType(), TypeBuilder.BytesType())));
                     }
                 }
                 else if (propertyClass.IsArray)
@@ -332,12 +332,12 @@ namespace NEsper.Avro.Core
                         JObject array;
                         if (avroSettings.IsEnableNativeString)
                         {
-                            array = TypeBuilder.Array(TypeBuilder.String(TypeBuilder.Property(
+                            array = TypeBuilder.Array(TypeBuilder.StringType(TypeBuilder.Property(
                                 AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)));
                         }
                         else
                         {
-                            array = TypeBuilder.Array(TypeBuilder.String());
+                            array = TypeBuilder.Array(TypeBuilder.StringType());
                         }
 
                         if (preferNonNull)
@@ -347,7 +347,7 @@ namespace NEsper.Avro.Core
                         else
                         {
                             assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                                TypeBuilder.Null(), array)));
+                                TypeBuilder.NullType(), array)));
                         }
                     }
                     else if (propertyClass.CanUnwrap<object>())
@@ -364,12 +364,12 @@ namespace NEsper.Avro.Core
                     JToken value;
                     if (avroSettings.IsEnableNativeString)
                     {
-                        value = TypeBuilder.String(
+                        value = TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE));
                     }
                     else
                     {
-                        value = TypeBuilder.String();
+                        value = TypeBuilder.StringType();
                     }
 
                     if (preferNonNull)
@@ -379,7 +379,7 @@ namespace NEsper.Avro.Core
                     else
                     {
                         assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                            TypeBuilder.Null(), TypeBuilder.Map(value))));
+                            TypeBuilder.NullType(), TypeBuilder.Map(value))));
                     }
                 }
                 else if (propertyClass.IsGenericCollection())
@@ -444,12 +444,12 @@ namespace NEsper.Avro.Core
                 JObject array;
                 if (avroSettings.IsEnableNativeString)
                 {
-                    array = TypeBuilder.Array(TypeBuilder.String(TypeBuilder.Property(
+                    array = TypeBuilder.Array(TypeBuilder.StringType(TypeBuilder.Property(
                         AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)));
                 }
                 else
                 {
-                    array = TypeBuilder.Array(TypeBuilder.String());
+                    array = TypeBuilder.Array(TypeBuilder.StringType());
                 }
 
                 if (preferNonNull)
@@ -459,7 +459,7 @@ namespace NEsper.Avro.Core
                 else
                 {
                     assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                        TypeBuilder.Null(), array)));
+                        TypeBuilder.NullType(), array)));
                 }
             }
             else
@@ -578,13 +578,13 @@ namespace NEsper.Avro.Core
                 {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfReq).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
-                    fields.Add(TypeBuilder.Union(TypeBuilder.Null(), arrayOfReq));
+                    fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfReq));
                 }
                 else
                 {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfOpt).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
-                    fields.Add(TypeBuilder.Union(TypeBuilder.Null(), arrayOfOpt));
+                    fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfOpt));
                 }
             }
         }

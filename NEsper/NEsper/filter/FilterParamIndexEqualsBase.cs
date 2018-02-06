@@ -40,14 +40,19 @@ namespace com.espertech.esper.filter
             ConstantsMap.Put(filterConstant, evaluator);
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
-            return ConstantsMap.Remove(filterConstant);
+            ConstantsMap.Remove(filterConstant);
         }
 
         public override int Count
         {
             get { return ConstantsMap.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return ConstantsMap.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

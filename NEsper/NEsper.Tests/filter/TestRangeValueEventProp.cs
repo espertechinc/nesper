@@ -22,16 +22,16 @@ namespace com.espertech.esper.filter
     [TestFixture]
     public class TestRangeValueEventProp 
     {
-        private FilterSpecParamRangeValue[] @params = new FilterSpecParamRangeValue[5];
+        private readonly FilterSpecParamFilterForEval[] _params = new FilterSpecParamFilterForEval[5];
     
         [SetUp]
         public void SetUp()
         {
-            @params[0] = new RangeValueEventProp("a", "b");
-            @params[1] = new RangeValueEventProp("asName", "b");
-            @params[2] = new RangeValueEventProp("asName", "BoolPrimitive");
-            @params[3] = new RangeValueEventProp("asName", "IntPrimitive");
-            @params[4] = new RangeValueEventProp("asName", "IntPrimitive");
+            _params[0] = new FilterForEvalEventPropDouble("a", "b");
+            _params[1] = new FilterForEvalEventPropDouble("asName", "b");
+            _params[2] = new FilterForEvalEventPropDouble("asName", "BoolPrimitive");
+            _params[3] = new FilterForEvalEventPropDouble("asName", "IntPrimitive");
+            _params[4] = new FilterForEvalEventPropDouble("asName", "IntPrimitive");
         }
     
         [Test]
@@ -43,31 +43,31 @@ namespace com.espertech.esper.filter
             MatchedEventMap matchedEvents = new MatchedEventMapImpl(new MatchedEventMapMeta(new String[] { "asName" }, false));
             matchedEvents.Add(0, theEvent);
     
-            TryInvalidGetFilterValue(matchedEvents, @params[0]);
-            TryInvalidGetFilterValue(matchedEvents, @params[1]);
-            Assert.AreEqual(1000.0, @params[3].GetFilterValue(matchedEvents, null));
+            TryInvalidGetFilterValue(matchedEvents, _params[0]);
+            TryInvalidGetFilterValue(matchedEvents, _params[1]);
+            Assert.AreEqual(1000.0, _params[3].GetFilterValue(matchedEvents, null));
         }
     
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(@params[0].Equals(@params[1]));
-            Assert.IsFalse(@params[2].Equals(@params[3]));
-            Assert.IsTrue(@params[3].Equals(@params[4]));
+            Assert.IsFalse(_params[0].Equals(_params[1]));
+            Assert.IsFalse(_params[2].Equals(_params[3]));
+            Assert.IsTrue(_params[3].Equals(_params[4]));
         }
     
-        private void TryInvalidGetFilterValue(MatchedEventMap matchedEvents, FilterSpecParamRangeValue value)
+        private void TryInvalidGetFilterValue(MatchedEventMap matchedEvents, FilterSpecParamFilterForEval value)
         {
             try
             {
                 value.GetFilterValue(matchedEvents, null);
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
-            catch (PropertyAccessException ex)
+            catch (PropertyAccessException)
             {
                 // expected
             }

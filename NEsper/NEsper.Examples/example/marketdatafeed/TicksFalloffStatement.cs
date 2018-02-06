@@ -6,18 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
 using com.espertech.esper.client;
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
     public class TicksFalloffStatement
     {
         public static EPStatement Create(EPAdministrator admin)
         {
-            String stmt = "select feed, avg(cnt) as avgCnt, cnt as feedCnt from TicksPerSecond.win:time(10 sec) " +
+            var stmt = "select feed, avg(cnt) as avgCnt, cnt as feedCnt from TicksPerSecond.win:time(10 sec) " +
                           "group by feed, cnt " +
                           "having cnt < avg(cnt) * 0.75 ";
 

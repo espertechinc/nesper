@@ -1,5 +1,6 @@
 ﻿
 using System;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.compat.threading
 {
@@ -16,7 +17,8 @@ namespace com.espertech.esper.compat.threading
 		/// </summary>
 		public DummyReaderWriterLock()
 		{
-			ReadLock = WriteLock = LockManager.CreateDefaultLock();
+		    ReadLock = WriteLock = new MonitorSlimLock(60000);
+
 		}
 		
 		/// <summary>

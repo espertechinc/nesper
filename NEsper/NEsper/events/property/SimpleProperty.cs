@@ -42,7 +42,7 @@ namespace com.espertech.esper.events.property
             return new[] { PropertyNameAtomic };
         }
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             var propertyDesc = eventType.GetSimpleProperty(PropertyNameAtomic);
             if (propertyDesc == null)
@@ -53,7 +53,7 @@ namespace com.espertech.esper.events.property
             {
                 return null;
             }
-            return eventType.GetGetter(PropertyNameAtomic);
+            return eventType.GetGetterSPI(PropertyNameAtomic);
         }
 
         public override Type GetPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
@@ -156,12 +156,12 @@ namespace com.espertech.esper.events.property
             writer.Write(PropertyNameAtomic);
         }
 
-        public override EventPropertyGetter GetGetterDOM()
+        public override EventPropertyGetterSPI GetGetterDOM()
         {
             return new DOMAttributeAndElementGetter(PropertyNameAtomic);
         }
 
-        public override EventPropertyGetter GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression)
+        public override EventPropertyGetterSPI GetGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression)
         {
             if (complexProperty.Attributes.Any(attribute => attribute.Name == PropertyNameAtomic))
             {

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.client
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace com.espertech.esper.client
     /// <see cref="EPRuntime"/>
 	public delegate void UnmatchedListener(EventBean theEvent);
 
-    public class UnmatchedEventArgs : System.EventArgs
+    public class UnmatchedEventArgs : EventArgs
     {
         public EventBean Event { get; private set; }
 

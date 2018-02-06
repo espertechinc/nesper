@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os, os.path
@@ -6,17 +6,9 @@ import re
 
 files=(
 	'./NEsper/NEsper/epl/join/base/ExecNodeQueryStrategy.cs',
-	'./NEsper/NEsper/Properties/AssemblyInfo.cs',
 	'./NEsper/NEsper/util/Version.cs',
-	'./NEsper/NEsper.Scripting.Jurassic/Properties/AssemblyInfo.cs',
-	'./NEsper/NEsper.Scripting.ClearScript/Properties/AssemblyInfo.cs',
-	'./NEsper/NEsper.Tests/Properties/AssemblyInfo.cs',
-	'./NEsper/NEsper.Regression/Properties/AssemblyInfo.cs',
-	'./NEsper.IO/NEsper.IO/Properties/AssemblyInfo.cs',
-	'./NEsper.IO/NEsper.IO.Tests/Properties/AssemblyInfo.cs',
 	'./NEsper.nuspec',
-	'./NEsper.proj',
-	'./NEsper.shfbproj'
+	'./NEsper.proj'
 )
 
 if (len(sys.argv) < 2):

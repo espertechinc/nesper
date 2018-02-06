@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
@@ -19,10 +21,13 @@ namespace com.espertech.esper.epl.expression.ops
     public class TestExprCastNode 
     {
         private ExprCastNode[] _castNodes;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _castNodes = new ExprCastNode[2];
     
             _castNodes[0] = new ExprCastNode("long");
@@ -37,7 +42,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _castNodes.Length; i++)
             {
-                _castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
 
             Assert.AreEqual(typeof(long?), _castNodes[0].TargetType);
@@ -52,10 +57,10 @@ namespace com.espertech.esper.epl.expression.ops
             // Test too few nodes under this node
             try
             {
-                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                castNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -66,7 +71,7 @@ namespace com.espertech.esper.epl.expression.ops
         {
             for (int i = 0; i < _castNodes.Length; i++)
             {
-                _castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _castNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
     
             Assert.AreEqual(10L, _castNodes[0].ExprEvaluator.Evaluate(new EvaluateParams(null, false, null)));
@@ -76,15 +81,15 @@ namespace com.espertech.esper.epl.expression.ops
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false)));
-            Assert.IsFalse(_castNodes[0].EqualsNode(_castNodes[1]));
-            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprCastNode("" + typeof(int?).FullName + "")));
+            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            Assert.IsFalse(_castNodes[0].EqualsNode(_castNodes[1], false));
+            Assert.IsFalse(_castNodes[0].EqualsNode(new ExprCastNode("" + typeof(int?).FullName + ""), false));
         }
     
         [Test]
         public void TestToExpressionString()
         {
-            _castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual("cast(10,long)", _castNodes[0].ToExpressionStringMinPrecedenceSafe());
         }
     }

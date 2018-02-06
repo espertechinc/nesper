@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
@@ -16,6 +17,7 @@ using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.view.std;
 
 using NUnit.Framework;
@@ -23,13 +25,15 @@ using NUnit.Framework;
 namespace com.espertech.esper.view.ext
 {
     [TestFixture]
-    public class TestSortWindowViewFactory 
+    public class TestSortWindowViewFactory
     {
+        private IContainer _container;
         private SortWindowViewFactory _factory;
     
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _factory = new SortWindowViewFactory();
         }
     
@@ -54,12 +58,12 @@ namespace com.espertech.esper.view.ext
             EventType parentType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
     
             _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(new Object[] {100, "Price"}));
-            _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
+            _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
     
             try
             {
                 _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(new Object[] {true, "Price"}));
-                _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(), null, null);
+                _factory.Attach(parentType, SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
             catch (ViewParameterException)
@@ -71,11 +75,11 @@ namespace com.espertech.esper.view.ext
         [Test]
         public void TestCanReuse()
         {
-            StatementContext context = SupportStatementContextFactory.MakeContext();
+            StatementContext context = SupportStatementContextFactory.MakeContext(_container);
 
-            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext();
+            AgentInstanceContext agentInstanceContext = SupportStatementContextFactory.MakeAgentInstanceContext(_container);
             _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(new Object[] { 100, "Price" }));
-            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
             Assert.IsFalse(_factory.CanReuse(new FirstElementView(null), agentInstanceContext));
             Assert.IsTrue(_factory.CanReuse(new SortWindowView(_factory, SupportExprNodeFactory.MakeIdentNodesMD("Price"), new ExprEvaluator[0], new bool[] { false }, 100, null, false, null), agentInstanceContext));
             Assert.IsFalse(_factory.CanReuse(new SortWindowView(_factory, SupportExprNodeFactory.MakeIdentNodesMD("Volume"), new ExprEvaluator[0], new bool[] { true }, 100, null, false, null), agentInstanceContext));
@@ -83,7 +87,7 @@ namespace com.espertech.esper.view.ext
             Assert.IsFalse(_factory.CanReuse(new SortWindowView(_factory, SupportExprNodeFactory.MakeIdentNodesMD("Symbol"), new ExprEvaluator[0], new bool[] { false }, 100, null, false, null), agentInstanceContext));
 
             _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(new Object[]{100, "Price", "Volume" }));
-            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
             Assert.IsTrue(_factory.CanReuse(new SortWindowView(_factory, SupportExprNodeFactory.MakeIdentNodesMD("Price", "Volume"), new ExprEvaluator[0], new bool[] { false, false }, 100, null, false, null), agentInstanceContext));
             Assert.IsFalse(_factory.CanReuse(new SortWindowView(_factory, SupportExprNodeFactory.MakeIdentNodesMD("Price", "Symbol"), new ExprEvaluator[0], new bool[] { true, false }, 100, null, false, null), agentInstanceContext));
         }
@@ -93,7 +97,7 @@ namespace com.espertech.esper.view.ext
             try
             {
                 _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(paramList));
-                _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
+                _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
                 Assert.Fail();
             }
             catch (ViewParameterException)
@@ -105,8 +109,8 @@ namespace com.espertech.esper.view.ext
         private void TryParameter(Object[] paramList, String[] fieldNames, int size)
         {
             _factory.SetViewParameters(null, TestViewSupport.ToExprListMD(paramList));
-            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(), null, null);
-            SortWindowView view = (SortWindowView) _factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            _factory.Attach(SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean)), SupportStatementContextFactory.MakeContext(_container), null, null);
+            SortWindowView view = (SortWindowView) _factory.MakeView(SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
             Assert.AreEqual(size, view.SortWindowSize);
             Assert.AreEqual(fieldNames[0], view.SortCriteriaExpressions[0].ToExpressionStringMinPrecedenceSafe());
             if (fieldNames.Length > 0)

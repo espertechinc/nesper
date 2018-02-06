@@ -9,24 +9,28 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprRelationalOpNode 
     {
         private ExprRelationalOpNode _opNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _opNode = new ExprRelationalOpNodeImpl(RelationalOpEnum.GE);
         }
     
@@ -44,17 +48,17 @@ namespace com.espertech.esper.epl.expression
             // Test success
             _opNode.AddChildNode(new SupportExprNode(typeof(String)));
             _opNode.AddChildNode(new SupportExprNode(typeof(String)));
-            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             _opNode.SetChildNodes(new SupportExprNode(typeof(String)));
     
             // Test too few nodes under this node
             try
             {
-                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected
             }
@@ -63,10 +67,10 @@ namespace com.espertech.esper.epl.expression
             _opNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -96,7 +100,7 @@ namespace com.espertech.esper.epl.expression
             SupportExprNode childTwo = new SupportExprNode("c");
             _opNode.AddChildNode(childOne);
             _opNode.AddChildNode(childTwo);
-            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty());       // Type initialization
+            _opNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));       // Type initialization
 
             var eparams = new EvaluateParams(null, false, null);
 
@@ -136,9 +140,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_opNode.EqualsNode(_opNode));
-            Assert.IsFalse(_opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE)));
-            Assert.IsFalse(_opNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_opNode.EqualsNode(_opNode, false));
+            Assert.IsFalse(_opNode.EqualsNode(new ExprRelationalOpNodeImpl(RelationalOpEnum.LE), false));
+            Assert.IsFalse(_opNode.EqualsNode(new ExprOrNode(), false));
         }
     }
 }

@@ -8,8 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.util;
@@ -28,11 +29,11 @@ namespace com.espertech.esper.core.service
         private readonly Dictionary<String, String[]> _stmtToType;
 
         /// <summary>Ctor. </summary>
-        public StatementEventTypeRefImpl()
+        public StatementEventTypeRefImpl(IReaderWriterLockManager lockManager)
         {
             _typeToStmt = new Dictionary<String, ICollection<String>>();
             _stmtToType = new Dictionary<String, String[]>();
-            _mapLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            _mapLock = lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         }
 
         public void AddReferences(String statementName, String[] eventTypesReferenced)

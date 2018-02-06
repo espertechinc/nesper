@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
+
 using com.espertech.esper.client;
 
-namespace NEsper.Example.Transaction
+namespace NEsper.Examples.Transaction
 {
     public class CombinedEventStmt
     {

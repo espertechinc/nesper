@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.eval
 {
@@ -39,7 +40,7 @@ namespace com.espertech.esper.epl.enummethod.eval
             var other = otherObj.Unwrap<object>(true);
             if (other == null)
             {
-                Log.Warn("Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" + otherObj.GetType().FullName + "'");
+                Log.Warn("Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" + otherObj.GetType().GetCleanName() + "'");
                 return false;
             }
 

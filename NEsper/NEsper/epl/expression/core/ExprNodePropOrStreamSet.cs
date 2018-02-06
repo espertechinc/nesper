@@ -158,7 +158,7 @@ namespace com.espertech.esper.epl.expression.core
 	            if (expression.StreamNum != exprItem.StreamNum) {
 	                continue;
 	            }
-	            if (ExprNodeUtility.DeepEquals(expression.Originator, exprItem.Originator)) {
+	            if (ExprNodeUtility.DeepEquals(expression.Originator, exprItem.Originator, false)) {
 	                return true;
 	            }
 	        }

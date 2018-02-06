@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-namespace com.espertech.esper.example.marketdatafeed
+namespace NEsper.Examples.MarketDataFeed
 {
     public enum FeedEnum
     {

@@ -6,9 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-namespace com.espertech.esper.example.feedexample
+namespace NEsper.Examples.FeedExample
 {
 	public enum FeedEnum
 	{

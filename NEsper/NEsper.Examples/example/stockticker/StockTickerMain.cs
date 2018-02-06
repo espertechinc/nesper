@@ -11,6 +11,7 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 
 using NEsper.Examples.StockTicker.eventbean;
@@ -31,14 +32,18 @@ namespace NEsper.Examples.StockTicker
         }
     
         public void Run() {
-    
-            var configuration = new Configuration();
+            var container = ContainerExtensions.CreateDefaultContainer(false)
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.AddEventType("PriceLimit", typeof(PriceLimit).FullName);
             configuration.AddEventType("StockTick", typeof(StockTick).FullName);
     
             Log.Info("Setting up EPL");
             
-            var epService = EPServiceProviderManager.GetProvider(_engineURI, configuration);
+            var epService = EPServiceProviderManager.GetProvider(
+                container, _engineURI, configuration);
             epService.Initialize();
 
             new StockTickerMonitor(epService, new StockTickerResultListener());

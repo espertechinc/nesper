@@ -75,7 +75,7 @@ namespace com.espertech.esper.epl.join.plan
                         QueryGraphValuePairInKWSingleIdx singles = value.InKeywordSingles;
                         if (!singles.Key.IsEmpty()) {
                             String indexedProp = singles.Indexed[0];
-                            QueryPlanIndexItem indexItem = new QueryPlanIndexItem(new String[] {indexedProp}, null, null, null, false);
+                            QueryPlanIndexItem indexItem = new QueryPlanIndexItem(new String[] {indexedProp}, null, null, null, false, null);
                             CheckDuplicateOrAdd(indexItem, indexesSet);
                         }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.epl.join.plan
                             QueryGraphValuePairInKWMultiIdx multi = multis[0];
                             foreach (ExprNode propIndexed in multi.Indexed) {
                                 ExprIdentNode identNode = (ExprIdentNode) propIndexed;
-                                QueryPlanIndexItem indexItem = new QueryPlanIndexItem(new String[] {identNode.ResolvedPropertyName}, null, null, null, false);
+                                QueryPlanIndexItem indexItem = new QueryPlanIndexItem(new String[] {identNode.ResolvedPropertyName}, null, null, null, false, null);
                                 CheckDuplicateOrAdd(indexItem, indexesSet);
                             }
                         }
@@ -104,13 +104,18 @@ namespace com.espertech.esper.epl.join.plan
                         rangeCoercionTypeArr = new Type[0];
                     }
 
-                    var proposed = new QueryPlanIndexItem(hashIndexProps, hashCoercionTypeArr, rangeIndexProps, rangeCoercionTypeArr, unique);
+                    var proposed = new QueryPlanIndexItem(
+                        hashIndexProps, 
+                        hashCoercionTypeArr, 
+                        rangeIndexProps, 
+                        rangeCoercionTypeArr, 
+                        unique, null);
                     CheckDuplicateOrAdd(proposed, indexesSet);
                 }
     
                 // create full-table-scan
                 if (indexesSet.IsEmpty()) {
-                    indexesSet.Add(new QueryPlanIndexItem(null, null, null, null, false));
+                    indexesSet.Add(new QueryPlanIndexItem(null, null, null, null, false, null));
                 }
     
                 indexSpecs[streamIndexed] = QueryPlanIndex.MakeIndex(indexesSet);
@@ -134,13 +139,29 @@ namespace com.espertech.esper.epl.join.plan
             // Build a list of streams and indexes
             var joinProps = new LinkedHashMap<String, SubordPropHashKey>();
             var rangeProps = new LinkedHashMap<String, SubordPropRangeKey>();
+            var customIndexOps = Collections.GetEmptyMap<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>();
+            
             for (int stream = 0; stream <  outsideStreamCount; stream++)
             {
                 int lookupStream = stream + 1;
     
                 QueryGraphValue queryGraphValue = queryGraph.GetGraphValue(lookupStream, 0);
                 QueryGraphValuePairHashKeyIndex hashKeysAndIndexes = queryGraphValue.HashKeyProps;
-    
+
+                // determine application functions
+                foreach (QueryGraphValueDesc item in queryGraphValue.Items)
+                {
+                    if (item.Entry is QueryGraphValueEntryCustom)
+                    {
+                        if (customIndexOps.IsEmpty())
+                        {
+                            customIndexOps = new Dictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>();
+                        }
+                        QueryGraphValueEntryCustom custom = (QueryGraphValueEntryCustom) item.Entry;
+                        custom.MergeInto(customIndexOps);
+                    }
+                }
+
                 // handle key-lookups
                 var keyPropertiesJoin = hashKeysAndIndexes.Keys;
                 var indexPropertiesJoin = hashKeysAndIndexes.Indexed;
@@ -272,8 +293,8 @@ namespace com.espertech.esper.epl.join.plan
 
                     QueryGraphValuePairInKWSingleIdx inkwSingles = queryGraphValue.InKeywordSingles;
                     if (inkwSingles.Indexed.Length != 0) {
-                        ExprNode[] keys = inkwSingles.Key[0].KeyExprs;
-                        String key = inkwSingles.Indexed[0];
+                        var keys = inkwSingles.Key[0].KeyExprs;
+                        var key = inkwSingles.Indexed[0];
                         if (inKeywordSingleIdxProp != null) {
                             continue;
                         }
@@ -284,7 +305,10 @@ namespace com.espertech.esper.epl.join.plan
                     IList<QueryGraphValuePairInKWMultiIdx> inkwMultis = queryGraphValue.InKeywordMulti;
                     if (!inkwMultis.IsEmpty()) {
                         QueryGraphValuePairInKWMultiIdx multi = inkwMultis[0];
-                        inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(ExprNodeUtility.GetIdentResolvedPropertyNames(multi.Indexed), multi.Indexed[0].ExprEvaluator.ReturnType, multi.Key.KeyExpr);
+                        inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(
+                            ExprNodeUtility.GetIdentResolvedPropertyNames(multi.Indexed), 
+                            multi.Indexed[0].ExprEvaluator.ReturnType, 
+                            multi.Key.KeyExpr);
                     }
 
                     if (inKeywordSingleIdxProp != null && inKeywordMultiIdxProp != null) {
@@ -293,7 +317,7 @@ namespace com.espertech.esper.epl.join.plan
                 }
             }
 
-            return new SubordPropPlan(joinProps, rangeProps, inKeywordSingleIdxProp, inKeywordMultiIdxProp);
+            return new SubordPropPlan(joinProps, rangeProps, inKeywordSingleIdxProp, inKeywordMultiIdxProp, customIndexOps);
         }
 
         private static void CheckDuplicateOrAdd(QueryPlanIndexItem proposed, IList<QueryPlanIndexItem> indexesSet)

@@ -6,25 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprBitWiseNode
     {
     	private ExprBitWiseNode _bitWiseNode;
-    
+        private IContainer _container;
+
         [SetUp]
-    	public void SetUp()
-    	{
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
     		_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
     	}
     
@@ -34,7 +38,7 @@ namespace com.espertech.esper.epl.expression
             // Must have exactly 2 subnodes
             try
             {
-                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -48,7 +52,7 @@ namespace com.espertech.esper.epl.expression
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -66,7 +70,7 @@ namespace com.espertech.esper.epl.expression
         	_bitWiseNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _bitWiseNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             	Assert.Fail();
             }
             catch (ExprValidationException)
@@ -76,7 +80,7 @@ namespace com.espertech.esper.epl.expression
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(long)));
             _bitWiseNode.AddChildNode(new SupportExprNode(typeof(long)));
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _bitWiseNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _bitWiseNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(typeof(long?), _bitWiseNode.ReturnType);
         }
     
@@ -86,7 +90,7 @@ namespace com.espertech.esper.epl.expression
         	Log.Debug(".testEvaluate");
         	_bitWiseNode.AddChildNode(new SupportExprNode(10));
         	_bitWiseNode.AddChildNode(new SupportExprNode(12));
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _bitWiseNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, _bitWiseNode, SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.AreEqual(8, _bitWiseNode.Evaluate(new EvaluateParams(null, false, null)));
         }
     
@@ -95,8 +99,8 @@ namespace com.espertech.esper.epl.expression
         {
         	Log.Debug(".testEqualsNode");
         	_bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
-            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode));
-            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR)));
+            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
+            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
         }
     
         [Test]

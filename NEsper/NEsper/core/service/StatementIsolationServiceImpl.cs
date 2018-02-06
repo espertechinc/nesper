@@ -48,16 +48,21 @@ namespace com.espertech.esper.core.service
 
         public EPServiceProviderIsolated GetIsolationUnit(string name, int? optionalUnitId)
         {
-            EPServiceProviderIsolatedImpl serviceProviderIsolated = _isolatedProviders.Get(name);
+            var serviceProviderIsolated = _isolatedProviders.Get(name);
             if (serviceProviderIsolated != null)
             {
                 return serviceProviderIsolated;
             }
 
-            FilterServiceSPI filterService =
-                FilterServiceProvider.NewService(
-                    _epServicesContext.ConfigSnapshot.EngineDefaults.Execution.FilterServiceProfile, true);
-            var scheduleService = new SchedulingServiceImpl(_epServicesContext.TimeSource);
+            FilterServiceSPI filterService = FilterServiceProvider.NewService(
+                _epServicesContext.LockManager,
+                _epServicesContext.RWLockManager,
+                _epServicesContext.ConfigSnapshot.EngineDefaults.Execution.FilterServiceProfile, 
+                true);
+
+            var scheduleService = new SchedulingServiceImpl(
+                _epServicesContext.TimeSource,
+                _epServicesContext.LockManager);
             var services = new EPIsolationUnitServices(name, currentUnitId, filterService, scheduleService);
             serviceProviderIsolated = new EPServiceProviderIsolatedImpl(
                 name, services, _epServicesContext, _isolatedProviders);

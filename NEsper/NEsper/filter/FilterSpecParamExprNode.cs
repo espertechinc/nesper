@@ -23,7 +23,8 @@ using com.espertech.esper.pattern;
 namespace com.espertech.esper.filter
 {
     /// <summary>
-    /// This class represents an arbitrary expression node returning a bool value as a filter parameter in an <seealso cref="FilterSpecCompiled" /> filter specification.
+    /// This class represents an arbitrary expression node returning a boolean value as
+    /// a filter parameter in an <seealso cref="FilterSpecCompiled" /> filter specification.
     /// </summary>
     public sealed class FilterSpecParamExprNode : FilterSpecParam
     {

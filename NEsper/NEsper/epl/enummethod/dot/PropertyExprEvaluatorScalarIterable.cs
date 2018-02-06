@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.epl.enummethod.dot
 {
@@ -65,10 +66,11 @@ namespace com.espertech.esper.epl.enummethod.dot
             {
                 return result.Unwrap<T>(true);
             }
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 var resultType = result.GetType();
-                Log.Warn("Expected iterable-type input from property '" + _propertyName + "' but received " + resultType.FullName);
+                Log.Warn(string.Format("Expected iterable-type input from property '{0}' but received {1}", 
+                    _propertyName, resultType.GetCleanName()));
                 throw;
                 //return null;
             }

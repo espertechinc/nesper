@@ -44,9 +44,6 @@ namespace com.espertech.esper.epl.lookup
             return GetType().Name;
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return new LookupStrategyDesc(LookupStrategyType.NULLROWS, null); }
-        }
+        public LookupStrategyDesc StrategyDesc => new LookupStrategyDesc(LookupStrategyType.NULLROWS, null);
     }
 } // end of namespace

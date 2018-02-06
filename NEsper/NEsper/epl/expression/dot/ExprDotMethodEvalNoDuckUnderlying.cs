@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.expression.core;
-
+using com.espertech.esper.util;
 using XLR8.CGLib;
 
 namespace com.espertech.esper.epl.expression.dot
@@ -33,7 +33,7 @@ namespace com.espertech.esper.epl.expression.dot
             }
             if (!(target is EventBean))
             {
-                Log.Warn("Expected EventBean return value but received '" + target.GetType().FullName + "' for statement " + base.StatementName);
+                Log.Warn("Expected EventBean return value but received '" + target.GetType().GetCleanName() + "' for statement " + base.StatementName);
                 return null;
             }
             var bean = (EventBean)target;

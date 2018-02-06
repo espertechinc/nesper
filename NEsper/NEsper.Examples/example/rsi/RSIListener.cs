@@ -8,13 +8,11 @@
 
 
 using System;
-
 using com.espertech.esper.client;
 using com.espertech.esper.compat.logging;
-
 using NEsper.Examples.StockTicker.eventbean;
 
-namespace com.espertech.esper.example.rsi
+namespace NEsper.Examples.RSI
 {
     public class RSIListener 
     {
@@ -57,9 +55,9 @@ namespace com.espertech.esper.example.rsi
 
         public void Update(Object sender, UpdateEventArgs e)
         {
-            EventBean[] newEvents = e.NewEvents;
-            Object eventBean = newEvents[0]["Tick"];
-            StockTick tick = (StockTick)eventBean;
+            var newEvents = e.NewEvents;
+            var eventBean = newEvents[0]["Tick"];
+            var tick = (StockTick)eventBean;
             Log.Info(" Stock " + tick.StockSymbol + " Price " + tick.Price);
             eventBean = newEvents[0]["AvgLoss"];
             _avgLoss = (Double)eventBean;
@@ -111,7 +109,7 @@ namespace com.espertech.esper.example.rsi
 
         private double To1tenthPrecision(double aDouble)
         {
-            int intValue = (int)(aDouble * 10);
+            var intValue = (int)(aDouble * 10);
             return intValue / 10.0;
         }
 

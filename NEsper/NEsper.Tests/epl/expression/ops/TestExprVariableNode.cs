@@ -6,25 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.epl.variable;
 using com.espertech.esper.supportunit.epl;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprVariableNode 
     {
         private ExprVariableNodeImpl _varNode;
         private VariableService _variableService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _variableService = new VariableServiceImpl(100, null, null, null);
+            _container = SupportContainer.Reset();
+
+            _variableService = new VariableServiceImpl(_container, 100, null, null, null);
             _variableService.CreateNewVariable(null, "var1", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "dummy", "string", true, false, false, null, null);
             _variableService.CreateNewVariable(null, "IntPrimitive", "int", true, false, false, null, null);
@@ -53,11 +57,11 @@ namespace com.espertech.esper.epl.expression
             ExprVariableNode otherVarTwo = new ExprVariableNodeImpl(_variableService.GetVariableMetaData("var1"), null);
             ExprVariableNode otherVarThree = new ExprVariableNodeImpl(_variableService.GetVariableMetaData("var1"), "abc");
     
-            Assert.IsTrue(_varNode.EqualsNode(_varNode));
-            Assert.IsTrue(_varNode.EqualsNode(otherVarTwo));
-            Assert.IsFalse(_varNode.EqualsNode(otherVarOne));
-            Assert.IsFalse(_varNode.EqualsNode(otherInNode));
-            Assert.IsFalse(otherVarTwo.EqualsNode(otherVarThree));
+            Assert.IsTrue(_varNode.EqualsNode(_varNode, false));
+            Assert.IsTrue(_varNode.EqualsNode(otherVarTwo, false));
+            Assert.IsFalse(_varNode.EqualsNode(otherVarOne, false));
+            Assert.IsFalse(_varNode.EqualsNode(otherInNode, false));
+            Assert.IsFalse(otherVarTwo.EqualsNode(otherVarThree, false));
         }
     
         [Test]
@@ -72,7 +76,7 @@ namespace com.espertech.esper.epl.expression
                 SupportExprNodeFactory.Validate3Stream(varNode);
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

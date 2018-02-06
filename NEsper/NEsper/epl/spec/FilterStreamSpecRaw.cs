@@ -96,6 +96,7 @@ namespace com.espertech.esper.epl.spec
                 {
                     optionalPropertyEvaluator =
                         PropertyEvaluatorFactory.MakeEvaluator(
+                            context.Container,
                             _rawFilterSpec.OptionalPropertyEvalSpec, namedWindowType, OptionalStreamName,
                             context.EventAdapterService,
                             context.EngineImportService,

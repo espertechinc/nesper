@@ -53,15 +53,20 @@ namespace com.espertech.esper.filter
             _evaluatorsMap.Put(keys, evaluator);
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
             var keys = (ExprNodeAdapterBase)filterConstant;
-            return _evaluatorsMap.Delete(keys) != null;
+            _evaluatorsMap.Delete(keys);
         }
 
         public override int Count
         {
             get { return _evaluatorsMap.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return _evaluatorsMap.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

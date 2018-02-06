@@ -131,7 +131,7 @@ namespace com.espertech.esper.core.context.mgr
 	            if (_detail.IsOverlapping)
 	            {
 	                return () => new StatementAIResourceRegistry(
-	                    new AIRegistryAggregationMultiPerm(), new AIRegistryExprMultiPerm());
+	                    new AIRegistryAggregationMap(), new AIRegistryExprMap());
 	            }
 	            else
 	            {

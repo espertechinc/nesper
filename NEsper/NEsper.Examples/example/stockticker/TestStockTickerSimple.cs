@@ -12,7 +12,9 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+
 using NEsper.Examples.StockTicker.eventbean;
 using NEsper.Examples.StockTicker.monitor;
 
@@ -30,11 +32,16 @@ namespace NEsper.Examples.StockTicker
         {
             _listener = new StockTickerResultListener();
 
-            var configuration = new Configuration();
+            var container = ContainerExtensions.CreateDefaultContainer(false)
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.AddEventType("PriceLimit", typeof (PriceLimit).FullName);
             configuration.AddEventType("StockTick", typeof (StockTick).FullName);
 
-            _epService = EPServiceProviderManager.GetProvider("TestStockTickerSimple", configuration);
+            _epService = EPServiceProviderManager.GetProvider(
+                container, "TestStockTickerSimple", configuration);
 
             // To reduce logging noise and get max performance
             _epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));

@@ -39,7 +39,8 @@ namespace com.espertech.esper.supportregression.util
 	        configuration.EngineDefaults.TimeSource.TimeUnit = timeUnit;
 	        configuration.EngineDefaults.Execution.IsAllowIsolatedService = true;
 	        configuration.EngineDefaults.ViewResources.IsShareViews = false;
-	        EPServiceProvider epService = EPServiceProviderManager.GetProvider(engineURI, configuration);
+	        EPServiceProvider epService = EPServiceProviderManager.GetProvider(
+	            SupportContainer.Instance, engineURI, configuration);
 	        epService.Initialize();
 	        return epService;
 	    }

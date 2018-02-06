@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using com.espertech.esper.compat.logging;
 
-namespace NEsper.Example.Transaction.sim
+namespace NEsper.Examples.Transaction.sim
 {
     /** Subclass to output events in your preferred format.
      * 

@@ -9,10 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Castle.Components.DictionaryAdapter.Xml;
-
-using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
@@ -28,8 +24,8 @@ namespace com.espertech.esper.epl.expression.ops
         : ExprNodeBase
         , ExprEqualsNode
     {
-        internal readonly bool vIsNotEquals;
-        internal readonly bool vIsIs;
+        private readonly bool _isNotEquals;
+        private readonly bool _isIs;
         [NonSerialized]
         private ExprEvaluator _evaluator;
 
@@ -40,24 +36,15 @@ namespace com.espertech.esper.epl.expression.ops
         /// <param name="isIs">true when "is" or "is not" (instead of = or &lt;&gt;)</param>
         public ExprEqualsNodeImpl(bool isNotEquals, bool isIs)
         {
-            vIsNotEquals = isNotEquals;
-            vIsIs = isIs;
+            _isNotEquals = isNotEquals;
+            _isIs = isIs;
         }
 
-        public override ExprEvaluator ExprEvaluator
-        {
-            get { return _evaluator; }
-        }
+        public override ExprEvaluator ExprEvaluator => _evaluator;
 
-        public bool IsNotEquals
-        {
-            get { return vIsNotEquals; }
-        }
+        public bool IsNotEquals => _isNotEquals;
 
-        public bool IsIs
-        {
-            get { return vIsIs; }
-        }
+        public bool IsIs => _isIs;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -93,7 +80,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
             catch (CoercionException)
             {
-                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", typeTwo.FullName, typeOne.FullName));
+                throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to '{1}' is not allowed", Name.Clean(typeTwo), Name.Clean(typeOne)));
             }
 
             // Check if we need to coerce
@@ -107,8 +94,8 @@ namespace com.espertech.esper.epl.expression.ops
                 coercionType = typeOne.GetElementType().GetCompareToCoercionType(typeTwo.GetElementType());
                 _evaluator = new ExprEqualsEvaluatorCoercingArray(
                     this, evaluators[0], evaluators[1],
-                    CoercerFactory.GetCoercer(typeOne.GetComponentType(), coercionType),
-                    CoercerFactory.GetCoercer(typeTwo.GetComponentType(), coercionType));
+                    CoercerFactory.GetCoercer(typeOne.GetElementType(), coercionType),
+                    CoercerFactory.GetCoercer(typeTwo.GetElementType(), coercionType));
             }
             else
             {
@@ -124,30 +111,24 @@ namespace com.espertech.esper.epl.expression.ops
             return null;
         }
 
-        public override bool IsConstantResult
-        {
-            get { return false; }
-        }
+        public override bool IsConstantResult => false;
 
-        public IDictionary<string, object> EventType
-        {
-            get { return null; }
-        }
+        public IDictionary<string, object> EventType => null;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ChildNodes[0].ToEPL(writer, Precedence);
-            if (vIsIs)
+            if (_isIs)
             {
                 writer.Write(" is ");
-                if (vIsNotEquals)
+                if (_isNotEquals)
                 {
                     writer.Write("not ");
                 }
             }
             else
             {
-                if (!vIsNotEquals)
+                if (!_isNotEquals)
                 {
                     writer.Write("=");
                 }
@@ -159,20 +140,17 @@ namespace com.espertech.esper.epl.expression.ops
             ChildNodes[1].ToEPL(writer, Precedence);
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
-            get { return ExprPrecedenceEnum.EQUALS; }
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.EQUALS;
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprEqualsNodeImpl;
-            return other != null && other.vIsNotEquals == vIsNotEquals;
+            return other != null && other._isNotEquals == _isNotEquals;
         }
 
         private ExprEvaluator GetEvaluator(ExprEvaluator lhs, ExprEvaluator rhs)
         {
-            if (vIsIs)
+            if (_isIs)
             {
                 return new ExprEqualsEvaluatorIs(this, lhs, rhs);
             }
@@ -239,7 +217,7 @@ namespace com.espertech.esper.epl.expression.ops
 
                 if (leftArray.Length != rightArray.Length)
                 {
-                    return !_parent.vIsNotEquals;
+                    return !_parent._isNotEquals;
                 }
 
                 var isEquals = true;
@@ -251,13 +229,10 @@ namespace com.espertech.esper.epl.expression.ops
                     isEquals &= Equals(valueL, valueR);
                 }
 
-                return isEquals ^ _parent.vIsNotEquals;
+                return isEquals ^ _parent._isNotEquals;
             }
 
-            public Type ReturnType
-            {
-                get { return typeof(bool?); }
-            }
+            public Type ReturnType => typeof(bool?);
         }
 
         [Serializable]
@@ -296,7 +271,7 @@ namespace com.espertech.esper.epl.expression.ops
                 var leftResult = _lhs.Evaluate(evaluateParams);
                 var rightResult = _rhs.Evaluate(evaluateParams);
 
-                if (!_parent.vIsIs)
+                if (!_parent._isIs)
                 {
                     if (leftResult == null || rightResult == null)  // null comparison
                     {
@@ -317,13 +292,10 @@ namespace com.espertech.esper.epl.expression.ops
 
                 var left = _numberCoercerLHS.Invoke(leftResult);
                 var right = _numberCoercerRHS.Invoke(rightResult);
-                return left.Equals(right) ^ _parent.vIsNotEquals;
+                return left.Equals(right) ^ _parent._isNotEquals;
             }
 
-            public Type ReturnType
-            {
-                get { return typeof(bool?); }
-            }
+            public Type ReturnType => typeof(bool?);
         }
 
         [Serializable]
@@ -372,13 +344,10 @@ namespace com.espertech.esper.epl.expression.ops
                     return null;
                 }
 
-                return leftResult.Equals(rightResult) ^ _parent.vIsNotEquals;
+                return leftResult.Equals(rightResult) ^ _parent._isNotEquals;
             }
 
-            public Type ReturnType
-            {
-                get { return typeof(bool?); }
-            }
+            public Type ReturnType => typeof(bool?);
         }
 
         [Serializable]
@@ -424,15 +393,12 @@ namespace com.espertech.esper.epl.expression.ops
 
                 if (leftResult == null)
                 {
-                    return rightResult == null ^ _parent.vIsNotEquals;
+                    return rightResult == null ^ _parent._isNotEquals;
                 }
-                return (rightResult != null && leftResult.Equals(rightResult)) ^ _parent.vIsNotEquals;
+                return (rightResult != null && leftResult.Equals(rightResult)) ^ _parent._isNotEquals;
             }
 
-            public Type ReturnType
-            {
-                get { return typeof(bool?); }
-            }
+            public Type ReturnType => typeof(bool?);
         }
     }
 } // end of namespace

@@ -12,31 +12,30 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
-namespace com.espertech.esper.support
+namespace NEsper.Examples.Support
 {
-	public class SendEventRunnable : IRunnable
-	{
-	    private readonly Object _eventToSend;
+    public class SendEventRunnable : IRunnable
+    {
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly Object _eventToSend;
         private readonly EPServiceProvider _epService;
-	
-	    public SendEventRunnable(EPServiceProvider epService, Object eventToSend)
-	    {
-	        _epService = epService;
-	        _eventToSend = eventToSend;
-	    }
-	
-	    public void Run()
-	    {
-	        try
-	        {
-	            _epService.EPRuntime.SendEvent(_eventToSend);
-	        }
-	        catch (Exception ex)
-	        {
-	            Log.Fatal(string.Empty, ex);
-	        }
-	    }
-	
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-	}
+
+        public SendEventRunnable(EPServiceProvider epService, Object eventToSend)
+        {
+            _epService = epService;
+            _eventToSend = eventToSend;
+        }
+
+        public void Run()
+        {
+            try {
+                _epService.EPRuntime.SendEvent(_eventToSend);
+            }
+            catch (Exception ex) {
+                Log.Fatal(string.Empty, ex);
+            }
+        }
+    }
 }

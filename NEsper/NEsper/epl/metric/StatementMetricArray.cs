@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using com.espertech.esper.client.metric;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.epl.metric
@@ -60,7 +62,12 @@ namespace com.espertech.esper.epl.metric
         /// <param name="name">name of statement group</param>
         /// <param name="initialSize">initial size of array</param>
         /// <param name="isReportInactive">true to indicate to report on inactive statements</param>
-        public StatementMetricArray(String engineURI, String name, int initialSize, bool isReportInactive)
+        public StatementMetricArray(
+            String engineURI, 
+            String name, 
+            int initialSize, 
+            bool isReportInactive,
+            IReaderWriterLockManager rwLockManager)
         {
             this.engineURI = engineURI;
             this.isReportInactive = isReportInactive;
@@ -68,7 +75,7 @@ namespace com.espertech.esper.epl.metric
             metrics = new StatementMetric[initialSize];
             statementNames = new String[initialSize];
             currentLastElement = -1;
-            rwLock = ReaderWriterLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+            rwLock = rwLockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             removedStatementNames = new HashSet<String>();
         }
 

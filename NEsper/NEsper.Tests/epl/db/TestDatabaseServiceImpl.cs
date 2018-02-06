@@ -12,10 +12,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;
@@ -23,14 +26,17 @@ using NUnit.Framework;
 namespace com.espertech.esper.epl.db
 {
     [TestFixture]
-    public class TestDatabaseServiceImpl 
+    public class TestDatabaseServiceImpl
     {
+        private IContainer _container;
         private DatabaseConfigServiceImpl _databaseServiceImpl;
     
         [SetUp]
         public void SetUp()
         {
-            IDictionary<String, ConfigurationDBRef> configs = new Dictionary<String, ConfigurationDBRef>();
+            _container = SupportContainer.Reset();
+
+            var configs = new Dictionary<String, ConfigurationDBRef>();
     
             var config = new ConfigurationDBRef();
             config.SetDatabaseDriver(SupportDatabaseService.DbDriverFactoryNative); 
@@ -47,8 +53,11 @@ namespace com.espertech.esper.epl.db
             config.SetExpiryTimeCache(1, 3);
             configs["name3"] = config;
     
-            SchedulingService schedulingService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
-            _databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, new ScheduleBucket(1), SupportEngineImportServiceFactory.Make());
+            SchedulingService schedulingService = new SchedulingServiceImpl(
+                new TimeSourceServiceImpl(), _container.Resolve<ILockManager>());
+            _databaseServiceImpl = new DatabaseConfigServiceImpl(
+                configs, schedulingService,  new ScheduleBucket(1), 
+                SupportEngineImportServiceFactory.Make(_container));
         }
     
         [Test]
@@ -64,7 +73,7 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestGetCache()
         {
-            var statementContext = SupportStatementContextFactory.MakeContext();
+            var statementContext = SupportStatementContextFactory.MakeContext(_container);
 
             var dataCacheFactory = new DataCacheFactory();
 

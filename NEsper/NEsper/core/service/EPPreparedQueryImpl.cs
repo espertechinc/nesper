@@ -55,7 +55,7 @@ namespace com.espertech.esper.core.service
                 EPPreparedQueryResult result = _executeMethod.Execute(contextPartitionSelectors);
                 return new EPQueryResultImpl(result);
             }
-            catch (EPStatementException ex)
+            catch (EPStatementException)
             {
                 throw;
             }

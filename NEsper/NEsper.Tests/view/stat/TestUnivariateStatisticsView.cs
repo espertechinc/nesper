@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
@@ -26,19 +27,22 @@ namespace com.espertech.esper.view.stat
     [TestFixture]
     public class TestUnivariateStatisticsView 
     {
-        UnivariateStatisticsView _myView;
-        SupportBeanClassView _childView;
-    
+        private UnivariateStatisticsView _myView;
+        private SupportBeanClassView _childView;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set up sum view and a test child view
-            var type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+            var type = UnivariateStatisticsView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
 
             var factory = new UnivariateStatisticsViewFactory();
             factory.EventType = type;
             factory.FieldExpression = SupportExprNodeFactory.MakeIdentNodeMD("Price");
-            _myView = new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext());
+            _myView = new UnivariateStatisticsView(factory, SupportStatementContextFactory.MakeAgentInstanceViewFactoryContext(_container));
     
             _childView = new SupportBeanClassView(typeof(SupportMarketDataBean));
             _myView.AddView(_childView);

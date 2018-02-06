@@ -36,10 +36,7 @@ namespace com.espertech.esper.epl.lookup
         /// Returns index to look up in.
         /// </summary>
         /// <value>index to use</value>
-        public PropertyIndexedEventTable Index
-        {
-            get { return _index; }
-        }
+        public PropertyIndexedEventTable Index => _index;
 
         public ICollection<EventBean> Lookup(EventBean[] eventsPerStream, ExprEvaluatorContext context) {
             if (InstrumentationHelper.ENABLED) {
@@ -73,10 +70,7 @@ namespace com.espertech.esper.epl.lookup
             return keyValues;
         }
 
-        public LookupStrategyDesc StrategyDesc
-        {
-            get { return _strategyDesc; }
-        }
+        public LookupStrategyDesc StrategyDesc => _strategyDesc;
 
         public string ToQueryPlan()
         {

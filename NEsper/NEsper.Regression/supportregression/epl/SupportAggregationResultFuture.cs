@@ -17,9 +17,9 @@ namespace com.espertech.esper.supportregression.epl
 {
     public class SupportAggregationResultFuture : AggregationResultFuture
     {
-        private readonly Object[] _values;
+        private readonly object[] _values;
 
-        public SupportAggregationResultFuture(Object[] values)
+        public SupportAggregationResultFuture(object[] values)
         {
             _values = values;
         }
@@ -44,7 +44,7 @@ namespace com.espertech.esper.supportregression.epl
             return null;
         }
 
-        public ICollection<Object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
+        public ICollection<object> GetGroupKeys(ExprEvaluatorContext exprEvaluatorContext)
         {
             return null;
         }

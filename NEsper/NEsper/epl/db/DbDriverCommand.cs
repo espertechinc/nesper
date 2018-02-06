@@ -46,8 +46,8 @@ namespace com.espertech.esper.epl.db
         /// <summary>
         /// Gets the meta data.
         /// </summary>
-        /// <value>The meta data.</value>
-        QueryMetaData MetaData { get; }
+        /// <returns>The meta data.</returns>
+        QueryMetaData GetMetaData();
 
         /// <summary>
         /// Gets the meta data settings associated with this command.

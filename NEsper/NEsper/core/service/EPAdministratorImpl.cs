@@ -43,7 +43,9 @@ namespace com.espertech.esper.core.service
 
             _deploymentAdminService = new EPDeploymentAdminImpl(
                 this,
+                _services.LockManager,
                 _services.EventProcessingRWLock,
+                _services.ResourceManager,
                 adminContext.Services.DeploymentStateService,
                 adminContext.Services.StatementEventTypeRefService,
                 adminContext.Services.EventAdapterService,
@@ -288,6 +290,7 @@ namespace com.espertech.esper.core.service
         public StatementSpecRaw MapSODAToRaw(EPStatementObjectModel model)
         {
             return StatementSpecMapper.Map(
+                _services.Container,
                 model,
                 _services.EngineImportService,
                 _services.VariableService,

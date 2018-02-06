@@ -11,8 +11,9 @@ using System.IO;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.client
@@ -23,11 +24,13 @@ namespace com.espertech.esper.client
         protected internal static readonly String ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
     
         private Configuration _config;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _config = new Configuration();
+            _container = SupportContainer.Reset();
+            _config = new Configuration(_container);
             _config.EngineDefaults.Logging.IsEnableExecutionDebug = true;
         }
     
@@ -41,7 +44,7 @@ namespace com.espertech.esper.client
         [Test]
         public void TestURL()
         {
-            Uri url = ResourceManager.ResolveResourceURL(ESPER_TEST_CONFIG);
+            Uri url = _container.Resolve<IResourceManager>().ResolveResourceURL(ESPER_TEST_CONFIG);
             _config.Configure(url);
             TestConfigurationParser.AssertFileConfig(_config);
         }
@@ -49,7 +52,7 @@ namespace com.espertech.esper.client
         [Test]
         public void TestFile()
         {
-            FileInfo fileInfo = ResourceManager.ResolveResourceFile(ESPER_TEST_CONFIG);
+            FileInfo fileInfo = _container.Resolve<IResourceManager>().ResolveResourceFile(ESPER_TEST_CONFIG);
             _config.Configure(fileInfo);
             TestConfigurationParser.AssertFileConfig(_config);
         }

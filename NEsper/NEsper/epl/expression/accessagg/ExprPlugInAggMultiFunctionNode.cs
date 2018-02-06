@@ -51,7 +51,7 @@ namespace com.espertech.esper.epl.expression.accessagg
             _config = config;
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             ValidatePositionals();
             return ValidateAggregationParamsWBinding(validationContext, null);
@@ -124,5 +124,8 @@ namespace com.espertech.esper.epl.expression.accessagg
         {
             return false;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => false;
+
     }
 } // end of namespace

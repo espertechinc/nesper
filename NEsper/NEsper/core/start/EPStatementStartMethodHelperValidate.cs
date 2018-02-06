@@ -71,11 +71,20 @@ namespace com.espertech.esper.core.start
                 try
                 {
                     var validationContext = new ExprValidationContext(
-                        typeService, engineImportService, statementContext.StatementExtensionServicesContext,
-                        viewResourceDelegate, statementContext.SchedulingService, statementContext.VariableService,
-                        statementContext.TableService, evaluatorContextStmt, statementContext.EventAdapterService,
-                        statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                        statementContext.ContextDescriptor, statementContext.ScriptingService,
+                        statementContext.Container,
+                        typeService, engineImportService, 
+                        statementContext.StatementExtensionServicesContext,
+                        viewResourceDelegate, 
+                        statementContext.SchedulingService, 
+                        statementContext.VariableService,
+                        statementContext.TableService,
+                        evaluatorContextStmt,
+                        statementContext.EventAdapterService,
+                        statementContext.StatementName, 
+                        statementContext.StatementId,
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor,
+                        statementContext.ScriptingService,
                         false, false, true, false, intoTableName, false);
                     optionalFilterNode = ExprNodeUtility.GetValidatedSubtree(
                         ExprNodeOrigin.FILTER, optionalFilterNode, validationContext);
@@ -120,11 +129,20 @@ namespace com.espertech.esper.core.start
                         new bool[] { true }, 
                         statementContext.EngineURI, false);
                     var validationContext = new ExprValidationContext(
-                        typeServiceOutputWhen, engineImportService, statementContext.StatementExtensionServicesContext,
-                        null, statementContext.SchedulingService, statementContext.VariableService,
-                        statementContext.TableService, evaluatorContextStmt, statementContext.EventAdapterService,
-                        statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                        statementContext.ContextDescriptor, statementContext.ScriptingService,
+                        statementContext.Container,
+                        typeServiceOutputWhen, 
+                        engineImportService, 
+                        statementContext.StatementExtensionServicesContext, null, 
+                        statementContext.SchedulingService, 
+                        statementContext.VariableService,
+                        statementContext.TableService, 
+                        evaluatorContextStmt, 
+                        statementContext.EventAdapterService,
+                        statementContext.StatementName, 
+                        statementContext.StatementId, 
+                        statementContext.Annotations,
+                        statementContext.ContextDescriptor,
+                        statementContext.ScriptingService,
                         false, false, false, false, intoTableName, false);
 
                     var outputLimitWhenNode = statementSpec.OutputLimitSpec.WhenExpressionNode;
@@ -253,11 +271,19 @@ namespace com.espertech.esper.core.start
             try
             {
                 var validationContext = new ExprValidationContext(
-                    typeService, statementContext.EngineImportService,
+                    statementContext.Container,
+                    typeService,
+                    statementContext.EngineImportService,
                     statementContext.StatementExtensionServicesContext, viewResourceDelegate,
-                    statementContext.SchedulingService, statementContext.VariableService, statementContext.TableService,
-                    evaluatorContextStmt, statementContext.EventAdapterService, statementContext.StatementName,
-                    statementContext.StatementId, statementContext.Annotations, statementContext.ContextDescriptor,
+                    statementContext.SchedulingService,
+                    statementContext.VariableService,
+                    statementContext.TableService,
+                    evaluatorContextStmt, 
+                    statementContext.EventAdapterService,
+                    statementContext.StatementName,
+                    statementContext.StatementId,
+                    statementContext.Annotations,
+                    statementContext.ContextDescriptor,
                     statementContext.ScriptingService,
                     false, false, true, false, null, false);
                 ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.JOINON, equalsNode, validationContext);
@@ -310,11 +336,20 @@ namespace com.espertech.esper.core.start
             bool allowTableConsumption)
         {
             var validationContext = new ExprValidationContext(
-                streamTypeService, statementContext.EngineImportService,
-                statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
-                statementContext.VariableService, statementContext.TableService, exprEvaluatorContext,
-                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+                statementContext.Container,
+                streamTypeService, 
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext, null, 
+                statementContext.SchedulingService,
+                statementContext.VariableService,
+                statementContext.TableService, 
+                exprEvaluatorContext,
+                statementContext.EventAdapterService, 
+                statementContext.StatementName, 
+                statementContext.StatementId,
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor, 
+                statementContext.ScriptingService,
                 false, false, allowTableConsumption,
                 false, null, false);
             var validated = ExprNodeUtility.GetValidatedSubtree(exprNodeOrigin, exprNode, validationContext);

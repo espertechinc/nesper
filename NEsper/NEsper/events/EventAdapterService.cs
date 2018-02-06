@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.hook;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.epl.core;
@@ -391,11 +392,12 @@ namespace com.espertech.esper.events
         /// <param name="runtimeEventSender">the runtime handle for sending the wrapped type</param>
         /// <param name="eventTypeName">is the name of the event type to return the sender for</param>
         /// <param name="threadingService">threading service</param>
-        /// <returns>event sender that is static, single-type</returns>
+        /// <param name="lockManager">The lock manager.</param>
         EventSender GetStaticTypeEventSender(
             EPRuntimeEventSender runtimeEventSender,
             String eventTypeName,
-            ThreadingService threadingService);
+            ThreadingService threadingService,
+            ILockManager lockManager);
 
         /// <summary>
         /// Returns an event sender that dynamically decides what the event type for a given object is.

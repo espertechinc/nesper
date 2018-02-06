@@ -37,7 +37,7 @@ namespace com.espertech.esper.supportregression.virtualdw
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            return EnumerationHelper<EventBean>.Empty();
+            return EnumerationHelper.Empty<EventBean>();
         }
     
         public void HandleEvent(VirtualDataWindowEvent theEvent)

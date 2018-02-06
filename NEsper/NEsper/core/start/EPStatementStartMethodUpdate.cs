@@ -117,11 +117,21 @@ namespace com.espertech.esper.core.start
                     }, statementSpec.DeclaredExpressions, null);
 
             var validationContext = new ExprValidationContext(
-                typeService, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext,
-                null, statementContext.SchedulingService, statementContext.VariableService,
-                statementContext.TableService, evaluatorContextStmt, statementContext.EventAdapterService,
-                statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, false, false, null,
+                statementContext.Container,
+                typeService,
+                statementContext.EngineImportService,
+                statementContext.StatementExtensionServicesContext,
+                null,
+                statementContext.SchedulingService,
+                statementContext.VariableService,
+                statementContext.TableService, evaluatorContextStmt,
+                statementContext.EventAdapterService,
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations,
+                statementContext.ContextDescriptor, 
+                statementContext.ScriptingService, 
+                false, false, false, false, null,
                 false);
             foreach (var assignment in updateSpec.Assignments)
             {

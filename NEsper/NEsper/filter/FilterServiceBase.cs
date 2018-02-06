@@ -36,11 +36,14 @@ namespace com.espertech.esper.filter
         private readonly CopyOnWriteArraySet<FilterServiceListener> _filterServiceListeners;
 
         /// <summary>Constructor. </summary>
-        protected FilterServiceBase(FilterServiceGranularLockFactory lockFactory, bool allowIsolation)
+        protected FilterServiceBase(
+            ILockManager lockManager,
+            FilterServiceGranularLockFactory lockFactory,
+            bool allowIsolation)
         {
             _lockFactory = lockFactory;
             _eventTypeIndex = new EventTypeIndex(lockFactory);
-            _indexBuilder = new EventTypeIndexBuilder(_eventTypeIndex, allowIsolation);
+            _indexBuilder = new EventTypeIndexBuilder(lockManager, _eventTypeIndex, allowIsolation);
             _filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
         }
 
@@ -190,7 +193,7 @@ namespace com.espertech.esper.filter
             {
                 _eventTypeIndex.MatchEvent(theEvent, matches);
             }
-            catch (FilterLockBackoffException ex)
+            catch (FilterLockBackoffException)
             {
                 // retry on lock back-off
                 // lock-backoff may occur when stateful evaluations take place such as bool expressions that are subqueries
@@ -205,7 +208,7 @@ namespace com.espertech.esper.filter
                         {
                             Thread.Sleep(0);
                         }
-                        catch (ThreadInterruptedException e)
+                        catch (ThreadInterruptedException)
                         {
                             Thread.CurrentThread.Interrupt();
                         }
@@ -222,7 +225,7 @@ namespace com.espertech.esper.filter
                         _eventTypeIndex.MatchEvent(theEvent, matches);
                         break;
                     }
-                    catch (FilterLockBackoffException ex2)
+                    catch (FilterLockBackoffException)
                     {
                         // retried
                     }

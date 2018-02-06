@@ -38,7 +38,7 @@ namespace com.espertech.esper.type
             {
                 StringValue.ParseString(invalidString);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // Expected exception
             }

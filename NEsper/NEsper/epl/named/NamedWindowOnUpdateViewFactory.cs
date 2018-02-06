@@ -39,14 +39,8 @@ namespace com.espertech.esper.epl.named
             return new NamedWindowOnUpdateView(lookupStrategy, namedWindowRootViewInstance, agentInstanceContext, this);
         }
 
-        public StatementResultService StatementResultService
-        {
-            get { return _statementResultService; }
-        }
+        public StatementResultService StatementResultService => _statementResultService;
 
-        public EventBeanUpdateHelper UpdateHelper
-        {
-            get { return _updateHelper; }
-        }
+        public EventBeanUpdateHelper UpdateHelper => _updateHelper;
     }
 }

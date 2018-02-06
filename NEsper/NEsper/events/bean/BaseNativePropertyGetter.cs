@@ -8,15 +8,20 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.util;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
-    /// <summary>Base getter for native fragments. </summary>
-    public abstract class BaseNativePropertyGetter : EventPropertyGetter
+    /// <summary>Base getter for native fragments.</summary>
+    public abstract class BaseNativePropertyGetter : EventPropertyGetterSPI
     {
         private readonly EventAdapterService _eventAdapterService;
         private volatile BeanEventType _fragmentEventType;
@@ -25,38 +30,53 @@ namespace com.espertech.esper.events.bean
         private readonly bool _isArray;
         private readonly bool _isIterable;
 
-        public abstract object Get(EventBean eventBean);
-        public abstract bool IsExistsProperty(EventBean eventBean);
+        public abstract Type TargetType { get; }
 
-        /// <summary>Constructor. </summary>
-        /// <param name="eventAdapterService">factory for event beans and event types</param>
-        /// <param name="returnType">type of the entry returned</param>
-        /// <param name="genericType">type generic parameter, if any</param>
-        protected BaseNativePropertyGetter(EventAdapterService eventAdapterService, Type returnType, Type genericType)
+        public abstract Type BeanPropType { get; }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="array">array</param>
+        /// <param name="fragmentEventType">fragment type</param>
+        /// <param name="eventAdapterService">event adapters</param>
+        /// <returns>array</returns>
+        public static Object ToFragmentArray(Array array, BeanEventType fragmentEventType, EventAdapterService eventAdapterService)
         {
-            _eventAdapterService = eventAdapterService;
-            if (returnType.IsArray)
+            var events = new EventBean[array.Length];
+            int countFilled = 0;
+
+            for (int i = 0; i < array.Length; i++)
             {
-                _fragmentClassType = returnType.GetElementType();
-                _isArray = true;
-                _isIterable = false;
+                var element = array.GetValue(i);
+                if (element == null)
+                {
+                    continue;
+                }
+
+                events[countFilled] = eventAdapterService.AdapterForTypedObject(element, fragmentEventType);
+                countFilled++;
             }
-            else if (returnType.IsImplementsInterface(typeof(IEnumerable)))
+
+            if (countFilled == array.Length)
             {
-                _fragmentClassType = genericType;
-                _isArray = false;
-                _isIterable = true;
+                return events;
             }
-            else
+
+            if (countFilled == 0)
             {
-                _fragmentClassType = returnType;
-                _isArray = false;
-                _isIterable = false;
+                return new EventBean[0];
             }
-            _isFragmentable = true;
+
+            var returnVal = new EventBean[countFilled];
+            Array.Copy(events, 0, returnVal, 0, countFilled);
+            return returnVal;
         }
 
-        /// <summary>Returns the fragment for dynamic properties. </summary>
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// Returns the fragment for dynamic properties.
+        /// </summary>
         /// <param name="object">to inspect</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <returns>fragment</returns>
@@ -92,14 +112,14 @@ namespace com.espertech.esper.events.bean
 
             if (isArray)
             {
-                var asArray = (Array) @object;
-                var len = asArray.Length;
+                var array = @object as Array;
+                int len = array.Length;
                 var events = new EventBean[len];
                 int countFilled = 0;
 
                 for (int i = 0; i < len; i++)
                 {
-                    Object element = asArray.GetValue(i);
+                    var element = array.GetValue(i);
                     if (element == null)
                     {
                         continue;
@@ -129,19 +149,154 @@ namespace com.espertech.esper.events.bean
             }
         }
 
-        public Object GetFragment(EventBean eventBean)
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// Returns the fragment for dynamic properties.
+        /// </summary>
+        /// <param name="object">to inspect</param>
+        /// <param name="fragmentEventType">type</param>
+        /// <param name="eventAdapterService">factory for event beans and event types</param>
+        /// <returns>fragment</returns>
+        public static Object ToFragmentIterable(Object @object, BeanEventType fragmentEventType, EventAdapterService eventAdapterService)
         {
-            Object @object = Get(eventBean);
-            if (@object == null)
+            if (!(@object is IEnumerable))
             {
                 return null;
             }
+            var enumerator = ((IEnumerable) @object).GetEnumerator();
+            if (!enumerator.MoveNext())
+            {
+                return new EventBean[0];
+            }
 
+            var events = new ArrayDeque<EventBean>();
+            do
+            {
+                var next = enumerator.Current;
+                if (next == null)
+                {
+                    continue;
+                }
+
+                events.Add(eventAdapterService.AdapterForTypedObject(next, fragmentEventType));
+            }
+            while (enumerator.MoveNext());
+
+            return events.ToArray();
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="eventAdapterService">factory for event beans and event types</param>
+        /// <param name="returnType">type of the entry returned</param>
+        /// <param name="genericType">type generic parameter, if any</param>
+        protected BaseNativePropertyGetter(EventAdapterService eventAdapterService, Type returnType, Type genericType)
+        {
+            _eventAdapterService = eventAdapterService;
+
+            if (returnType.IsArray)
+            {
+                _fragmentClassType = returnType.GetElementType();
+                _isArray = true;
+                _isIterable = false;
+            }
+            else if (returnType.IsImplementsInterface(typeof(IEnumerable)))
+            {
+                _fragmentClassType = genericType;
+                _isArray = false;
+                _isIterable = true;
+            }
+            else
+            {
+                _fragmentClassType = returnType;
+                _isArray = false;
+                _isIterable = false;
+            }
+            _isFragmentable = true;
+        }
+
+        public Object GetFragment(EventBean eventBean)
+        {
+            DetermineFragmentable();
             if (!_isFragmentable)
             {
                 return null;
             }
 
+            var @object = Get(eventBean);
+            if (@object == null)
+            {
+                return null;
+            }
+
+            if (_isArray)
+            {
+                return ToFragmentArray((Object[])@object, _fragmentEventType, _eventAdapterService);
+            }
+            else if (_isIterable)
+            {
+                return ToFragmentIterable(@object, _fragmentEventType, _eventAdapterService);
+            }
+            else
+            {
+                return _eventAdapterService.AdapterForTypedObject(@object, _fragmentEventType);
+            }
+        }
+
+        private string GetFragmentCodegen(ICodegenContext context)
+        {
+            var msvc = context.MakeAddMember(typeof(EventAdapterService), _eventAdapterService);
+            var mtype = context.MakeAddMember(typeof(BeanEventType), _fragmentEventType);
+
+            var block = context.AddMethod(typeof(Object), TargetType, "underlying", this.GetType())
+                    .DeclareVar(BeanPropType, "object", CodegenUnderlyingGet(Ref("underlying"), context))
+                    .IfRefNullReturnNull("object");
+
+            if (_isArray)
+            {
+                return block.MethodReturn(StaticMethod(
+                    typeof(BaseNativePropertyGetter), "ToFragmentArray",
+                    Cast(typeof(Object[]), Ref("object")),
+                    Ref(mtype.MemberName),
+                    Ref(msvc.MemberName)));
+            }
+            if (_isIterable)
+            {
+                return block.MethodReturn(StaticMethod(
+                    typeof(BaseNativePropertyGetter), "ToFragmentIterable",
+                    Ref("object"),
+                    Ref(mtype.MemberName),
+                    Ref(msvc.MemberName)));
+            }
+            return block.MethodReturn(ExprDotMethod(
+                Ref(msvc.MemberName), "AdapterForTypedBean",
+                Ref("object"),
+                Ref(mtype.MemberName)));
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            DetermineFragmentable();
+            if (!_isFragmentable)
+            {
+                return ConstantNull();
+            }
+            return CodegenUnderlyingFragment(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            DetermineFragmentable();
+            if (!_isFragmentable)
+            {
+                return ConstantNull();
+            }
+            return LocalMethod(GetFragmentCodegen(context), underlyingExpression);
+        }
+
+        private void DetermineFragmentable()
+        {
             if (_fragmentEventType == null)
             {
                 if (_fragmentClassType.IsFragmentableType())
@@ -151,72 +306,15 @@ namespace com.espertech.esper.events.bean
                 else
                 {
                     _isFragmentable = false;
-                    return null;
                 }
-            }
-
-            if (_isArray)
-            {
-                var asArray = (Array) @object;
-                var len = asArray.Length;
-                var events = new EventBean[len];
-                int countFilled = 0;
-
-                for (int i = 0; i < len; i++)
-                {
-                    Object element = asArray.GetValue(i);
-                    if (element == null)
-                    {
-                        continue;
-                    }
-
-                    events[countFilled] = _eventAdapterService.AdapterForTypedObject(element, _fragmentEventType);
-                    countFilled++;
-                }
-
-                if (countFilled == len)
-                {
-                    return events;
-                }
-
-                if (countFilled == 0)
-                {
-                    return new EventBean[0];
-                }
-
-                var returnVal = new EventBean[countFilled];
-                Array.Copy(events, 0, returnVal, 0, countFilled);
-                return returnVal;
-            }
-            else if (_isIterable)
-            {
-                if (!(@object is IEnumerable))
-                {
-                    return null;
-                }
-                IEnumerator enumerator = ((IEnumerable)@object).GetEnumerator();
-                if (!enumerator.MoveNext())
-                {
-                    return new EventBean[0];
-                }
-                var events = new List<EventBean>();
-                do
-                {
-                    Object next = enumerator.Current;
-                    if (next == null)
-                    {
-                        continue;
-                    }
-
-                    events.Add(_eventAdapterService.AdapterForTypedObject(next, _fragmentEventType));
-                } while (enumerator.MoveNext());
-
-                return events.ToArray();
-            }
-            else
-            {
-                return _eventAdapterService.AdapterForTypedObject(@object, _fragmentEventType);
             }
         }
+
+        public abstract ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context);
+        public abstract ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context);
+        public abstract ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context);
+        public abstract ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context);
+        public abstract object Get(EventBean eventBean);
+        public abstract bool IsExistsProperty(EventBean eventBean);
     }
-}
+} // end of namespace

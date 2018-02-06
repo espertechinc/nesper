@@ -13,29 +13,38 @@ using com.espertech.esper.epl.expression.core;
 
 namespace com.espertech.esper.epl.agg.factory
 {
-	public class AggregationStateFactoryLinear : AggregationStateFactory
+    public class AggregationStateFactoryLinear : AggregationStateFactory
     {
-	    protected internal readonly ExprAggMultiFunctionLinearAccessNode Expr;
-        protected internal readonly int StreamNum;
+        private readonly ExprAggMultiFunctionLinearAccessNode _expr;
+        private readonly ExprEvaluator _optionalFilter;
+        private readonly int _streamNum;
 
-	    public AggregationStateFactoryLinear(ExprAggMultiFunctionLinearAccessNode expr, int streamNum)
+        public AggregationStateFactoryLinear(ExprAggMultiFunctionLinearAccessNode expr, int streamNum,
+            ExprEvaluator optionalFilter)
         {
-	        Expr = expr;
-	        StreamNum = streamNum;
-	    }
+            _expr = expr;
+            _streamNum = streamNum;
+            _optionalFilter = optionalFilter;
+        }
 
-	    public AggregationState CreateAccess(int agentInstanceId, bool join, object groupKey, AggregationServicePassThru passThru)
+        public AggregationState CreateAccess(
+            int agentInstanceId,
+            bool join,
+            object groupKey,
+            AggregationServicePassThru passThru)
         {
-	        if (join)
+            if (join)
             {
-	            return new AggregationStateJoinImpl(StreamNum);
-	        }
-	        return new AggregationStateImpl(StreamNum);
-	    }
+                return _optionalFilter != null 
+                    ? new AggregationStateLinearJoinWFilter(_streamNum, _optionalFilter) 
+                    : new AggregationStateLinearJoinImpl(_streamNum);
+            }
 
-	    public ExprNode AggregationExpression
-	    {
-	        get { return Expr; }
-	    }
+            return _optionalFilter != null 
+                ? new AggregationStateLinearWFilter(_streamNum, _optionalFilter) 
+                : new AggregationStateLinearImpl(_streamNum);
+        }
+
+        public ExprNode AggregationExpression => _expr;
     }
 } // end of namespace

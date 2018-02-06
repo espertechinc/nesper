@@ -13,9 +13,10 @@ using System.Xml.XPath;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events
@@ -26,11 +27,16 @@ namespace com.espertech.esper.events
     public class TestEventAdapterServiceImpl 
     {
         private EventAdapterServiceImpl _adapterService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _adapterService = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, null, SupportEngineImportServiceFactory.Make());
+            _container = SupportContainer.Reset();
+            _adapterService = new EventAdapterServiceImpl(
+                _container,
+                new EventTypeIdGeneratorImpl(), 5, null,
+                SupportEngineImportServiceFactory.Make(_container));
         }
     
         [Test]

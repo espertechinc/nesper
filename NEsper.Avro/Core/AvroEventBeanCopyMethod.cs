@@ -48,7 +48,7 @@ namespace NEsper.Avro.Core
                 }
                 else if (field.Schema.Tag == Schema.Type.Map)
                 {
-                    var originalMap = original.Get(field).UnwrapDictionary();
+                    var originalMap = original.Get(field).UnwrapStringDictionary();
                     if (originalMap != null)
                     {
                         copy.Put(field, new Dictionary<string, object>(originalMap));

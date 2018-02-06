@@ -44,30 +44,18 @@ namespace com.espertech.esper.epl.named
 
         /// <summary>Returns the named window name. </summary>
         /// <value>name</value>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         /// <summary>Return the processor originating the event. </summary>
         /// <value>processor</value>
-        public NamedWindowProcessor Processor
-        {
-            get { return _processor; }
-        }
+        public NamedWindowProcessor Processor => _processor;
 
         /// <summary>Returns the event type. </summary>
         /// <value>type of event</value>
-        public LifecycleEventType EventType
-        {
-            get { return _eventType; }
-        }
+        public LifecycleEventType EventType => _eventType;
 
         /// <summary>Returns event parameters. </summary>
         /// <value>paramList</value>
-        public object[] Params
-        {
-            get { return _paramList; }
-        }
+        public object[] Params => _paramList;
     }
 }

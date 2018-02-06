@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.client;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.events.arr;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
@@ -43,10 +41,7 @@ namespace com.espertech.esper.events.property
             _index = index;
         }
 
-        public override bool IsDynamic
-        {
-            get { return true; }
-        }
+        public override bool IsDynamic => true;
 
         public override string[] ToPropertyArray()
         {
@@ -56,7 +51,7 @@ namespace com.espertech.esper.events.property
             };
         }
 
-        public override EventPropertyGetter GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
+        public override EventPropertyGetterSPI GetGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
         {
             return new DynamicIndexedPropertyGetter(PropertyNameAtomic, _index, eventAdapterService);
         }
@@ -110,7 +105,7 @@ namespace com.espertech.esper.events.property
             writer.Write('?');
         }
 
-        public override EventPropertyGetter GetGetterDOM(
+        public override EventPropertyGetterSPI GetGetterDOM(
             SchemaElementComplex complexProperty,
             EventAdapterService eventAdapterService,
             BaseXMLEventType eventType,
@@ -126,14 +121,11 @@ namespace com.espertech.esper.events.property
             return null; // dynamic properties always return Node
         }
 
-        public override EventPropertyGetter GetGetterDOM()
+        public override EventPropertyGetterSPI GetGetterDOM()
         {
             return new DOMIndexedGetter(PropertyNameAtomic, _index, null);
         }
 
-        public int Index
-        {
-            get { return _index; }
-        }
+        public int Index => _index;
     }
 } // end of namespace

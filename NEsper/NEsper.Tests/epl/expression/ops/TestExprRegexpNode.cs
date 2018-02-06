@@ -10,27 +10,30 @@ using System;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprRegexpNode 
     {
         private ExprRegexpNode _regexpNodeNormal;
         private ExprRegexpNode _regexpNodeNot;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _regexpNodeNormal = SupportExprNodeFactory.MakeRegexpNode(false);
             _regexpNodeNot = SupportExprNodeFactory.MakeRegexpNode(true);
         }
@@ -79,8 +82,8 @@ namespace com.espertech.esper.epl.expression
         {
             ExprRegexpNode otherRegexpNodeNot = SupportExprNodeFactory.MakeRegexpNode(true);
     
-            Assert.IsTrue(_regexpNodeNot.EqualsNode(otherRegexpNodeNot));
-            Assert.IsFalse(_regexpNodeNormal.EqualsNode(otherRegexpNodeNot));
+            Assert.IsTrue(_regexpNodeNot.EqualsNode(otherRegexpNodeNot, false));
+            Assert.IsFalse(_regexpNodeNormal.EqualsNode(otherRegexpNodeNot, false));
         }
     
         [Test]
@@ -96,13 +99,13 @@ namespace com.espertech.esper.epl.expression
             return new[] {SupportEventBeanFactory.CreateObject(theEvent)};
         }
     
-        private static void TryInvalidValidate(ExprRegexpNode exprLikeRegexpNode)
+        private void TryInvalidValidate(ExprRegexpNode exprLikeRegexpNode)
         {
             try {
-                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                exprLikeRegexpNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // expected
             }

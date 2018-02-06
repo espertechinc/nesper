@@ -18,6 +18,10 @@ namespace com.espertech.esper.epl.agg.aggregator
         private int _sum;
         private long _numDataPoints;
 
+        public AggregatorSumNumInteger()
+        {
+        }
+
         public virtual void Clear()
         {
             _sum = 0;

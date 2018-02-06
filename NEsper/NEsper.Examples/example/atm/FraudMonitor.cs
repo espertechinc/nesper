@@ -6,10 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using com.espertech.esper.client;
 
-namespace com.espertech.esper.example.atm
+namespace NEsper.Examples.ATM
 {
 	/// <summary>
 	/// Demonstrates a simple join between fraud warning and withdrawal event streams.

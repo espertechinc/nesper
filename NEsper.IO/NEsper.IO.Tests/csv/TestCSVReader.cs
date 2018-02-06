@@ -9,11 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esperio.support.util;
+
 using NUnit.Framework;
 
 namespace com.espertech.esperio.csv
@@ -21,86 +22,33 @@ namespace com.espertech.esperio.csv
     [TestFixture]
     public class TestCSVReader
     {
-        private void AssertLooping(String path)
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
         {
-            var reader = new CSVReader(new AdapterInputSource(path));
-            reader.Looping = true;
-
-            String[] nextRecord = reader.GetNextRecord();
-            var expected = new[] {"first line", "1"};
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsTrue(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] {"second line", "2"};
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsFalse(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] {"first line", "1"};
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsTrue(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] {"second line", "2"};
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsFalse(reader.GetAndClearIsReset());
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] {"first line", "1"};
-            Assert.AreEqual(expected, nextRecord);
-
-            Assert.IsTrue(reader.GetAndClearIsReset());
-
-            reader.Close();
-        }
-
-        private void AssertNonLooping(String path)
-        {
-            var reader = new CSVReader(new AdapterInputSource(path));
-
-            String[] nextRecord = reader.GetNextRecord();
-            var expected = new[] {"first line", "1"};
-            Assert.AreEqual(expected, nextRecord);
-
-            nextRecord = reader.GetNextRecord();
-            expected = new[] {"second line", "2"};
-            Assert.AreEqual(expected, nextRecord);
-
-            try {
-                reader.GetNextRecord();
-                Assert.Fail();
-            }
-            catch (EndOfStreamException ex) {
-                // Expected
-            }
-
-            reader.Close();
+            _container = SupportContainer.Reset();
         }
 
         [Test]
         public void TestClose()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(new AdapterInputSource(path));
+            var reader = new CSVReader(_container, new AdapterInputSource(path));
 
             reader.Close();
             try {
                 reader.GetNextRecord();
                 Assert.Fail();
             }
-            catch (EPException e) {
+            catch (EPException) {
                 // Expected
             }
             try {
                 reader.Close();
                 Assert.Fail();
             }
-            catch (EPException e) {
+            catch (EPException) {
                 // Expected
             }
         }
@@ -125,7 +73,7 @@ namespace com.espertech.esperio.csv
         public void TestParsing()
         {
             var path = "regression/parseTests.csv";
-            var reader = new CSVReader(new AdapterInputSource(path));
+            var reader = new CSVReader(_container, new AdapterInputSource(path));
 
             String[] nextRecord = reader.GetNextRecord();
             var expected = new[] {"8", "8.0", "c", "'c'", "string", "string"};
@@ -148,7 +96,7 @@ namespace com.espertech.esperio.csv
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"value\r\nwith newline"};
+            expected = new[] {string.Format("value{0}with newline", "\n")};
             Assert.AreEqual(expected, nextRecord);
 
             nextRecord = reader.GetNextRecord();
@@ -171,7 +119,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestReset()
         {
-            var reader = new CSVReader(new AdapterInputSource("regression/endOnNewline.csv"));
+            var reader = new CSVReader(_container, new AdapterInputSource("regression/endOnNewline.csv"));
 
             String[] nextRecord = reader.GetNextRecord();
             var expected = new[] {"first line", "1"};
@@ -191,7 +139,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestTitleRow()
         {
-            var reader = new CSVReader(new AdapterInputSource("regression/titleRow.csv"));
+            var reader = new CSVReader(_container, new AdapterInputSource("regression/titleRow.csv"));
             reader.Looping = true;
 
             // isUsingTitleRow is false by default, so get the title row
@@ -246,17 +194,19 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestNestedProperties()
         {
-            Configuration configuration = new Configuration();
+            var container = ContainerExtensions.CreateDefaultContainer();
+
+            var configuration = new Configuration(container);
             configuration.AddEventType<Figure>();
 
-            var ep = EPServiceProviderManager.GetProvider("testNestedProperties", configuration);
+            var ep = EPServiceProviderManager.GetProvider(container, "testNestedProperties", configuration);
             var ul = new SupportUpdateListener();
 
             ep.EPAdministrator.CreateEPL("select * from Figure").Events += ul.Update;
 
             var source = new AdapterInputSource("regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(ep, spec);
+            var adapter = new CSVInputAdapter(_container, ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());
@@ -268,7 +218,7 @@ namespace com.espertech.esperio.csv
         [Test]
         public void TestNestedMapProperties()
         {
-            var configuration = new Configuration();
+            var configuration = new Configuration(_container);
             var point = new Dictionary<string, object>();
             point.Put("X", typeof (int));
             point.Put("Y", typeof (int));
@@ -278,22 +228,86 @@ namespace com.espertech.esperio.csv
             figure.Put("Point", point);
 
             configuration.AddEventType("Figure", figure);
-            var ep = EPServiceProviderManager.GetProvider("testNestedMapProperties", configuration);
+            var ep = EPServiceProviderManager.GetProvider(
+                _container, "testNestedMapProperties", configuration);
             var ul = new SupportUpdateListener();
             ep.EPAdministrator.CreateEPL("select * from Figure").Events += ul.Update;
 
             var source = new AdapterInputSource("regression/nestedProperties.csv");
             var spec = new CSVInputAdapterSpec(source, "Figure");
-            var adapter = new CSVInputAdapter(ep, spec);
+            var adapter = new CSVInputAdapter(_container, ep, spec);
             adapter.Start();
 
             Assert.IsTrue(ul.IsInvoked());
             var e = ul.AssertOneGetNewAndReset();
             Assert.AreEqual(1, e.Get("Point.X"));
         }
+
+        private void AssertLooping(String path)
+        {
+            var reader = new CSVReader(_container, new AdapterInputSource(path));
+            reader.Looping = true;
+
+            String[] nextRecord = reader.GetNextRecord();
+            var expected = new[] { "first line", "1" };
+            Assert.AreEqual(expected, nextRecord);
+
+            Assert.IsTrue(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "second line", "2" };
+            Assert.AreEqual(expected, nextRecord);
+
+            Assert.IsFalse(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "first line", "1" };
+            Assert.AreEqual(expected, nextRecord);
+
+            Assert.IsTrue(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "second line", "2" };
+            Assert.AreEqual(expected, nextRecord);
+
+            Assert.IsFalse(reader.GetAndClearIsReset());
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "first line", "1" };
+            Assert.AreEqual(expected, nextRecord);
+
+            Assert.IsTrue(reader.GetAndClearIsReset());
+
+            reader.Close();
+        }
+
+        private void AssertNonLooping(String path)
+        {
+            var reader = new CSVReader(_container, new AdapterInputSource(path));
+
+            String[] nextRecord = reader.GetNextRecord();
+            var expected = new[] { "first line", "1" };
+            Assert.AreEqual(expected, nextRecord);
+
+            nextRecord = reader.GetNextRecord();
+            expected = new[] { "second line", "2" };
+            Assert.AreEqual(expected, nextRecord);
+
+            try
+            {
+                reader.GetNextRecord();
+                Assert.Fail();
+            }
+            catch (EndOfStreamException)
+            {
+                // Expected
+            }
+
+            reader.Close();
+        }
     }
 
-	public class Figure
+    public class Figure
     {
         public string Name { get; set; }
         public Point Point { get; set; }

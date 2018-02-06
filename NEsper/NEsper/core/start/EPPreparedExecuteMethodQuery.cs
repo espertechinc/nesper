@@ -24,6 +24,8 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.@join.@base;
+using com.espertech.esper.epl.join.hint;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.events;
 using com.espertech.esper.filter;
@@ -47,7 +49,7 @@ namespace com.espertech.esper.core.start
         private readonly EPServicesContext _services;
         private readonly EventBeanReader _eventBeanReader;
         private readonly JoinSetComposerPrototype _joinSetComposerPrototype;
-        private readonly FilterSpecCompiled[] _filters;
+        private readonly QueryGraph _queryGraph;
         private readonly bool _hasTableAccess;
 
         /// <summary>
@@ -104,19 +106,34 @@ namespace com.espertech.esper.core.start
             }
 
             // compile filter to optimize access to named window
-            _filters = new FilterSpecCompiled[numStreams];
+            var types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new bool[numStreams], services.EngineURI, false);
+            var excludePlanHint = ExcludePlanHint.GetHint(types.StreamNames, statementContext);
+            _queryGraph = new QueryGraph(numStreams, excludePlanHint, false);
+
             if (statementSpec.FilterRootNode != null)
             {
-                var tagged = new LinkedHashMap<string, Pair<EventType, string>>();
                 for (var i = 0; i < numStreams; i++)
                 {
                     try
                     {
-                        var types = new StreamTypeServiceImpl(typesPerStream, namesPerStream, new bool[numStreams], services.EngineURI, false);
-                        _filters[i] = FilterSpecCompiler.MakeFilterSpec(typesPerStream[i], namesPerStream[i],
-                                Collections.SingletonList(statementSpec.FilterRootNode), null,
-                                tagged, tagged, types,
-                                null, statementContext, Collections.SingletonList(i));
+                        ExprEvaluatorContextStatement evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
+                        ExprValidationContext validationContext = new ExprValidationContext(
+                            statementContext.Container,
+                            types, 
+                            statementContext.EngineImportService, 
+                            statementContext.StatementExtensionServicesContext, null, 
+                            statementContext.TimeProvider, 
+                            statementContext.VariableService,
+                            statementContext.TableService, evaluatorContextStmt,
+                            statementContext.EventAdapterService, 
+                            statementContext.StatementName, 
+                            statementContext.StatementId, 
+                            statementContext.Annotations, 
+                            statementContext.ContextDescriptor, 
+                            statementContext.ScriptingService,
+                            false, false, true, false, null, true);
+                        ExprNode validated = ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.FILTER, statementSpec.FilterRootNode, validationContext);
+                        FilterExprAnalyzer.Analyze(validated, _queryGraph, false);
                     }
                     catch (Exception ex)
                     {
@@ -235,7 +252,7 @@ namespace com.espertech.esper.core.start
                     if (processorInstance != null)
                     {
                         EPPreparedExecuteTableHelper.AssignTableAccessStrategies(_services, _statementSpec.TableNodes, processorInstance.AgentInstanceContext);
-                        var coll = processorInstance.SnapshotBestEffort(this, _filters[0], _statementSpec.Annotations);
+                        var coll = processorInstance.SnapshotBestEffort(this, _queryGraph, _statementSpec.Annotations);
                         contextPartitionResults.Add(new ContextPartitionResult(coll, processorInstance.AgentInstanceContext));
                     }
                 }
@@ -315,7 +332,7 @@ namespace com.espertech.esper.core.start
                 processorInstance = fireAndForgetProcessor.GetProcessorInstanceContextById(agentInstanceId);
                 if (processorInstance != null)
                 {
-                    var coll = processorInstance.SnapshotBestEffort(this, _filters[streamNum], _statementSpec.Annotations);
+                    var coll = processorInstance.SnapshotBestEffort(this, _queryGraph, _statementSpec.Annotations);
                     events.AddAll(coll);
                 }
             }
@@ -327,7 +344,7 @@ namespace com.espertech.esper.core.start
             IList<ExprNode> filterExpressions,
             FireAndForgetInstance processorInstance)
         {
-            var coll = processorInstance.SnapshotBestEffort(this, _filters[streamNum], _statementSpec.Annotations);
+            var coll = processorInstance.SnapshotBestEffort(this, _queryGraph, _statementSpec.Annotations);
             if (filterExpressions.Count != 0)
             {
                 coll = GetFiltered(coll, filterExpressions);

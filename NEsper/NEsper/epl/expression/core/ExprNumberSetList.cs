@@ -62,7 +62,7 @@ namespace com.espertech.esper.epl.expression.core
             get { return ChildNodes.All(child => child.IsConstantResult); }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             return (node is ExprNumberSetList);
         }

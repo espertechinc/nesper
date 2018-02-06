@@ -7,10 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.events;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.view;
 
 using NUnit.Framework;
@@ -23,15 +26,16 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestDBStatementViewFactory()
         {
-            DBStatementStreamSpec spec = new DBStatementStreamSpec("s0", ViewSpec.EMPTY_VIEWSPEC_ARRAY,
+            var container = SupportContainer.Instance;
+            var spec = new DBStatementStreamSpec("s0", ViewSpec.EMPTY_VIEWSPEC_ARRAY,
                     "mydb", "select * from mytesttable where mybigint=${idnum}", null);
 
             EventCollection eventCollection = DatabasePollingViewableFactory.CreateDBStatementView(
                 1, 1, spec,
                 SupportDatabaseService.MakeService(),
-                SupportEventAdapterService.Service,
+                container.Resolve<EventAdapterService>(),
                 null, null, null, null, true, new DataCacheFactory(),
-                SupportStatementContextFactory.MakeContext());
+                SupportStatementContextFactory.MakeContext(container));
             
             Assert.AreEqual(typeof(long?), eventCollection.EventType.GetPropertyType("mybigint"));
             Assert.AreEqual(typeof(string), eventCollection.EventType.GetPropertyType("myvarchar"));
@@ -58,7 +62,7 @@ namespace com.espertech.esper.epl.db
                 new [] {"select * from A union select * from B union select * from C", "select * from A  where 1=0 union  select * from B  where 1=0 union  select * from C where 1=0"},
             };
     
-            for (int i = 0; i < testcases.Length; i++)
+            for (var i = 0; i < testcases.Length; i++)
             {
                 String result = null;
                 try
@@ -69,7 +73,7 @@ namespace com.espertech.esper.epl.db
                 {
                     Assert.Fail("failed case with exception:" + testcases[i][0]);
                 }
-                String expected = testcases[i][1].Trim();
+                var expected = testcases[i][1].Trim();
                 Assert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
             }
         }

@@ -45,8 +45,10 @@ namespace com.espertech.esper.core.context.mgr
                 throw new ExprValidationException("Context by name '" + contextDesc.ContextName + "' already exists");
             }
 
-            var factoryServiceContext = new ContextControllerFactoryServiceContext(contextDesc.ContextName, servicesContext, contextDesc.ContextDetail, agentInstanceContext, isRecoveringResilient, statementResultEventType);
-            var contextManager = servicesContext.ContextManagerFactoryService.Make(contextDesc.ContextDetail, factoryServiceContext);
+            var factoryServiceContext = new ContextControllerFactoryServiceContext(
+                contextDesc.ContextName, servicesContext, contextDesc.ContextDetail, agentInstanceContext, isRecoveringResilient, statementResultEventType);
+            var contextManager = servicesContext.ContextManagerFactoryService.Make(
+                servicesContext.LockManager, contextDesc.ContextDetail, factoryServiceContext);
 
             factoryServiceContext.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.FilterFaultHandler = contextManager;
 

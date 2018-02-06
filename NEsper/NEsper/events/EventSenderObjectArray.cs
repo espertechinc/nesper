@@ -11,6 +11,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.thread;
 using com.espertech.esper.events.arr;
+using com.espertech.esper.util;
 
 namespace com.espertech.esper.events
 {
@@ -50,7 +51,8 @@ namespace com.espertech.esper.events
         {
             if (!(theEvent.GetType().IsArray))
             {
-                throw new EPException("Unexpected event object of type " + theEvent.GetType().FullName + ", expected Object[]");
+                throw new EPException(string.Format("Unexpected event object of type {0}, expected {1}", 
+                    theEvent.GetType().GetCleanName(), typeof(object[]).GetCleanName()));
             }
 
             var arr = (Object[]) theEvent;

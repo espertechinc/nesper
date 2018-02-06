@@ -20,7 +20,7 @@ namespace com.espertech.esper.collection
         [Test]
         public void TestNext()
         {
-            IEnumerator<string> it = EnumerationHelper<string>.Singleton("a");
+            IEnumerator<string> it = EnumerationHelper.Singleton("a");
             Assert.IsTrue(it.MoveNext());
             Assert.AreEqual("a", it.Current);
             Assert.IsFalse(it.MoveNext());

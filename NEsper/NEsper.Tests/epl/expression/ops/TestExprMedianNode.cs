@@ -14,20 +14,22 @@ using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprMedianNode : TestExprAggregateNodeAdapter
     {
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
+
             ValidatedNodeToTest= MakeNode(5, typeof(int));
         }
     
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(double?), ValidatedNodeToTest.ReturnType);
+            Assert.AreEqual(typeof(double), ValidatedNodeToTest.ReturnType);
         }
     
         [Test]
@@ -39,8 +41,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest));
-            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false)));
+            Assert.IsTrue(ValidatedNodeToTest.EqualsNode(ValidatedNodeToTest, false));
+            Assert.IsFalse(ValidatedNodeToTest.EqualsNode(new ExprSumNode(false), false));
         }
 
 

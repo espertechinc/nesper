@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.core.support;
-using com.espertech.esper.epl.expression;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.events;
 using com.espertech.esper.events.bean;
-using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 
 using NUnit.Framework;
 
@@ -19,6 +19,14 @@ namespace com.espertech.esper.epl.join.plan
     [TestFixture]
     public class TestQueryGraphValue
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestRangeRelOp()
         {
@@ -44,8 +52,12 @@ namespace com.espertech.esper.epl.join.plan
                     new object[][] { new object[] { null, "C", "B", QueryGraphRangeEnum.RANGE_CLOSED, "A" } });
         }
     
-        private ExprIdentNode MakeIdent(string prop) {
-            return new ExprIdentNodeImpl(new BeanEventType(null, 0, typeof(MyEvent), SupportEventAdapterService.Service, null), prop, 1);
+        private ExprIdentNode MakeIdent(string prop)
+        {
+            return new ExprIdentNodeImpl(
+                new BeanEventType(
+                    _container, null, 0, typeof(MyEvent),
+                    _container.Resolve<EventAdapterService>(), null), prop, 1);
         }
     
         private void TryAdd(string propertyKeyOne, QueryGraphRangeEnum opOne, ExprIdentNode valueOne,

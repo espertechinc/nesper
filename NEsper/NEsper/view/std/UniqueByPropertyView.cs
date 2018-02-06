@@ -40,7 +40,7 @@ namespace com.espertech.esper.view.std
     {
         private readonly UniqueByPropertyViewFactory _viewFactory;
         private readonly ExprEvaluator[] _criteriaExpressionsEvals;
-        private readonly IDictionary<object, EventBean> _mostRecentEvents = new NullableDictionary<object, EventBean>().WithNullSupport();
+        private readonly IDictionary<object, EventBean> _mostRecentEvents = new NullableDictionary<object, EventBean>();
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
         private readonly AgentInstanceViewFactoryChainContext _agentInstanceViewFactoryContext;
 

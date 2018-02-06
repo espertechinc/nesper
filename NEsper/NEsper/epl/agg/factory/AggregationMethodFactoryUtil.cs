@@ -14,28 +14,19 @@ namespace com.espertech.esper.epl.agg.factory
     {
         public static AggregationMethod MakeDistinctAggregator(AggregationMethod aggregationMethod, bool hasFilter)
         {
-            if (hasFilter)
-            {
-                return new AggregatorDistinctValueFilter(aggregationMethod);
-            }
+            if (hasFilter) return new AggregatorDistinctValueFilter(aggregationMethod);
             return new AggregatorDistinctValue(aggregationMethod);
         }
 
         public static AggregationMethod MakeFirstEver(bool hasFilter)
         {
-            if (hasFilter)
-            {
-                return new AggregatorFirstEverFilter();
-            }
+            if (hasFilter) return new AggregatorFirstEverFilter();
             return new AggregatorFirstEver();
         }
 
         public static AggregationMethod MakeLastEver(bool hasFilter)
         {
-            if (hasFilter)
-            {
-                return new AggregatorLastEverFilter();
-            }
+            if (hasFilter) return new AggregatorLastEverFilter();
             return new AggregatorLastEver();
         }
     }

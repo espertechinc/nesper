@@ -43,7 +43,7 @@ namespace com.espertech.esper.supportregression.bean
 
         public String P23 { get; set; }
 
-        public static Object[] MakeS2(String propOne, String[] propTwo)
+        public static object[] MakeS2(String propOne, String[] propTwo)
         {
             idCounter++;
 

@@ -9,17 +9,27 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprNode 
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestGetValidatedSubtree()
         {
@@ -45,7 +55,7 @@ namespace com.espertech.esper.epl.expression
             parent_2.AddChildNode(supportNode2_1);
             parent_2.AddChildNode(supportNode2_2);
 
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.MakeEmpty());
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.MakeEmpty(_container));
     
             Assert.AreEqual(1, supportNode1_1.ValidateCountSnapshot);
             Assert.AreEqual(2, supportNode1_2.ValidateCountSnapshot);
@@ -59,11 +69,11 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestDeepEquals()
         {
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make2SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd()));
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeEqualsNode(), SupportExprNodeFactory.MakeMathNode()));
-            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.MakeMathNode()));
-            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.Make2SubNodeAnd()));
-            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make3SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd()));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make2SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd(), false));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeEqualsNode(), SupportExprNodeFactory.MakeMathNode(), false));
+            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.MakeMathNode(), false));
+            Assert.IsFalse(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.MakeMathNode(), SupportExprNodeFactory.Make2SubNodeAnd(), false));
+            Assert.IsTrue(ExprNodeUtility.DeepEquals(SupportExprNodeFactory.Make3SubNodeAnd(), SupportExprNodeFactory.Make3SubNodeAnd(), false));
         }
     
         [Test]

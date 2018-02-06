@@ -30,6 +30,7 @@ namespace com.espertech.esper.epl.view
             StatementContext statementContext)
         {
             var validationContext = new ExprValidationContext(
+                statementContext.Container,
                 new StreamTypeServiceImpl(statementContext.EngineURI, false),
                 statementContext.EngineImportService, 
                 statementContext.StatementExtensionServicesContext, null, 

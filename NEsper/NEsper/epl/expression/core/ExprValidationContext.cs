@@ -9,6 +9,8 @@
 using System;
 
 using com.espertech.esper.client.annotation;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
 using com.espertech.esper.epl.core;
@@ -22,8 +24,30 @@ namespace com.espertech.esper.epl.expression.core
 {
 	public class ExprValidationContext
 	{
-	    public ExprValidationContext(StreamTypeService streamTypeService, EngineImportService engineImportService, StatementExtensionSvcContext statementExtensionSvcContext, ViewResourceDelegateUnverified viewResourceDelegate, TimeProvider timeProvider, VariableService variableService, TableService tableService, ExprEvaluatorContext exprEvaluatorContext, EventAdapterService eventAdapterService, string statementName, int statementId, Attribute[] annotations, ContextDescriptor contextDescriptor, ScriptingService scriptingService, bool disablePropertyExpressionEventCollCache, bool allowRollupFunctions, bool allowBindingConsumption, bool isUnidirectionalJoin, string intoTableName, bool isFilterExpression)
-        {
+	    public ExprValidationContext(
+            IContainer container,
+	        StreamTypeService streamTypeService,
+	        EngineImportService engineImportService,
+	        StatementExtensionSvcContext statementExtensionSvcContext,
+	        ViewResourceDelegateUnverified viewResourceDelegate,
+	        TimeProvider timeProvider,
+	        VariableService variableService,
+	        TableService tableService,
+	        ExprEvaluatorContext exprEvaluatorContext,
+	        EventAdapterService eventAdapterService, 
+	        string statementName,
+	        int statementId,
+	        Attribute[] annotations,
+	        ContextDescriptor contextDescriptor,
+	        ScriptingService scriptingService,
+	        bool disablePropertyExpressionEventCollCache, 
+	        bool allowRollupFunctions,
+	        bool allowBindingConsumption,
+	        bool isUnidirectionalJoin,
+	        string intoTableName,
+	        bool isFilterExpression)
+	    {
+	        Container = container;
 	        StreamTypeService = streamTypeService;
 	        EngineImportService = engineImportService;
 	        StatementExtensionSvcContext = statementExtensionSvcContext;
@@ -51,6 +75,7 @@ namespace com.espertech.esper.epl.expression.core
 
 	    public ExprValidationContext(StreamTypeServiceImpl types, ExprValidationContext ctx)
 	        : this(
+                ctx.Container,
                 types,
 	            ctx.EngineImportService,
                 ctx.StatementExtensionSvcContext,
@@ -72,6 +97,8 @@ namespace com.espertech.esper.epl.expression.core
 	            false)
         {
 	    }
+
+	    public IContainer Container { get; set; }
 
 	    public StreamTypeService StreamTypeService { get; private set; }
 
@@ -115,6 +142,10 @@ namespace com.espertech.esper.epl.expression.core
 
         public ScriptingService ScriptingService { get; private set; }
 
-        public bool IsFilterExpression { get; private set; }
+	    public IThreadLocalManager ThreadLocalManager {
+	        get => Container.Resolve<IThreadLocalManager>();
+	    }
+
+	    public bool IsFilterExpression { get; private set; }
 	}
 } // end of namespace

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
@@ -26,12 +25,10 @@ using com.espertech.esper.util;
 namespace com.espertech.esper.epl.expression.accessagg
 {
     [Serializable]
-    public class ExprAggMultiFunctionSortedMinMaxByNode
-        : ExprAggregateNodeBase
+    public class ExprAggMultiFunctionSortedMinMaxByNode : ExprAggregateNodeBase
         , ExprEvaluatorEnumeration
         , ExprAggregateAccessMultiValueNode
     {
-        private readonly bool _max;
         private readonly bool _ever;
         private readonly bool _sortedwin;
 
@@ -40,49 +37,107 @@ namespace com.espertech.esper.epl.expression.accessagg
         public ExprAggMultiFunctionSortedMinMaxByNode(bool max, bool ever, bool sortedwin)
             : base(false)
         {
-            _max = max;
-            _ever = ever;
-            _sortedwin = sortedwin;
+            IsMax = max;
+            this._ever = ever;
+            this._sortedwin = sortedwin;
         }
 
-        public AggregationMethodFactory ValidateAggregationParamsWBinding(
-            ExprValidationContext validationContext,
+        private Pair<ExprNode[], bool[]> CriteriaExpressions
+        {
+            get
+            {
+                // determine ordering ascending/descending and build criteria expression without "asc" marker
+                var positionalParams = PositionalParams;
+                var criteriaExpressions = new ExprNode[positionalParams.Length];
+                var sortDescending = new bool[positionalParams.Length];
+                for (var i = 0; i < positionalParams.Length; i++)
+                {
+                    var parameter = positionalParams[i];
+                    criteriaExpressions[i] = parameter;
+                    if (parameter is ExprOrderedExpr)
+                    {
+                        var ordered = (ExprOrderedExpr) parameter;
+                        sortDescending[i] = ordered.IsDescending;
+                        if (!ordered.IsDescending) criteriaExpressions[i] = ordered.ChildNodes[0];
+                    }
+                }
+
+                return new Pair<ExprNode[], bool[]>(criteriaExpressions, sortDescending);
+            }
+        }
+
+        public override string AggregationFunctionName
+        {
+            get
+            {
+                if (_sortedwin) return "sorted";
+
+                if (_ever) return IsMax ? "maxbyever" : "minbyever";
+
+                return IsMax ? "maxby" : "minby";
+            }
+        }
+
+        public bool IsMax { get; }
+
+        protected override bool IsFilterExpressionAsLastParameter => false;
+
+        public AggregationMethodFactory ValidateAggregationParamsWBinding(ExprValidationContext validationContext,
             TableMetadataColumnAggregation tableAccessColumn)
         {
             return ValidateAggregationInternal(validationContext, tableAccessColumn);
         }
 
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
+        {
+            return AggregationResultFuture.GetCollectionOfEvents(Column, evaluateParams);
+        }
+
+        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
+        {
+            return null;
+        }
+
+        public EventType GetEventTypeCollection(
+            EventAdapterService eventAdapterService,
+            int statementId)
+        {
+            if (!_sortedwin) return null;
+            return _containedType;
+        }
+
+        public Type ComponentTypeCollection => null;
+
+        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
+        {
+            if (_sortedwin) return null;
+            return _containedType;
+        }
+
+        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
+        {
+            return AggregationResultFuture.GetEventBean(Column, evaluateParams);
+        }
+
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             return ValidateAggregationInternal(validationContext, null);
         }
 
-        private AggregationMethodFactory ValidateAggregationInternal(
-            ExprValidationContext validationContext,
+        private AggregationMethodFactory ValidateAggregationInternal(ExprValidationContext validationContext,
             TableMetadataColumnAggregation optionalBinding)
         {
             ExprAggMultiFunctionSortedMinMaxByNodeFactory factory;
 
             // handle table-access expression (state provided, accessor needed)
             if (optionalBinding != null)
-            {
                 factory = HandleTableAccess(optionalBinding);
-            }
             else if (validationContext.ExprEvaluatorContext.StatementType == StatementType.CREATE_TABLE)
-            {
-                // handle create-table statements (state creator and default accessor, limited to certain options)
                 factory = HandleCreateTable(validationContext);
-            }
             else if (validationContext.IntoTableName != null)
-            {
-                // handle into-table (state provided, accessor and agent needed, validation done by factory)
                 factory = HandleIntoTable(validationContext);
-            }
             else
-            {
-                // handle standalone
                 factory = HandleNonTable(validationContext);
-            }
 
             _containedType = factory.ContainedEventType;
             return factory;
@@ -92,30 +147,21 @@ namespace com.espertech.esper.epl.expression.accessagg
         {
             var positionalParams = PositionalParams;
             if (positionalParams.Length == 0)
-            {
                 throw new ExprValidationException("Missing the sort criteria expression");
-            }
 
             // validate that the streams referenced in the criteria are a single stream's
             var streams = ExprNodeUtility.GetIdentStreamNumbers(positionalParams[0]);
             if (streams.Count > 1 || streams.IsEmpty())
-            {
                 throw new ExprValidationException(
-                    ErrorPrefix + " requires that any parameter expressions evaluate properties of the same stream");
-            }
+                    GetErrorPrefix() + " requires that any parameter expressions evaluate properties of the same stream");
             var streamNum = streams.First();
 
             // validate that there is a remove stream, use "ever" if not
-            var forceEver = false;
-            if (!_ever && ExprAggMultiFunctionLinearAccessNode.GetIstreamOnly(validationContext.StreamTypeService, streamNum))
-            {
+            if (!_ever && ExprAggMultiFunctionLinearAccessNode.GetIstreamOnly(validationContext.StreamTypeService,
+                    streamNum))
                 if (_sortedwin)
-                {
                     throw new ExprValidationException(
-                        ErrorPrefix + " requires that a data window is declared for the stream");
-                }
-                forceEver = true;
-            }
+                        GetErrorPrefix() + " requires that a data window is declared for the stream");
 
             // determine typing and evaluation
             _containedType = validationContext.StreamTypeService.EventTypes[streamNum];
@@ -127,24 +173,16 @@ namespace com.espertech.esper.epl.expression.accessagg
             if (!_sortedwin)
             {
                 if (tableMetadata != null)
-                {
-                    accessor = new AggregationAccessorMinMaxByTable(_max, tableMetadata);
-                }
+                    accessor = new AggregationAccessorMinMaxByTable(IsMax, tableMetadata);
                 else
-                {
-                    accessor = new AggregationAccessorMinMaxByNonTable(_max);
-                }
+                    accessor = new AggregationAccessorMinMaxByNonTable(IsMax);
             }
             else
             {
                 if (tableMetadata != null)
-                {
-                    accessor = new AggregationAccessorSortedTable(_max, componentType, tableMetadata);
-                }
+                    accessor = new AggregationAccessorSortedTable(IsMax, componentType, tableMetadata);
                 else
-                {
-                    accessor = new AggregationAccessorSortedNonTable(_max, componentType);
-                }
+                    accessor = new AggregationAccessorSortedNonTable(IsMax, componentType);
                 accessorResultType = TypeHelper.GetArrayType(accessorResultType);
             }
 
@@ -152,35 +190,35 @@ namespace com.espertech.esper.epl.expression.accessagg
 
             AggregationStateTypeWStream type;
             if (_ever)
-            {
-                type = _max ? AggregationStateTypeWStream.MAXEVER : AggregationStateTypeWStream.MINEVER;
-            }
+                type = IsMax ? AggregationStateTypeWStream.MAXEVER : AggregationStateTypeWStream.MINEVER;
             else
-            {
                 type = AggregationStateTypeWStream.SORTED;
-            }
-            var stateKey = new AggregationStateKeyWStream(streamNum, _containedType, type, criteriaExpressions.First);
 
+            var optionalFilter = OptionalFilter;
+            var stateKey = new AggregationStateKeyWStream(
+                streamNum, _containedType, type, criteriaExpressions.First, optionalFilter);
+
+            var optionalFilterEval = optionalFilter?.ExprEvaluator;
             var stateFactoryFactory = new
-                SortedAggregationStateFactoryFactory(
-                validationContext.EngineImportService, validationContext.StatementExtensionSvcContext,
-                ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
-                criteriaExpressions.Second, _ever, streamNum, this);
+                SortedAggregationStateFactoryFactory(validationContext.EngineImportService,
+                    validationContext.StatementExtensionSvcContext,
+                    ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
+                    criteriaExpressions.Second, _ever, streamNum, this, optionalFilterEval);
 
-            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(
-                this, accessor, accessorResultType, _containedType, stateKey, stateFactoryFactory,
-                AggregationAgentDefault.INSTANCE);
+            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, _containedType,
+                stateKey, stateFactoryFactory, AggregationAgentDefault.INSTANCE);
         }
 
-        private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleIntoTable(ExprValidationContext validationContext)
+        private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleIntoTable(
+            ExprValidationContext validationContext)
         {
             int streamNum;
             var positionalParams = PositionalParams;
             if (positionalParams.Length == 0 ||
-                (positionalParams.Length == 1 && positionalParams[0] is ExprWildcard))
+                positionalParams.Length == 1 && positionalParams[0] is ExprWildcard)
             {
-                ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(
-                    validationContext.StreamTypeService, AggregationFunctionName);
+                ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(validationContext.StreamTypeService,
+                    AggregationFunctionName);
                 streamNum = 0;
             }
             else if (positionalParams.Length == 1 && positionalParams[0] is ExprStreamUnderlyingNode)
@@ -202,41 +240,29 @@ namespace com.espertech.esper.epl.expression.accessagg
             AggregationAccessor accessor;
             if (!_sortedwin)
             {
-                accessor = new AggregationAccessorMinMaxByNonTable(_max);
+                accessor = new AggregationAccessorMinMaxByNonTable(IsMax);
             }
             else
             {
-                accessor = new AggregationAccessorSortedNonTable(_max, componentType);
+                accessor = new AggregationAccessorSortedNonTable(IsMax, componentType);
                 accessorResultType = TypeHelper.GetArrayType(accessorResultType);
             }
 
-            AggregationAgent agent = AggregationAgentDefault.INSTANCE;
-            if (streamNum != 0)
-            {
-                agent = new AggregationAgentRewriteStream(streamNum);
-            }
-
-            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(
-                this, accessor, accessorResultType, containedType, null, null, agent);
+            var agent = ExprAggAggregationAgentFactory.Make(streamNum, OptionalFilter);
+            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, containedType,
+                null, null, agent);
         }
 
-        private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleCreateTable(ExprValidationContext validationContext)
+        private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleCreateTable(
+            ExprValidationContext validationContext)
         {
-            var positionalParams = PositionalParams;
-            if (positionalParams.Length == 0)
-            {
+            if (PositionalParams.Length == 0)
                 throw new ExprValidationException("Missing the sort criteria expression");
-            }
 
             var message = "For tables columns, the aggregation function requires the 'sorted(*)' declaration";
-            if (!_sortedwin && !_ever)
-            {
-                throw new ExprValidationException(message);
-            }
+            if (!_sortedwin && !_ever) throw new ExprValidationException(message);
             if (validationContext.StreamTypeService.StreamNames.Length == 0)
-            {
                 throw new ExprValidationException("'Sorted' requires that the event type is provided");
-            }
             var containedType = validationContext.StreamTypeService.EventTypes[0];
             var componentType = containedType.UnderlyingType;
             var criteriaExpressions = CriteriaExpressions;
@@ -244,46 +270,21 @@ namespace com.espertech.esper.epl.expression.accessagg
             AggregationAccessor accessor;
             if (!_sortedwin)
             {
-                accessor = new AggregationAccessorMinMaxByNonTable(_max);
+                accessor = new AggregationAccessorMinMaxByNonTable(IsMax);
             }
             else
             {
-                accessor = new AggregationAccessorSortedNonTable(_max, componentType);
+                accessor = new AggregationAccessorSortedNonTable(IsMax, componentType);
                 accessorResultType = TypeHelper.GetArrayType(accessorResultType);
             }
-            var stateFactoryFactory = new
-                SortedAggregationStateFactoryFactory(
-                validationContext.EngineImportService, validationContext.StatementExtensionSvcContext,
-                ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
-                criteriaExpressions.Second, _ever, 0, this);
-            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(
-                this, accessor, accessorResultType, containedType, null, stateFactoryFactory, null);
-        }
 
-        private Pair<ExprNode[], bool[]> CriteriaExpressions
-        {
-            get
-            {
-                // determine ordering ascending/descending and build criteria expression without "asc" marker
-                var positionalParams = PositionalParams;
-                var criteriaExpressions = new ExprNode[positionalParams.Length];
-                var sortDescending = new bool[positionalParams.Length];
-                for (var i = 0; i < positionalParams.Length; i++)
-                {
-                    var parameter = positionalParams[i];
-                    criteriaExpressions[i] = parameter;
-                    if (parameter is ExprOrderedExpr)
-                    {
-                        var ordered = (ExprOrderedExpr) parameter;
-                        sortDescending[i] = ordered.IsDescending;
-                        if (!ordered.IsDescending)
-                        {
-                            criteriaExpressions[i] = ordered.ChildNodes[0];
-                        }
-                    }
-                }
-                return new Pair<ExprNode[], bool[]>(criteriaExpressions, sortDescending);
-            }
+            var stateFactoryFactory = new
+                SortedAggregationStateFactoryFactory(validationContext.EngineImportService,
+                    validationContext.StatementExtensionSvcContext,
+                    ExprNodeUtility.GetEvaluators(criteriaExpressions.First),
+                    criteriaExpressions.Second, _ever, 0, this, null);
+            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType, containedType,
+                null, stateFactoryFactory, null);
         }
 
         private ExprAggMultiFunctionSortedMinMaxByNodeFactory HandleTableAccess(
@@ -295,31 +296,16 @@ namespace com.espertech.esper.epl.expression.accessagg
             var accessorResultType = componentType;
             if (!_sortedwin)
             {
-                accessor = new AggregationAccessorMinMaxByNonTable(_max);
+                accessor = new AggregationAccessorMinMaxByNonTable(IsMax);
             }
             else
             {
-                accessor = new AggregationAccessorSortedNonTable(_max, componentType);
+                accessor = new AggregationAccessorSortedNonTable(IsMax, componentType);
                 accessorResultType = TypeHelper.GetArrayType(accessorResultType);
             }
-            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(
-                this, accessor, accessorResultType, factory.ContainedEventType, null, null, null);
-        }
 
-        public override string AggregationFunctionName
-        {
-            get
-            {
-                if (_sortedwin)
-                {
-                    return "sorted";
-                }
-                if (_ever)
-                {
-                    return _max ? "maxbyever" : "minbyever";
-                }
-                return _max ? "maxby" : "minby";
-            }
+            return new ExprAggMultiFunctionSortedMinMaxByNodeFactory(this, accessor, accessorResultType,
+                factory.ContainedEventType, null, null, null);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -328,57 +314,14 @@ namespace com.espertech.esper.epl.expression.accessagg
             ExprNodeUtility.ToExpressionStringParams(writer, PositionalParams);
         }
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(EvaluateParams evaluateParams)
-        {
-            return base.AggregationResultFuture.GetCollectionOfEvents(base.Column, evaluateParams);
-        }
-
-        public ICollection<object> EvaluateGetROCollectionScalar(EvaluateParams evaluateParams)
-        {
-            return null;
-        }
-
-        public EventType GetEventTypeCollection(EventAdapterService eventAdapterService, int statementId)
-        {
-            if (!_sortedwin)
-            {
-                return null;
-            }
-            return _containedType;
-        }
-
-        public Type ComponentTypeCollection
-        {
-            get { return null; }
-        }
-
-        public EventType GetEventTypeSingle(EventAdapterService eventAdapterService, int statementId)
-        {
-            if (_sortedwin)
-            {
-                return null;
-            }
-            return _containedType;
-        }
-
-        public EventBean EvaluateGetEventBean(EvaluateParams evaluateParams)
-        {
-            return base.AggregationResultFuture.GetEventBean(base.Column, evaluateParams);
-        }
-
-        public bool IsMax
-        {
-            get { return _max; }
-        }
-
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return false;
         }
 
-        private string ErrorPrefix
+        private string GetErrorPrefix()
         {
-            get { return "The '" + AggregationFunctionName + "' aggregation function"; }
+            return "The '" + AggregationFunctionName + "' aggregation function";
         }
     }
 } // end of namespace

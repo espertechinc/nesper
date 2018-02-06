@@ -6,15 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using log4net.Config;
+using com.espertech.esper.compat.logger;
 
-namespace com.espertech.esper.example.atm
+namespace NEsper.Examples.ATM
 {
     public class AppMain
     {
         public static void Main()
         {
-            XmlConfigurator.Configure();
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
 
             using (FraudMonitorTest fraudMonitorTest = new FraudMonitorTest()) {
                 fraudMonitorTest.SetUp();

@@ -24,7 +24,7 @@ namespace com.espertech.esper.epl.core
 
 	    protected override EventBean GetEventBean(object value)
         {
-            var valueDataMap = value.UnwrapDictionary();
+            var valueDataMap = value.UnwrapStringDictionary();
 	        return EventAdapterService.AdapterForTypedMap(valueDataMap, EventType);
 	    }
 	}

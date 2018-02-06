@@ -26,7 +26,7 @@ namespace com.espertech.esper.regression.epl
             var epService = EPServiceProviderManager.GetDefaultProvider(SupportConfigFactory.GetConfiguration());
             epService.Initialize();
 
-            string statementText = "select * from " + Name.Of<SupportBeanWithEnum>(false) + " where SupportEnum = " + Name.Of<SupportEnum>(false) + ".ENUM_VALUE_2";
+            string statementText = "select * from " + Name.Clean<SupportBeanWithEnum>(false) + " where SupportEnum = " + Name.Clean<SupportEnum>(false) + ".ENUM_VALUE_2";
             using(var statement = epService.EPAdministrator.CreateEPL(statementText)) {
                 var listener = new SupportUpdateListener();
                 statement.Events += listener.Update;

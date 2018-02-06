@@ -63,14 +63,13 @@ namespace com.espertech.esper.client.scopetest
                 _isInvoked = false;
             }
         }
-    
+
         /// <summary>Returns the last array of events (insert stream) that were received. </summary>
-        /// <returns>insert stream events or null if either a null value was received or when no events have been received since the last reset</returns>
-        public Object[] GetLastNewData()
-        {
-            return _lastNewData;
+        /// <value>insert stream events or null if either a null value was received or when no events have been received since the last reset</value>
+        public object[] LastNewData {
+            get { return _lastNewData; }
         }
-    
+
         /// <summary>Returns the last array of events (insert stream) that were received and resets the subscriber. </summary>
         /// <returns>insert stream events or null if either a null value was received or when no events have been received since the last reset</returns>
         public Object[] GetAndResetLastNewData()
@@ -127,35 +126,31 @@ namespace com.espertech.esper.client.scopetest
             Reset();
             return lastNew;
         }
-    
+
         /// <summary>Returns the last array of remove-stream events that were received. </summary>
-        /// <returns>remove stream events or null if either a null value was received or when no events have been received since the last reset</returns>
-        public Object[] GetLastOldData()
-        {
-            return _lastOldData;
+        /// <value>remove stream events or null if either a null value was received or when no events have been received since the last reset</value>
+        public object[] LastOldData {
+            get { return _lastOldData; }
         }
-    
+
         /// <summary>Get a list of all insert-stream event arrays received. </summary>
-        /// <returns>list of event arrays</returns>
-        public IList<Object[]> GetNewDataList()
-        {
-            return _newDataList;
+        /// <value>list of event arrays</value>
+        public IList<object[]> NewDataList {
+            get { return _newDataList; }
         }
-    
+
         /// <summary>Get a list of all remove-stream event arrays received. </summary>
-        /// <returns>list of event arrays</returns>
-        public IList<Object[]> GetOldDataList()
-        {
-            return _oldDataList;
+        /// <value>list of event arrays</value>
+        public IList<object[]> OldDataList {
+            get { return _oldDataList; }
         }
-    
+
         /// <summary>Returns true if the subscriber was invoked at least once. </summary>
-        /// <returns>invoked flag</returns>
-        public bool IsInvoked()
-        {
-            return _isInvoked;
+        /// <value>invoked flag</value>
+        public bool IsInvoked {
+            get { return _isInvoked; }
         }
-    
+
         /// <summary>Returns true if the subscriber was invoked at least once and clears the invocation flag. </summary>
         /// <returns>invoked flag</returns>
         public bool GetAndClearIsInvoked()

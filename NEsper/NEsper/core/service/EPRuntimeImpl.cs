@@ -22,6 +22,7 @@ using com.espertech.esper.client.util;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.mgr;
@@ -99,20 +100,17 @@ namespace com.espertech.esper.core.service
 #endif
         private ThreadLocalData ThreadData
         {
-            get
-            {
-                return _threadLocalData.GetOrCreate();
-            }
+            get => _threadLocalData.GetOrCreate();
         }
 
         private ArrayBackedCollection<ScheduleHandle> ScheduleArray
         {
-            get { return ThreadData.ScheduleArrayThreadLocal; }
+            get => ThreadData.ScheduleArrayThreadLocal;
         }
 
         private IDictionary<EPStatementAgentInstanceHandle, Object> SchedulePerStmt
         {
-            get { return ThreadData.SchedulePerStmtThreadLocal; }
+            get => ThreadData.SchedulePerStmtThreadLocal;
         }
 
         #endregion
@@ -122,7 +120,7 @@ namespace com.espertech.esper.core.service
         public EPRuntimeImpl(EPServicesContext services)
         {
             _services = services;
-            _threadWorkQueue = new ThreadWorkQueue();
+            _threadWorkQueue = new ThreadWorkQueue(services.ThreadLocalManager);
             _isLatchStatementInsertStream = _services.EngineSettingsService.EngineSettings.Threading.IsInsertIntoDispatchPreserveOrder;
             _isUsingExternalClocking = !_services.EngineSettingsService.EngineSettings.Threading.IsInternalTimerEnabled;
             _isPrioritized = services.EngineSettingsService.EngineSettings.Execution.IsPrioritized;
@@ -132,6 +130,7 @@ namespace com.espertech.esper.core.service
             var expressionResultCacheService = services.ExpressionResultCacheSharable;
             _engineFilterAndDispatchTimeContext = new ProxyExprEvaluatorContext
             {
+                ProcContainer = () => services.Container,
                 ProcTimeProvider = () => services.SchedulingService,
                 ProcExpressionResultCacheService = () => expressionResultCacheService,
                 ProcAgentInstanceId = () => -1,
@@ -199,17 +198,17 @@ namespace com.espertech.esper.core.service
         /// <value>router</value>
         public InternalEventRouter InternalEventRouter
         {
-            set { _internalEventRouter = value; }
+            set => _internalEventRouter = value;
         }
 
         public long RoutedInternal
         {
-            get { return _routedInternal.Get(); }
+            get => _routedInternal.Get();
         }
 
         public long RoutedExternal
         {
-            get { return _routedExternal.Get(); }
+            get => _routedExternal.Get();
         }
 
         public void TimerCallback()
@@ -520,7 +519,7 @@ namespace com.espertech.esper.core.service
 
         public long NumEventsEvaluated
         {
-            get { return _services.FilterService.NumEventsEvaluated; }
+            get => _services.FilterService.NumEventsEvaluated;
         }
 
         public void ResetStats()
@@ -644,14 +643,14 @@ namespace com.espertech.esper.core.service
 
                 try
                 {
-                    using (_services.EventProcessingRWLock.AcquireReadLock())
-                    {
-                        try
-                        {
+                    using (_services.EventProcessingRWLock.AcquireReadLock()) {
+                        try {
                             ProcessMatches(eventBean);
                         }
-                        catch (Exception ex)
-                        {
+                        catch (EPException) {
+                            throw;
+                        }
+                        catch (Exception ex) {
                             ThreadData.MatchesArrayThreadLocal.Clear();
                             throw new EPException(ex);
                         }
@@ -1625,7 +1624,7 @@ namespace com.espertech.esper.core.service
 
         public bool IsExternalClockingEnabled
         {
-            get { return _isUsingExternalClocking; }
+            get => _isUsingExternalClocking;
         }
 
         /// <summary>
@@ -1641,7 +1640,8 @@ namespace com.espertech.esper.core.service
         public void Initialize()
         {
             InitThreadLocals();
-            _threadWorkQueue = new ThreadWorkQueue();
+            _threadWorkQueue = new ThreadWorkQueue(
+                _services.ThreadLocalManager);
         }
 
         public void ClearCaches()
@@ -1927,9 +1927,9 @@ namespace com.espertech.esper.core.service
                 {
                     spec = EPAdministratorHelper.CompileEPL(epl, epl, true, stmtName, _services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
                 }
-                else if (model != null)
-                {
+                else if (model != null) {
                     spec = StatementSpecMapper.Map(
+                        _services.Container,
                         model,
                         _services.EngineImportService,
                         _services.VariableService,
@@ -1947,6 +1947,7 @@ namespace com.espertech.esper.core.service
                 {
                     var prepared = (EPPreparedStatementImpl)parameterizedQuery;
                     spec = StatementSpecMapper.Map(
+                        _services.Container,
                         prepared.Model,
                         _services.EngineImportService,
                         _services.VariableService,
@@ -2022,7 +2023,10 @@ namespace com.espertech.esper.core.service
 
         public EventSender GetEventSender(String eventTypeName)
         {
-            return _services.EventAdapterService.GetStaticTypeEventSender(this, eventTypeName, _services.ThreadingService);
+            return _services.EventAdapterService.GetStaticTypeEventSender(
+                this, eventTypeName, 
+                _services.ThreadingService, 
+                _services.LockManager);
         }
 
         public EventSender GetEventSender(Uri[] uri)
@@ -2032,22 +2036,22 @@ namespace com.espertech.esper.core.service
 
         public EventRenderer EventRenderer
         {
-            get { return _eventRenderer ?? (_eventRenderer = new EventRendererImpl()); }
+            get => _eventRenderer ?? (_eventRenderer = new EventRendererImpl());
         }
 
         public long CurrentTime
         {
-            get { return _services.SchedulingService.Time; }
+            get => _services.SchedulingService.Time;
         }
 
         public long? NextScheduledTime
         {
-            get { return _services.SchedulingService.NearestTimeHandle; }
+            get => _services.SchedulingService.NearestTimeHandle;
         }
 
         public IDictionary<string, long> StatementNearestSchedules
         {
-            get { return GetStatementNearestSchedulesInternal(_services.SchedulingService, _services.StatementLifecycleSvc); }
+            get => GetStatementNearestSchedulesInternal(_services.SchedulingService, _services.StatementLifecycleSvc);
         }
 
         internal static IDictionary<string, long> GetStatementNearestSchedulesInternal(SchedulingServiceSPI schedulingService, StatementLifecycleSvc statementLifecycleSvc)
@@ -2074,14 +2078,19 @@ namespace com.espertech.esper.core.service
             return result;
         }
 
+        public ExceptionHandlingService ExceptionHandlingService
+        {
+            get => _services.ExceptionHandlingService;
+        }
+
         public string EngineURI
         {
-            get { return _services.EngineURI; }
+            get => _services.EngineURI;
         }
 
         public EPDataFlowRuntime DataFlowRuntime
         {
-            get { return _services.DataFlowService; }
+            get => _services.DataFlowService;
         }
 
         private void RemoveFromThreadLocals()
@@ -2089,14 +2098,14 @@ namespace com.espertech.esper.core.service
             if (_threadLocalData != null)
             {
                 _threadLocalData.Dispose();
-                _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
+                _threadLocalData = _services.ThreadLocalManager.Create(CreateLocalData);
             }
         }
 
         private void InitThreadLocals()
         {
             RemoveFromThreadLocals();
-            _threadLocalData = ThreadLocalManager.Create(CreateLocalData);
+            _threadLocalData = _services.ThreadLocalManager.Create(CreateLocalData);
         }
 
         private void CheckVariable(String variableName, VariableMetaData metaData, bool settable, bool requireContextPartitioned)
@@ -2148,7 +2157,7 @@ namespace com.espertech.esper.core.service
                     {
                         _services.VariableService.CheckAndWrite(variableName, agentInstanceId, entry.Value);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         _services.VariableService.Rollback();
                         throw;

@@ -96,18 +96,18 @@ namespace com.espertech.esper.filter
 	            {
 	                var constantParam = (FilterSpecParamConstant) param;
 	                var constant = constantParam.FilterConstant;
-	                values.Add(new InSetOfValuesConstant(constant));
+	                values.Add(new FilterForEvalConstantAnyType(constant));
 	            }
 	            else if (param is FilterSpecParamEventProp)
 	            {
 	                var eventProp = (FilterSpecParamEventProp) param;
-	                values.Add(new InSetOfValuesEventProp(eventProp.ResultEventAsName, eventProp.ResultEventProperty,
+	                values.Add(new FilterForEvalEventPropMayCoerce(eventProp.ResultEventAsName, eventProp.ResultEventProperty,
 	                        eventProp.IsMustCoerce, TypeHelper.GetBoxedType(eventProp.CoercionType)));
 	            }
 	            else if (param is FilterSpecParamEventPropIndexed)
 	            {
 	                var eventProp = (FilterSpecParamEventPropIndexed) param;
-	                values.Add(new InSetOfValuesEventPropIndexed(eventProp.ResultEventAsName, eventProp.ResultEventIndex, eventProp.ResultEventProperty,
+	                values.Add(new FilterForEvalEventPropIndexedMayCoerce(eventProp.ResultEventAsName, eventProp.ResultEventIndex, eventProp.ResultEventProperty,
 	                        eventProp.IsMustCoerce, TypeHelper.GetBoxedType(eventProp.CoercionType), statementName));
 	            }
 	            else

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat;
 using com.espertech.esper.epl.agg.aggregator;
 using com.espertech.esper.epl.agg.service;
 
@@ -19,7 +20,9 @@ namespace com.espertech.esper.supportregression.epl
     {
         public void Validate(AggregationValidationContext validationContext)
         {
-            throw new ArgumentException("Invalid parameter type '" + validationContext.ParameterTypes[0].FullName + "', expecting string");
+            throw new ArgumentException(string.Format(
+                "Invalid parameter type '{0}', expecting string", 
+                Name.Clean(validationContext.ParameterTypes[0])));
         }
 
         public string FunctionName

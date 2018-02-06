@@ -26,39 +26,34 @@ namespace com.espertech.esper.epl.named
 	    private readonly NamedWindowTailViewInstance _tailViewInstance;
 	    private readonly NamedWindowRootViewInstance _rootViewInstance;
 
-	    public NamedWindowProcessorInstance(int? agentInstanceId, NamedWindowProcessor processor, AgentInstanceContext agentInstanceContext) {
+	    public NamedWindowProcessorInstance(
+	        int? agentInstanceId, 
+	        NamedWindowProcessor processor, 
+	        AgentInstanceContext agentInstanceContext)
+	    {
 	        _agentInstanceId = agentInstanceId;
 	        _rootViewInstance = new NamedWindowRootViewInstance(processor.RootView, agentInstanceContext, processor.EventTableIndexMetadataRepo);
 	        _tailViewInstance = new NamedWindowTailViewInstance(_rootViewInstance, processor.TailView, processor, agentInstanceContext);
 	        _rootViewInstance.DataWindowContents = _tailViewInstance;   // for iteration used for delete without index
 	    }
 
-	    public NamedWindowTailViewInstance TailViewInstance
-	    {
-	        get { return _tailViewInstance; }
-	    }
+	    public NamedWindowTailViewInstance TailViewInstance => _tailViewInstance;
 
-	    public NamedWindowRootViewInstance RootViewInstance
-	    {
-	        get { return _rootViewInstance; }
-	    }
+	    public NamedWindowRootViewInstance RootViewInstance => _rootViewInstance;
 
 	    /// <summary>
 	    /// Returns the number of events held.
 	    /// </summary>
 	    /// <value>number of events</value>
-	    public long CountDataWindow
-	    {
-	        get { return _tailViewInstance.NumberOfEvents; }
-	    }
+	    public long CountDataWindow => _tailViewInstance.NumberOfEvents;
 
 	    /// <summary>
 	    /// Deletes a named window and removes any associated resources.
 	    /// </summary>
 	    public void Dispose()
 	    {
-	        _tailViewInstance.Dispose();
-	        _rootViewInstance.Dispose();
+	        _tailViewInstance.Destroy();
+	        _rootViewInstance.Destroy();
 	    }
 
 	    public void Stop()
@@ -67,15 +62,9 @@ namespace com.espertech.esper.epl.named
 	        _rootViewInstance.Stop();
 	    }
 
-	    public IndexMultiKey[] IndexDescriptors
-	    {
-	        get { return _rootViewInstance.Indexes; }
-	    }
+	    public IndexMultiKey[] IndexDescriptors => _rootViewInstance.Indexes;
 
-	    public int? AgentInstanceId
-	    {
-	        get { return _agentInstanceId; }
-	    }
+	    public int? AgentInstanceId => _agentInstanceId;
 
 	    public StatementAgentInstancePostLoad PostLoad
 	    {

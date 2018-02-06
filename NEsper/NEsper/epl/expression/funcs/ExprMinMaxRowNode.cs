@@ -63,7 +63,7 @@ namespace com.espertech.esper.epl.expression.funcs
                 var childType = child.ReturnType;
                 if (!childType.IsNumeric())
                 {
-                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", childType.FullName));
+                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(childType)));
                 }
             }
 
@@ -153,7 +153,7 @@ namespace com.espertech.esper.epl.expression.funcs
             get { return ExprPrecedenceEnum.UNARY; }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var other = node as ExprMinMaxRowNode;
             if (other != null)

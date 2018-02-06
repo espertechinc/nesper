@@ -22,7 +22,7 @@ namespace com.espertech.esper.epl.join.@base
         private readonly EventBean[] _eventsPerStream;
         private readonly int _lookupStream;
 
-        public HistoricalIndexLookupStrategyInKeywordSingle(int lookupStream, ExprNode[] expressions)
+        public HistoricalIndexLookupStrategyInKeywordSingle(int lookupStream, IList<ExprNode> expressions)
         {
             _eventsPerStream = new EventBean[lookupStream + 1];
             _evaluators = ExprNodeUtility.GetEvaluators(expressions);

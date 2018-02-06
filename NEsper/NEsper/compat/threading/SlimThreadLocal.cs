@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -17,7 +17,7 @@ namespace com.espertech.esper.compat.threading
     {
         private IDictionary<Thread, T> _threadTable;
         private readonly SlimLock _wLock;
-        private readonly FactoryDelegate<T> _valueFactory;
+        private readonly Func<T> _valueFactory;
 
         /// <summary>
         /// Gets or sets the value.
@@ -85,7 +85,7 @@ namespace com.espertech.esper.compat.threading
         /// Initializes a new instance of the <see cref="SlimThreadLocal{T}"/> class.
         /// </summary>
         /// <param name="factory">The factory.</param>
-        public SlimThreadLocal(FactoryDelegate<T> factory)
+        public SlimThreadLocal(Func<T> factory)
         {
             _threadTable = new Dictionary<Thread, T>(new ThreadEq());
             _valueFactory = factory;
@@ -109,7 +109,7 @@ namespace com.espertech.esper.compat.threading
     /// <summary>
     /// Creates slim thread local objects.
     /// </summary>
-    public class SlimThreadLocalFactory : ThreadLocalFactory
+    public class SlimThreadLocalFactory : IThreadLocalFactory
     {
         #region ThreadLocalFactory Members
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.compat.threading
         /// <typeparam name="T"></typeparam>
         /// <param name="factory"></param>
         /// <returns></returns>
-        public IThreadLocal<T> CreateThreadLocal<T>(FactoryDelegate<T> factory) where T : class
+        public IThreadLocal<T> CreateThreadLocal<T>(Func<T> factory) where T : class
         {
             return new SlimThreadLocal<T>(factory);
         }

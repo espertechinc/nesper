@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
+using com.espertech.esper.events;
 using com.espertech.esper.supportregression.events;
 
 using NUnit.Framework;
@@ -58,9 +59,9 @@ namespace com.espertech.esper.supportregression.util
         /// </summary>
         /// <param name="enumerator">is the enumerator to iterate over and check returned values</param>
         /// <param name="expectedValues">is an array of expected underlying events</param>
-        public static void AreEqualExactOrderUnderlying(IEnumerator<EventBean> enumerator, Object[] expectedValues)
+        public static void AreEqualExactOrderUnderlying(IEnumerator<EventBean> enumerator, object[] expectedValues)
         {
-            var underlyingValues = new List<Object>();
+            var underlyingValues = new List<object>();
             while (enumerator.MoveNext()) {
                 Assert.IsNotNull(enumerator.Current);
                 underlyingValues.Add(enumerator.Current.Underlying);
@@ -68,7 +69,7 @@ namespace com.espertech.esper.supportregression.util
 
             Assert.IsFalse(enumerator.MoveNext());
 
-            Object[] data = null;
+            object[] data = null;
             if (underlyingValues.Count > 0) {
                 data = underlyingValues.ToArray();
             }
@@ -82,7 +83,7 @@ namespace com.espertech.esper.supportregression.util
         /// </summary>
         /// <param name="events">is an event array to get the underlying objects</param>
         /// <param name="expectedValues">is an array of expected underlying events</param>
-        public static void AreEqualExactOrderUnderlying(EventBean[] events, Object[] expectedValues)
+        public static void AreEqualExactOrderUnderlying(EventBean[] events, object[] expectedValues)
         {
             if ((expectedValues == null) && (events == null)) {
                 return;
@@ -97,7 +98,7 @@ namespace com.espertech.esper.supportregression.util
             AreEqualExactOrder(events.Select(theEvent => theEvent.Underlying).ToArray(), expectedValues);
         }
 
-        public static void AssertPropsPerRow(EventBean[] received, Object[][] propertiesPerRow)
+        public static void AssertPropsPerRow(EventBean[] received, object[][] propertiesPerRow)
         {
             if (propertiesPerRow == null) {
                 if ((received == null) || (received.Length == 0)) {
@@ -116,7 +117,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertPropsPerRow(IList<Object[]> received, Object[][] propertiesListPerRow)
+        public static void AssertPropsPerRow(IList<object[]> received, object[][] propertiesListPerRow)
         {
             if (propertiesListPerRow == null) {
                 if ((received == null) || (received.Count == 0)) {
@@ -128,8 +129,8 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(propertiesListPerRow.Length, received.Count);
 
             for (int i = 0; i < propertiesListPerRow.Length; i++) {
-                Object[] receivedThisRow = received[i];
-                Object[] propertiesThisRow = propertiesListPerRow[i];
+                object[] receivedThisRow = received[i];
+                object[] propertiesThisRow = propertiesListPerRow[i];
                 Assert.AreEqual(receivedThisRow.Length, propertiesThisRow.Length);
 
                 for (int j = 0; j < propertiesThisRow.Length; j++) {
@@ -140,7 +141,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertPropsPerRow(DataMap[] received, String[] propertyNames, Object[][] propertiesListPerRow)
+        public static void AssertPropsPerRow(DataMap[] received, String[] propertyNames, object[][] propertiesListPerRow)
         {
             if (propertiesListPerRow == null) {
                 if ((received == null) || (received.Length == 0)) {
@@ -152,7 +153,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(propertiesListPerRow.Length, received.Length);
 
             for (int i = 0; i < propertiesListPerRow.Length; i++) {
-                Object[] propertiesThisRow = propertiesListPerRow[i];
+                object[] propertiesThisRow = propertiesListPerRow[i];
                 for (int j = 0; j < propertiesThisRow.Length; j++) {
                     String name = propertyNames[j];
                     Object value = propertiesThisRow[j];
@@ -162,8 +163,8 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertPropsPerRow(Object[][] received, String[] propertyNames,
-                                             Object[][] propertiesListPerRow)
+        public static void AssertPropsPerRow(object[][] received, String[] propertyNames,
+                                             object[][] propertiesListPerRow)
         {
             if (propertiesListPerRow == null) {
                 if ((received == null) || (received.Length == 0)) {
@@ -175,7 +176,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(propertiesListPerRow.Length, received.Length);
 
             for (int i = 0; i < propertiesListPerRow.Length; i++) {
-                Object[] propertiesThisRow = propertiesListPerRow[i];
+                object[] propertiesThisRow = propertiesListPerRow[i];
                 for (int j = 0; j < propertiesThisRow.Length; j++) {
                     String name = propertyNames[j];
                     Object value = propertiesThisRow[j];
@@ -188,7 +189,7 @@ namespace com.espertech.esper.supportregression.util
         public static void AssertPropsPerRow(IEnumerable<EventBean> enumA,
                                              IEnumerable<EventBean> enumB, // safe enumerator
                                              String[] props,
-                                             Object[][] propertiesPerRow)
+                                             object[][] propertiesPerRow)
         {
             AssertPropsPerRow(enumA, props, propertiesPerRow);
             AssertPropsPerRow(enumB, props, propertiesPerRow);
@@ -197,7 +198,7 @@ namespace com.espertech.esper.supportregression.util
         public static void AssertPropsPerRow(IEnumerator<EventBean> enumA,
                                              IEnumerator<EventBean> enumB, // safe enumerator
                                              String[] props,
-                                             Object[][] propertiesPerRow)
+                                             object[][] propertiesPerRow)
         {
             AssertPropsPerRow(EnumeratorToArray(enumA), props, propertiesPerRow);
             AssertPropsPerRow(EnumeratorToArray(enumB), props, propertiesPerRow);
@@ -206,7 +207,7 @@ namespace com.espertech.esper.supportregression.util
 
         public static void AssertPropsPerRow(IEnumerable<EventBean> received,
                                              String[] propertyNames,
-                                             Object[][] propertiesListPerRow)
+                                             object[][] propertiesListPerRow)
         {
             AssertPropsPerRow(received.ToArray(), propertyNames, propertiesListPerRow, "");
         }
@@ -214,13 +215,13 @@ namespace com.espertech.esper.supportregression.util
 
         public static void AssertPropsPerRow(EventBean[] received, 
                                              String[] propertyNames,
-                                             Object[][] propertiesListPerRow)
+                                             object[][] propertiesListPerRow)
         {
             AssertPropsPerRow(received, propertyNames, propertiesListPerRow, "");
         }
 
         public static void AssertPropsPerRow(EventBean[] received, String[] propertyNames,
-                                             Object[][] propertiesListPerRow, String streamName)
+                                             object[][] propertiesListPerRow, String streamName)
         {
             if (propertiesListPerRow == null) {
                 if ((received == null) || (received.Length == 0)) {
@@ -235,7 +236,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(propertiesListPerRow.Length, received.Length, "Mismatch in the number of rows received");
 
             for (int i = 0; i < propertiesListPerRow.Length; i++) {
-                Object[] propertiesThisRow = propertiesListPerRow[i];
+                object[] propertiesThisRow = propertiesListPerRow[i];
                 for (int j = 0; j < propertiesThisRow.Length; j++) {
                     String name = propertyNames[j];
                     Object value = propertiesThisRow[j];
@@ -245,7 +246,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertProps(EventBean received, String[] propertyNames, Object[] propertiesThisRow)
+        public static void AssertProps(EventBean received, String[] propertyNames, object[] propertiesThisRow)
         {
             if (propertiesThisRow == null) {
                 if (received == null) {
@@ -269,8 +270,8 @@ namespace com.espertech.esper.supportregression.util
             if ((expected != null) && (expected.GetType().IsArray) && 
                 (received != null) && (received.GetType().IsArray))
             {
-                Object[] valueArray = ToObjectArray(expected);
-                Object[] eventPropArray = ToObjectArray(received);
+                object[] valueArray = ToObjectArray(expected);
+                object[] eventPropArray = ToObjectArray(received);
                 AreEqualExactOrder(eventPropArray, valueArray);
                 return;
             }
@@ -278,7 +279,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(expected, received, "Error asserting property named '" + name + "'");
         }
 
-        private static Object[] ToObjectArray(Object array)
+        private static object[] ToObjectArray(Object array)
         {
             if (array == null) {
                 throw new ArgumentNullException("array");
@@ -298,7 +299,7 @@ namespace com.espertech.esper.supportregression.util
             return val;
         }
 
-        public static void AssertAllProps(EventBean received, Object[] propertiesSortedByName)
+        public static void AssertAllProps(EventBean received, object[] propertiesSortedByName)
         {
             if (propertiesSortedByName == null) {
                 if (received == null) {
@@ -320,7 +321,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertPropsMap(DataMap pono, String[] propertyNames, params Object[] propertiesThisRow)
+        public static void AssertPropsMap(DataMap pono, String[] propertyNames, params object[] propertiesThisRow)
         {
             if (propertiesThisRow == null) {
                 if (pono == null) {
@@ -338,20 +339,20 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static void AssertProps(Object pono, String[] propertyNames, params Object[] propertiesThisRow)
+        public static void AssertProps(Object pono, String[] propertyNames, params object[] propertiesThisRow)
         {
-            EventBean ponoEvent = SupportEventAdapterService.Service.AdapterForObject(pono);
+            EventBean ponoEvent = SupportContainer.Resolve<EventAdapterService>().AdapterForObject(pono);
             AssertProps(ponoEvent, propertyNames, propertiesThisRow);
         }
 
         public static void AssertEqualsAnyOrder(IEnumerable<EventBean> enumerable, String[] propertyNames,
-                                            Object[][] propertiesListPerRow)
+                                            object[][] propertiesListPerRow)
         {
             AssertEqualsAnyOrder(enumerable.GetEnumerator(), propertyNames, propertiesListPerRow);
         }
 
         public static void AssertEqualsAnyOrder(IEnumerator<EventBean> enumerator, String[] propertyNames,
-                                                Object[][] propertiesListPerRow)
+                                                object[][] propertiesListPerRow)
         {
             // convert to array of events
             EventBean[] received = EnumeratorToArray(enumerator);
@@ -364,7 +365,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(propertiesListPerRow.Length, received.Length);
 
             // build map of event and values
-            IDictionary<EventBean, Object[]> valuesEachEvent = new Dictionary<EventBean, Object[]>();
+            IDictionary<EventBean, object[]> valuesEachEvent = new Dictionary<EventBean, object[]>();
             for (int i = 0; i < received.Length; i++) {
                 var values = new Object[propertyNames.Length];
                 for (int j = 0; j < propertyNames.Length; j++) {
@@ -375,7 +376,7 @@ namespace com.espertech.esper.supportregression.util
 
             // Find each list of properties
             for (int i = 0; i < propertiesListPerRow.Length; i++) {
-                Object[] propertiesThisRow = propertiesListPerRow[i];
+                object[] propertiesThisRow = propertiesListPerRow[i];
                 bool isFound = false;
 
                 foreach (var entry in valuesEachEvent) {
@@ -402,7 +403,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        private static String Dump(IDictionary<EventBean, Object[]> valuesEachEvent)
+        private static String Dump(IDictionary<EventBean, object[]> valuesEachEvent)
         {
             var writer = new StringWriter();
             foreach (var entry in valuesEachEvent) {
@@ -454,7 +455,7 @@ namespace com.espertech.esper.supportregression.util
             Assert.AreEqual(numMatches, expected.Length);
         }
 
-        public static void AssertRefAnyOrderArr(Object[][] expected, Object[][] received)
+        public static void AssertRefAnyOrderArr(object[][] expected, object[][] received)
         {
             // EmptyFalse lists are fine
             if (((received == null) && (expected == null)) ||
@@ -506,7 +507,7 @@ namespace com.espertech.esper.supportregression.util
         /// are true
         /// </summary>
         /// <param name="objects">values to assert that they are all true</param>
-        public static void AssertAllBooleanTrue(Object[] objects)
+        public static void AssertAllBooleanTrue(object[] objects)
         {
             foreach (object item in objects)
             {
@@ -520,7 +521,7 @@ namespace com.espertech.esper.supportregression.util
         /// </summary>
         /// <param name="classes">is the expected class</param>
         /// <param name="objects">is the objects to check the class for</param>
-        public static void AssertTypeEqualsAnyOrder(Type[] classes, Object[] objects)
+        public static void AssertTypeEqualsAnyOrder(Type[] classes, object[] objects)
         {
             Assert.AreEqual(classes.Length, objects.Length);
             var resultClasses = new Type[objects.Length];
@@ -543,9 +544,9 @@ namespace com.espertech.esper.supportregression.util
             return events.ToArray();
         }
 
-        public static Object[] EnumeratorToArrayUnderlying(IEnumerator<EventBean> enumerator)
+        public static object[] EnumeratorToArrayUnderlying(IEnumerator<EventBean> enumerator)
         {
-            var events = new List<Object>();
+            var events = new List<object>();
             while (enumerator.MoveNext()) {
                 EventBean eventBean = enumerator.Current;
                 events.Add(eventBean.Underlying);
@@ -562,7 +563,7 @@ namespace com.espertech.esper.supportregression.util
             return count;
         }
 
-        public static Object[] sum(Object[] srcOne, Object[] srcTwo)
+        public static object[] sum(object[] srcOne, object[] srcTwo)
         {
             var result = new Object[srcOne.Length + srcTwo.Length];
             Array.Copy(srcOne, 0, result, 0, srcOne.Length);
@@ -577,9 +578,9 @@ namespace com.espertech.esper.supportregression.util
         /// <param name="enumerator">supplies events</param>
         /// <param name="fields">The fields.</param>
         /// <param name="expectedValues">is the expected values</param>
-        public static void AreEqualExactOrder(IEnumerator<EventBean> enumerator, String[] fields, Object[][] expectedValues)
+        public static void AreEqualExactOrder(IEnumerator<EventBean> enumerator, String[] fields, object[][] expectedValues)
         {
-            var rows = new List<Object[]>();
+            var rows = new List<object[]>();
             while (enumerator.MoveNext()) {
                 EventBean theEvent = enumerator.Current;
                 var eventProps = new Object[fields.Length];
@@ -596,7 +597,7 @@ namespace com.espertech.esper.supportregression.util
                 return;
             }
 
-            Object[][] data = rows.ToArray();
+            object[][] data = rows.ToArray();
             if ((expectedValues == null) && (data != null)) {
                 Assert.Fail("Expected no values but received data: " + data.Length + " elements");
             }
@@ -651,7 +652,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static Object[][] AddArray(Object[][] first, params Object[][][] more)
+        public static object[][] AddArray(object[][] first, params object[][][] more)
         {
             int len = first.Length + more.Sum(next => next.Length);
 
@@ -663,7 +664,7 @@ namespace com.espertech.esper.supportregression.util
             }
 
             for (int i = 0; i < more.Length; i++) {
-                Object[][] next = more[i];
+                object[][] next = more[i];
                 for (int j = 0; j < next.Length; j++) {
                     result[count] = next[j];
                     count++;
@@ -801,7 +802,7 @@ namespace com.espertech.esper.supportregression.util
                 .ToArray();
         }
         
-        public static void AssertUnorderedMap<K,V>(IDictionary<K,V> amap, Object[][] expected)
+        public static void AssertUnorderedMap<K,V>(IDictionary<K,V> amap, object[][] expected)
         {
             Assert.AreEqual(expected.Length, amap.Count);
 
@@ -856,7 +857,7 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
-        public static Object[] AddArrayObjectArr(params Object[][] more)
+        public static object[] AddArrayObjectArr(params object[][] more)
         {
             var list = new List<object>();
             foreach (var array in more)
@@ -867,13 +868,13 @@ namespace com.espertech.esper.supportregression.util
             return list.ToArray();
         }
 
-            public static Object[] EventsToObjectArr(EventBean[] events, String field)
+            public static object[] EventsToObjectArr(EventBean[] events, String field)
             {
                 if (events == null)
                 {
                     return null;
                 }
-                Object[] objects = new Object[events.Length];
+                object[] objects = new Object[events.Length];
                 for (int i = 0; i < events.Length; i++)
                 {
                     objects[i] = events[i].Get(field);
@@ -881,17 +882,17 @@ namespace com.espertech.esper.supportregression.util
                 return objects;
             }
 
-            public static Object[][] EventsToObjectArr(EventBean[] events, String[] fields)
+            public static object[][] EventsToObjectArr(EventBean[] events, String[] fields)
             {
                 if (events == null)
                 {
                     return null;
                 }
-                Object[][] objects = new Object[events.Length][];
+                object[][] objects = new Object[events.Length][];
                 for (int i = 0; i < events.Length; i++)
                 {
                     EventBean theEvent = events[i];
-                    Object[] values = new Object[fields.Length];
+                    object[] values = new Object[fields.Length];
                     for (int j = 0; j < fields.Length; j++)
                     {
                         values[j] = theEvent.Get(fields[j]);

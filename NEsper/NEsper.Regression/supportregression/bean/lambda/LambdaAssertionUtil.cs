@@ -27,7 +27,7 @@ namespace com.espertech.esper.supportregression.bean.lambda
                 Assert.IsNull(listener.AssertOneGetNew().Get(field));
                 return;
             }
-            Object[] arr = listener.AssertOneGetNew().Get(field).UnwrapIntoArray<object>();
+            object[] arr = listener.AssertOneGetNew().Get(field).UnwrapIntoArray<object>();
             EPAssertionUtil.AssertEqualsExactOrder(expected, arr);
         }
 

@@ -51,7 +51,7 @@ namespace com.espertech.esper.type
                 lvp._Boolean = false;
                 Assert.IsTrue(false);
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 // Expected exception
             }
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.type
                 lvp._Int = 20;
                 Assert.IsTrue(false);
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 // Expected exception
             }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.type
                 lvp._String = "test";
                 Assert.IsTrue(false);
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 // Expected exception
             }
 
@@ -75,7 +75,7 @@ namespace com.espertech.esper.type
                 lvp = new LongValue();
                 lvp.GetLong();
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 // Expected exception
             }
         }

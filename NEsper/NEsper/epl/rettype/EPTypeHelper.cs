@@ -230,7 +230,7 @@ namespace com.espertech.esper.epl.rettype
             else if (epType is ClassEPType)
             {
                 var type = (ClassEPType)epType;
-                return "class " + type.Clazz.GetTypeNameFullyQualPretty();
+                return "class " + type.Clazz.GetCleanName();
             }
             else if (epType is NullEPType)
             {

@@ -11,13 +11,15 @@ using System.Xml;
 using System.Xml.Linq;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 
 namespace com.espertech.esper.events.xml
 {
     /// <summary>
     /// Shortcut-getter for DOM underlying objects.
     /// </summary>
-    public interface DOMPropertyGetter : EventPropertyGetter
+    public interface DOMPropertyGetter : EventPropertyGetterSPI
     {
         /// <summary>
         /// Returns a property value as a node.
@@ -72,5 +74,9 @@ namespace com.espertech.esper.events.xml
         /// fragment
         /// </returns>
         Object GetValueAsFragment(XObject node);
+
+        ICodegenExpression GetValueAsNodeCodegen(ICodegenExpression value, ICodegenContext context);
+        ICodegenExpression GetValueAsNodeArrayCodegen(ICodegenExpression value, ICodegenContext context);
+        ICodegenExpression GetValueAsFragmentCodegen(ICodegenExpression value, ICodegenContext context);
     }
 }

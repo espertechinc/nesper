@@ -7,21 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.bean;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
     /// <summary>
     /// A getter that works on arrays residing within a Map as an event property.
     /// </summary>
-    public class ObjectArrayArrayPONOEntryIndexedPropertyGetter
+    public class ObjectArrayArrayPonoEntryIndexedPropertyGetter
         : BaseNativePropertyGetter
-          ,
-          ObjectArrayEventPropertyGetterAndIndexed
+        , ObjectArrayEventPropertyGetterAndIndexed
     {
         private readonly int _index;
         private readonly int _propertyIndex;
+
+        public static object GetArrayValue(object[] array, int propertyIndex, int index)
+        {
+            // If the oa does not contain the key, this is allowed and represented as null
+            var value = array [propertyIndex];
+            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
+        }
 
         /// <summary>
         /// Ctor.
@@ -30,53 +41,70 @@ namespace com.espertech.esper.events.arr
         /// <param name="index">the index to fetch the array element for</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <param name="returnType">type of the entry returned</param>
-        public ObjectArrayArrayPONOEntryIndexedPropertyGetter(int propertyIndex,
-                                                              int index,
-                                                              EventAdapterService eventAdapterService,
-                                                              Type returnType)
+        public ObjectArrayArrayPonoEntryIndexedPropertyGetter(
+                int propertyIndex,
+                int index,
+                EventAdapterService eventAdapterService,
+                Type returnType)
             : base(eventAdapterService, returnType, null)
         {
             _propertyIndex = propertyIndex;
             _index = index;
         }
 
-        #region ObjectArrayEventPropertyGetterAndIndexed Members
-
-        public Object GetObjectArray(Object[] array)
+        public object GetObjectArray(object[] array)
         {
-            return GetArrayInternal(array, _index);
+            return GetArrayValue(array, _propertyIndex, _index);
         }
 
-        public bool IsObjectArrayExistsProperty(Object[] array)
+        public bool IsObjectArrayExistsProperty(object[] array)
         {
             return array.Length > _index;
         }
 
-        public Object Get(EventBean eventBean, int index)
+        public object Get(EventBean eventBean, int index)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return GetArrayInternal(array, index);
+            object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            return GetArrayValue(array, _propertyIndex, index);
         }
 
-        public override Object Get(EventBean eventBean)
+        public override object Get(EventBean eventBean)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return GetObjectArray(array);
         }
 
         public override bool IsExistsProperty(EventBean eventBean)
         {
-            Object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
+            object[] array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
             return array.Length > _index;
         }
 
-        #endregion
-
-        public Object GetArrayInternal(Object[] array, int index)
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
         {
-            // If the map does not contain the key, this is allowed and represented as null
-            Object value = array[_propertyIndex];
-            return BaseNestableEventUtil.GetIndexedValue(value, index);
+            return CodegenUnderlyingGet(CastUnderlying(typeof(object[]), beanExpression), context);
         }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingExists(CastUnderlying(typeof(object[]), beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return StaticMethod(GetType(), "GetArrayValue", underlyingExpression,
+                Constant(_propertyIndex),
+                Constant(_index));
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return Relational(
+                ArrayLength(underlyingExpression), CodegenRelational.GT,
+                Constant(_index));
+        }
+
+        public override Type TargetType => typeof(object[]);
+        public override Type BeanPropType => typeof(object);
     }
 }

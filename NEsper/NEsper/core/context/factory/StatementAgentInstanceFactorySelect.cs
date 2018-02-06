@@ -28,6 +28,7 @@ using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.expression.subquery;
 using com.espertech.esper.epl.expression.table;
 using com.espertech.esper.epl.@join.@base;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.view;
@@ -41,24 +42,98 @@ using com.espertech.esper.view.internals;
 
 namespace com.espertech.esper.core.context.factory
 {
+    /// <summary>
+    /// Defines the <see cref="StatementAgentInstanceFactorySelect" />
+    /// </summary>
     public class StatementAgentInstanceFactorySelect : StatementAgentInstanceFactoryBase
     {
+        /// <summary>
+        /// Defines the Log
+        /// </summary>
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        /// <summary>
+        /// Defines the _numStreams
+        /// </summary>
         private readonly int _numStreams;
+
+        /// <summary>
+        /// Defines the _eventStreamParentViewableActivators
+        /// </summary>
         private readonly ViewableActivator[] _eventStreamParentViewableActivators;
+
+        /// <summary>
+        /// Defines the _statementContext
+        /// </summary>
         private readonly StatementContext _statementContext;
+
+        /// <summary>
+        /// Defines the _statementSpec
+        /// </summary>
         private readonly StatementSpecCompiled _statementSpec;
+
+        /// <summary>
+        /// Defines the _services
+        /// </summary>
         private readonly EPServicesContext _services;
+
+        /// <summary>
+        /// Defines the _typeService
+        /// </summary>
         private readonly StreamTypeService _typeService;
+
+        /// <summary>
+        /// Defines the _unmaterializedViewChain
+        /// </summary>
         private readonly ViewFactoryChain[] _unmaterializedViewChain;
+
+        /// <summary>
+        /// Defines the _resultSetProcessorFactoryDesc
+        /// </summary>
         private readonly ResultSetProcessorFactoryDesc _resultSetProcessorFactoryDesc;
+
+        /// <summary>
+        /// Defines the _joinAnalysisResult
+        /// </summary>
         private readonly StreamJoinAnalysisResult _joinAnalysisResult;
+
+        /// <summary>
+        /// Defines the _joinSetComposerPrototype
+        /// </summary>
         private readonly JoinSetComposerPrototype _joinSetComposerPrototype;
+
+        /// <summary>
+        /// Defines the _subSelectStrategyCollection
+        /// </summary>
         private readonly SubSelectStrategyCollection _subSelectStrategyCollection;
+
+        /// <summary>
+        /// Defines the _viewResourceDelegate
+        /// </summary>
         private readonly ViewResourceDelegateVerified _viewResourceDelegate;
+
+        /// <summary>
+        /// Defines the _outputProcessViewFactory
+        /// </summary>
         private readonly OutputProcessViewFactory _outputProcessViewFactory;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatementAgentInstanceFactorySelect"/> class.
+        /// </summary>
+        /// <param name="numStreams">The <see cref="int"/></param>
+        /// <param name="eventStreamParentViewableActivators">The <see cref="ViewableActivator[]"/></param>
+        /// <param name="statementContext">The <see cref="StatementContext"/></param>
+        /// <param name="statementSpec">The <see cref="StatementSpecCompiled"/></param>
+        /// <param name="services">The <see cref="EPServicesContext"/></param>
+        /// <param name="typeService">The <see cref="StreamTypeService"/></param>
+        /// <param name="unmaterializedViewChain">The <see cref="ViewFactoryChain[]"/></param>
+        /// <param name="resultSetProcessorFactoryDesc">The <see cref="ResultSetProcessorFactoryDesc"/></param>
+        /// <param name="joinAnalysisResult">The <see cref="StreamJoinAnalysisResult"/></param>
+        /// <param name="recoveringResilient">The <see cref="bool"/></param>
+        /// <param name="joinSetComposerPrototype">The <see cref="JoinSetComposerPrototype"/></param>
+        /// <param name="subSelectStrategyCollection">The <see cref="SubSelectStrategyCollection"/></param>
+        /// <param name="viewResourceDelegate">The <see cref="ViewResourceDelegateVerified"/></param>
+        /// <param name="outputProcessViewFactory">The <see cref="OutputProcessViewFactory"/></param>
         public StatementAgentInstanceFactorySelect(
             int numStreams,
             ViewableActivator[] eventStreamParentViewableActivators,
@@ -91,11 +166,20 @@ namespace com.espertech.esper.core.context.factory
             _outputProcessViewFactory = outputProcessViewFactory;
         }
 
+        /// <summary>
+        /// Gets the ViewResourceDelegate
+        /// </summary>
         public ViewResourceDelegateVerified ViewResourceDelegate
         {
             get { return _viewResourceDelegate; }
         }
 
+        /// <summary>
+        /// The NewContextInternal
+        /// </summary>
+        /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
+        /// <param name="isRecoveringResilient">The <see cref="bool"/></param>
+        /// <returns>The <see cref="StatementAgentInstanceFactoryResult"/></returns>
         protected override StatementAgentInstanceFactoryResult NewContextInternal(AgentInstanceContext agentInstanceContext, bool isRecoveringResilient)
         {
             IList<StopCallback> stopCallbacks = new List<StopCallback>(2);
@@ -257,7 +341,7 @@ namespace com.espertech.esper.core.context.factory
                 if (_services.EventTableIndexService.AllowInitIndex(isRecoveringResilient))
                 {
                     var hasNamedWindow = false;
-                    var namedWindowPostloadFilters = new FilterSpecCompiled[_statementSpec.StreamSpecs.Length];
+                    var namedWindowPostloadFilters = new QueryGraph[_statementSpec.StreamSpecs.Length];
                     var namedWindowTailViews = new NamedWindowTailViewInstance[_statementSpec.StreamSpecs.Length];
                     var namedWindowFilters = new IList<ExprNode>[_statementSpec.StreamSpecs.Length];
 
@@ -270,7 +354,7 @@ namespace com.espertech.esper.core.context.factory
                         {
                             hasNamedWindow = true;
                             var namedSpec = (NamedWindowConsumerStreamSpec)streamSpec;
-                            NamedWindowProcessor processor = _services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
+                            var processor = _services.NamedWindowMgmtService.GetProcessor(namedSpec.WindowName);
                             var processorInstance = processor.GetProcessorInstance(agentInstanceContext);
                             if (processorInstance != null)
                             {
@@ -282,18 +366,11 @@ namespace com.espertech.esper.core.context.factory
                                 if (!namedSpec.FilterExpressions.IsEmpty())
                                 {
                                     namedWindowFilters[streamNum] = namedSpec.FilterExpressions;
-                                    try
-                                    {
-                                        var streamName = streamSpec.OptionalStreamName != null ? streamSpec.OptionalStreamName : consumerView.EventType.Name;
-                                        var types = new StreamTypeServiceImpl(consumerView.EventType, streamName, false, _services.EngineURI);
-                                        var tagged = new Dictionary<string, Pair<EventType, string>>();
-                                        namedWindowPostloadFilters[i] = FilterSpecCompiler.MakeFilterSpec(types.EventTypes[0], types.StreamNames[0],
-                                                namedSpec.FilterExpressions, null, tagged, tagged, types, null, _statementContext, Collections.SingletonSet(0));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
-                                    }
+                                    var streamName = streamSpec.OptionalStreamName != null ? streamSpec.OptionalStreamName : consumerView.EventType.Name;
+                                    var types = new StreamTypeServiceImpl(consumerView.EventType, streamName, false, _services.EngineURI);
+                                    namedWindowPostloadFilters[i] = ExprNodeUtility.ValidateFilterGetQueryGraphSafe(
+                                        ExprNodeUtility.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions), 
+                                        _statementContext, types);
                                 }
 
                                 // preload view for stream unless the expiry policy is batch window
@@ -311,7 +388,7 @@ namespace com.espertech.esper.core.context.factory
                                     var preloadFilterSpec = namedWindowPostloadFilters[i];
                                     preloadList.Add(new ProxyStatementAgentInstancePreload()
                                     {
-                                        ProcExecutePreload = () =>
+                                        ProcExecutePreload = exprEvaluatorContext =>
                                         {
                                             var snapshot = consumerView.Snapshot(preloadFilterSpec, _statementContext.Annotations);
                                             var eventsInWindow = new List<EventBean>(snapshot.Count);
@@ -333,12 +410,12 @@ namespace com.espertech.esper.core.context.factory
 
                             preloadList.Add(new ProxyStatementAgentInstancePreload()
                             {
-                                ProcExecutePreload = () =>
+                                ProcExecutePreload = exprEvaluatorContext =>
                                 {
                                     // in a join, preload indexes, if any
                                     if (joinPreloadMethod != null)
                                     {
-                                        joinPreloadMethod.PreloadFromBuffer(streamNum);
+                                        joinPreloadMethod.PreloadFromBuffer(streamNum, exprEvaluatorContext);
                                     }
                                     else
                                     {
@@ -357,7 +434,7 @@ namespace com.espertech.esper.core.context.factory
                     {
                         preloadList.Add(new ProxyStatementAgentInstancePreload()
                         {
-                            ProcExecutePreload = () =>
+                            ProcExecutePreload = exprEvaluatorContext =>
                             {
                                 joinPreloadMethod.PreloadAggregation(resultSetProcessor);
                             },
@@ -394,6 +471,11 @@ namespace com.espertech.esper.core.context.factory
             return selectResult;
         }
 
+        /// <summary>
+        /// The AddViewStopCallback
+        /// </summary>
+        /// <param name="stopCallbacks">The <see cref="IList{StopCallback}"/></param>
+        /// <param name="topViews">The <see cref="IList{View}"/></param>
         internal static void AddViewStopCallback(IList<StopCallback> stopCallbacks, IList<View> topViews)
         {
             foreach (var view in topViews)
@@ -405,6 +487,10 @@ namespace com.espertech.esper.core.context.factory
             }
         }
 
+        /// <summary>
+        /// The AssignExpressions
+        /// </summary>
+        /// <param name="result">The <see cref="StatementAgentInstanceFactoryResult"/></param>
         public override void AssignExpressions(StatementAgentInstanceFactoryResult result)
         {
             var selectResult = (StatementAgentInstanceFactorySelectResult)result;
@@ -416,6 +502,9 @@ namespace com.espertech.esper.core.context.factory
             EPStatementStartMethodHelperAssignExpr.AssignMatchRecognizePreviousStrategies(matchRecognizeNodes, result.RegexExprPreviousEvalStrategy);
         }
 
+        /// <summary>
+        /// The UnassignExpressions
+        /// </summary>
         public override void UnassignExpressions()
         {
             EPStatementStartMethodHelperAssignExpr.UnassignAggregations(_resultSetProcessorFactoryDesc.AggregationServiceFactoryDesc.Expressions);
@@ -434,66 +523,112 @@ namespace com.espertech.esper.core.context.factory
             EPStatementStartMethodHelperAssignExpr.UnassignMatchRecognizePreviousStrategies(matchRecognizeNodes);
         }
 
+        /// <summary>
+        /// Gets the EventStreamParentViewableActivators
+        /// </summary>
         public ViewableActivator[] EventStreamParentViewableActivators
         {
             get { return _eventStreamParentViewableActivators; }
         }
 
+        /// <summary>
+        /// Gets the UnmaterializedViewChain
+        /// </summary>
         public ViewFactoryChain[] UnmaterializedViewChain
         {
             get { return _unmaterializedViewChain; }
         }
 
+        /// <summary>
+        /// Gets the NumStreams
+        /// </summary>
         public int NumStreams
         {
             get { return _numStreams; }
         }
 
+        /// <summary>
+        /// Gets the StatementContext
+        /// </summary>
         public StatementContext StatementContext
         {
             get { return _statementContext; }
         }
 
+        /// <summary>
+        /// Gets the StatementSpec
+        /// </summary>
         public StatementSpecCompiled StatementSpec
         {
             get { return _statementSpec; }
         }
 
+        /// <summary>
+        /// Gets the Services
+        /// </summary>
         public EPServicesContext Services
         {
             get { return _services; }
         }
 
+        /// <summary>
+        /// Gets the TypeService
+        /// </summary>
         public StreamTypeService TypeService
         {
             get { return _typeService; }
         }
 
+        /// <summary>
+        /// Gets the ResultSetProcessorFactoryDesc
+        /// </summary>
         public ResultSetProcessorFactoryDesc ResultSetProcessorFactoryDesc
         {
             get { return _resultSetProcessorFactoryDesc; }
         }
 
+        /// <summary>
+        /// Gets the JoinAnalysisResult
+        /// </summary>
         public StreamJoinAnalysisResult JoinAnalysisResult
         {
             get { return _joinAnalysisResult; }
         }
 
+        /// <summary>
+        /// Gets the JoinSetComposerPrototype
+        /// </summary>
         public JoinSetComposerPrototype JoinSetComposerPrototype
         {
             get { return _joinSetComposerPrototype; }
         }
 
+        /// <summary>
+        /// Gets the SubSelectStrategyCollection
+        /// </summary>
         public SubSelectStrategyCollection SubSelectStrategyCollection
         {
             get { return _subSelectStrategyCollection; }
         }
 
+        /// <summary>
+        /// Gets the OutputProcessViewFactory
+        /// </summary>
         public OutputProcessViewFactory OutputProcessViewFactory
         {
             get { return _outputProcessViewFactory; }
         }
 
+        /// <summary>
+        /// The HandleSimpleSelect
+        /// </summary>
+        /// <param name="view">The <see cref="Viewable"/></param>
+        /// <param name="resultSetProcessor">The <see cref="ResultSetProcessor"/></param>
+        /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
+        /// <param name="evalRootMatchRemover">The <see cref="EvalRootMatchRemover"/></param>
+        /// <param name="suppressSameEventMatches">The <see cref="bool"/></param>
+        /// <param name="discardPartialsOnMatch">The <see cref="bool"/></param>
+        /// <returns>The <see cref="Viewable"/></returns>
         private Viewable HandleSimpleSelect(
             Viewable view,
             ResultSetProcessor resultSetProcessor,
@@ -567,6 +702,17 @@ namespace com.espertech.esper.core.context.factory
             return finalView;
         }
 
+        /// <summary>
+        /// The HandleJoin
+        /// </summary>
+        /// <param name="streamNames">The <see cref="string[]"/></param>
+        /// <param name="streamViews">The <see cref="Viewable[]"/></param>
+        /// <param name="resultSetProcessor">The <see cref="ResultSetProcessor"/></param>
+        /// <param name="agentInstanceContext">The <see cref="AgentInstanceContext"/></param>
+        /// <param name="stopCallbacks">The <see cref="IList{StopCallback}"/></param>
+        /// <param name="joinAnalysisResult">The <see cref="StreamJoinAnalysisResult"/></param>
+        /// <param name="isRecoveringResilient">The <see cref="bool"/></param>
+        /// <returns>The <see cref="JoinPlanResult"/></returns>
         private JoinPlanResult HandleJoin(
             string[] streamNames,
             Viewable[] streamViews,
@@ -622,8 +768,17 @@ namespace com.espertech.esper.core.context.factory
             return new JoinPlanResult(indicatorView, preloadMethod, joinSetComposerDesc);
         }
 
+        /// <summary>
+        /// Defines the <see cref="JoinPlanResult" />
+        /// </summary>
         internal class JoinPlanResult
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="JoinPlanResult"/> class.
+            /// </summary>
+            /// <param name="viewable">The <see cref="Viewable"/></param>
+            /// <param name="preloadMethod">The <see cref="JoinPreloadMethod"/></param>
+            /// <param name="joinSetComposerDesc">The <see cref="JoinSetComposerDesc"/></param>
             internal JoinPlanResult(Viewable viewable, JoinPreloadMethod preloadMethod, JoinSetComposerDesc joinSetComposerDesc)
             {
                 Viewable = viewable;
@@ -631,11 +786,20 @@ namespace com.espertech.esper.core.context.factory
                 JoinSetComposerDesc = joinSetComposerDesc;
             }
 
+            /// <summary>
+            /// Gets or sets the Viewable
+            /// </summary>
             public Viewable Viewable { get; private set; }
 
+            /// <summary>
+            /// Gets or sets the PreloadMethod
+            /// </summary>
             public JoinPreloadMethod PreloadMethod { get; private set; }
 
+            /// <summary>
+            /// Gets or sets the JoinSetComposerDesc
+            /// </summary>
             public JoinSetComposerDesc JoinSetComposerDesc { get; private set; }
         }
     }
-} // end of namespace
+}

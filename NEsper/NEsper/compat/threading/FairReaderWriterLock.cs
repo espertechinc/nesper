@@ -21,14 +21,14 @@ namespace com.espertech.esper.compat.threading
         /// <summary>
         /// Initializes a new instance of the <see cref="FairReaderWriterLock"/> class.
         /// </summary>
-        public FairReaderWriterLock()
+        public FairReaderWriterLock(int lockTimeout)
         {
             _uMainLock = new SpinLock(true);
             _uLockFlags = LockFlags.None;
             _uSharedCount = 0;
 
-            ReadLock = new CommonReadLock(this);
-            WriteLock = new CommonWriteLock(this);
+            ReadLock = new CommonReadLock(this, lockTimeout);
+            WriteLock = new CommonWriteLock(this, lockTimeout);
         }
 
         /// <summary>

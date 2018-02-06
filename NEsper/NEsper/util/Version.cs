@@ -6,15 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
-
 namespace com.espertech.esper.util
 {
     public class Version {
-        public static readonly string VERSION = "6.0.1";
+        public static readonly string VERSION = "6.1.0";
     }
 } // end of namespace

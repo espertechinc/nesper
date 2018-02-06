@@ -85,19 +85,9 @@ namespace com.espertech.esper.view.window
         /// Returns the field name to get timestamp values from.
         /// </summary>
         /// <value>field name for timestamp values</value>
-        public ExprNode TimestampExpression
-        {
-            get { return _timestampExpression; }
-        }
+        public ExprNode TimestampExpression => _timestampExpression;
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The schema is the parent view's schema
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -212,10 +202,7 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(Window, true, _factory.ViewName, null);
         }
 
-        public ViewFactory ViewFactory
-        {
-            get { return _factory; }
-        }
+        public ViewFactory ViewFactory => _factory;
 
         protected void DetermineOldestTimestamp()
         {

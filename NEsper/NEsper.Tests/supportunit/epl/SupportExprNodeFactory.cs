@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.start;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.core;
@@ -21,9 +21,11 @@ using com.espertech.esper.epl.expression.prev;
 using com.espertech.esper.epl.expression.prior;
 using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.variable;
+using com.espertech.esper.events;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
@@ -393,7 +395,8 @@ namespace com.espertech.esper.supportunit.epl
 
 	    public static void Validate3Stream(ExprNode topNode)
 	    {
-	        var streamTypeService = new SupportStreamTypeSvc3Stream();
+	        var container = SupportContainer.Instance;
+            var streamTypeService = new SupportStreamTypeSvc3Stream();
 
 	        var factoriesPerStream = new ViewFactoryChain[3];
 	        for (var i = 0; i < factoriesPerStream.Length; i++)
@@ -404,9 +407,11 @@ namespace com.espertech.esper.supportunit.epl
 	        }
 	        var viewResources = new ViewResourceDelegateUnverified();
 
-            EngineImportService engineImportService = SupportEngineImportServiceFactory.Make();
+            EngineImportService engineImportService = SupportEngineImportServiceFactory.Make(container);
 
-	        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceImpl()), SupportEventAdapterService.Service, null);
+	        VariableService variableService = new VariableServiceImpl(
+	            container, 0, new SchedulingServiceImpl(new TimeSourceServiceImpl(), container),
+	            container.Resolve<EventAdapterService>(), null);
 	        variableService.CreateNewVariable(null, "IntPrimitive", typeof(int?).FullName, false, false, false, 10, engineImportService);
 	        variableService.AllocateVariableState("IntPrimitive", EPStatementStartMethodConst.DEFAULT_AGENT_INSTANCE_ID, null, false);
 	        variableService.CreateNewVariable(null, "var1", typeof(string).FullName, false, false, false, "my_variable_value", engineImportService);
@@ -414,10 +419,11 @@ namespace com.espertech.esper.supportunit.epl
 
 	        ExprNodeUtility.GetValidatedSubtree(
 	            ExprNodeOrigin.SELECT, topNode, new ExprValidationContext(
-	                streamTypeService, SupportEngineImportServiceFactory.Make(), 
+                    container,
+	                streamTypeService, SupportEngineImportServiceFactory.Make(container), 
                     null, viewResources,
                     null, variableService, null,
-	                new SupportExprEvaluatorContext(null),
+	                new SupportExprEvaluatorContext(container, null),
 	                null, null, 1, null, null, null,
                     false, false, false, false, null, false));
 	    }
@@ -426,14 +432,16 @@ namespace com.espertech.esper.supportunit.epl
 	    {
 	        var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
 	        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(streamTypeService));
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, 
+                SupportExprValidationContextFactory.Make(SupportContainer.Instance, streamTypeService));
 	    }
 
 	    public static void Validate1StreamMD(ExprNode topNode)
 	    {
 	        var eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportMarketDataBean));
 	        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", false, "uri");
-            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, SupportExprValidationContextFactory.Make(streamTypeService));
+            ExprNodeUtility.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode, 
+                SupportExprValidationContextFactory.Make(SupportContainer.Instance, streamTypeService));
 	    }
 	}
 } // end of namespace

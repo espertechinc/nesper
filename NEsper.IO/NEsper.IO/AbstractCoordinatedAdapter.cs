@@ -16,6 +16,7 @@ using com.espertech.esper.client.time;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.util;
 using com.espertech.esper.core.service;
@@ -42,12 +43,13 @@ namespace com.espertech.esperio
 	    /// </summary>
 	    protected readonly ICollection<SendableEvent> EventsToSend = new SortedSet<SendableEvent>(new SendableEventComparator());
 
-	    private readonly EPServiceProvider _epService;
+	    private readonly EPServiceProviderSPI _epService;
 	    private SchedulingService _schedulingService;
 	    private long _currentTime;
         private long _lastEventTime;
 		private long _startTime;
         private AbstractSender _sender;
+	    private IContainer _container;
 
         /// <summary>
         /// Get the state of this Adapter.
@@ -81,7 +83,8 @@ namespace com.espertech.esperio
 				throw new ArgumentException("Invalid epService provided");
 			}
 
-            _epService = epService;
+            _epService = (EPServiceProviderSPI) epService;
+            _container = _epService.Container;
             Runtime = epService.EPRuntime;
 			_schedulingService = ((EPServiceProviderSPI)epService).SchedulingService;
 		}
@@ -361,7 +364,7 @@ namespace com.espertech.esperio
 		    var nextScheduleCallback = new ProxyScheduleHandleCallback(delegate { ContinueSendingEvents(); });
             var spi = (EPServiceProviderSPI)_epService;
             var metricsHandle = spi.MetricReportingService.GetStatementHandle(-1, "AbstractCoordinatedAdapter");
-            var lockImpl = ReaderWriterLockManager.CreateLock("CSV");
+            var lockImpl = _container.RWLockManager().CreateLock("CSV");
             var stmtHandle = new EPStatementHandle(-1, "AbstractCoordinatedAdapter", null, StatementType.ESPERIO, "AbstractCoordinatedAdapter", false, metricsHandle, 0, false, false, spi.ServicesContext.MultiMatchHandlerFactory.GetDefaultHandler());
             var agentInstanceHandle = new EPStatementAgentInstanceHandle(stmtHandle, lockImpl, -1, new StatementAgentInstanceFilterVersion(), null);
             var scheduleCSVHandle = new EPStatementHandleCallback(agentInstanceHandle, nextScheduleCallback);

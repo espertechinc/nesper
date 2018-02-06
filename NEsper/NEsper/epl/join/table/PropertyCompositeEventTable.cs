@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.exec.composite;
 using com.espertech.esper.metrics.instrumentation;
 
@@ -20,13 +21,12 @@ namespace com.espertech.esper.epl.join.table
 	{
 	    private readonly IList<Type> _optKeyCoercedTypes;
 	    private readonly IList<Type> _optRangeCoercedTypes;
-	    private readonly EventTableOrganization _organization;
 
 	    public abstract IDictionary<object, object> IndexTable { get; }
 	    public abstract CompositeIndexQueryResultPostProcessor PostProcessor { get; }
 
-	    public abstract void Add(EventBean @event);
-	    public abstract void Remove(EventBean @event);
+	    public abstract void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
+	    public abstract void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext);
 	    public abstract bool IsEmpty();
 	    public abstract void Clear();
 	    public abstract void Destroy();
@@ -36,19 +36,19 @@ namespace com.espertech.esper.epl.join.table
 	    {
 	        _optKeyCoercedTypes = optKeyCoercedTypes;
 	        _optRangeCoercedTypes = optRangeCoercedTypes;
-	        _organization = organization;
+	        Organization = organization;
 	    }
 
-	    public void AddRemove(EventBean[] newData, EventBean[] oldData) {
+	    public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext) {
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QIndexAddRemove(this, newData, oldData);}
 	        if (newData != null) {
 	            foreach (EventBean theEvent in newData) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (oldData != null) {
 	            foreach (EventBean theEvent in oldData) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	        if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AIndexAddRemove();}
@@ -60,21 +60,21 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="events">to add</param>
 	    /// <throws>ArgumentException if the event was already existed in the index</throws>
-	    public void Add(EventBean[] events)
+	    public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {
 
 	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
 	                InstrumentationHelper.Get().QIndexAdd(this, events);
 	                foreach (EventBean theEvent in events) {
-	                    Add(theEvent);
+	                    Add(theEvent, exprEvaluatorContext);
 	                }
 	                InstrumentationHelper.Get().AIndexAdd();
 	                return;
 	            }
 
 	            foreach (EventBean theEvent in events) {
-	                Add(theEvent);
+	                Add(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	    }
@@ -84,21 +84,21 @@ namespace com.espertech.esper.epl.join.table
 	    /// </summary>
 	    /// <param name="events">to be removed, can be null instead of an empty array.</param>
 	    /// <throws>ArgumentException when the event could not be removed as its not in the index</throws>
-	    public void Remove(EventBean[] events)
+	    public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
 	    {
 	        if (events != null) {
 
 	            if (InstrumentationHelper.ENABLED && events.Length > 0) {
 	                InstrumentationHelper.Get().QIndexRemove(this, events);
 	                foreach (EventBean theEvent in events) {
-	                    Remove(theEvent);
+	                    Remove(theEvent, exprEvaluatorContext);
 	                }
 	                InstrumentationHelper.Get().AIndexRemove();
 	                return;
 	            }
 
 	            foreach (EventBean theEvent in events) {
-	                Remove(theEvent);
+	                Remove(theEvent, exprEvaluatorContext);
 	            }
 	        }
 	    }
@@ -113,35 +113,17 @@ namespace com.espertech.esper.epl.join.table
 	        return GetType().FullName;
 	    }
 
-	    public IList<Type> OptRangeCoercedTypes
-	    {
-	        get { return _optRangeCoercedTypes; }
-	    }
+	    public IList<Type> OptRangeCoercedTypes => _optRangeCoercedTypes;
 
-	    public IList<Type> OptKeyCoercedTypes
-	    {
-	        get { return _optKeyCoercedTypes; }
-	    }
+	    public IList<Type> OptKeyCoercedTypes => _optKeyCoercedTypes;
 
-	    public int? NumberOfEvents
-	    {
-	        get { return null; }
-	    }
+	    public int? NumberOfEvents => null;
 
-        public virtual object Index
-        {
-            get { return IndexTable; }
-        }
+	    public virtual object Index => IndexTable;
 
-        public virtual IDictionary<object, object> MapIndex
-        {
-            get { return IndexTable; }
-        }
+	    public virtual IDictionary<object, object> MapIndex => IndexTable;
 
-        public EventTableOrganization Organization
-	    {
-	        get { return _organization; }
-	    }
+	    public EventTableOrganization Organization { get; }
 
 	    public abstract Type ProviderClass { get; }
 	    public abstract int NumKeys { get; }

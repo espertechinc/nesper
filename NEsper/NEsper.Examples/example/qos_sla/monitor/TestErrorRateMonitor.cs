@@ -8,42 +8,47 @@
 
 using System;
 
+using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
+using NEsper.Examples.QoS_SLA.eventbean;
+
 using NUnit.Framework;
 
-using com.espertech.esper.client;
-using com.espertech.esper.example.qos_sla.eventbean;
-
-namespace com.espertech.esper.example.qos_sla.monitor
+namespace NEsper.Examples.QoS_SLA.monitor
 {
 	[TestFixture]
 	public class TestErrorRateMonitor : IDisposable
 	{
-	    private EPRuntime runtime;
+	    private EPRuntime _runtime;
 
 	    [SetUp]
 	    public void SetUp()
 	    {
-            Configuration configuration = new Configuration();
+	        var container = ContainerExtensions.CreateDefaultContainer()
+	            .InitializeDefaultServices()
+	            .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 
             EPServiceProviderManager.PurgeDefaultProvider();
-            EPServiceProvider epService = EPServiceProviderManager.GetDefaultProvider(configuration);
+            var epService = EPServiceProviderManager.GetDefaultProvider(configuration);
 
 	        new ErrorRateMonitor();
-	        runtime = epService.EPRuntime;
+	        _runtime = epService.EPRuntime;
 	    }
 
 	    [Test]
 	    public void TestAlert()
 	    {
-	        for (int i= 0; i < 5; i++)
+	        for (var i= 0; i < 5; i++)
 	        {
 	            SendEvent(false);
 	        }
 
 	        //sleep(11000);
 
-	        for (int i= 0; i < 4; i++)
+	        for (var i= 0; i < 4; i++)
 	        {
 	            SendEvent(false);
 	        }
@@ -54,8 +59,8 @@ namespace com.espertech.esper.example.qos_sla.monitor
 
 	    private void SendEvent(bool success)
 	    {
-	        OperationMeasurement measurement = new OperationMeasurement("myService", "myCustomer", 10000, success);
-	        runtime.SendEvent(measurement);
+	        var measurement = new OperationMeasurement("myService", "myCustomer", 10000, success);
+	        _runtime.SendEvent(measurement);
 	    }
 
 	    public void Dispose()

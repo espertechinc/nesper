@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.exec.composite;
 
 namespace com.espertech.esper.epl.join.table
@@ -78,7 +79,7 @@ namespace com.espertech.esper.epl.join.table
             Chain = enterRemoves[0];
         }
 
-        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             EventTableOrganization organization = Organization;
             return new EventTable[] { new PropertyCompositeEventTableImpl(

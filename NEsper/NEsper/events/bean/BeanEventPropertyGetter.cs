@@ -14,21 +14,25 @@ namespace com.espertech.esper.events.bean
     /// <summary>
     /// Shortcut-evaluator for use with PONO-backed events only.
     /// </summary>
-    public interface BeanEventPropertyGetter : EventPropertyGetter
+    /// <seealso cref="com.espertech.esper.events.EventPropertyGetterSPI" />
+    public interface BeanEventPropertyGetter : EventPropertyGetterSPI
     {
         /// <summary>
         /// Returns the property as an object.
         /// </summary>
         /// <param name="object">to evaluate</param>
+        /// <exception cref="PropertyAccessException">if access failed</exception>
         /// <returns>property of object</returns>
-        /// <throws>PropertyAccessException if access failed</throws>
-        Object GetBeanProp(Object @object);
-
+        Object GetBeanProp(Object @object) ;
+    
         /// <summary>
         /// Returns true if the dynamic property exists.
         /// </summary>
         /// <param name="object">to evaluate</param>
         /// <returns>indicator if property exists</returns>
         bool IsBeanExistsProperty(Object @object);
+
+        Type BeanPropType { get; }
+        Type TargetType { get; }
     }
-}
+} // end of namespace

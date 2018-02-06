@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.core.context.util;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.named;
 using com.espertech.esper.epl.virtualdw;
 using com.espertech.esper.filter;
@@ -62,17 +63,17 @@ namespace com.espertech.esper.core.start
     
         public override EventBean[] ProcessDelete(EPPreparedExecuteIUDSingleStreamExecDelete delete) {
             EPPreparedExecuteTableHelper.AssignTableAccessStrategies(delete.Services, delete.OptionalTableNodes, _processorInstance.TailViewInstance.AgentInstanceContext);
-            return _processorInstance.TailViewInstance.SnapshotDelete(delete.Filter, delete.OptionalWhereClause, delete.Annotations);
+            return _processorInstance.TailViewInstance.SnapshotDelete(delete.QueryGraph, delete.OptionalWhereClause, delete.Annotations);
         }
     
         public override EventBean[] ProcessUpdate(EPPreparedExecuteIUDSingleStreamExecUpdate update) {
             EPPreparedExecuteTableHelper.AssignTableAccessStrategies(update.Services, update.OptionalTableNodes, _processorInstance.TailViewInstance.AgentInstanceContext);
-            return _processorInstance.TailViewInstance.SnapshotUpdate(update.Filter, update.OptionalWhereClause, update.UpdateHelper, update.Annotations);
+            return _processorInstance.TailViewInstance.SnapshotUpdate(update.QueryGraph, update.OptionalWhereClause, update.UpdateHelper, update.Annotations);
         }
     
-        public override ICollection<EventBean> SnapshotBestEffort(EPPreparedExecuteMethodQuery query, FilterSpecCompiled filter, Attribute[] annotations) {
+        public override ICollection<EventBean> SnapshotBestEffort(EPPreparedExecuteMethodQuery query, QueryGraph queryGraph, Attribute[] annotations) {
             EPPreparedExecuteTableHelper.AssignTableAccessStrategies(query.Services, query.TableNodes, _processorInstance.TailViewInstance.AgentInstanceContext);
-            return _processorInstance.TailViewInstance.Snapshot(filter, annotations);
+            return _processorInstance.TailViewInstance.Snapshot(queryGraph, annotations);
         }
 
         public override AgentInstanceContext AgentInstanceContext

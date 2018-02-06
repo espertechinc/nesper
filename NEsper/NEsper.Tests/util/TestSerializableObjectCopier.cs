@@ -22,7 +22,7 @@ namespace com.espertech.esper.util
         public void TestCopyEnum()
         {
             SupportEnum enumOne = SupportEnum.ENUM_VALUE_2;
-            Object result = SerializableObjectCopier.Copy(enumOne);
+            Object result = SerializableObjectCopier.Copy(null, enumOne);
             Assert.AreEqual(result, enumOne);
             Assert.IsTrue(Equals(result, enumOne));
         }

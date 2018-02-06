@@ -34,6 +34,58 @@ namespace com.espertech.esper.supportregression.util
             }
         }
 
+        public static void TryInvalidSyntax(EPServiceProvider engine, String epl, String message)
+        {
+            try
+            {
+                engine.EPAdministrator.CreateEPL(epl);
+                Assert.Fail();
+            }
+            catch (EPStatementSyntaxException ex)
+            {
+                AssertMessage(ex, message);
+            }
+        }
+
+        public static void TryInvalidFAF(EPServiceProvider engine, String epl, String message)
+        {
+            try
+            {
+                engine.EPRuntime.ExecuteQuery(epl);
+                Assert.Fail();
+            }
+            catch (EPStatementException ex)
+            {
+                AssertMessage(ex, message);
+            }
+        }
+
+        public static void TryInvalidFAFSyntax(EPServiceProvider engine, String epl, String message)
+        {
+            try
+            {
+                engine.EPRuntime.ExecuteQuery(epl);
+                Assert.Fail();
+            }
+            catch (EPStatementSyntaxException ex)
+            {
+                AssertMessage(ex, message);
+            }
+        }
+
+        public static void TryInvalidPattern(EPServiceProvider engine, String epl, String message)
+        {
+            try
+            {
+                engine.EPAdministrator.CreatePattern(epl);
+                Assert.Fail();
+            }
+            catch (EPStatementException ex)
+            {
+                AssertMessage(ex, message);
+            }
+        }
+
         public static void TryInvalidExecuteQuery(EPServiceProvider engine, String epl, String message)
         {
             try

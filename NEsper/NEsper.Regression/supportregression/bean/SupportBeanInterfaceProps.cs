@@ -6,12 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.client.annotation;
+
 namespace com.espertech.esper.supportregression.bean
 {
     public class SupportBeanInterfaceProps
     {
+        [PropertyName("isa")]
         public ISupportA ISA { get; set; }
 
+        [PropertyName("isg")]
         public ISupportAImplSuperG ISG { get; set; }
     }
 }

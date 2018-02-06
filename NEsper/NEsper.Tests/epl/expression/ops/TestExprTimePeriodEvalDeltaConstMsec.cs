@@ -10,7 +10,7 @@ using com.espertech.esper.epl.expression.time;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprTimePeriodEvalDeltaConstMsec

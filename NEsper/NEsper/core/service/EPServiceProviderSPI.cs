@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.context.mgr;
 using com.espertech.esper.core.deploy;
 using com.espertech.esper.core.thread;
@@ -31,6 +32,8 @@ namespace com.espertech.esper.core.service
     /// </summary>
     public interface EPServiceProviderSPI : EPServiceProvider
     {
+        IContainer Container { get; }
+
         /// <summary>Returns statement management service for the engine. </summary>
         /// <value>the StatementLifecycleSvc</value>
         StatementLifecycleSvc StatementLifecycleSvc { get; }

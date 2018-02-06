@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.client.annotation;
 using com.espertech.esper.client.soda;
 using com.espertech.esper.client.util;
 using com.espertech.esper.compat.collections;

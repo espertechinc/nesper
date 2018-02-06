@@ -17,6 +17,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.core.service;
 using com.espertech.esper.events;
@@ -49,18 +50,23 @@ namespace com.espertech.esperio.csv
         private String[] _firstRow;
         private Type _beanType;
         private int _rowCount = 0;
+        private readonly IContainer _container;
 
-        /// <summary>Ctor.</summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="epService">provides the engine runtime and services</param>
         /// <param name="spec">the parameters for this adapter</param>
 
-        public CSVInputAdapter(EPServiceProvider epService, CSVInputAdapterSpec spec)
+        public CSVInputAdapter(IContainer container, EPServiceProvider epService, CSVInputAdapterSpec spec)
             : base(epService, spec.IsUsingEngineThread, spec.IsUsingExternalTimer, spec.IsUsingTimeSpanEvents)
         {
             Coercer = new BasicTypeCoercer();
             _adapterSpec = spec;
             _eventTypeName = _adapterSpec.EventTypeName;
             _eventsPerSec = spec.EventsPerSec;
+            _container = container;
 
             if (epService != null)
             {
@@ -68,31 +74,39 @@ namespace com.espertech.esperio.csv
             }
         }
 
-        /// <summary>Ctor.</summary>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="epService">provides the engine runtime and services</param>
         /// <param name="adapterInputSource">the source of the CSV file</param>
         /// <param name="eventTypeName">the name of the Map event to create from the CSV data</param>
-
-        public CSVInputAdapter(EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeName)
-            : this(epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeName))
+        public CSVInputAdapter(IContainer container, EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeName)
+            : this(container, epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeName))
         {
             
         }
 
-        /// <summary>Ctor for adapters that will be passed to an AdapterCoordinator.</summary>
+        /// <summary>
+        /// Ctor for adapters that will be passed to an AdapterCoordinator.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="adapterSpec">contains parameters that specify the behavior of the input adapter</param>
 
-        public CSVInputAdapter(CSVInputAdapterSpec adapterSpec)
-            : this(null, adapterSpec)
+        public CSVInputAdapter(IContainer container, CSVInputAdapterSpec adapterSpec)
+            : this(container, null, adapterSpec)
         {
         }
 
-        /// <summary>Ctor for adapters that will be passed to an AdapterCoordinator.</summary>
+        /// <summary>
+        /// Ctor for adapters that will be passed to an AdapterCoordinator.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="adapterInputSource">the parameters for this adapter</param>
         /// <param name="eventTypeName">the event type name that the input adapter generates events for</param>
 
-        public CSVInputAdapter(AdapterInputSource adapterInputSource, String eventTypeName)
-            : this(null, adapterInputSource, eventTypeName)
+        public CSVInputAdapter(IContainer container, AdapterInputSource adapterInputSource, String eventTypeName)
+            : this(container, null, adapterInputSource, eventTypeName)
         {
         }
 
@@ -200,7 +214,7 @@ namespace com.espertech.esperio.csv
 
             ScheduleSlot = spi.SchedulingMgmtService.AllocateBucket().AllocateSlot();
 
-            _reader = new CSVReader(spec.AdapterInputSource);
+            _reader = new CSVReader(_container, spec.AdapterInputSource);
             _reader.Looping = spec.IsLooping;
 
             var firstRow = FirstRow;
@@ -629,6 +643,13 @@ namespace com.espertech.esperio.csv
             StaticTypeTable[typeof(decimal?)] = EasyParser<decimal>;
 
             StaticTypeTable[typeof(string)] = ProxyParser;
+        }
+
+        private static IContainer GetContainer(EPServiceProvider epService)
+        {
+            if (epService is EPServiceProviderSPI spi)
+                return spi.Container;
+            throw new ArgumentException("Container is missing");
         }
     }
 }

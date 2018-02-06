@@ -15,7 +15,7 @@ using com.espertech.esper.compat.logging;
 
 using NEsper.Examples.StockTicker.eventbean;
 
-namespace com.espertech.esper.example.rsi
+namespace NEsper.Examples.RSI
 {
     /// <summary>
     /// RSI gives you the trend for a stock and for more complete explanation, you can
@@ -65,15 +65,15 @@ namespace com.espertech.esper.example.rsi
 
         public void Update(Object sender, UpdateEventArgs e)
         {
-            EventBean[] newEvents = e.NewEvents;
-            Object eventBean = newEvents[0]["tick"];
-            StockTick newTick = (StockTick)eventBean;
+            var newEvents = e.NewEvents;
+            var eventBean = newEvents[0]["tick"];
+            var newTick = (StockTick)eventBean;
             Log.Info(".update for stock=" + newTick.StockSymbol + "  price=" + newTick.Price);
 
             if (_oldEvents != null)
             {
                 eventBean = _oldEvents[0]["tick"];
-                StockTick oldTick = (StockTick)eventBean;
+                var oldTick = (StockTick)eventBean;
                 Compute(newTick, oldTick);
                 _epService.EPRuntime.SendEvent(new RSIEvent(newTick, _avgLoss, _avgGain, _rs, _rsi));
             }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.example.rsi
         private void Compute(StockTick newTick, StockTick oldTick)
         {
             _count++;
-            double change = newTick.Price - oldTick.Price;
+            var change = newTick.Price - oldTick.Price;
             if (_count <= _period)
             {
                 if (change > 0)
@@ -109,8 +109,8 @@ namespace com.espertech.esper.example.rsi
                 {
                     _adv.Clear();
                     _decl.Clear();
-                    double adv = 0.0;
-                    double decl = 0.0;
+                    var adv = 0.0;
+                    var decl = 0.0;
                     if (change > 0)
                     {
                         Log.Info(".Count " + _count + " Advance " + change);
@@ -132,8 +132,8 @@ namespace com.espertech.esper.example.rsi
                 else
                 {
                     _rs = Math.Abs(_avgGain / _avgLoss);
-                    double to1 = 1.0 + _rs;
-                    double to100 = 100.0 / to1;
+                    var to1 = 1.0 + _rs;
+                    var to100 = 100.0 / to1;
                     _rsi = 100.0 - to100;
                 }
             }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.example.rsi
 
         private double AvgValueList(IEnumerable<double> lValues)
         {
-            double sum = lValues.Aggregate(0.0, (current, val) => current + val);
+            var sum = lValues.Aggregate(0.0, (current, val) => current + val);
             return (sum / _count);
         }
 

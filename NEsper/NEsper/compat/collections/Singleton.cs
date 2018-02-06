@@ -56,15 +56,9 @@ namespace com.espertech.esper.compat.collections
             throw new NotSupportedException();
         }
 
-        public int Count
-        {
-            get { return 1; }
-        }
+        public int Count => 1;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public bool Add(T item)
         {

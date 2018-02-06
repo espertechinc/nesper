@@ -7,26 +7,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.methodagg;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     public class TestExprMinMaxAggrNode : TestExprAggregateNodeAdapter
     {
         private ExprMinMaxAggrNode _maxNode;
         private ExprMinMaxAggrNode _minNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _maxNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MAX, false, false);
             _minNode = new ExprMinMaxAggrNode(false, MinMaxTypeEnum.MIN, false, false);
     
@@ -70,10 +74,10 @@ namespace com.espertech.esper.epl.expression
             // Must have exactly 1 subnodes
             try
             {
-                _minNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _minNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -84,10 +88,11 @@ namespace com.espertech.esper.epl.expression
             _minNode.AddChildNode(new SupportExprNode(typeof(int)));
             try
             {
-                _minNode.Validate(SupportExprValidationContextFactory.Make(new SupportStreamTypeSvc3Stream()));
+                _minNode.Validate(SupportExprValidationContextFactory.Make(
+                    _container, new SupportStreamTypeSvc3Stream()));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -96,9 +101,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_minNode.EqualsNode(_minNode));
-            Assert.IsFalse(_maxNode.EqualsNode(_minNode));
-            Assert.IsFalse(_minNode.EqualsNode(new ExprSumNode(false)));
+            Assert.IsTrue(_minNode.EqualsNode(_minNode, false));
+            Assert.IsFalse(_maxNode.EqualsNode(_minNode, false));
+            Assert.IsFalse(_minNode.EqualsNode(new ExprSumNode(false), false));
         }
 
         private ExprMinMaxAggrNode MakeNode(MinMaxTypeEnum minMaxType, Object value, Type type)

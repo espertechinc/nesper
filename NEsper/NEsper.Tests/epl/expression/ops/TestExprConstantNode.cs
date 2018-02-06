@@ -6,22 +6,26 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprConstantNode 
     {
         private ExprConstantNode _constantNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _constantNode = new ExprConstantNodeImpl("5");
         }
     
@@ -37,7 +41,7 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestValidate()
         {
-            _constantNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _constantNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
         }
     
         [Test]
@@ -59,13 +63,13 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl("5")));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprOrNode()));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
-            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(3)));
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl("5"), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprOrNode(), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(null), false));
+            Assert.IsFalse(_constantNode.EqualsNode(new ExprConstantNodeImpl(3), false));
     
             _constantNode = new ExprConstantNodeImpl(null);
-            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl(null)));
+            Assert.IsTrue(_constantNode.EqualsNode(new ExprConstantNodeImpl(null), false));
         }
     }
 }

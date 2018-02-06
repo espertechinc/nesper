@@ -8,7 +8,8 @@
 
 using System;
 using System.Text;
-
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 
@@ -19,13 +20,17 @@ namespace com.espertech.esper.epl.expression.ops
 	    private readonly ExprConcatNode _parent;
 	    private readonly ExprEvaluator[] _evaluators;
 
-	    private readonly IThreadLocal<StringBuilder> _localBuffer = ThreadLocalManager.Create<StringBuilder>(
-	        () => new StringBuilder());
+	    private readonly IThreadLocal<StringBuilder> _localBuffer;
 
-	    public ExprConcatNodeEvalThreadLocal(ExprConcatNode parent, ExprEvaluator[] evaluators) {
+	    public ExprConcatNodeEvalThreadLocal(
+	        ExprConcatNode parent,
+	        ExprEvaluator[] evaluators,
+	        IThreadLocalManager threadLocalManager)
+	    {
 	        _parent = parent;
 	        _evaluators = evaluators;
-	    }
+            _localBuffer = threadLocalManager.Create<StringBuilder>(() => new StringBuilder());
+        }
 
         public object Evaluate(EvaluateParams evaluateParams)
         {

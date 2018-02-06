@@ -110,7 +110,7 @@ namespace com.espertech.esper.epl.expression.core
                             propertyInfo = streamTypeService.ResolveByStreamAndPropName(
                                 eventType.Name, unresolvedPropertyName, obtainFragment);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                         }
                         if (propertyInfo != null)
@@ -149,7 +149,7 @@ namespace com.espertech.esper.epl.expression.core
                     }
                 }
             }
-            catch (StreamTypesException e)
+            catch (StreamTypesException)
             {
                 // need not be handled
             }

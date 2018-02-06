@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -19,6 +20,7 @@ using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.baseagg;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.table;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.lookup;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.epl.table.strategy;
@@ -36,16 +38,27 @@ namespace com.espertech.esper.epl.table.mgmt
 
         private readonly IDictionary<String, TableMetadata> _tables =
             new Dictionary<string, TableMetadata>().WithNullSupport();
-        private readonly TableExprEvaluatorContext _tableExprEvaluatorContext =
-            new TableExprEvaluatorContext();
 
-        public TableServiceImpl()
+        private readonly TableExprEvaluatorContext _tableExprEvaluatorContext;
+
+        private IReaderWriterLockManager _rwLockManager;
+
+        public TableServiceImpl(IContainer container)
+            : this(container.Resolve<IReaderWriterLockManager>(), container.Resolve<IThreadLocalManager>())
         {
         }
 
-        public void ValidateAddIndex(string createIndexStatementName, TableMetadata tableMetadata, string indexName, IndexMultiKey imk)
+        public TableServiceImpl(
+            IReaderWriterLockManager rwLockManager, 
+            IThreadLocalManager threadLocalManager)
         {
-            tableMetadata.ValidateAddIndexAssignUpdateStrategies(createIndexStatementName, imk, indexName);
+            _tableExprEvaluatorContext = new TableExprEvaluatorContext(threadLocalManager);
+            _rwLockManager = rwLockManager;
+        }
+
+        public void ValidateAddIndex(String createIndexStatementName, TableMetadata tableMetadata, String explicitIndexName, QueryPlanIndexItem explicitIndexDesc, IndexMultiKey imk)
+        {
+            tableMetadata.ValidateAddIndexAssignUpdateStrategies(createIndexStatementName, imk, explicitIndexName, explicitIndexDesc);
         }
 
         public TableUpdateStrategy GetTableUpdateStrategy(TableMetadata tableMetadata, EventBeanUpdateHelper updateHelper, bool isOnMerge)
@@ -107,14 +120,16 @@ namespace com.espertech.esper.epl.table.mgmt
             { // ungrouped
                 tableStateFactory = new ProxyTableStateFactory
                 {
-                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceUngroupedImpl(metadata, agentInstanceContext),
+                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceUngroupedImpl(
+                        metadata, agentInstanceContext, _rwLockManager),
                 };
             }
             else
             {
                 tableStateFactory = new ProxyTableStateFactory
                 {
-                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceGroupedImpl(metadata, agentInstanceContext),
+                    ProcMakeTableState = agentInstanceContext => new TableStateInstanceGroupedImpl(
+                        metadata, agentInstanceContext, _rwLockManager),
                 };
             }
             metadata.TableStateFactory = tableStateFactory;

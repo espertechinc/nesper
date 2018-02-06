@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.epl.core;
 

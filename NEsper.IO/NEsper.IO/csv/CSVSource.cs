@@ -1,6 +1,7 @@
 using System.IO;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esperio.csv
 {
@@ -10,34 +11,38 @@ namespace com.espertech.esperio.csv
 
 	public class CSVSource
 	{
-		private readonly AdapterInputSource source; // source of data
-		private TextReader reader; // reader from where data comes
-		private Stream stream;     // stream from where data comes
+		private readonly AdapterInputSource _source; // source of data
+		private TextReader _reader; // reader from where data comes
+		private Stream _stream;     // stream from where data comes
 
-	    private int eMarkIndex; // end index
-	    private int wMarkIndex; // write index
-	    private int rMarkIndex; // read index
-	    private int[] markData; // backing store for reading data when marked
+	    private int _eMarkIndex; // end index
+	    private int _wMarkIndex; // write index
+	    private int _rMarkIndex; // read index
+	    private int[] _markData; // backing store for reading data when marked
+
+	    private IContainer _container;
 
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="source">the AdapterInputSource from which to obtain the underlying resource</param>
 
-		public CSVSource(AdapterInputSource source)
-		{
-            rMarkIndex = -1; // not reading
-            wMarkIndex = -1; // not writing
-            eMarkIndex = -1;
-            markData = new int[2];
+		public CSVSource(IContainer container, AdapterInputSource source)
+        {
+            _container = container;
 
-			stream = source.GetAsStream() ;
-			if ( stream == null )
+            _rMarkIndex = -1; // not reading
+            _wMarkIndex = -1; // not writing
+            _eMarkIndex = -1;
+            _markData = new int[2];
+
+			_stream = source.GetAsStream(_container) ;
+			if ( _stream == null )
 			{
-				reader = source.GetAsReader() ;
+				_reader = source.GetAsReader() ;
 			}
 
-			this.source = source;
+			this._source = source;
 		}
 		
 		/// <summary>Close the underlying resource.</summary>
@@ -45,37 +50,37 @@ namespace com.espertech.esperio.csv
 
 		public void Close()
 		{
-			if (stream != null)
+			if (_stream != null)
 			{
-				stream.Close();
+				_stream.Close();
 			}
 			else
 			{
-				reader.Close();
+				_reader.Close();
 			}
 		}
 
         private int ReadFromBase()
         {
-            if (stream != null)
+            if (_stream != null)
             {
-                return stream.ReadByte();
+                return _stream.ReadByte();
             }
             else
             {
-                return reader.Read();
+                return _reader.Read();
             }
         }
 
         private void WriteToMark(int value)
         {
             // Do we need to store the value for a future read?
-            if (wMarkIndex >= 0)
+            if (_wMarkIndex >= 0)
             {
-                if (wMarkIndex < markData.Length)
+                if (_wMarkIndex < _markData.Length)
                 {
-                    markData[wMarkIndex] = value; // Write the value to buffer
-                    wMarkIndex++; // Increment the write mark
+                    _markData[_wMarkIndex] = value; // Write the value to buffer
+                    _wMarkIndex++; // Increment the write mark
                 }
             }
         }
@@ -83,11 +88,11 @@ namespace com.espertech.esperio.csv
         private void IncrementWriteMark()
         {
             // Do we need to store the value for a future read?
-            if (wMarkIndex >= 0)
+            if (_wMarkIndex >= 0)
             {
-                if (wMarkIndex < markData.Length)
+                if (_wMarkIndex < _markData.Length)
                 {
-                    wMarkIndex++;
+                    _wMarkIndex++;
                 }
             }
         }
@@ -103,12 +108,12 @@ namespace com.espertech.esperio.csv
             // Check to see if we are supposed to be reading from
             // somewhere within the markData.  If we are, make sure
             // that we return data from the markData buffer.
-		    if (rMarkIndex >= 0)
+		    if (_rMarkIndex >= 0)
 		    {
-		        int index = rMarkIndex++;
-		        if (eMarkIndex > index)
+		        int index = _rMarkIndex++;
+		        if (_eMarkIndex > index)
 		        {
-		            value = markData[index];
+		            value = _markData[index];
 		            IncrementWriteMark();
 		        }
                 else
@@ -118,7 +123,7 @@ namespace com.espertech.esperio.csv
                     // Can this value be written to the pushback buffer or have
                     // we consumed more data that was specified for the lookahead?
 
-                    if (wMarkIndex < markData.Length)
+                    if (_wMarkIndex < _markData.Length)
                     {
                         // More space is available in the pushback buffer
                         WriteToMark(value);
@@ -129,9 +134,9 @@ namespace com.espertech.esperio.csv
                         // the marked data is no longer retrievable because we can not
                         // recreate the character that has been consumed off the wire.
 
-                        eMarkIndex = -1;
-                        wMarkIndex = -1;
-                        rMarkIndex = -1;
+                        _eMarkIndex = -1;
+                        _wMarkIndex = -1;
+                        _rMarkIndex = -1;
                     }
 		        }
             }
@@ -152,7 +157,7 @@ namespace com.espertech.esperio.csv
 
 		public bool IsResettable
 		{
-			get { return source.IsResettable; }
+			get { return _source.IsResettable; }
 		}
 		
 		/// <summary>Reset to the last mark position.</summary>
@@ -160,13 +165,13 @@ namespace com.espertech.esperio.csv
 
 		public void ResetToMark()
 		{
-		    rMarkIndex = 0;
-		    eMarkIndex =
-		        eMarkIndex > wMarkIndex
-		            ? eMarkIndex
-		            : wMarkIndex;
+		    _rMarkIndex = 0;
+		    _eMarkIndex =
+		        _eMarkIndex > _wMarkIndex
+		            ? _eMarkIndex
+		            : _wMarkIndex;
 
-		    wMarkIndex = 0;
+		    _wMarkIndex = 0;
 		}
 
         /// <summary>Set the mark position.</summary>
@@ -178,23 +183,23 @@ namespace com.espertech.esperio.csv
             // Set a new mark ...
             // - Have we consumed data that is currently in the pushback buffer?
 
-            switch( rMarkIndex )
+            switch( _rMarkIndex )
             {
                 case -1:
                 case 0:
-                    wMarkIndex = 0;
+                    _wMarkIndex = 0;
                     break;
                 case 1:
-                    markData[0] = markData[1];
-                    markData[1] = 0;
-                    rMarkIndex = 0;
-                    eMarkIndex--;
-                    wMarkIndex = 0;
+                    _markData[0] = _markData[1];
+                    _markData[1] = 0;
+                    _rMarkIndex = 0;
+                    _eMarkIndex--;
+                    _wMarkIndex = 0;
                     break;
                 case 2:
-                    rMarkIndex = -1;
-                    wMarkIndex = 0;
-                    eMarkIndex = 0;
+                    _rMarkIndex = -1;
+                    _wMarkIndex = 0;
+                    _eMarkIndex = 0;
                     break;
             }
 		}
@@ -208,20 +213,20 @@ namespace com.espertech.esperio.csv
 				throw new UnsupportedOperationException("Reset not supported: underlying source cannot be reset");
 			}
 			
-			if(stream != null)
+			if(_stream != null)
 			{
-				stream = source.GetAsStream();
+				_stream = _source.GetAsStream(_container);
 			}
 			else
 			{
-				reader = source.GetAsReader();
+				_reader = _source.GetAsReader();
 			}
 
-		    rMarkIndex = -1;
-		    wMarkIndex = -1;
-		    eMarkIndex = -1;
-		    markData[0] = 0;
-		    markData[1] = 0;
+		    _rMarkIndex = -1;
+		    _wMarkIndex = -1;
+		    _eMarkIndex = -1;
+		    _markData[0] = 0;
+		    _markData[1] = 0;
 		}
 	}
 }

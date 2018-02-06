@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.events.arr
@@ -28,9 +28,13 @@ namespace com.espertech.esper.events.arr
     
         public override void Write(Object value, Object[] array)
         {
-            var mapEntry = (Map) array[Index];
-            if (mapEntry != null) {
-                mapEntry.Put(_key, value);
+            var mapEntryRaw = array[Index];
+            if (mapEntryRaw != null) {
+                if (mapEntryRaw is Map mapEntry) {
+                    mapEntry.Put(_key, value);
+                } else if (mapEntryRaw.GetType().IsGenericStringDictionary()) {
+                    mapEntryRaw.AsStringDictionary().Put(_key, value);
+                }
             }
         }
     }

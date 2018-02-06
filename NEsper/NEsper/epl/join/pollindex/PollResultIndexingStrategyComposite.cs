@@ -50,10 +50,18 @@ namespace com.espertech.esper.epl.join.pollindex
             if (!isActiveCache) {
                 return new EventTable[]{new UnindexedEventTableList(pollResult, _streamNum)};
             }
-            var factory = new PropertyCompositeEventTableFactory(_streamNum, _eventType, _indexPropertiesJoin, _keyCoercionTypes, _rangePropertiesJoin, _rangeCoercionTypes);
-            EventTable[] tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext));
-            foreach (EventTable table in tables) {
-                table.Add(pollResult.ToArray());
+            var factory = new PropertyCompositeEventTableFactory(
+                _streamNum, 
+                _eventType, 
+                _indexPropertiesJoin, 
+                _keyCoercionTypes, 
+                _rangePropertiesJoin, 
+                _rangeCoercionTypes);
+            var evaluatorContextStatement = new ExprEvaluatorContextStatement(statementContext, false);
+            EventTable[] tables = factory.MakeEventTables(new EventTableFactoryTableIdentStmt(statementContext), evaluatorContextStatement);
+            foreach (var table in tables)
+            {
+                table.Add(pollResult.ToArray(), evaluatorContextStatement);
             }
             return tables;
         }

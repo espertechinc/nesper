@@ -18,29 +18,44 @@ namespace com.espertech.esper.events
 {
     public interface EventTypeNestableGetterFactory
     {
-        EventPropertyGetter GetPropertyProvidedGetter(IDictionary<string, object> nestableTypes, String propertyName, Property prop, EventAdapterService eventAdapterService);
-        EventPropertyGetterMapped GetPropertyProvidedGetterMap(IDictionary<string, object> nestableTypes, String mappedPropertyName, MappedProperty mappedProperty, EventAdapterService eventAdapterService);
-        EventPropertyGetterIndexed GetPropertyProvidedGetterIndexed(IDictionary<string, object> nestableTypes, String indexedPropertyName, IndexedProperty indexedProperty, EventAdapterService eventAdapterService);
+        EventPropertyGetterSPI GetPropertyProvidedGetter(IDictionary<string, object> nestableTypes, string propertyName, Property prop, EventAdapterService eventAdapterService);
 
-        EventPropertyGetter GetGetterProperty(String name, BeanEventType nativeFragmentType, EventAdapterService eventAdapterService);
-        EventPropertyGetter GetGetterEventBean(String name);
-        EventPropertyGetter GetGetterEventBeanArray(String name, EventType eventType);
-        EventPropertyGetter GetGetterBeanNested(String name, EventType eventType, EventAdapterService eventAdapterService);
-        EventPropertyGetter GetGetterBeanNestedArray(String name, EventType eventType, EventAdapterService eventAdapterService);
-        EventPropertyGetter GetGetterIndexedEventBean(String propertyNameAtomic, int index);
+        EventPropertyGetterMapped GetPropertyProvidedGetterMap(IDictionary<string, object> nestableTypes, string mappedPropertyName, MappedProperty mappedProperty, EventAdapterService eventAdapterService);
 
-        EventPropertyGetter GetGetterIndexedUnderlyingArray(String propertyNameAtomic, int index, EventAdapterService eventAdapterService, EventType innerType);
-        EventPropertyGetter GetGetterIndexedPONO(String propertyNameAtomic, int index, EventAdapterService eventAdapterService, Type componentType);
-        EventPropertyGetter GetGetterMappedProperty(String propertyNameAtomic, String key);
+        EventPropertyGetterIndexed GetPropertyProvidedGetterIndexed(IDictionary<string, object> nestableTypes, string indexedPropertyName, IndexedProperty indexedProperty, EventAdapterService eventAdapterService);
 
-        EventPropertyGetter GetGetterNestedEntryBeanArray(String propertyNameAtomic, int index, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService);
-        EventPropertyGetter GetGetterIndexedEntryEventBeanArrayElement(String propertyNameAtomic, int index, EventPropertyGetter nestedGetter);
-        EventPropertyGetter GetGetterIndexedEntryPONO(String propertyNameAtomic, int index, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type propertyTypeGetter);
-        EventPropertyGetter GetGetterNestedMapProp(String propertyName, MapEventPropertyGetter getterNestedMap);
-        EventPropertyGetter GetGetterNestedPONOProp(String propertyName, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type nTypeReturnType, Type nestedComponentType);
-        EventPropertyGetter GetGetterNestedEventBean(String propertyName, EventPropertyGetter nestedGetter);
+        EventPropertyGetterSPI GetGetterProperty(string name, BeanEventType nativeFragmentType, EventAdapterService eventAdapterService);
 
-        EventPropertyGetter GetGetterNestedPropertyProvidedGetterDynamic(IDictionary<string, object> nestableTypes, string propertyName, EventPropertyGetter nestedGetter, EventAdapterService eventAdapterService);
-        EventPropertyGetter GetGetterNestedEntryBean(String propertyName, EventPropertyGetter innerGetter, EventType innerType, EventAdapterService eventAdapterService);
+        EventPropertyGetterSPI GetGetterEventBean(string name);
+
+        EventPropertyGetterSPI GetGetterEventBeanArray(string name, EventType eventType);
+
+        EventPropertyGetterSPI GetGetterBeanNested(string name, EventType eventType, EventAdapterService eventAdapterService);
+
+        EventPropertyGetterSPI GetGetterBeanNestedArray(string name, EventType eventType, EventAdapterService eventAdapterService);
+
+        EventPropertyGetterSPI GetGetterIndexedEventBean(string propertyNameAtomic, int index);
+
+        EventPropertyGetterSPI GetGetterIndexedUnderlyingArray(string propertyNameAtomic, int index, EventAdapterService eventAdapterService, EventType innerType);
+
+        EventPropertyGetterSPI GetGetterIndexedPono(string propertyNameAtomic, int index, EventAdapterService eventAdapterService, Type componentType);
+
+        EventPropertyGetterSPI GetGetterMappedProperty(string propertyNameAtomic, string key);
+
+        EventPropertyGetterSPI GetGetterNestedEntryBeanArray(string propertyNameAtomic, int index, EventPropertyGetter getter, EventType innerType, EventAdapterService eventAdapterService);
+
+        EventPropertyGetterSPI GetGetterIndexedEntryEventBeanArrayElement(string propertyNameAtomic, int index, EventPropertyGetterSPI nestedGetter);
+
+        EventPropertyGetterSPI GetGetterIndexedEntryPono(string propertyNameAtomic, int index, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type propertyTypeGetter);
+
+        EventPropertyGetterSPI GetGetterNestedMapProp(string propertyName, MapEventPropertyGetter getterNestedMap);
+
+        EventPropertyGetterSPI GetGetterNestedPonoProp(string propertyName, BeanEventPropertyGetter nestedGetter, EventAdapterService eventAdapterService, Type nestedReturnType, Type nestedComponentType);
+
+        EventPropertyGetterSPI GetGetterNestedEventBean(string propertyName, EventPropertyGetterSPI nestedGetter);
+
+        EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(IDictionary<string, object> nestableTypes, string propertyName, EventPropertyGetter nestedGetter, EventAdapterService eventAdapterService);
+
+        EventPropertyGetterSPI GetGetterNestedEntryBean(string propertyName, EventPropertyGetter innerGetter, EventType innerType, EventAdapterService eventAdapterService);
     }
 }

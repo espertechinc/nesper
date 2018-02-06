@@ -15,6 +15,7 @@ using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.view;
 
 namespace com.espertech.esper.supportunit.view
@@ -168,7 +169,12 @@ namespace com.espertech.esper.supportunit.view
         private static IList<ViewFactory> MakeFactories(EventType parentEventType, IList<ViewSpec> viewSpecs)
         {
             ViewServiceImpl svc = new ViewServiceImpl();
-            ViewFactoryChain viewFactories = svc.CreateFactories(1, parentEventType, ViewSpec.ToArray(viewSpecs), StreamSpecOptions.DEFAULT, SupportStatementContextFactory.MakeContext(), false, -1);
+            ViewFactoryChain viewFactories = svc.CreateFactories(
+                1, parentEventType, 
+                ViewSpec.ToArray(viewSpecs),
+                StreamSpecOptions.DEFAULT, 
+                SupportStatementContextFactory.MakeContext(SupportContainer.Instance), 
+                false, -1);
             return viewFactories.FactoryChain;
         }
     }

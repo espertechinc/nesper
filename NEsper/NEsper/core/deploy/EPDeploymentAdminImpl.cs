@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.deploy;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.service;
@@ -35,6 +36,7 @@ namespace com.espertech.esper.core.deploy
 
         private readonly EPAdministratorSPI _epService;
         private readonly IReaderWriterLock _eventProcessingRwLock;
+        private readonly IResourceManager _resourceManager;
         private readonly DeploymentStateService _deploymentStateService;
         private readonly StatementEventTypeRef _statementEventTypeRef;
         private readonly EventAdapterService _eventAdapterService;
@@ -42,11 +44,13 @@ namespace com.espertech.esper.core.deploy
         private readonly FilterService _filterService;
         private readonly TimeZoneInfo _timeZone;
         private readonly ConfigurationEngineDefaults.UndeployRethrowPolicy _undeployRethrowPolicy;
-        private readonly ILockable _iLock = LockManager.CreateDefaultLock();
+        private readonly ILockable _iLock;
 
         public EPDeploymentAdminImpl(
             EPAdministratorSPI epService,
+            ILockManager lockManager,
             IReaderWriterLock eventProcessingRWLock,
+            IResourceManager resourceManager,
             DeploymentStateService deploymentStateService,
             StatementEventTypeRef statementEventTypeRef,
             EventAdapterService eventAdapterService,
@@ -55,7 +59,9 @@ namespace com.espertech.esper.core.deploy
             TimeZoneInfo timeZone,
             ConfigurationEngineDefaults.UndeployRethrowPolicy undeployRethrowPolicy)
         {
+            _iLock = lockManager.CreateDefaultLock();
             _epService = epService;
+            _resourceManager = resourceManager;
             _eventProcessingRwLock = eventProcessingRWLock;
             _deploymentStateService = deploymentStateService;
             _statementEventTypeRef = statementEventTypeRef;
@@ -106,7 +112,10 @@ namespace com.espertech.esper.core.deploy
             {
                 Log.Debug("Reading resource '" + resource + "'");
             }
-            return EPLModuleUtil.ReadResource(resource, _eventAdapterService.EngineImportService);
+            return EPLModuleUtil.ReadResource(
+                resource, 
+                _eventAdapterService.EngineImportService,
+                _resourceManager);
         }
 
         public DeploymentResult Deploy(Module module, DeploymentOptions options, string assignedDeploymentId)
@@ -159,7 +168,6 @@ namespace com.espertech.esper.core.deploy
             string deploymentId,
             DateTimeEx addedDate)
         {
-
             if (Log.IsDebugEnabled)
             {
                 Log.Debug("Deploying module " + module);

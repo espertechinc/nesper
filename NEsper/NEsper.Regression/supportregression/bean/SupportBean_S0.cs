@@ -15,7 +15,7 @@ namespace com.espertech.esper.supportregression.bean
     {
         private static int _idCounter;
 
-        public static Object[] MakeS0(String propOne, String[] propTwo)
+        public static object[] MakeS0(String propOne, String[] propTwo)
         {
             _idCounter++;
             var events = new Object[propTwo.Length];

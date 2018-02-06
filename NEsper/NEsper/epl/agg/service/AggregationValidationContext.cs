@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.epl.expression;
 using com.espertech.esper.epl.expression.core;
 
@@ -29,7 +29,15 @@ namespace com.espertech.esper.epl.agg.service
         /// <param name="distinct">true if 'distinct' keyword was provided</param>
         /// <param name="windowed">true if all event properties references by parameter expressions are from streams that have data windows declared onto the stream or are from named windows</param>
         /// <param name="expressions">the parameter expressions themselves</param>
-        public AggregationValidationContext(Type[] parameterTypes, bool[] constantValue, Object[] constantValues, bool distinct, bool windowed, ExprNode[] expressions)
+        /// <param name="namedParameters"></param>
+        public AggregationValidationContext(
+            Type[] parameterTypes,
+            bool[] constantValue, 
+            object[] constantValues,
+            bool distinct,
+            bool windowed,
+            ExprNode[] expressions, 
+            IDictionary<string, IList<ExprNode>> namedParameters)
         {
             ParameterTypes = parameterTypes;
             IsConstantValue = constantValue;
@@ -37,6 +45,7 @@ namespace com.espertech.esper.epl.agg.service
             IsDistinct = distinct;
             IsWindowed = windowed;
             Expressions = expressions;
+            NamedParameters = namedParameters;
         }
 
         /// <summary>The return type of each parameter expression. <para />This information can also be obtained by calling getType on each parameter expression. </summary>
@@ -62,5 +71,11 @@ namespace com.espertech.esper.epl.agg.service
         /// <summary>Returns the parameter expressions themselves for interrogation. </summary>
         /// <value>parameter expressions</value>
         public ExprNode[] Expressions { get; private set; }
+
+        /// <summary>
+        /// Returns any named parameters or null if there are no named parameters
+        /// </summary>
+        /// <value></value>
+        public IDictionary<string, IList<ExprNode>> NamedParameters { get; private set; }
     }
 }

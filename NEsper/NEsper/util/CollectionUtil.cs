@@ -16,7 +16,6 @@ using com.espertech.esper.client;
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.expression.core;
-using com.espertech.esper.epl.expression;
 
 namespace com.espertech.esper.util
 {

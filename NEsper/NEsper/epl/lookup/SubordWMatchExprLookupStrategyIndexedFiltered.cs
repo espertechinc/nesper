@@ -34,10 +34,7 @@ namespace com.espertech.esper.epl.lookup
             _tableLookupStrategy = tableLookupStrategy;
         }
 
-        public SubordTableLookupStrategy TableLookupStrategy
-        {
-            get { return _tableLookupStrategy; }
-        }
+        public SubordTableLookupStrategy TableLookupStrategy => _tableLookupStrategy;
 
         public EventBean[] Lookup(EventBean[] newData, ExprEvaluatorContext exprEvaluatorContext)
         {

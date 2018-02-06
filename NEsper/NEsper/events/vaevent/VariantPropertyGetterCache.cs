@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.events.vaevent
@@ -31,9 +33,9 @@ namespace com.espertech.esper.events.vaevent
 
         /// <summary>Ctor. </summary>
         /// <param name="knownTypes">types known at cache construction type, may be an empty list for the ANY type variance.</param>
-        public VariantPropertyGetterCache(EventType[] knownTypes)
+        public VariantPropertyGetterCache(ILockManager lockManager, EventType[] knownTypes)
         {
-            _iLock = LockManager.CreateLock(GetType());
+            _iLock = lockManager.CreateLock(GetType());
             _knownTypes = knownTypes;
             _allGetters = new Dictionary<EventType, VariantPropertyGetterRow>();
             _properties = new List<String>();

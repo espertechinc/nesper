@@ -39,11 +39,11 @@ namespace com.espertech.esper.events.bean
         {
             try
             {
-                return descriptor.GetMethod().Invoke(underlying, null);
+                return descriptor.Method.Invoke(underlying, null);
             }
             catch (InvalidCastException e)
             {
-                throw PropertyUtility.GetMismatchException(descriptor.GetMethod().Target, underlying, e);
+                throw PropertyUtility.GetMismatchException(descriptor.Method.Target, underlying, e);
             }
             catch (PropertyAccessException)
             {

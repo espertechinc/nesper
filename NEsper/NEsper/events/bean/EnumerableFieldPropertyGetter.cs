@@ -10,8 +10,12 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.vaevent;
 using com.espertech.esper.util;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.bean
 {
@@ -58,7 +62,7 @@ namespace com.espertech.esper.events.bean
             try
             {
                 Object value = _field.GetValue(o);
-                return EnumerableFastPropertyGetter.GetEnumerable(value, index);
+                return EnumerableMethodPropertyGetter.GetBeanEventEnumerableValue(value, index);
             }
             catch (InvalidCastException e)
             {
@@ -73,7 +77,17 @@ namespace com.espertech.esper.events.bean
                 throw new PropertyAccessException(e);
             }
         }
-    
+
+        private String GetBeanPropInternalCodegen(ICodegenContext context)
+        {
+            return context.AddMethod(BeanPropType, TargetType, "object", this.GetType())
+                .DeclareVar(typeof(object), "value", ExprDotName(Ref("object"), _field.Name))
+                .MethodReturn(Cast(BeanPropType, StaticMethod(
+                    typeof(EnumerableMethodPropertyGetter), "GetBeanEventIterableValue", 
+                    Ref("value"), 
+                    Constant(_index))));
+        }
+
         public bool IsBeanExistsProperty(Object o)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
@@ -95,6 +109,29 @@ namespace com.espertech.esper.events.bean
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
+        }
+
+        public override Type BeanPropType => TypeHelper.GetGenericFieldType(_field, false);
+        public override Type TargetType => _field.DeclaringType;
+
+        public override ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return CodegenUnderlyingGet(CastUnderlying(TargetType, beanExpression), context);
+        }
+
+        public override ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public override ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return LocalMethod(GetBeanPropInternalCodegen(context), underlyingExpression);
+        }
+
+        public override ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
         }
     }
 }

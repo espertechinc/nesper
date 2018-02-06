@@ -496,7 +496,7 @@ namespace com.espertech.esper.client.annotation
         /// <returns>
         /// hint assigned values or null if none found
         /// </returns>
-        public static IList<String> GetHintAssignedValues(this HintEnum hintEnum, Attribute[] annotations)
+        public static IList<String> GetHintAssignedValues(this HintEnum hintEnum, IEnumerable<Attribute> annotations)
         {
             IList<String> allHints = null;
             try

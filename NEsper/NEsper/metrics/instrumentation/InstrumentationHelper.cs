@@ -7,12 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.service;
 using com.espertech.esper.util;
 
@@ -20,7 +16,10 @@ namespace com.espertech.esper.metrics.instrumentation
 {
     public class InstrumentationHelper
     {
-        public const bool ENABLED = false;
+        //public const bool ENABLED = true;
+
+        public static bool ENABLED { get; set; }
+
         public const bool ASSERTIONENABLED = false;
 
         private const string PROVIDER_PROPERTY = "instrumentation_provider";

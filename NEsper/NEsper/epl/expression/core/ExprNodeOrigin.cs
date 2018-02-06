@@ -44,6 +44,8 @@ namespace com.espertech.esper.epl.expression.core
         CONTAINEDEVENT,
         CREATEWINDOWFILTER,
         CREATETABLECOLUMN,
+        CREATEINDEXCOLUMN,
+        CREATEINDEXPARAMETER,
         SUBQUERYSELECT,
         FILTER,
         FORCLAUSE,
@@ -129,6 +131,10 @@ namespace com.espertech.esper.epl.expression.core
                     return ("create-window filter");
                 case ExprNodeOrigin.CREATETABLECOLUMN:
                     return ("table-column");
+                case ExprNodeOrigin.CREATEINDEXCOLUMN:
+                    return ("create-index index-column");
+                case ExprNodeOrigin.CREATEINDEXPARAMETER:
+                    return ("create-index index-parameter");
                 case ExprNodeOrigin.SUBQUERYSELECT:
                     return ("subquery select-clause");
                 case ExprNodeOrigin.FILTER:

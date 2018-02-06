@@ -9,9 +9,10 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.epl;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.core
@@ -19,12 +20,14 @@ namespace com.espertech.esper.epl.core
     [TestFixture]
     public class TestEngineImportServiceImpl 
     {
-        EngineImportServiceImpl _engineImportService;
-    
+        private EngineImportServiceImpl _engineImportService;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _engineImportService = SupportEngineImportServiceFactory.Make();
+            _container = SupportContainer.Reset();
+            _engineImportService = SupportEngineImportServiceFactory.Make(_container);
         }
     
         [Test]

@@ -118,10 +118,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.InvalidOperationException">
         /// The enumerator is positioned before the first element of the collection or after the last element.
         /// </exception>
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
+        object IEnumerator.Current => Current;
 
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.

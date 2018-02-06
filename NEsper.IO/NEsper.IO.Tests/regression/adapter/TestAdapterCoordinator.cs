@@ -12,15 +12,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.client.time;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
-using com.espertech.esperio;
 using com.espertech.esperio.csv;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
-
 
 namespace com.espertech.esperio.regression.adapter
 {
@@ -29,87 +27,90 @@ namespace com.espertech.esperio.regression.adapter
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     
-    	private SupportUpdateListener listener;
-    	private String eventTypeName;
-    	private EPServiceProvider epService;
-    	private long currentTime;
-    	private AdapterCoordinator coordinator;
-    	private CSVInputAdapterSpec timestampsLooping;
-    	private CSVInputAdapterSpec noTimestampsLooping;
-    	private CSVInputAdapterSpec noTimestampsNotLooping;
-    	private CSVInputAdapterSpec timestampsNotLooping;
-    	private String[] propertyOrderNoTimestamp;
+    	private SupportUpdateListener _listener;
+    	private String _eventTypeName;
+        private IContainer _container;
+    	private EPServiceProvider _epService;
+    	private long _currentTime;
+    	private AdapterCoordinator _coordinator;
+    	private CSVInputAdapterSpec _timestampsLooping;
+    	private CSVInputAdapterSpec _noTimestampsLooping;
+    	private CSVInputAdapterSpec _noTimestampsNotLooping;
+    	private CSVInputAdapterSpec _timestampsNotLooping;
+    	private String[] _propertyOrderNoTimestamp;
 
         [SetUp]
         public void SetUp()
-    	{
+        {
+            _container = SupportContainer.Reset();
+
     		IDictionary<String, Object> propertyTypes = new LinkedHashMap<String, Object>();
     		propertyTypes.Put("myInt", typeof(int));
     		propertyTypes.Put("myDouble", typeof(double?));
     		propertyTypes.Put("myString", typeof(String));
     
-    		eventTypeName = "mapEvent";
-    		Configuration configuration = new Configuration();
-    		configuration.AddEventType(eventTypeName, propertyTypes);
+    		_eventTypeName = "mapEvent";
+    		Configuration configuration = new Configuration(_container);
+    		configuration.AddEventType(_eventTypeName, propertyTypes);
     
-    		epService = EPServiceProviderManager.GetProvider("Adapter", configuration);
-    		epService.Initialize();
-    		EPAdministrator administrator = epService.EPAdministrator;
+    		_epService = EPServiceProviderManager.GetProvider(_container, "Adapter", configuration);
+    		_epService.Initialize();
+    		EPAdministrator administrator = _epService.EPAdministrator;
     		String statementText = "select * from mapEvent#length(5)";
     		EPStatement statement = administrator.CreateEPL(statementText);
-    		listener = new SupportUpdateListener();
-    		statement.Events += listener.Update;
+    		_listener = new SupportUpdateListener();
+    		statement.Events += _listener.Update;
     
     		// Turn off external clocking
-    		epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
+    		_epService.EPRuntime.SendEvent(new TimerControlEvent(TimerControlEvent.ClockTypeEnum.CLOCK_EXTERNAL));
     
     		// Set the clock to 0
-    		currentTime = 0;
+    		_currentTime = 0;
     		SendTimeEvent(0);
     
-    		coordinator = new AdapterCoordinatorImpl(epService, true);
+    		_coordinator = new AdapterCoordinatorImpl(_epService, true);
     
-        	propertyOrderNoTimestamp = new String[] { "myInt", "myDouble", "myString" };
+        	_propertyOrderNoTimestamp = new String[] { "myInt", "myDouble", "myString" };
         	String[] propertyOrderTimestamp = new String[] { "timestamp", "myInt", "myDouble", "myString" };
     
     		// A CSVPlayer for a file with timestamps, not looping
-    		timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/timestampOne.csv"), eventTypeName);
-            timestampsNotLooping.IsUsingEngineThread = true;
-    		timestampsNotLooping.PropertyOrder = propertyOrderTimestamp;
-    		timestampsNotLooping.TimestampColumn = "timestamp";
+    		_timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("regression/timestampOne.csv"), _eventTypeName);
+            _timestampsNotLooping.IsUsingEngineThread = true;
+    		_timestampsNotLooping.PropertyOrder = propertyOrderTimestamp;
+    		_timestampsNotLooping.TimestampColumn = "timestamp";
     
     		// A CSVAdapter for a file with timestamps, looping
-    		timestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/timestampTwo.csv"), eventTypeName);
-            timestampsLooping.IsLooping = true;
-    		timestampsLooping.IsUsingEngineThread = true;
-    		timestampsLooping.PropertyOrder = propertyOrderTimestamp;
-    		timestampsLooping.TimestampColumn = "timestamp";
+    		_timestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("regression/timestampTwo.csv"), _eventTypeName);
+            _timestampsLooping.IsLooping = true;
+    		_timestampsLooping.IsUsingEngineThread = true;
+    		_timestampsLooping.PropertyOrder = propertyOrderTimestamp;
+    		_timestampsLooping.TimestampColumn = "timestamp";
     
     		// A CSVAdapter that sends 10 events per sec, not looping
-    		noTimestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/noTimestampOne.csv"), eventTypeName);
-    		noTimestampsNotLooping.EventsPerSec = 10;
-    		noTimestampsNotLooping.PropertyOrder = propertyOrderNoTimestamp;
-            noTimestampsNotLooping.IsUsingEngineThread = true;
+    		_noTimestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource("regression/noTimestampOne.csv"), _eventTypeName);
+    		_noTimestampsNotLooping.EventsPerSec = 10;
+    		_noTimestampsNotLooping.PropertyOrder = _propertyOrderNoTimestamp;
+            _noTimestampsNotLooping.IsUsingEngineThread = true;
     
     		// A CSVAdapter that sends 5 events per sec, looping
-    		noTimestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("/regression/noTimestampTwo.csv"), eventTypeName);
-    		noTimestampsLooping.EventsPerSec = 5;
-            noTimestampsLooping.IsLooping = true;
-    		noTimestampsLooping.PropertyOrder = propertyOrderNoTimestamp;
-            noTimestampsLooping.IsUsingEngineThread = true;
+    		_noTimestampsLooping = new CSVInputAdapterSpec(new AdapterInputSource("regression/noTimestampTwo.csv"), _eventTypeName);
+    		_noTimestampsLooping.EventsPerSec = 5;
+            _noTimestampsLooping.IsLooping = true;
+    		_noTimestampsLooping.PropertyOrder = _propertyOrderNoTimestamp;
+            _noTimestampsLooping.IsUsingEngineThread = true;
     	}
     
         [Test]
     	public void TestRun()
     	{
-    		coordinator.Coordinate(new CSVInputAdapter(timestampsNotLooping));
-    		coordinator.Coordinate(new CSVInputAdapter(timestampsLooping));
-    		coordinator.Coordinate(new CSVInputAdapter(noTimestampsNotLooping));
-    		coordinator.Coordinate(new CSVInputAdapter(noTimestampsLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _timestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _timestampsLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _noTimestampsLooping));
     
     		// TimeInMillis is 0
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
-    		coordinator.Start();
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
+    		_coordinator.Start();
     
     		// TimeInMillis is 50
     		SendTimeEvent(50);
@@ -122,7 +123,7 @@ namespace com.espertech.esperio.regression.adapter
     
     		// TimeInMillis is 150
     		SendTimeEvent(50);
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 200
     		SendTimeEvent(50);
@@ -142,19 +143,19 @@ namespace com.espertech.esperio.regression.adapter
     
     		// TimeInMillis is 350
     		SendTimeEvent(50);
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
-    		coordinator.Pause();
+    		_coordinator.Pause();
     
     		// TimeInMillis is 400
     		SendTimeEvent(50);
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 450
     		SendTimeEvent(50);
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
-    		coordinator.Resume();
+    		_coordinator.Resume();
     
     		AssertEvent(0, 4, 4.4, "timestampTwo.four");
     		AssertEvent(1, 4, 4.4, "noTimestampTwo.four");
@@ -177,16 +178,16 @@ namespace com.espertech.esperio.regression.adapter
     		AssertEvent(1, 4, 4.4, "noTimestampTwo.four");
     		AssertSizeAndReset(2);
     
-    		coordinator.Stop();
+    		_coordinator.Stop();
     		SendTimeEvent(1000);
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     	}
     
         [Test]
     	public void TestRunTillNull()
     	{
-    		coordinator.Coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
-    		coordinator.Start();
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
+    		_coordinator.Start();
     
     		// TimeInMillis is 100
     		SendTimeEvent(100);
@@ -209,12 +210,12 @@ namespace com.espertech.esperio.regression.adapter
     		// TimeInMillis is 600
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==600");
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 700
     		SendTimeEvent(100);
             Log.Debug(".testRunTillNull time==700");
-    		Assert.IsFalse(listener.GetAndClearIsInvoked());
+    		Assert.IsFalse(_listener.GetAndClearIsInvoked());
     
     		// TimeInMillis is 800
     		SendTimeEvent(100);
@@ -224,18 +225,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
     	public void TestNotUsingEngineThread()
     	{
-    		coordinator = new AdapterCoordinatorImpl(epService, false);
-    		coordinator.Coordinate(new CSVInputAdapter(epService, noTimestampsNotLooping));
-    		coordinator.Coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
+    		_coordinator = new AdapterCoordinatorImpl(_epService, false);
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
     
     		long startTime = Environment.TickCount;
-    		coordinator.Start();
+    		_coordinator.Start();
     		long endTime = Environment.TickCount;
     
     		// The last event should be sent after 500 ms
     		Assert.IsTrue(endTime - startTime > 500);
     
-    		Assert.AreEqual(6, listener.GetNewDataList().Count);
+    		Assert.AreEqual(6, _listener.GetNewDataList().Count);
     		AssertEvent(0, 1, 1.1, "noTimestampOne.one");
     		AssertEvent(1, 1, 1.1, "timestampOne.one");
     		AssertEvent(2, 2, 2.2, "noTimestampOne.two");
@@ -247,18 +248,18 @@ namespace com.espertech.esperio.regression.adapter
         [Test]
     	public void TestExternalTimer()
     	{
-    		coordinator = new AdapterCoordinatorImpl(epService, false, true, false);
-    		coordinator.Coordinate(new CSVInputAdapter(epService, noTimestampsNotLooping));
-    		coordinator.Coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
+    		_coordinator = new AdapterCoordinatorImpl(_epService, false, true, false);
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _noTimestampsNotLooping));
+    		_coordinator.Coordinate(new CSVInputAdapter(_container, _epService, _timestampsNotLooping));
     
     		long startTime = Environment.TickCount;
-    		coordinator.Start();
+    		_coordinator.Start();
     		long endTime = Environment.TickCount;
     
     		// Check that we haven't been kept waiting
             Assert.That(endTime - startTime, Is.LessThan(100));
     
-    		Assert.AreEqual(6, listener.GetNewDataList().Count);
+    		Assert.AreEqual(6, _listener.GetNewDataList().Count);
     		AssertEvent(0, 1, 1.1, "noTimestampOne.one");
     		AssertEvent(1, 1, 1.1, "timestampOne.one");
     		AssertEvent(2, 2, 2.2, "noTimestampOne.two");
@@ -269,9 +270,9 @@ namespace com.espertech.esperio.regression.adapter
     
     	private void AssertEvent(int howManyBack, int? myInt, double? myDouble, String myString)
     	{
-    		Assert.IsTrue(listener.IsInvoked());
-    		Assert.IsTrue(howManyBack < listener.GetNewDataList().Count);
-    		EventBean[] data = listener.GetNewDataList()[howManyBack];
+    		Assert.IsTrue(_listener.IsInvoked());
+    		Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
+    		EventBean[] data = _listener.GetNewDataList()[howManyBack];
     		Assert.AreEqual(1, data.Length);
     		EventBean theEvent = data[0];
     		Assert.AreEqual(myInt, theEvent.Get("myInt"));
@@ -281,17 +282,17 @@ namespace com.espertech.esperio.regression.adapter
     
     
     	private void SendTimeEvent(int timeIncrement){
-    		currentTime += timeIncrement;
-    	    CurrentTimeEvent theEvent = new CurrentTimeEvent(currentTime);
-    	    epService.EPRuntime.SendEvent(theEvent);
+    		_currentTime += timeIncrement;
+    	    CurrentTimeEvent theEvent = new CurrentTimeEvent(_currentTime);
+    	    _epService.EPRuntime.SendEvent(theEvent);
     	}
     
     	private void AssertSizeAndReset(int size)
     	{
-    		IList<EventBean[]> list = listener.GetNewDataList();
+    		IList<EventBean[]> list = _listener.GetNewDataList();
     		Assert.AreEqual(size, list.Count);
     		list.Clear();
-    		listener.GetAndClearIsInvoked();
+    		_listener.GetAndClearIsInvoked();
     	}
     
     }

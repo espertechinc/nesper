@@ -147,7 +147,7 @@ namespace com.espertech.esper.epl.datetime.eval
             MetaDataTable.Put(
                 DatetimeMethodEnum.FORMAT,
                 new DatetimeMethodEnumMetaData("format", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,
-                                               DatetimeMethodEnumParams.NOPARAM));
+                                               DatetimeMethodEnumParams.FORMAT));
             MetaDataTable.Put(
                 DatetimeMethodEnum.TOCALENDAR,
                 new DatetimeMethodEnumMetaData("toCalendar", DatetimeMethodEnumStatics.REFORMAT_OP_FACTORY,

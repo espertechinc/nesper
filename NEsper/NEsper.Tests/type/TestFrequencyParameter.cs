@@ -22,7 +22,7 @@ namespace com.espertech.esper.type
             try {
                 new FrequencyParameter(0);
                 Assert.Fail();
-            } catch (ArgumentException ex) {
+            } catch (ArgumentException) {
                 // Expected
             }
         }

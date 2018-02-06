@@ -69,7 +69,7 @@ namespace com.espertech.esper.epl.join.@base
             get { return _allowInitIndex; }
         }
 
-        public virtual void Init(EventBean[][] eventsPerStream)
+        public virtual void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!_allowInitIndex)
             {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.epl.join.@base
                 {
                     for (var j = 0; j < _repositories[i].Length; j++)
                     {
-                        _repositories[i][j].Add((eventsPerStream[i]));
+                        _repositories[i][j].Add(eventsPerStream[i], exprEvaluatorContext);
                     }
                 }
             }
@@ -137,7 +137,7 @@ namespace com.espertech.esper.epl.join.@base
                 for (var j = 0; j < _repositories[stream].Length; j++)
                 {
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().QJoinCompositionStepUpdIndex(stream, newDataPerStream[stream], oldDataPerStream[stream]); }
-                    _repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream]);
+                    _repositories[stream][j].AddRemove(newDataPerStream[stream], oldDataPerStream[stream], exprEvaluatorContext);
                     if (InstrumentationHelper.ENABLED) { InstrumentationHelper.Get().AJoinCompositionStepUpdIndex(); }
                 }
             }

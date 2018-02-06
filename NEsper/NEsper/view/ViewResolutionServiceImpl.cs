@@ -8,7 +8,7 @@
 
 using System;
 using System.Reflection;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.epl.virtualdw;
@@ -22,7 +22,7 @@ namespace com.espertech.esper.view
     public class ViewResolutionServiceImpl : ViewResolutionService
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    
+
         private readonly PluggableObjectRegistry _viewObjects;
         private readonly string _optionalNamedWindowName;
         private readonly Type _virtualDataWindowViewFactory;
@@ -34,7 +34,7 @@ namespace com.espertech.esper.view
             _virtualDataWindowViewFactory = virtualDataWindowViewFactory;
         }
     
-        public ViewFactory Create(string nameSpace, string name)
+        public ViewFactory Create(IContainer container, string nameSpace, string name)
         {
             if (Log.IsDebugEnabled) {
                 Log.Debug(".create Creating view factory, @namespace =" + nameSpace + " name=" + name);
@@ -80,10 +80,8 @@ namespace com.espertech.esper.view
             }
     
             ViewFactory viewFactory;
-            try
-            {
-                viewFactory = (ViewFactory)Activator.CreateInstance(viewFactoryClass);
-    
+            try {
+                viewFactory = container.CreateInstance<ViewFactory>(viewFactoryClass);  
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated view");
                 }

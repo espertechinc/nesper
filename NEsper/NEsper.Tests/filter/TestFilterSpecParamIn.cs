@@ -11,35 +11,33 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-
-
 namespace com.espertech.esper.filter
 {
     [TestFixture]
     public class TestFilterSpecParamIn 
     {
-        private FilterSpecParamIn values;
+        private FilterSpecParamIn _values;
     
         [Test]
         public void TestEquals()
         {
-            values = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "B"}));
-            FilterSpecParamIn values2 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A"}));
-            FilterSpecParamIn values3 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "B"}));
-            FilterSpecParamIn values4 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "C"}));
+            _values = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "B"}));
+            var values2 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A"}));
+            var values3 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "B"}));
+            var values4 = new FilterSpecParamIn(MakeLookupable("a"), FilterOperator.IN_LIST_OF_VALUES, GetList(new Object[] {"A", "C"}));
     
-            Assert.IsFalse(values.Equals(new FilterSpecParamConstant(MakeLookupable("a"), FilterOperator.EQUAL, "a")));
-            Assert.IsFalse(values.Equals(values2));
-            Assert.IsTrue(values.Equals(values3));
-            Assert.IsFalse(values.Equals(values4));
+            Assert.IsFalse(_values.Equals(new FilterSpecParamConstant(MakeLookupable("a"), FilterOperator.EQUAL, "a")));
+            Assert.IsFalse(_values.Equals(values2));
+            Assert.IsTrue(_values.Equals(values3));
+            Assert.IsFalse(_values.Equals(values4));
         }
     
         private List<FilterSpecParamInValue> GetList(Object[] keys)
         {
-            List<FilterSpecParamInValue> list = new List<FilterSpecParamInValue>();
-            for (int i = 0; i < keys.Length; i++)
+            var list = new List<FilterSpecParamInValue>();
+            for (var i = 0; i < keys.Length; i++)
             {
-                list.Add(new InSetOfValuesConstant(keys[i]));
+                list.Add(new FilterForEvalConstantAnyType(keys[i]));
             }
             return list;
         }

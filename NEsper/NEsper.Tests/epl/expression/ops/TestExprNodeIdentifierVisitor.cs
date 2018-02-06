@@ -15,7 +15,7 @@ using com.espertech.esper.supportunit.epl;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprNodeIdentifierVisitor 

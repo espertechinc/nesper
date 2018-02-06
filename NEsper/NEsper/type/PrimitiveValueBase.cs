@@ -22,7 +22,7 @@ namespace com.espertech.esper.type
         /// Set a bool value.
         /// </summary>
         /// <value></value>
-        virtual public bool _Boolean
+        public virtual bool _Boolean
         {
             set { throw new NotSupportedException(); }
         }
@@ -31,7 +31,7 @@ namespace com.espertech.esper.type
         /// Set a byte value.
         /// </summary>
         /// <value></value>
-        virtual public byte _Byte
+        public virtual byte _Byte
         {
             set { throw new NotSupportedException(); }
         }
@@ -39,7 +39,7 @@ namespace com.espertech.esper.type
         /// <summary>
         /// Sets the sbyte value.
         /// </summary>
-	    virtual public sbyte _SByte
+	    public virtual sbyte _SByte
 	    {
             set { throw new NotSupportedException(); }
 	    }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.type
         /// Set a float value.
         /// </summary>
         /// <value></value>
-        virtual public float _Float
+        public virtual float _Float
         {
             set { throw new NotSupportedException(); }
         }
@@ -57,7 +57,7 @@ namespace com.espertech.esper.type
         /// Set an int value.
         /// </summary>
         /// <value></value>
-        virtual public int _Int
+        public virtual int _Int
         {
             set { throw new NotSupportedException(); }
         }
@@ -66,7 +66,7 @@ namespace com.espertech.esper.type
         /// Set a short value.
         /// </summary>
         /// <value></value>
-        virtual public short _Short
+        public virtual short _Short
         {
             set { throw new NotSupportedException(); }
         }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.type
         /// Set a string value.
         /// </summary>
         /// <value></value>
-        virtual public String _String
+        public virtual String _String
         {
             set { throw new NotSupportedException(); }
         }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.type
         /// Set a double value.
         /// </summary>
         /// <value></value>
-        virtual public Double _Double
+        public virtual Double _Double
         {
             set { throw new NotSupportedException(); }
         }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.type
         /// Set a long value.
         /// </summary>
         /// <value></value>
-        virtual public long _Long
+        public virtual long _Long
         {
             set { throw new NotSupportedException(); }
         }

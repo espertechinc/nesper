@@ -6,17 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 
-using NEsper.Example.MatchMaker.eventbean;
-using NEsper.Example.MatchMaker.monitor;
+using NEsper.Examples.MatchMaker.eventbean;
+using NEsper.Examples.MatchMaker.monitor;
 
 using NUnit.Framework;
 
-namespace NEsper.Example.MatchMaker
+namespace NEsper.Examples.MatchMaker
 {
     [TestFixture]
     public class TestMatchMakingMonitor : IDisposable
@@ -26,7 +26,11 @@ namespace NEsper.Example.MatchMaker
         [SetUp]
         public void SetUp()
         {
-            var configuration = new Configuration();
+            var container = ContainerExtensions.CreateDefaultContainer()
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
+            var configuration = new Configuration(container);
             configuration.EngineDefaults.EventMeta.ClassPropertyResolutionStyle =
                 PropertyResolutionStyle.CASE_INSENSITIVE;
 

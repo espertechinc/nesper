@@ -28,10 +28,7 @@ namespace com.espertech.esper.compat.collections
 
                 throw new KeyNotFoundException();
             }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            set => throw new NotSupportedException();
         }
 
         public ICollection<TK> Keys => _keyValuePairs.Select(kv => kv.Key).ToArray();

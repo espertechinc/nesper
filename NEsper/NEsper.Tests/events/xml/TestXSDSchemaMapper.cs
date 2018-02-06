@@ -13,7 +13,8 @@ using System.Xml.Schema;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
-
+using com.espertech.esper.compat.container;
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.xml
@@ -26,10 +27,12 @@ namespace com.espertech.esper.events.xml
         private XmlSchemaType _schemaTypeBoolean;
         private XmlSchemaType _schemaTypeDecimal;
         private XmlSchemaType _schemaTypeInt;
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _schemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
             _schemaTypeString = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
             _schemaTypeBoolean = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
@@ -40,10 +43,10 @@ namespace com.espertech.esper.events.xml
         [Test]
         public void TestMap()
         {
-            Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+            Uri uri = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
             String schemaUri = uri.ToString();
 
-            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null);
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null, _container.ResourceManager());
             Assert.That(model.Components.Count, Is.EqualTo(1));
 
             SchemaElementComplex simpleEvent = model.Components[0];
@@ -92,7 +95,7 @@ namespace com.espertech.esper.events.xml
         [Test]
         public void TestMap()
         {
-            Uri uri = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+            Uri uri = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
             String schemaUri = uri.ToString();
     
             SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null);
@@ -187,7 +190,7 @@ namespace com.espertech.esper.events.xml
         public void TestEvent()
         {
             //URL url = ResourceLoader.ResolveClassPathOrURLResource("schema", "regression/typeTestSchema.xsd");
-            var stream = ResourceManager.GetResourceAsStream("regression/simpleSchema.xsd");
+            var stream = _container.ResourceManager().GetResourceAsStream("regression/simpleSchema.xsd");
             var xsModel = XmlSchema.Read(stream, delegate { });
 
             var elements = new List<XmlSchemaElement>();
@@ -215,10 +218,10 @@ namespace com.espertech.esper.events.xml
         [Test]
         public void TestExtendedElements()
         {
-            Uri uri = ResourceManager.ResolveResourceURL("regression/schemaWithExtensions.xsd");
+            Uri uri = _container.ResourceManager().ResolveResourceURL("regression/schemaWithExtensions.xsd");
             String schemaUri = uri.ToString();
 
-            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null);
+            SchemaModel model = XSDSchemaMapper.LoadAndMap(schemaUri, null, null, _container.ResourceManager());
 
             SchemaElementComplex complexEvent = model.Components[0];
             VerifyComplexElement(complexEvent, "complexEvent", false);

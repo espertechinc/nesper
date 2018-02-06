@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client.dataflow;
+using com.espertech.esper.compat;
 using com.espertech.esper.dataflow.interfaces;
 using com.espertech.esper.dataflow.util;
 using com.espertech.esper.epl.core;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.dataflow.core
         protected readonly EPDataFlowEmitterExceptionHandler ExceptionHandler;
 
         private readonly FastMethod _fastMethod;
-        protected readonly Object TargetObject;
+        protected object TargetObject;
 
         protected EPDataFlowEmitter1Stream1TargetBase(
             int operatorNum,
@@ -43,6 +44,7 @@ namespace com.espertech.esper.dataflow.core
             var fastClass = FastClass.Create(target.Target.GetType());
             _fastMethod = fastClass.GetMethod(target.Binding.ConsumingBindingDesc.Method);
             TargetObject = target.Target;
+
         }
 
         public abstract void SubmitInternal(Object @object);

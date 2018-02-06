@@ -6,23 +6,36 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.map
 {
-    /// <summary>Getter for map entry. </summary>
+    /// <summary>Getter for map entry.</summary>
     public class MapPropertyGetterDefaultObjectArray : MapPropertyGetterDefaultBase
     {
-        public MapPropertyGetterDefaultObjectArray(String propertyName, EventType fragmentEventType, EventAdapterService eventAdapterService)
+        public MapPropertyGetterDefaultObjectArray(string propertyName, EventType fragmentEventType,
+            EventAdapterService eventAdapterService)
             : base(propertyName, fragmentEventType, eventAdapterService)
         {
         }
-    
-        protected override Object HandleCreateFragment(Object value)
+
+        protected override object HandleCreateFragment(object value)
         {
-            return BaseNestableEventUtil.HandleCreateFragmentObjectArray(value, FragmentEventType, EventAdapterService);
+            return BaseNestableEventUtil.HandleBNCreateFragmentObjectArray(value, FragmentEventType,
+                EventAdapterService);
+        }
+
+        protected override ICodegenExpression HandleCreateFragmentCodegen(ICodegenExpression value,
+            ICodegenContext context)
+        {
+            var mSvc = context.MakeAddMember(typeof(EventAdapterService), EventAdapterService);
+            var mType = context.MakeAddMember(typeof(EventType), FragmentEventType);
+            return StaticMethod(typeof(BaseNestableEventUtil), "HandleBNCreateFragmentObjectArray",
+                value, Ref(mType.MemberName), Ref(mSvc.MemberName));
         }
     }
-}
+} // end of namespace

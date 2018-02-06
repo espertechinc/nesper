@@ -72,26 +72,26 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 100L}});
 
             SendEvent("TAC", 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 101L}, new Object[] {"TAC", 101L}});
+                                                      new[] {new object[] {"SYM", 101L}, new object[] {"TAC", 101L}});
 
             SendEvent("MOV", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", 104L}, new Object[] {"TAC", 104L},
-                                                          new Object[] {"MOV", 104L}
+                                                          new object[] {"SYM", 104L}, new object[] {"TAC", 104L},
+                                                          new object[] {"MOV", 104L}
                                                       });
 
             SendEvent("SYM", 10);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"TAC", 14L}, new Object[] {"MOV", 14L},
-                                                          new Object[] {"SYM", 14L}
+                                                          new object[] {"TAC", 14L}, new object[] {"MOV", 14L},
+                                                          new object[] {"SYM", 14L}
                                                       });
         }
 
@@ -110,14 +110,14 @@ namespace com.espertech.esper.regression.view
 
             SendEvent("TAC", 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 101L}, new Object[] {"TAC", 101L}});
+                                                      new[] {new object[] {"SYM", 101L}, new object[] {"TAC", 101L}});
 
             SendEvent("MOV", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", 104L}, new Object[] {"TAC", 104L},
-                                                          new Object[] {"MOV", 104L}
+                                                          new object[] {"SYM", 104L}, new object[] {"TAC", 104L},
+                                                          new object[] {"MOV", 104L}
                                                       });
 
             SendEvent("SYM", 10);
@@ -136,26 +136,26 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 100L}});
 
             SendEvent("TAC", 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 101L}, new Object[] {"TAC", 101L}});
+                                                      new[] {new object[] {"SYM", 101L}, new object[] {"TAC", 101L}});
 
             SendEvent("MOV", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"MOV", 104L}, new Object[] {"SYM", 104L},
-                                                          new Object[] {"TAC", 104L}
+                                                          new object[] {"MOV", 104L}, new object[] {"SYM", 104L},
+                                                          new object[] {"TAC", 104L}
                                                       });
 
             SendEvent("SYM", 10);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"MOV", 14L}, new Object[] {"SYM", 14L},
-                                                          new Object[] {"TAC", 14L}
+                                                          new object[] {"MOV", 14L}, new object[] {"SYM", 14L},
+                                                          new object[] {"TAC", 14L}
                                                       });
         }
 
@@ -174,35 +174,35 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, null);
 
             SendEvent("SYM", -1);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", -10L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", -10L}});
 
             SendEvent("SYM", -6);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -10L}, new Object[] {"SYM", -60L}});
+                                                      new[] {new object[] {"SYM", -10L}, new object[] {"SYM", -60L}});
 
             SendEvent("SYM", 1);
             SendEvent("SYM", 16);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -10L}, new Object[] {"SYM", -60L}});
+                                                      new[] {new object[] {"SYM", -10L}, new object[] {"SYM", -60L}});
 
             SendEvent("SYM", -9);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -10L}, new Object[] {"SYM", -60L},
-                                                          new Object[] {"SYM", -90L}
+                                                          new object[] {"SYM", -10L}, new object[] {"SYM", -60L},
+                                                          new object[] {"SYM", -90L}
                                                       });
 
             SendEvent("SYM", 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -60L}, new Object[] {"SYM", -90L}});
+                                                      new[] {new object[] {"SYM", -60L}, new object[] {"SYM", -90L}});
 
             SendEvent("SYM", 3);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", -90L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", -90L}});
 
             SendEvent("SYM", 4);
             SendEvent("SYM", 5);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", -90L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", -90L}});
             SendEvent("SYM", 6);
             Assert.IsFalse(stmt.HasFirst());
         }
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regression.view
 
             _epService.EPRuntime.SendEvent(new SupportMarketDataBean("SYM", 100000d, 0L, null));
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", "1x1000.0"}});
+                                                      new[] {new object[] {"SYM", "1x1000.0"}});
 
             _epService.EPRuntime.SendEvent(new SupportMarketDataBean("SYM", 1d, 1L, null));
             Assert.IsFalse(stmt.HasFirst());
@@ -244,56 +244,56 @@ namespace com.espertech.esper.regression.view
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 100L}
+                                                          new object[] {"SYM", -1d, 100L}
                                                       });
 
             SendEvent("TAC", -2, 12);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 100L},
-                                                          new Object[] {"TAC", -2d, 12L}
+                                                          new object[] {"SYM", -1d, 100L},
+                                                          new object[] {"TAC", -2d, 12L}
                                                       });
 
             SendEvent("TAC", -3, 13);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 100L},
-                                                          new Object[] {"TAC", -2d, 25L},
-                                                          new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 100L},
+                                                          new object[] {"TAC", -2d, 25L},
+                                                          new object[] {"TAC", -3d, 25L}
                                                       });
 
             SendEvent("SYM", -4, 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L}, 
-                                                          new Object[] {"TAC", -3d, 25L},
-                                                          new Object[] {"SYM", -4d, 101L}
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"TAC", -2d, 25L}, 
+                                                          new object[] {"TAC", -3d, 25L},
+                                                          new object[] {"SYM", -4d, 101L}
                                                       });
 
             SendEvent("OCC", -5, 99);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L},
-                                                          new Object[] {"TAC", -3d, 25L},
-                                                          new Object[] {"SYM", -4d, 101L},
-                                                          new Object[] {"OCC", -5d, 99L}
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"TAC", -2d, 25L},
+                                                          new object[] {"TAC", -3d, 25L},
+                                                          new object[] {"SYM", -4d, 101L},
+                                                          new object[] {"OCC", -5d, 99L}
                                                       });
 
             SendEvent("TAC", -6, 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"TAC", -2d, 27L}, 
-                                                          new Object[] {"TAC", -3d, 27L},
-                                                          new Object[] {"SYM", -4d, 1L},
-                                                          new Object[] {"OCC", -5d, 99L}, 
-                                                          new Object[] {"TAC", -6d, 27L}
+                                                          new object[] {"TAC", -2d, 27L}, 
+                                                          new object[] {"TAC", -3d, 27L},
+                                                          new object[] {"SYM", -4d, 1L},
+                                                          new object[] {"OCC", -5d, 99L}, 
+                                                          new object[] {"TAC", -6d, 27L}
                                                       });
         }
 
@@ -310,49 +310,49 @@ namespace com.espertech.esper.regression.view
 
             SendEvent("SYM", -1, 100);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -1d, 100L}});
+                                                      new[] {new object[] {"SYM", -1d, 100L}});
 
             SendEvent("TAC", -2, 12);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -1d, 100L}});
+                                                      new[] {new object[] {"SYM", -1d, 100L}});
 
             SendEvent("TAC", -3, 13);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 100L},
-                                                          new Object[] {"TAC", -2d, 25L},
-                                                          new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 100L},
+                                                          new object[] {"TAC", -2d, 25L},
+                                                          new object[] {"TAC", -3d, 25L}
                                                       });
 
             SendEvent("SYM", -4, 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L}, new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"TAC", -2d, 25L}, new object[] {"TAC", -3d, 25L}
                                                           ,
-                                                          new Object[] {"SYM", -4d, 101L}
+                                                          new object[] {"SYM", -4d, 101L}
                                                       });
 
             SendEvent("OCC", -5, 99);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L}, new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"TAC", -2d, 25L}, new object[] {"TAC", -3d, 25L}
                                                           ,
-                                                          new Object[] {"SYM", -4d, 101L},
-                                                          new Object[] {"OCC", -5d, 99L}
+                                                          new object[] {"SYM", -4d, 101L},
+                                                          new object[] {"OCC", -5d, 99L}
                                                       });
 
             SendEvent("TAC", -6, 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"TAC", -2d, 27L}, new Object[] {"TAC", -3d, 27L}
-                                                          , new Object[] {"OCC", -5d, 99L},
-                                                          new Object[] {"TAC", -6d, 27L}
+                                                          new object[] {"TAC", -2d, 27L}, new object[] {"TAC", -3d, 27L}
+                                                          , new object[] {"OCC", -5d, 99L},
+                                                          new object[] {"TAC", -6d, 27L}
                                                       });
         }
 
@@ -370,48 +370,48 @@ namespace com.espertech.esper.regression.view
 
             SendEvent("SYM", -1, 100);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", -1d, 100L}});
+                                                      new[] {new object[] {"SYM", -1d, 100L}});
 
             SendEvent("TAC", -2, 12);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
-                                                      {new Object[] {"SYM", -1d, 100L}, new Object[] {"TAC", -2d, 12L}});
+                                                      {new object[] {"SYM", -1d, 100L}, new object[] {"TAC", -2d, 12L}});
 
             SendEvent("TAC", -3, 13);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 100L}, new Object[] {"TAC", -2d, 25L},
-                                                          new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 100L}, new object[] {"TAC", -2d, 25L},
+                                                          new object[] {"TAC", -3d, 25L}
                                                       });
 
             SendEvent("SYM", -4, 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"SYM", -4d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L},
-                                                          new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"SYM", -4d, 101L},
+                                                          new object[] {"TAC", -2d, 25L},
+                                                          new object[] {"TAC", -3d, 25L}
                                                       });
 
             SendEvent("OCC", -5, 99);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"OCC", -5d, 99L},
-                                                          new Object[] {"SYM", -1d, 101L},
-                                                          new Object[] {"SYM", -4d, 101L},
-                                                          new Object[] {"TAC", -2d, 25L}, new Object[] {"TAC", -3d, 25L}
+                                                          new object[] {"OCC", -5d, 99L},
+                                                          new object[] {"SYM", -1d, 101L},
+                                                          new object[] {"SYM", -4d, 101L},
+                                                          new object[] {"TAC", -2d, 25L}, new object[] {"TAC", -3d, 25L}
                                                       });
 
             SendEvent("TAC", -6, 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"OCC", -5d, 99L}, new Object[] {"SYM", -4d, 1L},
-                                                          new Object[] {"TAC", -2d, 27L},
-                                                          new Object[] {"TAC", -3d, 27L}, new Object[] {"TAC", -6d, 27L}
+                                                          new object[] {"OCC", -5d, 99L}, new object[] {"SYM", -4d, 1L},
+                                                          new object[] {"TAC", -2d, 27L},
+                                                          new object[] {"TAC", -3d, 27L}, new object[] {"TAC", -6d, 27L}
                                                       });
         }
 
@@ -427,45 +427,45 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 100L}});
 
             SendEvent("SYM", 10);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 110L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 110L}});
 
             SendEvent("TAC", 1);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 110L}, new Object[] {"TAC", 1L}});
+                                                      new[] {new object[] {"SYM", 110L}, new object[] {"TAC", 1L}});
 
             SendEvent("SYM", 11);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 121L}, new Object[] {"TAC", 1L}});
+                                                      new[] {new object[] {"SYM", 121L}, new object[] {"TAC", 1L}});
 
             SendEvent("TAC", 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 121L}, new Object[] {"TAC", 3L}});
+                                                      new[] {new object[] {"SYM", 121L}, new object[] {"TAC", 3L}});
 
             SendEvent("OCC", 55);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", 21L}, new Object[] {"TAC", 3L},
-                                                          new Object[] {"OCC", 55L}
+                                                          new object[] {"SYM", 21L}, new object[] {"TAC", 3L},
+                                                          new object[] {"OCC", 55L}
                                                       });
 
             SendEvent("OCC", 4);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"TAC", 3L}, new Object[] {"SYM", 11L},
-                                                          new Object[] {"OCC", 59L}
+                                                          new object[] {"TAC", 3L}, new object[] {"SYM", 11L},
+                                                          new object[] {"OCC", 59L}
                                                       });
 
             SendEvent("OCC", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"SYM", 11L}, new Object[] {"TAC", 2L},
-                                                          new Object[] {"OCC", 62L}
+                                                          new object[] {"SYM", 11L}, new object[] {"TAC", 2L},
+                                                          new object[] {"OCC", 62L}
                                                       });
         }
 
@@ -481,32 +481,32 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 100L}});
 
             SendEvent("SYM", 5);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 105L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 105L}});
 
             SendEvent("TAC", 1);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 105L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 105L}});
 
             SendEvent("SYM", 3);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 108L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 108L}});
 
             SendEvent("TAC", 12);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"SYM", 108L}, new Object[] {"TAC", 13L}});
+                                                      new[] {new object[] {"SYM", 108L}, new object[] {"TAC", 13L}});
 
             SendEvent("OCC", 55);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"TAC", 13L}, new Object[] {"OCC", 55L}});
+                                                      new[] {new object[] {"TAC", 13L}, new object[] {"OCC", 55L}});
 
             SendEvent("OCC", 4);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"TAC", 13L}, new Object[] {"OCC", 59L}});
+                                                      new[] {new object[] {"TAC", 13L}, new object[] {"OCC", 59L}});
 
             SendEvent("OCC", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"TAC", 12L}, new Object[] {"OCC", 62L}});
+                                                      new[] {new object[] {"TAC", 12L}, new object[] {"OCC", 62L}});
         }
 
         [Test]
@@ -522,34 +522,34 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 100L}});
 
             SendEvent("OCC", 5);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"OCC", 5L}, new Object[] {"SYM", 100L}});
+                                                      new[] {new object[] {"OCC", 5L}, new object[] {"SYM", 100L}});
 
             SendEvent("SYM", 10);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"OCC", 5L}, new Object[] {"SYM", 110L}});
+                                                      new[] {new object[] {"OCC", 5L}, new object[] {"SYM", 110L}});
 
             SendEvent("OCC", 6);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"OCC", 11L}, new Object[] {"SYM", 110L}});
+                                                      new[] {new object[] {"OCC", 11L}, new object[] {"SYM", 110L}});
 
             SendEvent("ATB", 8);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"ATB", 8L}, new Object[] {"OCC", 11L},
-                                                          new Object[] {"SYM", 110L}
+                                                          new object[] {"ATB", 8L}, new object[] {"OCC", 11L},
+                                                          new object[] {"SYM", 110L}
                                                       });
 
             SendEvent("ATB", 7);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"ATB", 15L}, new Object[] {"OCC", 11L},
-                                                          new Object[] {"SYM", 10L}
+                                                          new object[] {"ATB", 15L}, new object[] {"OCC", 11L},
+                                                          new object[] {"SYM", 10L}
                                                       });
         }
 
@@ -563,26 +563,26 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent("SYM", 1);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {"SYM", 1L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {"SYM", 1L}});
 
             SendEvent("OCC", 2);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
-                                                      new[] {new Object[] {"OCC", 2L}, new Object[] {"SYM", 1L}});
+                                                      new[] {new object[] {"OCC", 2L}, new object[] {"SYM", 1L}});
 
             SendEvent("SYM", 0);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"OCC", 2L}, new Object[] {"SYM", 0L},
-                                                          new Object[] {"SYM", 1L}
+                                                          new object[] {"OCC", 2L}, new object[] {"SYM", 0L},
+                                                          new object[] {"SYM", 1L}
                                                       });
 
             SendEvent("OCC", 3);
             EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields,
                                                       new[]
                                                       {
-                                                          new Object[] {"OCC", 2L}, new Object[] {"OCC", 3L},
-                                                          new Object[] {"SYM", 0L}
+                                                          new object[] {"OCC", 2L}, new object[] {"OCC", 3L},
+                                                          new object[] {"SYM", 0L}
                                                       });
         }
 
@@ -683,19 +683,19 @@ namespace com.espertech.esper.regression.view
                               "from " + typeof(SupportMarketDataBean).FullName + "#length(3) ";
 
             EPStatement stmt = _epService.EPAdministrator.CreateEPL(stmtText);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {null}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {null}});
 
             SendEvent(100);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {100L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {100L}});
 
             SendEvent(50);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {150L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {150L}});
 
             SendEvent(25);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {175L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {175L}});
 
             SendEvent(10);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {85L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {85L}});
         }
 
         [Test]
@@ -712,10 +712,10 @@ namespace com.espertech.esper.regression.view
             Assert.IsFalse(stmt.HasFirst());
 
             SendEvent(50);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {150L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {150L}});
 
             SendEvent(25);
-            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new Object[] {175L}});
+            EPAssertionUtil.AssertPropsPerRow(stmt.GetEnumerator(), fields, new[] {new object[] {175L}});
 
             SendEvent(10);
             Assert.IsFalse(stmt.HasFirst());

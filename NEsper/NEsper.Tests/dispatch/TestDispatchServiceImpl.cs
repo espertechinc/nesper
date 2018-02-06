@@ -8,9 +8,9 @@
 
 
 using System.Collections.Generic;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.dispatch;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.dispatch
@@ -18,35 +18,37 @@ namespace com.espertech.esper.dispatch
     [TestFixture]
     public class TestDispatchServiceImpl 
     {
-        private DispatchServiceImpl service;
-    
+        private DispatchServiceImpl _service;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            service = new DispatchServiceImpl();
+            _container = SupportContainer.Reset();
+            _service = new DispatchServiceImpl(_container.ThreadLocalManager());
         }
     
         [Test]
         public void TestAddAndDispatch()
         {
             // Dispatch without work to do, should complete
-            service.Dispatch();
+            _service.Dispatch();
     
             SupportDispatchable disOne = new SupportDispatchable();
             SupportDispatchable disTwo = new SupportDispatchable();
-            service.AddExternal(disOne);
-            service.AddExternal(disTwo);
+            _service.AddExternal(disOne);
+            _service.AddExternal(disTwo);
     
             Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
             Assert.AreEqual(0, disTwo.GetAndResetNumExecuted());
     
-            service.Dispatch();
+            _service.Dispatch();
     
-            service.AddExternal(disTwo);
+            _service.AddExternal(disTwo);
             Assert.AreEqual(1, disOne.GetAndResetNumExecuted());
             Assert.AreEqual(1, disTwo.GetAndResetNumExecuted());
     
-            service.Dispatch();
+            _service.Dispatch();
             Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
             Assert.AreEqual(1, disTwo.GetAndResetNumExecuted());
         }
@@ -55,12 +57,12 @@ namespace com.espertech.esper.dispatch
         public void TestAddDispatchTwice()
         {
             SupportDispatchable disOne = new SupportDispatchable();
-            service.AddExternal(disOne);
+            _service.AddExternal(disOne);
     
-            service.Dispatch();
+            _service.Dispatch();
             Assert.AreEqual(1, disOne.GetAndResetNumExecuted());
     
-            service.Dispatch();
+            _service.Dispatch();
             Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
         }
     
@@ -74,10 +76,10 @@ namespace com.espertech.esper.dispatch
             }
             SupportDispatchable.GetAndResetInstanceList();
     
-            service.AddExternal(dispatchables[0]);
-            service.AddExternal(dispatchables[1]);
+            _service.AddExternal(dispatchables[0]);
+            _service.AddExternal(dispatchables[1]);
     
-            service.Dispatch();
+            _service.Dispatch();
     
             IList<SupportDispatchable> dispatchList = SupportDispatchable.GetAndResetInstanceList();
             Assert.AreSame(dispatchables[0], dispatchList[0]);

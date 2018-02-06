@@ -47,15 +47,9 @@ namespace com.espertech.esper.compat.collections
             throw new UnsupportedOperationException();
         }
 
-        public int Count
-        {
-            get { return 0; }
-        }
+        public int Count => 0;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public void Add(T item)
         {
@@ -79,7 +73,7 @@ namespace com.espertech.esper.compat.collections
 
         public T this[int index]
         {
-            get { throw new UnsupportedOperationException(); }
+            get => throw new UnsupportedOperationException();
             set { throw new UnsupportedOperationException(); }
         }
     }

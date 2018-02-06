@@ -9,40 +9,45 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprEqualsNode 
     {
         private ExprEqualsNode[] _equalsNodes;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _equalsNodes = new ExprEqualsNode[4];
             _equalsNodes[0] = new ExprEqualsNodeImpl(false, false);
     
             _equalsNodes[1] = new ExprEqualsNodeImpl(false, false);
             _equalsNodes[1].AddChildNode(new SupportExprNode(1L));
             _equalsNodes[1].AddChildNode(new SupportExprNode(1));
-            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             _equalsNodes[2] = new ExprEqualsNodeImpl(true, false);
             _equalsNodes[2].AddChildNode(new SupportExprNode(1.5D));
             _equalsNodes[2].AddChildNode(new SupportExprNode(1));
-            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             _equalsNodes[3] = new ExprEqualsNodeImpl(false, false);
             _equalsNodes[3].AddChildNode(new SupportExprNode(1D));
             _equalsNodes[3].AddChildNode(new SupportExprNode(1));
-            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
         }
     
         [Test]
@@ -57,11 +62,11 @@ namespace com.espertech.esper.epl.expression
             // Test success
             _equalsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
             _equalsNodes[0].AddChildNode(new SupportExprNode(typeof(String)));
-            _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
 
-            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty());
-            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty());
-            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
+            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
+            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
 
             _equalsNodes[0].ChildNodes = new ExprNode[]
             {
@@ -71,7 +76,7 @@ namespace com.espertech.esper.epl.expression
             // Test too few nodes under this node
             try
             {
-                _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -83,7 +88,7 @@ namespace com.espertech.esper.epl.expression
             _equalsNodes[0].AddChildNode(new SupportExprNode(typeof(Boolean)));
             try
             {
-                _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _equalsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
             catch (ExprValidationException)
@@ -116,14 +121,14 @@ namespace com.espertech.esper.epl.expression
             Assert.IsNull(_equalsNodes[0].ExprEvaluator.Evaluate(eparams));
     
             // try a long and int
-            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[1].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.IsTrue(_equalsNodes[1].ExprEvaluator.Evaluate(eparams).AsBoolean());
     
             // try a double and int
-            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[2].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.IsTrue(_equalsNodes[2].ExprEvaluator.Evaluate(eparams).AsBoolean());
 
-            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _equalsNodes[3].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             Assert.IsTrue(_equalsNodes[3].ExprEvaluator.Evaluate(eparams).AsBoolean());
         }
     
@@ -180,8 +185,8 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_equalsNodes[0].EqualsNode(_equalsNodes[1]));
-            Assert.IsFalse(_equalsNodes[0].EqualsNode(_equalsNodes[2]));
+            Assert.IsTrue(_equalsNodes[0].EqualsNode(_equalsNodes[1], false));
+            Assert.IsFalse(_equalsNodes[0].EqualsNode(_equalsNodes[2], false));
         }
     }
 }

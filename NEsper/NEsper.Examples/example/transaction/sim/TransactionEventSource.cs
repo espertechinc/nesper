@@ -24,7 +24,7 @@ using com.espertech.esper.compat.logging;
  *
  */
 
-namespace NEsper.Example.Transaction.sim
+namespace NEsper.Examples.Transaction.sim
 {
     public class TransactionEventSource : EventSource
     {

@@ -24,7 +24,7 @@ namespace com.espertech.esper.regression.client
         private const String FILTER_NAME = "\"com.espertech.esper-default\":type=\"filter\"";
         private const String RUNTIME_NAME = "\"com.espertech.esper-default\":type=\"runtime\"";
         private const String SCHEDULE_NAME = "\"com.espertech.esper-default\":type=\"schedule\"";
-        private static readonly String[] ALL = new String[] {FILTER_NAME, RUNTIME_NAME, SCHEDULE_NAME};
+        private static readonly String[] ALL = new string[] {FILTER_NAME, RUNTIME_NAME, SCHEDULE_NAME};
     
         [Test]
         public void TestMetricsJMX() {
@@ -35,7 +35,7 @@ namespace com.espertech.esper.regression.client
             epService.Initialize();
     
             epService.EPRuntime.SendEvent(new CurrentTimeEvent(DateTimeParser.ParseDefaultMSec("2002-05-01T08:00:00.000")));
-            epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+            epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
     
             epService.EPAdministrator.CreateEPL("select * from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B') where timer:within(a.IntPrimitive)]");
             epService.EPRuntime.SendEvent(new SupportBean("A1", 10));

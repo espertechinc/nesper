@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.client.scopetest;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.threading;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util;
 
 using NUnit.Framework;
@@ -21,11 +24,13 @@ namespace com.espertech.esper.core.service
     public class TestStatementEventTypeRef 
     {
         private StatementEventTypeRefImpl _service;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _service = new StatementEventTypeRefImpl();
+            _container = SupportContainer.Reset();
+            _service = new StatementEventTypeRefImpl(_container.Resolve<IReaderWriterLockManager>());
         }
     
         [Test]

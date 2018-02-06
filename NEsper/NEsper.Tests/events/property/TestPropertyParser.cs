@@ -9,11 +9,11 @@
 
 using System;
 using System.Collections.Generic;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.property
@@ -21,12 +21,14 @@ namespace com.espertech.esper.events.property
     [TestFixture]
     public class TestPropertyParser 
     {
-        private EventAdapterService eventAdapterService;
-    
+        private EventAdapterService _eventAdapterService;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            eventAdapterService = SupportEventAdapterService.Service;
+            _container = SupportContainer.Reset();
+            _eventAdapterService = _container.Resolve<EventAdapterService>();
         }
     
         [Test]

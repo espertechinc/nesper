@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.context.factory;
 using com.espertech.esper.core.context.mgr;
@@ -80,6 +81,7 @@ namespace com.espertech.esper.core.service
         /// <param name="statementSemiAnonymousTypeRegistry">The statement semi anonymous type registry.</param>
         /// <param name="priority">The priority.</param>
         public StatementContext(
+            IContainer container,
             StatementContextEngineServices stmtEngineServices,
             SchedulingService schedulingService,
             ScheduleBucket scheduleBucket,
@@ -108,6 +110,7 @@ namespace com.espertech.esper.core.service
             StatementSemiAnonymousTypeRegistry statementSemiAnonymousTypeRegistry,
             int priority)
         {
+            Container = container;
             _stmtEngineServices = stmtEngineServices;
             SchedulingService = schedulingService;
             ScheduleBucket = scheduleBucket;
@@ -138,26 +141,25 @@ namespace com.espertech.esper.core.service
             Priority = priority;
         }
 
+        public IContainer Container { get; set; }
+
+        public IThreadLocalManager ThreadLocalManager => _stmtEngineServices.ThreadLocalManager;
+
+        public ILockManager LockManager => _stmtEngineServices.LockManager;
+
+        public IReaderWriterLockManager RWLockManager => _stmtEngineServices.RWLockManager;
+
         /// <summary>Returns the statement id. </summary>
         /// <value>statement id</value>
-        public int StatementId
-        {
-            get { return EpStatementHandle.StatementId; }
-        }
+        public int StatementId => EpStatementHandle.StatementId;
 
         /// <summary>Returns the statement type. </summary>
         /// <value>statement type</value>
-        public StatementType StatementType
-        {
-            get { return EpStatementHandle.StatementType; }
-        }
+        public StatementType StatementType => EpStatementHandle.StatementType;
 
         /// <summary>Returns the statement name </summary>
         /// <value>statement name</value>
-        public string StatementName
-        {
-            get { return EpStatementHandle.StatementName; }
-        }
+        public string StatementName => EpStatementHandle.StatementName;
 
         /// <summary>Returns service to use for schedule evaluation. </summary>
         /// <value>schedule evaluation service implemetation</value>
@@ -165,10 +167,9 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns service for generating events and handling event types. </summary>
         /// <value>event adapter service</value>
-        public EventAdapterService EventAdapterService
-        {
-            get { return _stmtEngineServices.EventAdapterService; }
-        }
+        public EventAdapterService EventAdapterService => _stmtEngineServices.EventAdapterService;
+
+        public StatementContextEngineServices EngineServices => _stmtEngineServices;
 
         /// <summary>Returns the schedule bucket for ordering schedule callbacks within this pattern. </summary>
         /// <value>schedule bucket</value>
@@ -203,49 +204,25 @@ namespace com.espertech.esper.core.service
         /// <summary>Gets or sets the statement.</summary>
         public EPStatementSPI Statement { get; set; }
 
-        public EngineLevelExtensionServicesContext EngineExtensionServicesContext
-        {
-            get { return _stmtEngineServices.EngineLevelExtensionServicesContext; }
-        }
+        public EngineLevelExtensionServicesContext EngineExtensionServicesContext => _stmtEngineServices.EngineLevelExtensionServicesContext;
 
-        public RegexHandlerFactory RegexPartitionStateRepoFactory
-        {
-            get { return _stmtEngineServices.RegexHandlerFactory; }
-        }
+        public RegexHandlerFactory RegexPartitionStateRepoFactory => _stmtEngineServices.RegexHandlerFactory;
 
-        public ViewServicePreviousFactory ViewServicePreviousFactory
-        {
-            get { return _stmtEngineServices.ViewServicePreviousFactory; }
-        }
+        public ViewServicePreviousFactory ViewServicePreviousFactory => _stmtEngineServices.ViewServicePreviousFactory;
 
-        public PatternNodeFactory PatternNodeFactory
-        {
-            get { return _stmtEngineServices.PatternNodeFactory; }
-        }
+        public PatternNodeFactory PatternNodeFactory => _stmtEngineServices.PatternNodeFactory;
 
-        public EventTableIndexService EventTableIndexService
-        {
-            get { return _stmtEngineServices.EventTableIndexService; }
-        }
+        public EventTableIndexService EventTableIndexService => _stmtEngineServices.EventTableIndexService;
 
-        public StatementLockFactory StatementLockFactory
-        {
-            get { return _stmtEngineServices.StatementLockFactory; }
-        }
+        public StatementLockFactory StatementLockFactory => _stmtEngineServices.StatementLockFactory;
 
         /// <summary>Returns the statement expression text </summary>
         /// <value>expression text</value>
-        public string Expression
-        {
-            get { return EpStatementHandle.EPL; }
-        }
+        public string Expression => EpStatementHandle.EPL;
 
         /// <summary>Returns the engine URI. </summary>
         /// <value>engine URI</value>
-        public string EngineURI
-        {
-            get { return _stmtEngineServices.EngineURI; }
-        }
+        public string EngineURI => _stmtEngineServices.EngineURI;
 
         /// <summary>Returns the statement's resolution service for pattern objects. </summary>
         /// <value>service for resolving pattern objects</value>
@@ -253,52 +230,31 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns the named window management service. </summary>
         /// <value>service for managing named windows</value>
-        public NamedWindowMgmtService NamedWindowMgmtService
-        {
-            get { return _stmtEngineServices.NamedWindowMgmtService; }
-        }
+        public NamedWindowMgmtService NamedWindowMgmtService => _stmtEngineServices.NamedWindowMgmtService;
 
         /// <summary>Returns variable service. </summary>
         /// <value>variable service</value>
-        public VariableService VariableService
-        {
-            get { return _stmtEngineServices.VariableService; }
-        }
+        public VariableService VariableService => _stmtEngineServices.VariableService;
 
         /// <summary>Returns table service.</summary>
         /// <value>The table service.</value>
-        public TableService TableService
-        {
-            get { return _stmtEngineServices.TableService; }
-        }
+        public TableService TableService => _stmtEngineServices.TableService;
 
         /// <summary>Returns the service that handles awareness of listeners/subscriptions for a statement customizing output produced </summary>
         /// <value>statement result svc</value>
-        public StatementResultService StatementResultService
-        {
-            get { return _statementResultService; }
-        }
+        public StatementResultService StatementResultService => _statementResultService;
 
         /// <summary>Returns the URIs for resolving the event name against plug-inn event representations, if any </summary>
         /// <value>URIs</value>
-        public IList<Uri> PlugInTypeResolutionURIs
-        {
-            get { return _stmtEngineServices.PlugInTypeResolutionURIs; }
-        }
+        public IList<Uri> PlugInTypeResolutionURIs => _stmtEngineServices.PlugInTypeResolutionURIs;
 
         /// <summary>Returns the Update event service. </summary>
         /// <value>revision service</value>
-        public ValueAddEventService ValueAddEventService
-        {
-            get { return _stmtEngineServices.ValueAddEventService; }
-        }
+        public ValueAddEventService ValueAddEventService => _stmtEngineServices.ValueAddEventService;
 
         /// <summary>Returns the configuration. </summary>
         /// <value>configuration</value>
-        public ConfigurationInformation ConfigSnapshot
-        {
-            get { return _stmtEngineServices.ConfigSnapshot; }
-        }
+        public ConfigurationInformation ConfigSnapshot => _stmtEngineServices.ConfigSnapshot;
 
         /// <summary>Sets the filter service </summary>
         /// <value>filter service</value>
@@ -314,51 +270,27 @@ namespace com.espertech.esper.core.service
 
         /// <summary>Returns metrics svc. </summary>
         /// <value>metrics</value>
-        public MetricReportingServiceSPI MetricReportingService
-        {
-            get { return _stmtEngineServices.MetricReportingService; }
-        }
+        public MetricReportingServiceSPI MetricReportingService => _stmtEngineServices.MetricReportingService;
 
         /// <summary>Returns the time provider. </summary>
         /// <value>time provider</value>
-        public TimeProvider TimeProvider
-        {
-            get { return SchedulingService; }
-        }
+        public TimeProvider TimeProvider => SchedulingService;
 
         /// <summary>Returns view svc. </summary>
         /// <value>svc</value>
-        public ViewService ViewService
-        {
-            get { return _stmtEngineServices.ViewService; }
-        }
+        public ViewService ViewService => _stmtEngineServices.ViewService;
 
-        public ExceptionHandlingService ExceptionHandlingService
-        {
-            get { return _stmtEngineServices.ExceptionHandlingService; }
-        }
+        public ExceptionHandlingService ExceptionHandlingService => _stmtEngineServices.ExceptionHandlingService;
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext
-        {
-            get { return _stmtEngineServices.TableExprEvaluatorContext; }
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => _stmtEngineServices.TableExprEvaluatorContext;
 
-        public ContextManagementService ContextManagementService
-        {
-            get { return _stmtEngineServices.ContextManagementService; }
-        }
+        public ContextManagementService ContextManagementService => _stmtEngineServices.ContextManagementService;
 
         public Attribute[] Annotations { get; private set; }
 
-        public ExpressionResultCacheService ExpressionResultCacheServiceSharable
-        {
-            get { return _stmtEngineServices.ExpressionResultCacheService; }
-        }
+        public ExpressionResultCacheService ExpressionResultCacheServiceSharable => _stmtEngineServices.ExpressionResultCacheService;
 
-        public int AgentInstanceId
-        {
-            get { throw new Exception("Statement agent instance information is not available when providing a context"); }
-        }
+        public int AgentInstanceId => throw new Exception("Statement agent instance information is not available when providing a context");
 
         public StatementAIResourceRegistry StatementAgentInstanceRegistry { get; private set; }
 
@@ -382,35 +314,17 @@ namespace com.espertech.esper.core.service
 
         public FilterFaultHandlerFactory FilterFaultHandlerFactory { get; set; }
 
-        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory
-        {
-            get { return _stmtEngineServices.FilterBooleanExpressionFactory; }
-        }
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory => _stmtEngineServices.FilterBooleanExpressionFactory;
 
-        public EngineSettingsService EngineSettingsService
-        {
-            get { return _stmtEngineServices.EngineSettingsService; }
-        }
+        public EngineSettingsService EngineSettingsService => _stmtEngineServices.EngineSettingsService;
 
-        public ExprDeclaredService ExprDeclaredService
-        {
-            get { return _stmtEngineServices.ExprDeclaredService; }
-        }
+        public ExprDeclaredService ExprDeclaredService => _stmtEngineServices.ExprDeclaredService;
 
-        public TimeSourceService TimeSourceService
-        {
-            get { return _stmtEngineServices.TimeSourceService; }
-        }
+        public TimeSourceService TimeSourceService => _stmtEngineServices.TimeSourceService;
 
-        public EngineImportService EngineImportService
-        {
-            get { return _stmtEngineServices.EngineImportService; }
-        }
+        public EngineImportService EngineImportService => _stmtEngineServices.EngineImportService;
 
-        public TimeAbacus TimeAbacus
-        {
-            get { return _stmtEngineServices.EngineImportService.TimeAbacus; }
-        }
+        public TimeAbacus TimeAbacus => _stmtEngineServices.EngineImportService.TimeAbacus;
 
         public AgentInstanceScriptContext AllocateAgentInstanceScriptContext
         {
@@ -424,17 +338,11 @@ namespace com.espertech.esper.core.service
             }
         }
 
-        public StatementEventTypeRef StatementEventTypeRef
-        {
-            get { return _stmtEngineServices.StatementEventTypeRef; }
-        }
+        public StatementEventTypeRef StatementEventTypeRef => _stmtEngineServices.StatementEventTypeRef;
 
         public ScriptingService ScriptingService { get; private set; }
 
-        public string ContextName
-        {
-            get { return ContextDescriptor == null ? null : ContextDescriptor.ContextName; }
-        }
+        public string ContextName => ContextDescriptor == null ? null : ContextDescriptor.ContextName;
 
         public bool IsWritesToTables { get; private set; }
 

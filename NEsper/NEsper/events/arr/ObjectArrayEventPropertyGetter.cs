@@ -15,7 +15,7 @@ namespace com.espertech.esper.events.arr
     /// <summary>
     /// Property getter for Objectarray-underlying events.
     /// </summary>
-    public interface ObjectArrayEventPropertyGetter : EventPropertyGetter
+    public interface ObjectArrayEventPropertyGetter : EventPropertyGetterSPI
     {
         /// <summary>Returns a property of an event. </summary>
         /// <param name="array">to interrogate</param>

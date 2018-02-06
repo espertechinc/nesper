@@ -29,6 +29,7 @@ namespace com.espertech.esper.events.vaevent
         private readonly IDictionary<string, EventPropertyDescriptor> _propertyDescriptorMap;
         private readonly IDictionary<string, RevisionPropertyTypeDesc> _propertyDesc;
         private readonly EventAdapterService _eventAdapterService;
+        private IDictionary<String, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
         /// <summary>
         /// Ctor.
@@ -63,22 +64,13 @@ namespace com.espertech.esper.events.vaevent
             }
         }
 
-        public int EventTypeId
-        {
-            get { return _eventTypeId; }
-        }
+        public int EventTypeId => _eventTypeId;
 
-        public string StartTimestampPropertyName
-        {
-            get { return null; }
-        }
+        public string StartTimestampPropertyName => null;
 
-        public string EndTimestampPropertyName
-        {
-            get { return null; }
-        }
+        public string EndTimestampPropertyName => null;
 
-        public EventPropertyGetter GetGetter(string propertyName)
+        public EventPropertyGetterSPI GetGetterSPI(string propertyName)
         {
             var desc = _propertyDesc.Get(propertyName);
             if (desc != null)
@@ -146,9 +138,9 @@ namespace com.espertech.esper.events.vaevent
             {
                 // ask the nested class to resolve the property
                 var simpleClass = (Type) desc.PropertyType;
-                var nestedEventType = _eventAdapterService.AddBeanType(
+                var nestedEventType = (EventTypeSPI) _eventAdapterService.AddBeanType(
                     simpleClass.Name, simpleClass, false, false, false);
-                var nestedGetter = nestedEventType.GetGetter(propertyNested);
+                var nestedGetter = nestedEventType.GetGetterSPI(propertyNested);
                 if (nestedGetter == null)
                 {
                     return null;
@@ -163,10 +155,35 @@ namespace com.espertech.esper.events.vaevent
             }
         }
 
-        public string Name
+        public virtual EventPropertyGetter GetGetter(string propertyName)
         {
-            get { return _metadata.PublicName; }
+            if (!_eventAdapterService.EngineImportService.IsCodegenEventPropertyGetters)
+            {
+                return GetGetterSPI(propertyName);
+            }
+            if (_propertyGetterCodegeneratedCache == null)
+            {
+                _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>(); 
+            }
+
+            EventPropertyGetter getter = _propertyGetterCodegeneratedCache.Get(propertyName);
+            if (getter != null)
+            {
+                return getter;
+            }
+
+            EventPropertyGetterSPI getterSPI = GetGetterSPI(propertyName);
+            if (getterSPI == null)
+            {
+                return null;
+            }
+
+            EventPropertyGetter getterCode = _eventAdapterService.EngineImportService.CodegenGetter(getterSPI, propertyName);
+            _propertyGetterCodegeneratedCache.Put(propertyName, getterCode);
+            return getterCode;
         }
+
+        public string Name => _metadata.PublicName;
 
         public Type GetPropertyType(string propertyName)
         {
@@ -218,40 +235,22 @@ namespace com.espertech.esper.events.vaevent
             }
         }
 
-        public Type UnderlyingType
-        {
-            get { return typeof (RevisionEventType); }
-        }
+        public Type UnderlyingType => typeof (RevisionEventType);
 
-        public string[] PropertyNames
-        {
-            get { return _propertyNames; }
-        }
+        public string[] PropertyNames => _propertyNames;
 
         public bool IsProperty(string property)
         {
             return GetPropertyType(property) != null;
         }
 
-        public EventType[] SuperTypes
-        {
-            get { return null; }
-        }
+        public EventType[] SuperTypes => null;
 
-        public EventType[] DeepSuperTypes
-        {
-            get { return null; }
-        }
+        public EventType[] DeepSuperTypes => null;
 
-        public EventTypeMetadata Metadata
-        {
-            get { return _metadata; }
-        }
+        public EventTypeMetadata Metadata => _metadata;
 
-        public IList<EventPropertyDescriptor> PropertyDescriptors
-        {
-            get { return _propertyDescriptors; }
-        }
+        public IList<EventPropertyDescriptor> PropertyDescriptors => _propertyDescriptors;
 
         public FragmentEventType GetFragmentType(string property)
         {
@@ -268,10 +267,7 @@ namespace com.espertech.esper.events.vaevent
             return null;
         }
 
-        public EventPropertyDescriptor[] WriteableProperties
-        {
-            get { return new EventPropertyDescriptor[0]; }
-        }
+        public EventPropertyDescriptor[] WriteableProperties => new EventPropertyDescriptor[0];
 
         public EventBeanCopyMethod GetCopyMethod(string[] properties)
         {
@@ -288,10 +284,7 @@ namespace com.espertech.esper.events.vaevent
             return null;
         }
 
-        public EventBeanReader Reader
-        {
-            get { return null; }
-        }
+        public EventBeanReader Reader => null;
 
         public EventPropertyGetterMapped GetGetterMapped(string mappedProperty)
         {

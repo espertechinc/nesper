@@ -408,11 +408,20 @@ namespace com.espertech.esper.core.start
                     true
                 }, services.EngineURI, false);
             var validationContext = new ExprValidationContext(
-                typeService, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext,
-                null, statementContext.SchedulingService, statementContext.VariableService,
+                statementContext.Container,
+                typeService, 
+                statementContext.EngineImportService, 
+                statementContext.StatementExtensionServicesContext,
+                null, 
+                statementContext.SchedulingService, 
+                statementContext.VariableService,
                 statementContext.TableService, GetDefaultAgentInstanceContext(statementContext),
-                statementContext.EventAdapterService, statementContext.StatementName, statementContext.StatementId,
-                statementContext.Annotations, statementContext.ContextDescriptor, statementContext.ScriptingService,
+                statementContext.EventAdapterService, 
+                statementContext.StatementName, 
+                statementContext.StatementId,
+                statementContext.Annotations, 
+                statementContext.ContextDescriptor,
+                statementContext.ScriptingService,
                 false, false, true, false, null, false);
 
             // Materialize sub-select views
@@ -552,6 +561,7 @@ namespace com.espertech.esper.core.start
                 {
                     optionalPropertyEvaluator =
                         PropertyEvaluatorFactory.MakeEvaluator(
+                            statementContext.Container,
                             splits.FromClause.PropertyEvalSpec, 
                             activatorResult.ActivatorResultEventType, 
                             streamName,
@@ -794,12 +804,21 @@ namespace com.espertech.esper.core.start
             {
                 var updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
                 var validationContext = new ExprValidationContext(
-                    assignmentTypeService, statementContext.EngineImportService,
-                    statementContext.StatementExtensionServicesContext, null, statementContext.SchedulingService,
-                    statementContext.VariableService, statementContext.TableService,
-                    GetDefaultAgentInstanceContext(statementContext), statementContext.EventAdapterService,
-                    statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                    statementContext.ContextDescriptor, statementContext.ScriptingService, false, false, true, false,
+                    statementContext.Container,
+                    assignmentTypeService, 
+                    statementContext.EngineImportService,
+                    statementContext.StatementExtensionServicesContext, null, 
+                    statementContext.SchedulingService,
+                    statementContext.VariableService,
+                    statementContext.TableService,
+                    GetDefaultAgentInstanceContext(statementContext), 
+                    statementContext.EventAdapterService,
+                    statementContext.StatementName, 
+                    statementContext.StatementId, 
+                    statementContext.Annotations,
+                    statementContext.ContextDescriptor,
+                    statementContext.ScriptingService,
+                    false, false, true, false,
                     null, false);
                 foreach (var assignment in updateDesc.Assignments)
                 {
@@ -1118,13 +1137,19 @@ namespace com.espertech.esper.core.start
                             {
                                 var exprSpec = (SelectClauseExprRawSpec) raw;
                                 var validationContext = new ExprValidationContext(
+                                    statementContext.Container,
                                     insertTypeSvc, statementContext.EngineImportService,
                                     statementContext.StatementExtensionServicesContext, null,
-                                    statementContext.TimeProvider, statementContext.VariableService,
-                                    statementContext.TableService, evaluatorContextStmt,
-                                    statementContext.EventAdapterService, statementContext.StatementName,
-                                    statementContext.StatementId, statementContext.Annotations,
-                                    statementContext.ContextDescriptor, statementContext.ScriptingService,
+                                    statementContext.TimeProvider,
+                                    statementContext.VariableService,
+                                    statementContext.TableService,
+                                    evaluatorContextStmt,
+                                    statementContext.EventAdapterService,
+                                    statementContext.StatementName,
+                                    statementContext.StatementId,
+                                    statementContext.Annotations,
+                                    statementContext.ContextDescriptor,
+                                    statementContext.ScriptingService,
                                     false, false, true, false, null, false);
                                 var exprCompiled = ExprNodeUtility.GetValidatedSubtree(
                                     ExprNodeOrigin.SELECT, exprSpec.SelectExpression, validationContext);
@@ -1194,11 +1219,21 @@ namespace com.espertech.esper.core.start
 
             var evaluatorContextStmt = new ExprEvaluatorContextStatement(statementContext, false);
             var validationContext = new ExprValidationContext(
-                typeService, statementContext.EngineImportService, statementContext.StatementExtensionServicesContext,
-                null, statementContext.SchedulingService, statementContext.VariableService,
-                statementContext.TableService, evaluatorContextStmt, statementContext.EventAdapterService,
-                statementContext.StatementName, statementContext.StatementId, statementContext.Annotations,
-                statementContext.ContextDescriptor, statementContext.ScriptingService, 
+                statementContext.Container,
+                typeService, 
+                statementContext.EngineImportService, 
+                statementContext.StatementExtensionServicesContext,
+                null, 
+                statementContext.SchedulingService, 
+                statementContext.VariableService,
+                statementContext.TableService, 
+                evaluatorContextStmt, 
+                statementContext.EventAdapterService,
+                statementContext.StatementName, 
+                statementContext.StatementId, 
+                statementContext.Annotations,
+                statementContext.ContextDescriptor, 
+                statementContext.ScriptingService, 
                 false, false, true, false, null, false);
             return ExprNodeUtility.GetValidatedSubtree(exprNodeOrigin, deleteJoinExpr, validationContext);
         }

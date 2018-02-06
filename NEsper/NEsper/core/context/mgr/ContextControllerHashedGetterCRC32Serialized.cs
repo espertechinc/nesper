@@ -64,7 +64,7 @@ namespace com.espertech.esper.core.context.mgr
                 bytes = new byte[0];
             }
 
-            var value = bytes.GetCrc32() % _granularity;
+            var value = (int) (bytes.GetCrc32() % _granularity);
             var result = value;
             if (result >= 0)
             {

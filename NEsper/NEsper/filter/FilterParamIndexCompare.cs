@@ -70,21 +70,22 @@ namespace com.espertech.esper.filter
             }
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
-            if (_constantsMap.Delete(filterConstant) == null)
+            if (_constantsMap.Delete(filterConstant) != null)
             {
-                return false;
+                UpdateBounds();
             }
-
-            UpdateBounds();
-
-            return true;
         }
 
         public override int Count
         {
             get { return _constantsMap.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return _constantsMap.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

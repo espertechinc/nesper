@@ -14,15 +14,15 @@ namespace com.espertech.esper.supportunit.bean
 	[Serializable]
 	public class ISupportBCImpl : ISupportB, ISupportC
 	{
-		virtual public String B
+		public virtual String B
 		{
             get { return valueB; }
 		}
-		virtual public String BaseAB
+		public virtual String BaseAB
 		{
             get { return valueBaseAB; }
 		}
-		virtual public String C
+		public virtual String C
 		{
             get { return valueC; }
 		}

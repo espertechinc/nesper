@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -27,10 +29,12 @@ namespace com.espertech.esper.filter
         private EventBean _testEventBean;
         private EventType _testEventType;
         private List<FilterHandle> _matchesList;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _testEvaluators = new SupportEventEvaluator[4];
             for (int i = 0; i < _testEvaluators.Length; i++)
             {
@@ -120,8 +124,15 @@ namespace com.espertech.esper.filter
             Verify(index, 6L, new bool[] {true, true, true, true});
         }
     
-        private FilterParamIndexDoubleRangeInverted MakeOne(String field, FilterOperator notRangeHalfClosed, EventType testEventType) {
-            return new FilterParamIndexDoubleRangeInverted(MakeLookupable(field), ReaderWriterLockManager.CreateDefaultLock(), notRangeHalfClosed);
+        private FilterParamIndexDoubleRangeInverted MakeOne(
+            String field,
+            FilterOperator notRangeHalfClosed, 
+            EventType testEventType)
+        {
+            return new FilterParamIndexDoubleRangeInverted(
+                MakeLookupable(field),
+                _container.RWLockManager().CreateDefaultLock(),
+                notRangeHalfClosed);
         }
     
         private void Verify(FilterParamIndexBase index, long? testValue, bool[] expected)

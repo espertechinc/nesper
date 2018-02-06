@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.epl.expression.time;
 using com.espertech.esper.epl.join.table;
 using com.espertech.esper.schedule;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 
 using NUnit.Framework;
@@ -23,10 +25,13 @@ namespace com.espertech.esper.epl.db
         private SupportSchedulingServiceImpl _scheduler;
         private DataCacheExpiringImpl _cache;
         private readonly EventTable[] _lists = new EventTable[10];
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             for (var i = 0; i < _lists.Length; i++)
             {
                 _lists[i] = new UnindexedEventTableImpl(0);
@@ -36,7 +41,7 @@ namespace com.espertech.esper.epl.db
         [Test]
         public void TestPurgeInterval()
         {
-            var scheduler = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            var scheduler = new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container);
             _cache = new DataCacheExpiringImpl(10, 20, ConfigurationCacheReferenceType.HARD, scheduler, 1, null, TimeAbacusMilliseconds.INSTANCE);   // age 10 sec, purge 1000 seconds
     
             // test single entry in cache

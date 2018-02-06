@@ -28,7 +28,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             const string message = "The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant";
             var positionalParams = PositionalParams;
@@ -43,19 +43,25 @@ namespace com.espertech.esper.epl.expression.methodagg
             }
 
             var num = second.ExprEvaluator.Evaluate(new EvaluateParams(null, true, validationContext.ExprEvaluatorContext));
-            int size = num.AsInt();
+            var size = num.AsInt();
+
+            var optionalFilter = OptionalFilter;
+            if (optionalFilter != null)
+            {
+                PositionalParams = ExprNodeUtility.AddExpression(positionalParams, optionalFilter);
+            }
+
 
             return validationContext.EngineImportService.AggregationFactoryFactory.MakeNth(validationContext.StatementExtensionSvcContext, this, first.ExprEvaluator.ReturnType, size);
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "nth"; }
-        }
+        public override string AggregationFunctionName => "nth";
 
         protected override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
             return node is ExprNthAggNode;
         }
+
+        protected override bool IsFilterExpressionAsLastParameter => false;
     }
 }

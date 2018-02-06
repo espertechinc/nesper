@@ -16,6 +16,7 @@ using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.parse;
 using com.espertech.esper.events.property;
 
@@ -33,7 +34,7 @@ namespace com.espertech.esper.events.xml
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly bool _isPropertyExpressionXPath;
-        private readonly IDictionary<String, EventPropertyGetter> _propertyGetterCache;
+        private readonly IDictionary<String, EventPropertyGetterSPI> _propertyGetterCache;
         private readonly String _rootElementNamespace;
 
         private readonly SchemaModel _schemaModel;
@@ -47,10 +48,17 @@ namespace com.espertech.esper.events.xml
         /// <param name="config">configuration for type</param>
         /// <param name="schemaModel">the schema representation</param>
         /// <param name="eventAdapterService">type lookup and registration</param>
-        public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, int eventTypeId, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
-            : base(eventTypeMetadata, eventTypeId, config, eventAdapterService)
+        /// <param name="lockManager"></param>
+        public SchemaXMLEventType(
+            EventTypeMetadata eventTypeMetadata,
+            int eventTypeId,
+            ConfigurationEventTypeXMLDOM config,
+            SchemaModel schemaModel,
+            EventAdapterService eventAdapterService,
+            ILockManager lockManager)
+            : base(eventTypeMetadata, eventTypeId, config, eventAdapterService, lockManager)
         {
-            _propertyGetterCache = new Dictionary<String, EventPropertyGetter>();
+            _propertyGetterCache = new Dictionary<String, EventPropertyGetterSPI>();
             _schemaModel = schemaModel;
             _rootElementNamespace = config.RootElementNamespace;
             _schemaModelRoot = SchemaUtil.FindRootElement(schemaModel, _rootElementNamespace, RootElementName);
@@ -258,14 +266,14 @@ namespace com.espertech.esper.events.xml
             return SchemaUtil.ToReturnType(item);
         }
 
-        protected override EventPropertyGetter DoResolvePropertyGetter(String property)
+        protected override EventPropertyGetterSPI DoResolvePropertyGetter(String property)
         {
             return DoResolvePropertyGetter(property, false);
         }
 
-        private EventPropertyGetter DoResolvePropertyGetter(String propertyExpression, bool allowSimpleProperties)
+        private EventPropertyGetterSPI DoResolvePropertyGetter(String propertyExpression, bool allowSimpleProperties)
         {
-            EventPropertyGetter getter = _propertyGetterCache.Get(propertyExpression);
+            EventPropertyGetterSPI getter = _propertyGetterCache.Get(propertyExpression);
             if (getter != null)
             {
                 return getter;
@@ -287,7 +295,7 @@ namespace com.espertech.esper.events.xml
                         }
                         var indexedProp = (IndexedProperty)property;
                         getter = PropertyGetters.Get(indexedProp.PropertyNameAtomic);
-                        if (null == getter)
+                        if (getter == null)
                         {
                             return null;
                         }
@@ -340,7 +348,7 @@ namespace com.espertech.esper.events.xml
                     {
                         if (!returnType.IsArray)
                         {
-                            getter = new DOMConvertingGetter(propertyExpression, (DOMPropertyGetter)getter, returnType);
+                            getter = new DOMConvertingGetter((DOMPropertyGetter)getter, returnType);
                         }
                         else
                         {

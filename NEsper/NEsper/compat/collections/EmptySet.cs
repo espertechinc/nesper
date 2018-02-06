@@ -50,15 +50,9 @@ namespace com.espertech.esper.compat.collections
             throw new UnsupportedOperationException();
         }
 
-        public int Count
-        {
-            get { return 0; }
-        }
+        public int Count => 0;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public void UnionWith(IEnumerable<T> other)
         {

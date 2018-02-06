@@ -12,10 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.arr
@@ -25,10 +26,13 @@ namespace com.espertech.esper.events.arr
     {
         private EventAdapterService _eventAdapterService;
         private ObjectArrayEventType _eventType;
-    
+        private IContainer _container;
+
         [SetUp]
-        public void SetUp() {
-            _eventAdapterService = SupportEventAdapterService.Service;
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+            _eventAdapterService = _container.Resolve<EventAdapterService>();
     
             EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.OBJECTARR, "typename", true, true, true, false, false);
             String[] names = {"myInt", "myIntBoxed", "myString", "mySupportBean", "myComplexBean", "myNullType"};
@@ -118,7 +122,7 @@ namespace com.espertech.esper.events.arr
                 _eventType.GetGetter("myInt").Get(eventBean);
                 Assert.IsTrue(false);
             }
-            catch (InvalidCastException ex)
+            catch (InvalidCastException)
             {
             }
         }

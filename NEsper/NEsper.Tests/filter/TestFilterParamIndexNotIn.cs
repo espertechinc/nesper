@@ -11,11 +11,13 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.collection;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.filter;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.filter
@@ -28,10 +30,12 @@ namespace com.espertech.esper.filter
         private EventBean _testEventBean;
         private EventType _testEventType;
         private List<FilterHandle> _matchesList;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _testEvaluators = new SupportEventEvaluator[4];
             for (int i = 0; i < _testEvaluators.Length; i++)
             {
@@ -47,7 +51,7 @@ namespace com.espertech.esper.filter
         [Test]
         public void TestIndex()
         {
-            FilterParamIndexNotIn index = new FilterParamIndexNotIn(MakeLookupable("LongBoxed"), ReaderWriterLockManager.CreateDefaultLock());
+            FilterParamIndexNotIn index = new FilterParamIndexNotIn(MakeLookupable("LongBoxed"), _container.RWLockManager().CreateDefaultLock());
             Assert.AreEqual(FilterOperator.NOT_IN_LIST_OF_VALUES, index.FilterOperator);
     
             index.Put(new MultiKeyUntyped(new Object[] {2L, 5L}), _testEvaluators[0]);
@@ -66,8 +70,8 @@ namespace com.espertech.esper.filter
             MultiKeyUntyped inList = new MultiKeyUntyped(new Object[] {3L, 4L, 5L});
             Assert.AreEqual(_testEvaluators[1], index.Get(inList));
             Assert.IsTrue(index.ReadWriteLock != null);
-            Assert.IsTrue(index.Remove(inList));
-            Assert.IsFalse(index.Remove(inList));
+            index.Remove(inList);
+            index.Remove(inList);
             Assert.AreEqual(null, index.Get(inList));
     
             // now that {3,4,5} is removed, verify results again
@@ -84,7 +88,7 @@ namespace com.espertech.esper.filter
                 index["a"] = _testEvaluators[0];
                 Assert.IsTrue(false);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Expected
             }

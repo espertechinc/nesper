@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
 using com.espertech.esper.supportunit.util;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.epl.join.table
@@ -32,7 +34,7 @@ namespace com.espertech.esper.epl.join.table
             _propertyNames = new[] {"IntPrimitive", "TheString"};
             _eventType = SupportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             var factory = new PropertyIndexedEventTableFactory(1, _eventType, _propertyNames, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null, null)[0];
 
             // Populate with testEvents
             var intValues = new[] {0, 1, 1, 2, 1, 0};
@@ -45,7 +47,7 @@ namespace com.espertech.esper.epl.join.table
                 _testEvents[i] = MakeBean(intValues[i], stringValues[i]);
                 _testEventsUnd[i] = _testEvents[i].Underlying;
             }
-            _index.Add(_testEvents);
+            _index.Add(_testEvents, null);
         }
 
         private EventBean MakeBean(int intValue, String stringValue)
@@ -63,7 +65,7 @@ namespace com.espertech.esper.epl.join.table
             EventBean theEvent = SupportEventBeanFactory.CreateObject(new SupportBean_A("d"));
             try
             {
-                _index.Add(new[] {theEvent});
+                _index.Add(new[] {theEvent}, null);
                 Assert.Fail();
             }
             catch (PropertyAccessException)
@@ -74,7 +76,7 @@ namespace com.espertech.esper.epl.join.table
             // Add null should fail
             try
             {
-                _index.Add(new EventBean[] {null});
+                _index.Add(new EventBean[] {null}, null);
                 Assert.Fail();
             }
             catch (PropertyAccessException)
@@ -87,13 +89,13 @@ namespace com.espertech.esper.epl.join.table
         public void TestAddArray()
         {
             var factory = new PropertyIndexedEventTableFactory(1, _eventType, _propertyNames, false, null);
-            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null)[0];
+            _index = (PropertyIndexedEventTable) factory.MakeEventTables(null, null)[0];
 
             // Add just 2
             var events = new EventBean[2];
             events[0] = _testEvents[1];
             events[1] = _testEvents[4];
-            _index.Add(events);
+            _index.Add(events, null);
 
             ICollection<EventBean> result = _index.Lookup(new Object[] {1, "b"});
             Assert.AreEqual(2, result.Count);
@@ -129,7 +131,7 @@ namespace com.espertech.esper.epl.join.table
         [Test]
         public void TestMixed()
         {
-            _index.Remove(new[] {_testEvents[1]});
+            _index.Remove(new[] {_testEvents[1]}, null);
             ICollection<EventBean> result = _index.Lookup(new Object[] {1, "b"});
             Assert.AreEqual(1, result.Count);
             Assert.IsTrue(result.Contains(_testEvents[4]));
@@ -140,7 +142,7 @@ namespace com.espertech.esper.epl.join.table
                 new[] {_testEventsUnd[0], _testEventsUnd[2], _testEventsUnd[3], _testEventsUnd[4], _testEventsUnd[5]},
                 underlying);
 
-            _index.Remove(new[] {_testEvents[4]});
+            _index.Remove(new[] {_testEvents[4]}, null);
             result = _index.Lookup(new Object[] {1, "b"});
             Assert.IsNull(result);
 
@@ -149,7 +151,7 @@ namespace com.espertech.esper.epl.join.table
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new[] {_testEventsUnd[0], _testEventsUnd[2], _testEventsUnd[3], _testEventsUnd[5]}, underlying);
 
-            _index.Add(new[] {_testEvents[1]});
+            _index.Add(new[] {_testEvents[1]}, null);
             result = _index.Lookup(new Object[] {1, "b"});
             Assert.AreEqual(1, result.Count);
             Assert.IsTrue(result.Contains(_testEvents[1]));
@@ -164,19 +166,19 @@ namespace com.espertech.esper.epl.join.table
         [Test]
         public void TestRemove()
         {
-            _index.Remove(_testEvents);
+            _index.Remove(_testEvents, null);
         }
 
         [Test]
         public void TestRemoveArray()
         {
-            _index.Remove(_testEvents);
+            _index.Remove(_testEvents, null);
 
             ICollection<EventBean> result = _index.Lookup(new Object[] {1, "b"});
             Assert.IsNull(result);
 
             // Remove again - already removed but won't throw an exception
-            _index.Remove(_testEvents);
+            _index.Remove(_testEvents, null);
         }
     }
 }

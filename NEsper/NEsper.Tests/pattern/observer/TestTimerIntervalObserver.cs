@@ -9,12 +9,14 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.service;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.guard;
 using com.espertech.esper.supportunit.pattern;
 using com.espertech.esper.supportunit.schedule;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.supportunit.view;
 using com.espertech.esper.timer;
 
@@ -25,25 +27,6 @@ namespace com.espertech.esper.pattern.observer
     [TestFixture]
     public class TestTimerIntervalObserver
     {
-        #region Setup/Teardown
-
-        [SetUp]
-        public void SetUp()
-        {
-            _beginState = new MatchedEventMapImpl(new MatchedEventMapMeta(new String[0], false));
-
-            _scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
-            StatementContext stmtContext = SupportStatementContextFactory.MakeContext(_scheduleService);
-            _context = new PatternContext(stmtContext, 1, new MatchedEventMapMeta(new String[0], false), false);
-            _agentContext = SupportPatternContextFactory.MakePatternAgentInstanceContext(_scheduleService);
-
-            _evaluator = new SupportObserverEvaluator(_agentContext);
-
-            _observer = new TimerIntervalObserver(1000, _beginState, _evaluator);
-        }
-
-        #endregion
-
         private PatternContext _context;
         private PatternAgentInstanceContext _agentContext;
 
@@ -51,6 +34,24 @@ namespace com.espertech.esper.pattern.observer
         private SchedulingServiceImpl _scheduleService;
         private SupportObserverEvaluator _evaluator;
         private MatchedEventMap _beginState;
+
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+            _beginState = new MatchedEventMapImpl(new MatchedEventMapMeta(new String[0], false));
+
+            _scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container);
+            var stmtContext = SupportStatementContextFactory.MakeContext(_container, _scheduleService);
+            _context = new PatternContext(stmtContext, 1, new MatchedEventMapMeta(new String[0], false), false);
+            _agentContext = SupportPatternContextFactory.MakePatternAgentInstanceContext(_scheduleService);
+
+            _evaluator = new SupportObserverEvaluator(_agentContext);
+
+            _observer = new TimerIntervalObserver(1000, _beginState, _evaluator);
+        }
 
         [Test]
         public void TestImmediateTrigger()
@@ -75,7 +76,7 @@ namespace com.espertech.esper.pattern.observer
                 _observer.StartObserve();
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

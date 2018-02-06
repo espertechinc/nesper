@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.spec;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
@@ -22,7 +23,9 @@ namespace com.espertech.esper.supportunit.epl
             ExprIdentNode identNodeOne = new ExprIdentNodeImpl(propOne, streamOne);
             ExprIdentNode identNodeTwo = new ExprIdentNodeImpl(propTwo, streamTwo);
 
-            ExprValidationContext context = SupportExprValidationContextFactory.Make(new SupportStreamTypeSvc3Stream());
+            ExprValidationContext context = SupportExprValidationContextFactory.Make(
+                SupportContainer.Instance,
+                new SupportStreamTypeSvc3Stream());
             identNodeOne.Validate(context);
             identNodeTwo.Validate(context);
             OuterJoinDesc desc = new OuterJoinDesc(type, identNodeOne, identNodeTwo, null, null);

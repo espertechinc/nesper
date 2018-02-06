@@ -36,7 +36,6 @@ namespace com.espertech.esper.regression.support
         private readonly EventCollection _sendEventCollection;
         private readonly CaseList _caseList;
         private readonly Type _testClass;
-        private readonly String _testMethodName;
 
         // Array of expressions and match listeners for listening to events for each test descriptor
         private readonly EPStatement[] _expressions;
@@ -45,13 +44,11 @@ namespace com.espertech.esper.regression.support
         public PatternTestHarness(
             EventCollection sendEventCollection,
             CaseList caseList,
-            Type testClass,
-            String testMethodName)
+            Type testClass)
         {
             _sendEventCollection = sendEventCollection;
             _caseList = caseList;
             _testClass = testClass;
-            _testMethodName = testMethodName;
     
             // Create a listener for each test descriptor
             _listeners = new SupportUpdateListener[_caseList.Count];
@@ -62,27 +59,22 @@ namespace com.espertech.esper.regression.support
             _expressions = new EPStatement[_listeners.Length];
         }
 
-        public static void RunTest(EventCollection eventCollection, EventExpressionCase caseExpr, Type testClass, String testMethod)
+        public static void RunTest(EventCollection eventCollection, EventExpressionCase caseExpr, Type testClass)
         {
             var caseList = new CaseList();
             caseList.AddTest(caseExpr);
 
-            var patternTestHarness = new PatternTestHarness(eventCollection, caseList, testClass, testMethod);
-            patternTestHarness.RunTest();
+            var config = SupportConfigFactory.GetConfiguration();
+            var serviceProvider = EPServiceProviderManager.GetDefaultProvider(config);
+            serviceProvider.Initialize();
+
+            var patternTestHarness = new PatternTestHarness(eventCollection, caseList, testClass);
+            patternTestHarness.RunTest(serviceProvider);
         }
 
-        public void RunTest()
+        public void RunTest(EPServiceProvider epService)
         {
-            RunTest(PatternTestStyle.USE_PATTERN_LANGUAGE);
-            RunTest(PatternTestStyle.USE_EPL);
-            RunTest(PatternTestStyle.COMPILE_TO_MODEL);
-            RunTest(PatternTestStyle.COMPILE_TO_EPL);
-            RunTest(PatternTestStyle.USE_EPL_AND_CONSUME_NOCHECK);
-        }
-    
-        private void RunTest(PatternTestStyle testStyle)
-        {
-            Configuration config = SupportConfigFactory.GetConfiguration();
+            var config = epService.EPAdministrator.Configuration;
             config.AddEventType("A", typeof(SupportBean_A));
             config.AddEventType("B", typeof(SupportBean_B));
             config.AddEventType("C", typeof(SupportBean_C));
@@ -90,12 +82,18 @@ namespace com.espertech.esper.regression.support
             config.AddEventType("E", typeof(SupportBean_E));
             config.AddEventType("F", typeof(SupportBean_F));
             config.AddEventType("G", typeof(SupportBean_G));
-            EPServiceProvider serviceProvider = EPServiceProviderManager.GetDefaultProvider(config);
-            serviceProvider.Initialize();
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.StartTest(serviceProvider, _testClass, _testMethodName); }
-    
-            EPRuntime runtime = serviceProvider.EPRuntime;
-    
+
+            RunTest(epService, PatternTestStyle.USE_PATTERN_LANGUAGE);
+            RunTest(epService, PatternTestStyle.USE_EPL);
+            RunTest(epService, PatternTestStyle.COMPILE_TO_MODEL);
+            RunTest(epService, PatternTestStyle.COMPILE_TO_EPL);
+            RunTest(epService, PatternTestStyle.USE_EPL_AND_CONSUME_NOCHECK);
+        }
+
+        private void RunTest(EPServiceProvider epService, PatternTestStyle testStyle)
+        {
+            var runtime = epService.EPRuntime;
+
             // Send the start time to the runtime
             if (_sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID) != null)
             {
@@ -118,39 +116,39 @@ namespace com.espertech.esper.regression.support
                 {
                     if (model != null)
                     {
-                        statement = serviceProvider.EPAdministrator.Create(model, "name--" + expressionText);
+                        statement = epService.EPAdministrator.Create(model, "name--" + expressionText);
                     }
                     else
                     {
                         if (testStyle == PatternTestStyle.USE_PATTERN_LANGUAGE)
                         {
-                            statement = serviceProvider.EPAdministrator.CreatePattern(expressionText, "name--" + expressionText);
+                            statement = epService.EPAdministrator.CreatePattern(expressionText, "name--" + expressionText);
                         }
                         else if (testStyle == PatternTestStyle.USE_EPL)
                         {
                             String text = "@Audit('pattern') @Audit('pattern-instances') select * from pattern [" + expressionText + "]";
-                            statement = serviceProvider.EPAdministrator.CreateEPL(text);
+                            statement = epService.EPAdministrator.CreateEPL(text);
                             expressionText = text;
                         }
                         else if (testStyle == PatternTestStyle.USE_EPL_AND_CONSUME_NOCHECK)
                         {
                             String text = "select * from pattern @DiscardPartialsOnMatch @SuppressOverlappingMatches [" + expressionText + "]";
-                            statement = serviceProvider.EPAdministrator.CreateEPL(text);
+                            statement = epService.EPAdministrator.CreateEPL(text);
                             expressionText = text;
                         }
                         else if (testStyle == PatternTestStyle.COMPILE_TO_MODEL)
                         {
                             String text = "select * from pattern [" + expressionText + "]";
-                            EPStatementObjectModel mymodel = serviceProvider.EPAdministrator.CompileEPL(text);
-                            statement = serviceProvider.EPAdministrator.Create(mymodel);
+                            EPStatementObjectModel mymodel = epService.EPAdministrator.CompileEPL(text);
+                            statement = epService.EPAdministrator.Create(mymodel);
                             expressionText = text;
                         }
                         else if (testStyle == PatternTestStyle.COMPILE_TO_EPL)
                         {
                             String text = "select * from pattern [" + expressionText + "]";
-                            EPStatementObjectModel mymodel = serviceProvider.EPAdministrator.CompileEPL(text);
+                            EPStatementObjectModel mymodel = epService.EPAdministrator.CompileEPL(text);
                             String reverse = mymodel.ToEPL();
-                            statement = serviceProvider.EPAdministrator.CreateEPL(reverse);
+                            statement = epService.EPAdministrator.CreateEPL(reverse);
                             expressionText = reverse;
                         }
                         else
@@ -268,9 +266,9 @@ namespace com.espertech.esper.regression.support
                 }
             }
 
-            if (InstrumentationHelper.ENABLED) { InstrumentationHelper.EndTest(); }
+            epService.EPAdministrator.DestroyAllStatements();
         }
-    
+
         private void CheckResults(PatternTestStyle testStyle, String eventId)
         {
             // For each test descriptor, make sure the listener has received exactly the events expected
@@ -318,7 +316,6 @@ namespace com.espertech.esper.regression.support
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.StackTrace);
                     Assert.Fail("For statement '" + expressionText + "' failed to assert: " + ex.Message);
                 }
             }

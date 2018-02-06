@@ -10,8 +10,9 @@ using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.xml
@@ -20,22 +21,28 @@ namespace com.espertech.esper.events.xml
     public class TestSchemaXMLEventType
     {
         private EventBean _eventSchemaOne;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            var schemaUrl = ResourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+            _container = SupportContainer.Reset();
+
+            var schemaUrl = _container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd");
             var configNoNS = new ConfigurationEventTypeXMLDOM();
             configNoNS.IsXPathPropertyExpr = true;
             configNoNS.SchemaResource = schemaUrl.ToString();
             configNoNS.RootElementName = "simpleEvent";
             configNoNS.AddXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathResultType.Number);
             configNoNS.AddNamespacePrefix("ss", "samples:schemas:simpleSchema");
-            var model = XSDSchemaMapper.LoadAndMap(schemaUrl.ToString(), null, SupportEngineImportServiceFactory.Make());
-            var eventTypeNoNS = new SchemaXMLEventType(null, 1, configNoNS, model, SupportEventAdapterService.Service);
+            var model = XSDSchemaMapper.LoadAndMap(
+                schemaUrl.ToString(), null, SupportEngineImportServiceFactory.Make(_container),
+                _container.ResourceManager());
+            var eventTypeNoNS = new SchemaXMLEventType(
+                null, 1, configNoNS, model, _container.Resolve<EventAdapterService>(), _container.LockManager());
 
             var noNSDoc = new XmlDocument();
-            using (var stream = ResourceManager.GetResourceAsStream("regression/simpleWithSchema.xml"))
+            using (var stream = _container.ResourceManager().GetResourceAsStream("regression/simpleWithSchema.xml"))
             {
                 noNSDoc.Load(stream);
             }

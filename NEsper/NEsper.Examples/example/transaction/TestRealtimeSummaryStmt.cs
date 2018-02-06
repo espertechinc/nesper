@@ -8,13 +8,13 @@
 
 using System;
 
-using NUnit.Framework;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.client.time;
 
-namespace NEsper.Example.Transaction
+using NUnit.Framework;
+
+namespace NEsper.Examples.Transaction
 {
     [TestFixture]
 	public class TestRealtimeSummaryStmt : TestStmtBase

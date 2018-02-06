@@ -9,6 +9,11 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.blocks;
+using com.espertech.esper.codegen.model.expression;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
@@ -50,7 +55,7 @@ namespace com.espertech.esper.events.arr
             }
 
             // If the map does not contain the key, this is allowed and represented as null
-            EventBean eventBean = EventAdapterService.AdapterForTypedObjectArray((Object[])value, FragmentType);
+            var eventBean = EventAdapterService.AdapterForTypedObjectArray((Object[])value, FragmentType);
             return _arrayGetter.GetFragment(eventBean);
         }
 
@@ -60,11 +65,31 @@ namespace com.espertech.esper.events.arr
             {
                 if (value is EventBean)
                 {
-                    return _arrayGetter.IsExistsProperty((EventBean) value);
+                    return _arrayGetter.IsExistsProperty((EventBean)value);
                 }
                 return false;
             }
-            return _arrayGetter.IsObjectArrayExistsProperty((Object[]) value);
+            return _arrayGetter.IsObjectArrayExistsProperty((Object[])value);
+        }
+
+        public override ICodegenExpression HandleNestedValueCodegen(ICodegenExpression name, ICodegenContext context)
+        {
+            return LocalMethod(GenerateMethod(context, CodegenBlockPropertyBeanOrUnd.AccessType.GET), name);
+        }
+
+        public override ICodegenExpression HandleNestedValueExistsCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return LocalMethod(GenerateMethod(context, CodegenBlockPropertyBeanOrUnd.AccessType.EXISTS), refName);
+        }
+
+        public override ICodegenExpression HandleNestedValueFragmentCodegen(ICodegenExpression refName, ICodegenContext context)
+        {
+            return LocalMethod(GenerateMethod(context, CodegenBlockPropertyBeanOrUnd.AccessType.FRAGMENT), refName);
+        }
+
+        private string GenerateMethod(ICodegenContext context, CodegenBlockPropertyBeanOrUnd.AccessType accessType)
+        {
+            return CodegenBlockPropertyBeanOrUnd.From(context, typeof(Object[]), _arrayGetter, accessType, this.GetType());
         }
     }
-}
+} // end of namespace

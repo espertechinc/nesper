@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.logging;
 
 using NEsper.Examples.StockTicker.eventbean;
 
@@ -42,6 +43,6 @@ namespace NEsper.Examples.StockTicker.monitor
             _stockTickerResultListener.Emitted(alert);
         }
     
-        private static readonly log4net.ILog Log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

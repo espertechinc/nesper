@@ -39,11 +39,11 @@ namespace com.espertech.esper.epl.expression.accessagg
                 }
                 else if (parent.AggType == CountMinSketchAggType.FREQ)
                 {
-                    return typeof (long?);
+                    return typeof(long?);
                 }
                 else if (parent.AggType == CountMinSketchAggType.TOPK)
                 {
-                    return typeof (CountMinSketchTopK[]);
+                    return typeof(CountMinSketchTopK[]);
                 }
                 else
                 {
@@ -80,6 +80,7 @@ namespace com.espertech.esper.epl.expression.accessagg
                 {
                     return CountMinSketchAggAccessorTopk.INSTANCE;
                 }
+
                 throw new IllegalStateException(
                     "Aggregation accessor not available for this function '" + parent.AggregationFunctionName + "'");
             }
@@ -92,8 +93,14 @@ namespace com.espertech.esper.epl.expression.accessagg
                 var parent = Parent;
                 if (parent.AggType == CountMinSketchAggType.ADD)
                 {
-                    return new CountMinSketchAggAgentAdd(_addOrFrequencyEvaluator);
+                    if (parent.OptionalFilter == null) {
+                        return new CountMinSketchAggAgentAdd(_addOrFrequencyEvaluator);
+                    }
+
+                    return new CountMinSketchAggAgentAddFilter(
+                        _addOrFrequencyEvaluator, parent.OptionalFilter.ExprEvaluator);
                 }
+
                 throw new IllegalStateException(
                     "Aggregation agent not available for this function '" + parent.AggregationFunctionName + "'");
             }

@@ -7,27 +7,31 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.funcs;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.type;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprOrNode 
     {
         private ExprOrNode _orNode;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _orNode = new ExprOrNode();
         }
     
@@ -43,16 +47,16 @@ namespace com.espertech.esper.epl.expression
             // test success
             _orNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             _orNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
-            _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+            _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
     
             // test failure, type mismatch
             _orNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {
-                _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -62,10 +66,10 @@ namespace com.espertech.esper.epl.expression
             _orNode.AddChildNode(new SupportExprNode(typeof(Boolean)));
             try
             {
-                _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _orNode.Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
                 Assert.Fail();
             }
-            catch (ExprValidationException ex)
+            catch (ExprValidationException)
             {
                 // Expected
             }
@@ -103,9 +107,9 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_orNode.EqualsNode(_orNode));
-            Assert.IsFalse(_orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN)));
-            Assert.IsTrue(_orNode.EqualsNode(new ExprOrNode()));
+            Assert.IsTrue(_orNode.EqualsNode(_orNode, false));
+            Assert.IsFalse(_orNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            Assert.IsTrue(_orNode.EqualsNode(new ExprOrNode(), false));
         }
     }
 }

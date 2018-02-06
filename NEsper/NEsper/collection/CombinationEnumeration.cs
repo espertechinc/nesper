@@ -48,15 +48,9 @@ namespace com.espertech.esper.collection
             _subEnumerator = New(combinations).GetEnumerator();
         }
 
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
+        object IEnumerator.Current => Current;
 
-        public object[] Current
-        {
-            get { return _subEnumerator.Current; }
-        }
+        public object[] Current => _subEnumerator.Current;
 
         public bool MoveNext()
         {
@@ -69,7 +63,7 @@ namespace com.espertech.esper.collection
         /// <param name="combinations"></param>
         /// <returns></returns>
 
-        private static IEnumerable<Object[]> New(Object[][] combinations)
+        public static IEnumerable<Object[]> New(Object[][] combinations)
         {
             if (combinations.Any(element => element == null || element.Length < 1))
             {

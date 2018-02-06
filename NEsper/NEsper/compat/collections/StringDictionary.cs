@@ -166,10 +166,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </returns>
-        public int Count
-        {
-            get { return _subDictionary.Count; }
-        }
+        public int Count => _subDictionary.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
@@ -178,10 +175,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return _subDictionary.IsReadOnly; }
-        }
+        public bool IsReadOnly => _subDictionary.IsReadOnly;
 
         #endregion
 
@@ -268,7 +262,7 @@ namespace com.espertech.esper.compat.collections
         /// </exception>
         public V this[string key]
         {
-            get { return _subDictionary[_normalizeKey(key)]; }
+            get => _subDictionary[_normalizeKey(key)];
             set { _subDictionary[_normalizeKey(key)] = value; }
         }
 
@@ -279,10 +273,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<string> Keys
-        {
-            get { return _subDictionary.Keys; }
-        }
+        public ICollection<string> Keys => _subDictionary.Keys;
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
@@ -291,10 +282,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<V> Values
-        {
-            get { return _subDictionary.Values; }
-        }
+        public ICollection<V> Values => _subDictionary.Values;
 
         #endregion
 

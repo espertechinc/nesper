@@ -122,7 +122,7 @@ namespace com.espertech.esper.util
             /// <summary> Returns the string text of the fragment.</summary>
             /// <returns> fragment string
             /// </returns>
-            virtual public String Value
+            public virtual String Value
             {
                 get { return value; }
             }

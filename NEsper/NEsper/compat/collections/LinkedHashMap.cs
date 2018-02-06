@@ -66,7 +66,7 @@ namespace com.espertech.esper.compat.collections
 
         public bool ShuffleOnAccess
         {
-            get { return _shuffleOnAccess; }
+            get => _shuffleOnAccess;
             set { _shuffleOnAccess = value; }
         }
 
@@ -556,10 +556,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
 
-        public int Count
-        {
-            get { return _hashTable.Count; }
-        }
+        public int Count => _hashTable.Count;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
@@ -567,10 +564,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.

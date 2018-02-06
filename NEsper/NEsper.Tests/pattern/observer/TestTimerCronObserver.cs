@@ -9,11 +9,13 @@
 using System;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.schedule;
 using com.espertech.esper.supportunit.guard;
 using com.espertech.esper.supportunit.pattern;
 using com.espertech.esper.supportunit.schedule;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.timer;
 using com.espertech.esper.type;
 
@@ -28,13 +30,16 @@ namespace com.espertech.esper.pattern.observer
         private SchedulingServiceImpl _scheduleService;
         private SupportObserverEvaluator _evaluator;
         private MatchedEventMap _beginState;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _beginState = new MatchedEventMapImpl(new MatchedEventMapMeta(new String[0], false));
     
-            _scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            _scheduleService = new SchedulingServiceImpl(new TimeSourceServiceImpl(), _container);
             PatternAgentInstanceContext agentContext = SupportPatternContextFactory.MakePatternAgentInstanceContext(_scheduleService);
     
             ScheduleSpec scheduleSpec = new ScheduleSpec();
@@ -99,7 +104,7 @@ namespace com.espertech.esper.pattern.observer
                 _observer.StartObserve();
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // Expected exception
             }

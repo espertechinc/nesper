@@ -8,6 +8,7 @@
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.core;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.supportunit.bean;
@@ -15,21 +16,25 @@ using com.espertech.esper.supportunit.epl;
 using com.espertech.esper.supportunit.events;
 
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprIdentNode 
     {
         private ExprIdentNode[] _identNodes;
         private StreamTypeService _streamTypeService;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _identNodes = new ExprIdentNode[4];
             _identNodes[0] = new ExprIdentNodeImpl("Mapped('a')");
             _identNodes[1] = new ExprIdentNodeImpl("NestedValue", "Nested");
@@ -59,7 +64,7 @@ namespace com.espertech.esper.epl.expression
                 var xx = _identNodes[0].ResolvedStreamName;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -69,7 +74,7 @@ namespace com.espertech.esper.epl.expression
                 var xx = _identNodes[0].ResolvedPropertyName;
                 Assert.Fail();
             }
-            catch (IllegalStateException ex)
+            catch (IllegalStateException)
             {
                 // expected
             }
@@ -78,22 +83,22 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestValidate()
         {
-            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(2, _identNodes[0].StreamId);
             Assert.AreEqual(typeof(string), _identNodes[0].ExprEvaluator.ReturnType);
             Assert.AreEqual("Mapped('a')", _identNodes[0].ResolvedPropertyName);
 
-            _identNodes[1].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[1].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(2, _identNodes[1].StreamId);
             Assert.AreEqual(typeof(string), _identNodes[1].ExprEvaluator.ReturnType);
             Assert.AreEqual("Nested.NestedValue", _identNodes[1].ResolvedPropertyName);
 
-            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(2, _identNodes[2].StreamId);
             Assert.AreEqual(typeof(int), _identNodes[2].ExprEvaluator.ReturnType);
             Assert.AreEqual("Indexed[1]", _identNodes[2].ResolvedPropertyName);
 
-            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(0, _identNodes[3].StreamId);
             Assert.AreEqual(typeof(int), _identNodes[3].ExprEvaluator.ReturnType);
             Assert.AreEqual("IntPrimitive", _identNodes[3].ResolvedPropertyName);
@@ -110,7 +115,7 @@ namespace com.espertech.esper.epl.expression
         public void TestGetType()
         {
             // test success
-            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(typeof(string), _identNodes[0].ExprEvaluator.ReturnType);
         }
     
@@ -119,7 +124,7 @@ namespace com.espertech.esper.epl.expression
         {
             EventBean[] events = new EventBean[] {MakeEvent(10)};
 
-            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             Assert.AreEqual(10, _identNodes[3].ExprEvaluator.Evaluate(new EvaluateParams(events, false, null)));
             Assert.IsNull(_identNodes[3].ExprEvaluator.Evaluate(new EvaluateParams(new EventBean[2], false, null)));
         }
@@ -131,7 +136,7 @@ namespace com.espertech.esper.epl.expression
             // fails if the getter is not in place
 
             EventBean[] events = SupportStreamTypeSvc3Stream.SampleEvents;
-            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
     
             long startTime = PerformanceObserver.MilliTime;
             for (int i = 0; i < 100000; i++)
@@ -140,7 +145,7 @@ namespace com.espertech.esper.epl.expression
             }
             long endTime = PerformanceObserver.MilliTime;
             long delta = endTime - startTime;
-            log.Info(".testEvaluate delta=" + delta);
+            Log.Info(".testEvaluate delta=" + delta);
             Assert.IsTrue(delta < 500);
         }
     
@@ -149,7 +154,7 @@ namespace com.espertech.esper.epl.expression
         {
             for (int i = 0; i < _identNodes.Length; i++)
             {
-                _identNodes[i].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+                _identNodes[i].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
             }
             Assert.AreEqual("Mapped('a')", _identNodes[0].ToExpressionStringMinPrecedenceSafe());
             Assert.AreEqual("Nested.NestedValue", _identNodes[1].ToExpressionStringMinPrecedenceSafe());
@@ -160,11 +165,11 @@ namespace com.espertech.esper.epl.expression
         [Test]
         public void TestEqualsNode()
         {
-            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
-            Assert.IsTrue(_identNodes[3].EqualsNode(_identNodes[3]));
-            Assert.IsFalse(_identNodes[0].EqualsNode(_identNodes[2]));
+            _identNodes[0].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
+            _identNodes[2].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
+            _identNodes[3].Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
+            Assert.IsTrue(_identNodes[3].EqualsNode(_identNodes[3], false));
+            Assert.IsFalse(_identNodes[0].EqualsNode(_identNodes[2], false));
         }
     
         protected internal static EventBean MakeEvent(int intPrimitive)
@@ -178,15 +183,15 @@ namespace com.espertech.esper.epl.expression
         {
             try
             {
-                identNode.Validate(SupportExprValidationContextFactory.Make(_streamTypeService));
+                identNode.Validate(SupportExprValidationContextFactory.Make(_container, _streamTypeService));
                 Assert.Fail();
             }
-            catch(ExprValidationException ex)
+            catch(ExprValidationException)
             {
                 // expected
             }
         }
     
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

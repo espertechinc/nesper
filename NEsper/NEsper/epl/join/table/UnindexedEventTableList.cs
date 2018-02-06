@@ -12,6 +12,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.util;
 
@@ -37,7 +38,7 @@ namespace com.espertech.esper.epl.join.table
             _streamNum = streamNum;
         }
     
-        public void AddRemove(EventBean[] newData, EventBean[] oldData)
+        public void AddRemove(EventBean[] newData, EventBean[] oldData, ExprEvaluatorContext exprEvaluatorContext)
         {
             Instrument.With(
                 i => i.QIndexAddRemove(this, newData, oldData),
@@ -58,7 +59,7 @@ namespace com.espertech.esper.epl.join.table
                 });
         }
     
-        public void Add(EventBean[] events)
+        public void Add(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null && events.Length > 0)
             {
@@ -70,7 +71,7 @@ namespace com.espertech.esper.epl.join.table
 
         }
     
-        public void Remove(EventBean[] events)
+        public void Remove(EventBean[] events, ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null && events.Length > 0)
             {
@@ -87,12 +88,12 @@ namespace com.espertech.esper.epl.join.table
             }
         }
 
-        public void Add(EventBean @event)
+        public void Add(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
         {
             _eventSet.Add(@event);
         }
 
-        public void Remove(EventBean @event)
+        public void Remove(EventBean @event, ExprEvaluatorContext exprEvaluatorContext)
         {
             _eventSet.Remove(@event);
         }

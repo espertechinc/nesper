@@ -71,6 +71,7 @@ namespace com.espertech.esper.events.vaevent
         /// </summary>
         /// <param name="oldData">to remove</param>
         /// <param name="indexRepository">the indexes to Update</param>
-        void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository);
+        /// <param name="agentInstanceContext">The agent instance context.</param>
+        void RemoveOldData(EventBean[] oldData, EventTableIndexRepository indexRepository, AgentInstanceContext agentInstanceContext);
     }
 }

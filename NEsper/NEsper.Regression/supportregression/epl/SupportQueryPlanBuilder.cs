@@ -41,19 +41,19 @@ namespace com.espertech.esper.supportregression.epl
     
         public SupportQueryPlanBuilder SetIndexFullTableScan(int stream, string indexName) {
             QueryPlanIndex index = _queryPlan.IndexSpecs[stream];
-            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(null, null, null, null, false));
+            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(null, null, null, null, false, null));
             return this;
         }
     
         public SupportQueryPlanBuilder AddIndexHashSingleNonUnique(int stream, string indexName, string property) {
             QueryPlanIndex index = _queryPlan.IndexSpecs[stream];
-            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(new string[] {property}, null, new string[0], null, false));
+            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(new string[] {property}, null, new string[0], null, false, null));
             return this;
         }
     
         public SupportQueryPlanBuilder AddIndexBtreeSingle(int stream, string indexName, string property) {
             QueryPlanIndex index = _queryPlan.IndexSpecs[stream];
-            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(new string[0], null, new string[] {property}, null, false));
+            index.Items.Put(new TableLookupIndexReqKey(indexName), new QueryPlanIndexItem(new string[0], null, new string[] {property}, null, false, null));
             return this;
         }
     

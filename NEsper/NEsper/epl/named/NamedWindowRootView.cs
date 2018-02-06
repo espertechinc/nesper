@@ -45,10 +45,7 @@ namespace com.espertech.esper.epl.named
             OptionalUniqueKeyProps = optionalUniqueKeyProps;
         }
 
-        public static ILog QueryPlanLog
-        {
-            get { return QueryPlanLogInstance; }
-        }
+        public static ILog QueryPlanLog => QueryPlanLogInstance;
 
         public ValueAddEventProcessor RevisionProcessor { get; private set; }
 

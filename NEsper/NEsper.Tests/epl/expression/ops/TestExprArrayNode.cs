@@ -7,24 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.compat.container;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.expression.ops;
 using com.espertech.esper.supportunit.epl;
+using com.espertech.esper.supportunit.util;
 using com.espertech.esper.util.support;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.epl.expression
+namespace com.espertech.esper.epl.expression.ops
 {
     [TestFixture]
     public class TestExprArrayNode
     {
-        #region Setup/Teardown
+        private IContainer _container;
 
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _arrayNodes = new ExprArrayNode[4];
             _arrayNodes[0] = new ExprArrayNode();
 
@@ -45,19 +48,17 @@ namespace com.espertech.esper.epl.expression
 
             for (int i = 0; i < _arrayNodes.Length; i++)
             {
-                _arrayNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty());
+                _arrayNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(_container));
             }
         }
-
-        #endregion
-
+        
         private ExprArrayNode[] _arrayNodes;
 
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(_arrayNodes[0].EqualsNode(_arrayNodes[1]));
-            Assert.IsFalse(_arrayNodes[0].EqualsNode(new SupportExprNode(null)));
+            Assert.IsTrue(_arrayNodes[0].EqualsNode(_arrayNodes[1], false));
+            Assert.IsFalse(_arrayNodes[0].EqualsNode(new SupportExprNode(null), false));
         }
 
         [Test]

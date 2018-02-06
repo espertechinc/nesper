@@ -61,20 +61,27 @@ namespace com.espertech.esper.filter
             Ranges.Put(range, matcher);
         }
 
-        public override bool Remove(Object filterConstant)
+        public override void Remove(Object filterConstant)
         {
             var range = (StringRange)filterConstant;
             if ((range.Max == null) || (range.Min == null))
             {
-                return _rangesNullEndpoints.Delete(range) != null;
+                _rangesNullEndpoints.Delete(range);
             }
-
-            return Ranges.Delete(range) != null;
+            else
+            {
+                Ranges.Remove(range);
+            }
         }
 
         public override int Count
         {
             get { return Ranges.Count; }
+        }
+
+        public override bool IsEmpty
+        {
+            get { return Ranges.IsEmpty(); }
         }
 
         public override IReaderWriterLock ReadWriteLock

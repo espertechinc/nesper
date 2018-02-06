@@ -29,20 +29,11 @@ namespace com.espertech.esper.epl.core.eval
             _remapped = remapped;
         }
 
-        public EventType ResultEventType
-        {
-            get { return _resultEventType; }
-        }
+        public EventType ResultEventType => _resultEventType;
 
-        public int[] Remapped
-        {
-            get { return _remapped; }
-        }
+        public int[] Remapped => _remapped;
 
-        public SelectExprContext SelectExprContext
-        {
-            get { return _selectExprContext; }
-        }
+        public SelectExprContext SelectExprContext => _selectExprContext;
 
         public virtual EventBean Process(EventBean[] eventsPerStream, bool isNewData, bool isSynthesize, ExprEvaluatorContext exprEvaluatorContext)
         {

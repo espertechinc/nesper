@@ -49,7 +49,7 @@ namespace com.espertech.esper.epl.table.upd
             foreach (string affectedIndexName in _affectedIndexNames)
             {
                 EventTable index = instance.GetIndex(affectedIndexName);
-                index.Remove(events);
+                index.Remove(events, instance.AgentInstanceContext);
             }
 
             // update (no-copy unless original values required)
@@ -75,7 +75,7 @@ namespace com.espertech.esper.epl.table.upd
             foreach (string affectedIndexName in _affectedIndexNames)
             {
                 EventTable index = instance.GetIndex(affectedIndexName);
-                index.Add(events);
+                index.Add(events, instance.AgentInstanceContext);
             }
         }
     }

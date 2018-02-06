@@ -6,12 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Linq.Expressions;
-
 using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
-using com.espertech.esper.collection;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.metrics.instrumentation;
 using com.espertech.esper.supportregression.bean;
 using com.espertech.esper.supportregression.client;
@@ -59,8 +55,6 @@ namespace com.espertech.esper.regression.resultset
 
             using (var statement = _epService.EPAdministrator.CreateEPL(statementText))
             {
-                UniformPair<EventBean[]> result;
-
                 statement.Events += _listener.Update;
                 SendEvent(SYMBOL_DELL, 100);
                 EPAssertionUtil.AssertProps(_listener.AssertOneGetNewAndReset(), fields, new object[] { "DELL", 1L });

@@ -7,17 +7,27 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.client;
-
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.core.service
 {
-    /// <summary>Interface for a factory class to provide services in a services context for an engine instance. </summary>
+    /// <summary>
+    /// Interface for a factory class to provide services in a services context for an engine instance.
+    /// </summary>
     public interface EPServicesContextFactory
     {
-        /// <summary>Factory method for a new set of engine services. </summary>
+        /// <summary>
+        /// Factory method for a new set of engine services.
+        /// </summary>
+        /// <param name="container">The root IoC container.</param>
         /// <param name="epServiceProvider">is the engine instance</param>
         /// <param name="configurationSnapshot">is a snapshot of configs at the time of engine creation</param>
-        /// <returns>services context</returns>
-        EPServicesContext CreateServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configurationSnapshot);    
+        /// <returns>
+        /// services context
+        /// </returns>
+        EPServicesContext CreateServicesContext(
+            IContainer container,
+            EPServiceProvider epServiceProvider, 
+            ConfigurationInformation configurationSnapshot);    
     }
 }

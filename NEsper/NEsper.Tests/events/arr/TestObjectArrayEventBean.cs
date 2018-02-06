@@ -11,11 +11,12 @@ using System.Collections.Generic;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.arr
@@ -31,10 +32,12 @@ namespace com.espertech.esper.events.arr
         private ObjectArrayEventBean _eventBean;
     
         private readonly SupportBeanComplexProps _supportBean = SupportBeanComplexProps.MakeDefaultBean();
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
             _testProps = new String[] {"aString", "anInt", "myComplexBean"};
             _testTypes = new Object[] {typeof(String), typeof(int), typeof(SupportBeanComplexProps)};
             IDictionary<String, Object> typeRep = new LinkedHashMap<String, Object>();
@@ -45,7 +48,7 @@ namespace com.espertech.esper.events.arr
             _testValues = new Object[] {"test", 10, _supportBean};
 
             EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.OBJECTARR, "testtype", true, true, true, false, false);
-            _eventType = new ObjectArrayEventType(metadata, "", 1, SupportEventAdapterService.Service, typeRep, null, null, null); 
+            _eventType = new ObjectArrayEventType(metadata, "", 1, _container.Resolve<EventAdapterService>(), typeRep, null, null, null); 
             _eventBean = new ObjectArrayEventBean(_testValues, _eventType);
         }
     

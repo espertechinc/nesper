@@ -11,6 +11,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
+using com.espertech.esper.compat.container;
 
 namespace com.espertech.esper.util
 {
@@ -19,17 +20,25 @@ namespace com.espertech.esper.util
     /// </summary>
     public class SerializableObjectCopier
     {
-        /// <summary>Deep copies the input object. </summary>
+        /// <summary>
+        /// Deep copies the input object.
+        /// </summary>
+        /// <param name="container">The container.</param>
         /// <param name="orig">is the object to be copied, must be serializable</param>
-        /// <returns>copied object</returns>
+        /// <returns>
+        /// copied object
+        /// </returns>
         /// <throws>IOException if the streams returned an exception</throws>
         /// <throws>ClassNotFoundException if the de-serialize fails</throws>
-        public static Object Copy(Object orig)
+        public static Object Copy(IContainer container, Object orig)
         {
             // Create the formatter
             var formatter = new BinaryFormatter();
             formatter.FilterLevel = TypeFilterLevel.Full;
-            formatter.AssemblyFormat = FormatterAssemblyStyle.Full;
+#if NETFRAMEWORK
+            formatter.AssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Full;
+#endif
+            formatter.Context = new StreamingContext(StreamingContextStates.Clone, container);
 
             using (MemoryStream stream = new MemoryStream())
             {

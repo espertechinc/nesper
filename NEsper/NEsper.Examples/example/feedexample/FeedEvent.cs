@@ -8,7 +8,7 @@
 
 using System;
 
-namespace com.espertech.esper.example.feedexample
+namespace NEsper.Examples.FeedExample
 {
 	public class FeedEvent
 	{

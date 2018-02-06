@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.client;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.join.exec.@base;
@@ -49,7 +50,7 @@ namespace com.espertech.esper.epl.join.exec
     
             // Test lookup on filled index, expect row2
             var indexEvents = SupportEventBeanFactory.MakeEvents(new String[] {"a1", "a2"});
-            _index.Add(indexEvents);
+            _index.Add(indexEvents, null);
             _exec.Process(lookupEvents[0], prefill, result, null);
             Assert.AreEqual(2, result.Count);
     

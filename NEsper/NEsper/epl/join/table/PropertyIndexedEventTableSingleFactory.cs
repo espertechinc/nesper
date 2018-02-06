@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.events;
 
 namespace com.espertech.esper.epl.join.table
@@ -51,7 +52,7 @@ namespace com.espertech.esper.epl.join.table
             PropertyGetter = EventBeanUtility.GetAssertPropertyGetter(eventType, propertyName);
         }
 
-        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent)
+        public virtual EventTable[] MakeEventTables(EventTableFactoryTableIdent tableIdent, ExprEvaluatorContext exprEvaluatorContext)
         {
             var organization = new EventTableOrganization(OptionalIndexName, Unique, false, StreamNum, new String[] { PropertyName }, EventTableOrganizationType.HASH);
             if (Unique)

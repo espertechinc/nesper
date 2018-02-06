@@ -10,11 +10,11 @@ using System;
 
 using Avro.Generic;
 
-using com.espertech.esper.client;
+using com.espertech.esper.events;
 
 namespace NEsper.Avro.Core
 {
-    public interface AvroEventPropertyGetter : EventPropertyGetter
+    public interface AvroEventPropertyGetter : EventPropertyGetterSPI
     {
         Object GetAvroFieldValue(GenericRecord record);
     

@@ -10,7 +10,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Nito.KitchenSink.CRC;
+using Force.Crc32;
 
 namespace com.espertech.esper.compat
 {
@@ -67,9 +67,7 @@ namespace com.espertech.esper.compat
             if (encoding == null)
                 encoding = Encoding.UTF8;
 
-            var algo = new CRC32(); 
-            var hash = algo.ComputeHash(encoding.GetBytes(input));
-            return BitConverter.ToUInt32(hash, 0);
+            return Crc32Algorithm.Compute(encoding.GetBytes(input));
         }
 
         /// <summary>

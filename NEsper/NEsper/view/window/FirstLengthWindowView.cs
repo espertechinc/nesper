@@ -63,14 +63,7 @@ namespace com.espertech.esper.view.window
         /// <value>size of length window</value>
         public int Size { get; private set; }
 
-        public override EventType EventType
-        {
-            get
-            {
-                // The event type is the parent view's event type
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(EventBean[] newData, EventBean[] oldData)
         {
@@ -152,14 +145,8 @@ namespace com.espertech.esper.view.window
             viewDataVisitor.VisitPrimary(_indexedEvents, true, _lengthFirstFactory.ViewName, null);
         }
 
-        public LinkedHashSet<EventBean> IndexedEvents
-        {
-            get { return _indexedEvents; }
-        }
+        public LinkedHashSet<EventBean> IndexedEvents => _indexedEvents;
 
-        public ViewFactory ViewFactory
-        {
-            get { return _lengthFirstFactory; }
-        }
+        public ViewFactory ViewFactory => _lengthFirstFactory;
     }
 }

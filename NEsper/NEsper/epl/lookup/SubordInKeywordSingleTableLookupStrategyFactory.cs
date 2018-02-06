@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.@join.table;
@@ -24,12 +25,14 @@ namespace com.espertech.esper.epl.lookup
         protected int StreamCountOuter;
         protected readonly LookupStrategyDesc StrategyDesc;
     
-        public SubordInKeywordSingleTableLookupStrategyFactory(bool isNWOnTrigger, int streamCountOuter, ExprNode[] exprNodes)
+        public SubordInKeywordSingleTableLookupStrategyFactory(
+            bool isNWOnTrigger, int streamCountOuter, IList<ExprNode> exprNodes)
         {
             StreamCountOuter = streamCountOuter;
             Evaluators = ExprNodeUtility.GetEvaluators(exprNodes);
             IsNWOnTrigger = isNWOnTrigger;
-            StrategyDesc = new LookupStrategyDesc(LookupStrategyType.INKEYWORDSINGLEIDX, ExprNodeUtility.ToExpressionStringsMinPrecedence(exprNodes));
+            StrategyDesc = new LookupStrategyDesc(
+                LookupStrategyType.INKEYWORDSINGLEIDX, ExprNodeUtility.ToExpressionStringsMinPrecedence(exprNodes));
         }
     
         public SubordTableLookupStrategy MakeStrategy(EventTable[] eventTable, VirtualDWView vdw)

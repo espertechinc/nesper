@@ -22,6 +22,8 @@ namespace com.espertech.esper.epl.join.util
                                  bool isNot,
                                  QueryGraph queryGraph)
         {
+            var rangeOp = QueryGraphRangeEnumExtensions.GetRangeOp(includeStart, includeEnd, isNot);
+
             if (((target is ExprIdentNode)) &&
                 ((start is ExprIdentNode)) &&
                 ((end is ExprIdentNode)))
@@ -37,7 +39,7 @@ namespace com.espertech.esper.epl.join.util
                     keyStreamStart, identNodeStart, keyStreamEnd,
                     identNodeEnd, valueStream,
                     identNodeValue,
-                    includeStart, includeEnd, isNot);
+                    rangeOp);
 
                 return;
             }
@@ -60,7 +62,7 @@ namespace com.espertech.esper.epl.join.util
                     return;
                 }
 
-                queryGraph.AddRangeExpr(indexedStream, identNode, start, eligibilityStart.StreamNum, end, eligibilityEnd.StreamNum);
+                queryGraph.AddRangeExpr(indexedStream, identNode, start, eligibilityStart.StreamNum, end, eligibilityEnd.StreamNum, rangeOp);
             }
         }
     }

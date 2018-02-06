@@ -263,8 +263,11 @@ namespace com.espertech.esper.epl.expression.prev
             else
             {
                 ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
-                writer.Write(",");
-                ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                if (ChildNodes.Count > 1)
+                {
+                    writer.Write(",");
+                    ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                }
             }
             writer.Write(')');
         }
@@ -279,7 +282,7 @@ namespace com.espertech.esper.epl.expression.prev
             return _previousType != null ? _previousType.GetHashCode() : 0;
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             var that = node as ExprPreviousNode;
             if (that == null)

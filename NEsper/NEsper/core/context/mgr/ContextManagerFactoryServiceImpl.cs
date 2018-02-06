@@ -6,17 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.spec;
 
 namespace com.espertech.esper.core.context.mgr
 {
 	public class ContextManagerFactoryServiceImpl : ContextManagerFactoryService
     {
-	    public ContextManager Make(ContextDetail contextDetail, ContextControllerFactoryServiceContext factoryServiceContext)
+	    public ContextManager Make(
+	        ILockManager lockManager,
+            ContextDetail contextDetail, 
+	        ContextControllerFactoryServiceContext factoryServiceContext)
         {
 	        if (contextDetail is ContextDetailNested)
             {
-	            return new ContextManagerNested(factoryServiceContext);
+	            return new ContextManagerNested(lockManager, factoryServiceContext);
 	        }
 	        return new ContextManagerImpl(factoryServiceContext);
 	    }

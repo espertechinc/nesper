@@ -42,15 +42,16 @@ namespace com.espertech.esper.events.xml
         /// xpath expression
         /// </returns>
         /// <throws>EPException is there are XPath errors</throws>
-        public static EventPropertyGetter GetXPathResolution(String propertyName,
-                                                             XPathNamespaceContext xPathContext,
-                                                             String rootElementName,
-                                                             String @namespace,
-                                                             SchemaModel schemaModel,
-                                                             EventAdapterService eventAdapterService,
-                                                             BaseXMLEventType xmlEventType,
-                                                             bool isAllowFragment,
-                                                             String defaultNamespace)
+        public static EventPropertyGetterSPI GetXPathResolution(
+            String propertyName,
+            XPathNamespaceContext xPathContext,
+            String rootElementName,
+            String @namespace,
+            SchemaModel schemaModel,
+            EventAdapterService eventAdapterService,
+            BaseXMLEventType xmlEventType,
+            bool isAllowFragment,
+            String defaultNamespace)
         {
             if (Log.IsDebugEnabled)
             {

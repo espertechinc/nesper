@@ -105,11 +105,12 @@ namespace com.espertech.esper.dataflow.ops
             }
             ExprNodeSubselectDeclaredDotVisitor visitor = StatementSpecRawAnalyzer.WalkSubselectAndDeclaredDotExpr(select);
             GroupByClauseExpressions groupByExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
-                    select.GroupByExpressions,
-                    select.SelectClauseSpec,
-                    select.HavingExprRootNode,
-                    select.OrderByList,
-                    visitor);
+                servicesContext.Container,
+                select.GroupByExpressions,
+                select.SelectClauseSpec,
+                select.HavingExprRootNode,
+                select.OrderByList,
+                visitor);
             if (!visitor.Subselects.IsEmpty())
             {
                 throw new ExprValidationException("Subselects are not supported");

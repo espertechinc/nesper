@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.core.service;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.spec;
 using com.espertech.esper.filter;
 
@@ -23,9 +24,9 @@ namespace com.espertech.esper.core.start
             
         }
     
-        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(FilterSpecCompiled filter, string aliasName)
+        public override EPPreparedExecuteIUDSingleStreamExec GetExecutor(QueryGraph queryGraph, string aliasName)
         {
-            return new EPPreparedExecuteIUDSingleStreamExecDelete(filter, StatementSpec.FilterRootNode, StatementSpec.Annotations, StatementSpec.TableNodes, Services);
+            return new EPPreparedExecuteIUDSingleStreamExecDelete(queryGraph, StatementSpec.FilterRootNode, StatementSpec.Annotations, StatementSpec.TableNodes, Services);
         }
     }
 }

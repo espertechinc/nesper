@@ -25,8 +25,8 @@ namespace com.espertech.esper.epl.join.table
             UnindexedEventTable rep = new UnindexedEventTableImpl(1);
     
             EventBean[] addOne = SupportEventBeanFactory.MakeEvents(new String[] {"a", "b"});
-            rep.Add(addOne);
-            rep.Remove(new EventBean[] {addOne[0]});
+            rep.Add(addOne, null);
+            rep.Remove(new EventBean[] {addOne[0]}, null);
         }
     }
 }

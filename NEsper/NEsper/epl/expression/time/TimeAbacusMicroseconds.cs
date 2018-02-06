@@ -47,9 +47,9 @@ namespace com.espertech.esper.epl.expression.time
             return dt.TimeInMillis*1000 + remainder;
         }
 
-        public long GetOneSecond()
+        public long OneSecond
         {
-            return 1000000;
+            get { return 1000000; }
         }
 
         public DateTimeEx ToDate(long ts)

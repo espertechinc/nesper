@@ -44,19 +44,13 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <value></value>
         /// <returns></returns>
-        public T First
-        {
-            get { return this[0]; }
-        }
+        public T First => this[0];
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
-        public bool IsEmpty
-        {
-            get { return Count == 0; }
-        }
+        public bool IsEmpty => Count == 0;
 
         #endregion
 

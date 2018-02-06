@@ -43,17 +43,11 @@ namespace com.espertech.esper.epl.named
 
 	    /// <summary>Returns the insert stream events.</summary>
 	    /// <returns>insert stream</returns>
-	    public EventBean[] NewData
-	    {
-            get { return newData; }
-	    }
+	    public EventBean[] NewData => newData;
 
 	    /// <summary>Returns the remove stream events.</summary>
 	    /// <returns>remove stream</returns>
-	    public EventBean[] OldData
-	    {
-            get { return oldData; }
-	    }
+	    public EventBean[] OldData => oldData;
 
 	    private static EventBean[] Aggregate(EventBean[] arrOne, EventBean[] arrTwo)
 	    {

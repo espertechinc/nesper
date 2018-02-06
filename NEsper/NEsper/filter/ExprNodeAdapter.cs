@@ -8,6 +8,8 @@
 
 using System;
 using com.espertech.esper.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
@@ -37,13 +39,16 @@ namespace com.espertech.esper.filter
         /// <param name="exprNode">is the bool expression</param>
         /// <param name="prototype">is the row of events the we are matching on</param>
         /// <param name="variableService">for setting variable version for evaluating variables, if required</param>
-        public ExprNodeAdapter(ExprNode exprNode, EventBean[] prototype,
-                               VariableService variableService)
+        public ExprNodeAdapter(
+            ExprNode exprNode,
+            EventBean[] prototype,
+            VariableService variableService,
+            IThreadLocalManager threadLocalManager)
         {
             _exprNode = exprNode;
             _exprNodeEval = exprNode.ExprEvaluator;
             _variableService = variableService;
-            _arrayPerThread = ThreadLocalManager.Create<EventBean[]>(CreateLocalData);
+            _arrayPerThread = threadLocalManager.Create<EventBean[]>(CreateLocalData);
 
             if (prototype == null) {
                 _prototype = new EventBean[1];

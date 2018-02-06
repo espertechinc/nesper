@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-
+using System.Reflection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading;
 
@@ -19,7 +19,7 @@ namespace com.espertech.esper.compat.magic
     public class MagicMarker
     {
         #region Collection Factory
-        private static readonly ILockable collectionFactoryTableLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILockable collectionFactoryTableLock = new MonitorSpinLock(60000);
         private static readonly IDictionary<Type, Func<object, ICollection<object>>> collectionFactoryTable =
             new Dictionary<Type, Func<object, ICollection<object>>>();
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region List Factory
-        private static readonly ILockable listFactoryTableLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILockable listFactoryTableLock = new MonitorSpinLock(60000);
         private static readonly IDictionary<Type, Func<object, IList<object>>> listFactoryTable =
             new Dictionary<Type, Func<object, IList<object>>>();
 
@@ -140,7 +140,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region Dictionary Factory
-        private static readonly ILockable dictionaryFactoryTableLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILockable dictionaryFactoryTableLock = new MonitorSpinLock(60000);
         private static readonly IDictionary<Type, Func<object, IDictionary<object, object>>> dictionaryFactoryTable =
             new Dictionary<Type, Func<object, IDictionary<object, object>>>();
 
@@ -207,7 +207,7 @@ namespace com.espertech.esper.compat.magic
         #endregion
 
         #region String Dictionary Factory
-        private static readonly ILockable stringDictionaryFactoryTableLock = LockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILockable stringDictionaryFactoryTableLock = new MonitorSpinLock(60000);
         private static readonly IDictionary<Type, Func<object, IDictionary<string, object>>> stringDictionaryFactoryTable =
             new Dictionary<Type, Func<object, IDictionary<string, object>>>();
 
@@ -286,7 +286,6 @@ namespace com.espertech.esper.compat.magic
             // Return the compiled lambda method
             return eLambda.Compile();
         }
-
         #endregion
     }
 }

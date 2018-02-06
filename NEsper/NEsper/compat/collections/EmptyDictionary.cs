@@ -92,7 +92,7 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         public V this[K key]
         {
-            get { throw new KeyNotFoundException(); }
+            get => throw new KeyNotFoundException();
             set { throw new NotSupportedException(); }
         }
 
@@ -103,10 +103,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<K> Keys
-        {
-            get { return new K[0]; }
-        }
+        public ICollection<K> Keys => new K[0];
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
@@ -115,10 +112,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<V> Values
-        {
-            get { return new V[0]; }
-        }
+        public ICollection<V> Values => new V[0];
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -208,10 +202,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </returns>
-        public int Count
-        {
-            get { return 0; }
-        }
+        public int Count => 0;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
@@ -219,9 +210,6 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
     }
 }

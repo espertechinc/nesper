@@ -40,7 +40,7 @@ namespace com.espertech.esper.epl.join.@base
             get { return false; }
         }
 
-        public void Init(EventBean[][] eventsPerStream)
+        public void Init(EventBean[][] eventsPerStream, ExprEvaluatorContext exprEvaluatorContext)
         {
         }
 

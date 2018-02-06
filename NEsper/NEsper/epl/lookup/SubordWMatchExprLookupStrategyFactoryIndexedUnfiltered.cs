@@ -35,9 +35,6 @@ namespace com.espertech.esper.epl.lookup
             return this.GetType().Name + " " + " strategy " + _lookupStrategyFactory.ToQueryPlan();
         }
 
-        public SubordTableLookupStrategyFactory OptionalInnerStrategy
-        {
-            get { return _lookupStrategyFactory; }
-        }
+        public SubordTableLookupStrategyFactory OptionalInnerStrategy => _lookupStrategyFactory;
     }
 }

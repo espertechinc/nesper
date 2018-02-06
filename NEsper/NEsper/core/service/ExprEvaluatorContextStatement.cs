@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.epl.expression.core;
 using com.espertech.esper.epl.script;
@@ -31,6 +32,8 @@ namespace com.espertech.esper.core.service
             _statementContext = statementContext;
             _allowTableAccess = allowTableAccess;
         }
+
+        public IContainer Container => _statementContext.Container;
 
         /// <summary>Returns the time provider. </summary>
         /// <value>time provider</value>

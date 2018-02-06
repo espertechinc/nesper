@@ -26,7 +26,7 @@ namespace com.espertech.esper.collection
                 PermutationEnumerator.Create(0);
                 Assert.Fail();
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 // expected
             }

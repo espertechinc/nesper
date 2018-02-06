@@ -36,8 +36,8 @@ namespace com.espertech.esper.compat.collections
         /// <value></value>
 		public T this[int index]
 		{
-			get { return _parent[index] ; }
-			set { throw new NotSupportedException() ; }
+            get => _parent[index];
+            set { throw new NotSupportedException() ; }
 		}
 
         /// <summary>
@@ -45,20 +45,16 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-		public int Count {
-			get { return _parent.Count; }
-		}
+		public int Count => _parent.Count;
 
-        /// <summary>
+	    /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-		public bool IsReadOnly {
-			get { return true ; }
-		}
+		public bool IsReadOnly => true;
 
-        /// <summary>
+	    /// <summary>
         /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
         /// </summary>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>

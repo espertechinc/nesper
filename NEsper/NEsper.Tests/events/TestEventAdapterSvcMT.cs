@@ -14,12 +14,13 @@ using com.espertech.esper.client;
 using com.espertech.esper.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.core.support;
 using com.espertech.esper.events.bean;
 using com.espertech.esper.events.map;
 using com.espertech.esper.supportunit.bean;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events
@@ -29,11 +30,16 @@ namespace com.espertech.esper.events
     public class TestEventAdapterSvcMT 
     {
         private EventAdapterService _service;
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
-            _service = new EventAdapterServiceImpl(new EventTypeIdGeneratorImpl(), 5, null, SupportEngineImportServiceFactory.Make());
+            _container = SupportContainer.Reset();
+            _service = new EventAdapterServiceImpl(
+                _container,
+                new EventTypeIdGeneratorImpl(), 5, null,
+                SupportEngineImportServiceFactory.Make(_container));
         }
     
         [Test]

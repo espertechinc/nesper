@@ -10,11 +10,12 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.client;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.events;
-
+using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
 namespace com.espertech.esper.events.map
@@ -29,10 +30,13 @@ namespace com.espertech.esper.events.map
         private MapEventBean _eventBean;
     
         private readonly SupportBeanComplexProps _supportBean = SupportBeanComplexProps.MakeDefaultBean();
-    
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             _testTypesMap = new Dictionary<String, Object>();
             _testTypesMap["aString"] = typeof(string);
             _testTypesMap["anInt"] = typeof(int);
@@ -44,7 +48,7 @@ namespace com.espertech.esper.events.map
             _testValuesMap["myComplexBean"] = _supportBean;
 
             EventTypeMetadata metadata = EventTypeMetadata.CreateNonPonoApplicationType(ApplicationType.MAP, "testtype", true, true, true, false, false);
-            _eventType = new MapEventType(metadata, "", 1, SupportEventAdapterService.Service, _testTypesMap, null, null, null);
+            _eventType = new MapEventType(metadata, "", 1, _container.Resolve<EventAdapterService>(), _testTypesMap, null, null, null);
             _eventBean = new MapEventBean(_testValuesMap, _eventType);
         }
     
@@ -82,7 +86,7 @@ namespace com.espertech.esper.events.map
             _testTypesMap.Clear();
             _testTypesMap["a"] = typeof(SupportBean);
             _testTypesMap["b"] = typeof(SupportBean_A);
-            EventType eventType = SupportEventAdapterService.Service.CreateAnonymousMapType("test", _testTypesMap, true);
+            EventType eventType = _container.Resolve<EventAdapterService>().CreateAnonymousMapType("test", _testTypesMap, true);
     
             IDictionary<String, Object> events = new Dictionary<String, Object>();
             events["a"] = beanOne;

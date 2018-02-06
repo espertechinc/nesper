@@ -9,7 +9,11 @@
 using System;
 
 using com.espertech.esper.client;
+using com.espertech.esper.codegen.core;
+using com.espertech.esper.codegen.model.expression;
 using com.espertech.esper.events.bean;
+
+using static com.espertech.esper.codegen.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.events.arr
 {
@@ -34,8 +38,6 @@ namespace com.espertech.esper.events.arr
             _eventAdapterService = eventAdapterService;
             _eventType = eventType;
         }
-
-        #region ObjectArrayEventPropertyGetter Members
 
         public Object GetObjectArray(Object[] array)
         {
@@ -65,9 +67,51 @@ namespace com.espertech.esper.events.arr
                 return null;
             }
             Object result = Get(eventBean);
-            return BaseNestableEventUtil.GetFragmentPono(result, _eventType, _eventAdapterService);
+            return BaseNestableEventUtil.GetBNFragmentPono(result, _eventType, _eventAdapterService);
         }
 
-        #endregion
+        public ICodegenExpression CodegenEventBeanGet(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return BeanUndCastArrayAtIndex(typeof(object[]), beanExpression, _propertyIndex);
+        }
+
+        public ICodegenExpression CodegenEventBeanExists(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenEventBeanFragment(ICodegenExpression beanExpression, ICodegenContext context)
+        {
+            if (_eventType == null)
+            {
+                return ConstantNull();
+            }
+            return CodegenUnderlyingFragment(
+                CastUnderlying(typeof(object[]), beanExpression), context);
+        }
+
+        public ICodegenExpression CodegenUnderlyingGet(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ArrayAtIndex(underlyingExpression, Constant(_propertyIndex));
+        }
+
+        public ICodegenExpression CodegenUnderlyingExists(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            return ConstantTrue();
+        }
+
+        public ICodegenExpression CodegenUnderlyingFragment(ICodegenExpression underlyingExpression, ICodegenContext context)
+        {
+            if (_eventType == null)
+            {
+                return ConstantNull();
+            }
+            var mSvc = context.MakeAddMember(typeof(EventAdapterService), _eventAdapterService);
+            var mType = context.MakeAddMember(typeof(BeanEventType), _eventType);
+            return StaticMethod(typeof(BaseNestableEventUtil), "GetBNFragmentPono",
+                CodegenUnderlyingGet(underlyingExpression, context),
+                Ref(mType.MemberName), 
+                Ref(mSvc.MemberName));
+        }
     }
 }

@@ -12,12 +12,14 @@ using System.Threading;
 
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.container;
+using com.espertech.esper.compat.logger;
 using com.espertech.esper.compat.logging;
 
-using NEsper.Example.MatchMaker.eventbean;
-using NEsper.Example.MatchMaker.monitor;
+using NEsper.Examples.MatchMaker.eventbean;
+using NEsper.Examples.MatchMaker.monitor;
 
-namespace NEsper.Example.MatchMaker
+namespace NEsper.Examples.MatchMaker
 {
     public class AppMain
     {
@@ -28,6 +30,9 @@ namespace NEsper.Example.MatchMaker
 
         public static void Main(string[] args)
         {
+            LoggerNLog.BasicConfig();
+            LoggerNLog.Register();
+
             new AppMain("MatchMaker", false).Run();
         }
 
@@ -40,12 +45,17 @@ namespace NEsper.Example.MatchMaker
         public void Run()
         {
             Log.Info("Setting up EPL");
+
+            var container = ContainerExtensions.CreateDefaultContainer()
+                .InitializeDefaultServices()
+                .InitializeDatabaseDrivers();
+
             // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
-            var config = new Configuration();
+            var config = new Configuration(container);
             config.EngineDefaults.Threading.IsInternalTimerEnabled = false;
 
             var listener = new MatchAlertListener();
-            var epService = EPServiceProviderManager.GetProvider(_engineURI, config);
+            var epService = EPServiceProviderManager.GetProvider(container, _engineURI, config);
             epService.Initialize();
 
             new MatchMakingMonitor(epService, listener);

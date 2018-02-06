@@ -31,7 +31,7 @@ namespace com.espertech.esper.epl.expression.methodagg
         {
         }
     
-        public override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
+        protected override AggregationMethodFactory ValidateAggregationChild(ExprValidationContext validationContext)
         {
             _hasFilter = PositionalParams.Length > 1;
             var childType = base.ValidateNumericChildAllowFilter(_hasFilter);
@@ -44,14 +44,10 @@ namespace com.espertech.esper.epl.expression.methodagg
             return node is ExprAvedevNode;
         }
 
-        public override string AggregationFunctionName
-        {
-            get { return "avedev"; }
-        }
+        public override string AggregationFunctionName => "avedev";
 
-        public bool HasFilter
-        {
-            get { return _hasFilter; }
-        }
+        public bool HasFilter => _hasFilter;
+
+        protected override bool IsFilterExpressionAsLastParameter => true;
     }
 }

@@ -161,10 +161,7 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         #endregion
 
@@ -212,10 +209,7 @@ namespace com.espertech.esper.compat.collections
 
                 throw new KeyNotFoundException();
             }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            set => throw new NotSupportedException();
         }
 
         public ICollection<K> Keys

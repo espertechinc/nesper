@@ -34,7 +34,7 @@ namespace com.espertech.esper.events.bean
         /// <param name="fastClass">is the CGLIB fast classs to make FastMethod for</param>
         /// <param name="eventAdapterService">factory for event beans and event types</param>
         /// <returns>property getter</returns>
-        public static EventPropertyGetter GetGetter(String propertyName, MethodInfo method, FastClass fastClass, EventAdapterService eventAdapterService)
+        public static EventPropertyGetterSPI GetGetter(String propertyName, MethodInfo method, FastClass fastClass, EventAdapterService eventAdapterService)
         {
             // Construct the appropriate property getter CGLib or reflect
             if (fastClass != null)

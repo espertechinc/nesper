@@ -82,9 +82,11 @@ namespace com.espertech.esper.compat.collections
         /// Gets the number of items in the queue.
         /// </summary>
         /// <value>The count.</value>
-        public int Count
+        public int Count => (int)Interlocked.Read(ref _count);
+
+        public bool IsEmpty()
         {
-            get { return (int)Interlocked.Read(ref _count); }
+            return Interlocked.Read(ref _count) == 0L;
         }
 
         /// <summary>

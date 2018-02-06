@@ -97,11 +97,29 @@ namespace com.espertech.esper.epl.lookup
                 return new SubordinateQueryPlanDesc(lookupStrategyFactoryVdw, null);
             }
 
+            if ((joinDesc.CustomIndexOps != null) && (!joinDesc.CustomIndexOps.IsEmpty()))
+            {
+                foreach (var op in joinDesc.CustomIndexOps)
+                {
+                    foreach (var index in indexMetadata.Indexes)
+                    {
+                        if (IsCustomIndexMatch(index, op))
+                        {
+                            var provisionDesc = index.Value.QueryPlanIndexItem.AdvancedIndexProvisionDesc;
+                            var lookupStrategyFactoryX = provisionDesc.Factory.GetSubordinateLookupStrategy(
+                                op.Key.OperationName, op.Value.PositionalExpressions, isNWOnTrigger, outerStreams.Length);
+                            var indexDesc = new SubordinateQueryIndexDesc(null, index.Value.OptionalIndexName, index.Key, null);
+                            return new SubordinateQueryPlanDesc(lookupStrategyFactoryX, new SubordinateQueryIndexDesc[] { indexDesc });
+                        }
+                    }
+                }
+            }
+
             var hashKeys = Collections.GetEmptyList<SubordPropHashKey>();
             CoercionDesc hashKeyCoercionTypes = null;
             var rangeKeys = Collections.GetEmptyList<SubordPropRangeKey>();
             CoercionDesc rangeKeyCoercionTypes = null;
-            ExprNode[] inKeywordSingleIdxKeys = null;
+            IList<ExprNode> inKeywordSingleIdxKeys = null;
             ExprNode inKeywordMultiIdxKey = null;
 
             SubordinateQueryIndexDesc[] indexDescs;
@@ -117,7 +135,7 @@ namespace com.espertech.esper.epl.lookup
                 {
                     return null;
                 }
-                var desc = new SubordinateQueryIndexDesc(indexDesc.IndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
+                var desc = new SubordinateQueryIndexDesc(indexDesc.OptionalIndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
                 indexDescs = new SubordinateQueryIndexDesc[] { desc };
                 inKeywordSingleIdxKeys = single.Expressions;
             }
@@ -150,12 +168,12 @@ namespace com.espertech.esper.epl.lookup
                 {
                     return null;
                 }
-                var indexKeyInfo = indexDesc.IndexKeyInfo;
+                var indexKeyInfo = indexDesc.OptionalIndexKeyInfo;
                 hashKeys = indexKeyInfo.OrderedHashDesc;
                 hashKeyCoercionTypes = indexKeyInfo.OrderedKeyCoercionTypes;
                 rangeKeys = indexKeyInfo.OrderedRangeDesc;
                 rangeKeyCoercionTypes = indexKeyInfo.OrderedRangeCoercionTypes;
-                var desc = new SubordinateQueryIndexDesc(indexDesc.IndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
+                var desc = new SubordinateQueryIndexDesc(indexDesc.OptionalIndexKeyInfo, indexDesc.IndexName, indexDesc.IndexMultiKey, indexDesc.QueryPlanIndexItem);
                 indexDescs = new SubordinateQueryIndexDesc[] { desc };
             }
 
@@ -164,9 +182,36 @@ namespace com.espertech.esper.epl.lookup
                 return null;
             }
 
-            var lookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(outerStreams,
-                    hashKeys, hashKeyCoercionTypes, rangeKeys, rangeKeyCoercionTypes, inKeywordSingleIdxKeys, inKeywordMultiIdxKey, isNWOnTrigger);
+            var lookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(
+                outerStreams, 
+                hashKeys, hashKeyCoercionTypes, 
+                rangeKeys, rangeKeyCoercionTypes, 
+                inKeywordSingleIdxKeys, 
+                inKeywordMultiIdxKey, 
+                isNWOnTrigger);
             return new SubordinateQueryPlanDesc(lookupStrategyFactory, indexDescs);
+        }
+
+        private static bool IsCustomIndexMatch(
+            KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> index,
+            KeyValuePair<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation> op)
+        {
+            if (index.Value.ExplicitIndexNameIfExplicit == null || 
+                index.Value.QueryPlanIndexItem == null)
+            {
+                return false;
+            }
+
+            var provision = index.Value.QueryPlanIndexItem.AdvancedIndexProvisionDesc;
+            if (provision == null)
+            {
+                return false;
+            }
+            if (!provision.Factory.ProvidesIndexForOperation(op.Key.OperationName, op.Value.PositionalExpressions))
+            {
+                return false;
+            }
+            return ExprNodeUtility.DeepEquals(index.Key.AdvancedIndexDesc.IndexedExpressions, op.Key.ExprNodes, true);
         }
 
         private static SubordinateQueryIndexDesc FindOrSuggestIndex(
@@ -203,7 +248,11 @@ namespace com.espertech.esper.epl.lookup
                 optionalIndexHintInstructions = optionalIndexHint.GetInstructionsSubquery(subqueryNumber);
             }
 
-            var indexFoundPair = EventTableIndexUtil.FindIndexConsiderTyping(indexMetadata.Indexes, hashedAndBtreeProps.HashedProps, hashedAndBtreeProps.BtreeProps, optionalIndexHintInstructions);
+            var indexFoundPair = EventTableIndexUtil.FindIndexConsiderTyping(
+                indexMetadata.IndexesAsBase, 
+                hashedAndBtreeProps.HashedProps, 
+                hashedAndBtreeProps.BtreeProps, 
+                optionalIndexHintInstructions);
             if (indexFoundPair != null)
             {
                 var hintIndex = indexMetadata.Indexes.Get(indexFoundPair);
@@ -321,7 +370,7 @@ namespace com.espertech.esper.epl.lookup
             bool mustCoerce)
         {
             // not resolved as full match and not resolved as unique index match, allocate
-            var indexPropKey = new IndexMultiKey(unique, hashProps, btreeProps);
+            var indexPropKey = new IndexMultiKey(unique, hashProps, btreeProps, null);
 
             var indexedPropDescs = hashProps.ToArray();
             var indexProps = IndexedPropDesc.GetIndexProperties(indexedPropDescs);
@@ -335,7 +384,7 @@ namespace com.espertech.esper.epl.lookup
             var rangeProps = IndexedPropDesc.GetIndexProperties(rangePropDescs);
             var rangeCoercionTypes = IndexedPropDesc.GetCoercionTypes(rangePropDescs);
 
-            var indexItem = new QueryPlanIndexItem(indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes, unique);
+            var indexItem = new QueryPlanIndexItem(indexProps, indexCoercionTypes, rangeProps, rangeCoercionTypes, unique, null);
             return new Pair<QueryPlanIndexItem, IndexMultiKey>(indexItem, indexPropKey);
         }
     }

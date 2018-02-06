@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.epl.datetime.eval;
 using com.espertech.esper.epl.expression.core;
+using com.espertech.esper.epl.join.plan;
 using com.espertech.esper.epl.variable;
 
 namespace com.espertech.esper.epl.expression.dot
@@ -17,15 +18,10 @@ namespace com.espertech.esper.epl.expression.dot
     /// <summary>
     /// Represents an Dot-operator expression, for use when "(expression).Method(...).Method(...)"
     /// </summary>
-    public interface ExprDotNode : ExprNode
+    public interface ExprDotNode : ExprNode, FilterExprAnalyzerAffectorProvider
     {
         int? StreamReferencedIfAny { get; }
-
         IList<ExprChainedSpec> ChainSpec { get; }
-
         string IsVariableOpGetName(VariableService variableService);
-
-        ExprDotNodeFilterAnalyzerDesc ExprDotNodeFilterAnalyzerDesc { get; }
     }
-    
 } // end of namespace

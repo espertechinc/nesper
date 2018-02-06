@@ -179,7 +179,6 @@ namespace com.espertech.esper.epl.parse
 
         private static String ExtractUnicode(StringBuilder sb, int slashIndex)
         {
-            String result;
             String code = sb.ToString().Substring(slashIndex + 2, 4);
             int ordinal = int.Parse(code, NumberStyles.HexNumber); // hex to integer
             if (ordinal < 0x10000)

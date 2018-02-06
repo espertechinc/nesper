@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.core.support;
 using com.espertech.esper.supportunit.bean;
 using com.espertech.esper.supportunit.epl;
@@ -26,17 +27,20 @@ namespace com.espertech.esper.view.stat
     [TestFixture]
     public class TestCorrelationView 
     {
-        CorrelationView _myView;
-        SupportBeanClassView _childView;
-    
+        private CorrelationView _myView;
+        private SupportBeanClassView _childView;
+        private IContainer _container;
+
         [SetUp]
         public void SetUp()
         {
+            _container = SupportContainer.Reset();
+
             // Set up sum view and a test child view
-            EventType type = CorrelationView.CreateEventType(SupportStatementContextFactory.MakeContext(), null, 1);
+            EventType type = CorrelationView.CreateEventType(SupportStatementContextFactory.MakeContext(_container), null, 1);
             CorrelationViewFactory factory = new CorrelationViewFactory();
             _myView = new CorrelationView(factory, 
-                SupportStatementContextFactory.MakeAgentInstanceContext(),
+                SupportStatementContextFactory.MakeAgentInstanceContext(_container),
                 SupportExprNodeFactory.MakeIdentNodeMD("Price"),
                 SupportExprNodeFactory.MakeIdentNodeMD("Volume"), type, null);
     

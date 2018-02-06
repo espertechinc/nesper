@@ -8,6 +8,7 @@
 
 
 using com.espertech.esper.client.metric;
+using com.espertech.esper.compat.container;
 using com.espertech.esper.supportunit.util;
 using NUnit.Framework;
 
@@ -16,10 +17,18 @@ namespace com.espertech.esper.epl.metric
     [TestFixture]
     public class TestStatementMetricArray
     {
+        private IContainer _container;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _container = SupportContainer.Reset();
+        }
+
         [Test]
         public void TestFlowReportActive()
         {
-            var rep = new StatementMetricArray("uri", "name", 3, false);
+            var rep = new StatementMetricArray("uri", "name", 3, false, _container.RWLockManager());
 
             Assert.AreEqual(0, rep.SizeLastElement);
 
@@ -80,7 +89,7 @@ namespace com.espertech.esper.epl.metric
         [Test]
         public void TestFlowReportInactive()
         {
-            var rep = new StatementMetricArray("uri", "name", 3, true);
+            var rep = new StatementMetricArray("uri", "name", 3, true, _container.RWLockManager());
 
             Assert.AreEqual(0, rep.AddStatementGetIndex("001"));
             Assert.AreEqual(1, rep.AddStatementGetIndex("002"));

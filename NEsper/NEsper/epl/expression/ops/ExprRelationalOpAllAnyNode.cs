@@ -196,7 +196,7 @@ namespace com.espertech.esper.epl.expression.ops
             {
                 if (!coercionType.IsNumeric())
                 {
-                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", coercionType.FullName));
+                    throw new ExprValidationException(string.Format("Implicit conversion from datatype '{0}' to numeric is not allowed", Name.Clean(coercionType)));
                 }
             }
 
@@ -459,7 +459,7 @@ namespace com.espertech.esper.epl.expression.ops
             }
         }
 
-        public override bool EqualsNode(ExprNode node)
+        public override bool EqualsNode(ExprNode node, bool ignoreStreamPrefix)
         {
             if (!(node is ExprRelationalOpAllAnyNode))
             {
