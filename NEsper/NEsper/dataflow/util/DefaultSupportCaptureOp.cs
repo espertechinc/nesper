@@ -127,6 +127,11 @@ namespace com.espertech.esper.dataflow.util
             return GetCurrent();
         }
 
+        public object[] GetValue(int units, TimeUnit timeUnit)
+        {
+            return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
+        }
+
         public Object[] GetPunctuated()
         {
             var result = _numRowLatch.Await(TimeSpan.FromSeconds(1));

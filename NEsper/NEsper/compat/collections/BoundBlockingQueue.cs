@@ -36,6 +36,21 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
+        /// Determines whether this instance is empty.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public bool IsEmpty()
+        {
+            using (_queueLock.Acquire())
+            {
+                return _queue.Count == 0;
+            }
+        }
+
+        /// <summary>
         /// Gets the number of items in the queue.
         /// </summary>
         /// <value>The count.</value>

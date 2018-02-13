@@ -72,6 +72,7 @@ namespace com.espertech.esper.regression.support
                 _stmt = _engine.EPAdministrator.CreateEPL(irStreamEPL);
                 _stmt.AddListener(_listener);
                 Execute(isAssert, false, allowAnyOrder);
+                _stmt.Stop();
             }
         }
 

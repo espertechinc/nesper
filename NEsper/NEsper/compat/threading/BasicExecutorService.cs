@@ -225,6 +225,11 @@ namespace com.espertech.esper.compat.threading
             AwaitTermination(new TimeSpan(0, 0, 15));
         }
 
+        public void AwaitTermination(int units, TimeUnit timeUnit)
+        {
+            AwaitTermination(TimeUnitHelper.ToTimeSpan(units, timeUnit));
+        }
+
         /// <summary>
         /// Awaits the termination.
         /// </summary>
@@ -319,6 +324,8 @@ namespace com.espertech.esper.compat.threading
         /// <param name="timeOut">The time out.</param>
         /// <returns></returns>
         T GetValue(TimeSpan timeOut);
+
+        T GetValue(int units, TimeUnit timeUnit);
 
         /// <summary>
         /// Gets the result value from the execution.
@@ -447,6 +454,11 @@ namespace com.espertech.esper.compat.threading
         public T GetValue(TimeSpan timeOut)
         {
             throw new NotSupportedException("implementation does not provide blocking mechanics");
+        }
+
+        public T GetValue(int units, TimeUnit timeUnit)
+        {
+            return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
         }
 
         /// <summary>

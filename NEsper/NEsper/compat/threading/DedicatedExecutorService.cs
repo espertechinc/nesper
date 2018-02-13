@@ -298,6 +298,17 @@ namespace com.espertech.esper.compat.threading
 
                 return Value;
             }
+
+            /// <summary>
+            /// Gets the result value from the execution.
+            /// </summary>
+            /// <param name="units">The units.</param>
+            /// <param name="timeUnit">The time unit.</param>
+            /// <returns></returns>
+            public T GetValue(int units, TimeUnit timeUnit)
+            {
+                return GetValue(TimeUnitHelper.ToTimeSpan(units, timeUnit));
+            }
         }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

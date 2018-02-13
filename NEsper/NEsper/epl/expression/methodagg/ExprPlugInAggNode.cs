@@ -7,8 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.client.hook;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.epl.agg.service;
 using com.espertech.esper.epl.expression.accessagg;
 using com.espertech.esper.epl.expression.baseagg;
@@ -78,7 +79,15 @@ namespace com.espertech.esper.epl.expression.methodagg
 	            count++;
 	        }
 
-	        var context = new AggregationValidationContext(parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions);
+	        IDictionary<string, IList<ExprNode>> namedParameters = null;
+	        if (OptionalFilter != null)
+	        {
+	            namedParameters = new Dictionary<string, IList<ExprNode>>();
+	            namedParameters.Put("filter", Collections.SingletonList(OptionalFilter));
+	            positionalParams = ExprNodeUtility.AddExpression(positionalParams, OptionalFilter);
+	        }
+
+            var context = new AggregationValidationContext(parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions, namedParameters);
 	        try
 	        {
 	            // the aggregation function factory is transient, obtain if not provided

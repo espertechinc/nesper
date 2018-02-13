@@ -30,5 +30,14 @@ namespace com.espertech.esper.client.context
         {
             get { return ProcPartitionKeys.Invoke(); }
         }
+
+        public ProxyContextPartitionSelectorSegmented()
+        {
+        }
+
+        public ProxyContextPartitionSelectorSegmented(Func<IList<object[]>> procPartitionKeys)
+        {
+            ProcPartitionKeys = procPartitionKeys;
+        }
     }
 }

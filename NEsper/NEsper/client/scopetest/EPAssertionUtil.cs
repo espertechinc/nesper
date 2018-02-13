@@ -1496,7 +1496,6 @@ namespace com.espertech.esper.client.scopetest
         /// <summary>Callback for extracting individual collection items for assertion. </summary>
         public interface AssertionCollectionValueString
         {
-
             /// <summary>Extract value. </summary>
             /// <param name="collectionItem">to extract from</param>
             /// <returns>extracted value</returns>

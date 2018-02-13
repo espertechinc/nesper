@@ -37,7 +37,6 @@ namespace com.espertech.esper.compat.threading
     /// <typeparam name="T"></typeparam>
 
     public sealed class FastThreadLocal<T> : IThreadLocal<T>
-        where T : class
     {
         // Technique    Config      Cycles      time-ms     avg time-us
         // IThreadLocal	Release	    1183734	    6200.5	    5.238085583
@@ -256,7 +255,7 @@ namespace com.espertech.esper.compat.threading
                         {
                             if (threadData.Count > lInstance)
                             {
-                                threadData.Table[lInstance] = null;
+                                threadData.Table[lInstance] = default(T);
                             }
 
                             continue;

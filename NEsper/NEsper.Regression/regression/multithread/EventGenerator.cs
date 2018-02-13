@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.supportregression.bean;
+using com.espertech.esper.supportregression.multithread;
 
 namespace com.espertech.esper.regression.multithread
 {

@@ -13,7 +13,6 @@ using System.Threading;
 namespace com.espertech.esper.compat.threading
 {
     public sealed class XperThreadLocal<T> : IThreadLocal<T>
-        where T : class
     {
         private readonly SlimLock _wLock;
         private readonly FactoryDelegate<T> _valueFactory;

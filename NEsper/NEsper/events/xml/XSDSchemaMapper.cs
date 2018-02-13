@@ -756,7 +756,7 @@ namespace com.espertech.esper.events.xml
                             {
                                 digits = Integer.parseInt(facet.getLexicalFacetValue());
                             }
-                            catch (RuntimeException ex)
+                            catch (Exception ex)
                             {
                                 Log.warn(
                                     "Error parsing fraction facet value '" + facet.getLexicalFacetValue() + "' : " +

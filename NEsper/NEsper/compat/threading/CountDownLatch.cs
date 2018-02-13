@@ -61,5 +61,10 @@ namespace com.espertech.esper.compat.threading
         {
             return Await(TimeSpan.MaxValue);
         }
+
+        public bool Await(int units, TimeUnit timeUnits)
+        {
+            return Await(TimeUnitHelper.ToTimeSpan(units, timeUnits));
+        }
     }
 }

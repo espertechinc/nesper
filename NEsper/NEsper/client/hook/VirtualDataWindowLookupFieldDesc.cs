@@ -20,7 +20,10 @@ namespace com.espertech.esper.client.hook
         /// <param name="propertyName">property name queried in where-clause</param>
         /// <param name="operator">operator</param>
         /// <param name="lookupValueType">lookup key type</param>
-        public VirtualDataWindowLookupFieldDesc(String propertyName, VirtualDataWindowLookupOp? @operator, Type lookupValueType)
+        public VirtualDataWindowLookupFieldDesc(
+            string propertyName,
+            VirtualDataWindowLookupOp? @operator, 
+            Type lookupValueType)
         {
             PropertyName = propertyName;
             Operator = @operator;

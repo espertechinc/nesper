@@ -47,5 +47,10 @@ namespace com.espertech.esper.supportregression.client
             }
             return config;
         }
+
+        public static bool SkipTest(Type type)
+        {
+            return false;
+        }
     }
 }

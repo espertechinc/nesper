@@ -47,6 +47,20 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        public bool IsEmpty()
+        {
+            Monitor.Enter(_queueLock);
+
+            try
+            {
+                return _queue.Count == 0;
+            }
+            finally
+            {
+                Monitor.Exit(_queueLock);
+            }
+        }
+
         /// <summary>
         /// Clears all items from the queue
         /// </summary>

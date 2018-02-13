@@ -110,7 +110,7 @@ namespace com.espertech.esper.regression.events
 	        epService.EPAdministrator.CreateEPL("on pattern [a=TheWindow -> timer:interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`");
 
 	        // test escape in column name
-	        epService.EPAdministrator.Configuration.AddEventType(typeof(SupportBean));
+	        epService.EPAdministrator.Configuration.AddEventType<SupportBean>();
 	        EPStatement stmtTwo = epService.EPAdministrator.CreateEPL("select theString as `order`, theString as `price.for.goods` from SupportBean");
 	        stmtTwo.AddListener(listener);
 	        Assert.AreEqual(typeof(string), stmtTwo.EventType.GetPropertyType("order"));

@@ -67,9 +67,9 @@ namespace com.espertech.esper.supportregression.epl
             Joins.Add(join);
         }
 
-        public static IList<QueryPlanIndexDescSubquery> GetAndResetSubqueries()
+        public static List<QueryPlanIndexDescSubquery> GetAndResetSubqueries()
         {
-            IList<QueryPlanIndexDescSubquery> copy = new List<QueryPlanIndexDescSubquery>(Subqueries);
+            List<QueryPlanIndexDescSubquery> copy = new List<QueryPlanIndexDescSubquery>(Subqueries);
             Reset();
             return copy;
         }

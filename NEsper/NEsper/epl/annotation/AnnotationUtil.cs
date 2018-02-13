@@ -412,14 +412,14 @@ namespace com.espertech.esper.epl.annotation
                 anno.GetType().IsSubclassOf(annotationClass));
         }
 
-        public static List<Attribute> FindAttributes(Attribute[] annotations, Type annotationClass)
+        public static List<Attribute> FindAnnotations(IEnumerable<Attribute> annotations, Type annotationClass)
         {
             if (!TypeHelper.IsSubclassOrImplementsInterface(annotationClass, typeof(Attribute)))
             {
                 throw new ArgumentException("Class " + annotationClass.FullName + " is not an attribute class");
             }
 
-            if (annotations == null || annotations.Length == 0)
+            if (annotations == null || annotations.HasFirst() == false)
             {
                 return null;
             }

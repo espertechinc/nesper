@@ -87,6 +87,11 @@ namespace com.espertech.esper.compat.collections
             get { return (int)Interlocked.Read(ref _count); }
         }
 
+        public bool IsEmpty()
+        {
+            return Interlocked.Read(ref _count) == 0L;
+        }
+
         /// <summary>
         /// Clears all items from the queue
         /// </summary>
