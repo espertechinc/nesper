@@ -1,0 +1,10 @@
+language: csharp
+solution: NEsper.sln
+script:
+        - xbuild /p:Configuration=Debug NEsper.sln
+before-install:
+        - sudo apt-get install nunit-console
+before-script:
+        - nuget restore NEsper.sln
+after-script:
+        - nunit-console NEsper/NEsper.Tests/bin/Release/NEsper.Tests.dll
